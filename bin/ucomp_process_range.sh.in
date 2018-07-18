@@ -1,0 +1,48 @@
+#!/bin/sh
+
+# This script launches the ucomp_process.sh script for a series of days.
+
+# u=rwx,g=rwx,o=rx
+umask 0002
+
+canonicalpath() {
+  if [ -d $1 ]; then
+    pushd $1 > /dev/null 2>&1
+    echo $PWD
+  elif [ -f $1 ]; then
+    pushd $(dirname $1) > /dev/null 2>&1
+    echo $PWD/$(basename $1)
+  else
+    echo "Invalid path $1"
+  fi
+  popd > /dev/null 2>&1
+}
+
+printhelp() {
+  echo "syntax: ucomp_process_range.sh start_date end_date config_flag"
+  echo "note: start_date is inclusive, but end_date is not"
+}
+
+# find locations relative to this script
+SCRIPT_LOC=$(canonicalpath $0)
+BIN_DIR=$(dirname ${SCRIPT_LOC})
+PROCESS_SCRIPT=$BIN_DIR/ucomp_process.sh
+
+if [[ $# -lt 3 ]]; then
+  echo "required arguments not present"
+  printhelp
+  exit
+fi
+
+START_DATE=$1
+END_DATE=$2
+CONFIG_FLAG=$3
+
+d=$START_DATE
+
+while [ $d != $END_DATE ]; do
+  cmd="$PROCESS_SCRIPT $d $CONFIG_FLAG"
+  echo "$cmd"
+  $cmd
+  d=$(date +"%Y%m%d" -d "$d + 1 day")
+done

@@ -46,7 +46,7 @@ def list_processes():
                                     'pid': p.pid,
                                     'start_time': p.create_time()})
     if len(ucomp_processes) == 0:
-        print('no ucomp processes currently running')
+        print('no UCoMP processes currently running')
         return
 
     now = datetime.datetime.now()
@@ -55,7 +55,37 @@ def list_processes():
         started = datetime.datetime.fromtimestamp(p['start_time'])
         time_running = now - started
         start_time = started.strftime("%Y-%m-%d %H:%M:%S")
-        print('[%d] (%s running %s): %s' % (p['pid'], start_time, format_timedelta(time_running), p['cmdline']))
+        print('[%d] (%s running %s): %s' % (p['pid'],
+                                            start_time,
+                                            format_timedelta(time_running), p['cmdline']))
+
+
+def process_dates(dates, flags, no_wait):
+    for d in dates.split(','):
+        if d.find('-') < 0:
+            cmd = [os.path.join(PIPELINE_DIR,
+                                'bin',
+                                'ucomp_process.sh'),
+                   d,
+                   flags]
+
+            process = subprocess.Popen(cmd, stdout=None, stderr=subprocess.PIPE)
+            print('[%d] %s' % (process.pid, ' '.join(cmd)))
+            if not no_wait:
+                terminated = wait_for(process)
+                if terminated: break
+        else:
+            r = d.split('-')
+            script = 'ucomp_process_range.sh'
+            cmd = [os.path.join(PIPELINE_DIR, 'bin', script),
+                   r[0], r[1],
+                   flags]
+
+            process = subprocess.Popen(cmd, stdout=None, stderr=subprocess.PIPE)
+            print('[%d] %s' % (process.pid, ' '.join(cmd)))
+            if not no_wait:
+                terminated = wait_for(process)
+                if terminated: break
 
 
 def wait_for(process):
@@ -72,6 +102,16 @@ if __name__ == '__main__':
     name = 'UCoMP pipeline @VERSION@'
 
     parser = argparse.ArgumentParser(description=name)
+
+    date_help = '''Dates to run on in the form YYYYMMDD including lists (using
+                   commas) and ranges (using hyphens). Note that the beginning
+                   of a range is inclusive and the end is exclusive. For
+                   example, '20170101-20170201' represents all of January 2017,
+                   '20170201,20170202' represents the first two days of February
+                   2017, and '20170101-20170201,20170201,20170202' represents
+                   all of January and the first two days of February 2017.
+                '''
+    parser.add_argument('dates', type=str, nargs='*', help=date_help)
 
     parser.add_argument('-l', '--list', action='store_true',
                         help='set to list UCoMP processes')
@@ -96,3 +136,11 @@ if __name__ == '__main__':
     if args.list:
         list_processes()
         parser.exit(status=0)
+
+    # only allow no date arguments if doing a listing 
+    if len(args.dates) == 0:
+        parser.error('too few arguments')
+
+    dates = ''.join(args.dates)
+
+    process_dates(dates, args.flags, args.no_wait)
