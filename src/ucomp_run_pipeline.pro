@@ -12,14 +12,19 @@
 pro ucomp_run_pipeline, date, config_filename
   compile_opt strictarr
 
-  config_filename_fullpath = file_expand_path(config_filename)
-
   ; initialize performance metrics
   t0 = systime(/seconds)
   start_memory = memory(/current)
 
+  if (n_params() ne 2) then begin
+    mg_log, 'incorrect number of arguments', name='ucomp', /critical
+    goto, done
+  endif
+
+  config_fullpath = file_expand_path(config_filename)
+
   ; create run object
-  run = ucomp_run(date, config_filename)
+  run = ucomp_run(date, config_fullpath)
 
   version = ucomp_version(revision=revision, branch=branch)
   mg_log, 'ucomp-pipeline %s (%s on %s)', version, revision, branch, $
