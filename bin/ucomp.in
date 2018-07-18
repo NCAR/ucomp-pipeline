@@ -1,0 +1,98 @@
+#!/usr/bin/env python
+
+import argparse
+import datetime
+import os
+import psutil
+import subprocess
+
+
+DEVNULL = open(os.devnull, 'w')
+PIPELINE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+
+
+intervals = (
+    ('weeks', 604800),  # 60 * 60 * 24 * 7
+    ('days', 86400),    # 60 * 60 * 24
+    ('hrs', 3600),    # 60 * 60
+    ('mins', 60),
+    ('secs', 1),
+    )
+
+def display_time(seconds, granularity=2):
+    result = []
+
+    for name, count in intervals:
+        value = seconds // count
+        if value:
+            seconds -= value * count
+            if value == 1:
+                name = name.rstrip('s')
+            result.append("%d %s" % (value, name))
+    return ' '.join(result[:granularity])
+
+
+def format_timedelta(timedelta):
+    return(display_time(int(timedelta.total_seconds()), granularity=len(intervals)))
+
+
+def list_processes():
+    ucomp_processes = []
+    for p in psutil.process_iter():
+        cmdline = p.cmdline()
+        cmdline = '' if len(cmdline) == 0 else cmdline[-1]
+        if p.name() == 'idl' and cmdline.startswith('ucomp'):
+            ucomp_processes.append({'cmdline': cmdline,
+                                    'pid': p.pid,
+                                    'start_time': p.create_time()})
+    if len(ucomp_processes) == 0:
+        print('no ucomp processes currently running')
+        return
+
+    now = datetime.datetime.now()
+
+    for p in ucomp_processes:
+        started = datetime.datetime.fromtimestamp(p['start_time'])
+        time_running = now - started
+        start_time = started.strftime("%Y-%m-%d %H:%M:%S")
+        print('[%d] (%s running %s): %s' % (p['pid'], start_time, format_timedelta(time_running), p['cmdline']))
+
+
+def wait_for(process):
+    try:
+        process.wait()
+        return 0
+    except KeyboardInterrupt:
+        print('killing process %d' % process.pid)
+        process.kill()
+        return 1
+
+
+if __name__ == '__main__':
+    name = 'UCoMP pipeline @VERSION@'
+
+    parser = argparse.ArgumentParser(description=name)
+
+    parser.add_argument('-l', '--list', action='store_true',
+                        help='set to list UCoMP processes')
+
+    parser.add_argument('-f', '--flags',
+                        type=str,
+                        default='latest',
+                        help='''FLAGS section of config filename, i.e., file in
+                                config/ directory matching ucomp.user.machine.FLAGS.cfg
+                                will be used''')
+
+    parser.add_argument('--no-wait',
+                        action='store_true',
+                        help='set to run all dates simultaneously')
+
+    parser.add_argument('-v', '--version',
+                        action='version',
+                        version=name)
+
+    args = parser.parse_args()
+
+    if args.list:
+        list_processes()
+        parser.exit(status=0)

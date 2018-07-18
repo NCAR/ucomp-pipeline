@@ -1,0 +1,47 @@
+module        mg_mysql
+description   MySQL bindings
+version       ${VERSION}
+source        mgalloy
+build_date    ${comp_pipeline_BUILD_DATE}
+
+
+function   mg_mysql_get_client_info         0    0
+function   mg_mysql_get_client_version      0    0
+function   mg_mysql_get_proto_info          1    1
+function   mg_mysql_get_host_info           1    1
+function   mg_mysql_get_server_info         1    1
+function   mg_mysql_get_server_version      1    1
+function   mg_mysql_info                    1    1
+
+function   mg_mysql_init                    0    0
+function   mg_mysql_options                 3    3
+procedure  mg_mysql_close                   1    1
+function   mg_mysql_select_db               2    2
+
+function   mg_mysql_real_connect            8    8
+function   mg_mysql_list_tables             1    2
+function   mg_mysql_list_dbs                1    2
+function   mg_mysql_query                   2    2
+function   mg_mysql_error                   1    1
+function   mg_mysql_errno                   1    1
+
+function   mg_mysql_store_result            1     1
+function   mg_mysql_num_fields              1     1
+function   mg_mysql_num_rows                1     1
+function   mg_mysql_fetch_row               1     1
+function   mg_mysql_get_field               2     2
+function   mg_mysql_get_blobfield           3     3
+procedure  mg_mysql_free_result             1     1
+function   mg_mysql_insert_id               1     1
+function   mg_mysql_next_result             1     1
+
+structure  mg_mysql_field
+function   mg_mysql_field_count             1     1
+function   mg_mysql_fetch_field             1     1
+function   mg_mysql_fetch_lengths           1     1
+
+function   mg_mysql_real_escape_string      4     4
+function   mg_mysql_real_query              3     3
+
+function   mg_mysql_affected_rows           1     1
+function   mg_mysql_warning_count           1     1

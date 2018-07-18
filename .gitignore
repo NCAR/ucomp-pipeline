@@ -1,0 +1,12 @@
+# the CMake build
+/build
+
+# built documentation
+/api-docs
+/api-userdocs
+
+# all config files
+/config/ucomp.*.cfg
+
+# temporary file used to find the SolarSoft dependencies
+/ssw/ROUTINES

@@ -1,0 +1,5 @@
+Config files specify the options for running the pipeline. A pipeline run must
+have a config file.
+
+Place config files in this directory, the pipeline will only find config files
+places here.
