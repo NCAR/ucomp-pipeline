@@ -66,8 +66,8 @@ def process_dates(dates, flags, no_wait):
             cmd = [os.path.join(PIPELINE_DIR,
                                 'bin',
                                 'ucomp_process.sh'),
-                   d,
-                   flags]
+                   flags,
+                   d]
 
             process = subprocess.Popen(cmd, stdout=None, stderr=subprocess.PIPE)
             print('[%d] %s' % (process.pid, ' '.join(cmd)))
@@ -78,8 +78,8 @@ def process_dates(dates, flags, no_wait):
             r = d.split('-')
             script = 'ucomp_process_range.sh'
             cmd = [os.path.join(PIPELINE_DIR, 'bin', script),
-                   r[0], r[1],
-                   flags]
+                   flags,
+                   r[0], r[1]]
 
             process = subprocess.Popen(cmd, stdout=None, stderr=subprocess.PIPE)
             print('[%d] %s' % (process.pid, ' '.join(cmd)))
