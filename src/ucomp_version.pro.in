@@ -8,16 +8,16 @@
 ;
 ; :Keywords:
 ;   revision : out, optional, type=string
-;     code repo revision value, such as '8207' or 'afc6d0'
+;     code repo revision value, such as '8207' or 'afc6d0'; revisions with
+;     changes are indicated with a trailing '*'
 ;   branch : out, optional, type=string
 ;     current branch, such as 'master', 'production', etc.
 ;
 ; :Author:
 ;   MLSO Software Team
 ;-
-function comp_find_code_version, revision=revision, branch=branch
+function ucomp_version, revision=revision, branch=branch
   compile_opt strictarr
-  @comp_config_common
 
   if (arg_present(revision)) then revision = '${GIT_REVISION}'
   if (arg_present(branch)) then branch = '${GIT_BRANCH}'

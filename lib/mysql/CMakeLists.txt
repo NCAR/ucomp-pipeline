@@ -5,7 +5,6 @@ find_package(MySQL)
 
 if (MYSQL_INCLUDE_DIR AND MYSQL_LIBRARY)
   if (EXISTS ${MYSQL_INCLUDE_DIR} AND EXISTS ${MYSQL_LIBRARY})
-    LONG_TODAY(mglib_BUILD_DATE)
     include_directories(${MYSQL_INCLUDE_DIR})
 
     configure_file("${DLM_NAME}.dlm.in" "${DLM_NAME}.dlm")

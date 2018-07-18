@@ -8,6 +8,5 @@ install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/ucomp_verify_dates.sh
         DESTINATION bin)
 install(PROGRAMS ucomp_verify.sh
                  ucomp_get_hostname.sh
-                 ucomp_run_latest.sh
                  ucomp_mail_results.sh
         DESTINATION bin)
