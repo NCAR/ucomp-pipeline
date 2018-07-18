@@ -1,8 +1,8 @@
 module        mg_mysql
 description   MySQL bindings
 version       ${VERSION}
-source        mgalloy
-build_date    ${comp_pipeline_BUILD_DATE}
+source        ${PROJECT_NAME}
+build_date    ${ucomp_pipeline_BUILD_DATE}
 
 
 function   mg_mysql_get_client_info         0    0
