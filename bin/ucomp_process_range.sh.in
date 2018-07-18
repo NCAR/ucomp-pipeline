@@ -19,7 +19,7 @@ canonicalpath() {
 }
 
 printhelp() {
-  echo "syntax: ucomp_process_range.sh start_date end_date config_flag"
+  echo "syntax: ucomp_process_range.sh config_flag start_date end_date"
   echo "note: start_date is inclusive, but end_date is not"
 }
 
@@ -34,15 +34,14 @@ if [[ $# -lt 3 ]]; then
   exit
 fi
 
-START_DATE=$1
-END_DATE=$2
-CONFIG_FLAG=$3
+CONFIG_FLAG=$1
+START_DATE=$2
+END_DATE=$3
 
 d=$START_DATE
 
 while [ $d != $END_DATE ]; do
-  cmd="$PROCESS_SCRIPT $d $CONFIG_FLAG"
-  echo "$cmd"
+  cmd="$PROCESS_SCRIPT $CONFIG_FLAG $d"
   $cmd
   d=$(date +"%Y%m%d" -d "$d + 1 day")
 done
