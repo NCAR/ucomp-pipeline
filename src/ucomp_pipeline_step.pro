@@ -28,7 +28,8 @@ pro ucomp_pipeline_step, routine_name, skip=skip, _extra=e
     call_procedure, routine_name, _extra=e
     t1 = systime(/seconds)
 
-    mg_log, 'wall time: %s', ucomp_sec2str(t1 - t0), name='ucomp', /debug 
+    mg_log, 'wall time: %s', ucomp_sec2str(t1 - t0), $
+            from=routine_name, name='ucomp', /debug 
     mg_log, 'memory usage: %0.1fM', $
             (memory(/highwater) - start_memory) / 1024. / 1024., $
             from=routine_name, name='ucomp', /debug
