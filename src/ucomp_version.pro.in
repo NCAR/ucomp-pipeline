@@ -1,0 +1,26 @@
+; docformat = 'rst'
+
+;+
+; Determines the version of the code.
+;
+; :Returns:
+;   string verion number, such as '1.0.0'
+;
+; :Keywords:
+;   revision : out, optional, type=string
+;     code repo revision value, such as '8207' or 'afc6d0'
+;   branch : out, optional, type=string
+;     current branch, such as 'master', 'production', etc.
+;
+; :Author:
+;   MLSO Software Team
+;-
+function comp_find_code_version, revision=revision, branch=branch
+  compile_opt strictarr
+  @comp_config_common
+
+  if (arg_present(revision)) then revision = '${GIT_REVISION}'
+  if (arg_present(branch)) then branch = '${GIT_BRANCH}'
+
+  return, '${VERSION}'
+end
