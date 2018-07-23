@@ -6,6 +6,8 @@
 ; :Params:
 ;   routine_name : in, required, type=string
 ;     name of routine to call as a string
+;   wave_type : in, optional, type=string
+;     wave type, e.g., '1074', '1079', etc.
 ;
 ; :Keywords:
 ;   skip : in, optional, type=boolean
@@ -13,7 +15,7 @@
 ;   _extra : in, optional, type=keywords
 ;     keywords to pass along to `ROUTINE`
 ;-
-pro ucomp_pipeline_step, routine_name, skip=skip, _extra=e
+pro ucomp_pipeline_step, routine_name, wave_type, skip=skip, _extra=e
   compile_opt strictarr
 
   if (keyword_set(skip)) then begin
@@ -25,7 +27,11 @@ pro ucomp_pipeline_step, routine_name, skip=skip, _extra=e
     start_memory = memory(/current)
 
     t0 = systime(/seconds)
-    call_procedure, routine_name, _extra=e
+    if (n_params() eq 1) then begin
+      call_procedure, routine_name, _extra=e
+    endif else begin
+      call_procedure, routine_name, wave_type, _extra=e
+    endelse
     t1 = systime(/seconds)
 
     mg_log, 'wall time: %s', ucomp_sec2str(t1 - t0), $
