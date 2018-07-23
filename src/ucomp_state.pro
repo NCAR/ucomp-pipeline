@@ -36,13 +36,16 @@ function ucomp_state, date, $
   compile_opt strictarr, logical_predicate
   on_error, 2
 
-  if (n_elements(n_concurrent) eq 0L) then n_concurrent = 0L
+  ; TODO: add to run object
+  ;if (n_elements(n_concurrent) eq 0L) then n_concurrent = 0L
 
-  raw_dir = filepath(date, root=run.raw_basedir)
+  raw_dir = filepath(date, root=run->config('raw/basedir'))
   lock_file = filepath('.lock', root=raw_dir)
   processed_file = filepath('.processed', root=raw_dir)
 
-  available = ~file_test(lock_file) && ~file_test(processed_file)
+  available = file_test(raw_dir, /directory) $
+                && ~file_test(lock_file) $
+                && ~file_test(processed_file)
 
   if (keyword_set(lock)) then begin
     if (available) then begin
@@ -68,8 +71,9 @@ function ucomp_state, date, $
     return, 1B
   endif
 
+  ; TODO: add to run object
   ; this was just a test call, increment if lock_file was present
-  if (file_test(lock_file)) then n_concurrent += 1L
+  ;if (file_test(lock_file)) then n_concurrent += 1L
 
   return, available
 end
