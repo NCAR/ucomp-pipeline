@@ -75,6 +75,13 @@ endif ()
 
 set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "api-docs")
 
+
+if (mgunit_FOUND)
+  add_custom_target(unit
+    COMMAND ${IDL_EXECUTABLE} -IDL_STARTUP "\"\"" -IDL_PATH "${CMAKE_CURRENT_SOURCE_DIR}${SEP_CHAR}${CMAKE_CURRENT_SOURCE_DIR}/scripts${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/src${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/unit${SEP_CHAR}+${mgunit_DIR}${SEP_CHAR}\"<IDL_DEFAULT>\"" -quiet -e ucomp_run_unittests
+  )
+endif ()
+
 # setup installer
 
 if (WIN32)
