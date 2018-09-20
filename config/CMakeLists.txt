@@ -1,2 +1,3 @@
 file(GLOB CONFIG_FILES "*.cfg")
 install(FILES ${CONFIG_FILES} DESTINATION config)
+install(FILES README DESTINATION config)
