@@ -24,5 +24,5 @@ end
 pro ucomp_sec2str_ut__define
   compile_opt strictarr
 
-  define = { ucomp_sec2str_ut, inherits UCoMPutTestCase }
+  define = {ucomp_sec2str_ut, inherits UCoMPutTestCase}
 end
