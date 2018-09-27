@@ -69,7 +69,7 @@ def process_dates(dates, flags, no_wait):
                    flags,
                    d]
 
-            process = subprocess.Popen(cmd, stdout=None, stderr=subprocess.PIPE)
+            process = subprocess.Popen(cmd, stderr=subprocess.STDOUT)
             print('[%d] %s' % (process.pid, ' '.join(cmd)))
             if not no_wait:
                 terminated = wait_for(process)
@@ -81,7 +81,7 @@ def process_dates(dates, flags, no_wait):
                    flags,
                    r[0], r[1]]
 
-            process = subprocess.Popen(cmd, stdout=None, stderr=subprocess.PIPE)
+            process = subprocess.Popen(cmd, stderr=subprocess.STDOUT)
             print('[%d] %s' % (process.pid, ' '.join(cmd)))
             if not no_wait:
                 terminated = wait_for(process)
