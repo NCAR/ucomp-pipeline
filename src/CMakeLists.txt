@@ -2,6 +2,7 @@ add_subdirectory(data)
 add_subdirectory(database)
 add_subdirectory(level1)
 add_subdirectory(level2)
+add_subdirectory(utils)
 
 configure_file(ucomp_version.pro.in ucomp_version.pro)
 
