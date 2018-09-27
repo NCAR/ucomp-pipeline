@@ -93,6 +93,7 @@ pro ucomp_run::setup_logger
   level_name = self->config('logging/level')
   level_code = self->_log_level_code(level_name)
   max_version = self->config('logging/max_version')
+  max_width = self->config('logging/max_width')
 
   ; setup log directory and file
   basename = string(self.date, format='(%"%s.ucomp.log")')
@@ -106,6 +107,7 @@ pro ucomp_run::setup_logger
   mg_log, name='ucomp', logger=logger
   logger->setProperty, format=fmt, $
                        time_format=time_fmt, $
+                       max_width=max_width, $
                        level=level_code, $
                        filename=filename
 end
