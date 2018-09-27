@@ -28,7 +28,9 @@ function ucomp_run::config, name
 
   tokens = strsplit(name, '/', /extract, count=n_tokens)
   if (n_tokens ne 2) then message, 'bad format for config option name'
-  return, self.options->get(tokens[1], section=tokens[0])
+  value = self.options->get(tokens[1], section=tokens[0])
+
+  return, value
 end
 
 
@@ -124,20 +126,29 @@ function ucomp_run::init, date, config_filename
   self.date = date
 
   ; setup config options
-  config_spec = filepath('config_spec.cfg', $
-                         subdir=['..', 'resource'], $
-                         root=mg_src_root())
-  self.options = mg_read_config(config_filename, spec=config_spec)
+  config_spec_filename = filepath('ucomp.spec.cfg', $
+                                  subdir=['..', 'config'], $
+                                  root=mg_src_root())
+
+  self.options = mg_read_config(config_filename, spec=config_spec_filename)
+  config_valid = self.options->is_valid(error_msg=error_msg)
+  if (~config_valid) then begin
+    mg_log, 'invalid configuration file', name='ucomp', /critical
+    mg_log, '%s', error_msg, name='ucomp', /critical
+    return, 0
+  endif
 
   ; setup logger
   self->setup_logger
 
   ; setup epoch reading
-  epochs_spec = filepath('epochs_spec.cfg', $
-                         subdir=['..', 'resource'], $
-                         root=mg_src_root())
-  ; TODO: implement spec epoch reader
-  ; self.epochs = 
+  epochs_filename = filepath('epochs.cfg', $
+                             root=mg_src_root())
+  epochs_spec_filename = filepath('epochs_spec.cfg', $
+                                  subdir=['..', 'resource'], $
+                                  root=mg_src_root())
+
+  self.epochs = mgffepochparser(epochs_filename, epochs_spec_filename)
 
   return, 1
 end
