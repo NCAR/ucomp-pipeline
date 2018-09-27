@@ -30,9 +30,18 @@ pro ucomp_run_pipeline, date, config_filename
   endif
 
   config_fullpath = file_expand_path(config_filename)
+  if (~file_test(config_fullpath, /regular)) then begin
+    mg_log, config_fullpath, format='(%"config file %s not found")', $
+            name='ucomp', /critical
+    goto, done
+  endif
 
   ; create run object
   run = ucomp_run(date, config_fullpath)
+  if (~obj_valid(run)) then begin
+    mg_log, 'cannot create run object', name='ucomp', /critical
+    goto, done
+  endif
 
   version = ucomp_version(revision=revision, branch=branch)
   mg_log, 'ucomp-pipeline %s (%s on %s)', version, revision, branch, $
@@ -81,13 +90,15 @@ pro ucomp_run_pipeline, date, config_filename
   done:
 
   ; unlock raw directory and mark processed if no crash
-  if (run->config('raw/lock')) then begin
-    if (available) then begin
-      unlocked = ucomp_state(run.date, /unlock, run=run)
-      mg_log, 'unlocked %s', run.date, name='ucomp', /info
-      if (error eq 0) then begin
-        processed = ucomp_state(run.date, /processed, run=run)
-        mg_log, 'marked %s as processed', run.date, name='ucomp', /info
+  if (obj_valid(run)) then begin
+    if (run->config('raw/lock')) then begin
+      if (available) then begin
+        unlocked = ucomp_state(run.date, /unlock, run=run)
+        mg_log, 'unlocked %s', run.date, name='ucomp', /info
+        if (error eq 0) then begin
+          processed = ucomp_state(run.date, /processed, run=run)
+          mg_log, 'marked %s as processed', run.date, name='ucomp', /info
+        endif
       endif
     endif
   endif
