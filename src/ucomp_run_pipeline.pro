@@ -71,7 +71,7 @@ pro ucomp_run_pipeline, date, config_filename
     ucomp_pipeline_step, 'ucomp_check_quality', wave_types[w], run=run
     ucomp_pipeline_step, 'ucomp_make_darks', wave_types[w], run=run
     ucomp_pipeline_step, 'ucomp_make_flats', wave_types[w], run=run
-    ucomp_pipeline_step, 'ucomp_perform_l1', wave_types[w], run=run
+    ucomp_pipeline_step, 'ucomp_l1_process', wave_types[w], run=run
     ucomp_pipeline_step, 'ucomp_check_gbu', wave_types[w], run=run
   endfor
 
