@@ -1,5 +1,5 @@
-add_subdirectory(data)
 add_subdirectory(database)
+add_subdirectory(fileio)
 add_subdirectory(level1)
 add_subdirectory(level2)
 add_subdirectory(utils)
