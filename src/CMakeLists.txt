@@ -3,6 +3,7 @@ add_subdirectory(fileio)
 add_subdirectory(level1)
 add_subdirectory(level2)
 add_subdirectory(utils)
+add_subdirectory(verification)
 
 configure_file(ucomp_version.pro.in ucomp_version.pro)
 
