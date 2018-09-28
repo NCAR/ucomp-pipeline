@@ -3,10 +3,25 @@
 
 ;= epoch values
 
-function ucomp_run::epoch, name
+;+
+; Retrieve the epoch value for a given option name.
+;
+; :Returns:
+;   any
+;
+; :Params:
+;   option_name : in, required, type=string
+;     name of an epoch option
+;
+; :Keywords:
+;   datetime : in, optional, type=string
+;     datetime in the form 'YYYYMMDD' or 'YYYYMMDD.HHMMSS'; defaults to the
+;     value of the `DATETIME` property if this keyword is not given
+;-
+function ucomp_run::epoch, option_name, datetime=datetime
   compile_opt strictarr
 
-  ; TODO: implement
+  return, self.epochs->get(option_name, datetime=datetime)
 end
 
 
@@ -36,10 +51,37 @@ end
 
 ;= property access
 
-pro ucomp_run::getProperty, date=date
+;+
+; Get properties.
+;-
+pro ucomp_run::getProperty, date=date, $
+                            files=files, wave_type=wave_type, count=count
   compile_opt strictarr
+  on_error, 2
 
   if (arg_present(date)) then date = self.date
+
+  if (arg_present(files) || arg_present(count)) then begin
+    if (n_elements(wave_type) eq 0L) then message, 'WAVE_TYPE not given for FILES'
+    files = (self.files)[wave_type]
+    count = n_elements(files)
+  endif
+end
+
+
+;+
+; Set properties.
+;-
+pro ucomp_run::setProperty, datetime=datetime, $
+                            files=files, wave_type=wave_type
+  compile_opt strictarr
+  on_error, 2
+
+  if (n_elements(date) gt 0L) then self.epochs->setProperty, datetime=datetime
+  if (n_elements(files) gt 0L) then begin
+    if (n_elements(wave_type) eq 0L) then message, 'WAVE_TYPE not given for FILES'
+    (self.files)[wave_type] = files
+  endif
 end
 
 
@@ -47,6 +89,13 @@ end
 
 ;+
 ; Convert a log level name to a log level code.
+;
+; :Returns:
+;   integer log level code
+;
+; :Params:
+;   name : in, required, type=string
+;     case-insensitive name of log level, i.e., 'debug', 'info', etc.
 ;-
 function ucomp_run::_log_level_code, name
   compile_opt strictarr
@@ -81,6 +130,9 @@ function ucomp_run::_log_level_code, name
 end
 
 
+;+
+; Rotate logs and use config file values to setup the logger.
+;-
 pro ucomp_run::setup_logger
   compile_opt strictarr
 
@@ -115,13 +167,32 @@ end
 
 ;= lifecycle methods
 
+;+
+; Free resources.
+;-
 pro ucomp_run::cleanup
   compile_opt strictarr
 
   obj_destroy, [self.options, self.epochs]
+
+  foreach files, self.files do begin
+    if (n_elements(files) gt 0L) then obj_destroy, files
+  endforeach
+  obj_destroy, self.files
 end
 
 
+;+
+; Initialize the run.
+;
+; :Params:
+;   date : in, required, type=string
+;     observing date in the form 'YYYYMMDD'; this is the local HST date of the
+;     observations, i.e., it does not change at midnight UT during the middle of
+;     an observing day
+;   config_filename : in, required, type=string
+;     filename of config file specifying the run
+;-
 function ucomp_run::init, date, config_filename
   compile_opt strictarr
 
@@ -140,7 +211,6 @@ function ucomp_run::init, date, config_filename
     return, 0
   endif
 
-  ; setup logger
   self->setup_logger
 
   ; setup epoch reading
@@ -151,16 +221,29 @@ function ucomp_run::init, date, config_filename
                                   root=mg_src_root())
 
   self.epochs = mgffepochparser(epochs_filename, epochs_spec_filename)
+  epochs_valid = self.epochs->is_valid(error_msg=error_msg)
+  if (~epochs_valid) then begin
+    mg_log, 'invalid epochs file', name='ucomp', /critical
+    mg_log, '%s', error_msg, name='ucomp', /critical
+    return, 0
+  endif
+
+  ; hash of wave_type -> array of file objects
+  self.files = hash()
 
   return, 1
 end
 
 
+;+
+; Define the data in the run class.
+;-
 pro ucomp_run__define
   compile_opt strictarr
 
   !null = {ucomp_run, inherits IDL_Object, $
            date: '', $
            options: obj_new(), $
-           epochs: obj_new()}
+           epochs: obj_new(), $
+           files: obj_new()}
 end
