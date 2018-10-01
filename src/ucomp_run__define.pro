@@ -1,6 +1,61 @@
 ; docformat = 'rst'
 
 
+;= API
+
+;+
+; Create an inventory of the raw files for a run.
+;-
+pro ucomp_run::make_raw_inventory
+  compile_opt strictarr
+
+  raw_dir = filepath(self.date, root=run->config('raw_basedir'))
+  raw_files = file_search(filepath('*.FTS', root=raw_dir), count=n_raw_files)
+
+  for f = 0L, n_raw_files - 1L do begin
+    file = kcor_file(raw_files[f])
+
+    if ((self.files)->hasKey(file.wave_type)) then begin
+      (self.files)[file.wave_type] = list()
+    endif
+
+    (self.files)[file.wave_type]->add, file
+  endfor
+end
+
+
+;+
+; Write an inventory file of the raw files for a run.
+;
+; :Params:
+;   filename : in, required, type=str
+;     write an inventory file
+;   wave_type : in, required, type=str
+;     wave type of the files, i.e., '1074', etc.
+;-
+pro ucomp_run::read_raw_inventory, filename, wave_type
+  compile_opt strictarr
+
+  ; TODO: implement
+end
+
+
+;+
+; Write an inventory file of the raw files for a run.
+;
+; :Params:
+;   filename : in, required, type=str
+;     write an inventory file
+;   wave_type : in, required, type=str
+;     wave type of the files, i.e., '1074', etc.
+;-
+pro ucomp_run::write_raw_inventory, filename, wave_type
+  compile_opt strictarr
+
+  ; TODO: implement
+end
+
+
 ;= epoch values
 
 ;+
@@ -133,7 +188,7 @@ end
 ;+
 ; Rotate logs and use config file values to setup the logger.
 ;-
-pro ucomp_run::setup_logger
+pro ucomp_run::_setup_logger
   compile_opt strictarr
 
   ; log message formats
@@ -175,8 +230,9 @@ pro ucomp_run::cleanup
 
   obj_destroy, [self.options, self.epochs]
 
-  foreach files, self.files do begin
-    if (n_elements(files) gt 0L) then obj_destroy, files
+  foreach wave_type, self.files do begin
+    foreach file, wave_type do obj_destroy, file
+    obj_destroy, wave_type
   endforeach
   obj_destroy, self.files
 end
@@ -211,7 +267,7 @@ function ucomp_run::init, date, config_filename
     return, 0
   endif
 
-  self->setup_logger
+  self->_setup_logger
 
   ; setup epoch reading
   epochs_filename = filepath('epochs.cfg', $
@@ -228,7 +284,7 @@ function ucomp_run::init, date, config_filename
     return, 0
   endif
 
-  ; hash of wave_type -> array of file objects
+  ; hash of wave_type -> list of file objects
   self.files = hash()
 
   return, 1
