@@ -24,10 +24,10 @@ pro ucomp_send_notification, run=run
     body->add, string(mg_src_root(/filename), $
                       getenv('USER'), hostname, $
                       format='(%"Sent from %s (%s@%s)")')
-    code_version = comp_find_code_version(runevision=revision, branch=branch)
+    code_version = ucomp_version(revision=revision, branch=branch)
     body->add, string(code_version, revision, branch, $
                       format='(%"ucomp-pipeline %s (%s on %s)")')
-    body->add, string(comp_sec2str(systime(/seconds) - run.t0), $
+    body->add, string(ucomp_sec2str(systime(/seconds) - run.t0), $
                       format='(%"Total runtime: %s")')
 
     subject = string(run.date, format='(%"UCoMP results for %s")')
