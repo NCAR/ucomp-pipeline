@@ -9,7 +9,7 @@
 pro ucomp_run::make_raw_inventory
   compile_opt strictarr
 
-  raw_dir = filepath(self.date, root=run->config('raw_basedir'))
+  raw_dir = filepath(self.date, root=self->config('raw/basedir'))
   raw_files = file_search(filepath('*.FTS', root=raw_dir), count=n_raw_files)
 
   for f = 0L, n_raw_files - 1L do begin
@@ -35,10 +35,11 @@ end
 pro ucomp_run::lock, is_available=is_available
   compile_opt strictarr
 
+  is_available = 1B
   if (self->config('raw/lock')) then begin
-    is_available = ucomp_state(self.date, run=run)
+    is_available = ucomp_state(self.date, run=self)
     if (is_available) then begin
-      !null = ucomp_state(self.date, /lock, run=run)
+      !null = ucomp_state(self.date, /lock, run=self)
       mg_log, 'locked %s', self.date, name='ucomp', /info
     endif else begin
       mg_log, '%s not available, skipping', self.date, name='ucomp', /info
@@ -57,12 +58,12 @@ end
 pro ucomp_run::unlock, error
   compile_opt strictarr
 
-  if (run->config('raw/lock')) then begin
+  if (self->config('raw/lock')) then begin
     if (~ucomp_state(self.date)) then begin
-      unlocked = ucomp_state(self.date, /unlock, run=run)
+      unlocked = ucomp_state(self.date, /unlock, run=self)
       mg_log, 'unlocked %s', self.date, name='ucomp', /info
       if (error eq 0) then begin
-        processed = ucomp_state(self.date, /processed, run=run)
+        processed = ucomp_state(self.date, /processed, run=self)
         mg_log, 'marked %s as processed', self.date, name='ucomp', /info
       endif
     endif
@@ -133,8 +134,13 @@ pro ucomp_run::getProperty, date=date, $
 
   if (arg_present(files) || arg_present(count)) then begin
     if (n_elements(wave_type) eq 0L) then message, 'WAVE_TYPE not given for FILES'
-    files = (self.files)[wave_type]
-    count = n_elements(files)
+    if ((self.files)->hasKey(wave_type)) then begin
+      files = (self.files)[wave_type]
+      count = n_elements(files)
+    endif else begin
+      files = !null
+      count = 0L
+    endelse
   endif
   if (arg_present(t0)) then t0 = self.t0
 end
