@@ -16,6 +16,9 @@ pro ucomp_run_pipeline, date, config_filename
   t0 = systime(/seconds)
   start_memory = memory(/current)
 
+  orig_except = !except
+  !except = 0
+
   ; error handler
   catch, error
   if (error ne 0) then begin
@@ -69,6 +72,7 @@ pro ucomp_run_pipeline, date, config_filename
     ucomp_pipeline_step, 'ucomp_check_gbu', wave_types[w], run=run
   endfor
 
+
   ;== level 2
 
   ; TODO: add level 2 steps
@@ -81,8 +85,11 @@ pro ucomp_run_pipeline, date, config_filename
 
   ucomp_pipeline_step, 'ucomp_send_notification', run=run
 
+
   ;== cleanup and quit
   done:
+
+  mg_log, /check_math, name='ucomp', /debug
 
   ; unlock raw directory and mark processed if no crash
   if (obj_valid(run)) then run->unlock, error
@@ -93,4 +100,6 @@ pro ucomp_run_pipeline, date, config_filename
 
   if (obj_valid(run)) then obj_destroy, run
   mg_log, /quit
+
+  !except = orig_except
 end
