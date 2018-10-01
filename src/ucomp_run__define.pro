@@ -25,34 +25,48 @@ end
 
 
 ;+
-; Write an inventory file of the raw files for a run.
+; Lock the raw directory if required and available.
 ;
-; :Params:
-;   filename : in, required, type=str
-;     write an inventory file
-;   wave_type : in, required, type=str
-;     wave type of the files, i.e., '1074', etc.
+; :Keywords:
+;   is_available : out, optional, type=boolean
+;     set to a named variable to retrieve whether the raw directory was
+;     available, and therefor locked
 ;-
-pro ucomp_run::read_raw_inventory, filename, wave_type
+pro ucomp_run::lock, is_available=is_available
   compile_opt strictarr
 
-  ; TODO: implement
+  if (self->config('raw/lock')) then begin
+    is_available = ucomp_state(self.date, run=run)
+    if (is_available) then begin
+      !null = ucomp_state(self.date, /lock, run=run)
+      mg_log, 'locked %s', self.date, name='ucomp', /info
+    endif else begin
+      mg_log, '%s not available, skipping', self.date, name='ucomp', /info
+    endelse
+  endif
 end
 
 
 ;+
-; Write an inventory file of the raw files for a run.
+; Unlock raw directory and, if `error` is 0, mark as processed.
 ;
 ; :Params:
-;   filename : in, required, type=str
-;     write an inventory file
-;   wave_type : in, required, type=str
-;     wave type of the files, i.e., '1074', etc.
+;   error : in, required, type=int
+;     error code, 0 for no error
 ;-
-pro ucomp_run::write_raw_inventory, filename, wave_type
+pro ucomp_run::unlock, error
   compile_opt strictarr
 
-  ; TODO: implement
+  if (run->config('raw/lock')) then begin
+    if (~ucomp_state(self.date)) then begin
+      unlocked = ucomp_state(self.date, /unlock, run=run)
+      mg_log, 'unlocked %s', self.date, name='ucomp', /info
+      if (error eq 0) then begin
+        processed = ucomp_state(self.date, /processed, run=run)
+        mg_log, 'marked %s as processed', self.date, name='ucomp', /info
+      endif
+    endif
+  endif
 end
 
 
@@ -110,7 +124,8 @@ end
 ; Get properties.
 ;-
 pro ucomp_run::getProperty, date=date, $
-                            files=files, wave_type=wave_type, count=count
+                            files=files, wave_type=wave_type, count=count, $
+                            t0=t0
   compile_opt strictarr
   on_error, 2
 
@@ -121,6 +136,7 @@ pro ucomp_run::getProperty, date=date, $
     files = (self.files)[wave_type]
     count = n_elements(files)
   endif
+  if (arg_present(t0)) then t0 = self.t0
 end
 
 
@@ -128,7 +144,8 @@ end
 ; Set properties.
 ;-
 pro ucomp_run::setProperty, datetime=datetime, $
-                            files=files, wave_type=wave_type
+                            files=files, wave_type=wave_type, $
+                            t0=t0
   compile_opt strictarr
   on_error, 2
 
@@ -137,6 +154,7 @@ pro ucomp_run::setProperty, datetime=datetime, $
     if (n_elements(wave_type) eq 0L) then message, 'WAVE_TYPE not given for FILES'
     (self.files)[wave_type] = files
   endif
+  if (n_elements(t0) gt 0L) then self.t0 = t0
 end
 
 
@@ -299,6 +317,7 @@ pro ucomp_run__define
 
   !null = {ucomp_run, inherits IDL_Object, $
            date: '', $
+           t0: 0.0D, $
            options: obj_new(), $
            epochs: obj_new(), $
            files: obj_new()}
