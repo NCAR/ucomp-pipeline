@@ -13,12 +13,15 @@ pro ucomp_run::make_raw_inventory
   raw_files = file_search(filepath('*.FTS', root=raw_dir), count=n_raw_files)
 
   for f = 0L, n_raw_files - 1L do begin
-    file = kcor_file(raw_files[f])
+    file = ucomp_file(raw_files[f])
 
-    if ((self.files)->hasKey(file.wave_type)) then begin
+    if (~(self.files)->hasKey(file.wave_type)) then begin
       (self.files)[file.wave_type] = list()
     endif
 
+    mg_log, '%s [%s] %s', $
+            file_basename(raw_files[f]), file.wave_type, file.data_type, $
+            name='ucomp', /debug
     (self.files)[file.wave_type]->add, file
   endfor
 end

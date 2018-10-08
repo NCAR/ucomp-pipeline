@@ -42,7 +42,7 @@ pro ucomp_read_raw_data, filename, $
 
   ; read extensions if requested
   if (arg_present(ext_data) || arg_present(ext_headers)) then begin
-    for e = 1L, n_extensions - 1L do begin
+    for e = 1L, n_extensions do begin
       fits_read, fcb, data, header, exten_no=e, /no_abort, message=msg
       if (msg ne '') then message, msg
 

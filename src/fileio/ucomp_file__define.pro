@@ -60,6 +60,7 @@ end
 ;-
 pro ucomp_file::_inventory
   compile_opt strictarr
+  on_error, 2
 
   fits_open, self.raw_filename, fcb
 
@@ -74,7 +75,9 @@ pro ucomp_file::_inventory
 
   ; inventory extensions
   for e = 1L, self.n_extensions do begin
-    fits_read, fcb, data, extension_header, exten_no=e, /header_only
+    fits_read, fcb, data, extension_header, exten_no=e, /header_only, $
+               /no_abort, message=error_msg
+    if (error_msg ne '') then message, error_msg
 
     (*self.wavelengths)[e - 1]         = sxpar(extension_header, 'WAVELENG')
     (*self.polarization_states)[e - 1] = sxpar(extension_header, 'POLSTATE')
