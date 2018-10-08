@@ -92,7 +92,7 @@ end
 ;     set to a named variable to retrieve the status of the date: 0 for success,
 ;     anything else indicates a problem
 ;-
-pro kcor_verify, date, config_filename, status=status
+pro ucomp_verify, date, config_filename, status=status
   compile_opt strictarr
 
   status = 0L
@@ -118,7 +118,7 @@ pro kcor_verify, date, config_filename, status=status
     goto, done
   endif
 
-  run = kcor_run(date, config_fullpath)
+  run = ucomp_run(date, config_fullpath)
 
   mg_log, name=logger_name, logger=logger
   logger->setProperty, format='%(time)s %(levelshortname)s: %(message)s'
