@@ -31,6 +31,8 @@ end
 ; Get property values.
 ;-
 pro ucomp_file::getProperty, raw_filename=raw_filename, $
+                             hst_date=hst_date, $
+                             hst_time=hst_time, $
                              ut_date=ut_date, $
                              ut_time=ut_time, $
                              wave_type=wave_type, $
@@ -44,6 +46,9 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
   ; for the file
   if (arg_present(raw_filename)) then raw_filename = self.raw_filename
   if (arg_present(n_extensions)) then n_extensions = self.n_extensions
+
+  if (arg_present(hst_date)) then hst_date = self.hst_date
+  if (arg_present(hst_time)) then hst_time = self.hst_time
   if (arg_present(ut_date)) then ut_date = self.ut_date
   if (arg_present(ut_time)) then ut_time = self.ut_time
 
@@ -67,9 +72,9 @@ pro ucomp_file::_extract_datetime
   compile_opt strictarr
 
   datetime = strmid(file_basename(self.raw_filename), 0, 15)
-  date = strmid(datetime, 0, 8)
-  time = strmid(datetime, 9, 6)
-  ucomp_hst2ut, date, time, ut_date=ut_date, ut_time=ut_time
+  self.hst_date = strmid(datetime, 0, 8)
+  self.hst_time = strmid(datetime, 9, 6)
+  ucomp_hst2ut, self.hst_date, self.hst_time, ut_date=ut_date, ut_time=ut_time
   self.ut_date = ut_date
   self.ut_time = ut_time
 end
@@ -156,6 +161,8 @@ pro ucomp_file__define
 
   !null = {ucomp_file, inherits IDL_Object, $
            raw_filename        : '', $
+           hst_date            : '', $
+           hst_time            : '', $
            ut_date             : '', $
            ut_time             : '', $
            n_extensions        : 0L, $
