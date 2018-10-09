@@ -12,6 +12,7 @@ pro ucomp_run::make_raw_inventory
   raw_dir = filepath(self.date, root=self->config('raw/basedir'))
   raw_files = file_search(filepath('*.FTS', root=raw_dir), count=n_raw_files)
 
+  mg_log, '%d raw files', n_raw_files, name='ucomp', /info
   for f = 0L, n_raw_files - 1L do begin
     file = ucomp_file(raw_files[f])
 
