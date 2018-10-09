@@ -66,7 +66,7 @@ end
 pro ucomp_file::_extract_datetime
   compile_opt strictarr
 
-  datetime = strmid(file_basename(raw_filename), 0, 15)
+  datetime = strmid(file_basename(self.raw_filename), 0, 15)
   date = strmid(datetime, 0, 8)
   time = strmid(datetime, 9, 6)
   ucomp_hst2ut, date, time, ut_date=ut_date, ut_time=ut_time

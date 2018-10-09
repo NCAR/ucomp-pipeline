@@ -14,25 +14,36 @@
 pro ucomp_l1_process_file, file, run=run
   compile_opt strictarr
 
-
-  ucomp_read_raw_data, self.raw_filename, $
+  ucomp_read_raw_data, file.raw_filename, $
                        primary_header=primary_header, $
                        ext_data=data, $
                        ext_headers=headers, $
                        repair_routine=run->epoch('raw_data_repair_routine')
 
-  ucomp_l1_step, 'ucomp_camera_correction', file, primary_header, data, headers, run=run
-  ucomp_l1_step, 'ucomp_average_data', file, primary_header, data, headers, run=run
-  ucomp_l1_step, 'ucomp_apply_dark', file, primary_header, data, headers, run=run
-  ucomp_l1_step, 'ucomp_stray_light', file, primary_header, data, headers, run=run
-  ucomp_l1_step, 'ucomp_apply_gain', file, primary_header, data, headers, run=run
-  ucomp_l1_step, 'ucomp_continuum_correction', file, primary_header, data, headers, run=run
-  ucomp_l1_step, 'ucomp_alignment', file, primary_header, data, headers, run=run
-  ucomp_l1_step, 'ucomp_demodulation', file, primary_header, data, headers, run=run
-  ucomp_l1_step, 'ucomp_combine_beams', file, primary_header, data, headers, run=run
-  ucomp_l1_step, 'ucomp_rotate_north_up', file, primary_header, data, headers, run=run
-  ucomp_l1_step, 'ucomp_masking', file, primary_header, data, headers, run=run
-  ucomp_l1_step, 'ucomp_polarimetric_correction', file, primary_header, data, headers, run=run
+  ucomp_l1_step, 'ucomp_camera_correction', $
+                 file, primary_header, data, headers, run=run
+  ucomp_l1_step, 'ucomp_average_data', $
+                 file, primary_header, data, headers, run=run
+  ucomp_l1_step, 'ucomp_apply_dark', $
+                 file, primary_header, data, headers, run=run
+  ucomp_l1_step, 'ucomp_stray_light', $
+                 file, primary_header, data, headers, run=run
+  ucomp_l1_step, 'ucomp_apply_gain', $
+                 file, primary_header, data, headers, run=run
+  ucomp_l1_step, 'ucomp_continuum_correction', $
+                 file, primary_header, data, headers, run=run
+  ucomp_l1_step, 'ucomp_alignment', $
+                 file, primary_header, data, headers, run=run
+  ucomp_l1_step, 'ucomp_demodulation', $
+                 file, primary_header, data, headers, run=run
+  ucomp_l1_step, 'ucomp_combine_beams', $
+                 file, primary_header, data, headers, run=run
+  ucomp_l1_step, 'ucomp_rotate_north_up', $
+                 file, primary_header, data, headers, run=run
+  ucomp_l1_step, 'ucomp_masking', $
+                 file, primary_header, data, headers, run=run
+  ucomp_l1_step, 'ucomp_polarimetric_correction', $
+                 file, primary_header, data, headers, run=run
 
   l1_filename = string(file.ut_date, $
                        file.ut_time, $
