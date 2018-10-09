@@ -8,7 +8,7 @@
 ;
 ; :Params:
 ;   date : in, required, type=string
-;     date in the form "20150801"
+;     date in the form 'YYYYMMDD'
 ;-
 function ucomp_decompose_date, date
   compile_opt strictarr
