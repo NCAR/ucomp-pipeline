@@ -14,6 +14,7 @@
 pro ucomp_l1_process_file, file, run=run
   compile_opt strictarr
 
+  run.datetime = string(file.ut_date, file.ut_time, format='(%"%s.%s")')
   ucomp_read_raw_data, file.raw_filename, $
                        primary_header=primary_header, $
                        ext_data=data, $
