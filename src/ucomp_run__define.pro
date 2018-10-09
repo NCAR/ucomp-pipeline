@@ -159,7 +159,7 @@ pro ucomp_run::setProperty, datetime=datetime, $
   compile_opt strictarr
   on_error, 2
 
-  if (n_elements(date) gt 0L) then self.epochs->setProperty, datetime=datetime
+  if (n_elements(datetime) gt 0L) then self.epochs->setProperty, datetime=datetime
   if (n_elements(files) gt 0L) then begin
     if (n_elements(wave_type) eq 0L) then message, 'WAVE_TYPE not given for FILES'
     (self.files)[wave_type] = files
