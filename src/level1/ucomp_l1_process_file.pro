@@ -52,9 +52,12 @@ pro ucomp_l1_process_file, file, run=run
                        file.polarization_string, $
                        file.n_unique_wavelengths, $
                        format='(%"%s.%s.ucomp.%s.%s.%d.fts")')
-  l1_filename = filepath(l1_basename, $
-                         subdir=[run.date, 'level1'], $
-                         root=run->config('results/processing_basedir')
+  l1_dirname = filepath('', $
+                        subdir=[run.date, 'level1'], $
+                        root=run->config('results/processing_basedir'))
+  l1_filename = filepath(l1_basename, root=l1_dirname)
+  if (~file_test(l1_dirname, /directory)) then file_mkdir, l1_dirname
+
   ucomp_write_l1_file, l1_filename, primary_header, data, headers
 
   obj_destroy, headers
