@@ -42,22 +42,21 @@ pro ucomp_read_raw_data, filename, $
 
   ; read extensions if requested
   if (arg_present(ext_data) || arg_present(ext_headers)) then begin
+    if (arg_present(ext_headers)) then ext_headers = list()
     for e = 1L, n_extensions do begin
       fits_read, fcb, data, header, exten_no=e, /no_abort, message=msg
       if (msg ne '') then message, msg
 
       ; need to setup arrays the first time
       if (e eq 1) then begin
-        n_ext_keywords = n_elements(header)
         type = size(data, /type)
         dims = size(data, /dimensions)
 
         ext_data = make_array(dimension=[dims, n_extensions], type=type)
-        ext_headers = strarr(n_ext_keywords, n_extensions)
       endif
 
       ext_data[0, 0, e - 1] = data
-      ext_headers[0, e - 1] = header
+      ext_headers->add, header
     endfor
   endif
 
