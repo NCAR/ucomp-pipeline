@@ -46,7 +46,8 @@ pro ucomp_find_ssw_dependencies, routines_filename, ssw_loc
                    'CSPICE_RECGEO', 'CSPICE_RECLAT', 'CSPICE_SCE2C', $
                    'CSPICE_SPKCOV', 'CSPICE_SPKEZR', 'CSPICE_SPKOBJ', $
                    'CSPICE_STR2ET', 'CSPICE_SXFORM', 'CSPICE_UNLOAD', $
-                   'CSPICE_UTC2ET']
+                   'CSPICE_UTC2ET', $
+                   'UCOMP_VERSION']
 
   print, 'Resolving SSW routines...'
   ssw_files = file_search(filepath('*.pro', root='.'), count=n_files)
