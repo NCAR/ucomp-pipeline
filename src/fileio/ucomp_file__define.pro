@@ -38,9 +38,10 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
                              wave_type=wave_type, $
                              data_type=data_type, $
                              n_extensions=n_extensions, $
-                             polarization_states=polarization_states, $
-                             wavelengths=wavelengths
-
+                             polarization_string=polarization_string, $
+                             wavelengths=wavelengths, $
+                             n_unique_wavelengths=n_unique_wavelengths, $
+                             polarization_states=polarization_states
   compile_opt strictarr
 
   ; for the file
@@ -60,6 +61,16 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
     polarization_states = *self.polarization_states
   endif
   if (arg_present(wavelengths)) then wavelengths = *self.wavelengths
+
+  if (arg_present(n_unique_wavelengths)) then begin
+    w = *self.wavelengths
+    n_unique_wavelengths = n_elements(uniq(w, sort(w)))
+  endif
+
+  if (arg_present(polarization_string)) then begin
+    pol_states = strlowcase(*self.polarization_states)
+    polarization_string = strjoin(pol_states[uniq(pol_states, sort(pol_states))])
+  endif
 end
 
 

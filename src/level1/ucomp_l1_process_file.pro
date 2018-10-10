@@ -46,12 +46,16 @@ pro ucomp_l1_process_file, file, run=run
   ucomp_l1_step, 'ucomp_polarimetric_correction', $
                  file, primary_header, data, headers, run=run
 
-  l1_filename = string(file.ut_date, $
+  l1_basename = string(file.ut_date, $
                        file.ut_time, $
                        file.wave_type, $
                        file.polarization_string, $
                        file.n_unique_wavelengths, $
                        format='(%"%s.%s.ucomp.%s.%s.%d.fts")')
+  l1_filename = filepath(l1_basename, $
+                         subdir=[run.date, 'level1'], $
+                         root=run->config('results/processing_basedir')
   ucomp_write_l1_file, l1_filename, primary_header, data, headers
-  obj_destroy, ext_headers
+
+  obj_destroy, headers
 end

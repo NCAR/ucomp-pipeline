@@ -25,15 +25,12 @@ pro ucomp_l1_step, routine_name, file, primary_header, data, headers, skip=skip,
   compile_opt strictarr
 
   if (keyword_set(skip)) then begin
-    mg_log, 'skipping %s', routine_name, $
-            from=routine_name, name='ucomp', /info
+    mg_log, 'skipping', from=routine_name, name='ucomp', /info
   endif else begin
-    mg_log, 'starting %s...', routine_name, $
-            from=routine_name, name='ucomp', /info
+    mg_log, 'starting...', from=routine_name, name='ucomp', /info
 
     call_procedure, routine_name, file, primary_header, data, headers, _extra=e
 
-    mg_log, 'done with %s', routine_name, $
-            from=routine_name, name='ucomp', /info
+    mg_log, 'done', from=routine_name, name='ucomp', /info
   endelse
 end
