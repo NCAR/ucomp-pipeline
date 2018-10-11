@@ -24,10 +24,14 @@ pro ucomp_l1_process, wave_type, run=run
 
   n_digits = floor(alog10(n_files)) + 1L
 
+  t0 = systime(/seconds)
   for f = 0L, n_files - 1L do begin
     mg_log, mg_format('%*d/%d @ %s: %s', n_digits, /simple), $
             f + 1, n_files, wave_type, file_basename(files[f].raw_filename), $
             name='ucomp', /info
     ucomp_l1_process_file, files[f], run=run
   endfor
+  t1 = systime(/seconds)
+
+  mg_log, '%0.1f secs/file', (t1 - t0) / n_files, name='ucomp', /info
 end
