@@ -21,6 +21,11 @@ pro ucomp_send_notification, run=run
     if (status ne 0) then hostname = 'unknown'
 
     body = list()
+
+    ; TODO: add warnings/errors from logs
+    ; TODO: add config file
+    ; TODO: add quality histogram image
+
     body->add, string(mg_src_root(/filename), $
                       getenv('USER'), hostname, $
                       format='(%"Sent from %s (%s@%s)")')
