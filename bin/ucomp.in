@@ -14,9 +14,9 @@ PIPELINE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
 
 intervals = (
-    ('weeks', 604800),  # 60 * 60 * 24 * 7
-    ('days', 86400),    # 60 * 60 * 24
-    ('hrs', 3600),    # 60 * 60
+    ('weeks', 604800),  # 60 * 60 * 24 * 7 seconds
+    ('days', 86400),    # 60 * 60 * 24 seconds
+    ('hrs', 3600),      # 60 * 60 seconds
     ('mins', 60),
     ('secs', 1),
     )
