@@ -16,36 +16,18 @@ canonicalpath() {
   popd > /dev/null 2>&1
 }
 
-# u=rwx,g=rwx,o=rx
-umask 0002
-
 # find locations relative to this script
 SCRIPT_LOC=$(canonicalpath $0)
 BIN_DIR=$(dirname ${SCRIPT_LOC})
-PIPE_DIR=$(dirname ${BIN_DIR})
 
-# use today if date not passed to script
+source ${BIN_DIR}/ucomp_include.sh
+
+# reset DATE because it's different in ucomp_include.sh
 if [[ $# -lt 1 ]]; then
   DATE=$(date +"%Y%m%d" -d "-1 day")
 else
   DATE=$1
 fi
-
-MACHINE=$(hostname | sed -e 's/\..*$//')
-CONFIG=${PIPE_DIR}/config/ucomp.${USER}.${MACHINE}.production.cfg
-
-IDL=@IDL_EXECUTABLE@
-
-# IDL_DEFAULT will be wrong if IDL_DIR is set
-unset IDL_DIR
-
-# setup IDL paths
-SSW_DIR=${PIPE_DIR}/ssw
-GEN_DIR=${PIPE_DIR}/gen
-LIB_DIR=${PIPE_DIR}/lib
-SRC_DIR=${PIPE_DIR}/src
-UCOMP_PATH=+${SRC_DIR}:${SSW_DIR}:${GEN_DIR}:+${LIB_DIR}:"<IDL_DEFAULT>"
-UCOMP_DLM_PATH=${LIB_DIR}/mysql:"<IDL_DEFAULT>"
 
 ${IDL} -quiet -IDL_QUIET 1 -IDL_STARTUP "" \
   -IDL_PATH ${UCOMP_PATH} -IDL_DLM_PATH ${UCOMP_DLM_PATH} \
