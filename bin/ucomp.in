@@ -65,20 +65,32 @@ def list_processes():
 def parse_date_expr(date_expr):
     dates = []
 
-    for de in date_expr.split(','):
-        d = de.split('-')
-        if len(d) not in [1, 2]:
-            print('invalid syntax')
+    try:
+        for de in date_expr.split(','):
+            d = de.split('-')
+            if len(d) not in [1, 2]:
+                print(f'invalid syntax: {de}')
+                return []
 
-        if len(d) == 1:
-            dates.append(d[0])
+            if len(d) == 1:
+                date_string = d[0]
+                date = datetime.datetime.strptime(date_string, DATE_FORMAT)
+                dates.append(date.strftime(DATE_FORMAT))
 
-        if len(d) == 2:
-            date = datetime.datetime.strptime(d[0], DATE_FORMAT)
-            end_date = datetime.datetime.strptime(d[1], DATE_FORMAT)
-            while date.strftime(DATE_FORMAT) != end_date.strftime(DATE_FORMAT):
-                dates.append(date.strftime(DATE_FORMAT)
-                date = date + datetime.timedelta(days=1)
+            if len(d) == 2:
+                date_string = d[0]
+                date = datetime.datetime.strptime(date_string, DATE_FORMAT)
+                date_string = d[1]
+                end_date = datetime.datetime.strptime(date_string, DATE_FORMAT)
+                if date > end_date:
+                    print(f'invalid date range {de}')
+                    return []
+                while date.strftime(DATE_FORMAT) != end_date.strftime(DATE_FORMAT):
+                    dates.append(date.strftime(DATE_FORMAT))
+                    date = date + datetime.timedelta(days=1)
+    except ValueError:
+        print(f'invalid date syntax: {date_string}')
+        return []
 
     return dates
 
