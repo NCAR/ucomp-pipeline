@@ -7,6 +7,8 @@ import psutil
 import subprocess
 
 
+DATE_FORMAT = '%Y%m%d'
+
 DEVNULL = open(os.devnull, 'w')
 PIPELINE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
@@ -60,32 +62,48 @@ def list_processes():
                                             format_timedelta(time_running), p['cmdline']))
 
 
+def parse_date_expr(date_expr):
+    dates = []
+
+    for de in date_expr.split(','):
+        d = de.split('-')
+        if len(d) not in [1, 2]:
+            print('invalid syntax')
+
+        if len(d) == 1:
+            dates.append(d[0])
+
+        if len(d) == 2:
+            date = datetime.datetime.strptime(d[0], DATE_FORMAT)
+            end_date = datetime.datetime.strptime(d[1], DATE_FORMAT)
+            while date.strftime(DATE_FORMAT) != end_date.strftime(DATE_FORMAT):
+                dates.append(date.strftime(DATE_FORMAT)
+                date = date + datetime.timedelta(days=1)
+
+    return dates
+
+
+def process_realtime(dates, flags, no_wait):
+    launch_processes(dates, flags, no_wait, 'ucomp_realtime.sh')
+
+
 def process_dates(dates, flags, no_wait):
-    for d in dates.split(','):
-        if d.find('-') < 0:
-            cmd = [os.path.join(PIPELINE_DIR,
-                                'bin',
-                                'ucomp_process.sh'),
-                   flags,
-                   d]
+    launch_processes(dates, flags, no_wait, 'ucomp_process.sh')
 
-            process = subprocess.Popen(cmd, stderr=subprocess.STDOUT)
-            print('[%d] %s' % (process.pid, ' '.join(cmd)))
-            if not no_wait:
-                terminated = wait_for(process)
-                if terminated: break
-        else:
-            r = d.split('-')
-            script = 'ucomp_process_range.sh'
-            cmd = [os.path.join(PIPELINE_DIR, 'bin', script),
-                   flags,
-                   r[0], r[1]]
 
-            process = subprocess.Popen(cmd, stderr=subprocess.STDOUT)
-            print('[%d] %s' % (process.pid, ' '.join(cmd)))
-            if not no_wait:
-                terminated = wait_for(process)
-                if terminated: break
+def launch_processes(dates, flags, no_wait, routine):
+    for d in dates:
+        cmd = [os.path.join(PIPELINE_DIR,
+                            'bin',
+                            routine),
+               flags,
+               d]
+
+        process = subprocess.Popen(cmd, stderr=subprocess.STDOUT)
+        print('[%d] %s' % (process.pid, ' '.join(cmd)))
+        if not no_wait:
+            terminated = wait_for(process)
+            if terminated: break
 
 
 def wait_for(process):
@@ -123,6 +141,8 @@ if __name__ == '__main__':
                                 config/ directory matching ucomp.user.machine.FLAGS.cfg
                                 will be used''')
 
+    parser.add_argument('-r', '--realtime', action='store_true',
+                        help='set to run the realtime instead of full processing')
     parser.add_argument('--no-wait',
                         action='store_true',
                         help='set to run all dates simultaneously')
@@ -141,6 +161,12 @@ if __name__ == '__main__':
     if len(args.dates) == 0:
         parser.error('too few arguments')
 
-    dates = ''.join(args.dates)
+    date_expr = ''.join(args.dates)
+    dates = parse_date_expr(date_expr)
 
-    process_dates(dates, args.flags, args.no_wait)
+    if args.realtime:
+        if len(dates) != 1:
+            parser.error('realtime mode is only valid for a single date')
+            process_realtime(dates, args.flags, args.no_wait)
+    else:
+        process_dates(dates, args.flags, args.no_wait)
