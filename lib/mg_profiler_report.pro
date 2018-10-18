@@ -17,7 +17,7 @@ pro mg_profiler_report, filename=filename, csv=csv, html=html
   compile_opt strictarr
 
   profiler, /report, data=data, output=output
-help, data
+
   ind = sort(-data.time)
   data = data[ind]
   output = output[ind]
