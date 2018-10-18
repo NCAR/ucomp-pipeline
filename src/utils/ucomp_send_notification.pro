@@ -14,7 +14,7 @@ pro ucomp_send_notification, run=run
   if (email eq '') then begin
     mg_log, 'no notification email set, not sending email', name='ucomp', /info
   endif else begin
-    mg_log, 'sending notification email to %s', email, name='ucomp', /info
+    mg_log, 'sending email to %s', email, name='ucomp', /info
 
     ; add tag about pipeline and process at the end of body
     spawn, 'hostname', hostname, exit_status=status
