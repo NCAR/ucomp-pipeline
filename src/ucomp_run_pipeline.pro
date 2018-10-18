@@ -46,6 +46,7 @@ pro ucomp_run_pipeline, date, config_filename
     goto, done
   endif
   run.t0 = t0
+  run->start_profiler
 
   wave_types = run->config('options/wave_types')
 
@@ -94,6 +95,9 @@ pro ucomp_run_pipeline, date, config_filename
 
   ; unlock raw directory and mark processed if no crash
   if (obj_valid(run)) then run->unlock, error
+
+  run->report
+  run->report_profiling
 
   t1 = systime(/seconds)
   mg_log, 'total running time: %s', ucomp_sec2str(t1 - t0), $

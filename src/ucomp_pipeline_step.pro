@@ -12,34 +12,36 @@
 ; :Keywords:
 ;   skip : in, optional, type=boolean
 ;     set to skip routine
+;   run : in, required, type=object
+;     UCoMP run object
 ;   _extra : in, optional, type=keywords
 ;     keywords to pass along to `ROUTINE`
 ;-
-pro ucomp_pipeline_step, routine_name, wave_type, skip=skip, _extra=e
+pro ucomp_pipeline_step, routine_name, wave_type, skip=skip, run=run, _extra=e
   compile_opt strictarr
 
   if (keyword_set(skip)) then begin
-    mg_log, 'skipping %s', routine_name, from=routine_name, name='ucomp', /info
-  endif else begin
-    mg_log, 'starting %s...', routine_name, $
+    mg_log, 'skipping %s', routine_name, $
             from=routine_name, name='ucomp', /info
+  endif else begin
+    mg_log, 'starting...', from=routine_name, name='ucomp', /info
 
     start_memory = memory(/current)
 
-    t0 = systime(/seconds)
-    if (n_params() eq 1) then begin
-      call_procedure, routine_name, _extra=e
-    endif else begin
-      call_procedure, routine_name, wave_type, _extra=e
-    endelse
-    t1 = systime(/seconds)
+    clock_id = run->start(routine_name)
 
-    mg_log, 'wall time: %s', ucomp_sec2str(t1 - t0), $
-            from=routine_name, name='ucomp', /debug 
+    if (n_params() eq 1) then begin
+      call_procedure, routine_name, run=run, _extra=e
+    endif else begin
+      call_procedure, routine_name, wave_type, run=run, _extra=e
+    endelse
+
+    time = run->stop(clock_id)
+
     mg_log, 'memory usage: %0.1fM', $
             (memory(/highwater) - start_memory) / 1024. / 1024., $
             from=routine_name, name='ucomp', /debug
-    mg_log, 'done with %s', routine_name, $
+    mg_log, 'done (%s)', ucomp_sec2str(time), $
             from=routine_name, name='ucomp', /info
   endelse
 end

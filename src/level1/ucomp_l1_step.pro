@@ -18,19 +18,26 @@
 ; :Keywords:
 ;   skip : in, optional, type=boolean
 ;     set to skip routine
+;   run : in, required, type=object
+;     UCoMP run object
 ;   _extra : in, optional, type=keywords
 ;     keywords to pass along to `ROUTINE`
 ;-
-pro ucomp_l1_step, routine_name, file, primary_header, data, headers, skip=skip, _extra=e
+pro ucomp_l1_step, routine_name, file, primary_header, data, headers, $
+                   skip=skip, run=run, _extra=e
   compile_opt strictarr
 
   if (keyword_set(skip)) then begin
-    mg_log, 'skipping', from=routine_name, name='ucomp', /info
+    mg_log, 'skipping', from=routine_name, name='ucomp', /debug
   endif else begin
-    mg_log, 'starting...', from=routine_name, name='ucomp', /info
+    mg_log, 'starting...', from=routine_name, name='ucomp', /debug
 
-    call_procedure, routine_name, file, primary_header, data, headers, _extra=e
+    clock_id = run->start(routine_name)
+    call_procedure, routine_name, file, primary_header, data, headers, $
+                    run=run, _extra=e
+    time = run->stop(clock_id)
 
-    mg_log, 'done', from=routine_name, name='ucomp', /info
+    mg_log, 'done (%s)', ucomp_sec2str(time), $
+            from=routine_name, name='ucomp', /debug
   endelse
 end
