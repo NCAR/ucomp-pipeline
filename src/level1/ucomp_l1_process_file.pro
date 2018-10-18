@@ -15,11 +15,13 @@ pro ucomp_l1_process_file, file, run=run
   compile_opt strictarr
 
   run.datetime = string(file.hst_date, file.hst_time, format='(%"%s.%s")')
+  clock_id = run->start('ucomp_read_raw_data')
   ucomp_read_raw_data, file.raw_filename, $
                        primary_header=primary_header, $
                        ext_data=data, $
                        ext_headers=headers, $
                        repair_routine=run->epoch('raw_data_repair_routine')
+  !null = run->stop(clock_id)
 
   ucomp_l1_step, 'ucomp_camera_correction', $
                  file, primary_header, data, headers, run=run
@@ -58,7 +60,9 @@ pro ucomp_l1_process_file, file, run=run
   l1_filename = filepath(l1_basename, root=l1_dirname)
   if (~file_test(l1_dirname, /directory)) then file_mkdir, l1_dirname
 
+  clock_id = run->start('ucomp_write_l1_file')
   ucomp_write_l1_file, l1_filename, primary_header, data, headers
+  !null = run->stop(clock_id)
 
   obj_destroy, headers
 end
