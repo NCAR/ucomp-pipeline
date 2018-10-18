@@ -34,5 +34,7 @@ function ucomp_sec2str, secs
   endfor
 
   ind = result[where(result ne '', count, /null)]
-  return, count gt 0L ? strjoin(ind, ' ') : string(secs, format='(%"%0.1f secs")')
+  return, secs ge 60.0 $
+            ? strjoin(ind, ' ') $
+            : string(secs, format='(%"%0.3f secs")')
 end
