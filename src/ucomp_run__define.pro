@@ -59,7 +59,7 @@ end
 pro ucomp_run::unlock, error
   compile_opt strictarr
 
-  if (~ucomp_state(self.date)) then begin
+  if (~ucomp_state(self.date, run=self)) then begin
     unlocked = ucomp_state(self.date, /unlock, run=self)
     mg_log, 'unlocked %s', self.date, name='ucomp', /info
     if (error eq 0) then begin
