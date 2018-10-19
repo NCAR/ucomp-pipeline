@@ -51,7 +51,9 @@ pro ucomp_run_pipeline, date, config_filename
   ; copy config file to processing dir, creating dir if needed
   process_dir = filepath(date, root=run->config('results/processing_basedir')
   if (~file_test(process_dir, /directory)) then file_mkdir, process_dir
-  file_copy, config_filename, filepath('ucomp.cfg', root=process_dir)
+  file_copy, config_filename, $
+             filepath(string(date, format='(%"%s.ucomp.cfg")'), $
+                      root=process_dir)
 
   ; log starting up pipeline with versions
   version = ucomp_version(revision=revision, branch=branch)

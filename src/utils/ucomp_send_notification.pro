@@ -25,7 +25,7 @@ pro ucomp_send_notification, run=run
     ; TODO: add warnings/errors from logs
 
     ; add config file
-    config_filename = filepath('ucomp.cfg', $
+    config_filename = filepath(string(run.date, format='(%"%s.ucomp.cfg")'), $
                                subdir=run.date, $
                                root=run->config('results/processing_basedir'))
     n_config_lines = file_lines(config_filename)
