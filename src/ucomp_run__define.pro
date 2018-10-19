@@ -34,21 +34,18 @@ end
 ; :Keywords:
 ;   is_available : out, optional, type=boolean
 ;     set to a named variable to retrieve whether the raw directory was
-;     available, and therefor locked
+;     available, and therefore locked
 ;-
 pro ucomp_run::lock, is_available=is_available
   compile_opt strictarr
 
-  is_available = 1B
-  if (self->config('raw/lock')) then begin
-    is_available = ucomp_state(self.date, run=self)
-    if (is_available) then begin
-      !null = ucomp_state(self.date, /lock, run=self)
-      mg_log, 'locked %s', self.date, name='ucomp', /info
-    endif else begin
-      mg_log, '%s not available, skipping', self.date, name='ucomp', /info
-    endelse
-  endif
+  is_available = ucomp_state(self.date, run=self)
+  if (is_available) then begin
+    !null = ucomp_state(self.date, /lock, run=self)
+    mg_log, 'locked %s', self.date, name='ucomp', /info
+  endif else begin
+    mg_log, '%s not available, skipping', self.date, name='ucomp', /info
+  endelse
 end
 
 
@@ -62,14 +59,12 @@ end
 pro ucomp_run::unlock, error
   compile_opt strictarr
 
-  if (self->config('raw/lock')) then begin
-    if (~ucomp_state(self.date)) then begin
-      unlocked = ucomp_state(self.date, /unlock, run=self)
-      mg_log, 'unlocked %s', self.date, name='ucomp', /info
-      if (error eq 0) then begin
-        processed = ucomp_state(self.date, /processed, run=self)
-        mg_log, 'marked %s as processed', self.date, name='ucomp', /info
-      endif
+  if (~ucomp_state(self.date)) then begin
+    unlocked = ucomp_state(self.date, /unlock, run=self)
+    mg_log, 'unlocked %s', self.date, name='ucomp', /info
+    if (error eq 0) then begin
+      processed = ucomp_state(self.date, /processed, run=self)
+      mg_log, 'marked %s as processed', self.date, name='ucomp', /info
     endif
   endif
 end
@@ -119,11 +114,11 @@ pro ucomp_run::report_profiling
 
   if (~self->config('engineering/profile')) then return
 
-  basename = string(self.date, format='(%"%s.ucomp.profiler.html")')
+  basename = string(self.date, format='(%"%s.ucomp.profiler.csv")')
   filename = filepath(basename, $
                       subdir=ucomp_decompose_date(self.date), $
                       root=self->config('engineering/basedir'))
-  mg_profiler_report, filename=filename, /html
+  mg_profiler_report, filename=filename, /csv
 end
 
 
