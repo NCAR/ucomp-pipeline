@@ -48,8 +48,12 @@ pro ucomp_run_pipeline, date, config_filename
   run.t0 = t0
   run->start_profiler
 
-  wave_types = run->config('options/wave_types')
+  ; copy config file to processing dir, creating dir if needed
+  process_dir = filepath(date, root=run->config('results/processing_basedir')
+  if (~file_test(process_dir, /directory)) then file_mkdir, process_dir
+  file_copy, config_filename, filepath('ucomp.cfg', root=process_dir)
 
+  ; log starting up pipeline with versions
   version = ucomp_version(revision=revision, branch=branch)
   mg_log, 'ucomp-pipeline %s (%s on %s)', version, revision, branch, $
           name='ucomp', /info
@@ -58,6 +62,7 @@ pro ucomp_run_pipeline, date, config_filename
 
   mg_log, 'starting processing for %d...', date, name='ucomp', /info
 
+
   ;== level 1
 
   run->lock, is_available=is_available
@@ -65,6 +70,7 @@ pro ucomp_run_pipeline, date, config_filename
 
   ucomp_pipeline_step, 'ucomp_make_raw_inventory', run=run
 
+  wave_types = run->config('options/wave_types')
   for w = 0L, n_elements(wave_types) - 1L do begin
     ucomp_pipeline_step, 'ucomp_check_quality', wave_types[w], run=run
     ucomp_pipeline_step, 'ucomp_make_darks', wave_types[w], run=run
