@@ -39,7 +39,6 @@ function ucomp_state, date, $
 
   if (keyword_set(lock)) then begin
     if (available) then begin
-      n_concurrent += 1L
       openw, lun, lock_file, /get_lun
       free_lun, lun
     endif
@@ -49,7 +48,6 @@ function ucomp_state, date, $
   if (keyword_set(unlock)) then begin
     locked = file_test(lock_file)
     if (locked) then begin
-      n_concurrent -= 1L
       file_delete, lock_file
     endif
     return, locked
