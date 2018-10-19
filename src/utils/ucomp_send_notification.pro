@@ -23,7 +23,21 @@ pro ucomp_send_notification, run=run
     body = list()
 
     ; TODO: add warnings/errors from logs
-    ; TODO: add config file
+
+    ; add config file
+    config_filename = filepath('ucomp.cfg', $
+                               subdir=run.date, $
+                               root=run->config('results/processing_basedir'))
+    n_config_lines = file_lines(config_filename)
+    openr, lun, config_filename, /get_lun
+    config_line = ''
+    for i = 0L, n_config_lines - 1L do begin
+      readf, lun, config_line
+      body->add, config_line
+    endfor
+    free_lun, lun
+    body->add, ['', ''], /extract
+
     ; TODO: add quality histogram image
 
     body->add, string(mg_src_root(/filename), $
