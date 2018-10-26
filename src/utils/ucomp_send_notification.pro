@@ -25,17 +25,7 @@ pro ucomp_send_notification, run=run
     ; TODO: add warnings/errors from logs
 
     ; add config file
-    config_filename = filepath(string(run.date, format='(%"%s.ucomp.cfg")'), $
-                               subdir=run.date, $
-                               root=run->config('results/processing_basedir'))
-    n_config_lines = file_lines(config_filename)
-    openr, lun, config_filename, /get_lun
-    config_line = ''
-    for i = 0L, n_config_lines - 1L do begin
-      readf, lun, config_line
-      body->add, config_line
-    endfor
-    free_lun, lun
+    body->add, run.config_contents, /extract
     body->add, ['', ''], /extract
 
     ; TODO: add quality histogram image

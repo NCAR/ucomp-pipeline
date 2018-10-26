@@ -250,12 +250,16 @@ end
 ; Get properties.
 ;-
 pro ucomp_run::getProperty, date=date, $
+                            config_contents=config_contents, $
                             files=files, wave_type=wave_type, count=count, $
                             t0=t0
   compile_opt strictarr
   on_error, 2
 
   if (arg_present(date)) then date = self.date
+  if (arg_present(config_contents)) then begin
+    config_contents = reform(self.options->_toString(/substitute))
+  endif
 
   if (arg_present(files) || arg_present(count)) then begin
     if (n_elements(wave_type) eq 0L) then message, 'WAVE_TYPE not given for FILES'
