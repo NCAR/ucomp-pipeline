@@ -1,0 +1,37 @@
+#1234567890123456789012345678901234567890123456789012345678901234567890123456789
+DATE-BEG= '%(datebeg)s'        / UTC observation start
+DATE-END= '%(dateend)s'        / UTC observation end
+WAVELENG=    %(wavelength)0.3f / [nm] wavelength of observation
+OBJECT  = 'Emission Line Corona' / coronal brightness
+#BEAM-like keyword to tell which camera is taking continuum?
+CALOPTIC= '%(caloptic)s'       / polarizer and retarder in or out of the beam
+DARKSHUT= '%(darkshut)s'       / dark shutter in or out of the beam
+POLANGLE=      %(polangle)0.3f / [deg] angle of rotation of cal polarizer
+RETANGLE=      %(retangle)0.3f / [deg] angle of rotation of cal retarder
+V_LCVR1 =       %(v_lcvr1)0.3f / [V] LCVR 1 tuning voltage
+V_LCVR2 =       %(v_lcvr2)0.3f / [V] LCVR 2 tuning voltage
+V_LCVR3 =       %(v_lcvr3)0.3f / [V] LCVR 3 tuning voltage
+V_LCVR4 =       %(v_lcvr4)0.3f / [V] LCVR 4 tuning voltage
+V_LCVR5 =       %(v_lcvr5)0.3f / [V] LCVR 5 tuning voltage
+LCVR1TMP=      %(lcvr1tmp)0.3f / [C] temperature of LCVR stage 1
+LCVR2TMP=      %(lcvr2tmp)0.3f / [C] temperature of LCVR stage 2
+LCVR3TMP=      %(lcvr3tmp)0.3f / [C] temperature of LCVR stage 3
+LCVR4TMP=      %(lcvr4tmp)0.3f / [C] temperature of LCVR stage 4
+LCVR5TMP=      %(lcvr5tmp)0.3f / [C] temperature of LCVR stage 5
+LCVR6TMP=      %(lcvr6tmp)0.3f / [C] temperature of LCVR stage 6
+BODYTEMP=      %(bodytemp)0.3f / [C] temperature of filter body
+BASETEMP=      %(basetemp)0.3f / [C] base plate temp
+RACKTEMP=      %(racktemp)0.3f / [C] computer rack ambient air temp
+OPTRTEMP=      %(optrtemp)0.3f / [C] optical rail temp
+SGSDIMV =       %(sgsdimv)0.6f / [V] mean SGS DIM signal
+SGSDIMS =       %(sgsdims)0.6f / [V] SGS DIM signal standard deviation
+SGSSUMV =       %(sgssumv)0.6f / [V] mean SGS sum signal
+SGSSUMS =       %(sgssums)0.6f / [V] SGS sum signal standard deviation
+SGSRAV  =        %(sgsrav)0.6f / [V] Mean SGS RA error signal
+SGSRAS  =        %(sgsras)0.6f / [V] SGS RA error signal standard deviation
+SGSDECV =       %(sgsdecv)0.6f / [V] Mean SGS dec error signal
+SGSDECS =       %(sgsdecs)0.6f / [V] SGS dec error signal standard deviation
+SGSSCINT=      %(sgsscint)0.6f / [arcsec] SGS scintillation seeing estimate
+SGSRAZR =       %(sgsrazr)0.6f / [arcsec] SGS RA zero point offset
+SGSDECZR=      %(sgsdeczr)0.6f / [arcsec] SGS DEC zero point offset
+SGSLOOP =          %(sgsloop)d / SGS loop closed fraction
