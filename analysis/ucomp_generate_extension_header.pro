@@ -11,6 +11,7 @@ function ucomp_generate_extension_header
 
   h = hash()
 
+  dt_format = '(C(CYI, "-", CMoI02, "-", CDI02, "T", CHI02, ":", CMI02, ":", CSI02))'
   h['datebeg'] = string(systime(/julian), format=dt_format)
   h['dateend'] = string(systime(/julian) + 15.0/24.0/60.0/60.0, format=dt_format)
 
