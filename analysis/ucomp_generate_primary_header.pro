@@ -12,6 +12,7 @@ function ucomp_generate_primary_header
 
   primary_hash = hash()
 
+  dt_format = '(C(CYI, "-", CMoI02, "-", CDI02, "T", CHI02, ":", CMI02, ":", CSI02))'
   primary_hash['dateobs'] = string(systime(/julian), format=dt_format)
   primary_hash['dateend'] = string(systime(/julian) + 15.0/24.0/60.0/60.0, format=dt_format)
 

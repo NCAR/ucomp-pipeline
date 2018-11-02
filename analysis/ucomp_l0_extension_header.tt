@@ -1,7 +1,7 @@
 #1234567890123456789012345678901234567890123456789012345678901234567890123456789
 DATE-BEG= '%(datebeg)s'        / UTC observation start
 DATE-END= '%(dateend)s'        / UTC observation end
-WAVELENG=    %(wavelength)0.3f / [nm] wavelength of observation
+WAVELENG=    %(wavelength)0.2f / [nm] wavelength of observation
 OBJECT  = 'Emission Line Corona' / coronal brightness
 #BEAM-like keyword to tell which camera is taking continuum?
 CALOPTIC= '%(caloptic)s'       / polarizer and retarder in or out of the beam

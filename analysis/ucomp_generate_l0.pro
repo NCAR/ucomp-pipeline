@@ -11,12 +11,9 @@ pro ucomp_generate_l0, filename
   compile_opt strictarr
 
   wavelengths = [1074.38, 1074.50, 1074.62, 1074.74, 1074.86]
-  dt_format = '(C(CYI, "-", CMoI02, "-", CDI02, "T", CHI02, ":", CMI02, ":", CSI02))'
 
   primary_hash = ucomp_generate_primary_header()
-
   primary_header_template = filepath('ucomp_l0_primary_header.tt', root=mg_src_root())
-
   primary_data = 0.0
   primary_header = ucomp_make_header(primary_header_template, $
                                      primary_data, $
@@ -40,7 +37,7 @@ pro ucomp_generate_l0, filename
 
 
     fits_write, fcb, extension_data, extension_header, $
-                extname=string(extension_hash['wavelength'], format='(%"%0.3f")')
+                extname=string(extension_hash['wavelength'], format='(%"%0.2f")')
   endfor
 
   fits_close, fcb
