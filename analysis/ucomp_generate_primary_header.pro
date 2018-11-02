@@ -1,6 +1,13 @@
 ; docformat = 'rst'
 
-function ucomp_generate_fake_primary_header
+
+;+
+; Generate a random synthetic primary header.
+;
+; :Returns:
+;   hash
+;-
+function ucomp_generate_primary_header
   compile_opt strictarr
 
   primary_hash = hash()

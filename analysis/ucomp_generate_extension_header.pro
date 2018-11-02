@@ -1,6 +1,12 @@
 ; docformat = 'rst'
 
-function ucomp_generate_fake_extension_header
+;+
+; Generate a random synthetic extension header.
+;
+; :Returns:
+;   hash
+;-
+function ucomp_generate_extension_header
   compile_opt strictarr
 
   h = hash()

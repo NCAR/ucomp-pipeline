@@ -74,7 +74,7 @@ end
 
 dt_format = '(C(CYI, "-", CMoI02, "-", CDI02, "T", CHI02, ":", CMI02, ":", CSI02))'
 
-primary_hash = ucomp_generate_fake_primary_header()
+primary_hash = ucomp_generate_primary_header()
 
 primary_header_template = filepath('ucomp_l0_primary_header.tt', root=mg_src_root())
 primary_header = ucomp_make_header(primary_header_template, 0.0, primary_hash, /extend)
