@@ -17,3 +17,4 @@ install(FILES ${PRO_FILES} DESTINATION src)
 #install(FILES ${SAV_FILES} DESTINATION src)
 
 install(FILES epochs.cfg DESTINATION src)
+install(FILES epochs.spec.cfg DESTINATION src)
