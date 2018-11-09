@@ -436,11 +436,8 @@ function ucomp_run::init, date, config_filename
   self->_setup_logger
 
   ; setup epoch reading
-  epochs_filename = filepath('epochs.cfg', $
-                             root=mg_src_root())
-  epochs_spec_filename = filepath('epochs_spec.cfg', $
-                                  subdir=['..', 'resource'], $
-                                  root=mg_src_root())
+  epochs_filename = filepath('epochs.cfg', root=mg_src_root())
+  epochs_spec_filename = filepath('epochs.spec.cfg', root=mg_src_root())
 
   self.epochs = mgffepochparser(epochs_filename, epochs_spec_filename)
   epochs_valid = self.epochs->is_valid(error_msg=error_msg)
