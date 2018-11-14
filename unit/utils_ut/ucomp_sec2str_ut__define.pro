@@ -1,6 +1,6 @@
 ; docformat = 'rst'
 
-function ucomp_sec2str_ut::test1
+function ucomp_sec2str_ut::test_basic
   compile_opt strictarr
 
   secs = 3 * 60L * 60L * 24L + 2 * 60 * 60 + 1 * 60 + 2
