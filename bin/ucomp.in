@@ -99,6 +99,10 @@ def process_realtime(dates, flags, no_wait):
     launch_processes(dates, flags, no_wait, 'ucomp_realtime.sh')
 
 
+def process_calibrate(dates, flags, no_wait):
+    launch_processes(dates, flags, no_wait, 'ucomp_calibrate.sh')
+
+
 def process_dates(dates, flags, no_wait):
     launch_processes(dates, flags, no_wait, 'ucomp_process.sh')
 
@@ -155,6 +159,8 @@ if __name__ == '__main__':
 
     parser.add_argument('-r', '--realtime', action='store_true',
                         help='set to run the realtime instead of full processing')
+    parser.add_argument('-c', '--calibrate', action='store_true',
+                        help='set to run the calibration instead of full processing')
     parser.add_argument('--no-wait',
                         action='store_true',
                         help='set to run all dates simultaneously')
@@ -179,6 +185,9 @@ if __name__ == '__main__':
     if args.realtime:
         if len(dates) != 1:
             parser.error('realtime mode is only valid for a single date')
-            process_realtime(dates, args.flags, args.no_wait)
+
+        process_realtime(dates, args.flags, args.no_wait)
+    elif args.calibrate:
+        process_calibrate(dates, args.flags, args.no_wait)
     else:
         process_dates(dates, args.flags, args.no_wait)
