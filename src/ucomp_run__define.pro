@@ -238,7 +238,13 @@ function ucomp_run::config, name
 
   tokens = strsplit(name, '/', /extract, count=n_tokens)
   if (n_tokens ne 2) then message, 'bad format for config option name'
+
   value = self.options->get(tokens[1], section=tokens[0])
+
+  if (name eq 'raw/basedir' && value eq '') then begin
+    routing_file = self.options->get('routing_file', section='raw')
+    value = ucomp_get_route(routing_file, self.date)
+  endif
 
   return, value
 end
