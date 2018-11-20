@@ -23,7 +23,7 @@ function ucomp_new_files_ut::test_error
   new_files = ucomp_new_files(mg_src_root(), catalog_filename, $
                               count=count, error=error)
 
-  assert, error eq 1, 'error not set'
+  assert, error ne 0, 'error not set'
 
   return, 1
 end
@@ -54,7 +54,7 @@ function ucomp_new_files_ut::test_remove
   new_files = ucomp_new_files(filepath('..', root=mg_src_root()), catalog_filename, $
                               count=count, error=error)
 
-  assert, error eq 1, 'error not set'
+  assert, error ne 0, 'error not set'
 
   return, 1
 end
