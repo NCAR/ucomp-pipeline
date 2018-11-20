@@ -1,9 +1,9 @@
 ; docformat = 'rst'
 
 ;+
-; Given a directory where new files are appearing and the filename of a catalog
-; of the already existing files, determine the new files since the catalog was
-; created.
+; Given a directory where new .fts.gz files are appearing and the filename of a
+; catalog of the already existing files, determine the new files since the
+; catalog was created.
 ;
 ; :Returns:
 ;   `strarr` or `!null` if no new files
@@ -18,6 +18,8 @@
 ; :Keywords:
 ;   count : out, optional, type=long
 ;     set to a named variable to retrieve the number of files returned
+;   error : out, optional, type=long
+;     set to a named variable to retrieve the error status, 0 indicates no error
 ;-
 function ucomp_new_files, dir, catalog_filename, count=count, error=error
   compile_opt strictarr
@@ -27,6 +29,7 @@ function ucomp_new_files, dir, catalog_filename, count=count, error=error
 
   ; read catalog
   if (~file_test(catalog_filename)) then begin
+    error = 1L
     n_existing_files = 0L
     existing_files = !null
   endif else begin
@@ -55,7 +58,7 @@ function ucomp_new_files, dir, catalog_filename, count=count, error=error
   ; this case should not happen unless something is taking files out of the raw
   ; directory
   if (n_all_files eq 0L) then begin
-    error = 1L
+    error = 2L
     return, !null
   endif
 
@@ -74,11 +77,11 @@ function ucomp_new_files, dir, catalog_filename, count=count, error=error
   ; this case should not happen unless something is taking files out of the raw
   ; directory
   if (existing_files[-1] gt all_files[-1]) then begin
-    error = 2L
+    error = 3L
     return, !null
   endif
 
   ; should never get here
-  error = 3L
+  error = 4L
   return, !null
 end
