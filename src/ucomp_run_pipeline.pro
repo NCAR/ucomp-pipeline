@@ -1,7 +1,8 @@
 ; docformat = 'rst'
 
 ;+
-; Run the UCoMP pipeline.
+; Run the UCoMP pipeline; this is full processing (or reprocessing) for a day
+; not the quicklook/realtime processing.
 ;
 ; :Params:
 ;   date : in, required, type=string
