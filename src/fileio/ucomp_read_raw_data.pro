@@ -8,19 +8,26 @@
 ;     FITS filename of UCoMP raw data file
 ;
 ; :Keywords:
+;   primary_data : out, optional, type=float
+;     set to a named variable to retrieve the data in the primary extension
+;     (should always be 0.0)
 ;   primary_header : out, optional, type=strarr(n_keywords)
 ;     set to a named variable to retrieve the primary header
 ;   ext_data : out, optional, type="fltarr(nx, ny, n_exts)"
 ;     set to a named variable to retrieve the extension data
-;   ext_headers : out, optional, type="strarr(n_ext_keywords, n_exts)"
+;   ext_headers : out, optional, type="list of strarr(n_ext_keywords)"
 ;     set to a named variable to retrieve the extension headers
+;   n_extensions : out, optional, type=long
+;     set to a named variable to retrieve the number of extensions
 ;   repair_routine : in, optional, type=string
 ;     call procedure given by this keyword to repair data, if present
 ;-
 pro ucomp_read_raw_data, filename, $
+                         primary_data=primary_data, $
                          primary_header=primary_header, $
                          ext_data=ext_data, $
                          ext_headers=ext_headers, $
+                         n_extensions=n_extensions, $
                          repair_routine=repair_routine
   compile_opt strictarr
   on_error, 2
@@ -34,7 +41,7 @@ pro ucomp_read_raw_data, filename, $
   endif
 
   ; read primary header if requested
-  if (arg_present(primary_header)) then begin
+  if (arg_present(primary_header) || arg_present(primary_data)) then begin
     fits_read, filename, primary_data, primary_header, exten_no=0, $
                /header_only, /no_abort, message=msg
     if (msg ne '') then message, msg
