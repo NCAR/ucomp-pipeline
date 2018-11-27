@@ -28,9 +28,9 @@ pro ucomp_l1_step, routine_name, file, primary_header, data, headers, $
   compile_opt strictarr
 
   if (keyword_set(skip)) then begin
-    mg_log, 'skipping', from=routine_name, name='ucomp', /debug
+    mg_log, 'skipping', from=routine_name, name=run.logger_name, /debug
   endif else begin
-    mg_log, 'starting...', from=routine_name, name='ucomp', /debug
+    mg_log, 'starting...', from=routine_name, name=run.logger_name, /debug
 
     clock_id = run->start(routine_name)
     call_procedure, routine_name, file, primary_header, data, headers, $
@@ -38,6 +38,6 @@ pro ucomp_l1_step, routine_name, file, primary_header, data, headers, $
     time = run->stop(clock_id)
 
     mg_log, 'done (%s)', ucomp_sec2str(time), $
-            from=routine_name, name='ucomp', /debug
+            from=routine_name, name=run.logger_name, /debug
   endelse
 end
