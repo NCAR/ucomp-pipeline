@@ -30,8 +30,6 @@ RCAMLUT = '13891_20160716'     / unique ID of the LUT for camera 0
 COMMENT O1 stuff
 O1ID    = 'ID'                 / unique ID of objective lens
 O1FOCUS = 'ID'                 / O1 focus position
-BZERO   =                  0.0 / (what are these for UCoMP?)
-BSCALE  =                  1.0 / 
 LEVEL   = 'L0'                 / level 0 (summed raw images)
 OBSSWID = 'ID'                 / version of the observing software used  
 OBS_ID  = 'ID'                 / recipe descriptive name
