@@ -1,0 +1,5 @@
+create table ucomp_level (
+  level_id       tinyint (2) auto_increment primary key,
+  level          char (5) not null,
+  description    varchar (512)
+)
