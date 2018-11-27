@@ -56,7 +56,7 @@ pro ucomp_l1_process_file, file, run=run
                        format='(%"%s.%s.ucomp.%s.%s.%d.fts")')
   l1_dirname = filepath('', $
                         subdir=[run.date, 'level1'], $
-                        root=run->config('results/processing_basedir'))
+                        root=run->config('processing/basedir'))
   l1_filename = filepath(l1_basename, root=l1_dirname)
   if (~file_test(l1_dirname, /directory)) then file_mkdir, l1_dirname
 

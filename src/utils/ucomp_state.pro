@@ -29,7 +29,7 @@ function ucomp_state, date, $
   compile_opt strictarr, logical_predicate
   on_error, 2
 
-  lock_dir = filepath(date, root=run->config('results/processing_basedir'))
+  lock_dir = filepath(date, root=run->config('processing/basedir'))
   lock_file = filepath('.lock', root=lock_dir)
   processed_file = filepath('.processed', root=lock_dir)
 
