@@ -50,7 +50,7 @@ pro ucomp_run_eod_pipeline, date, config_filename
   run->start_profiler
 
   ; copy config file to processing dir, creating dir if needed
-  process_dir = filepath(date, root=run->config('results/processing_basedir'))
+  process_dir = filepath(date, root=run->config('processing/basedir'))
   if (~file_test(process_dir, /directory)) then file_mkdir, process_dir
   file_copy, config_filename, $
              filepath(string(date, format='(%"%s.ucomp.cfg")'), $
