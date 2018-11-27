@@ -10,7 +10,7 @@
 ;   config_filename : in, required, type=string
 ;     filename for configuration file to use
 ;-
-pro ucomp_run_pipeline, date, config_filename
+pro ucomp_run_eod_pipeline, date, config_filename
   compile_opt strictarr
 
   ; initialize performance metrics
@@ -24,26 +24,26 @@ pro ucomp_run_pipeline, date, config_filename
   catch, error
   if (error ne 0) then begin
     catch, /cancel
-    mg_log, /last_error, name='ucomp', /critical
+    mg_log, /last_error, name='ucomp/eod', /critical
     goto, done
   endif
 
   if (n_params() ne 2) then begin
-    mg_log, 'incorrect number of arguments', name='ucomp', /critical
+    mg_log, 'incorrect number of arguments', name='ucomp/eod', /critical
     goto, done
   endif
 
   config_fullpath = file_expand_path(config_filename)
   if (~file_test(config_fullpath, /regular)) then begin
     mg_log, config_fullpath, format='(%"config file %s not found")', $
-            name='ucomp', /critical
+            name='ucomp/eod', /critical
     goto, done
   endif
 
   ; create run object
-  run = ucomp_run(date, config_fullpath)
+  run = ucomp_run(date, 'eod', config_fullpath)
   if (~obj_valid(run)) then begin
-    mg_log, 'cannot create run object', name='ucomp', /critical
+    mg_log, 'cannot create run object', name='ucomp/eod', /critical
     goto, done
   endif
   run.t0 = t0
@@ -60,11 +60,11 @@ pro ucomp_run_pipeline, date, config_filename
   ; log starting up pipeline with versions
   version = ucomp_version(revision=revision, branch=branch)
   mg_log, 'ucomp-pipeline %s (%s on %s)', version, revision, branch, $
-          name='ucomp', /info
+          name=run.logger_name, /info
   mg_log, 'using IDL %s on %s', !version.release, !version.os_name, $
-          name='ucomp', /info
+          name=run.logger_name, /info
 
-  mg_log, 'starting processing for %d...', date, name='ucomp', /info
+  mg_log, 'starting processing for %d...', date, name=run.logger_name, /info
 
 
   ;== level 1
@@ -101,7 +101,7 @@ pro ucomp_run_pipeline, date, config_filename
   ;== cleanup and quit
   done:
 
-  mg_log, /check_math, name='ucomp', /debug
+  mg_log, /check_math, name=run.logger_name, /debug
 
   ; unlock raw directory and mark processed if no crash
   if (obj_valid(run)) then run->unlock, error
@@ -111,7 +111,7 @@ pro ucomp_run_pipeline, date, config_filename
 
   t1 = systime(/seconds)
   mg_log, 'total running time: %s', ucomp_sec2str(t1 - t0), $
-          name='ucomp', /info
+          name=run.logger_name, /info
 
   if (obj_valid(run)) then obj_destroy, run
   mg_log, /quit

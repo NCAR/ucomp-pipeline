@@ -12,7 +12,9 @@ pro ucomp_run::make_raw_inventory
   raw_dir = filepath(self.date, root=self->config('raw/basedir'))
   raw_files = file_search(filepath('*.FTS', root=raw_dir), count=n_raw_files)
 
-  mg_log, '%d raw files', n_raw_files, name='ucomp', /info
+  self->getProperty, logger_name=logger_name
+
+  mg_log, '%d raw files', n_raw_files, name=logger_name, /info
   for f = 0L, n_raw_files - 1L do begin
     file = ucomp_file(raw_files[f])
 
@@ -22,7 +24,7 @@ pro ucomp_run::make_raw_inventory
 
     mg_log, '%s [%s] %s', $
             file_basename(raw_files[f]), file.wave_type, file.data_type, $
-            name='ucomp', /debug
+            name=logger_name, /debug
     (self.files)[file.wave_type]->add, file
   endfor
 end
@@ -39,12 +41,14 @@ end
 pro ucomp_run::lock, is_available=is_available
   compile_opt strictarr
 
+  self->getProperty, logger_name=logger_name
+
   is_available = ucomp_state(self.date, run=self)
   if (is_available) then begin
     !null = ucomp_state(self.date, /lock, run=self)
-    mg_log, 'locked %s', self.date, name='ucomp', /info
+    mg_log, 'locked %s', self.date, name=logger_name, /info
   endif else begin
-    mg_log, '%s not available, skipping', self.date, name='ucomp', /info
+    mg_log, '%s not available, skipping', self.date, name=logger_name, /info
   endelse
 end
 
@@ -59,12 +63,14 @@ end
 pro ucomp_run::unlock, error
   compile_opt strictarr
 
+  self->getProperty, logger_name=logger_name
+
   if (~ucomp_state(self.date, run=self)) then begin
     unlocked = ucomp_state(self.date, /unlock, run=self)
-    mg_log, 'unlocked %s', self.date, name='ucomp', /info
+    mg_log, 'unlocked %s', self.date, name=logger_name, /info
     if (error eq 0) then begin
       processed = ucomp_state(self.date, /processed, run=self)
-      mg_log, 'marked %s as processed', self.date, name='ucomp', /info
+      mg_log, 'marked %s as processed', self.date, name=logger_name, /info
     endif
   endif
 end
@@ -256,6 +262,8 @@ end
 ; Get properties.
 ;-
 pro ucomp_run::getProperty, date=date, $
+                            mode=mode, $
+                            logger_name=logger_name, $
                             config_contents=config_contents, $
                             files=files, wave_type=wave_type, count=count, $
                             t0=t0
@@ -263,6 +271,12 @@ pro ucomp_run::getProperty, date=date, $
   on_error, 2
 
   if (arg_present(date)) then date = self.date
+  if (arg_present(mode)) then mode = self.mode
+
+  if (arg_present(logger_name)) then begin
+    logger_name = string(self.mode, format='(%"ucomp/%s")')
+  endif
+
   if (arg_present(config_contents)) then begin
     config_contents = reform(self.options->_toString(/substitute))
   endif
@@ -362,7 +376,7 @@ pro ucomp_run::_setup_logger
   max_width = self->config('logging/max_width')
 
   ; setup log directory and file
-  basename = string(self.date, format='(%"%s.ucomp.log")')
+  basename = string(self.date, self.mode, format='(%"%s.ucomp.%s.log")')
   filename = filepath(basename, root=log_dir)
   if (~file_test(log_dir, /directory)) then file_mkdir, log_dir
 
@@ -370,7 +384,8 @@ pro ucomp_run::_setup_logger
   mg_rotate_log, filename, max_version=max_version
 
   ; configure logger
-  mg_log, name='ucomp', logger=logger
+  self->getProperty, logger_name=logger_name
+  mg_log, name=logger_name, logger=logger
   logger->setProperty, format=fmt, $
                        time_format=time_fmt, $
                        max_width=max_width, $
@@ -418,13 +433,18 @@ end
 ;     observing date in the form 'YYYYMMDD'; this is the local HST date of the
 ;     observations, i.e., it does not change at midnight UT during the middle of
 ;     an observing day
+;   mode : in, required, type=string
+;     mode, i.e., either 'realtime' or 'eod'
 ;   config_filename : in, required, type=string
 ;     filename of config file specifying the run
 ;-
-function ucomp_run::init, date, config_filename
+function ucomp_run::init, date, mode, config_filename
   compile_opt strictarr
 
   self.date = date
+  self.mode = mode
+
+  self->getProperty, logger_name=logger_name
 
   ; setup config options
   config_spec_filename = filepath('ucomp.spec.cfg', $
@@ -434,8 +454,8 @@ function ucomp_run::init, date, config_filename
   self.options = mg_read_config(config_filename, spec=config_spec_filename)
   config_valid = self.options->is_valid(error_msg=error_msg)
   if (~config_valid) then begin
-    mg_log, 'invalid configuration file', name='ucomp', /critical
-    mg_log, '%s', error_msg, name='ucomp', /critical
+    mg_log, 'invalid configuration file', name=logger_name, /critical
+    mg_log, '%s', error_msg, name=logger_name, /critical
     return, 0
   endif
 
@@ -448,8 +468,8 @@ function ucomp_run::init, date, config_filename
   self.epochs = mgffepochparser(epochs_filename, epochs_spec_filename)
   epochs_valid = self.epochs->is_valid(error_msg=error_msg)
   if (~epochs_valid) then begin
-    mg_log, 'invalid epochs file', name='ucomp', /critical
-    mg_log, '%s', error_msg, name='ucomp', /critical
+    mg_log, 'invalid epochs file', name=logger_name, /critical
+    mg_log, '%s', error_msg, name=logger_name, /critical
     return, 0
   endif
 
@@ -471,6 +491,7 @@ pro ucomp_run__define
 
   !null = {ucomp_run, inherits IDL_Object, $
            date:    '', $
+           mode:    '', $
            t0:      0.0D, $
            options: obj_new(), $
            epochs:  obj_new(), $

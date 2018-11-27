@@ -13,39 +13,37 @@
 pro ucomp_create_tables, run=run
   compile_opt strictarr
 
-  log_name = 'ucomp'
-
   ; create MySQL database interface object
   db = mgdbmysql()
   db->connect, config_filename=run->config('database/config_filename'), $
                config_section=run->config('database/config_section'), $
                status=status, error_message=error_message
   if (status ne 0L) then begin
-    mg_log, 'failed to connect to database', name=log_name, /error
-    mg_log, '%s', error_message, name=log_name, /error
+    mg_log, 'failed to connect to database', name=run.logger_name, /error
+    mg_log, '%s', error_message, name=run.logger_name, /error
     return
   endif
 
   db->getProperty, host_name=host
-  mg_log, 'connected to %s', host, name=log_name, /info
+  mg_log, 'connected to %s', host, name=run.logger_name, /info
 
   ; tables in the order they need to be created
   tables = 'ucomp_' + ['mission', 'sw', 'level', 'raw', 'eng', 'cal', 'file', 'sci']
 
   ; delete existing tables (in reverse order), if they exist
   for t = n_elements(tables) - 1L, 0L, - 1L do begin
-    mg_log, 'dropping %s...', tables[t], name=log_name, /info
+    mg_log, 'dropping %s...', tables[t], name=run.logger_name, /info
     db->execute, 'drop table if exists %s', tables[t], $
                  status=status, error_message=error_message
     if (status ne 0L) then begin
-      mg_log, 'problem dropping %s', tables[t], name=log_name, /error
-      mg_log, '%s', error_message, name=log_name, /error
+      mg_log, 'problem dropping %s', tables[t], name=run.logger_name, /error
+      mg_log, '%s', error_message, name=run.logger_name, /error
     endif
   endfor
 
   ; create tables
   for t = 0L, n_elements(tables) - 1L do begin
-    mg_log, 'creating %s...', tables[t], name=log_name, /info
+    mg_log, 'creating %s...', tables[t], name=run.logger_name, /info
 
     definition_filename = filepath(string(tables[t], format='(%"%s.tbl")'), $
                                    root=mg_src_root())
@@ -59,12 +57,13 @@ pro ucomp_create_tables, run=run
     db->execute, '%s', sql_code, $
                  status=status, error_message=error_message
     if (status ne 0L) then begin
-      mg_log, 'problem creating %s', tables[t], name=log_name, /error
-      mg_log, '%s', error_message, name=log_name, /error
+      mg_log, 'problem creating %s', tables[t], name=run.logger_name, /error
+      mg_log, '%s', error_message, name=run.logger_name, /error
     endif
   endfor
 
   ; some tables have some initial values
+
   levels = [{name: 'L0', description: 'raw data'}, $
             {name: 'L0.5', description: 'level 0.5 data (averaged L0 data)'}, $
             {name: 'L1', description: 'level 1 data (calibrated to science units)'}, $
@@ -75,13 +74,15 @@ pro ucomp_create_tables, run=run
     cmd = string(levels[i].name, levels[i].description, format=fmt)
     db->execute, cmd, status=status, error_message=error_message
     if (status ne 0L) then begin
-      mg_log, 'problem inserting level %s', levels[i].name, name=log_name, /error
-      mg_log, '%s', error_message, name=log_name, /error
+      mg_log, 'problem inserting level %s', levels[i].name, name=run.logger_name, /error
+      mg_log, '%s', error_message, name=run.logger_name, /error
     endif
   endfor
 
+  ; TODO: insert into mission table
+
   ; disconnect from database
-  mg_log, 'disconnecting from %s', host, name=log_name, /info
+  mg_log, 'disconnecting from %s', host, name=run.logger_name, /info
   obj_destroy, db
 end
 
@@ -93,7 +94,7 @@ config_filename = filepath('ucomp.mgalloy.pike.latest.cfg', $
                            subdir=['..', '..', 'config'], $
                            root=mg_src_root())
 
-run = ucomp_run(date, config_filename)
+run = ucomp_run(date, 'eod', config_filename)
 ucomp_create_tables, run=run
 
 obj_destroy, run

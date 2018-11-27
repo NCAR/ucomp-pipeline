@@ -22,9 +22,9 @@ pro ucomp_pipeline_step, routine_name, wave_type, skip=skip, run=run, _extra=e
 
   if (keyword_set(skip)) then begin
     mg_log, 'skipping %s', routine_name, $
-            from=routine_name, name='ucomp', /info
+            from=routine_name, name=run.logger_name, /info
   endif else begin
-    mg_log, 'starting...', from=routine_name, name='ucomp', /info
+    mg_log, 'starting...', from=routine_name, name=run.logger_name, /info
 
     start_memory = memory(/current)
 
@@ -40,8 +40,8 @@ pro ucomp_pipeline_step, routine_name, wave_type, skip=skip, run=run, _extra=e
 
     mg_log, 'memory usage: %0.1fM', $
             (memory(/highwater) - start_memory) / 1024. / 1024., $
-            from=routine_name, name='ucomp', /debug
+            from=routine_name, name=run.logger_name, /debug
     mg_log, 'done (%s)', ucomp_sec2str(time), $
-            from=routine_name, name='ucomp', /info
+            from=routine_name, name=run.logger_name, /info
   endelse
 end

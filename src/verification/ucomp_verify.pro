@@ -118,7 +118,7 @@ pro ucomp_verify, date, config_filename, status=status
     goto, done
   endif
 
-  run = ucomp_run(date, config_fullpath)
+  run = ucomp_run(date, 'verify', config_fullpath)
 
   mg_log, name=logger_name, logger=logger
   logger->setProperty, format='%(time)s %(levelshortname)s: %(message)s'
