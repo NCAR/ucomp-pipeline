@@ -1,0 +1,16 @@
+create table ucomp_sw (
+  sw_id            int(10) auto_increment primary key,
+  date             datetime not null,
+  proc_date        datetime not null,
+  dmodswid         char(24),
+  distort          char(50),
+  sw_version       char(24),
+  bunit            varchar(12),
+  bzero            float(6, 3),
+  bscale           float(6, 3),
+  labviewid        varchar(20),
+  socketcamid      varchar(20),
+  sw_revision      varchar(20),
+  sky_pol_factor   float(6, 3),
+  sky_bias         float(7, 4)
+)

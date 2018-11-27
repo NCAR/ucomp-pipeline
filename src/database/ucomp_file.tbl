@@ -1,0 +1,35 @@
+-- one per L1 or L2 file
+-- this table is for user searches
+
+create table ucomp_file (
+  file_id       int (10) auto_increment primary key,
+  file_name     char (35) not null, 
+  date_obs      datetime not null, 
+  obs_day       mediumint (5) not null,
+
+  level         tinyint (2) not null,
+  producttype   tinyint (2),
+  filetype      tinyint (2),
+
+  quality       tinyint (2),
+
+  pol_list      char (4),
+  wavetype      smallint,
+  ntunes        tinyint (2),
+
+  ucomp_sw_id   int (10),
+
+  unique (file_name),
+
+  index (date_obs),
+  index (obs_day),
+  index (quality),
+  index (producttype),
+
+  foreign key (level) references ucomp_level(level_id),
+  foreign key (ucomp_sw_id) references ucomp_sw(sw_id),
+
+  foreign key (producttype) references mlso_producttype(producttype_id),
+  foreign key (filetype) references mlso_filetype(filetype_id),
+  foreign key (obs_day) references mlso_numfiles(day_id)
+)

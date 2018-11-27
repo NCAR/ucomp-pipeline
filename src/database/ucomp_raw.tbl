@@ -5,7 +5,9 @@ create table ucomp_raw(
   date_end         datetime not null,
   obs_day          mediumint (5) not null,
   level            tinyint (2) not null,
+
   quality_id       tinyint (2) not null,
+
   mean_int_img0    float (14, 7),
   mean_int_img1    float (14, 7),
   mean_int_img2    float (14, 7),
@@ -22,8 +24,11 @@ create table ucomp_raw(
   median_int_img5  float (14, 7),
   median_int_img6  float (14, 7),
   median_int_img7  float (14, 7),
+
   unique(file_name),
+
   index(date_obs),
+
   foreign key (level) references ucomp_level(level_id),
   foreign key (obs_day) references mlso_numfiles(day_id)
 )
