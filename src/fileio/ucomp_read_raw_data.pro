@@ -13,7 +13,7 @@
 ;     (should always be 0.0)
 ;   primary_header : out, optional, type=strarr(n_keywords)
 ;     set to a named variable to retrieve the primary header
-;   ext_data : out, optional, type="fltarr(nx, ny, n_exts)"
+;   ext_data : out, optional, type="fltarr(nx, ny, n_polstates, n_cameras, n_exts)"
 ;     set to a named variable to retrieve the extension data
 ;   ext_headers : out, optional, type="list of strarr(n_ext_keywords)"
 ;     set to a named variable to retrieve the extension headers
@@ -62,7 +62,7 @@ pro ucomp_read_raw_data, filename, $
         ext_data = make_array(dimension=[dims, n_extensions], type=type)
       endif
 
-      ext_data[0, 0, e - 1] = data
+      ext_data[0, 0, 0, 0, e - 1] = data
       ext_headers->add, header
     endfor
   endif
