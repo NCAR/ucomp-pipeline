@@ -1,0 +1,63 @@
+-- one per L1 file, only center line
+
+create table ucomp_eng (
+  eng_id         int (10) auto_increment primary key,
+  file_name      char (32) not null,
+  date_obs       datetime not null,
+  obs_day        mediumint (5) not null,
+  level            tinyint (2) not null,
+
+  focus          float (6, 2),   -- focus stage position
+  o1focs         float (8, 3),   -- O1 position in mm
+
+  obs_id         char (30),      -- name of current measurement
+  obs_plan       char (30),      -- name of current program
+
+  cover          tinyint (1),
+  opal           tinyint (1),
+  polangle       float (8, 3),
+  polarizer      tinyint (1),
+  retarder       tinyint (1),
+
+  -- TODO: ask Giuliana if this is sufficient for centering?
+  -- distortion corrected centers/radii for occulter
+  ixcnter1       float(8, 4),    -- center x for sub-image 1
+  iycnter1       float(8, 4),    -- center y for sub-image 1
+  iradius1       float(8, 4),    -- radius for sub-image 1
+  ixcnter2       float(8, 4),    -- center x for sub-image 2
+  iycnter2       float(8, 4),    -- center y for sub-image 2
+  iradius2       float(8, 4),    -- radius for sub-image 2
+
+  overlap_angle  float(7, 3),
+  post_angle     float(7, 3),
+
+  wavelength     float (8, 3),
+  ntunes         tinyint (2),
+  pol_list       char (4),
+
+  nextensions    smallint,
+
+  -- extract the rest from from first extension
+
+  exposure       float (5, 1),  -- millisec
+  nd             tinyint (2),
+  background     float (7, 3),  -- median of masked line center background for i
+
+  bodytemp       float (9, 6),  --  temperature of filter body (deg C)
+  basetemp       float (9, 6),  --  base plate temp (deg C)
+  optrtemp       float (9, 6),  --  optical rail temp (deg C)
+  lcvr4tmp       float (9, 6),  --  deg C
+
+  occltrid       char (10),
+  
+  ucomp_sw_id    int (10),
+
+  unique (file_name),
+
+  index (date_obs),
+
+  foreign key (level) references ucomp_level(level_id),
+  foreign key (ucomp_sw_id) references ucomp_sw(sw_id),
+
+  foreign key (obs_day) references mlso_numfiles(day_id)
+)

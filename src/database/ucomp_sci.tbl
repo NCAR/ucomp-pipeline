@@ -1,0 +1,35 @@
+-- one entry per L1 file for line center, but need corresponding
+-- polarization/dynamics files
+
+create table ucomp_sci (
+  sci_id              int (10) auto_increment primary key,
+  file_name           char (40) not null,
+  date_obs            datetime not null,
+  obs_day             mediumint (5) not null,
+
+  totali              float (8, 3),
+  totalq              float (8, 3),
+  totalu              float (8, 3),
+
+  intensity           blob,
+  intensity_stddev    blob,
+  q                   blob,
+  q_stddev            blob,
+  u                   blob,
+  u_stddev            blob,
+
+  r108i               blob,
+  r13i                blob,
+  r108l               blob,
+  r13l                blob,
+  r108radazi          blob,
+  r13radazi           blob,
+  r108doppler         blob,
+  r13doppler          blob,
+
+  ucomp_sw_id         int (10),
+
+  foreign key (ucomp_sw_id) references ucomp_sw(sw_id),
+
+  foreign key (obs_day) references mlso_numfiles(day_id)
+)

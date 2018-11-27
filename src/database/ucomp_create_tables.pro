@@ -30,8 +30,7 @@ pro ucomp_create_tables, run=run
   mg_log, 'connected to %s', host, name=log_name, /info
 
   ; tables in the order they need to be created
-  ;tables = 'comp_' + ['file', 'sci', 'cal', 'eng', 'sw', 'mission', 'level']
-  tables = 'ucomp_' + ['level', 'raw']
+  tables = 'ucomp_' + ['mission', 'sw', 'level', 'raw', 'eng', 'cal', 'file', 'sci']
 
   ; delete existing tables (in reverse order), if they exist
   for t = n_elements(tables) - 1L, 0L, - 1L do begin

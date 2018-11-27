@@ -1,0 +1,69 @@
+-- one entry unless hardware changes
+
+-- TODO: ask Steve: are there any instrument hardware changes that need to be
+-- captured in this table?
+
+create table ucomp_mission (
+  mission_id      int (10) auto_increment primary key, 
+  date            datetime not null, 
+
+  -- added in l1 primary header
+  mlso_url        char (24),
+  doi_url         char (48),
+  bunit           char (15),
+  method          char (10),
+  wavestep        float (7, 2),
+  wavefwhm        float (5, 2),
+  cdelt           float (7, 3),
+
+  -- primary header
+  telescope       char (24),
+  instrument      char (24),
+  location        char (27),
+  origin          char (12),
+  object          char (32),
+
+  fov_min         float (4, 2),  -- about 1.05
+  fov_max         float (4, 2),  -- about 1.25
+
+  bitpixl0        tinyint (3),   -- 16
+  bitpixl1        tinyint (3),   -- -32
+
+  xdiml0          smallint (5),  -- 1024
+  ydiml0          smallint (5),  -- 1024
+  xdiml1          smallint (5),  -- 620
+  ydiml1          smallint (5),  -- 620
+  wcsname         char (26),     -- helioprojective-cartesian
+  ctype1          char (8),      -- x
+  ctype2          char (8),      -- y
+  timesysl0       char (3),      -- hst
+  timesysl1       char (3),      -- utc
+  inst_rot        float (7, 2),  -- 0.0
+  demult          tinyint (1),   -- 0 (early mission possible) or 1
+
+  -- transmission of ND filters
+  nd1             float (5, 3),  -- 0.83820683
+  nd2             float (5, 3),  -- 0.49466920
+  nd3             float (5, 3),  -- 0.31343165
+  nd4             float (5, 3),  -- 0.09221819
+  nd5             float (5, 3),  -- 0.00952949
+  nd6             float (5, 3),  -- 0.00186020
+  nd7             float (5, 3),  -- 0.99590516
+  nd8             float (5, 3),  -- 1.00000000
+
+  -- coordinate system
+  pc1_1           float (4, 3),  -- 1.0
+  pc1_2           float (4, 3),  -- 0.0
+  pc2_1           float (4, 3),  -- 0.0
+  pc2_2           float (4, 3),  -- 1.0
+
+  -- crosstalk coefficients
+  i_to_q          float (7, 6),  -- -0.000581
+  i_to_u          float (7, 6),  --  0.004841
+  u_to_q          float (7, 6),  --  0.0
+  q_to_u          float (7, 6),  --  0.0
+  i_to_v          float (7, 6),  -- -0.001158
+  q_to_v          float (7, 6),  --  0.073802
+  u_to_v          float (7, 6),  -- -0.155195
+  unique (date)
+)
