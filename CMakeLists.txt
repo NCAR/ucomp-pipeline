@@ -18,12 +18,16 @@ set(CMAKE_MODULE_PATH
   ${CMAKE_MODULE_PATH}
 )
 
+set(GIT_VERSION "${VERSION}")
+
 find_package(Git)
 if (GIT_FOUND)
   execute_process(
     COMMAND ${GIT_EXECUTABLE} log -1 --pretty=format:%h
     OUTPUT_VARIABLE GIT_REVISION
   )
+
+  # append a * to the revision if there are modified files
   execute_process(
     COMMAND ${GIT_EXECUTABLE} diff-index --quiet HEAD --
     RESULT_VARIABLE GIT_CHANGES
@@ -31,15 +35,43 @@ if (GIT_FOUND)
   if (${GIT_CHANGES})
     set(GIT_REVISION "${GIT_REVISION}*")
   endif ()
+
   execute_process(
     COMMAND ${GIT_EXECUTABLE} rev-parse --abbrev-ref HEAD
     OUTPUT_STRIP_TRAILING_WHITESPACE
     OUTPUT_VARIABLE GIT_BRANCH
   )
+  execute_process(
+    COMMAND ${GIT_EXECUTABLE} log -1 --pretty=format:%ad --date=short
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    OUTPUT_VARIABLE GIT_SHORTDATE
+  )
+  execute_process(
+    COMMAND ${GIT_EXECUTABLE} log -1 --pretty=format:%ad --date=local
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    OUTPUT_VARIABLE GIT_LOCALDATE
+  )
+
+  # append a * to version if it is not the exact tagged version
+  execute_process(
+    COMMAND ${GIT_EXECUTABLE} describe
+    ERROR_QUIET
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    OUTPUT_VARIABLE GIT_DESCRIBE
+  )
+  string(COMPARE NOTEQUAL "${GIT_DESCRIBE}" "v${GIT_VERSION}" GIT_COMMITS)
+  if (${GIT_COMMITS})
+    set(GIT_VERSION "${GIT_VERSION}*")
+  endif ()
 else ()
   set(GIT_REVISION "")
   set(GIT_BRANCH "")
+  set(GIT_SHORTDATE "")
 endif ()
+
+message(STATUS "git branch   = ${GIT_BRANCH}")
+message(STATUS "git version  = ${GIT_VERSION}")
+message(STATUS "git revision = ${GIT_REVISION}")
 
 include(${CMAKE_SOURCE_DIR}/cmake/GetDate.cmake)
 LONG_TODAY(ucomp_pipeline_BUILD_DATE)

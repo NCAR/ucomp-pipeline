@@ -1,4 +1,6 @@
 Source directory    : @CMAKE_SOURCE_DIR@
-Version             : @VERSION@
+Version             : @GIT_VERSION@
 Revision            : @GIT_REVISION@
 Branch              : @GIT_BRANCH@
+Last commit         : @GIT_LOCALDATE@
+Configure date      : @ucomp_pipeline_BUILD_DATE@
