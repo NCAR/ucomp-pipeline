@@ -4,7 +4,8 @@
 ; Determines the version of the code.
 ;
 ; :Returns:
-;   string verion number, such as '1.0.0'
+;   string verion number, such as '1.0.0'; versions with commits since tag are
+;   indicated with a trailing '*'
 ;
 ; :Keywords:
 ;   revision : out, optional, type=string
@@ -12,15 +13,18 @@
 ;     changes are indicated with a trailing '*'
 ;   branch : out, optional, type=string
 ;     current branch, such as 'master', 'production', etc.
+;   date : out, optional, type=string
+;     date for last commit
 ;
 ; :Author:
 ;   MLSO Software Team
 ;-
-function ucomp_version, revision=revision, branch=branch
+function ucomp_version, revision=revision, branch=branch, date=date
   compile_opt strictarr
 
   if (arg_present(revision)) then revision = '${GIT_REVISION}'
   if (arg_present(branch)) then branch = '${GIT_BRANCH}'
+  if (arg_present(date)) then date = '${GIT_SHORTDATE}'
 
-  return, '${VERSION}'
+  return, '${GIT_VERSION}'
 end
