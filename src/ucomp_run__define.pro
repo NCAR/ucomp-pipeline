@@ -10,7 +10,7 @@ pro ucomp_run::make_raw_inventory
   compile_opt strictarr
 
   raw_dir = filepath(self.date, root=self->config('raw/basedir'))
-  raw_files = file_search(filepath('*.FTS', root=raw_dir), count=n_raw_files)
+  raw_files = file_search(filepath('*.fts', root=raw_dir), count=n_raw_files)
 
   self->getProperty, logger_name=logger_name
 
