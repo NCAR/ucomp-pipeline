@@ -23,10 +23,6 @@ pro ucomp_send_notification, run=run
 
     body = list()
 
-    body->add, '<html><body>'
-
-    body->add, '<pre>'
-
     ; TODO: add basic statistics on run, i.e., # of files, # of good files,
     ; etc.
 
@@ -35,8 +31,6 @@ pro ucomp_send_notification, run=run
     ; add config file
     body->add, run.config_contents, /extract
     body->add, ['', ''], /extract
-
-    ; TODO: add wave_type histogram image
 
     ; TODO: add quality histogram image
 
@@ -49,14 +43,18 @@ pro ucomp_send_notification, run=run
     body->add, string(ucomp_sec2str(systime(/seconds) - run.t0), $
                       format='(%"Total runtime: %s")')
 
-    body->add, '</pre>'
-
-    body->add, '</body></html>'
-
     subject = string(run.date, format='(%"UCoMP results for %s")')
     body_text = body->toArray()
     obj_destroy, body
 
-    mg_send_mail, email, subject, body_text, from='$(whoami)@ucar.edu', /html
+    ; add wave_type histogram image
+    wave_type_histogram_filename = filepath(string(run.date, $
+                                                   format='(%"%s.wave_types.png")'), $
+                                            subdir=ucomp_decompose_date(run.date), $
+                                            root=run->config('engineering/basedir'))
+
+    mg_send_mail, email, subject, body_text, $
+                  from='$(whoami)@ucar.edu', $
+                  attachments=[wave_type_histogram_filename]
   endelse
 end
