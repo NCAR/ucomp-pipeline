@@ -54,13 +54,14 @@ end
 
 
 ;+
-; Unlock raw directory and, if `error` is 0, mark as processed.
+; Unlock raw directory and, if `MARK_PROCESSED` is set, mark as processed.
 ;
-; :Params:
-;   error : in, required, type=int
-;     error code, 0 for no error
+; :Keywords:
+;   mark_processed : in, optional, type=boolean
+;     set to indicate that directory should be marked as processed after
+;     unlocking
 ;-
-pro ucomp_run::unlock, error
+pro ucomp_run::unlock, mark_processed=mark_processed
   compile_opt strictarr
 
   self->getProperty, logger_name=logger_name
@@ -68,7 +69,7 @@ pro ucomp_run::unlock, error
   if (~ucomp_state(self.date, run=self)) then begin
     unlocked = ucomp_state(self.date, /unlock, run=self)
     mg_log, 'unlocked %s', self.date, name=logger_name, /info
-    if (error eq 0) then begin
+    if (keyword_set(mark_processed)) then begin
       processed = ucomp_state(self.date, /processed, run=self)
       mg_log, 'marked %s as processed', self.date, name=logger_name, /info
     endif

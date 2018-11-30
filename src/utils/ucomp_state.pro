@@ -50,7 +50,13 @@ function ucomp_state, date, $
     if (locked) then begin
       file_delete, lock_file
     endif
-    return, locked
+
+    processed = file_test(processed_file)
+    if (processed) then begin
+      file_delete, processed_file
+    endif
+
+    return, locked || processed
   endif
 
   if (keyword_set(processed)) then begin

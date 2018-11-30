@@ -49,14 +49,6 @@ pro ucomp_run_eod_pipeline, date, config_filename
   run.t0 = t0
   run->start_profiler
 
-  ; copy config file to processing dir, creating dir if needed
-  process_dir = filepath(date, root=run->config('processing/basedir'))
-  if (~file_test(process_dir, /directory)) then file_mkdir, process_dir
-  file_copy, config_filename, $
-             filepath(string(date, format='(%"%s.ucomp.cfg")'), $
-                      root=process_dir), $
-             /overwrite
-
   ; log starting up pipeline with versions
   version = ucomp_version(revision=revision, branch=branch)
   mg_log, 'ucomp-pipeline %s (%s on %s)', version, revision, branch, $
@@ -65,6 +57,18 @@ pro ucomp_run_eod_pipeline, date, config_filename
           name=run.logger_name, /info
 
   mg_log, 'starting processing for %d...', date, name=run.logger_name, /info
+
+  if (run->config('eod/reprocessing')) then begin
+    ucomp_reprocess_cleanup, run=run
+  endif
+
+  ; copy config file to processing dir, creating dir if needed
+  process_dir = filepath(date, root=run->config('processing/basedir'))
+  if (~file_test(process_dir, /directory)) then file_mkdir, process_dir
+  file_copy, config_filename, $
+             filepath(string(date, format='(%"%s.ucomp.cfg")'), $
+                      root=process_dir), $
+             /overwrite
 
 
   ;== level 1
@@ -104,7 +108,7 @@ pro ucomp_run_eod_pipeline, date, config_filename
   mg_log, /check_math, name=run.logger_name, /debug
 
   ; unlock raw directory and mark processed if no crash
-  if (obj_valid(run)) then run->unlock, error
+  if (obj_valid(run)) then run->unlock, mark_processed=error eq 0
 
   run->report
   run->report_profiling
