@@ -38,10 +38,8 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
                              wave_type=wave_type, $
                              data_type=data_type, $
                              n_extensions=n_extensions, $
-                             polarization_string=polarization_string, $
                              wavelengths=wavelengths, $
-                             n_unique_wavelengths=n_unique_wavelengths, $
-                             polarization_states=polarization_states
+                             n_unique_wavelengths=n_unique_wavelengths
   compile_opt strictarr
 
   ; for the file
@@ -57,19 +55,11 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
   if (arg_present(data_type)) then data_type = self.data_type
 
   ; by extension
-  if (arg_present(polarization_states)) then begin
-    polarization_states = *self.polarization_states
-  endif
   if (arg_present(wavelengths)) then wavelengths = *self.wavelengths
 
   if (arg_present(n_unique_wavelengths)) then begin
     w = *self.wavelengths
     n_unique_wavelengths = n_elements(uniq(w, sort(w)))
-  endif
-
-  if (arg_present(polarization_string)) then begin
-    pol_states = strlowcase(*self.polarization_states)
-    polarization_string = strjoin(pol_states[uniq(pol_states, sort(pol_states))])
   endif
 end
 
@@ -102,9 +92,12 @@ pro ucomp_file::_inventory
 
   self.n_extensions = fcb.nextend
 
+  fits_read, fcb, primary_data, primary_header, exten_no=0
+
+  self.wave_type = sxpar(primary_header, 'FILTER')
+
   ; allocate inventory variables
   *self.wavelengths         = fltarr(self.n_extensions)
-  *self.polarization_states = strarr(self.n_extensions)
 
   ; TODO: exposure, data type, opal, dark shutter, polarizer, polarizer angle,
   ; retarder, etc.
@@ -116,10 +109,7 @@ pro ucomp_file::_inventory
     if (error_msg ne '') then message, error_msg
 
     (*self.wavelengths)[e - 1]         = sxpar(extension_header, 'WAVELENG')
-    (*self.polarization_states)[e - 1] = sxpar(extension_header, 'POLSTATE')
   endfor
-
-  self.wave_type = ucomp_wave_type(*self.wavelengths)
 
   ; TODO: determine data_type
 
@@ -133,7 +123,7 @@ end
 pro ucomp_file::cleanup
   compile_opt strictarr
 
-  ptr_free, self.polarization_states, self.wavelengths
+  ptr_free, self.wavelengths
 end
 
 
@@ -155,7 +145,6 @@ function ucomp_file::init, raw_filename
   self.data_type = 'unk'
 
   ; allocate inventory variables for extensions
-  self.polarization_states = ptr_new(/allocate_heap)
   self.wavelengths         = ptr_new(/allocate_heap)
 
   self->_inventory
@@ -179,7 +168,6 @@ pro ucomp_file__define
            n_extensions        : 0L, $
            wave_type           : '', $
            data_type           : '', $
-           polarization_states : ptr_new(), $
            wavelengths         : ptr_new() $
           }
 end

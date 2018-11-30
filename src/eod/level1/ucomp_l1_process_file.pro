@@ -51,9 +51,8 @@ pro ucomp_l1_process_file, file, run=run
   l1_basename = string(file.ut_date, $
                        file.ut_time, $
                        file.wave_type, $
-                       file.polarization_string, $
                        file.n_unique_wavelengths, $
-                       format='(%"%s.%s.ucomp.%s.%s.%d.fts")')
+                       format='(%"%s.%s.ucomp.%s.%d.fts")')
   l1_dirname = filepath('', $
                         subdir=[run.date, 'level1'], $
                         root=run->config('processing/basedir'))
