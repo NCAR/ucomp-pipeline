@@ -1,7 +1,6 @@
 add_subdirectory(database)
 add_subdirectory(fileio)
-add_subdirectory(level1)
-add_subdirectory(level2)
+add_subdirectory(eod)
 add_subdirectory(realtime)
 add_subdirectory(utils)
 add_subdirectory(verification)
