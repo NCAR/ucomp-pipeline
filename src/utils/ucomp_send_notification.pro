@@ -44,6 +44,8 @@ pro ucomp_send_notification, run=run
     body_text = body->toArray()
     obj_destroy, body
 
-    mg_send_mail, email, subject, body_text
+    body_text = ['<html><body><pre>', body_text, '</pre></body></html>']
+
+    mg_send_mail, email, subject, body_text, from='$(whoami)@ucar.edu', /html
   endelse
 end
