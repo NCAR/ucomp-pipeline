@@ -89,6 +89,8 @@ pro ucomp_run_eod_pipeline, date, config_filename
     ucomp_pipeline_step, 'ucomp_check_gbu', wave_types[w], run=run
   endfor
 
+  ucomp_l1_engineering_plots, run=run
+
 
   ;== level 2
 
