@@ -13,9 +13,9 @@
 function ucomp_decompose_date, date
   compile_opt strictarr
 
-  year = strmid(date, 0, 4)
+  year  = strmid(date, 0, 4)
   month = strmid(date, 4, 2)
-  day = strmid(date, 6, 2)
+  day   = strmid(date, 6, 2)
 
   return, [year, month, day]
 end
