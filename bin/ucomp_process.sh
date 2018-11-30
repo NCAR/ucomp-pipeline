@@ -1,7 +1,6 @@
 #!/bin/sh
 
-# This script launches IDL for the pipeline to process a day, both the
-# realtime and end-of-day processing.
+# This script launches IDL for the end-of-day pipeline to process a day.
 
 canonicalpath() {
   if [ -d $1 ]; then
