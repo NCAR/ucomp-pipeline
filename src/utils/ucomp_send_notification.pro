@@ -23,11 +23,20 @@ pro ucomp_send_notification, run=run
 
     body = list()
 
+    body->add, '<html><body>'
+
+    body->add, '<pre>'
+
+    ; TODO: add basic statistics on run, i.e., # of files, # of good files,
+    ; etc.
+
     ; TODO: add warnings/errors from logs
 
     ; add config file
     body->add, run.config_contents, /extract
     body->add, ['', ''], /extract
+
+    ; TODO: add wave_type histogram image
 
     ; TODO: add quality histogram image
 
@@ -40,11 +49,13 @@ pro ucomp_send_notification, run=run
     body->add, string(ucomp_sec2str(systime(/seconds) - run.t0), $
                       format='(%"Total runtime: %s")')
 
+    body->add, '</pre>'
+
+    body->add, '</body></html>'
+
     subject = string(run.date, format='(%"UCoMP results for %s")')
     body_text = body->toArray()
     obj_destroy, body
-
-    body_text = ['<html><body><pre>', body_text, '</pre></body></html>']
 
     mg_send_mail, email, subject, body_text, from='$(whoami)@ucar.edu', /html
   endelse
