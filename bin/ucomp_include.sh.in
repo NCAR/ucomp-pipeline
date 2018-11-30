@@ -3,11 +3,10 @@ umask 0002
 
 PIPE_DIR=$(dirname ${BIN_DIR})
 
-MACHINE=$(hostname | sed -e 's/\..*$//')
 if [[ $# -lt 1 ]]; then
-  CONFIG=${PIPE_DIR}/config/ucomp.${USER}.${MACHINE}.production.cfg
+  CONFIG=${PIPE_DIR}/config/ucomp.production.cfg
 else
-  CONFIG=${PIPE_DIR}/config/ucomp.${USER}.${MACHINE}.${1}.cfg
+  CONFIG=${PIPE_DIR}/config/ucomp.${1}.cfg
 fi
 
 # use today if date not passed to script

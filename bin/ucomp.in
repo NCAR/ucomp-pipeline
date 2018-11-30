@@ -154,8 +154,8 @@ if __name__ == '__main__':
                         type=str,
                         default='latest',
                         help='''FLAGS section of config filename, i.e., file in
-                                config/ directory matching ucomp.user.machine.FLAGS.cfg
-                                will be used''')
+                                config/ directory matching ucomp.FLAGS.cfg will
+                                be used''')
 
     parser.add_argument('-r', '--realtime', action='store_true',
                         help='set to run the realtime instead of full processing')
