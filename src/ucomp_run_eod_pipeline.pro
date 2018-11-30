@@ -40,6 +40,8 @@ pro ucomp_run_eod_pipeline, date, config_filename
     goto, done
   endif
 
+  ;== initialize
+
   ; create run object
   run = ucomp_run(date, 'eod', config_fullpath)
   if (~obj_valid(run)) then begin
@@ -70,11 +72,11 @@ pro ucomp_run_eod_pipeline, date, config_filename
                       root=process_dir), $
              /overwrite
 
-
-  ;== level 1
-
   run->lock, is_available=is_available
   if (~is_available) then goto, done
+
+
+  ;== level 1
 
   ucomp_pipeline_step, 'ucomp_make_raw_inventory', run=run
 
@@ -93,7 +95,7 @@ pro ucomp_run_eod_pipeline, date, config_filename
   ; TODO: add level 2 steps
 
 
-  ; finish bookkeeping
+  ;== finish bookkeeping
 
   for w = 0L, n_elements(wave_types) - 1L do begin
     ucomp_pipeline_step, 'ucomp_update_database', wave_types[w], run=run
