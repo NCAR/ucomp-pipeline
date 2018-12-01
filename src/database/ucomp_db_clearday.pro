@@ -14,8 +14,17 @@ pro ucomp_db_clearday, run=run
   if (run->config('database/update') && run->config('eod/reprocess')) then begin
     mg_log, 'clearing database for the day', name=run.logger_name, /info
 
-    db = ucomp_db_connect(run->config('database/config_filename'), $
-                          run->config('database/config_section'), $
+    filename = run->config('database/config_filename')
+    section = run->config('database/config_section')
+
+    if (filename eq '' || section eq '') then begin
+      mg_log, 'config filename or section not specified', $
+              name=run.logger_name, /error
+      mg_log, 'cannot connect to database', $
+              name=run.logger_name, /error
+    endif
+
+    db = ucomp_db_connect(filename, section, $
                           status=status, $
                           logger_name=run.logger_name)
     if (status ne 0L) then return
@@ -25,14 +34,14 @@ pro ucomp_db_clearday, run=run
                                        logger_name=run.logger_name)
     if (status ne 0L) then return
 
-;      kcor_db_clearday, run=run, $
-;                        database=db, $
-;                        obsday_index=obsday_index, $
-;                        log_name='kcor/reprocess'
+    tables = 'ucomp_' + ['raw', 'file', 'eng', 'sci', 'cal']
+    for t = 0L, n_elements(tables) - 1L do begin
+      ucomp_db_cleartable, obsday_index, tables[t], db, $
+                           logger_name=run.logger_name
+    endfor
 
     obj_destroy, db
   endif else begin
-    mg_log, 'skipping updating database', name=run.logger_name, /info
+    mg_log, 'skipping clearing database', name=run.logger_name, /info
   endelse
-
 end
