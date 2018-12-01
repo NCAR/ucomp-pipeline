@@ -25,6 +25,7 @@ pro ucomp_run_eod_pipeline, date, config_filename
   if (error ne 0) then begin
     catch, /cancel
     mg_log, /last_error, name='ucomp/eod', /critical
+    ucomp_crash_notification, run=run
     goto, done
   endif
 
