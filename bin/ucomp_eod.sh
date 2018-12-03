@@ -29,4 +29,4 @@ ${IDL} -quiet \
     -IDL_STARTUP "" \
     -IDL_PATH ${UCOMP_PATH} \
     -IDL_DLM_PATH ${UCOMP_DLM_PATH} \
-    -e "ucomp_run_eod_pipeline, '${DATE}', '${CONFIG}'"
+    -e "ucomp_eod, '${DATE}', '${CONFIG}'"

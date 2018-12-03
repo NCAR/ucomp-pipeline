@@ -10,7 +10,7 @@
 ;   config_filename : in, required, type=string
 ;     filename for configuration file to use
 ;-
-pro ucomp_run_eod_pipeline, date, config_filename
+pro ucomp_eod, date, config_filename
   compile_opt strictarr
 
   ; initialize performance metrics
