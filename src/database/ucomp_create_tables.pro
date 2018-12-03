@@ -4,14 +4,16 @@
 ; Create UCoMP database tables. Will destroy existing tables!
 ;
 ; :Params:
-;   run : in, required, type=object
-;     `ucomp_run` object
+;   config_filename : in, required, type=string
+;     filename for configuration file to use
 ;
 ; :Author:
 ;   MLSO Software Team
 ;-
-pro ucomp_create_tables, run=run
+pro ucomp_create_tables, config_filename
   compile_opt strictarr
+
+  run = ucomp_run('20190101', 'eod', config_filename)
 
   ; create MySQL database interface object
   db = mgdbmysql()
@@ -84,6 +86,7 @@ pro ucomp_create_tables, run=run
   ; disconnect from database
   mg_log, 'disconnecting from %s', host, name=run.logger_name, /info
   obj_destroy, db
+  obj_destroy, run
 end
 
 

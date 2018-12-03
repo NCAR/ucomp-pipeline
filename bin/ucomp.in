@@ -104,7 +104,7 @@ def process_calibrate(dates, flags, no_wait):
 
 
 def process_dates(dates, flags, no_wait):
-    launch_processes(dates, flags, no_wait, 'ucomp_process.sh')
+    launch_processes(dates, flags, no_wait, 'ucomp_eod.sh')
 
 
 def launch_processes(dates, flags, no_wait, routine):
