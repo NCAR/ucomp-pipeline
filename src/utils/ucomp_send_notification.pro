@@ -26,9 +26,42 @@ pro ucomp_send_notification, run=run
     ; TODO: add basic statistics on run, i.e., # of files, # of good files,
     ; etc.
 
-    ; TODO: add warnings/errors from logs
+    ; add warnings/errors from logs
+    rt_log_filename = filepath(run.date + '.ucomp.realtime.log', $
+                               root=run->config('logging/dir'))
+    rt_errors = ucomp_log_filter(rt_log_filename, $
+                                 /error, n_messages=n_rt_errors)
+    if (n_rt_errors eq 0L) then begin
+      body-> add, '## No realtime errors in log'
+    endif else begin
+      body->add, string(n_rt_errors, format='(%"## Realtime errors in log (%d errors)")')
+      body->add, ''
+      body->add, rt_errors, /extract
+      body->add, ''
+      body->add, string(rt_log_filename, format='(%"see %s for details")')
+      body->add, ''
+    endelse
+    body->add, ''
+
+    eod_log_filename = filepath(run.date + '.ucomp.eod.log', $
+                                root=run->config('logging/dir'))
+    eod_errors = ucomp_log_filter(eod_log_filename, $
+                                 /error, n_messages=n_eod_errors)
+    if (n_eod_errors eq 0L) then begin
+      body->add, '## No end-of-day errors in log'
+    endif else begin
+      body->add, string(n_eod_errors, format='(%"## End-of-day errors in log (%d errors)")')
+      body->add, ''
+      body->add, eod_errors, /extract
+      body->add, ''
+      body->add, string(eod_log_filename, format='(%"see %s for details")')
+      body->add, ''
+    endelse
+    body->add, ''
+
 
     ; add config file
+    body->add, ['## Configuration file used', ''], /extract
     body->add, run.config_contents, /extract
     body->add, ['', ''], /extract
 
