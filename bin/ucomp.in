@@ -158,9 +158,9 @@ if __name__ == '__main__':
                                 be used''')
 
     parser.add_argument('-r', '--realtime', action='store_true',
-                        help='set to run the realtime instead of full processing')
+                        help='set to run the realtime instead of eod-of-day processing')
     parser.add_argument('-c', '--calibrate', action='store_true',
-                        help='set to run the calibration instead of full processing')
+                        help='set to run the calibration instead of end-of-day processing')
     parser.add_argument('--no-wait',
                         action='store_true',
                         help='set to run all dates simultaneously')
