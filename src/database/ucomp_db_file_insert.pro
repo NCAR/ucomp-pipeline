@@ -60,11 +60,10 @@ pro ucomp_db_file_insert, l1_files, obsday_index, sw_index, db, $
                  error_message=error_message, $
                  sql_statement=sql_cmd
     if (status ne 0L) then begin
-      mg_log, 'error inserting in ucomp_raw table', name=logger_name, /error
+      mg_log, 'error inserting in ucomp_file table', name=logger_name, /error
       mg_log, 'status: %d, error message: %s', status, error_message, $
               name=logger_name, /error
       mg_log, 'SQL command: %s', sql_cmd, name=logger_name, /error
     endif
   endfor
 end
-
