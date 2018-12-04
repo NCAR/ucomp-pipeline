@@ -36,7 +36,7 @@ pro ucomp_eod, date, config_filename
 
   config_fullpath = file_expand_path(config_filename)
   if (~file_test(config_fullpath, /regular)) then begin
-    mg_log, config_fullpath, format='(%"config file %s not found")', $
+    mg_log, 'config file %s not found', config_fullpath, $
             name='ucomp/eod', /critical
     goto, done
   endif
@@ -110,17 +110,19 @@ pro ucomp_eod, date, config_filename
   ;== cleanup and quit
   done:
 
-  mg_log, /check_math, name=run.logger_name, /debug
+  mg_log, /check_math, name='ucomp/eod', /debug
 
   ; unlock raw directory and mark processed if no crash
-  if (obj_valid(run)) then run->unlock, mark_processed=error eq 0
+  if (obj_valid(run)) then begin
+    run->unlock, mark_processed=error eq 0
 
-  run->report
-  run->report_profiling
+    run->report
+    run->report_profiling
+  endif
 
   t1 = systime(/seconds)
   mg_log, 'total running time: %s', ucomp_sec2str(t1 - t0), $
-          name=run.logger_name, /info
+          name='ucomp/eod', /info
 
   if (obj_valid(run)) then obj_destroy, run
   mg_log, /quit
