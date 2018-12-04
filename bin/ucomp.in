@@ -133,7 +133,7 @@ def wait_for(process):
 
 
 if __name__ == '__main__':
-    name = 'UCoMP pipeline @VERSION@'
+    name = 'UCoMP pipeline @GIT_VERSION@ [@GIT_REVISION@] (@GIT_BRANCH@)'
 
     parser = argparse.ArgumentParser(description=name)
 
