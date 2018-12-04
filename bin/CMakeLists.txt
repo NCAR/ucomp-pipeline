@@ -5,8 +5,8 @@ install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/ucomp_include.sh
                  ${CMAKE_CURRENT_BINARY_DIR}/ucomp
         DESTINATION bin)
 
-install(PROGRAMS ucomp_verify.sh
-		 ucomp_verify_dates.sh
+install(PROGRAMS ucomp_validate.sh
+		 ucomp_validate_dates.sh
                  ucomp_mail_results.sh
 		 ucomp_create_tables.sh
 		 ucomp_calibrate.sh
