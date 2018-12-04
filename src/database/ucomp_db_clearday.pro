@@ -29,9 +29,9 @@ pro ucomp_db_clearday, run=run
                           logger_name=run.logger_name)
     if (status ne 0L) then return
 
-    obsday_index = ucomp_obsday_insert(run.date, db, $
-                                       status=status, $
-                                       logger_name=run.logger_name)
+    obsday_index = ucomp_db_obsday_insert(run.date, db, $
+                                          status=status, $
+                                          logger_name=run.logger_name)
     if (status ne 0L) then return
 
     tables = 'ucomp_' + ['raw', 'file', 'eng', 'sci', 'cal']

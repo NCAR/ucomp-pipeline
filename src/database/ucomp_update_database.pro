@@ -19,9 +19,9 @@ pro ucomp_update_database, wave_type, run=run
                         logger_name=run.logger_name)
   if (status ne 0) then goto, cleanup
 
-  obsday_index = ucomp_obsday_insert(run.date, db, $
-                                     status=status, $
-                                     logger_name=run.logger_name)
+  obsday_index = ucomp_db_obsday_insert(run.date, db, $
+                                        status=status, $
+                                        logger_name=run.logger_name)
   if (status ne 0L) then goto, cleanup
 
   ucomp_db_raw_insert, files, obsday_index, db, logger_name=run.logger_name
