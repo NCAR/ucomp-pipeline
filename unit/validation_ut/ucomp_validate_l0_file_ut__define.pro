@@ -6,10 +6,10 @@ function ucomp_validate_l0_file_ut::init, _extra=e
   if (~self->UCoMPutTestCase::init(_extra=e)) then return, 0
 
   
-  self->addTestingRoutine, ['ucomp_validate_l0_file_checkspec', $
+  self->addTestingRoutine, ['ucomp_validate_l0_file', $
+                            'ucomp_validate_l0_file_checkspec', $
                             'ucomp_validate_l0_file_checkheader', $
-                            'ucomp_validate_l0_file_checkdata', $
-                            'ucomp_validate_l0_file'], $
+                            'ucomp_validate_l0_file_checkdata'], $
                            /is_function
 
   return, 1
