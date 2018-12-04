@@ -1,0 +1,5 @@
+create table ucomp_quality (
+  quality_id            tinyint (2) auto_increment primary key,
+  quality               char (5) not null,
+  description           varchar (512)
+)
