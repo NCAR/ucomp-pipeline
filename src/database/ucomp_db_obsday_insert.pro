@@ -24,7 +24,7 @@
 ;   logger_name : in, optional, type=string
 ;     name of logger
 ;-
-function ucomp_obsday_insert, date, db, status=status, logger_name=logger_name
+function ucomp_db_obsday_insert, date, db, status=status, logger_name=logger_name
   compile_opt strictarr
 
   obs_day = strjoin(ucomp_decompose_date(date), '-')
