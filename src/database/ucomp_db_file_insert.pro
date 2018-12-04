@@ -36,10 +36,10 @@ pro ucomp_db_file_insert, l1_files, obsday_index, sw_index, db, $
   filetype_results = db->query(q, fields=fields)
   filetype_index = filetype_results.filetype_id	
 
-  n_files = n_elements(l0_files)
+  n_files = n_elements(l1_files)
 
   for f = 0L, n_files - 1L do begin
-    file = l0_files[f]
+    file = l1_files[f]
 
     mg_log, 'ingesting %s', file.l1_basename, name=logger_name, /info
 
@@ -54,7 +54,7 @@ pro ucomp_db_file_insert, l1_files, obsday_index, sw_index, db, $
                  filetype_index, $
                  quality, $
                  long(file.wave_type), $
-                 self.n_unique_wavelengths, $
+                 file.n_unique_wavelengths, $
                  sw_index, $
                  status=status, $
                  error_message=error_message, $
