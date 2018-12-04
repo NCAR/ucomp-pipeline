@@ -35,6 +35,8 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
                              hst_time=hst_time, $
                              ut_date=ut_date, $
                              ut_time=ut_time, $
+                             date_obs=date_obs, $
+                             date_end=date_end, $
                              wave_type=wave_type, $
                              data_type=data_type, $
                              n_extensions=n_extensions, $
@@ -50,6 +52,9 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
   if (arg_present(hst_time)) then hst_time = self.hst_time
   if (arg_present(ut_date)) then ut_date = self.ut_date
   if (arg_present(ut_time)) then ut_time = self.ut_time
+
+  if (arg_present(date_obs)) then date_obs = self.date_obs
+  if (arg_present(date_end)) then date_end = self.date_end
 
   if (arg_present(wave_type)) then wave_type = self.wave_type
   if (arg_present(data_type)) then data_type = self.data_type
@@ -95,6 +100,8 @@ pro ucomp_file::_inventory
   fits_read, fcb, primary_data, primary_header, exten_no=0
 
   self.wave_type = sxpar(primary_header, 'FILTER')
+  self.date_obs  = sxpar(primary_header, 'DATE-OBS')
+  self.date_end  = sxpar(primary_header, 'DATE-END')
 
   ; allocate inventory variables
   *self.wavelengths         = fltarr(self.n_extensions)
@@ -165,6 +172,8 @@ pro ucomp_file__define
            hst_time            : '', $
            ut_date             : '', $
            ut_time             : '', $
+           date_obs            : '', $
+           date_end            : '', $
            n_extensions        : 0L, $
            wave_type           : '', $
            data_type           : '', $
