@@ -4,8 +4,8 @@ create table ucomp_eng (
   eng_id         int (10) auto_increment primary key,
   file_name      char (32) not null,
   date_obs       datetime not null,
-  obs_day        mediumint (5) not null,
-  level            tinyint (2) not null,
+  obsday_id      mediumint (5) not null,
+  level          tinyint (2) not null,
 
   focus          float (6, 2),   -- focus stage position
   o1focs         float (8, 3),   -- O1 position in mm
@@ -59,5 +59,5 @@ create table ucomp_eng (
   foreign key (level) references ucomp_level(level_id),
   foreign key (ucomp_sw_id) references ucomp_sw(sw_id),
 
-  foreign key (obs_day) references mlso_numfiles(day_id)
+  foreign key (obsday_id) references mlso_numfiles(day_id)
 )

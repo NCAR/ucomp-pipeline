@@ -1,34 +1,17 @@
-create table ucomp_raw(
+create table ucomp_raw (
   raw_id           int (10) auto_increment primary key,
   file_name        char (40) not null,
   date_obs         datetime not null,
   date_end         datetime not null,
-  obs_day          mediumint (5) not null,
-  level            tinyint (2) not null,
-
+  obsday_id        mediumint (5) not null,
   quality_id       tinyint (2) not null,
-
-  mean_int_img0    float (14, 7),
-  mean_int_img1    float (14, 7),
-  mean_int_img2    float (14, 7),
-  mean_int_img3    float (14, 7),
-  mean_int_img4    float (14, 7),
-  mean_int_img5    float (14, 7),
-  mean_int_img6    float (14, 7),
-  mean_int_img7    float (14, 7),
-  median_int_img0  float (14, 7),
-  median_int_img1  float (14, 7),
-  median_int_img2  float (14, 7),
-  median_int_img3  float (14, 7),
-  median_int_img4  float (14, 7),
-  median_int_img5  float (14, 7),
-  median_int_img6  float (14, 7),
-  median_int_img7  float (14, 7),
+  level_id         tinyint (2) not null,
 
   unique(file_name),
 
   index(date_obs),
 
-  foreign key (level) references ucomp_level(level_id),
-  foreign key (obs_day) references mlso_numfiles(day_id)
+  foreign key (quality_id) references ucomp_quality(quality_id),
+  foreign key (level_id) references ucomp_level(level_id),
+  foreign key (obsday_id) references mlso_numfiles(day_id)
 )

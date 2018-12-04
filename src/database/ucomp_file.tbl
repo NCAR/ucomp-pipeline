@@ -5,7 +5,7 @@ create table ucomp_file (
   file_id       int (10) auto_increment primary key,
   file_name     char (35) not null, 
   date_obs      datetime not null, 
-  obs_day       mediumint (5) not null,
+  obsday_id     mediumint (5) not null,
 
   level         tinyint (2) not null,
   producttype   tinyint (2),
@@ -22,7 +22,7 @@ create table ucomp_file (
   unique (file_name),
 
   index (date_obs),
-  index (obs_day),
+  index (obsday_id),
   index (quality),
   index (producttype),
 
@@ -31,5 +31,5 @@ create table ucomp_file (
 
   foreign key (producttype) references mlso_producttype(producttype_id),
   foreign key (filetype) references mlso_filetype(filetype_id),
-  foreign key (obs_day) references mlso_numfiles(day_id)
+  foreign key (obsday_id) references mlso_numfiles(day_id)
 )

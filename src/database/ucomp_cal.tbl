@@ -8,7 +8,7 @@ create table ucomp_cal (
   file_name               char (40) not null,
   date_obs                datetime not null,
   date_end                datetime not null,
-  obs_day                 mediumint (5) not null,
+  obsday_id               mediumint (5) not null,
   wavelength              float (8, 3),
   n_points                tinyint (2),
   level                   tinyint (2) not null,
@@ -28,10 +28,10 @@ create table ucomp_cal (
   unique (file_name),
 
   index (date_obs),
-  index (obs_day),
+  index (obsday_id),
 
   foreign key (level) references ucomp_level(level_id),
   foreign key (ucomp_sw_id) references ucomp_sw(sw_id),
 
-  foreign key (obs_day) references mlso_numfiles(day_id)  
+  foreign key (obsday_id) references mlso_numfiles(day_id)  
 )
