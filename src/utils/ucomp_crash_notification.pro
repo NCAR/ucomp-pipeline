@@ -5,10 +5,21 @@
 ;
 ; :Keywords:
 ;   run : in, required, type=object
-;     `kcor_run` object
+;     `ucomp_run` object
 ;-
 pro ucomp_crash_notification, run=run
   compile_opt strictarr
+
+  help, /last_message, output=help_output
+
+  if (~obj_valid(run)) then begin
+    if (n_elements(helpOutput) gt 1L && help_output[0] ne '') then begin
+      print, transpose(help_output)
+    endif
+    return
+  endif
+
+  body = [help_output, '']
 
   case 1 of
     run.mode eq 'realtime': begin
@@ -17,25 +28,25 @@ pro ucomp_crash_notification, run=run
         rt_errors = ucomp_filter_log(rt_log_filename, $
                                      /error, n_messages=n_rt_errors)
         name = 'real-time'
-        body = [rt_log_filename, '', rt_errors]
+        body = [body, rt_log_filename + ':', '', rt_errors]
       end
     run.mode eq 'eod': begin
         eod_log_filename = filepath(run.date + '.ucomp.eod.log', $
-                                    root=run->config('logging/dir')
+                                    root=run->config('logging/dir'))
         eod_errors = ucomp_filter_log(eod_log_filename, $
                                       /error, n_messages=n_eod_errors)
         name = 'end-of-day'
-        body = [eod_log_filename, '', eod_errors]
+        body = [body, eod_log_filename + ':', '', eod_errors]
       end
   endcase
 
   address = run->config('notifications/email')
   if (address eq '') then begin
-    mg_log, 'not sending crash notification', name=run.logger_name, /info
+    mg_log, 'not sending crash notification', name=logger_name, /info
     return
   endif else begin
     mg_log, 'sending crash notification to %s', address, $
-            name=run.logger_name, /info
+            name=logger_name, /info
   endelse
 
   spawn, 'echo $(whoami)@$(hostname)', who, error_result, exit_status=status
