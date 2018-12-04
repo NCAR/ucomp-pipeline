@@ -25,7 +25,7 @@ pro ucomp_crash_notification, run=run
     run.mode eq 'realtime': begin
         rt_log_filename = filepath(run.date + '.ucomp.realtime.log', $
                                    root=run->config('logging/dir'))
-        rt_errors = ucomp_filter_log(rt_log_filename, $
+        rt_errors = ucomp_log_filter(rt_log_filename, $
                                      /error, n_messages=n_rt_errors)
         name = 'real-time'
         body = [body, rt_log_filename + ':', '', rt_errors]
@@ -33,7 +33,7 @@ pro ucomp_crash_notification, run=run
     run.mode eq 'eod': begin
         eod_log_filename = filepath(run.date + '.ucomp.eod.log', $
                                     root=run->config('logging/dir'))
-        eod_errors = ucomp_filter_log(eod_log_filename, $
+        eod_errors = ucomp_log_filter(eod_log_filename, $
                                       /error, n_messages=n_eod_errors)
         name = 'end-of-day'
         body = [body, eod_log_filename + ':', '', eod_errors]

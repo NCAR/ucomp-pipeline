@@ -3,7 +3,7 @@ add_subdirectory(fileio)
 add_subdirectory(eod)
 add_subdirectory(realtime)
 add_subdirectory(utils)
-add_subdirectory(verification)
+add_subdirectory(validation)
 
 configure_file(ucomp_version.pro.in ucomp_version.pro)
 
