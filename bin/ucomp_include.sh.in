@@ -4,7 +4,8 @@ umask 0002
 PIPE_DIR=$(dirname ${BIN_DIR})
 
 if [[ $# -lt 1 ]]; then
-  CONFIG=${PIPE_DIR}/config/ucomp.production.cfg
+  echo "missing configuration file FLAGS"
+  exit 1
 else
   CONFIG=${PIPE_DIR}/config/ucomp.${1}.cfg
 fi
