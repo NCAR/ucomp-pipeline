@@ -1,7 +1,7 @@
 ; docformat = 'rst'
 
-function ucomp_verify_l0_file_checkspec, specline, keyword_value, n_found, $
-                                         msg=error_msg
+function ucomp_validate_l0_file_checkspec, specline, keyword_value, n_found, $
+                                           msg=error_msg
   compile_opt strictarr
 
   required = 0B
@@ -72,7 +72,7 @@ function ucomp_verify_l0_file_checkspec, specline, keyword_value, n_found, $
 end
 
 
-function ucomp_verify_l0_file_checkheader, header, type, spec, msg=error_msg
+function ucomp_validate_l0_file_checkheader, header, type, spec, msg=error_msg
   compile_opt strictarr
 
   keywords = mg_fits_keywords(header, count=n_keywords)
@@ -87,7 +87,7 @@ function ucomp_verify_l0_file_checkheader, header, type, spec, msg=error_msg
   for k = 0L, n_spec_keywords - 1L do begin
     specline = spec->get(spec_keywords[k], section=type)
     value = sxpar(header, spec_keywords[k], count=n_found)
-    is_valid = ucomp_verify_l0_file_checkspec(specline, value, n_found, $
+    is_valid = ucomp_validate_l0_file_checkspec(specline, value, n_found, $
                                               msg=error_msg)
     if (~is_valid) then begin
       error_msg = string(spec_keywords[k], error_msg, format='(%"%s: %s")')
@@ -108,11 +108,11 @@ function ucomp_verify_l0_file_checkheader, header, type, spec, msg=error_msg
 end
 
 
-function ucomp_verify_l0_file_checkdata, data, $
-                                         type=type, $
-                                         n_dimensions=n_dimensions, $
-                                         dimensions=dimensions, $
-                                         msg=error_msg
+function ucomp_validate_l0_file_checkdata, data, $
+                                           type=type, $
+                                           n_dimensions=n_dimensions, $
+                                           dimensions=dimensions, $
+                                           msg=error_msg
   compile_opt strictarr
 
   _type = size(data, /type)
@@ -141,21 +141,21 @@ end
 
 
 ;+
-; Verify that an L0 file matches the specification.
+; Validate an L0 file against the specification.
 ;
 ; :Returns:
 ;   1 if valid, 0 if not
 ;
 ; :Params:
 ;   filename : in, required, type=string
-;     L0 file to verify
+;     L0 file to validate
 ;
 ; :Keywords:
 ;   error_msg : out, optional, type=string
 ;     set to a named variable to retrieve the problem with the file (at least
 ;     the first problem encountered), empty string if no problem
 ;-
-function ucomp_verify_l0_file, filename, error_msg=error_msg
+function ucomp_validate_l0_file, filename, error_msg=error_msg
   compile_opt strictarr
 
   error_msg = ''
@@ -176,36 +176,36 @@ function ucomp_verify_l0_file, filename, error_msg=error_msg
                        n_extensions=n_extensions
 
   ; check primary data
-  is_valid = ucomp_verify_l0_file_checkdata(primary_data, $
-                                            type=3, $
-                                            n_dimensions=0, $
-                                            msg=error_msg)
+  is_valid = ucomp_validate_l0_file_checkdata(primary_data, $
+                                              type=3, $
+                                              n_dimensions=0, $
+                                              msg=error_msg)
   if (~is_valid) then begin
     error_msg = 'primary data: ' + error_msg
     goto, done
   endif
 
   ; read spec
-  l0_header_spec_filename = filepath('ucomp.l0.verification.cfg', $
+  l0_header_spec_filename = filepath('ucomp.l0.validation.cfg', $
                                      root=mg_src_root())
   l0_header_spec = mg_read_config(l0_header_spec_filename)
 
   ; check primary header against header spec
-  is_valid = ucomp_verify_l0_file_checkheader(primary_header, $
-                                              'primary', $
-                                              l0_header_spec, $
-                                              msg=error_msg)
+  is_valid = ucomp_validate_l0_file_checkheader(primary_header, $
+                                                'primary', $
+                                                l0_header_spec, $
+                                                msg=error_msg)
   if (~is_valid) then begin
     error_msg = 'primary header: ' + error_msg
     goto, done
   endif
 
   ; check extension data
-  is_valid = ucomp_verify_l0_file_checkdata(ext_data, $
-                                            type=4, $
-                                            n_dimensions=5, $
-                                            dimensions=[1280, 1024, 4, 2, n_extensions], $
-                                            msg=error_msg)
+  is_valid = ucomp_validate_l0_file_checkdata(ext_data, $
+                                              type=4, $
+                                              n_dimensions=5, $
+                                              dimensions=[1280, 1024, 4, 2, n_extensions], $
+                                              msg=error_msg)
   if (~is_valid) then begin
     error_msg = 'ext data: ' + error_msg
     goto, done
@@ -214,10 +214,10 @@ function ucomp_verify_l0_file, filename, error_msg=error_msg
   ; check extensions
   for e = 1, n_extensions do begin
     ; check ext header against spec
-    is_valid = ucomp_verify_l0_file_checkheader(ext_headers[e - 1], $
-                                                'extension', $
-                                                l0_header_spec, $
-                                                msg=error_msg)
+    is_valid = ucomp_validate_l0_file_checkheader(ext_headers[e - 1], $
+                                                  'extension', $
+                                                  l0_header_spec, $
+                                                  msg=error_msg)
     if (~is_valid) then begin
       error_msg = string(e, error_msg, format='(%"ext %d: %s")')
       goto, done
@@ -244,7 +244,7 @@ filename = filepath(basename, $
                     subdir=['..', '..', 'analysis'], $
                     root=mg_src_root())
 
-is_valid = ucomp_verify_l0_file(filename, error_msg=error_msg)
+is_valid = ucomp_validate_l0_file(filename, error_msg=error_msg)
 print, is_valid ? 'Valid' : 'Not valid'
 if (~is_valid) then begin
   print, error_msg
