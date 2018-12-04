@@ -2,34 +2,33 @@
 -- this table is for user searches
 
 create table ucomp_file (
-  file_id       int (10) auto_increment primary key,
-  file_name     char (35) not null, 
-  date_obs      datetime not null, 
-  obsday_id     mediumint (5) not null,
+  file_id          int (10) auto_increment primary key,
+  file_name        char (35) not null, 
+  date_obs         datetime not null, 
+  obsday_id        mediumint (5) not null,
 
-  level         tinyint (2) not null,
-  producttype   tinyint (2),
-  filetype      tinyint (2),
+  level_id         tinyint (2) not null,
+  producttype_id   tinyint (2),
+  filetype_id      tinyint (2),
 
-  quality       tinyint (2),
+  quality          tinyint (2),
 
-  pol_list      char (4),
-  wavetype      smallint,
-  ntunes        tinyint (2),
+  wavetype         smallint,
+  ntunes           tinyint (2),
 
-  ucomp_sw_id   int (10),
+  ucomp_sw_id      int (10),
 
   unique (file_name),
 
   index (date_obs),
   index (obsday_id),
   index (quality),
-  index (producttype),
+  index (producttype_id),
 
-  foreign key (level) references ucomp_level(level_id),
+  foreign key (level_id) references ucomp_level(level_id),
   foreign key (ucomp_sw_id) references ucomp_sw(sw_id),
 
-  foreign key (producttype) references mlso_producttype(producttype_id),
-  foreign key (filetype) references mlso_filetype(filetype_id),
+  foreign key (producttype_id) references mlso_producttype(producttype_id),
+  foreign key (filetype_id) references mlso_filetype(filetype_id),
   foreign key (obsday_id) references mlso_numfiles(day_id)
 )

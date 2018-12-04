@@ -24,7 +24,14 @@ pro ucomp_update_database, wave_type, run=run
                                         logger_name=run.logger_name)
   if (status ne 0L) then goto, cleanup
 
-  ucomp_db_raw_insert, files, obsday_index, db, logger_name=run.logger_name
+  sw_index = ucomp_db_sw_insert(db, $
+                                status=status, $
+                                logger_name=run.logger_name)
+
+  ucomp_db_raw_insert, files, obsday_index, db, $
+                       logger_name=run.logger_name
+  ucomp_db_file_insert, files, obsday_index, sw_index, db, $
+                        logger_name=run.logger_name
 
   cleanup:
   if (obj_valid(db)) then obj_destroy, db

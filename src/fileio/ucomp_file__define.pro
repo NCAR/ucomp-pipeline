@@ -31,6 +31,7 @@ end
 ; Get property values.
 ;-
 pro ucomp_file::getProperty, raw_filename=raw_filename, $
+                             l1_basename=l1_basename, $
                              hst_date=hst_date, $
                              hst_time=hst_time, $
                              ut_date=ut_date, $
@@ -46,6 +47,17 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
 
   ; for the file
   if (arg_present(raw_filename)) then raw_filename = self.raw_filename
+  if (arg_present(l1_basename)) then begin
+    ; YYYYMMDD.HHMMSS.ucomp.WAVE.N.fts
+    self->getProperty, n_unique_wavelengths=n_unique_wavelengths
+    l1_basename = string(self.ut_date, $
+                         self.ut_time, $
+                         self.wave_type, $
+                         n_unique_wavelengths, $
+                         format='(%"%s.%s.ucomp.%s.%d.fts")')
+
+  endif
+
   if (arg_present(n_extensions)) then n_extensions = self.n_extensions
 
   if (arg_present(hst_date)) then hst_date = self.hst_date
