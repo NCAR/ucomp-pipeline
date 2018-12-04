@@ -194,7 +194,12 @@ pro ucomp_run::report
           format=mg_format('%*s %*s %*s %*s', widths)
   printf, lun, mg_repstr('-', widths), format='(%"%s %s %s %s")'
   foreach n_calls, self.calls, routine_name do begin
-    time = (self.times)[routine_name]
+    if (self.times->hasKey(routine_name)) then begin
+      time = (self.times)[routine_name]
+    endif else begin
+      time = !values.f_nan
+    endelse
+
     printf, lun, routine_name, ucomp_sec2str(time), n_calls, time / n_calls, $
             format=mg_format('%-*s %*s %*d %*.3f', widths)
   endforeach
@@ -222,8 +227,11 @@ end
 ;-
 function ucomp_run::epoch, option_name, datetime=datetime
   compile_opt strictarr
+  on_error, 2
 
-  return, self.epochs->get(option_name, datetime=datetime)
+  value = self.epochs->get(option_name, datetime=datetime)
+
+  return, value
 end
 
 
@@ -246,7 +254,7 @@ function ucomp_run::config, name
   tokens = strsplit(name, '/', /extract, count=n_tokens)
   if (n_tokens ne 2) then message, 'bad format for config option name'
 
-  value = self.options->get(tokens[1], section=tokens[0])
+  value = self.options->get(tokens[1], section=tokens[0], found=found)
 
   if (name eq 'raw/basedir' && value eq '') then begin
     routing_file = self.options->get('routing_file', section='raw')
@@ -364,6 +372,7 @@ end
 ;-
 pro ucomp_run::_setup_logger
   compile_opt strictarr
+  on_error, 2
 
   ; log message formats
   fmt = '%(time)s %(levelshortname)s: %(routine)s: %(message)s'
@@ -438,8 +447,12 @@ end
 ;     mode, i.e., either 'realtime' or 'eod'
 ;   config_filename : in, required, type=string
 ;     filename of config file specifying the run
+;
+; :Keywords:
+;   no_log : in, optional, type=boolean
+;     set to not initialize the logs
 ;-
-function ucomp_run::init, date, mode, config_filename
+function ucomp_run::init, date, mode, config_filename, no_log=no_log
   compile_opt strictarr
 
   self.date = date
@@ -460,7 +473,7 @@ function ucomp_run::init, date, mode, config_filename
     return, 0
   endif
 
-  self->_setup_logger
+  if (~ keyword_set(no_log)) then self->_setup_logger
 
   ; setup epoch reading
   epochs_filename = filepath('epochs.cfg', root=mg_src_root())
