@@ -13,7 +13,14 @@
 pro ucomp_create_tables, config_filename
   compile_opt strictarr
 
-  run = ucomp_run('20190101', 'eod', config_filename)
+  config_fullpath = file_expand_path(config_filename)
+  if (~file_test(config_fullpath, /regular)) then begin
+    mg_log, 'config file %s not found', config_fullpath, $
+            name='ucomp/eod', /critical
+    goto, done
+  endif
+
+  run = ucomp_run('20190101', 'eod', config_filename, /no_log)
 
   ; create MySQL database interface object
   db = mgdbmysql()
@@ -30,7 +37,10 @@ pro ucomp_create_tables, config_filename
   mg_log, 'connected to %s', host, name=run.logger_name, /info
 
   ; tables in the order they need to be created
-  tables = 'ucomp_' + ['mission', 'sw', 'level', 'raw', 'eng', 'cal', 'file', 'sci']
+  tables = 'ucomp_' + ['mission', $
+                       'quality', 'level', $
+                       'sw', $
+                       'raw', 'eng', 'cal', 'file', 'sci']
 
   ; delete existing tables (in reverse order), if they exist
   for t = n_elements(tables) - 1L, 0L, - 1L do begin
@@ -66,6 +76,18 @@ pro ucomp_create_tables, config_filename
 
   ; some tables have some initial values
 
+  qualities = [{name: 'ok', description: 'OK images'}]
+  fmt = '(%"insert into ucomp_quality (quality, description) values (''%s'', ''%s'')")'
+  for i = 0L, n_elements(qualities) - 1L do begin
+    cmd = string(qualities[i].name, qualities[i].description, format=fmt)
+    db->execute, cmd, status=status, error_message=error_message
+    if (status ne 0L) then begin
+      mg_log, 'problem inserting quality %s', qualities[i].name, $
+              name=run.logger_name, /error
+      mg_log, '%s', error_message, name=run.logger_name, /error
+    endif
+  endfor
+
   levels = [{name: 'L0', description: 'raw data'}, $
             {name: 'L0.5', description: 'level 0.5 data (averaged L0 data)'}, $
             {name: 'L1', description: 'level 1 data (calibrated to science units)'}, $
@@ -85,6 +107,8 @@ pro ucomp_create_tables, config_filename
 
   ; disconnect from database
   mg_log, 'disconnecting from %s', host, name=run.logger_name, /info
+
+  done:
   obj_destroy, db
   obj_destroy, run
 end

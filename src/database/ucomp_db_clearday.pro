@@ -11,7 +11,7 @@ pro ucomp_db_clearday, run=run
   compile_opt strictarr
 
   ; clear database for the day 
-  if (run->config('database/update') && run->config('eod/reprocess')) then begin
+  if (run->config('database/update') && run->config('eod/reprocessing')) then begin
     mg_log, 'clearing database for the day', name=run.logger_name, /info
 
     filename = run->config('database/config_filename')

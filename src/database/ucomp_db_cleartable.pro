@@ -16,12 +16,12 @@
 ;   logger_name : in, required, type=string
 ;     name of log to send log messages to
 ;-
-pro ucomp_db_clearday_cleartable, obsday_index, table, db, $
-                                  logger_name=logger_name
+pro ucomp_db_cleartable, obsday_index, table, db, $
+                       logger_name=logger_name
   compile_opt strictarr
 
   mg_log, 'clearing %s table', table, name=logger_name, /info
-  db->execute, 'DELETE FROM %s WHERE obs_day=%d', $
+  db->execute, 'delete from %s where obsday_id=%d', $
                table, obsday_index, $
                status=status, $
                error_message=error_message, $
