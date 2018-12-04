@@ -33,6 +33,8 @@ function ucomp_db_sw_insert, db, status=status, logger_name=logger_name
     date_format = '(C(CYI, "-", CMOI2.2, "-", CDI2.2, "T", CHI2.2, ":", CMI2.2, ":", CSI2.2))'
     proc_date = string(julday(), format=date_format)
 
+    mg_log, 'inserting new version %s [%s]', version, revision, $
+            name=logger_name, /info
 
     ; if not already in table, create a new entry for the sw version/revision
     db->execute, 'insert into ucomp_sw (sw_version, sw_revision, date) values (''%s'', ''%s'', ''%s'') ', $
