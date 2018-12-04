@@ -1,7 +1,7 @@
 ; docformat = 'rst'
 
 ;+
-; Insert an array of L0 FITS files ino the ucomp_raw database table.
+; Insert an array of L0 FITS files into the ucomp_raw database table.
 ;
 ; :Params:
 ;   l0_files : in, required, type=strarr

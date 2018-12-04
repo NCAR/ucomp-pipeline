@@ -6,13 +6,13 @@
 ; :Keywords:
 ;   database : in, required, type=object
 ;     `MGdbMySQL` database connection
-;   run : in, required, type=object
-;     `ucomp_run` object
+;   logger_name : in, optional, type=string
+;     name of logger to send output to
 ;
 ; :Author:
 ;   MLSO Software Team
 ;-
-pro ucomp_db_log_warnings, database=db, run=run
+pro ucomp_db_log_warnings, database=db, logger_name=logger_name
   compile_opt strictarr
 
   warnings = db->query('show warnings', $
@@ -21,6 +21,6 @@ pro ucomp_db_log_warnings, database=db, run=run
                        error_message=error_message)
   for w = 0L, n_warnings - 1L do begin
     mg_log, '[%d]: %s', warnings[w].code, warnings[w].message, $
-            name=run.logger_name, /warn
+            name=logger_name, /warn
   endfor
 end

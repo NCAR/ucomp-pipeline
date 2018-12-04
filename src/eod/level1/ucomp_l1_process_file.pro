@@ -48,16 +48,12 @@ pro ucomp_l1_process_file, file, run=run
   ucomp_l1_step, 'ucomp_polarimetric_correction', $
                  file, primary_header, data, headers, run=run
 
-  l1_basename = string(file.ut_date, $
-                       file.ut_time, $
-                       file.wave_type, $
-                       file.n_unique_wavelengths, $
-                       format='(%"%s.%s.ucomp.%s.%d.fts")')
   l1_dirname = filepath('', $
-                        subdir=[run.date, 'level1'], $
-                        root=run->config('processing/basedir'))
-  l1_filename = filepath(l1_basename, root=l1_dirname)
+                         subdir=[run.date, 'level1'], $
+                         root=run->config('processing/basedir'))
   if (~file_test(l1_dirname, /directory)) then file_mkdir, l1_dirname
+
+  l1_filename = filepath(file.l1_basename, root=l1_dirname)
 
   clock_id = run->start('ucomp_write_l1_file')
   ucomp_write_l1_file, l1_filename, primary_header, data, headers
