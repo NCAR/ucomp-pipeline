@@ -31,13 +31,13 @@ function ucomp_obsday_insert, date, db, status=status, logger_name=logger_name
   obs_day_index = 0
 	
   ; check to see if passed observation day date is in mlso_numfiles table
-  q = 'SELECT count(obs_day) FROM mlso_numfiles WHERE obs_day=''%s'''
+  q = 'select count(obs_day) from mlso_numfiles where obs_day=''%s'''
   obs_day_results = db->query(q, obs_day)
   obs_day_count = obs_day_results.count_obs_day_
 
   if (obs_day_count eq 0) then begin
     ; if not already in table, create a new entry for the passed observation day
-    db->execute, 'INSERT INTO mlso_numfiles (obs_day) VALUES (''%s'') ', $
+    db->execute, 'insert into mlso_numfiles (obs_day) values (''%s'') ', $
                  obs_day, $
                  status=status, error_message=error_message, sql_statement=sql_cmd
     if (status ne 0L) then begin
@@ -49,10 +49,10 @@ function ucomp_obsday_insert, date, db, status=status, logger_name=logger_name
               name=logger_name, /error
     endif
 
-    obs_day_index = db->query('SELECT LAST_INSERT_ID()')	
+    obs_day_index = db->query('select last_insert_id()')
   endif else begin
     ; if it is in the database, get the corresponding index, day_id
-    q = 'SELECT day_id FROM mlso_numfiles WHERE obs_day=''%s'''
+    q = 'select day_id from mlso_numfiles where obs_day=''%s'''
     obs_day_results = db->query(q, obs_day, fields=fields)	
     obs_day_index = obs_day_results.day_id
 
@@ -61,7 +61,7 @@ function ucomp_obsday_insert, date, db, status=status, logger_name=logger_name
       for i = 1L, n_elements(obs_day_index) - 1L do begin
         mg_log, 'deleting redundant day_id=%d', obs_day_index[i], $
                 name=logger_name, /warn
-        db->execute, 'DELETE FROM mlso_numfiles WHERE day_id=%d', $
+        db->execute, 'delete from mlso_numfiles where day_id=%d', $
                      obs_day_index[i], $
                      status=status, $
                      error_message=error_message, $
