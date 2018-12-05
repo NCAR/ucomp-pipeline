@@ -25,6 +25,35 @@ function ucomp_file::_overloadHelp, varname
 end
 
 
+;+
+; Method calls via `PRINT`.
+;
+; :Returns:
+;   `strarr` or string
+;-
+function ucomp_file::_overloadPrint
+  compile_opt strictarr
+
+  if (self.n_extensions lt 1) then begin
+    return, 'no extensions'
+  endif
+
+  self->getProperty, n_unique_wavelengths=n_unique_wavelengths
+
+  output = strarr(self.n_extensions + 1L)
+  output[0] = string(self.wave_type, $
+                     self.data_type, $
+                     self.n_extensions, $
+                     n_unique_wavelengths, $
+                     format='(%"UCoMP file: %s nm [%s] - %d exts (%d pts)")')
+  for e = 1L, self.n_extensions do begin
+    output[e] = string(e, (*self.wavelengths)[e - 1], format='(%"%d: %0.2f nm")')
+  endfor
+
+  return, transpose(output)
+end
+
+
 ;= property access
 
 ;+
