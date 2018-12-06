@@ -54,7 +54,7 @@ pro ucomp_eod, date, config_filename
 
   ; log starting up pipeline with versions
   version = ucomp_version(revision=revision, branch=branch)
-  mg_log, 'ucomp-pipeline %s (%s on %s)', version, revision, branch, $
+  mg_log, 'ucomp-pipeline %s (%s) [%s]', version, revision, branch, $
           name=run.logger_name, /info
   mg_log, 'using IDL %s on %s', !version.release, !version.os_name, $
           name=run.logger_name, /info

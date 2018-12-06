@@ -292,13 +292,22 @@ pro ucomp_run::getProperty, date=date, $
   endif
 
   if (arg_present(files) || arg_present(count)) then begin
-    if (n_elements(wave_type) eq 0L) then message, 'WAVE_TYPE not given for FILES'
-    if ((self.files)->hasKey(wave_type)) then begin
-      files = (self.files)[wave_type]
-      count = n_elements(files)
+    if (n_elements(wave_type) eq 0L) then begin
+      files_list = list()
+      foreach f, self.files, t do begin
+        files_list->add, f, /extract
+      endforeach
+      count = files_list->count()
+      files = files_list->toArray()
+      obj_destroy, files
     endif else begin
-      files = !null
-      count = 0L
+      if ((self.files)->hasKey(wave_type)) then begin
+        files = (self.files)[wave_type]
+        count = n_elements(files)
+      endif else begin
+        files = !null
+        count = 0L
+      endelse
     endelse
   endif
 

@@ -23,8 +23,16 @@ pro ucomp_send_notification, run=run
 
     body = list()
 
-    ; TODO: add basic statistics on run, i.e., # of files, # of good files,
-    ; etc.
+    version = ucomp_version(revision=revision, branch=branch)
+    body->add, string(version, revision, branch, $
+                      format='(%"ucomp-pipeline %s (%s) [%s]")')
+    body->add, ''
+
+    ; add basic statistics on run
+    body->add, '## Basic statistics'
+    body->add, ''
+    body->add, string(run.count, format='(%"number of raw files: %d")')
+    body->add, ['', ''], /extract
 
     ; add warnings/errors from logs
     rt_log_filename = filepath(run.date + '.ucomp.realtime.log', $
