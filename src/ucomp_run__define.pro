@@ -275,6 +275,7 @@ pro ucomp_run::getProperty, date=date, $
                             logger_name=logger_name, $
                             config_contents=config_contents, $
                             files=files, wave_type=wave_type, count=count, $
+                            all_wave_types=all_wave_types, $
                             t0=t0
   compile_opt strictarr
   on_error, 2
@@ -300,6 +301,13 @@ pro ucomp_run::getProperty, date=date, $
       count = 0L
     endelse
   endif
+
+  if (arg_present(all_wave_types)) then begin
+    all_wave_types_list = self.files->keys()
+    all_wave_types = all_wave_types_list->toArray()
+    obj_destroy, all_wave_types_list
+  endif
+
   if (arg_present(t0)) then t0 = self.t0
 end
 
