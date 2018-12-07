@@ -27,6 +27,6 @@ pro ucomp_clearday, date, basedir, name, logger_name=logger_name
     mg_log, 'no files to remove in %s', name, name=logger_name, /info
   endif else begin
     mg_log, 'removing %d files in %s', n_files, name, name=logger_name, /info
-    file_remove, files
+    file_delete, files
   endelse
 end
