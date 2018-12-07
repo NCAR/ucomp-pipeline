@@ -62,7 +62,7 @@ pro ucomp_eod, date, config_filename
   mg_log, 'starting processing for %d...', date, name=run.logger_name, /info
 
   if (run->config('eod/reprocessing')) then begin
-    ucomp_reprocess_cleanup, run=run
+    ucomp_pipeline_step, 'ucomp_reprocess_cleanup', run=run
   endif
 
   ; copy config file to processing dir, creating dir if needed
@@ -102,6 +102,13 @@ pro ucomp_eod, date, config_filename
 
   for w = 0L, n_elements(wave_types) - 1L do begin
     ucomp_pipeline_step, 'ucomp_update_database', wave_types[w], run=run
+  endfor
+
+  ucomp_pipeline_step, 'ucomp_l0_distribute', run=run
+
+  for w = 0L, n_elements(wave_types) - 1L do begin
+    ucomp_pipeline_step, 'ucomp_l1_distribute', wave_types[w], run=run
+    ucomp_pipeline_step, 'ucomp_l2_distribute', wave_types[w], run=run
   endfor
 
   ucomp_pipeline_step, 'ucomp_send_notification', run=run
