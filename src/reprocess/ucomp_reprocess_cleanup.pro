@@ -18,6 +18,6 @@ pro ucomp_reprocess_cleanup, run=run
   
   ucomp_db_clearday, run=run
 
-  ucomp_clearday, date, run->config('results/archive_basedir'), 'archive', $
+  ucomp_clearday, run.date, run->config('results/archive_basedir'), 'archive', $
                   logger_name=run.logger_name
 end
