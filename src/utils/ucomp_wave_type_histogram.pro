@@ -20,8 +20,7 @@ pro ucomp_wave_type_histogram, output_filename, $
                                bin_size=bin_size
   compile_opt strictarr
 
-  mg_log, 'producing end-of-day wave type histgram...', $
-          name=run.logger_name, /info
+  mg_log, 'producing wave type histgram...', name=run.logger_name, /info
 
   ; create wave_type histogram
 

@@ -22,8 +22,10 @@ pro ucomp_run::make_raw_inventory
       (self.files)[file.wave_type] = list()
     endif
 
-    mg_log, '%s [%s] %s', $
-            file_basename(raw_files[f]), file.wave_type, file.data_type, $
+    mg_log, '%s.%s [%s] %s', $
+            file.ut_date, file.ut_time, $
+            file.wave_type, $
+            file.data_type, $
             name=logger_name, /debug
     (self.files)[file.wave_type]->add, file
   endfor
