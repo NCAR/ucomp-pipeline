@@ -13,7 +13,11 @@ pro ucomp_reprocess_cleanup, run=run
 
   mg_log, 'cleaning %s', run.date, name=run.logger_name, /info
 
+  ; remove's lock file indicating the day was already processed
   run->unlock
   
   ucomp_db_clearday, run=run
+
+  ucomp_clearday, date, run->config('results/archive_basedir'), 'archive', $
+                  logger_name=run.logger_name
 end
