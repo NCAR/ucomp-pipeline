@@ -17,22 +17,39 @@ pro ucomp_l0_distribute, run=run
     goto, done
   endif
 
-  l0_dir = filepath('', $
-                    subdir=[run.date, 'level0'], $
-                    root=run->config('processing/basedir'))
+  l0_dir = filepath(run.date, $
+                    root=run->config('raw/basedir'))
   cd, l0_dir
 
   ; make tarball of L0 data
-  tarfile  = string(date, format='(%"%s.ucomp.l0.tgz")')
-  tarlist  = string(date, format='(%"%s.ucomp.l0.tarlist")')
+  tarfile  = string(run.date, format='(%"%s.ucomp.l0.tgz")')
+  tarlist  = string(run.date, format='(%"%s.ucomp.l0.tarlist")')
 
   if (file_test(tarfile, /regular)) then begin
     mg_log, 'tarfile already exists: %s', tarfile, name=run.logger_name, /warn
     goto, done
   endif
 
+  ; determine the types of files in tarball
+  types = ['*.ucomp.fts*', $
+           '*.log']
+  n_files_by_type = lonarr(n_elements(types))
+  for t = 0L, n_elements(types) - 1L do begin
+    !null = file_search(types[t], count=n_files)
+    n_files_by_type[t] = n_files
+  endfor
+
+  glob_indices = where(n_files_by_type gt 0L, n_glob_parts)
+  if (n_glob_parts eq 0L) then begin
+    mg_log, 'no files to tar', run.logger_name, /warn
+    goto, done
+  endif
+  glob = strjoin(types[glob_indices], ' ')
+
+  ; make tarball
   tar_cmd = string(tarfile, $
-                   format='(%"tar cf %s *.ucomp.fts* *.log")')
+                   glob, $
+                   format='(%"tar cf %s %s")')
   mg_log, 'creating tarfile %s...', tarfile, name=run.logger_name, /info
   spawn, tar_cmd, result, error_result, exit_status=status
   if (status ne 0L) then begin
@@ -43,6 +60,7 @@ pro ucomp_l0_distribute, run=run
   endif
   ucomp_fix_permissions, tarfile, logger_name=run.logger_name
 
+  ; make tarlist
   tarlist_cmd = string(tarfile, tarlist, $
                        format='(%"tar tfv %s > %s")')
   mg_log, 'creating tarlist %s...', tarlist, name=run.logger_name, /info
@@ -53,6 +71,7 @@ pro ucomp_l0_distribute, run=run
     mg_log, '%s', strjoin(error_result, ' '), name=run.logger_name, /error
     goto, done
   endif
+  ucomp_fix_permissions, tarlist, logger_name=run.logger_name
 
   ; put link to L0 tarball in HPSS directory
   hpss_gateway = run->config('results/hpss_gateway')
