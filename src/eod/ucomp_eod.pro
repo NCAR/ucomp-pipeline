@@ -61,7 +61,7 @@ pro ucomp_eod, date, config_filename
 
   mg_log, 'starting processing for %d...', date, name=run.logger_name, /info
 
-  if (run->config('eod/reprocessing')) then begin
+  if (run->config('eod/reprocess')) then begin
     ucomp_pipeline_step, 'ucomp_reprocess_cleanup', run=run
   endif
 
