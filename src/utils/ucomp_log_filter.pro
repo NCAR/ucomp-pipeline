@@ -52,7 +52,7 @@ function ucomp_log_filter, logfile, $
 
   loglevel_re = string(strjoin(levels[_level:*], '|'), format='(%".*(%s):.*")')
 
-  logstart_re = '[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2} [[:digit:]]{2}:[[:digit:]]{2}:[[:digit:]]{2}'
+  logstart_re = '[[:digit:]]{8}.[[:digit:]]{6}'
 
   log_msgs = list()
 
