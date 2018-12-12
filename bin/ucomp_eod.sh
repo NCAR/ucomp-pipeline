@@ -24,9 +24,11 @@ BIN_DIR=$(dirname ${SCRIPT_LOC})
 
 source ${BIN_DIR}/ucomp_include.sh
 
+# skip first two lines of output (IDL license info)
 ${IDL} -quiet \
     -IDL_QUIET 1 \
     -IDL_STARTUP "" \
     -IDL_PATH ${UCOMP_PATH} \
     -IDL_DLM_PATH ${UCOMP_DLM_PATH} \
-    -e "ucomp_eod, '${DATE}', '${CONFIG}'"
+    -e "ucomp_eod, '${DATE}', '${CONFIG}'" \
+    2>&1 | tail -n +3
