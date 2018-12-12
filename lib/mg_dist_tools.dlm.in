@@ -1,0 +1,10 @@
+MODULE        mg_dist_tools
+DESCRIPTION   Tools for the distributing IDL packages
+VERSION       ${VERSION}
+SOURCE        ${PROJECT_NAME}
+BUILD_DATE    ${ucomp_pipeline_BUILD_DATE}
+
+FUNCTION MG_LOGINNAME  0 0
+FUNCTION MG_HOMEDIR    0 0
+FUNCTION MG_PID        0 0
+FUNCTION MG_HOSTNAME   0 0
