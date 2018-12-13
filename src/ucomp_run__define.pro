@@ -127,7 +127,11 @@ pro ucomp_run::report_profiling
   eng_dir = filepath('', $
                      subdir=ucomp_decompose_date(self.date), $
                      root=self->config('engineering/basedir'))
-  if (~file_test(eng_dir, /directory)) then file_mkdir, eng_dir
+  if (~file_test(eng_dir, /directory)) then begin
+    file_mkdir, eng_dir
+    self->getProperty, logger_name=logger_name
+    ucomp_fix_permissions, eng_dir, /directory, logger_name=logger_name
+  endif
 
   basename = string(self.date, format='(%"%s.ucomp.profiler.csv")')
   filename = filepath(basename, root=eng_dir)
@@ -193,7 +197,11 @@ pro ucomp_run::report
   eng_dir = filepath('', $
                      subdir=ucomp_decompose_date(self.date), $
                      root=self->config('engineering/basedir'))
-  if (~file_test(eng_dir, /directory)) then file_mkdir, eng_dir
+  if (~file_test(eng_dir, /directory)) then begin
+    file_mkdir, eng_dir
+    self->getProperty, logger_name=logger_name
+    ucomp_fix_permissions, eng_dir, /directory, logger_name=logger_name
+  endif
 
   basename = string(self.date, format='(%"%s.ucomp.perf.txt")')
   filename = filepath(basename, root=eng_dir)
@@ -384,7 +392,11 @@ pro ucomp_run::_setup_logger
   ; setup log directory and file
   basename = string(self.date, self.mode, format='(%"%s.ucomp.%s.log")')
   filename = filepath(basename, root=log_dir)
-  if (~file_test(log_dir, /directory)) then file_mkdir, log_dir
+  if (~file_test(log_dir, /directory)) then begin
+    file_mkdir, log_dir
+    self->getProperty, logger_name=logger_name
+    ucomp_fix_permissions, log_dir, /directory, logger_name=logger_name
+  endif
 
   ; rotate logs
   if (self.mode ne 'realtime') then begin
