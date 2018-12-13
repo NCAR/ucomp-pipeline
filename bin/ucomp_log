@@ -28,7 +28,7 @@ def prune_logfiles(files, max_version):
 def filter_file(logfile, level_index, follow):
     loglevel_filter = '|'.join(LEVELS[level_index:])
     loglevel_prog = re.compile('.*(%s):.*' % loglevel_filter)
-    logstart_prog = re.compile('\d{8}.\d{6}')
+    logstart_prog = re.compile('\d+: \d{8}.\d{6}')
 
     matched_last_line = False
 
