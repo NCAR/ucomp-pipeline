@@ -141,8 +141,10 @@ pro ucomp_file::_inventory
   fits_read, fcb, primary_data, primary_header, exten_no=0
 
   self.wave_type = sxpar(primary_header, 'FILTER')
+  self.data_type = sxpar(primary_header, 'DATATYPE')
   self.date_obs  = sxpar(primary_header, 'DATE-OBS')
   self.date_end  = sxpar(primary_header, 'DATE-END')
+  self.exposure  = sxpar(primary_header, 'EXPOSURE')
 
   ; allocate inventory variables
   *self.wavelengths         = fltarr(self.n_extensions)
@@ -158,8 +160,6 @@ pro ucomp_file::_inventory
 
     (*self.wavelengths)[e - 1]         = sxpar(extension_header, 'WAVELENG')
   endfor
-
-  ; TODO: determine data_type
 
   fits_close, fcb
 end
@@ -218,6 +218,7 @@ pro ucomp_file__define
            n_extensions        : 0L, $
            wave_type           : '', $
            data_type           : '', $
+           exposure            : 0.0, $
            wavelengths         : ptr_new() $
           }
 end
