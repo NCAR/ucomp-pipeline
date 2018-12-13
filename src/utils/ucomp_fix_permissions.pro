@@ -15,14 +15,16 @@
 ;     set to a named variable to retrieve the status of the file: 0 if OK, 1 if
 ;     it has a bad permission that cannot be fixed by this process
 ;-
-pro ucomp_fix_permissions, filename, logger_name=logger_name, status=status
+pro ucomp_fix_permissions, filename, directory=directory, $
+                           logger_name=logger_name, status=status
   compile_opt strictarr
 
   status = 0L
-  !null = file_test(filename, get_mode=mode)
-  if (mode ne '664'o) then begin
+  desired_mode = keyword_set(directory) ? '775'o : '664'o
+  !null = file_test(filename, get_mode=current_mode)
+  if (current_mode ne desired_mode) then begin
     if (file_test(filename, /user)) then begin
-      file_chmod, filename, '664'o
+      file_chmod, filename, desired_mode
     endif else begin
       mg_log, 'bad permissions on %s', filename, name=logger_name, /error
       status = 1L

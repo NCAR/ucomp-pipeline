@@ -106,7 +106,10 @@ pro ucomp_wave_type_histogram, output_filename, $
 
   ; make directory for output file, if it doesn't already exist
   dir_name = file_dirname(output_filename)
-  if (~file_test(dir_name, /directory)) then file_mkdir, dir_name
+  if (~file_test(dir_name, /directory)) then begin
+    file_mkdir, dir_name
+    ucomp_fix_permissions, dir_name, /directory, logger_name=run.logger_name
+  endif
 
   write_png, output_filename, im
 end

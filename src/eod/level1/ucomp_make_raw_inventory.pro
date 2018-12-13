@@ -16,7 +16,10 @@ pro ucomp_make_raw_inventory, run=run
   ; write the inventory files
   process_dir = filepath(run.date, $
                          root=run->config('processing/basedir'))
-  if (~file_test(process_dir, /directory)) then file_mkdir, process_dir
+  if (~file_test(process_dir, /directory)) then begin
+    file_mkdir, process_dir
+    ucomp_fix_permissions, process_dir, /directory, logger_name=run.logger_name
+  endif
 
   run->getProperty, all_wave_types=all_wave_types
   for w = 0L, n_elements(all_wave_types) - 1L do begin
