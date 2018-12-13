@@ -18,16 +18,16 @@ pro ucomp_run::make_raw_inventory
   for f = 0L, n_raw_files - 1L do begin
     file = ucomp_file(raw_files[f])
 
-    if (~(self.files)->hasKey(file.wave_type)) then begin
-      (self.files)[file.wave_type] = list()
-    endif
-
     mg_log, '%s.%s [%s] %s', $
             file.ut_date, file.ut_time, $
             file.wave_type, $
             file.data_type, $
             name=logger_name, /debug
-    (self.files)[file.wave_type]->add, file
+
+    ; store science files by wave type, otherwise by data type
+    key = file.data_type eq 'sci' ? file.wave_type : file.data_type
+    if (~(self.files)->hasKey(key)) then (self.files)[key] = list()
+    (self.files)[key]->add, file
   endfor
 end
 
@@ -285,7 +285,13 @@ pro ucomp_run::getProperty, date=date, $
                             mode=mode, $
                             logger_name=logger_name, $
                             config_contents=config_contents, $
-                            files=files, wave_type=wave_type, count=count, $
+
+                            ; get files by data_type or wave_type
+                            files=files, $
+                            data_type=data_type, $
+                            wave_type=wave_type, $
+                            count=count, $
+
                             all_wave_types=all_wave_types, $
                             t0=t0
   compile_opt strictarr
@@ -303,7 +309,7 @@ pro ucomp_run::getProperty, date=date, $
   endif
 
   if (arg_present(files) || arg_present(count)) then begin
-    if (n_elements(wave_type) eq 0L) then begin
+    if (n_elements(wave_type) eq 0L && n_elements(data_type) eq 0L) then begin
       files_list = list()
       foreach f, self.files, t do begin
         files_list->add, f, /extract
@@ -312,8 +318,13 @@ pro ucomp_run::getProperty, date=date, $
       files = files_list->toArray()
       obj_destroy, files
     endif else begin
-      if ((self.files)->hasKey(wave_type)) then begin
+      if (n_elements(wave_type) gt 0L $
+            && (self.files)->hasKey(wave_type)) then begin
         files = (self.files)[wave_type]
+        count = n_elements(files)
+      endif else if (n_elements(data_type) gt 0 $
+                       && (self.files)->hasKey(data_type)) then begin
+        files = (self.files)[data_type]
         count = n_elements(files)
       endif else begin
         files = !null

@@ -36,4 +36,23 @@ pro ucomp_make_raw_inventory, run=run
     endfor
     free_lun, lun
   endfor
+
+  data_types = ['cal', 'eng', 'unk']
+  for t = 0L, n_elements(data_types) - 1L do begin
+    run->getProperty, files=files, data_type=data_types[t], count=n_files
+
+    basename = string(run.date, data_types[t], format='(%"%d.ucomp.%s.files.txt")')
+    filename = filepath(basename, root=process_dir)
+
+    openw, lun, filename, /get_lun
+    for f = 0L, n_files - 1L do begin
+      printf, lun, $
+              file_basename(files[f].raw_filename), $
+              files[f].data_type, $
+              files[f].n_extensions, $
+              strjoin(string(files[f].wavelengths, format='(F0.2)'), ' '), $
+              format='(%"%-30s %-3s %3d %s")'
+    endfor
+    free_lun, lun
+  endfor
 end
