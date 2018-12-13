@@ -20,33 +20,36 @@ pro ucomp_eod, date, config_filename
   orig_except = !except
   !except = 0
 
+  mode = 'eod'
+  logger_name = string(mode, format='(%"ucomp/%s")')
+
   ; error handler
   catch, error
   if (error ne 0) then begin
     catch, /cancel
-    mg_log, /last_error, name='ucomp/eod', /critical
+    mg_log, /last_error, name=logger_name, /critical
     ucomp_crash_notification, run=run
     goto, done
   endif
 
   if (n_params() ne 2) then begin
-    mg_log, 'incorrect number of arguments', name='ucomp/eod', /critical
+    mg_log, 'incorrect number of arguments', name=logger_name, /critical
     goto, done
   endif
 
   config_fullpath = file_expand_path(config_filename)
   if (~file_test(config_fullpath, /regular)) then begin
     mg_log, 'config file %s not found', config_fullpath, $
-            name='ucomp/eod', /critical
+            name=logger_name, /critical
     goto, done
   endif
 
   ;== initialize
 
   ; create run object
-  run = ucomp_run(date, 'eod', config_fullpath)
+  run = ucomp_run(date, mode, config_fullpath)
   if (~obj_valid(run)) then begin
-    mg_log, 'cannot create run object', name='ucomp/eod', /critical
+    mg_log, 'cannot create run object', name=logger_name, /critical
     goto, done
   endif
   run.t0 = t0
@@ -117,7 +120,7 @@ pro ucomp_eod, date, config_filename
   ;== cleanup and quit
   done:
 
-  mg_log, /check_math, name='ucomp/eod', /debug
+  mg_log, /check_math, name=logger_name, /debug
 
   ; unlock raw directory and mark processed if no crash
   if (obj_valid(run)) then begin
@@ -129,7 +132,7 @@ pro ucomp_eod, date, config_filename
 
   t1 = systime(/seconds)
   mg_log, 'total running time: %s', ucomp_sec2str(t1 - t0), $
-          name='ucomp/eod', /info
+          name=logger_name, /info
 
   if (obj_valid(run)) then obj_destroy, run
   mg_log, /quit
