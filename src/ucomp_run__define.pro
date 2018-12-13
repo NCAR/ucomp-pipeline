@@ -123,10 +123,15 @@ pro ucomp_run::report_profiling
 
   if (~self->config('engineering/profile')) then return
 
+  ; if needed, create engineering directory 
+  eng_dir = filepath('', $
+                     subdir=ucomp_decompose_date(self.date), $
+                     root=self->config('engineering/basedir'))
+  if (~file_test(eng_dir, /directory)) then file_mkdir, eng_dir
+
   basename = string(self.date, format='(%"%s.ucomp.profiler.csv")')
-  filename = filepath(basename, $
-                      subdir=ucomp_decompose_date(self.date), $
-                      root=self->config('engineering/basedir'))
+  filename = filepath(basename, root=eng_dir)
+
   mg_profiler_report, filename=filename, /csv
 end
 
@@ -184,10 +189,14 @@ end
 pro ucomp_run::report
   compile_opt strictarr
 
+  ; if needed, create engineering directory 
+  eng_dir = filepath('', $
+                     subdir=ucomp_decompose_date(self.date), $
+                     root=self->config('engineering/basedir'))
+  if (~file_test(eng_dir, /directory)) then file_mkdir, eng_dir
+
   basename = string(self.date, format='(%"%s.ucomp.perf.txt")')
-  filename = filepath(basename, $
-                      subdir=ucomp_decompose_date(self.date), $
-                      root=self->config('engineering/basedir'))
+  filename = filepath(basename, root=eng_dir)
 
   openw, lun, filename, /get_lun
 
@@ -343,48 +352,6 @@ end
 
 ;= initialization
 
-;+
-; Convert a log level name to a log level code.
-;
-; :Returns:
-;   integer log level code
-;
-; :Params:
-;   name : in, required, type=string
-;     case-insensitive name of log level, i.e., 'debug', 'info', etc.
-;-
-function ucomp_run::_log_level_code, name
-  compile_opt strictarr
-
-  switch strlowcase(name) of
-    'debug': begin
-        code = 5
-        break
-      end
-    'info':
-    'informational': begin
-        code = 4
-        break
-      end
-    'warn':
-    'warning': begin
-        code = 3
-        break
-      end
-    'error': begin
-        code = 2
-        break
-      end
-    'critical': begin
-        code = 1
-        break
-      end
-    else: code = 5
-  endswitch
-
-  return, code
-end
-
 
 ;+
 ; Rotate logs and use config file values to setup the logger.
@@ -394,16 +361,14 @@ pro ucomp_run::_setup_logger
   on_error, 2
 
   ; log message formats
-  fmt = '%(time)s %(pid)s %(levelshortname)s: %(routine)s: %(message)s'
-  ;time_fmt = '(C(CYI4, "-", CMOI2.2, "-", CDI2.2, " " CHI2.2, ":", CMI2.2, ":", CSI2.2))'
+  fmt      = '%(pid)s: %(time)s %(levelshortname)s: %(routine)s: %(message)s'
   time_fmt = '(C(CYI4, CMOI2.2, CDI2.2, "." CHI2.2, CMI2.2, CSI2.2))'
 
   ; get logging values from config file
-  log_dir = self->config('logging/dir')
-  level_name = self->config('logging/level')
-  level_code = self->_log_level_code(level_name)
+  log_dir     = self->config('logging/dir')
+  level_name  = self->config('logging/level')
   max_version = self->config('logging/max_version')
-  max_width = self->config('logging/max_width')
+  max_width   = self->config('logging/max_width')
 
   ; setup log directory and file
   basename = string(self.date, self.mode, format='(%"%s.ucomp.%s.log")')
@@ -411,7 +376,9 @@ pro ucomp_run::_setup_logger
   if (~file_test(log_dir, /directory)) then file_mkdir, log_dir
 
   ; rotate logs
-  mg_rotate_log, filename, max_version=max_version
+  if (self.mode ne 'realtime') then begin
+    mg_rotate_log, filename, max_version=max_version
+  endif
 
   ; configure logger
   self->getProperty, logger_name=logger_name
@@ -419,18 +386,8 @@ pro ucomp_run::_setup_logger
   logger->setProperty, format=fmt, $
                        time_format=time_fmt, $
                        max_width=max_width, $
-                       level=level_code, $
+                       level=mg_log_name2level(level_name), $
                        filename=filename
-
-  ; setup performance log
-  basename = string(self.date, format='(%"%s.ucomp.perf.txt")')
-  eng_dir = filepath('', $
-                     subdir=ucomp_decompose_date(self.date), $
-                     root=self->config('engineering/basedir'))
-  filename = filepath(basename, root=eng_dir)
-  if (~file_test(eng_dir, /directory)) then file_mkdir, eng_dir
-
-  mg_rotate_log, filename, max_version=max_version
 end
 
 
@@ -493,7 +450,7 @@ function ucomp_run::init, date, mode, config_filename, no_log=no_log
     return, 0
   endif
 
-  if (~ keyword_set(no_log)) then self->_setup_logger
+  if (~keyword_set(no_log)) then self->_setup_logger
 
   ; setup epoch reading
   epochs_filename = filepath('epochs.cfg', root=mg_src_root())
@@ -525,7 +482,7 @@ pro ucomp_run__define
 
   !null = {ucomp_run, inherits IDL_Object, $
            date:    '', $
-           mode:    '', $
+           mode:    '', $          ; eod, realtime, cal
            t0:      0.0D, $
            options: obj_new(), $
            epochs:  obj_new(), $
