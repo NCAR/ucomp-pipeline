@@ -55,15 +55,15 @@ pro ucomp_read_raw_data, filename, $
       if (msg ne '') then message, msg
 
       ; need to setup arrays the first time
-      if (e eq 1) then begin
+      if (e eq 1 && arg_present(ext_data)) then begin
         type = size(data, /type)
         dims = size(data, /dimensions)
 
         ext_data = make_array(dimension=[dims, n_extensions], type=type)
       endif
 
-      ext_data[0, 0, 0, 0, e - 1] = data
-      ext_headers->add, header
+      if (arg_present(ext_data)) then ext_data[0, 0, 0, 0, e - 1] = data
+      if (arg_present(ext_headers)) then ext_headers->add, header
     endfor
   endif
 

@@ -57,6 +57,16 @@ end
 ;= property access
 
 ;+
+; Set property values.
+;-
+pro ucomp_file::setProperty, pass_quality=pass_quality
+  compile_opt strictarr
+
+  if (n_elements(pass_quality) gt 0L) then self.pass_quality = pass_quality
+end
+
+
+;+
 ; Get property values.
 ;-
 pro ucomp_file::getProperty, raw_filename=raw_filename, $
@@ -71,7 +81,8 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
                              data_type=data_type, $
                              n_extensions=n_extensions, $
                              wavelengths=wavelengths, $
-                             n_unique_wavelengths=n_unique_wavelengths
+                             n_unique_wavelengths=n_unique_wavelengths, $
+                             pass_quality=pass_quality
   compile_opt strictarr
 
   ; for the file
@@ -99,6 +110,8 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
 
   if (arg_present(wave_type)) then wave_type = self.wave_type
   if (arg_present(data_type)) then data_type = self.data_type
+
+  if (arg_present(pass_quality)) then pass_quality = self.pass_quality
 
   ; by extension
   if (arg_present(wavelengths)) then wavelengths = *self.wavelengths
@@ -219,7 +232,8 @@ pro ucomp_file__define
            wave_type           : '', $
            data_type           : '', $
            exposure            : 0.0, $
-           wavelengths         : ptr_new() $
+           wavelengths         : ptr_new(), $
+           pass_quality        : 0B $
           }
 end
 
