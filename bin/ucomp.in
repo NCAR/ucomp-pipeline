@@ -2,16 +2,26 @@
 
 import argparse
 import datetime
+import glob
 import os
 import psutil
+import re
 import subprocess
+import time
 
+
+POLL_SECS = 0.1
+
+LEVELS = ['DEBUG', 'INFO', 'WARN', 'ERROR', 'CRITICAL']
+LOG_DIR = '/hao/acos/ucomp/logs'
 
 DATE_FORMAT = '%Y%m%d'
 
 DEVNULL = open(os.devnull, 'w')
 PIPELINE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
+
+# date handling helpers
 
 intervals = (
     ('weeks', 604800),  # 60 * 60 * 24 * 7 seconds
@@ -38,7 +48,9 @@ def format_timedelta(timedelta):
     return(display_time(int(timedelta.total_seconds()), granularity=len(intervals)))
 
 
-def list_processes():
+# list sub-command
+
+def list_processes(args):
     ucomp_processes = []
     for p in psutil.process_iter():
         cmdline = p.cmdline()
@@ -62,11 +74,129 @@ def list_processes():
                                             format_timedelta(time_running), p['cmdline']))
 
 
-def parse_date_expr(date_expr):
-    dates = []
+# log sub-command
+
+def prune_logfiles(files, max_version):
+    version_re = re.compile('\d+')
+    for f in files:
+        versions = glob.glob('%s.*' % f)
+        for v in versions:
+            n = v[len(f) + 1:]
+            if version_re.match(n):
+                if int(n) > max_version:
+                    file_to_delete = '%s.%s' % (f, n)
+                    print('rm %s' % file_to_delete)
+                    os.remove(file_to_delete)
+
+
+def filter_file(logfile, level_index, follow):
+    loglevel_filter = '|'.join(LEVELS[level_index:])
+    loglevel_prog = re.compile('.*(%s):.*' % loglevel_filter)
+    logstart_prog = re.compile('\d+: \d{8}.\d{6}')
+
+    matched_last_line = False
+
+    line = 'not empty'
 
     try:
-        for de in date_expr.split(','):
+        with open(logfile, 'r') as f:
+            while follow or line != '':
+                line = f.readline()
+                if line == '':
+                    try:
+                        time.sleep(POLL_SECS)
+                    except (IOError, KeyboardInterrupt):
+                        return
+                    continue
+
+                if loglevel_prog.match(line):
+                    matched_last_line = True
+                    try:
+                        print(line.rstrip())
+                    except (IOError, KeyboardInterrupt):
+                        return
+                else:
+                    if matched_last_line:
+                        if logstart_prog.match(line):
+                            matched_last_line = False
+                        else:
+                            try:
+                                print(line.rstrip())
+                            except (IOError, KeyboardInterrupt):
+                                return
+    except IOError:
+        print('Problem reading %s' % logfile)
+
+
+def filter_log(args):
+    date_re = '^\d{8}$'
+    date_prog = re.compile(date_re)
+
+    logfiles = []
+    for f in args.logfiles:
+        if date_prog.match(f):
+            path1 = os.path.join(LOG_DIR, f + '.log')
+            if os.path.isfile(path1):
+                logfiles.append(path1)
+            else:
+                path2 = os.path.join(LOG_DIR, f + '.ucomp.eod.log')
+                if os.path.isfile(path2):
+                    logfiles.append(path2)
+                else:
+                    parser.error(f + ' does not exist')
+        else:
+            logfiles.append(f)
+
+    follow = args.follow
+    if follow and len(logfiles) > 1:
+        print('cannot follow multiple files')
+        return
+
+    if args.prune is not None:
+        prune_logfiles(logfiles, int(args.prune))
+        return
+
+    # default is to not filter
+    if args.level:
+        level = args.level.upper()
+    elif args.critical:
+        level = 'CRITICAL'
+    elif args.error:
+        level = 'ERROR'
+    elif args.warn:
+        level = 'WARN'
+    elif args.info:
+        level = 'INFO'
+    else:
+        level = 'DEBUG'
+
+    try:
+        level_index = LEVELS.index(level)
+    except ValueError:
+        print('invalid level: %s' % level)
+        parser.print_help()
+        return
+
+    is_first = False
+    for i, f in enumerate(logfiles):
+        if len(logfiles) > 1:
+            if i != 0: print('')
+            print(f)
+            print('-' * len(f))
+        filter_file(f, level_index, follow)
+
+
+
+# realtime, eod, and calibrate sub-commands
+
+def parse_date_expr(date_expr):
+    dates = []
+    expr_re = re.compile('[, ]')
+    print(date_expr)
+
+    try:
+        for de in expr_re.split(date_expr):
+            print(de)
             d = de.split('-')
             if len(d) not in [1, 2]:
                 print(f'invalid syntax: {de}')
@@ -95,29 +225,37 @@ def parse_date_expr(date_expr):
     return dates
 
 
-def process_realtime(dates, flags, no_wait):
-    launch_processes(dates, flags, no_wait, 'ucomp_realtime.sh')
+def process_eod(args):
+    launch_processes(args, 'ucomp_eod.sh')
+
+def process_rt(args):
+    launch_processes(args, 'ucomp_realtime.sh')
+
+def process_cal(args):
+    launch_processes(args, 'ucomp_calibrate.sh')
 
 
-def process_calibrate(dates, flags, no_wait):
-    launch_processes(dates, flags, no_wait, 'ucomp_calibrate.sh')
+def launch_processes(args, routine):
+    # only allow no date arguments if doing a listing 
+    if len(args.dates) == 0:
+        args.parser.error('too few arguments')
 
+    date_expr = ' '.join(args.dates)
+    dates = parse_date_expr(date_expr)
 
-def process_dates(dates, flags, no_wait):
-    launch_processes(dates, flags, no_wait, 'ucomp_eod.sh')
+    if len(dates) != 1 and routine == 'ucomp_realtime.sh':
+        args.parser.error('realtime mode is only valid for a single date')
 
-
-def launch_processes(dates, flags, no_wait, routine):
     for d in dates:
         cmd = [os.path.join(PIPELINE_DIR,
                             'bin',
                             routine),
-               flags,
+               args.flags,
                d]
 
         process = subprocess.Popen(cmd, stderr=subprocess.STDOUT)
         print('[%d] %s' % (process.pid, ' '.join(cmd)))
-        if not no_wait:
+        if not args.no_wait:
             terminated = wait_for(process)
             if terminated: break
 
@@ -137,6 +275,53 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description=name)
 
+    # top-level options
+    parser.add_argument('-v', '--version',
+                        action='version',
+                        version=name)
+
+    subparsers = parser.add_subparsers(help='sub-command help')
+
+    # list sub-command
+    list_parser = subparsers.add_parser('list',
+                                        help='list UCoMP processes')
+    list_parser.set_defaults(func=list_processes, parser=list_parser)
+
+    # log sub-command
+    log_parser = subparsers.add_parser('log',
+                                       help='filter/display log output')
+    log_parser.add_argument('logfiles', nargs='+',
+                            help='UCoMP log filenames or dates')
+    level_help = 'filter level: DEBUG INFO WARN ERROR CRITICAL (default DEBUG)'
+    log_parser.add_argument('-l', '--level',
+                            help=level_help)
+    prune_help = 'prune rotated logs with versions higher than MAX_VERSION'
+    log_parser.add_argument('-p', '--prune',
+                            help=prune_help,
+                            metavar='MAX_VERSION')
+    log_parser.add_argument('-f', '--follow',
+                            help='output appended data as file grows',
+                            action='store_true')
+    log_parser.add_argument('-d', '--debug',
+                            help='DEBUG filter level',
+                            action='store_true')
+    log_parser.add_argument('-i', '--info',
+                            help='INFO filter level',
+                            action='store_true')
+    log_parser.add_argument('-w', '--warn',
+                            help='WARN filter level',
+                            action='store_true')
+    log_parser.add_argument('-e', '--error',
+                            help='ERROR filter level',
+                            action='store_true')
+    log_parser.add_argument('-c', '--critical',
+                            help='CRITICAL filter level',
+                            action='store_true')
+    log_parser.set_defaults(func=filter_log, parser=log_parser)
+
+
+    # eod, rt, cal sub-commands
+
     date_help = '''Dates to run on in the form YYYYMMDD including lists (using
                    commas) and ranges (using hyphens). Note that the beginning
                    of a range is inclusive and the end is exclusive. For
@@ -145,49 +330,38 @@ if __name__ == '__main__':
                    2017, and '20170101-20170201,20170201,20170202' represents
                    all of January and the first two days of February 2017.
                 '''
-    parser.add_argument('dates', type=str, nargs='*', help=date_help)
+    eod_parser = subparsers.add_parser('end-of-day', aliases=['eod'],
+                                       help='run end-of-day pipeline')
 
-    parser.add_argument('-l', '--list', action='store_true',
-                        help='set to list UCoMP processes')
+    rt_parser = subparsers.add_parser('realtime', aliases=['rt'],
+                                      help='run realtime pipeline')
 
-    parser.add_argument('-f', '--flags',
-                        type=str,
-                        default='latest',
-                        help='''FLAGS section of config filename, i.e., file in
-                                config/ directory matching ucomp.FLAGS.cfg will
-                                be used''')
+    cal_parser = subparsers.add_parser('calibration', aliases=['cal'],
+                                       help='run calibration')
 
-    parser.add_argument('-r', '--realtime', action='store_true',
-                        help='set to run the realtime instead of eod-of-day processing')
-    parser.add_argument('-c', '--calibrate', action='store_true',
-                        help='set to run the calibration instead of end-of-day processing')
-    parser.add_argument('--no-wait',
-                        action='store_true',
-                        help='set to run all dates simultaneously')
+    eod_parser.add_argument('dates', type=str, nargs='*', help=date_help,
+                            metavar='date-expr')
+    rt_parser.add_argument('dates', type=str, nargs='*', help=date_help,
+                            metavar='date-expr')
+    cal_parser.add_argument('dates', type=str, nargs='*', help=date_help,
+                            metavar='date-expr')
 
-    parser.add_argument('-v', '--version',
-                        action='version',
-                        version=name)
+    flags_help = '''FLAGS section of config filename, i.e., file in
+                    config/ directory matching ucomp.FLAGS.cfg will
+                    be used'''
+    eod_parser.add_argument('-f', '--flags', type=str, help=flags_help)
+    rt_parser.add_argument('-f', '--flags', type=str, help=flags_help)
+    cal_parser.add_argument('-f', '--flags', type=str, help=flags_help)
 
+    nowait_help = 'set to run all dates simultaneously'
+    eod_parser.add_argument('--no-wait', action='store_true', help=nowait_help)
+    rt_parser.add_argument('--no-wait', action='store_true', help=nowait_help)
+    cal_parser.add_argument('--no-wait', action='store_true', help=nowait_help)
+
+    eod_parser.set_defaults(func=process_eod, parser=eod_parser)
+    rt_parser.set_defaults(func=process_rt, parser=rt_parser)
+    cal_parser.set_defaults(func=process_cal, parser=cal_parser)
+
+    # parse args and call appropriate sub-command
     args = parser.parse_args()
-
-    if args.list:
-        list_processes()
-        parser.exit(status=0)
-
-    # only allow no date arguments if doing a listing 
-    if len(args.dates) == 0:
-        parser.error('too few arguments')
-
-    date_expr = ''.join(args.dates)
-    dates = parse_date_expr(date_expr)
-
-    if args.realtime:
-        if len(dates) != 1:
-            parser.error('realtime mode is only valid for a single date')
-
-        process_realtime(dates, args.flags, args.no_wait)
-    elif args.calibrate:
-        process_calibrate(dates, args.flags, args.no_wait)
-    else:
-        process_dates(dates, args.flags, args.no_wait)
+    args.func(args)
