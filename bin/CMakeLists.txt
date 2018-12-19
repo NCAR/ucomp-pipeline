@@ -12,5 +12,4 @@ install(PROGRAMS ucomp_validate.sh
 		 ucomp_calibrate.sh
 		 ucomp_eod.sh
 		 ucomp_realtime.sh
-                 ucomp_log
         DESTINATION bin)
