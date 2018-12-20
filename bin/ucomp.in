@@ -74,6 +74,27 @@ def list_processes(args):
                                             format_timedelta(time_running), p['cmdline']))
 
 
+# validate sub-command
+
+def validate(args):
+    # only allow no date arguments if doing a listing 
+    if len(args.dates) == 0:
+        args.parser.error('too few arguments')
+
+    cmd = [os.path.join(PIPELINE_DIR,
+                        'bin',
+                        'ucomp_validate_dates.sh'),
+           args.flags,
+           ','.join(args.dates)]
+
+    process = subprocess.Popen(cmd, stderr=subprocess.STDOUT)
+    print('[%d] %s' % (process.pid, ' '.join(cmd)))
+    if not args.no_wait:
+        terminated = wait_for(process)
+        if terminated: break
+
+
+
 # log sub-command
 
 def prune_logfiles(files, max_version):
@@ -191,12 +212,9 @@ def filter_log(args):
 
 def parse_date_expr(date_expr):
     dates = []
-    expr_re = re.compile('[, ]')
-    print(date_expr)
 
     try:
-        for de in expr_re.split(date_expr):
-            print(de)
+        for de in date_expr.split(','):
             d = de.split('-')
             if len(d) not in [1, 2]:
                 print(f'invalid syntax: {de}')
@@ -240,8 +258,7 @@ def launch_processes(args, routine):
     if len(args.dates) == 0:
         args.parser.error('too few arguments')
 
-    date_expr = ' '.join(args.dates)
-    dates = parse_date_expr(date_expr)
+    dates = parse_date_expr(','.join(args.dates))
 
     if len(dates) != 1 and routine == 'ucomp_realtime.sh':
         args.parser.error('realtime mode is only valid for a single date')
@@ -282,10 +299,27 @@ if __name__ == '__main__':
 
     subparsers = parser.add_subparsers(help='sub-command help')
 
+    date_help = '''dates to run on in the form YYYYMMDD including lists (using
+                   commas) and ranges (using hyphens where end date is not
+                   included)
+                '''
+    flags_help = '''FLAGS section of config filename, i.e., file in config/
+                    directory matching ucomp.FLAGS.cfg will be used'''
+
     # list sub-command
     list_parser = subparsers.add_parser('list',
                                         help='list UCoMP processes')
     list_parser.set_defaults(func=list_processes, parser=list_parser)
+
+    # validate sub-command
+    validate_parser = subparsers.add_parser('validate',
+                                            help='validate previously processed dates')
+    validate_parser.add_argument('dates', type=str, nargs='*', help=date_help,
+                                 metavar='date-expr')
+
+    validate_parser.add_argument('-f', '--flags', type=str, help=flags_help,
+                                 default='latest')
+    validate_parser.set_defaults(func=validate, parser=validate_parser)
 
     # log sub-command
     log_parser = subparsers.add_parser('log',
@@ -319,23 +353,11 @@ if __name__ == '__main__':
                             action='store_true')
     log_parser.set_defaults(func=filter_log, parser=log_parser)
 
-
     # eod, rt, cal sub-commands
-
-    date_help = '''Dates to run on in the form YYYYMMDD including lists (using
-                   commas) and ranges (using hyphens). Note that the beginning
-                   of a range is inclusive and the end is exclusive. For
-                   example, '20170101-20170201' represents all of January 2017,
-                   '20170201,20170202' represents the first two days of February
-                   2017, and '20170101-20170201,20170201,20170202' represents
-                   all of January and the first two days of February 2017.
-                '''
     eod_parser = subparsers.add_parser('end-of-day', aliases=['eod'],
                                        help='run end-of-day pipeline')
-
     rt_parser = subparsers.add_parser('realtime', aliases=['rt'],
                                       help='run realtime pipeline')
-
     cal_parser = subparsers.add_parser('calibration', aliases=['cal'],
                                        help='run calibration')
 
@@ -346,12 +368,12 @@ if __name__ == '__main__':
     cal_parser.add_argument('dates', type=str, nargs='*', help=date_help,
                             metavar='date-expr')
 
-    flags_help = '''FLAGS section of config filename, i.e., file in
-                    config/ directory matching ucomp.FLAGS.cfg will
-                    be used'''
-    eod_parser.add_argument('-f', '--flags', type=str, help=flags_help)
-    rt_parser.add_argument('-f', '--flags', type=str, help=flags_help)
-    cal_parser.add_argument('-f', '--flags', type=str, help=flags_help)
+    eod_parser.add_argument('-f', '--flags', type=str, help=flags_help,
+                            default='latest')
+    rt_parser.add_argument('-f', '--flags', type=str, help=flags_help,
+                           default='latest')
+    cal_parser.add_argument('-f', '--flags', type=str, help=flags_help,
+                            default='latest')
 
     nowait_help = 'set to run all dates simultaneously'
     eod_parser.add_argument('--no-wait', action='store_true', help=nowait_help)
