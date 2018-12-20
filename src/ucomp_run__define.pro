@@ -380,7 +380,7 @@ pro ucomp_run::_setup_logger
   on_error, 2
 
   ; log message formats
-  fmt      = '%(pid)s: %(time)s %(levelshortname)s: %(routine)s: %(message)s'
+  fmt      = '[%(pid)s] %(time)s %(levelshortname)s: %(routine)s: %(message)s'
   time_fmt = '(C(CYI4, CMOI2.2, CDI2.2, "." CHI2.2, CMI2.2, CSI2.2))'
 
   ; get logging values from config file
