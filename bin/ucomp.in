@@ -91,8 +91,6 @@ def validate(args):
     print('[%d] %s' % (process.pid, ' '.join(cmd)))
     if not args.no_wait:
         terminated = wait_for(process)
-        if terminated: break
-
 
 
 # log sub-command
