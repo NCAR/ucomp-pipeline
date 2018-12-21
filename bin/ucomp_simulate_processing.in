@@ -1,0 +1,81 @@
+#!/usr/bin/env python
+
+import argparse
+import logging
+import os
+import subprocess
+import sys
+import time
+
+
+# wait after RT pipeline is launched to launch EOD pipeline
+EOD_WAIT = 30   # seconds
+
+
+# setup the logging mechanism
+logging.basicConfig(format='%(asctime)s %(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S',
+                    level=logging.DEBUG)
+
+
+def launch_loop(date, config_flags, launch_interval, no_eod):
+    logging.info('starting UCoMP realtime runner...')
+    logging.info('config flags      : %s', config_flags)
+    logging.info('launch_interval   : %d minutes', launch_interval)
+
+    pipeline_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+
+    realtime_cmd = [os.path.join(pipeline_dir, 'bin', 'ucomp_realtime.sh'),
+                    config_flags,
+                    date]
+    eod_cmd = [os.path.join(pipeline_dir, 'bin', 'ucomp_eod.sh'),
+               config_flags,
+               date]
+
+    while True:
+        logging.info(' '.join(realtime_cmd))
+        realtime_pid = subprocess.Popen(realtime_cmd).pid
+        logging.info('launched UCoMP realtime pipeline with pid %d', realtime_pid)
+        time.sleep(EOD_WAIT)
+        if not no_eod:
+            logging.info(' '.join(eod_cmd))
+            eod_pid = subprocess.Popen(eod_cmd).pid
+            logging.info('launched UCoMP end-of-day pipeline with pid %d', eod_pid)
+            time.sleep(launch_interval - EOD_WAIT)
+
+
+if __name__ == '__main__':
+    name = 'Realtime UCoMP pipeline processing simulator @GIT_VERSION@ [@GIT_REVISION@] (@GIT_BRANCH@)'
+
+    parser = argparse.ArgumentParser(description=name)
+    config_flags_help = '''FLAGS section of config filename'''
+    date_help = '''date to run on'''
+    parser.add_argument('date', type=str, help=date_help)
+
+    parser.add_argument('-f', '--flags',
+                        type=str,
+                        default='latest',
+                        help='''FLAGS section of config filename, i.e., file in
+                                config/ directory matching ucomp.FLAGS.cfg
+                                will be used''')
+    launch_interval_help = '''seconds between launches of realtime pipeline,
+                              default is 600 seconds'''
+    parser.add_argument('--launch-interval',
+                        type=float,
+                        help=launch_interval_help,
+                        default=600.0)
+    parser.add_argument('--no-eod',
+                        action='store_true',
+                        help='set to not launch end-of-day processing')
+    parser.add_argument('-v', '--version',
+                        action='version',
+                        version=name)
+    args = parser.parse_args()
+
+    try:
+        launch_loop(args.date, args.flags, args.launch_interval, args.no_eod)
+    except KeyboardInterrupt:
+        logging.info('quitting...')
+        sys.exit(1)
+
+    logging.info('done')
