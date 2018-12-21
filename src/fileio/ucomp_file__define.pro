@@ -153,11 +153,11 @@ pro ucomp_file::_inventory
 
   fits_read, fcb, primary_data, primary_header, exten_no=0
 
-  self.wave_type = sxpar(primary_header, 'FILTER')
-  self.data_type = sxpar(primary_header, 'DATATYPE')
-  self.date_obs  = sxpar(primary_header, 'DATE-OBS')
-  self.date_end  = sxpar(primary_header, 'DATE-END')
-  self.exposure  = sxpar(primary_header, 'EXPOSURE')
+  self.wave_type = ucomp_getpar(primary_header, 'FILTER')
+  self.data_type = ucomp_getpar(primary_header, 'DATATYPE')
+  self.date_obs  = ucomp_getpar(primary_header, 'DATE-OBS')
+  self.date_end  = ucomp_getpar(primary_header, 'DATE-END')
+  self.exposure  = ucomp_getpar(primary_header, 'EXPOSURE', /float)
 
   ; allocate inventory variables
   *self.wavelengths         = fltarr(self.n_extensions)
@@ -171,7 +171,7 @@ pro ucomp_file::_inventory
                /no_abort, message=error_msg
     if (error_msg ne '') then message, error_msg
 
-    (*self.wavelengths)[e - 1]         = sxpar(extension_header, 'WAVELENG')
+    (*self.wavelengths)[e - 1] = ucomp_getpar(extension_header, 'WAVELENG', /float)
   endfor
 
   fits_close, fcb
