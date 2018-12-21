@@ -16,4 +16,5 @@ install(PROGRAMS ucomp_archive.sh
                  ucomp_realtime.sh
                  ucomp_validate.sh
                  ucomp_validate_dates.sh
+		 ucomp_make_t1log
         DESTINATION bin)
