@@ -5,7 +5,7 @@ add_subdirectory(eod)
 add_subdirectory(realtime)
 add_subdirectory(reprocess)
 add_subdirectory(utils)
-add_subdirectory(validation)
+add_subdirectory(validate)
 
 configure_file(ucomp_version.pro.in ucomp_version.pro)
 
