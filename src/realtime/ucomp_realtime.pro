@@ -73,12 +73,17 @@ pro ucomp_realtime, date, config_filename
 
   run->make_raw_inventory, new_files
 
+
   ;== create quicklook L0.5 files
 
   wave_types = run->config('options/wave_types')
   for w = 0L, n_elements(wave_types) - 1L do begin
     run->getProperty, files=files, wave_type=wave_types[w], count=n_files
+    n_digits = floor(alog10(n_files)) + 1L
     for f = 0L, n_files - 1L do begin
+      mg_log, mg_format('%*d/%d @ %s: %s', n_digits, /simple), $
+              f + 1, n_files, wave_type, file_basename(files[f].raw_filename), $
+              name=run.logger_name, /info
       ucomp_pipeline_step, 'ucomp_quicklook', files[f], run=run
     endfor
     ucomp_pipeline_step, 'ucomp_quicklook_distribute', files, run=run
