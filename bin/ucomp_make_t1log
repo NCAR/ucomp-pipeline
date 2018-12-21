@@ -1,0 +1,17 @@
+#!/usr/bin/env python
+
+import argparse
+import glob
+import os
+
+
+if __name__ == '__main__':
+   name = 'UCoMP t1 log creator'
+   parser = argparse.ArgumentParser(description=name)
+   parser.add_argument('dir', type=str, default='.', help='directory to catalog')
+   args = parser.parse_args()
+
+   fits_files = glob.glob(os.path.join(args.dir, '*.FTS*'))
+   for f in fits_files:
+      size = os.stat(f).st_size
+      print('%s   %d' % (os.path.basename(f), size))
