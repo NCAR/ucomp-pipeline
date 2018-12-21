@@ -100,7 +100,7 @@ if __name__ == '__main__':
     parser.add_argument('-r', '--raw-dir', type=str, help=raw_dir_help)
 
     arrival_interval_help = 'seconds between copies, default is 60 seconds'
-    parser.add_argument('-a', '--arrival-interval',
+    parser.add_argument('--arrival-interval',
                         type=float,
                         help=arrival_interval_help,
                         default=60.0)

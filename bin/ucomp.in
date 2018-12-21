@@ -10,6 +10,14 @@ import subprocess
 import time
 
 
+PY3 = sys.version_info[0] == 3
+
+if PY3:
+    import configparser
+else:
+    import ConfigParser as configparser
+
+
 POLL_SECS = 0.1
 
 LEVELS = ['DEBUG', 'INFO', 'WARN', 'ERROR', 'CRITICAL']
@@ -306,6 +314,58 @@ def archive(args):
         if terminated: break
 
 
+# simulate sub-command
+
+def simulate(args):
+    if len(args.dates) == 0:
+        args.parser.error('too few arguments')
+
+    dates = parse_date_expr(','.join(args.dates))
+
+    if len(dates) != 1:
+        args.parser.error('simulator is only valid for a single date')
+
+    # read config file to get options
+    pipeline_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+    config_basename = 'ucomp.%s.cfg' % args.flags
+    config_filename = os.path.join(pipeline_dir, 'config', config_basename)
+
+    config = configparser.ConfigParser()
+    config.read(config_filename)
+
+    depot_basedir = config.get('testing', 'depot_basedir')
+    raw_basedir = config.get('raw', 'basedir')
+    raw_dir = os.path.join(raw_basedir, dates[0])
+
+    arrival_interval = config.get('testing', 'arrival_interval')
+    launch_interval = config.get('testing', 'launch_interval')
+
+    # launch processing simulator
+    processing_cmd = [os.path.join(pipeline_dir, 'bin', 'ucomp_simulate_processing'),
+                      '-f', args.flags,
+                      '--launch-interval', '%f' % launch_interval,
+                      args.date]
+    if args.no_eod:
+        processing_cmd.insert(2, '--no-eod')
+    processing_process = subprocess.Popen(processing_cmd)
+
+    time.sleep(5.0)
+
+    # launch incoming data simulator
+    data_cmd = [os.path.join(pipeline_dir, 'bin', 'ucomp_simulate_data'),
+                '-r', raw_dir,
+                '--arrival-interval', '%f' % arrival_interval,
+                os.path.join(depot_basedir, args.date)]
+    data_process = subprocess.Popen(data_cmd)
+
+    try:
+        while True:
+            time.sleep(1.0)
+    except KeyboardInterrupt:
+        print('killing data (%d) and processing (%d) subprocesses...' % (data_process.pid, processing_process.pid))
+        processing_process.kill()
+        data_process.kill()
+
 if __name__ == '__main__':
     name = 'UCoMP pipeline @GIT_VERSION@ [@GIT_REVISION@] (@GIT_BRANCH@)'
 
@@ -411,6 +471,17 @@ if __name__ == '__main__':
     archive_parser.add_argument('-f', '--flags', type=str, help=flags_help,
                                 default='latest')
     archive_parser.set_defaults(func=archive, parser=archive_parser)
+
+    # simulate sub-command
+    simulate_parser = subparsers.add_parser('simulate',
+                                            help='simulate realtime processing')
+    simulate_parser.add_argument('dates', type=str, nargs='*', help=date_help,
+                                 metavar='date-expr')
+    simulate_parser.add_argument('-f', '--flags', type=str, help=flags_help,
+                                default='latest')
+    simulate_parser.add_argument('--no-eod', action='store_true',
+                                 help='set to not launch end-of-day processing')
+    simulate_parser.set_defaults(func=simulate, parser=simulate_parser)
 
     # parse args and call appropriate sub-command
     args = parser.parse_args()
