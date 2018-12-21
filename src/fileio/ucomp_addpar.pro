@@ -10,10 +10,10 @@
 ;     FITS keyword name
 ;   value : in, optional, type=any
 ;     value of keyword
-;   comment : in, optional, type=string
-;     value of comment
 ;
 ; :Keywords:
+;   comment : in, optional, type=string
+;     value of comment
 ;   before : in, optional, type=string
 ;     keyword name to place this keyword before
 ;   after : in, optional, type=string
@@ -21,8 +21,10 @@
 ;   format : in, optional, type=string
 ;     IDL format code to use for value
 ;-
-pro ucomp_addpar, header, name, value, comment, $
-                  before=before, after=after, format=format
+pro ucomp_addpar, header, name, value, $
+                  comment=comment, $
+                  before=before, after=after, $
+                  format=format
   compile_opt strictarr
 
   ; add a leading space to comment, if it's not already there
