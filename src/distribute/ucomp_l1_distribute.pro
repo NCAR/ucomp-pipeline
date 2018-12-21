@@ -20,8 +20,7 @@ pro ucomp_l1_distribute, wave_type, run=run
     goto, done
   endif
 
-  ; TODO: make tarball of L1 data
-  ; TODO: put link to L1 tarball in HPSS directory
+  ucomp_l1_archive, wave_type, run=run
 
   ; TODO: copy L1 data into archive, etc. directories
   archive_dir = filepath('', $
