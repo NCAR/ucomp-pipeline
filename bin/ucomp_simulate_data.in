@@ -1,0 +1,128 @@
+#!/usr/bin/env python
+
+import argparse
+import datetime
+import glob
+import logging
+import os
+import re
+import shutil
+import sys
+import time
+
+
+UCOMP_L0_RE = '^\d{8}.\d{6}.ucomp\.fts$'
+UCOMP_LOG_RE = '^\d{8}\.ucomp\.t\d\.log$'
+
+DOWNLOAD_TIME = 3.0  # in seconds
+
+
+# setup the logging mechanism
+logging.basicConfig(format='%(asctime)s %(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S',
+                    level=logging.DEBUG)
+
+
+def decompose_filename(f):
+    parts = [f[0:4], f[4:6], f[6:8], f[9:11], f[11:13], f[13:15]]
+    return tuple(int(p) for p in parts)
+
+
+def catalog_depot(depot_dir):
+    '''UCoMP raw data filenames are of the form `20170131.022253.ucomp.fts`; log
+       files are of the form `20170131.ucomp.t1.log`.'''
+    files = os.listdir(depot_dir)
+    l0_re = re.compile(UCOMP_L0_RE)
+    log_re = re.compile(UCOMP_LOG_RE)
+    data_files = [f for f in sorted(files) if l0_re.match(f)]
+    dates = [datetime.datetime(*decompose_filename(f)) for f in data_files]
+    logs = [f for f in files if log_re.match(f)]
+    return [{'filename': f, 'date': d} for f, d in zip(data_files, dates)], logs
+
+
+def download_loop(depot_dir, raw_dir, arrival_interval):
+    logging.info('starting UCoMP realtime data simulator...')
+    logging.info('depot directory   : %s', depot_dir)
+    logging.info('raw directory     : %s', raw_dir)
+    logging.info('arrival interval  : %0.1f seconds', arrival_interval)
+    logging.info('download time     : %0.1f seconds', DOWNLOAD_TIME)
+
+    start_time = datetime.datetime.now()
+    catalog, logs = catalog_depot(depot_dir)
+    delta = start_time - catalog[0]['date'] - datetime.timedelta(seconds=arrival_interval)
+
+    logging.info('%d file%s in depot...', len(catalog), '' if len(catalog) == 1 else 's')
+    logging.info('%s to %s (duration: %s)',
+                 catalog[0]['date'],
+                 catalog[-1]['date'],
+                 catalog[-1]['date'] - catalog[0]['date'])
+
+    if not len(logs) == 2:
+        logging.error('%d t1/t2 logs in depot, exiting...', len(logs))
+        return
+
+    # if raw_dir does not exist, create it
+    if not os.path.isdir(raw_dir):
+        os.makedirs(raw_dir)
+
+    while True:
+        # copy files before now - delta that are still in catalog
+        now = datetime.datetime.now()
+        d = catalog[0]['date']
+        while catalog and d < now - delta:
+            c = catalog.pop(0)
+            d = None if not catalog else catalog[0]['date']
+            logging.info('copying %s...' % c['filename'])
+            shutil.copy(os.path.join(depot_dir, c['filename']), raw_dir)
+            time.sleep(DOWNLOAD_TIME)
+
+        if not catalog:
+            for f in logs:
+                logging.info('copying %s...', f)
+                shutil.copy(os.path.join(depot_dir, f), raw_dir)
+            logging.info('done copying files')
+            return
+
+        downloading_time = (datetime.datetime.now() - now).total_seconds()
+        time.sleep(arrival_interval - downloading_time)
+
+
+if __name__ == '__main__':
+    name = 'Realtime UCoMP pipeline data simulator @GIT_VERSION@ [@GIT_REVISION@] (@GIT_BRANCH@)'
+
+    parser = argparse.ArgumentParser(description=name)
+
+    depot_dir_help = '''source directory of data files'''
+    parser.add_argument('depot_dir', type=str, help=depot_dir_help)
+
+    raw_dir_help = '''destination for copying, the default is the
+                      current directory'''
+    parser.add_argument('-r', '--raw-dir', type=str, help=raw_dir_help)
+
+    arrival_interval_help = 'seconds between copies, default is 60 seconds'
+    parser.add_argument('-a', '--arrival-interval',
+                        type=float,
+                        help=arrival_interval_help,
+                        default=60.0)
+
+    parser.add_argument('-v', '--version',
+                        action='version',
+                        version=name)
+
+    args = parser.parse_args()
+
+    raw_dir = args.raw_dir if args.raw_dir else os.getcwd()
+
+    # clean raw_dir before starting
+    for f in glob.glob(os.path.join(raw_dir, '*.fts')):
+        os.remove(f)
+    for f in glob.glob(os.path.join(raw_dir, '*.log')):
+        os.remove(f)
+
+    try:
+        download_loop(args.depot_dir, raw_dir.lstrip(), args.arrival_interval)
+    except KeyboardInterrupt:
+        logging.info('quitting...')
+        sys.exit(1)
+
+    logging.info('done')
