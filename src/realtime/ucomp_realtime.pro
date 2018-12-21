@@ -71,9 +71,18 @@ pro ucomp_realtime, date, config_filename
 
   ucomp_update_catalog, new_files, catalog_filename
 
+  run->make_raw_inventory, new_files
 
-  ;== TODO: create quicklook L0.5 files
+  ;== create quicklook L0.5 files
 
+  wave_types = run->config('options/wave_types')
+  for w = 0L, n_elements(wave_types) - 1L do begin
+    run->getProperty, files=files, wave_type=wave_types[w], count=n_files
+    for f = 0L, n_files - 1L do begin
+      ucomp_pipeline_step, 'ucomp_quicklook', files[f], run=run
+    endfor
+    ucomp_pipeline_step, 'ucomp_quicklook_distribute', files, run=run
+  endfor
 
 
   ;== cleanup and quit

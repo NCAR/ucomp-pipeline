@@ -5,18 +5,29 @@
 
 ;+
 ; Create an inventory of the raw files for a run.
+;
+; :Params:
+;   raw_files : in, optional, type=strarr
+;     raw files to inventory, default is all raw files in the `l0_dir`
 ;-
-pro ucomp_run::make_raw_inventory
+pro ucomp_run::make_raw_inventory, raw_files
   compile_opt strictarr
 
   raw_dir = filepath(self.date, root=self->config('raw/basedir'))
-  raw_files = file_search(filepath('*.fts', root=raw_dir), count=n_raw_files)
+  if (n_elements(raw_files) eq 0L) then begin
+    _raw_files = file_search(filepath('*.fts', root=raw_dir), count=n_raw_files)
+  endif else begin
+    n_raw_files = n_elements(raw_files)
+    if (n_raw_files gt 0L) then begin
+      _raw_files = filepath(raw_files, root=raw_dir)
+    endif
+  endelse
 
   self->getProperty, logger_name=logger_name
 
   mg_log, '%d raw files', n_raw_files, name=logger_name, /info
   for f = 0L, n_raw_files - 1L do begin
-    file = ucomp_file(raw_files[f])
+    file = ucomp_file(_raw_files[f])
 
     mg_log, '%s.%s [%s] %s', $
             file.ut_date, file.ut_time, $
