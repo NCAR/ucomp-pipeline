@@ -58,20 +58,25 @@ pro ucomp_realtime, date, config_filename
   l0_dir = filepath(run.date, root=run->config('raw/basedir'))
   catalog_filename = filepath(string(run.date, format='(%"%s.ucomp.catalog.txt")'), $
                               subdir=run.date, $
-                              root=run->config('process/basedir'))
-  new_files = ucomp_new_files(l0_dir, catalog_filename, $
-                              count=n_new_files, error=error)
+                              root=run->config('processing/basedir'))
+  new_filenames = ucomp_new_files(l0_dir, catalog_filename, $
+                                  count=n_new_files, error=error)
+
   case error of
     0: ; no error
     1: mg_log, 'no catalog file', name=run.logger_name, /info
-    2: mg_log, 'files removed from raw dir', name=run.logger_name, /warn
-    3: mg_log, 'files removed from raw dir', name=run.logger_name, /warn
+    2: mg_log, 'files removed from raw dir (errno 2)', name=run.logger_name, /warn
+    3: mg_log, 'files removed from raw dir (errno 3)', name=run.logger_name, /warn
     else: mg_log, 'unknown error', name=run.logger_name, /warn
   endcase
 
-  ucomp_update_catalog, new_files, catalog_filename
+  mg_log, '%d new files', n_new_files, name=run.logger_name, /info
+  for f = 0L, n_new_files - 1L do begin
+    mg_log, '%s', new_filenames[f], name=run.logger_name, /debug
+  endfor
 
-  run->make_raw_inventory, new_files
+  ucomp_update_catalog, new_filenames, catalog_filename
+  run->make_raw_inventory, new_filenames
 
 
   ;== create quicklook L0.5 files
@@ -82,7 +87,7 @@ pro ucomp_realtime, date, config_filename
     n_digits = floor(alog10(n_files)) + 1L
     for f = 0L, n_files - 1L do begin
       mg_log, mg_format('%*d/%d @ %s: %s', n_digits, /simple), $
-              f + 1, n_files, wave_type, file_basename(files[f].raw_filename), $
+              f + 1, n_files, wave_types[w], file_basename(files[f].raw_filename), $
               name=run.logger_name, /info
       ucomp_pipeline_step, 'ucomp_quicklook', files[f], run=run
     endfor

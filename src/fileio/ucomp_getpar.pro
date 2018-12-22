@@ -28,7 +28,7 @@ function ucomp_getpar, header, name, float=float, found=found, comment=comment, 
   value = fxpar(header, name, comment=comment, /null, count=count, _extra=e)
 
   found = count gt 0L
-  comment = strtrim(comment, 2)
+  if (n_elements(comment) gt 0L) then comment = strtrim(comment, 2)
 
   if (keyword_set(float) && size(value, /type) eq 7) then begin
     value = float(value)
