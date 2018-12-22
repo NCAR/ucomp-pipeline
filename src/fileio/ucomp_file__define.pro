@@ -157,13 +157,13 @@ pro ucomp_file::_inventory
   self.data_type = ucomp_getpar(primary_header, 'DATATYPE')
   self.date_obs  = ucomp_getpar(primary_header, 'DATE-OBS')
   self.date_end  = ucomp_getpar(primary_header, 'DATE-END')
-  self.exposure  = ucomp_getpar(primary_header, 'EXPOSURE', /float)
 
   ; allocate inventory variables
   *self.wavelengths         = fltarr(self.n_extensions)
 
   ; TODO: exposure, data type, opal, dark shutter, polarizer, polarizer angle,
   ; retarder, etc.
+  ;  self.exposure  = ucomp_getpar(primary_header, 'EXPOSURE', /float)
 
   ; inventory extensions
   for e = 1L, self.n_extensions do begin

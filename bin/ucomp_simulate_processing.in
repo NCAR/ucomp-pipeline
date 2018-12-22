@@ -33,12 +33,12 @@ def launch_loop(date, config_flags, launch_interval, no_eod):
                date]
 
     while True:
-        logging.info(' '.join(realtime_cmd))
+        #logging.info(' '.join(realtime_cmd))
         realtime_pid = subprocess.Popen(realtime_cmd).pid
         logging.info('launched UCoMP realtime pipeline with pid %d', realtime_pid)
         time.sleep(EOD_WAIT)
         if not no_eod:
-            logging.info(' '.join(eod_cmd))
+            #logging.info(' '.join(eod_cmd))
             eod_pid = subprocess.Popen(eod_cmd).pid
             logging.info('launched UCoMP end-of-day pipeline with pid %d', eod_pid)
             time.sleep(launch_interval - EOD_WAIT)
@@ -78,4 +78,4 @@ if __name__ == '__main__':
         logging.info('quitting...')
         sys.exit(1)
 
-    logging.info('done')
+    logging.info('processing simulator done')

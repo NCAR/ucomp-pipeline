@@ -125,4 +125,4 @@ if __name__ == '__main__':
         logging.info('quitting...')
         sys.exit(1)
 
-    logging.info('done')
+    logging.info('data simulator done')

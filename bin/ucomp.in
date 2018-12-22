@@ -7,6 +7,7 @@ import os
 import psutil
 import re
 import subprocess
+import sys
 import time
 
 
@@ -343,10 +344,10 @@ def simulate(args):
     # launch processing simulator
     processing_cmd = [os.path.join(pipeline_dir, 'bin', 'ucomp_simulate_processing'),
                       '-f', args.flags,
-                      '--launch-interval', '%f' % launch_interval,
-                      args.date]
+                      '--launch-interval', launch_interval,
+                      dates[0]]
     if args.no_eod:
-        processing_cmd.insert(2, '--no-eod')
+        processing_cmd.insert(1, '--no-eod')
     processing_process = subprocess.Popen(processing_cmd)
 
     time.sleep(5.0)
@@ -354,8 +355,8 @@ def simulate(args):
     # launch incoming data simulator
     data_cmd = [os.path.join(pipeline_dir, 'bin', 'ucomp_simulate_data'),
                 '-r', raw_dir,
-                '--arrival-interval', '%f' % arrival_interval,
-                os.path.join(depot_basedir, args.date)]
+                '--arrival-interval', arrival_interval,
+                os.path.join(depot_basedir, dates[0])]
     data_process = subprocess.Popen(data_cmd)
 
     try:
@@ -475,8 +476,9 @@ if __name__ == '__main__':
     # simulate sub-command
     simulate_parser = subparsers.add_parser('simulate',
                                             help='simulate realtime processing')
-    simulate_parser.add_argument('dates', type=str, nargs='*', help=date_help,
-                                 metavar='date-expr')
+    simulate_parser.add_argument('dates', type=str, nargs='*',
+                                 help='date to run on in the form YYYYMMDD',
+                                 metavar='date')
     simulate_parser.add_argument('-f', '--flags', type=str, help=flags_help,
                                 default='latest')
     simulate_parser.add_argument('--no-eod', action='store_true',
