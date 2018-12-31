@@ -72,6 +72,10 @@ pro ucomp_wave_type_histogram, output_filename, $
   histograms = histograms[ind, *]
   colors     = colors[ind]
   wave_types = wave_types[ind]
+  wave_names = wave_types
+  for w = 0L, n_nonzero_wave_types - 1L do begin
+    wave_names[w] = run->line(wave_types[w], 'name')
+  endfor
 
   ; display plot
 
@@ -89,16 +93,17 @@ pro ucomp_wave_type_histogram, output_filename, $
                        ystyle=9, yrange=[0, max_files], yticks=4, $
                        charsize=0.85, $
                        xtitle='Time (HST)', ytitle='# of files', $
-                       position=[0.075, 0.25, 0.85, 0.95]
+                       position=[0.075, 0.25, 0.75, 0.95]
 
   square = mg_usersym(/square, /fill)
-  mg_legend, item_name=wave_types + ' ' + strtrim(sums, 2), $
+  mg_legend, item_name=wave_types + ' (' + wave_names + ') '+ strtrim(sums, 2), $
              item_color=colors, $
              item_psym=square, $
              item_symsize=1.5, $
              color='000000'x, $
              charsize=0.85, $
-             position=[0.875, 0.15, 0.95, 0.95]
+             gap=0.075, $
+             position=[0.775, 0.15, 0.95, 0.95]
 
   im = tvrd(true=1)
   tvlct, original_rgb

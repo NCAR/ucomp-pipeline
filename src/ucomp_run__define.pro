@@ -266,6 +266,26 @@ function ucomp_run::epoch, option_name, datetime=datetime
 end
 
 
+;+
+; Retrieve the value for a given option name for a given line.
+;
+; :Returns:
+;   any
+;
+; :Params:
+;   line : in, required, type=string
+;     line name, e.g., '1074'
+;   option_name : in, required, type=string
+;     name of an epoch option, e.g., 'center_wavelength'
+;-
+function ucomp_run::line, line, option_name
+  compile_opt strictarr
+
+  value = self.lines->get(option_name, section=line, found=found)
+  return, value
+end
+
+
 ;= config values
 
 ;+
@@ -434,7 +454,7 @@ end
 pro ucomp_run::cleanup
   compile_opt strictarr
 
-  obj_destroy, [self.options, self.epochs]
+  obj_destroy, [self.options, self.epochs, self.lines]
 
   ; performance monitoring API
   obj_destroy, [self.calls, self.times]
@@ -499,6 +519,18 @@ function ucomp_run::init, date, mode, config_filename, no_log=no_log
     return, 0
   endif
 
+  ; setup information about lines
+  lines_filename = filepath('lines.cfg', root=mg_src_root())
+  lines_spec_filename = filepath('lines.spec.cfg', root=mg_src_root())
+
+  self.lines = mg_read_config(lines_filename, spec=lines_spec_filename)
+  lines_valid = self.lines->is_valid(error_msg=error_msg)
+  if (~lines_valid) then begin
+    mg_log, 'invalid lines file', name=logger_name, /critical
+    mg_log, '%s', error_msg, name=logger_name, /critical
+    return, 0
+  endif
+
   self.files = hash()   ; wave_type (string) -> list of file objects
 
   ; performance monitoring
@@ -521,6 +553,7 @@ pro ucomp_run__define
            t0:      0.0D, $
            options: obj_new(), $
            epochs:  obj_new(), $
+           lines:   obj_new(), $
            files:   obj_new(), $
 
            ; performance
