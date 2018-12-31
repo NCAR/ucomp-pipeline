@@ -96,13 +96,14 @@ pro ucomp_wave_type_histogram, output_filename, $
                        position=[0.075, 0.25, 0.75, 0.95]
 
   square = mg_usersym(/square, /fill)
-  mg_legend, item_name=wave_types + ' (' + wave_names + ') '+ strtrim(sums, 2), $
+  mg_legend, item_name=wave_types + ' [' + wave_names + ']: '+ strtrim(sums, 2), $
              item_color=colors, $
              item_psym=square, $
              item_symsize=1.5, $
              color='000000'x, $
              charsize=0.85, $
              gap=0.075, $
+             line_bump=0.06, $
              position=[0.775, 0.15, 0.95, 0.95]
 
   im = tvrd(true=1)
