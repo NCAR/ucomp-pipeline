@@ -63,6 +63,7 @@ end
 ;   quality_bitmask : in, optional, type=ulong
 ;     set to value to `or` with current value, values are::
 ;
+;       0 - OK
 ;       1 - cover in
 ;       2 - moving optic elements, i.e., occulter, cal optics, etc.
 ;-
