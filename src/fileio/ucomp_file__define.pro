@@ -58,11 +58,20 @@ end
 
 ;+
 ; Set property values.
+;
+; :Keywords:
+;   quality_bitmask : in, optional, type=ulong
+;     set to value to `or` with current value, values are::
+;
+;       1 - cover in
+;       2 - moving optic elements, i.e., occulter, cal optics, etc.
 ;-
-pro ucomp_file::setProperty, pass_quality=pass_quality
+pro ucomp_file::setProperty, quality_bitmask=quality_bitmask
   compile_opt strictarr
 
-  if (n_elements(pass_quality) gt 0L) then self.pass_quality = pass_quality
+  if (n_elements(quality_bitmask) gt 0L) then begin
+    self.quality_bitmask or= quality_bitmask
+  endif
 end
 
 
@@ -82,7 +91,8 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
                              n_extensions=n_extensions, $
                              wavelengths=wavelengths, $
                              n_unique_wavelengths=n_unique_wavelengths, $
-                             pass_quality=pass_quality
+                             quality_bitmask=quality_bitmask, $
+                             ok=ok
   compile_opt strictarr
 
   ; for the file
@@ -111,7 +121,8 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
   if (arg_present(wave_type)) then wave_type = self.wave_type
   if (arg_present(data_type)) then data_type = self.data_type
 
-  if (arg_present(pass_quality)) then pass_quality = self.pass_quality
+  if (arg_present(quality_bitmask)) then quality_bitmask = self.quality_bitmask
+  if (arg_present(ok)) then ok = self.quality_bitmask eq 0
 
   ; by extension
   if (arg_present(wavelengths)) then wavelengths = *self.wavelengths
@@ -157,6 +168,19 @@ pro ucomp_file::_inventory
   self.data_type = ucomp_getpar(primary_header, 'DATATYPE')
   self.date_obs  = ucomp_getpar(primary_header, 'DATE-OBS')
   self.date_end  = ucomp_getpar(primary_header, 'DATE-END')
+
+  cover = ucomp_getpar(primary_header, 'COVER')
+  self.cover_in = cover eq 'in'
+  if (self.cover_in) then self->setProperty, quality_bitmask=ishft(1, 0)
+  if (cover ne 'in' && cover ne 'out') then begin
+    self->setProperty, quality_bitmask=ishft(1, 1)
+  endif
+
+  occulter = ucomp_getpar(primary_header, 'OCCLTR')
+  self.occulter_in = occulter eq 'in'
+  if (occulter ne 'in' && occulter ne 'out') then begin
+    self->setProperty, quality_bitmask=ishft(1, 1)
+  endif
 
   ; allocate inventory variables
   *self.wavelengths         = fltarr(self.n_extensions)
@@ -229,11 +253,16 @@ pro ucomp_file__define
            date_obs            : '', $
            date_end            : '', $
            n_extensions        : 0L, $
+
            wave_type           : '', $
            data_type           : '', $
            exposure            : 0.0, $
+           occulter_in         : 0B, $
+           cover_in            : 0B, $
+
            wavelengths         : ptr_new(), $
-           pass_quality        : 0B $
+
+           quality_bitmask     : 0UL $
           }
 end
 

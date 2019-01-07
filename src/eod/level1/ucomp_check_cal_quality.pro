@@ -23,10 +23,10 @@ pro ucomp_check_cal_quality, run=run
   for f = 0L, n_files - 1L do begin
     ucomp_read_raw_data, (files[f]).raw_filename, ext_data=ext_data
 
-    ; TODO: check ext_data, set pass_quality to 0B or 1B
-    pass_quality = 1B
+    ; TODO: check ext_data, set quality_bitmask
+    quality_bitmask = 0UL
 
-    files[f].pass_quality = pass_quality
+    files[f].quality_bitmask = quality_bitmask
   endfor
 
   done:

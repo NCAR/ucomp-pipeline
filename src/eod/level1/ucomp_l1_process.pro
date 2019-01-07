@@ -29,7 +29,7 @@ pro ucomp_l1_process, wave_type, run=run
     mg_log, mg_format('%*d/%d @ %s: %s', n_digits, /simple), $
             f + 1, n_files, wave_type, file_basename(files[f].raw_filename), $
             name=run.logger_name, /info
-    if (files[f].pass_quality) then begin
+    if (files[f].ok) then begin
       ucomp_l1_process_file, files[f], run=run
     endif else begin
       mg_log, 'skipping for poor quality', name=run.logger_name, /info
