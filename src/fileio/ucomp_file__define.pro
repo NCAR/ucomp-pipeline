@@ -196,6 +196,8 @@ pro ucomp_file::_inventory
                /no_abort, message=error_msg
     if (error_msg ne '') then message, error_msg
 
+    ; TODO: check for non-in/out values for CALOPTIC, DARKSHUT, CALPOL
+
     (*self.wavelengths)[e - 1] = ucomp_getpar(extension_header, 'WAVELENG', /float)
   endfor
 
