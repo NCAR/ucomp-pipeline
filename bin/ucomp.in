@@ -405,7 +405,8 @@ if __name__ == '__main__':
     log_parser = subparsers.add_parser('log',
                                        help='filter/display log output')
     log_parser.add_argument('logfiles', nargs='+',
-                            help='UCoMP log filenames or dates')
+                            help='UCoMP log filename or date',
+                            metavar='logfile')
     level_help = 'filter level: DEBUG INFO WARN ERROR CRITICAL (default DEBUG)'
     log_parser.add_argument('-l', '--level',
                             help=level_help)
