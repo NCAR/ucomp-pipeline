@@ -87,6 +87,7 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
                              ut_time=ut_time, $
                              date_obs=date_obs, $
                              date_end=date_end, $
+                             carrington_rotation=carrington_rotation, $
                              wave_type=wave_type, $
                              data_type=data_type, $
                              n_extensions=n_extensions, $
@@ -118,6 +119,13 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
 
   if (arg_present(date_obs)) then date_obs = self.date_obs
   if (arg_present(date_end)) then date_end = self.date_end
+
+  if (arg_present(carrington_rotation)) then begin
+    date_parts = ucomp_decompose_date(self.ut_date)
+    hours = ucomp_decompose_time(self.ut_time, /float)
+    sun, date_parts[0], date_parts[1], date_parts[2], hours, $
+         carrington=carrington_rotation
+  endif
 
   if (arg_present(wave_type)) then wave_type = self.wave_type
   if (arg_present(data_type)) then data_type = self.data_type

@@ -13,6 +13,10 @@ pro ucomp_l0_archive, run=run
   cd, current=original_dir
 
   l0_dir = filepath(run.date, root=run->config('raw/basedir'))
+  if (~file_test(l0_dir)) then begin
+    mg_log, 'raw directory does not exist', name=run.logger_name, /error
+    goto, done
+  endif
   cd, l0_dir
 
   ; make tarball of L0 data

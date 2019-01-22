@@ -2,21 +2,22 @@
 -- this table is for user searches
 
 create table ucomp_file (
-  file_id          int (10) auto_increment primary key,
-  file_name        char (35) not null, 
-  date_obs         datetime not null, 
-  obsday_id        mediumint (5) not null,
+  file_id               int (10) auto_increment primary key,
+  file_name             char (35) not null, 
+  date_obs              datetime not null, 
+  obsday_id             mediumint (5) not null,
+  carrington_rotation   mediumint (5),
 
-  level_id         tinyint (2) not null,
-  producttype_id   tinyint (2),
-  filetype_id      tinyint (2),
+  level_id              tinyint (2) not null,
+  producttype_id        tinyint (2),
+  filetype_id           tinyint (2),
 
-  quality          tinyint (2),
+  quality               tinyint (2),
 
-  wavetype         smallint,
-  ntunes           tinyint (2),
+  wavetype              smallint,
+  ntunes                tinyint (2),
 
-  ucomp_sw_id      int (10),
+  ucomp_sw_id           int (10),
 
   unique (file_name),
 
