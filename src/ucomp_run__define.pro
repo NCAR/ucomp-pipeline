@@ -355,8 +355,7 @@ pro ucomp_run::getProperty, date=date, $
         files_list->add, f, /extract
       endforeach
       count = files_list->count()
-      files = files_list->toArray()
-      obj_destroy, files
+      if (arg_present(files)) then files = files_list->toArray()
     endif else begin
       if (n_elements(wave_type) gt 0L $
             && (self.files)->hasKey(wave_type)) then begin

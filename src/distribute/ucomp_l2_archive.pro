@@ -20,8 +20,19 @@ pro ucomp_l2_archive, wave_type, run=run
     goto, done
   endif
 
+  cd, current=original_dir
+
+  l2_dir = filepath(run.date, subdir='level2', $
+                    root=run->config('processing/basedir'))
+  if (~file_test(l2_dir)) then begin
+    mg_log, 'L2 directory does not exist', name=run.logger_name, /error
+    goto, done
+  endif
+  cd, l2_dir
+
   ; TODO: make tarball of L2 data
   ; TODO: put link to L2 tarball in HPSS directory
 
   done:
+  cd, original_dir
 end

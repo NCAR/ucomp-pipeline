@@ -43,16 +43,16 @@ pro ucomp_db_file_insert, l1_files, obsday_index, sw_index, db, $
 
     mg_log, 'ingesting %s', file.l1_basename, name=logger_name, /info
 
-    quality = 100
-    q = 'insert into ucomp_file (file_name, date_obs, obsday_id, level_id, producttype_id, filetype_id, quality, wavetype, ntunes, ucomp_sw_id) values (''%s'', ''%s'', %d, %d, %d, %d, %d, %d, %d, %d)'
+    q = 'insert into ucomp_file (file_name, date_obs, obsday_id, carrington_rotation, level_id, producttype_id, filetype_id, quality, wavetype, ntunes, ucomp_sw_id) values (''%s'', ''%s'', %d, %d, %d, %d, %d, %d, %d, %d, %d)'
     db->execute, q, $
                  file.l1_basename, $
                  file.date_obs,$
                  obsday_index, $
+                 long(file.carrington_rotation), $
                  level_index, $
                  producttype_index, $
                  filetype_index, $
-                 quality, $
+                 file.quality_bitmask, $
                  long(file.wave_type), $
                  file.n_unique_wavelengths, $
                  sw_index, $
