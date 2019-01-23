@@ -31,14 +31,14 @@ function ucomp_db_sw_insert, db, status=status, logger_name=logger_name
 
   if (sw_id_count eq 0) then begin
     date_format = '(C(CYI, "-", CMOI2.2, "-", CDI2.2, "T", CHI2.2, ":", CMI2.2, ":", CSI2.2))'
-    proc_date = string(julday(), format=date_format)
+    release_date = string(julday(), format=date_format)
 
     mg_log, 'inserting new version %s [%s]', version, revision, $
             name=logger_name, /info
 
     ; if not already in table, create a new entry for the sw version/revision
-    db->execute, 'insert into ucomp_sw (sw_version, sw_revision, date) values (''%s'', ''%s'', ''%s'') ', $
-                 version, revision, proc_date, $
+    db->execute, 'insert into ucomp_sw (release_date, sw_version, sw_revision) values (''%s'', ''%s'', ''%s'')',
+                 release_date, version, revision, $
                  status=status, error_message=error_message, sql_statement=sql_cmd
     if (status ne 0L) then begin
       mg_log, 'error inserting into ucomp_sw table', $
@@ -47,11 +47,14 @@ function ucomp_db_sw_insert, db, status=status, logger_name=logger_name
               name=logger_name, /error
       mg_log, 'SQL command: %s', sql_cmd, $
               name=logger_name, /error
+
+      sw_index = 0L
+      goto, done
     endif
 
     sw_index = db->query('select last_insert_id()')
   endif else begin
-    ; if it is in the database, get the corresponding index, day_id
+    ; if it is in the database, get the corresponding index
     q = 'select sw_id from ucomp_sw where sw_version=''%s'' and sw_revision=''%s'''
     sw_id_results = db->query(q, version, revision)
     sw_index = sw_id_results.sw_id
@@ -81,6 +84,8 @@ function ucomp_db_sw_insert, db, status=status, logger_name=logger_name
       sw_index = sw_index[0]
     endif
   endelse
+
+  done:
 
   return, sw_index
 end

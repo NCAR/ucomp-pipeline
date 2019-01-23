@@ -49,6 +49,19 @@ create table ucomp_eng (
   lcvr4tmp       float (9, 6),  --  deg C
 
   occltrid       char (10),
+
+  -- moved from ucomp_sw, do they belong here?
+  dmodswid         char(24),
+  distort          char(50),
+
+  bunit            varchar(12),
+  bzero            float(6, 3),
+  bscale           float(6, 3),
+  labviewid        varchar(20),
+  socketcamid      varchar(20),
+
+  sky_pol_factor   float(6, 3),
+  sky_bias         float(7, 4)
   
   ucomp_sw_id    int (10),
 

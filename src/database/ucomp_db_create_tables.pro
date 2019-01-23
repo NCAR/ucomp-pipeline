@@ -10,7 +10,7 @@
 ; :Author:
 ;   MLSO Software Team
 ;-
-pro ucomp_create_tables, config_filename
+pro ucomp_db_create_tables, config_filename
   compile_opt strictarr
 
   config_fullpath = file_expand_path(config_filename)
@@ -122,7 +122,7 @@ config_filename = filepath('ucomp.mgalloy.pike.latest.cfg', $
                            root=mg_src_root())
 
 run = ucomp_run(date, 'eod', config_filename)
-ucomp_create_tables, run=run
+ucomp_db_create_tables, run=run
 
 obj_destroy, run
 
