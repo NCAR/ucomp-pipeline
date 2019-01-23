@@ -24,4 +24,4 @@ ${IDL} -quiet \
     -IDL_STARTUP "" \
     -IDL_PATH ${UCOMP_PATH} \
     -IDL_DLM_PATH ${UCOMP_DLM_PATH} \
-    -e "ucomp_create_tables, '${CONFIG}'"
+    -e "ucomp_db_create_tables, '${CONFIG}'"
