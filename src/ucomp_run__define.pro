@@ -45,6 +45,36 @@ end
 
 
 ;+
+; Retrieve a dark image for a given science image.
+;
+; :Params:
+;   time : in, required, type=string
+;     time of science image in UT with format "HHMMSS"
+;-
+function ucomp_run::get_dark, time
+  compile_opt strictarr
+
+  ; TODO: implement
+end
+
+
+;+
+; Retrieve a flat image for a given science image.
+;
+; :Params:
+;   time : in, required, type=string
+;     time of science image in UT with format "HHMMSS"
+;   wavelength : in, required, type=float
+;     wavelength of science image in nm
+;-
+function ucomp_run::get_flat, time, wavelength
+  compile_opt strictarr
+
+  ; TODO: implement
+end
+
+
+;+
 ; Lock the raw directory if required and available.
 ;
 ; :Keywords:
