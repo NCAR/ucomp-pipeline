@@ -367,6 +367,11 @@ def simulate(args):
         processing_process.kill()
         data_process.kill()
 
+
+def print_help(args):
+    args.parser.print_help()
+
+
 if __name__ == '__main__':
     name = 'UCoMP pipeline @GIT_VERSION@ [@GIT_REVISION@] (@GIT_BRANCH@)'
 
@@ -376,6 +381,9 @@ if __name__ == '__main__':
     parser.add_argument('-v', '--version',
                         action='version',
                         version=name)
+
+    # show help if no sub-command given
+    parser.set_defaults(func=print_help, parser=parser)
 
     subparsers = parser.add_subparsers(help='sub-command help')
 
@@ -488,4 +496,7 @@ if __name__ == '__main__':
 
     # parse args and call appropriate sub-command
     args = parser.parse_args()
-    args.func(args)
+    if parser.get_default('func'):
+        args.func(args)
+    else:
+        parser.print_help()
