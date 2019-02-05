@@ -165,10 +165,18 @@ pro ucomp_run::report_profiling
 
   if (~self->config('engineering/profile')) then return
 
-  ; if needed, create engineering directory 
+  ; quit if no place to put profile results
+  engineering_basedir = self->config('engineering/basedir')
+  if (n_elements(engineering_basedir) eq 0L) then begin
+    mg_log, 'no engineering/basedir to save profiling', $
+            name=self.logger_name, /warn
+    return
+  endif
+
+  ; if needed, create engineering directory
   eng_dir = filepath('', $
                      subdir=ucomp_decompose_date(self.date), $
-                     root=self->config('engineering/basedir'))
+                     root=engineering_basedir)
   if (~file_test(eng_dir, /directory)) then begin
     file_mkdir, eng_dir
     self->getProperty, logger_name=logger_name
@@ -177,7 +185,7 @@ pro ucomp_run::report_profiling
 
   basename = string(self.date, format='(%"%s.ucomp.profiler.csv")')
   filename = filepath(basename, root=eng_dir)
-
+    
   mg_profiler_report, filename=filename, /csv
 end
 
@@ -337,7 +345,7 @@ function ucomp_run::config, name
 
   value = self.options->get(tokens[1], section=tokens[0], found=found)
 
-  if (name eq 'raw/basedir' && value eq '') then begin
+  if (name eq 'raw/basedir' && n_elements(value) eq 0L) then begin
     routing_file = self.options->get('routing_file', section='raw')
     value = ucomp_get_route(routing_file, self.date)
   endif

@@ -334,12 +334,12 @@ def simulate(args):
     config = configparser.ConfigParser()
     config.read(config_filename)
 
-    depot_basedir = config.get('testing', 'depot_basedir')
+    depot_basedir = config.get('simulator', 'depot_basedir')
     raw_basedir = config.get('raw', 'basedir')
     raw_dir = os.path.join(raw_basedir, dates[0])
 
-    arrival_interval = config.get('testing', 'arrival_interval')
-    launch_interval = config.get('testing', 'launch_interval')
+    arrival_interval = config.get('simulator', 'arrival_interval', '60.0')
+    launch_interval = config.get('simulator', 'launch_interval', '60.0')
 
     # launch processing simulator
     processing_cmd = [os.path.join(pipeline_dir, 'bin', 'ucomp_simulate_processing'),
