@@ -76,7 +76,7 @@ pro ucomp_l0_archive, run=run
   hpss_gateway = run->config('results/hpss_gateway')
   if (run->config('raw/send_to_hpss')) then begin
     if (~run->config('eod/reprocess')) then begin
-      if (hpss_gateway ne '') then begin
+      if (n_elements(hpss_gateway) gt 0L) then begin
         ; create HPSS gateway directory if needed
         if (~file_test(hpss_gateway, /directory)) then begin
           file_mkdir, hpss_gateway

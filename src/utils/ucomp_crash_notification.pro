@@ -16,8 +16,21 @@ pro ucomp_crash_notification, run=run
     if (n_elements(helpOutput) gt 1L && help_output[0] ne '') then begin
       print, transpose(help_output)
     endif
-    return
+    goto, done
   endif
+
+  address = run->config('notifications/email')
+  if (run->config('notifications/send')) then begin
+    if (n_elements(address) eq 0L) then begin
+      mg_log, 'no address for crash notification', name=logger_name, /warn
+    endif else begin
+      mg_log, 'sending crash notification to %s', address, $
+              name=logger_name, /info
+    endelse
+  endif else begin
+    mg_log, 'not sending crash notification', name=logger_name, /info
+    goto, done
+  endelse
 
   body = [help_output, '']
 
@@ -40,15 +53,6 @@ pro ucomp_crash_notification, run=run
       end
   endcase
 
-  address = run->config('notifications/email')
-  if (address eq '') then begin
-    mg_log, 'not sending crash notification', name=logger_name, /info
-    return
-  endif else begin
-    mg_log, 'sending crash notification to %s', address, $
-            name=logger_name, /info
-  endelse
-
   spawn, 'echo $(whoami)@$(hostname)', who, error_result, exit_status=status
   if (status eq 0L) then begin
     who = who[0]
@@ -63,4 +67,6 @@ pro ucomp_crash_notification, run=run
   body = [body, '', credit]
 
   mg_send_mail, address, subject, body, error=error
+
+  done:
 end
