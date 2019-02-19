@@ -128,7 +128,8 @@ pro ucomp_eod, date, config_filename
 
   ; unlock raw directory and mark processed if no crash
   if (obj_valid(run)) then begin
-    run->unlock, mark_processed=error eq 0
+    ; only unlock if this process was responsible for locking it
+    if (is_available) then run->unlock, mark_processed=error eq 0
 
     run->report
     run->report_profiling

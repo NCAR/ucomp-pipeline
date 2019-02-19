@@ -53,6 +53,9 @@ pro ucomp_realtime, date, config_filename
 
   mg_log, 'starting processing for %d...', date, name=run.logger_name, /info
 
+  run->lock, is_available=is_available
+  if (~is_available) then goto, done
+
 
   ; find new files
   l0_dir = filepath(run.date, root=run->config('raw/basedir'))
@@ -102,7 +105,8 @@ pro ucomp_realtime, date, config_filename
 
   ; unlock raw directory and mark processed if no crash
   if (obj_valid(run)) then begin
-    run->unlock, mark_processed=error eq 0
+    ; only unlock if this process was responsible for locking it
+    if (is_available) then run->unlock
   endif
 
   t1 = systime(/seconds)
