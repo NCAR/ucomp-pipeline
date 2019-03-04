@@ -1,7 +1,8 @@
 ; docformat = 'rst'
 
-function ucomp_validate_l0_file_checkspec, specline, keyword_value, n_found, $
-                                           msg=error_msg
+function ucomp_validate_l0_file_checkspec, keyword_name, specline, $
+                                           keyword_value, n_found, $
+                                           error_msg=error_msg
   compile_opt strictarr
 
   required = 0B
@@ -54,26 +55,47 @@ function ucomp_validate_l0_file_checkspec, specline, keyword_value, n_found, $
   ;endif
 
   if (n_elements(value) gt 0L) then begin
-    if (keyword_value ne value) then begin
-      error_msg = string(keyword_value, format='(%"wrong value: %s")')
+    if (n_found eq 0L) then begin
+      error_msg = string(keyword_name, format='(%"%s: no value")')
       return, 0B
-    endif
+    endif else begin
+      if (keyword_value ne value) then begin
+        error_msg = string(keyword_value, format='(%"wrong value: %s")')
+        return, 0B
+      endif
+    endelse
   endif
 
   if (n_elements(values) gt 0L) then begin
-    ind = where(keyword_value eq values, count)
-    if (count ne 1L) then begin
-      error_msg = string(keyword_value, format='(%"not one of possible values: %s")')
+    if (n_found eq 0L) then begin
+      error_msg = string(keyword_name, format='(%"%s: no value")')
       return, 0B
-    endif
+    endif else begin
+      ind = where(keyword_value eq values, count)
+      if (count ne 1L) then begin
+        error_msg = string(keyword_value, format='(%"not one of possible values: %s")')
+        return, 0B
+      endif
+    endelse
   endif
 
   return, 1B
 end
 
 
-function ucomp_validate_l0_file_checkheader, header, type, spec, msg=error_msg
+function ucomp_validate_l0_file_checkheader, header, spec, $
+                                             extension=extension, $
+                                             error_list=error_list
   compile_opt strictarr
+
+  type = n_elements(extension) eq 0L ? 'primary' : 'extension'
+
+  case type of
+    'primary': location = 'primary header'
+    'extension': location = string(extension, format='(%"ext %d header")')
+  endcase
+
+  is_valid = 1B
 
   keywords = mg_fits_keywords(header, count=n_keywords)
   spec_keywords = spec->options(section=type, count=n_spec_keywords)
@@ -81,62 +103,77 @@ function ucomp_validate_l0_file_checkheader, header, type, spec, msg=error_msg
   if (n_keywords gt n_spec_keywords) then begin
     error_msg = string(n_keywords, n_spec_keywords, $
                        format='(%"more keywords (%d) than spec (%d)")')
-    return, 0B
+    is_valid = 0B
   endif
 
   for k = 0L, n_spec_keywords - 1L do begin
     specline = spec->get(spec_keywords[k], section=type)
     value = sxpar(header, spec_keywords[k], count=n_found)
-    is_valid = ucomp_validate_l0_file_checkspec(specline, value, n_found, $
-                                              msg=error_msg)
+    is_valid = ucomp_validate_l0_file_checkspec(spec_keywords[k], $
+                                                specline, value, n_found, $
+                                                error_msg=error_msg)
     if (~is_valid) then begin
-      error_msg = string(spec_keywords[k], error_msg, format='(%"%s: %s")')
-      return, 0B
+      error_list->add, string(location, spec_keywords[k], error_msg, $
+                              format='(%"%s: %s: %s")')
+      is_valid = 0B
     endif
   endfor
 
   for k = 0L, n_keywords - 1L do begin
     value = spec->get(keywords[k], section=type, found=found)
     if (~found) then begin
-      error_msg = string(keywords[k], $
-                         format='(%"keyword %s not found in spec")')
-      return, 0B
+      error_list->add, string(location, keywords[k], $
+                              format='(%"%s: keyword %s not found in spec")')
+      is_valid = 0B
     endif
   endfor
 
-  return, 1B
+  return, is_valid
 end
 
 
-function ucomp_validate_l0_file_checkdata, data, $
-                                           type=type, $
-                                           n_dimensions=n_dimensions, $
-                                           dimensions=dimensions, $
-                                           msg=error_msg
+function ucomp_validate_l0_file_checkdata, data, spec, $
+                                           n_extensions=n_extensions, $
+                                           error_list=error_list
   compile_opt strictarr
 
-  _type = size(data, /type)
-  if (_type ne type) then begin
-    error_msg = string(_type, format='(%"wrong type for data: %d")')
-    return, 0B
+  is_valid = 1B
+
+  ext_type = n_elements(n_extensions) eq 0L ? 'primary' : 'extension'
+  section = string(ext_type, format='(%"%s-data")')
+
+  data_type = size(data, /type)
+  spec_type = spec->get('type', section=section, type=3)
+
+  if (data_type ne spec_type) then begin
+    error_list->add, string(ext_type, data_type, spec_type, $
+                            format='(%"%s data: wrong type for data: %d (spec: %d)")')
+    is_valid = 0B
   endif
 
-  _n_dims = size(data, /n_dimensions)
-  if (_n_dims ne n_dimensions) then begin
-    error_msg = string(_n_dims, format='(%"wrong number of dims for data: %d")')
-    return, 0B
+  ; if extension data, remove n_extensions from end
+  data_n_dims = size(data, /n_dimensions) - (n_elements(n_extensions) gt 0L)
+  spec_n_dims = spec->get('n_dims', section=section)
+
+  if (data_n_dims ne spec_n_dims) then begin
+    error_list->add, string(ext_type, data_n_dims, spec_n_dims, $
+                            format='(%"%s data: wrong number of dims for data: %d (spec: %s)")')
+    is_valid = 0B
   endif
 
-  if (_n_dims ne 0L) then begin
-    _dims = size(data, /dimensions)
-    if (~array_equal(_dims, dimensions)) then begin
-      error_msg = string(strjoin(strtrim(_dims, 2), ', '), $
-                         format='(%"wrong dims for data: [%s]")')
-      return, 0B
-    endif
+  if (n_elements(n_extensions) gt 0L) then begin
+    data_dims = size(data, /dimensions)
+    for d = 0L, data_n_dims - 1L do begin
+      spec_dim = spec->get(string(d, format='(%"dim%d")'), section=section, type=3)
+      if (data_dims[d] ne spec_dim) then begin
+        error_list->add, string(ext_type, d, data_dims[d], spec_dim, $
+                                format='(%"%s data: wrong size for data dim %d, %d (spec: %d)")')
+        is_valid = 0B
+      endif
+    endfor
   endif
 
-  return, 1B
+  return, is_valid
 end
 
 
@@ -149,21 +186,32 @@ end
 ; :Params:
 ;   filename : in, required, type=string
 ;     L0 file to validate
+;   validation_spec : in, required, type=string
+;     filename of the specification of L0 keyword format
 ;
 ; :Keywords:
 ;   error_msg : out, optional, type=string
 ;     set to a named variable to retrieve the problem with the file (at least
 ;     the first problem encountered), empty string if no problem
 ;-
-function ucomp_validate_l0_file, filename, error_msg=error_msg
+function ucomp_validate_l0_file, filename, validation_spec, $
+                                 error_msg=error_msg
   compile_opt strictarr
 
+  error_list = list()
   error_msg = ''
+  is_valid = 1B
 
   catch, error
   if (error ne 0L) then begin
     catch, /cancel
-    error_msg = !error_state.msg
+    error_list->add, !error_state.msg
+    is_valid = 0B
+    goto, done
+  endif
+
+  if (~file_test(filename, /regular)) then begin
+    error_list->add, 'file does not exist'
     is_valid = 0B
     goto, done
   endif
@@ -175,63 +223,39 @@ function ucomp_validate_l0_file, filename, error_msg=error_msg
                        ext_headers=ext_headers, $
                        n_extensions=n_extensions
 
-  ; check primary data
-  is_valid = ucomp_validate_l0_file_checkdata(primary_data, $
-                                              type=3, $
-                                              n_dimensions=0, $
-                                              msg=error_msg)
-  if (~is_valid) then begin
-    error_msg = 'primary data: ' + error_msg
-    goto, done
-  endif
+  l0_spec = mg_read_config(validation_spec)
 
-  ; read spec
-  l0_header_spec_filename = filepath('ucomp.l0.validation.cfg', $
-                                     root=mg_src_root())
-  l0_header_spec = mg_read_config(l0_header_spec_filename)
+  ; check primary data
+  is_valid = ucomp_validate_l0_file_checkdata(primary_data, l0_spec, $
+                                              error_list=error_list)
 
   ; check primary header against header spec
   is_valid = ucomp_validate_l0_file_checkheader(primary_header, $
-                                                'primary', $
-                                                l0_header_spec, $
-                                                msg=error_msg)
-  if (~is_valid) then begin
-    error_msg = 'primary header: ' + error_msg
-    goto, done
-  endif
+                                                l0_spec, $
+                                                error_list=error_list)
 
   ; check extension data
-  is_valid = ucomp_validate_l0_file_checkdata(ext_data, $
-                                              type=4, $
-                                              n_dimensions=5, $
-                                              dimensions=[1280, 1024, 4, 2, n_extensions], $
-                                              msg=error_msg)
-  if (~is_valid) then begin
-    error_msg = 'ext data: ' + error_msg
-    goto, done
-  endif
+  is_valid = ucomp_validate_l0_file_checkdata(ext_data, l0_spec, $
+                                              n_extensions=n_extensions, $
+                                              error_list=error_list)
 
   ; check extensions
   for e = 1, n_extensions do begin
     ; check ext header against spec
     is_valid = ucomp_validate_l0_file_checkheader(ext_headers[e - 1], $
-                                                  'extension', $
-                                                  l0_header_spec, $
-                                                  msg=error_msg)
-    if (~is_valid) then begin
-      error_msg = string(e, error_msg, format='(%"ext %d: %s")')
-      goto, done
-    endif
+                                                  l0_spec, $
+                                                  extension=e, $
+                                                  error_list=error_list)
   endfor
 
-  ; it's valid if it makes it to here
-  is_valid = 1B
-
   done:
+
+  error_msg = error_list->toArray()
 
   ; cleanup
   if (obj_valid(l0_header_spec)) then obj_destroy, l0_header_spec
   if (obj_valid(ext_headers)) then obj_destroy, ext_headers
+  if (obj_valid(error_list)) then obj_destroy, error_list
 
   return, is_valid
 end
@@ -239,15 +263,23 @@ end
 
 ; main-level example program
 
-basename = '20181102.020900.ucomp.fts'
-filename = filepath(basename, $
-                    subdir=['..', '..', 'analysis'], $
-                    root=mg_src_root())
+raw_basedir = '/hao/twilight/Data/UCoMP/raw.test'
 
-is_valid = ucomp_validate_l0_file(filename, error_msg=error_msg)
+date='20190220'
+
+basename = '20190220.203209.ucomp.FTS'
+filename = filepath(basename, $
+                    subdir=[date], $
+                    root=raw_basedir)
+
+; read spec
+l0_header_spec_filename = filepath('ucomp.l0.validation.cfg', $
+                                   root=mg_src_root())
+
+is_valid = ucomp_validate_l0_file(filename, l0_header_spec_filename, error_msg=error_msg)
 print, is_valid ? 'Valid' : 'Not valid'
 if (~is_valid) then begin
-  print, error_msg
+  print, transpose(error_msg)
 endif
 
 end
