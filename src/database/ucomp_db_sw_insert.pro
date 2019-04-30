@@ -37,7 +37,7 @@ function ucomp_db_sw_insert, db, status=status, logger_name=logger_name
             name=logger_name, /info
 
     ; if not already in table, create a new entry for the sw version/revision
-    db->execute, 'insert into ucomp_sw (release_date, sw_version, sw_revision) values (''%s'', ''%s'', ''%s'')',
+    db->execute, 'insert into ucomp_sw (release_date, sw_version, sw_revision) values (''%s'', ''%s'', ''%s'')', $
                  release_date, version, revision, $
                  status=status, error_message=error_message, sql_statement=sql_cmd
     if (status ne 0L) then begin
