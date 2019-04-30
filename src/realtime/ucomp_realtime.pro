@@ -46,6 +46,7 @@ pro ucomp_realtime, date, config_filename
 
   ; log starting up pipeline with versions
   version = ucomp_version(revision=revision, branch=branch)
+  mg_log, '------------------------------', name=run.logger_name, /info
   mg_log, 'ucomp-pipeline %s (%s) [%s]', version, revision, branch, $
           name=run.logger_name, /info
   mg_log, 'using IDL %s on %s', !version.release, !version.os_name, $
@@ -81,13 +82,16 @@ pro ucomp_realtime, date, config_filename
   ucomp_update_catalog, new_filenames, catalog_filename
   run->make_raw_inventory, new_filenames
 
-
   ;== create quicklook L0.5 files
 
   wave_types = run->config('options/wave_types')
   for w = 0L, n_elements(wave_types) - 1L do begin
     run->getProperty, files=files, wave_type=wave_types[w], count=n_files
+    mg_log, '%d %s nm files', n_files, wave_types[w], name=run.logger_name, /info
+
+    if (n_files eq 0L) then continue
     n_digits = floor(alog10(n_files)) + 1L
+
     for f = 0L, n_files - 1L do begin
       mg_log, mg_format('%*d/%d @ %s: %s', n_digits, /simple), $
               f + 1, n_files, wave_types[w], file_basename(files[f].raw_filename), $
