@@ -269,7 +269,15 @@ pro ucomp_run::report
       time = !values.f_nan
     endelse
 
-    printf, lun, routine_name, ucomp_sec2str(time), n_calls, time / n_calls, $
+    if (finite(time)) then begin
+      time_str = ucomp_sec2str(time)
+      mean_time = time / n_calls
+    endif else begin
+      mean_time = !values.f_nan
+      time_str = 'NaN'
+    endelse
+
+    printf, lun, routine_name, time_str, n_calls, mean_time, $
             format=mg_format('%-*s %*s %*d %*.3f', widths)
   endforeach
 
@@ -449,7 +457,9 @@ pro ucomp_run::_setup_logger
   on_error, 2
 
   ; log message formats
-  fmt      = '[%(pid)s] %(time)s %(levelshortname)s: %(routine)s: %(message)s'
+
+  fmt = '%(time)s %(levelshortname)s: %(routine)s: %(message)s'
+  if (self->config('logging/include_pid')) then fmt = '[%(pid)s] ' + fmt
   time_fmt = '(C(CYI4, CMOI2.2, CDI2.2, "." CHI2.2, CMI2.2, CSI2.2))'
 
   ; get logging values from config file
