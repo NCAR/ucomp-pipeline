@@ -12,7 +12,7 @@ pro ucomp_l1_engineering_plots, run=run
 
   mg_log, 'producing engineering plots...', name=run.logger_name, /info
 
-  engineering_basedir = self->config('engineering/basedir')
+  engineering_basedir = run->config('engineering/basedir')
   if (n_elements(engineering_basedir) eq 0L) then begin
     mg_log, 'no engineering/basedir to save plots', name=run.logger_name, /warn
   endif
