@@ -22,13 +22,13 @@ pro ucomp_crash_notification, run=run
   address = run->config('notifications/email')
   if (run->config('notifications/send')) then begin
     if (n_elements(address) eq 0L) then begin
-      mg_log, 'no address for crash notification', name=logger_name, /warn
+      mg_log, 'no address for crash notification', name=run.logger_name, /warn
     endif else begin
       mg_log, 'sending crash notification to %s', address, $
-              name=logger_name, /info
+              name=run.logger_name, /info
     endelse
   endif else begin
-    mg_log, 'not sending crash notification', name=logger_name, /info
+    mg_log, 'not sending crash notification', name=run.logger_name, /info
     goto, done
   endelse
 
@@ -60,13 +60,20 @@ pro ucomp_crash_notification, run=run
     who = 'unknown'
   endelse
 
+  spawn, 'echo $(whoami)', username, error_result, exit_status=status
+  username = status eq 0L ? username[0] : 'ucomp-pipeline'
+  username += '@ucar.edu'
+
   credit = string(mg_src_root(/filename), who, format='(%"Sent from %s (%s)")')
 
   subject = string(name, run.date, $
                    format='(%"UCoMP crash during %s processing for %s")')
   body = [body, '', credit]
 
-  mg_send_mail, address, subject, body, error=error
+  mg_send_mail, address, subject, body, from=username, error=error
+  if (error ne 0L) then begin
+    mg_log, 'error %d sending crash notification', name=run.logger_name, /error
+  endif
 
   done:
 end
