@@ -113,6 +113,8 @@ pro ucomp_eod, date, config_filename
 
   ucomp_pipeline_step, 'ucomp_l0_distribute', run=run
 
+  ucomp_pipeline_step, 'ucomp_get_observerlog', run=run
+
   for w = 0L, n_elements(wave_types) - 1L do begin
     ucomp_pipeline_step, 'ucomp_l1_distribute', wave_types[w], run=run
     ucomp_pipeline_step, 'ucomp_l2_distribute', wave_types[w], run=run
