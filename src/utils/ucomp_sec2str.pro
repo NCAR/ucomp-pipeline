@@ -16,6 +16,10 @@
 function ucomp_sec2str, secs
   compile_opt strictarr
 
+  if (n_elements(secs) eq 0L || ~finite(secs)) then begin
+    return, 'unknown time'
+  endif
+
   _secs = long(secs)
   intervals = [{name: 'days', secs: 60L * 60L * 24L}, $
                {name: 'hrs', secs: 60L * 60L}, $
