@@ -108,7 +108,7 @@ pro ucomp_eod, date, config_filename
   ;== finish bookkeeping
 
   for w = 0L, n_elements(wave_types) - 1L do begin
-    ucomp_pipeline_step, 'ucomp_update_database', wave_types[w], run=run
+    ucomp_pipeline_step, 'ucomp_db_update', wave_types[w], run=run
   endfor
 
   ucomp_pipeline_step, 'ucomp_l0_distribute', run=run

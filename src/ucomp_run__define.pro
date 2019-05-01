@@ -36,10 +36,13 @@ pro ucomp_run::make_raw_inventory, raw_files
             file.data_type, $
             name=logger_name, /debug
 
-    ; store science files by wave type, otherwise by data type
-    key = file.data_type eq 'sci' ? file.wave_type : file.data_type
-    if (~(self.files)->hasKey(key)) then (self.files)[key] = list()
-    (self.files)[key]->add, file
+    ; store files by data type and wave type
+
+    if (~(self.files)->hasKey(file.data_type)) then (self.files)[file.data_type] = hash()
+    dtype_hash = (self.files)[file.data_type]
+
+    if (~dtype_hash->hasKey(file.wave_type)) then dtype_hash[file.wave_type] = list()
+    (dtype_hash)[file.wave_type]->add, file
   endfor
 end
 
@@ -55,6 +58,75 @@ function ucomp_run::get_dark, time
   compile_opt strictarr
 
   ; TODO: implement
+end
+
+
+;+
+; Retrieve files after an inventory has been completed.
+;
+; :Returns:
+;   `objarr` of `ucomp_file` objects
+;
+; :Keywords:
+;   wave_type : in, optional, type=string
+;     set to wave type of files to return: '1074', '1079', etc.; by default,
+;     returns files of all wave types
+;   data_type : in, optional, type=string
+;     set to data type of files to return: 'sci', 'cal', etc.; by default,
+;     returns files of all data_types
+;   count : out, optional, type=long
+;     set to a named variable to retrieve the number of files returned
+;-
+function ucomp_run::get_files, wave_type=wave_type, data_type=data_type, $
+                               count=count
+  compile_opt strictarr
+
+  count = 0L   ; set for all the special cases that return early
+
+  case 1 of
+    n_elements(wave_type) eq 0L && n_elements(data_type) eq 0L: begin
+        files_list = list()
+        foreach dtype_hash, self.files, dtype do begin
+          foreach wtype_list, dtype_hash, wtype do begin
+            files_list->add, wtype_list, /extract
+          endforeach
+        endforeach
+        files = files_list->toArray()
+        count = files_list->count()
+        obj_destroy, files_list
+      end
+    n_elements(wave_type) eq 0L: begin
+        if (~(self.files)->hasKey(data_type)) then return, !null
+
+        files_list = list()
+        foreach wtype_list, (self.files)[data_type], wtype do begin
+          files_list->add, wtype_list, /extract
+        endforeach
+        files = files_list->toArray()
+        count = files_list->count()
+        obj_destroy, files_list
+      end
+    n_elements(data_type) eq 0L: begin
+        files_list = list()
+        foreach dtype_hash, self.files, dtype do begin
+          if (~dtype_hash->hasKey(wave_type)) then continue
+          files_list->add, dtype_hash[wave_type], /extract
+        endforeach
+        files = files_list->toArray()
+        count = files_list->count()
+        obj_destroy, files_list
+      end
+    else: begin
+        if (~(self.files)->hasKey(data_type)) then return, !null
+        if (~((self.files)[data_type])->hasKey(wave_type)) then return, !null
+
+        files_list = ((self.files)[data_type])[wave_type]
+        files = files_list->toArray()
+        count = files_list->count()
+      end
+  endcase
+
+  return, files
 end
 
 
@@ -371,13 +443,6 @@ pro ucomp_run::getProperty, date=date, $
                             mode=mode, $
                             logger_name=logger_name, $
                             config_contents=config_contents, $
-
-                            ; get files by data_type or wave_type
-                            files=files, $
-                            data_type=data_type, $
-                            wave_type=wave_type, $
-                            count=count, $
-
                             all_wave_types=all_wave_types, $
                             t0=t0
   compile_opt strictarr
@@ -394,34 +459,15 @@ pro ucomp_run::getProperty, date=date, $
     config_contents = reform(self.options->_toString(/substitute))
   endif
 
-  if (arg_present(files) || arg_present(count)) then begin
-    if (n_elements(wave_type) eq 0L && n_elements(data_type) eq 0L) then begin
-      files_list = list()
-      foreach f, self.files, t do begin
-        files_list->add, f, /extract
-      endforeach
-      count = files_list->count()
-      if (arg_present(files)) then files = files_list->toArray()
-    endif else begin
-      if (n_elements(wave_type) gt 0L $
-            && (self.files)->hasKey(wave_type)) then begin
-        files = (self.files)[wave_type]
-        count = n_elements(files)
-      endif else if (n_elements(data_type) gt 0 $
-                       && (self.files)->hasKey(data_type)) then begin
-        files = (self.files)[data_type]
-        count = n_elements(files)
-      endif else begin
-        files = !null
-        count = 0L
-      endelse
-    endelse
-  endif
-
   if (arg_present(all_wave_types)) then begin
-    all_wave_types_list = self.files->keys()
-    all_wave_types = all_wave_types_list->toArray()
-    obj_destroy, all_wave_types_list
+    wtype_hash = hash()
+    foreach dtype_hash, self.files, dtype do begin
+      foreach wtype_list, dtype_hash, wtype do begin
+        wtype_hash[wtype] = 1B
+      endforeach
+    endforeach
+    all_wave_types = (wtype_hash->keys())->toArray()
+    obj_destroy, wtype_hash
   endif
 
   if (arg_present(t0)) then t0 = self.t0
@@ -432,16 +478,11 @@ end
 ; Set properties.
 ;-
 pro ucomp_run::setProperty, datetime=datetime, $
-                            files=files, wave_type=wave_type, $
                             t0=t0
   compile_opt strictarr
   on_error, 2
 
   if (n_elements(datetime) gt 0L) then self.epochs->setProperty, datetime=datetime
-  if (n_elements(files) gt 0L) then begin
-    if (n_elements(wave_type) eq 0L) then message, 'WAVE_TYPE not given for FILES'
-    (self.files)[wave_type] = files
-  endif
   if (n_elements(t0) gt 0L) then self.t0 = t0
 end
 

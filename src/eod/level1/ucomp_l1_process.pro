@@ -16,7 +16,7 @@ pro ucomp_l1_process, wave_type, run=run
 
   mg_log, 'L1 processing for %s nm...', wave_type, name=run.logger_name, /info
 
-  run->getProperty, files=files, wave_type=wave_type, count=n_files
+  files = run->get_files(data_type='sci', wave_type=wave_type, count=n_files)
   if (n_files eq 0L) then begin
     mg_log, 'no files @ %s nm', wave_type, name=run.logger_name, /debug
     return

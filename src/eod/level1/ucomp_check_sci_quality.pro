@@ -14,7 +14,7 @@
 pro ucomp_check_sci_quality, wave_type, run=run
   compile_opt strictarr
 
-  run->getProperty, files=files, wave_type=wave_type, count=n_files
+  files = run->get_files(data_type='sci', wave_type=wave_type, count=n_files)
 
   if (n_files eq 0L) then begin
     mg_log, 'no files of %s nm', wave_type, name=run.logger_name, /info

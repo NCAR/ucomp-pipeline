@@ -10,7 +10,7 @@
 pro ucomp_check_cal_quality, run=run
   compile_opt strictarr
 
-  run->getProperty, files=files, data_type='cal', count=n_files
+  files = run->get_files(data_type='cal', count=n_files)
 
   if (n_files eq 0L) then begin
     mg_log, 'no cal files', name=run.logger_name, /info
