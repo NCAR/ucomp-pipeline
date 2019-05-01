@@ -35,10 +35,12 @@ pro ucomp_send_notification, run=run
                     format='(%"ucomp-pipeline %s (%s) [%s]")')
   body->add, ''
 
+  all_files = run->get_files(count=n_all_files)
+
   ; add basic statistics on run
   body->add, '## Basic statistics'
   body->add, ''
-  body->add, string(run.count, format='(%"number of raw files: %d")')
+  body->add, string(n_all_files, format='(%"number of raw files: %d")')
   body->add, ['', ''], /extract
 
   ; add warnings/errors from logs

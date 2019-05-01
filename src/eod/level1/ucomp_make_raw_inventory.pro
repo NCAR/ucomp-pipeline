@@ -23,7 +23,8 @@ pro ucomp_make_raw_inventory, run=run
 
   run->getProperty, all_wave_types=all_wave_types
   for w = 0L, n_elements(all_wave_types) - 1L do begin
-    run->getProperty, files=files, wave_type=all_wave_types[w], count=n_files
+    files = run->get_files(data_type='sci', wave_type=all_wave_types[w], $
+                           count=n_files)
 
     basename = string(run.date, all_wave_types[w], format='(%"%d.ucomp.%s.files.txt")')
     filename = filepath(basename, root=process_dir)
@@ -42,7 +43,7 @@ pro ucomp_make_raw_inventory, run=run
 
   data_types = ['cal', 'eng', 'unk']
   for t = 0L, n_elements(data_types) - 1L do begin
-    run->getProperty, files=files, data_type=data_types[t], count=n_files
+    files = run->get_files(data_type=data_types[t], count=n_files)
 
     basename = string(run.date, data_types[t], format='(%"%d.ucomp.%s.files.txt")')
     filename = filepath(basename, root=process_dir)

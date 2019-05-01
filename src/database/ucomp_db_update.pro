@@ -7,7 +7,7 @@ pro ucomp_db_update, wave_type, run=run
           name=run.logger_name, /info
 
   ; get the files for the given wave_type
-  run->getProperty, files=files, wave_type=wave_type, count=n_files
+  files = run->get_files(data_type='sci', wave_type=wave_type, count=n_files)
   if (n_files eq 0L) then begin
     mg_log, 'no files to insert', name=run.logger_name, /info
     return

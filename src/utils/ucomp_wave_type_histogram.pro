@@ -39,7 +39,8 @@ pro ucomp_wave_type_histogram, output_filename, $
   n_files_per_type = lonarr(n_wave_types)
 
   for t = 0L, n_wave_types - 1L do begin
-    run->getProperty, files=files, wave_type=wave_types[t], count=n_files
+    files = run->get_files(wave_type=wave_types[t], count=n_files)
+
     n_files_per_type[t] = n_files
     if (n_files eq 0L) then continue
 

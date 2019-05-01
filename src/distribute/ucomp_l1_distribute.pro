@@ -37,7 +37,7 @@ pro ucomp_l1_distribute, wave_type, run=run
                            subdir=[run.date, 'level1'], $
                            root=run->config('processing/basedir'))
 
-    run->getProperty, files=files, wave_type=wave_type, count=n_files
+    files = run->get_files(wave_type=wave_type, count=n_files)
     for f = 0L, n_files - 1L do begin
       file_copy, filepath(files[f].l1_basename, root=process_dir), $
                  archive_dir, $
