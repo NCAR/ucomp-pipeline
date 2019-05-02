@@ -22,10 +22,10 @@ pro ucomp_l1_archive, wave_type, run=run
 
   cd, current=original_dir
 
-  l1_dir = filepath(run.date, subdir='level1', $
+  l1_dir = filepath('level1', subdir=run.date, $
                     root=run->config('processing/basedir'))
   if (~file_test(l1_dir)) then begin
-    mg_log, 'L1 directory does not exist', name=run.logger_name, /error
+    mg_log, 'L1 directory does not exist', name=run.logger_name, /warn
     goto, done
   endif
   cd, l1_dir

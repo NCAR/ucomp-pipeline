@@ -60,7 +60,7 @@ pro ucomp_eod, date, config_filename
   mg_log, 'ucomp-pipeline %s (%s) [%s]', version, revision, branch, $
           name=run.logger_name, /info
   mg_log, 'using IDL %s on %s', !version.release, !version.os_name, $
-          name=run.logger_name, /info
+          name=run.logger_name, /debug
 
   mg_log, 'starting processing for %d...', date, name=run.logger_name, /info
 
