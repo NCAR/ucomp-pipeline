@@ -117,7 +117,7 @@ end
 ; main-level example program
 
 date = '20181127'
-config_filename = filepath('ucomp.mgalloy.pike.latest.cfg', $
+config_filename = filepath('ucomp.latest.cfg', $
                            subdir=['..', '..', 'config'], $
                            root=mg_src_root())
 
