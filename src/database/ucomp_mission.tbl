@@ -9,7 +9,6 @@ create table ucomp_mission (
 
   -- added in l1 primary header
   mlso_url        char (24),
-  doi_url         char (48),
   bunit           char (15),
   method          char (10),
   wavestep        float (7, 2),
@@ -36,8 +35,8 @@ create table ucomp_mission (
   wcsname         char (26),     -- helioprojective-cartesian
   ctype1          char (8),      -- x
   ctype2          char (8),      -- y
-  timesysl0       char (3),      -- hst
-  timesysl1       char (3),      -- utc
+  timesysl0       char (3),      -- HST
+  timesysl1       char (3),      -- UTC
   inst_rot        float (7, 2),  -- 0.0
   demult          tinyint (1),   -- 0 (early mission possible) or 1
 

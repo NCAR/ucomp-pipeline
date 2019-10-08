@@ -1,0 +1,4 @@
+insert into ucomp_level (level, description) values ('L0', 'raw data files')
+insert into ucomp_level (level, description) values ('L1', 'level 1 data files')
+insert into ucomp_level (level, description) values ('L2', 'level 2 data files')
+insert into ucomp_level (level, description) values ('unk', 'Value entered was not in this table; check for error.')

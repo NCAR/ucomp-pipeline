@@ -13,28 +13,37 @@
 pro ucomp_db_create_tables, config_filename
   compile_opt strictarr
 
+  mode = 'eod'
+
   config_fullpath = file_expand_path(config_filename)
   if (~file_test(config_fullpath, /regular)) then begin
     mg_log, 'config file %s not found', config_fullpath, $
-            name='ucomp/eod', /critical
+            name='ucomp/' + mode, /critical
     goto, done
   endif
 
-  run = ucomp_run('20190101', 'eod', config_filename, /no_log)
+  date = '20190101'   ; using arbitrary date
+  run = ucomp_run(date, mode, config_filename, /no_log)
 
-  ; create MySQL database interface object
-  db = mgdbmysql()
-  db->connect, config_filename=run->config('database/config_filename'), $
-               config_section=run->config('database/config_section'), $
-               status=status, error_message=error_message
-  if (status ne 0L) then begin
-    mg_log, 'failed to connect to database', name=run.logger_name, /error
-    mg_log, '%s', error_message, name=run.logger_name, /error
-    return
+  if (~run->config('database/update')) then begin
+    mg_log, 'config file indicates no updating database, exiting...', $
+            name=run.logger_name, /warn
+    goto, done
   endif
 
-  db->getProperty, host_name=host
-  mg_log, 'connected to %s', host, name=run.logger_name, /info
+  ; connect to the database
+  db = ucomp_db_connect(run->config('database/config_filename'), $
+                        run->config('database/config_section'), $
+                        status=status, $
+                        error_message=error_message)
+  if (status eq 0) then begin
+    db->getProperty, host_name=host
+    mg_log, 'connected to %s', host, name=run.logger_name, /info
+  endif else begin
+    mg_log, 'failed to connect to database', name=run.logger_name, /error
+    mg_log, error_message, name=run.logger_name, /error
+    goto, done
+  endelse
 
   ; tables in the order they need to be created
   tables = 'ucomp_' + ['mission', $
@@ -71,59 +80,67 @@ pro ucomp_db_create_tables, config_filename
     if (status ne 0L) then begin
       mg_log, 'problem creating %s', tables[t], name=run.logger_name, /error
       mg_log, '%s', error_message, name=run.logger_name, /error
+      mg_log, 'SQL cmd: %s', sql_code, name=run.logger_name, /error
+      goto, done
     endif
   endfor
 
-  ; some tables have some initial values
+  ; remove old UCoMP product types from mlso_producttype table 
+  db->execute, 'delete from mlso_producttype where description like "UCoMP%"', $
+               status=status, error_message=error_message, $
+               sql_statement=sql_cmd
+  if (status ne 0L) then begin
+    mg_log, 'problem removing old UCoMP product types', $
+            name=run.logger_name, /error
+    mg_log, 'status: %d, error message: %s', status, error_message, $
+            name=run.logger_name, /error
+    mg_log, 'SQL command: %s', sql_cmd, name=run.logger_name, /error
+    goto, done
+  endif
 
-  qualities = [{name: 'ok', description: 'OK images'}]
-  fmt = '(%"insert into ucomp_quality (quality, description) values (''%s'', ''%s'')")'
-  for i = 0L, n_elements(qualities) - 1L do begin
-    cmd = string(qualities[i].name, qualities[i].description, format=fmt)
-    db->execute, cmd, status=status, error_message=error_message
-    if (status ne 0L) then begin
-      mg_log, 'problem inserting quality %s', qualities[i].name, $
-              name=run.logger_name, /error
-      mg_log, '%s', error_message, name=run.logger_name, /error
-    endif
+  ; populate some tables with initial values
+  insert_tables = ['ucomp_quality', 'ucomp_level', 'ucomp_mission', $
+                   'mlso_producttype']
+  for t = 0L, n_elements(insert_tables) - 1L do begin
+    mg_log, 'populating %s', insert_tables[t], name=log_name, /info
+
+    definition_filename = filepath(string(insert_tables[t], $
+                                          format='(%"%s_insert.tbl")'), $
+                                   root=mg_src_root())
+    nlines = file_lines(definition_filename)
+    sql_code = strarr(nlines)
+    openr, lun, definition_filename, /get_lun
+    readf, lun, sql_code
+    free_lun, lun
+
+    for s = 0L, nlines - 1L do begin
+      db->execute, '%s', sql_code[s], $
+                   status=status, error_message=error_message
+      if (status ne 0L) then begin
+        mg_log, 'problem populating %s with statement %s', $
+                insert_tables[t], $
+                sql_code[s], $
+                name=run.logger_name, /error
+        mg_log, '%s', error_message, name=run.logger_name, /error
+      endif
+    endfor
   endfor
-
-  levels = [{name: 'L0', description: 'raw data'}, $
-            {name: 'L0.5', description: 'level 0.5 data (averaged L0 data)'}, $
-            {name: 'L1', description: 'level 1 data (calibrated to science units)'}, $
-            {name: 'L2', description: 'level 2 data (derived variables)'}, $
-            {name: 'unk', description: 'unknown'}]
-  fmt = '(%"insert into ucomp_level (level, description) values (''%s'', ''%s'')")'
-  for i = 0L, n_elements(levels) - 1L do begin
-    cmd = string(levels[i].name, levels[i].description, format=fmt)
-    db->execute, cmd, status=status, error_message=error_message
-    if (status ne 0L) then begin
-      mg_log, 'problem inserting level %s', levels[i].name, name=run.logger_name, /error
-      mg_log, '%s', error_message, name=run.logger_name, /error
-    endif
-  endfor
-
-  ; TODO: insert into mission table
 
   ; disconnect from database
   mg_log, 'disconnecting from %s', host, name=run.logger_name, /info
 
   done:
-  obj_destroy, db
-  obj_destroy, run
+  if (obj_valid(db)) then obj_destroy, db
+  if (obj_valid(run)) then obj_destroy, run
 end
 
 
 ; main-level example program
 
-date = '20181127'
 config_filename = filepath('ucomp.latest.cfg', $
                            subdir=['..', '..', 'config'], $
                            root=mg_src_root())
 
-run = ucomp_run(date, 'eod', config_filename)
-ucomp_db_create_tables, run=run
-
-obj_destroy, run
+ucomp_db_create_tables, config_filename
 
 end

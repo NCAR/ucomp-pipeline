@@ -8,7 +8,7 @@
 ;   obsday_index : in, required, type=integer
 ;     index into mlso_numfiles database table
 ;   table : in, required, type=string
-;     table to clear, i.e., kcor_img, kcor_eng, etc.
+;     table to clear, i.e., ucomp_file, ucomp_eng, etc.
 ;   db : in, optional, type=object
 ;     `MGdbMySQL` database connection to use
 ;
@@ -17,7 +17,7 @@
 ;     name of log to send log messages to
 ;-
 pro ucomp_db_cleartable, obsday_index, table, db, $
-                       logger_name=logger_name
+                         logger_name=logger_name
   compile_opt strictarr
 
   mg_log, 'clearing %s table', table, name=logger_name, /info

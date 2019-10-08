@@ -11,37 +11,47 @@ pro ucomp_db_clearday, run=run
   compile_opt strictarr
 
   ; clear database for the day 
-  if (run->config('database/update') && run->config('eod/reprocess')) then begin
-    mg_log, 'clearing database for the day', name=run.logger_name, /info
-
-    filename = run->config('database/config_filename')
-    section = run->config('database/config_section')
-
-    if (filename eq '' || section eq '') then begin
-      mg_log, 'config filename or section not specified', $
-              name=run.logger_name, /error
-      mg_log, 'cannot connect to database', $
-              name=run.logger_name, /error
-    endif
-
-    db = ucomp_db_connect(filename, section, $
-                          status=status, $
-                          logger_name=run.logger_name)
-    if (status ne 0L) then return
-
-    obsday_index = ucomp_db_obsday_insert(run.date, db, $
-                                          status=status, $
-                                          logger_name=run.logger_name)
-    if (status ne 0L) then return
-
-    tables = 'ucomp_' + ['raw', 'file', 'eng', 'sci', 'cal']
-    for t = 0L, n_elements(tables) - 1L do begin
-      ucomp_db_cleartable, obsday_index, tables[t], db, $
-                           logger_name=run.logger_name
-    endfor
-
-    obj_destroy, db
-  endif else begin
+  if (~run->config('database/update') || ~run->config('eod/reprocess')) then begin
     mg_log, 'skipping clearing database', name=run.logger_name, /info
+    goto, done
+  endif
+
+  mg_log, 'clearing database for the day', name=run.logger_name, /info
+
+  filename = run->config('database/config_filename')
+  section = run->config('database/config_section')
+
+  if (filename eq '' || section eq '') then begin
+    mg_log, 'config filename or section not specified', $
+            name=run.logger_name, /error
+    mg_log, 'cannot connect to database', $
+            name=run.logger_name, /error
+    goto, done
+  endif
+
+  db = ucomp_db_connect(filename, section, $
+                        status=status, $
+                        error_message=error_message)
+  if (status eq 0) then begin
+    db->getProperty, host_name=host
+    mg_log, 'connected to %s', host, name=run.logger_name, /info
+  endif else begin
+    mg_log, 'failed to connect to database', name=run.logger_name, /error
+    mg_log, error_message, name=run.logger_name, /error
+    goto, done
   endelse
+
+  obsday_index = ucomp_db_obsday_insert(run.date, db, $
+                                        status=status, $
+                                        logger_name=run.logger_name)
+  if (status ne 0L) then return
+
+  tables = 'ucomp_' + ['raw', 'file', 'eng', 'sci', 'cal']
+  for t = 0L, n_elements(tables) - 1L do begin
+    ucomp_db_cleartable, obsday_index, tables[t], db, $
+                         logger_name=run.logger_name
+  endfor
+  
+  done:
+  if (arg_present(db)) then obj_destroy, db
 end
