@@ -16,26 +16,19 @@
 ;   status : out, optional, type=long
 ;     set to a named variable to retrieve the status of the database creation;
 ;     0 if no error
-;   logger_name : optional, type=string
-;     name of logger
+;   error_message : out, optional, type=string
+;     error message if status not 0
 ;-
 function ucomp_db_connect, filename, section, $
                            status=status, $
-                           logger_name=logger_name
+                           error_message=error_message
   compile_opt strictarr
 
   db = mgdbmysql()
   db->connect, config_filename=filename, $
                config_section=section, $
                status=status, error_message=error_message
-  if (status eq 0L) then begin
-    db->getProperty, host_name=host
-    mg_log, 'connected to %s', host, name=logger_name, /info
-  endif else begin
-    mg_log, 'failed to connect to database', name=logger_name, /error
-    mg_log, '%s', error_message, name=logger_name, /error
-    return, !null
-  endelse
+  if (status ne 0L) then return, !null
 
   return, db
 end
