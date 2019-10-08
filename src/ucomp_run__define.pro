@@ -487,6 +487,25 @@ pro ucomp_run::setProperty, datetime=datetime, $
 end
 
 
+;= overload operators
+
+function ucomp_run::_overloadPrint
+  compile_opt strictarr
+
+  return, transpose(['UCoMP run', $
+                    '  date: ' + self.date, $
+                    '  mode: ' + self.mode])
+end
+
+function ucomp_run::_overloadHelp, varname
+  compile_opt strictarr
+
+  type = 'UCoMP run'
+  specs = string(self.date, format='(%"%s")')
+  return, string(varname, type, specs, format='(%"%-15s %-9s = <%s>")')
+end
+
+
 ;= initialization
 
 
