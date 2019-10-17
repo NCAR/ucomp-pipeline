@@ -3,18 +3,20 @@ umask 0002
 
 PIPE_DIR=$(dirname ${BIN_DIR})
 
-if [[ $# -lt 1 ]]; then
+SCRIPT_NAME=$1
+
+if [[ $# -lt 2 ]]; then
   echo "missing configuration file FLAGS"
   exit 1
 else
-  CONFIG=${PIPE_DIR}/config/ucomp.${1}.cfg
+  CONFIG=${PIPE_DIR}/config/ucomp.${2}.cfg
 fi
 
 # use today if date not passed to script
-if [[ $# -lt 2 ]]; then
+if [[ $# -lt 3 ]]; then
   DATE=$(date +"%Y%m%d")
 else
-  DATE=$2
+  DATE=$3
 fi
 
 IDL=@IDL_EXECUTABLE@
