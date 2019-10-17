@@ -250,13 +250,13 @@ def parse_date_expr(date_expr):
 
 
 def process_eod(args):
-    launch_processes(args, 'ucomp_eod.sh')
+    launch_processes(args, 'ucomp_eod')
 
 def process_rt(args):
-    launch_processes(args, 'ucomp_realtime.sh')
+    launch_processes(args, 'ucomp_realtime')
 
 def process_cal(args):
-    launch_processes(args, 'ucomp_calibrate.sh')
+    launch_processes(args, 'ucomp_calibration')
 
 
 def launch_processes(args, routine):
@@ -265,13 +265,14 @@ def launch_processes(args, routine):
 
     dates = parse_date_expr(','.join(args.dates))
 
-    if len(dates) != 1 and routine == 'ucomp_realtime.sh':
+    if len(dates) != 1 and routine == 'ucomp_realtime':
         args.parser.error('realtime mode is only valid for a single date')
 
     for d in dates:
         cmd = [os.path.join(PIPELINE_DIR,
                             'bin',
-                            routine),
+                            'ucomp_script.sh'),
+               routine,
                args.flags,
                d]
 
@@ -294,25 +295,14 @@ def wait_for(process):
         return 1
 
 
+# script sub-command
+def run_script(args):
+    launch_processes(args, args.name)
+
+
 # archive sub-command
-
 def archive(args):
-    if len(args.dates) == 0:
-        args.parser.error('too few arguments')
-
-    dates = parse_date_expr(','.join(args.dates))
-
-    for d in dates:
-        cmd = [os.path.join(PIPELINE_DIR,
-                            'bin',
-                            'ucomp_archive.sh'),
-               args.flags,
-               d]
-
-        process = subprocess.Popen(cmd, stderr=subprocess.STDOUT)
-        print('[%d] %s' % (process.pid, ' '.join(cmd)))
-        terminated = wait_for(process)
-        if terminated: break
+    launch_processes(args, 'ucomp_archive')
 
 
 # simulate sub-command
@@ -472,6 +462,18 @@ if __name__ == '__main__':
     eod_parser.set_defaults(func=process_eod, parser=eod_parser)
     rt_parser.set_defaults(func=process_rt, parser=rt_parser)
     cal_parser.set_defaults(func=process_cal, parser=cal_parser)
+
+    # script sub-command
+    script_parser = subparsers.add_parser('script',
+                                           help='run a given script on days')
+    script_parser.add_argument('dates', type=str, nargs='*', help=date_help,
+                               metavar='date-expr')
+    script_parser.add_argument('-f', '--flags', type=str, help=flags_help,
+                               default='latest')
+    script_parser.add_argument('-n', '--name', type=str, help="name of script",
+                               required=True)
+    script_parser.add_argument('--no-wait', action='store_true', help=nowait_help)
+    script_parser.set_defaults(func=run_script, parser=script_parser)
 
     # archive sub-command
     archive_parser = subparsers.add_parser('archive',
