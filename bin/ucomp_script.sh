@@ -1,7 +1,6 @@
 #!/bin/sh
 
-# This script launches IDL for the pipeline to process a day, both the
-# realtime and end-of-day processing.
+# This script launches IDL to run a script on a date.
 
 canonicalpath() {
   if [ -d $1 ]; then
@@ -31,5 +30,5 @@ ${IDL} -quiet \
     -IDL_STARTUP "" \
     -IDL_PATH ${UCOMP_PATH} \
     -IDL_DLM_PATH ${UCOMP_DLM_PATH} \
-    -e "ucomp_calibration, '${DATE}', '${CONFIG}'" \
+    -e "${SCRIPT_NAME}, '${DATE}', '${CONFIG}'" \
     2>&1 | tail -n +3
