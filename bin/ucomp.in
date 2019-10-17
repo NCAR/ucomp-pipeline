@@ -2,10 +2,13 @@
 
 import argparse
 import datetime
+from email.mime.text import MIMEText
 import glob
 import os
 import psutil
 import re
+import smtplib
+import socket
 import subprocess
 import sys
 import time
@@ -57,8 +60,51 @@ def format_timedelta(timedelta):
     return(display_time(int(timedelta.total_seconds()), granularity=len(intervals)))
 
 
-# list sub-command
+def convert_boolean(value):
+    return True if value.lower() in {'1', 'yes', 'true'} else False
 
+
+def notify_completed(args, task):
+    config_basename = f'ucomp.{args.flags}.cfg'
+
+    # construct config file filename
+    config_filename = os.path.join(PIPELINE_DIR, 'config', config_basename)
+
+    # read config file to get arguments to launch data/processing simulators
+    config = configparser.ConfigParser()
+    config.read(config_filename)
+
+    try:
+        send_notification = convert_boolean(config.get('notifications', 'send'))
+    except (configparser.NoSectionError, configparser.NoOptionError) as e:
+        send_notification = False
+
+    try:
+        notification_email = config.get('notifications', 'email')
+    except (configparser.NoSectionError, configparser.NoOptionError) as e:
+        send_notification = False
+
+    if send_notification:
+        userhome = os.path.expanduser('~')
+        user = os.path.split(userhome)[-1]
+        hostname = socket.gethostname()
+
+        dates = ','.join(args.dates)
+
+        with open(config_filename, "r") as f:
+            text = f.read()
+
+        msg = MIMEText(text)
+        msg["Subject"] = f"UCoMP {task} [{args.flags}] job completed for {dates} on {hostname}"
+        msg["From"] = f"{user}@ucar.edu"
+        msg["To"] = notification_email
+
+        s = smtplib.SMTP("localhost")
+        s.send_message(msg)
+        s.quit()
+
+
+# list sub-command
 def list_processes(args):
     ucomp_processes = []
     for p in psutil.process_iter():
@@ -251,12 +297,17 @@ def parse_date_expr(date_expr):
 
 def process_eod(args):
     launch_processes(args, 'ucomp_eod')
+    notify_completed(args, "end-of-day")
+
 
 def process_rt(args):
     launch_processes(args, 'ucomp_realtime')
+    notify_completed(args, "realtime")
+
 
 def process_cal(args):
     launch_processes(args, 'ucomp_calibration')
+    notify_completed(args, "calibration")
 
 
 def launch_processes(args, routine):
@@ -298,11 +349,13 @@ def wait_for(process):
 # script sub-command
 def run_script(args):
     launch_processes(args, args.name)
+    notify_completed(args, f"script ({args.name})")
 
 
 # archive sub-command
 def archive(args):
     launch_processes(args, 'ucomp_archive')
+    notify_completed(args, f"archive")
 
 
 # simulate sub-command
