@@ -1,5 +1,21 @@
 ; docformat = 'rst'
 
+;+
+; Get the basedir from a routing file for a given date.
+;
+; :Returns:
+;   string, or `!null` if not found
+;
+; :Params:
+;   routing_file : in, required, type=string
+;     filename of a routing file
+;   date : in, required, type=string
+;     date in the form "YYYYMMDD"
+;
+; :Keywords:
+;   found : out, optional, type=boolean
+;     set to a named variable to retrieve whether a route was found
+;-
 function ucomp_get_route, routing_file, date, found=found
   compile_opt strictarr
 
