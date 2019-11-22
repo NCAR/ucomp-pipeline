@@ -266,8 +266,9 @@ end
 raw_basedir = '/hao/twilight/Data/UCoMP/raw.test'
 
 date='20190220'
+date='20191009'
 
-basename = '20190220.203209.ucomp.FTS'
+basename = '20191009.152516.70565.ucomp.FTS'
 filename = filepath(basename, $
                     subdir=[date], $
                     root=raw_basedir)

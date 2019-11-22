@@ -35,7 +35,7 @@ pro ucomp_read_raw_data, filename, $
   fits_open, filename, fcb
 
   n_extensions = fcb.nextend
-  if (n_extensions le 1) then begin
+  if (n_extensions lt 1) then begin
     message, string(filename, n_extensions, $
                     format='(%"%s contains only %d extensions")')
   endif
