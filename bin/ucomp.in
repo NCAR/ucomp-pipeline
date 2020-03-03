@@ -133,18 +133,40 @@ def list_processes(args):
 
 def validate(args):
     if len(args.dates) == 0:
-        args.parser.error('too few arguments')
+        args.parser.error("too few arguments")
+
+    if args.file is not None:
+        validate_file(args)
+        return
 
     cmd = [os.path.join(PIPELINE_DIR,
-                        'bin',
-                        'ucomp_validate_dates.sh'),
+                        "bin",
+                        "ucomp_validate_dates.sh"),
            args.flags,
-           ','.join(args.dates)]
+           ",".join(args.dates)]
 
     process = subprocess.Popen(cmd, stderr=subprocess.STDOUT)
-    print('[%d] %s' % (process.pid, ' '.join(cmd)))
+    print("[%d] %s" % (process.pid, " ".join(cmd)))
     if not args.no_wait:
         terminated = wait_for(process)
+
+
+def validate_file(args):
+    if len(args.dates) > 1:
+        args.parser.error("too many date arguments")
+
+    cmd = [os.path.join(PIPELINE_DIR,
+                        "bin",
+                        "ucomp_validate_file.sh"),
+           args.flags,
+           args.dates[0],
+           args.file,
+           args.level]
+
+    process = subprocess.Popen(cmd, stderr=subprocess.STDOUT)
+    print("[%d] %s" % (process.pid, " ".join(cmd)))
+    terminated = wait_for(process)
+
 
 
 # log sub-command
@@ -443,13 +465,17 @@ if __name__ == '__main__':
     list_parser.set_defaults(func=list_processes, parser=list_parser)
 
     # validate sub-command
-    validate_parser = subparsers.add_parser('validate',
-                                            help='validate previously processed dates')
-    validate_parser.add_argument('dates', type=str, nargs='*', help=date_help,
-                                 metavar='date-expr')
+    validate_parser = subparsers.add_parser("validate",
+                                            help="validate previously processed dates")
+    validate_parser.add_argument("dates", type=str, nargs="*", help=date_help,
+                                 metavar="date-expr")
 
-    validate_parser.add_argument('-f', '--flags', type=str, help=flags_help,
-                                 default='latest')
+    validate_parser.add_argument("-f", "--flags", type=str, help=flags_help,
+                                 default="latest")
+    validate_parser.add_argument("--file", type=str, help="validate file, instead of data")
+    validate_parser.add_argument("--level", type=str,
+                                 help="level of file to validate, 0 or 1, default=0",
+                                 default="0")
     validate_parser.set_defaults(func=validate, parser=validate_parser)
 
     # log sub-command
