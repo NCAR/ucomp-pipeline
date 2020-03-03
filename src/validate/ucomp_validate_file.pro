@@ -7,7 +7,10 @@ pro ucomp_validate_file, date, config_filename, filename, level
   l0_header_spec_filename = run->config("validation/l0_specification")
 
   if (level eq 0L) then begin
-    is_valid = ucomp_validate_l0_file(filename, l0_header_spec_filename, $
+    is_valid = ucomp_validate_l0_file(filepath(filename, $
+                                               subdir=date, $
+                                               root=run->config("raw/basedir")), $
+                                      l0_header_spec_filename, $
                                       error_msg=error_msg)
   endif else begin
     print, 'only level 0 files are supported currently'
