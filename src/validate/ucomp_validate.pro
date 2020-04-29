@@ -119,6 +119,7 @@ pro ucomp_validate, date, config_filename, status=status
   endif
 
   run = ucomp_run(date, 'validate', config_fullpath)
+  if (not obj_valid(run)) then goto, done
 
   mg_log, name=logger_name, logger=logger
   logger->setProperty, format='%(time)s %(levelshortname)s: %(message)s'
@@ -133,7 +134,7 @@ pro ucomp_validate, date, config_filename, status=status
     mg_log, 'verification failed', name=logger_name, /error
   endelse
 
-  obj_destroy, run
+  if (obj_valid(run)) then obj_destroy, run
 end
 
 
