@@ -24,23 +24,23 @@ else:
 
 POLL_SECS = 0.1
 
-LEVELS = ['DEBUG', 'INFO', 'WARN', 'ERROR', 'CRITICAL']
-LOG_DIR = '/hao/acos/ucomp/logs'
+LEVELS = ["DEBUG", "INFO", "WARN", "ERROR", "CRITICAL"]
+LOG_DIR = "/hao/acos/ucomp/logs"
 
-DATE_FORMAT = '%Y%m%d'
+DATE_FORMAT = "%Y%m%d"
 
-DEVNULL = open(os.devnull, 'w')
+DEVNULL = open(os.devnull, "w")
 PIPELINE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
 
 # date handling helpers
 
 intervals = (
-    ('weeks', 604800),  # 60 * 60 * 24 * 7 seconds
-    ('days', 86400),    # 60 * 60 * 24 seconds
-    ('hrs', 3600),      # 60 * 60 seconds
-    ('mins', 60),
-    ('secs', 1),
+    ("weeks", 604800),  # 60 * 60 * 24 * 7 seconds
+    ("days", 86400),    # 60 * 60 * 24 seconds
+    ("hrs", 3600),      # 60 * 60 seconds
+    ("mins", 60),
+    ("secs", 1),
     )
 
 def display_time(seconds, granularity=2):
@@ -51,7 +51,7 @@ def display_time(seconds, granularity=2):
         if value:
             seconds -= value * count
             if value == 1:
-                name = name.rstrip('s')
+                name = name.rstrip("s")
             result.append("%d %s" % (value, name))
     return ' '.join(result[:granularity])
 
@@ -61,35 +61,35 @@ def format_timedelta(timedelta):
 
 
 def convert_boolean(value):
-    return True if value.lower() in {'1', 'yes', 'true'} else False
+    return True if value.lower() in {"1", "yes", "true"} else False
 
 
 def notify_completed(args, task):
-    config_basename = f'ucomp.{args.flags}.cfg'
+    config_basename = f"ucomp.{args.flags}.cfg"
 
     # construct config file filename
-    config_filename = os.path.join(PIPELINE_DIR, 'config', config_basename)
+    config_filename = os.path.join(PIPELINE_DIR, "config", config_basename)
 
     # read config file to get arguments to launch data/processing simulators
     config = configparser.ConfigParser()
     config.read(config_filename)
 
     try:
-        send_notification = convert_boolean(config.get('notifications', 'send'))
+        send_notification = convert_boolean(config.get("notifications", "send"))
     except (configparser.NoSectionError, configparser.NoOptionError) as e:
         send_notification = False
 
     try:
-        notification_email = config.get('notifications', 'email')
+        notification_email = config.get("notifications", "email")
     except (configparser.NoSectionError, configparser.NoOptionError) as e:
         send_notification = False
 
     if send_notification:
-        userhome = os.path.expanduser('~')
+        userhome = os.path.expanduser("~")
         user = os.path.split(userhome)[-1]
         hostname = socket.gethostname()
 
-        dates = ','.join(args.dates)
+        dates = ",".join(args.dates)
 
         with open(config_filename, "r") as f:
             text = f.read()
@@ -109,24 +109,24 @@ def list_processes(args):
     ucomp_processes = []
     for p in psutil.process_iter():
         cmdline = p.cmdline()
-        cmdline = '' if len(cmdline) == 0 else cmdline[-1]
-        if p.name() == 'idl' and cmdline.startswith('ucomp'):
-            ucomp_processes.append({'cmdline': cmdline,
-                                    'pid': p.pid,
-                                    'start_time': p.create_time()})
+        cmdline = "" if len(cmdline) == 0 else cmdline[-1]
+        if p.name() == "idl" and cmdline.startswith("ucomp"):
+            ucomp_processes.append({"cmdline": cmdline,
+                                    "pid": p.pid,
+                                    "start_time": p.create_time()})
     if len(ucomp_processes) == 0:
-        print('no UCoMP processes currently running')
+        print("no UCoMP processes currently running")
         return
 
     now = datetime.datetime.now()
 
     for p in ucomp_processes:
-        started = datetime.datetime.fromtimestamp(p['start_time'])
+        started = datetime.datetime.fromtimestamp(p["start_time"])
         time_running = now - started
         start_time = started.strftime("%Y-%m-%d %H:%M:%S")
-        print('[%d] (%s running %s): %s' % (p['pid'],
+        print("[%d] (%s running %s): %s" % (p["pid"],
                                             start_time,
-                                            format_timedelta(time_running), p['cmdline']))
+                                            format_timedelta(time_running), p["cmdline"]))
 
 
 # validate sub-command
@@ -172,32 +172,32 @@ def validate_file(args):
 # log sub-command
 
 def prune_logfiles(files, max_version):
-    version_re = re.compile('\d+')
+    version_re = re.compile("\d+")
     for f in files:
-        versions = glob.glob('%s.*' % f)
+        versions = glob.glob("%s.*" % f)
         for v in versions:
             n = v[len(f) + 1:]
             if version_re.match(n):
                 if int(n) > max_version:
-                    file_to_delete = '%s.%s' % (f, n)
-                    print('rm %s' % file_to_delete)
+                    file_to_delete = f"{f}.{n}"
+                    print(f"rm {file_to_delete}")
                     os.remove(file_to_delete)
 
 
 def filter_file(logfile, level_index, follow):
-    loglevel_filter = '|'.join(LEVELS[level_index:])
-    loglevel_prog = re.compile('.*(%s):.*' % loglevel_filter)
-    logstart_prog = re.compile('(\[\d+\] )?\d{8}.\d{6}')
+    loglevel_filter = "|".join(LEVELS[level_index:])
+    loglevel_prog = re.compile(".*(%s):.*" % loglevel_filter)
+    logstart_prog = re.compile("(\[\d+\] )?\d{8}.\d{6}")
 
     matched_last_line = False
 
-    line = 'not empty'
+    line = "not empty"
 
     try:
-        with open(logfile, 'r') as f:
-            while follow or line != '':
+        with open(logfile, "r") as f:
+            while follow or line != "":
                 line = f.readline()
-                if line == '':
+                if line == "":
                     try:
                         time.sleep(POLL_SECS)
                     except (IOError, KeyboardInterrupt):
@@ -220,31 +220,31 @@ def filter_file(logfile, level_index, follow):
                             except (IOError, KeyboardInterrupt):
                                 return
     except IOError:
-        print('Problem reading %s' % logfile)
+        print("Problem reading %s" % logfile)
 
 
 def filter_log(args):
-    date_re = '^\d{8}$'
+    date_re = "^\d{8}$"
     date_prog = re.compile(date_re)
 
     logfiles = []
     for f in args.logfiles:
         if date_prog.match(f):
-            path1 = os.path.join(LOG_DIR, f + '.log')
+            path1 = os.path.join(LOG_DIR, f + ".log")
             if os.path.isfile(path1):
                 logfiles.append(path1)
             else:
-                path2 = os.path.join(LOG_DIR, f + '.ucomp.eod.log')
+                path2 = os.path.join(LOG_DIR, f + ".ucomp.eod.log")
                 if os.path.isfile(path2):
                     logfiles.append(path2)
                 else:
-                    parser.error(f + ' does not exist')
+                    parser.error(f + " does not exist")
         else:
             logfiles.append(f)
 
     follow = args.follow
     if follow and len(logfiles) > 1:
-        print('cannot follow multiple files')
+        print("cannot follow multiple files")
         return
 
     if args.prune is not None:
@@ -255,20 +255,20 @@ def filter_log(args):
     if args.level:
         level = args.level.upper()
     elif args.critical:
-        level = 'CRITICAL'
+        level = "CRITICAL"
     elif args.error:
-        level = 'ERROR'
+        level = "ERROR"
     elif args.warn:
-        level = 'WARN'
+        level = "WARN"
     elif args.info:
-        level = 'INFO'
+        level = "INFO"
     else:
-        level = 'DEBUG'
+        level = "DEBUG"
 
     try:
         level_index = LEVELS.index(level)
     except ValueError:
-        print('invalid level: %s' % level)
+        print(f"invalid level: {level}")
         parser.print_help()
         return
 
@@ -277,7 +277,7 @@ def filter_log(args):
         if len(logfiles) > 1:
             if i != 0: print('')
             print(f)
-            print('-' * len(f))
+            print("-" * len(f))
         filter_file(f, level_index, follow)
 
 
@@ -288,10 +288,10 @@ def parse_date_expr(date_expr):
     dates = []
 
     try:
-        for de in date_expr.split(','):
-            d = de.split('-')
+        for de in date_expr.split(","):
+            d = de.split("-")
             if len(d) not in [1, 2]:
-                print(f'invalid syntax: {de}')
+                print(f"invalid syntax: {de}")
                 return []
 
             if len(d) == 1:
@@ -305,13 +305,13 @@ def parse_date_expr(date_expr):
                 date_string = d[1]
                 end_date = datetime.datetime.strptime(date_string, DATE_FORMAT)
                 if date > end_date:
-                    print(f'invalid date range {de}')
+                    print(f"invalid date range {de}")
                     return []
                 while date.strftime(DATE_FORMAT) != end_date.strftime(DATE_FORMAT):
                     dates.append(date.strftime(DATE_FORMAT))
                     date = date + datetime.timedelta(days=1)
     except ValueError:
-        print(f'invalid date syntax: {date_string}')
+        print(f"invalid date syntax: {date_string}")
         return []
 
     return dates
@@ -323,7 +323,7 @@ def process_eod(args):
 
 
 def process_rt(args):
-    launch_processes(args, 'ucomp_realtime')
+    launch_processes(args, "ucomp_realtime")
     notify_completed(args, "realtime")
 
 
@@ -332,25 +332,30 @@ def process_cal(args):
     notify_completed(args, "calibration")
 
 
+def reprocess(args):
+    launch_processes(args, 'ucomp_reprocess')
+    notify_completed(args, "reprocess")
+
+
 def launch_processes(args, routine):
     if len(args.dates) == 0:
         args.parser.error('too few arguments')
 
-    dates = parse_date_expr(','.join(args.dates))
+    dates = parse_date_expr(",".join(args.dates))
 
-    if len(dates) != 1 and routine == 'ucomp_realtime':
-        args.parser.error('realtime mode is only valid for a single date')
+    if len(dates) != 1 and routine == "ucomp_realtime":
+        args.parser.error("realtime mode is only valid for a single date")
 
     for d in dates:
         cmd = [os.path.join(PIPELINE_DIR,
-                            'bin',
-                            'ucomp_script.sh'),
+                            "bin",
+                            "ucomp_script.sh"),
                routine,
                args.flags,
                d]
 
         process = subprocess.Popen(cmd, stderr=subprocess.STDOUT)
-        print('[%d] %s' % (process.pid, ' '.join(cmd)))
+        print("[%d] %s" % (process.pid, " ".join(cmd)))
         if not args.no_wait:
             terminated = wait_for(process)
             if terminated: break
@@ -518,6 +523,8 @@ if __name__ == '__main__':
                                       help='run realtime pipeline')
     cal_parser = subparsers.add_parser('calibration', aliases=['cal'],
                                        help='run calibration')
+    reprocess_parser = subparsers.add_parser('reprocess',
+                                       help='reprocess date(s)')
 
     eod_parser.add_argument('dates', type=str, nargs='*', help=date_help,
                             metavar='date-expr')
@@ -525,6 +532,8 @@ if __name__ == '__main__':
                             metavar='date-expr')
     cal_parser.add_argument('dates', type=str, nargs='*', help=date_help,
                             metavar='date-expr')
+    reprocess_parser.add_argument('dates', type=str, nargs='*', help=date_help,
+                                  metavar='date-expr')
 
     eod_parser.add_argument('-f', '--flags', type=str, help=flags_help,
                             default='latest')
@@ -532,15 +541,19 @@ if __name__ == '__main__':
                            default='latest')
     cal_parser.add_argument('-f', '--flags', type=str, help=flags_help,
                             default='latest')
+    reprocess_parser.add_argument('-f', '--flags', type=str, help=flags_help,
+                                  default='latest')
 
     nowait_help = 'set to run all dates simultaneously'
     eod_parser.add_argument('--no-wait', action='store_true', help=nowait_help)
     rt_parser.add_argument('--no-wait', action='store_true', help=nowait_help)
     cal_parser.add_argument('--no-wait', action='store_true', help=nowait_help)
+    reprocess_parser.add_argument('--no-wait', action='store_true', help=nowait_help)
 
     eod_parser.set_defaults(func=process_eod, parser=eod_parser)
     rt_parser.set_defaults(func=process_rt, parser=rt_parser)
     cal_parser.set_defaults(func=process_cal, parser=cal_parser)
+    reprocess_parser.set_defaults(func=reprocess, parser=reprocess_parser)
 
     # script sub-command
     script_parser = subparsers.add_parser('script',

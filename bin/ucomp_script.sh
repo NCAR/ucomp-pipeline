@@ -1,6 +1,7 @@
 #!/bin/sh
 
-# This script launches IDL to run a script on a date.
+# This script launches IDL to run a script (like the realtime or eod processing
+# scripts) on a date.
 
 canonicalpath() {
   if [ -d $1 ]; then
@@ -21,6 +22,9 @@ umask 0002
 # find locations relative to this script
 SCRIPT_LOC=$(canonicalpath $0)
 BIN_DIR=$(dirname ${SCRIPT_LOC})
+
+SCRIPT_NAME=$1
+shift
 
 source ${BIN_DIR}/ucomp_include.sh
 
