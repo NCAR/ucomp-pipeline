@@ -62,11 +62,7 @@ pro ucomp_eod, date, config_filename
   mg_log, 'using IDL %s on %s', !version.release, !version.os_name, $
           name=run.logger_name, /debug
 
-  mg_log, 'starting processing for %d...', date, name=run.logger_name, /info
-
-  if (run->config('eod/reprocess')) then begin
-    ucomp_pipeline_step, 'ucomp_reprocess_cleanup', run=run
-  endif
+  mg_log, 'starting end-of-day processing for %d...', date, name=run.logger_name, /info
 
   ; copy config file to processing dir, creating dir if needed
   process_dir = filepath(date, root=run->config('processing/basedir'))
@@ -83,26 +79,8 @@ pro ucomp_eod, date, config_filename
   if (~is_available) then goto, done
 
 
-  ;== level 1
-
-  ucomp_pipeline_step, 'ucomp_make_raw_inventory', run=run
-  ucomp_pipeline_step, 'ucomp_check_cal_quality', run=run
-
-  wave_types = run->config('options/wave_types')
-  for w = 0L, n_elements(wave_types) - 1L do begin
-    ucomp_pipeline_step, 'ucomp_check_sci_quality', wave_types[w], run=run
-    ucomp_pipeline_step, 'ucomp_make_darks', wave_types[w], run=run
-    ucomp_pipeline_step, 'ucomp_make_flats', wave_types[w], run=run
-    ucomp_pipeline_step, 'ucomp_l1_process', wave_types[w], run=run
-    ucomp_pipeline_step, 'ucomp_check_gbu', wave_types[w], run=run
-  endfor
-
-  ucomp_l1_engineering_plots, run=run
-
-
-  ;== level 2
-
-  ; TODO: add level 2 steps
+  ; do the end-of-day processing
+  ucomp_eod_steps, run=run
 
 
   ;== finish bookkeeping
