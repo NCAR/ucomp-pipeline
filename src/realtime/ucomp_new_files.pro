@@ -40,6 +40,9 @@ function ucomp_new_files, dir, catalog_filename, count=count, error=error
       existing_files = strarr(n_existing_files)
       openr, lun, catalog_filename, /get_lun
       readf, lun, existing_files
+      for f = 0L, n_existing_files - 1L do begin
+        existing_files[f] = (strsplit(existing_files[f], /extract))[0]
+      endfor
       free_lun, lun
     endelse
   endelse

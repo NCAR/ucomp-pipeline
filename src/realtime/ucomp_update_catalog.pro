@@ -5,12 +5,22 @@
 ; if needed.
 ;
 ; :Params:
-;   new_files : in, required, type=strarr or !null
-;     files to add to catalog file
 ;   catalog_filename : in, required, type=string
 ;     filename of catalog file
+;   new_files : in, required, type=strarr or !null
+;     files to add to catalog file
+;   data_types : in, required, type=strarr
+;     data types of `new_files`
+;   wave_regions : in, required, type=strarr
+;     wave regions of `new_files`
+;   n_extensions : in, required, type=lonarr
+;     number of extensions of `new_files`
 ;-
-pro ucomp_update_catalog, new_files, catalog_filename
+pro ucomp_update_catalog, catalog_filename, $
+                          new_files, $
+                          data_types, $
+                          wave_regions, $
+                          n_extensions
   compile_opt strictarr
 
   if (n_elements(new_files) eq 0L) then return
@@ -23,7 +33,12 @@ pro ucomp_update_catalog, new_files, catalog_filename
     openu, lun, catalog_filename, /get_lun, /append
   endelse
 
-  printf, lun, transpose([file_basename(new_files)])
+  for f = 0L, n_elements(new_files) - 1L do begin
+    printf, lun, $
+            file_basename(new_files[f]), $
+            data_types[f], wave_regions[f], n_extensions[f], $
+            format='(%"%-40s %7s %7s nm %7d exts")'
+  endfor
 
   free_lun, lun
 end
