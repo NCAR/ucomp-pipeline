@@ -4,6 +4,8 @@ pro ucomp_validate_file, date, config_filename, filename, level
   compile_opt strictarr
 
   run = ucomp_run(date, 'validate', config_filename, /no_log)
+  if (not obj_valid(run)) then goto, done
+
   l0_header_spec_filename = run->config("validation/l0_specification")
 
   if (level eq 0L) then begin
@@ -22,5 +24,5 @@ pro ucomp_validate_file, date, config_filename, filename, level
   endif
 
   done:
-  obj_destroy, run
+  if (obj_valid(run)) then obj_destroy, run
 end
