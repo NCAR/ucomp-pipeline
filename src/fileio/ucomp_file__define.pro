@@ -173,19 +173,22 @@ pro ucomp_file::_inventory
 
   fits_read, fcb, primary_data, primary_header, exten_no=0
 
-  self.wave_type = ucomp_getpar(primary_header, 'FILTER')
-  self.data_type = ucomp_getpar(primary_header, 'DATATYPE')
-  self.date_obs  = ucomp_getpar(primary_header, 'DATE-OBS')
-  self.date_end  = ucomp_getpar(primary_header, 'DATE-END')
+  ; read a representative, test extension header
+  fits_read, fcb, extension_data, extension_header, exten_no=1, /header_only
 
-  cover = ucomp_getpar(primary_header, 'COVER')
+  self.wave_type = strtrim(long(ucomp_getpar(primary_header, 'FILTER')), 2)
+  self.data_type = ucomp_getpar(extension_header, 'DATATYPE')
+  self.date_obs  = ucomp_getpar(primary_header, 'DATE-OBS')
+;  self.date_end  = ucomp_getpar(primary_header, 'DATE-END')
+
+  cover = ucomp_getpar(extension_header, 'COVER')
   self.cover_in = cover eq 'in'
   if (self.cover_in) then self->setProperty, quality_bitmask=ishft(1, 0)
   if (cover ne 'in' && cover ne 'out') then begin
     self->setProperty, quality_bitmask=ishft(1, 1)
   endif
 
-  occulter = ucomp_getpar(primary_header, 'OCCLTR')
+  occulter = ucomp_getpar(extension_header, 'OCCLTR')
   self.occulter_in = occulter eq 'in'
   if (occulter ne 'in' && occulter ne 'out') then begin
     self->setProperty, quality_bitmask=ishft(1, 1)
@@ -206,7 +209,7 @@ pro ucomp_file::_inventory
 
     ; TODO: check for non-in/out values for CALOPTIC, DARKSHUT, CALPOL
 
-    (*self.wavelengths)[e - 1] = ucomp_getpar(extension_header, 'WAVELENG', /float)
+    (*self.wavelengths)[e - 1] = ucomp_getpar(extension_header, 'WAVELNG', /float)
   endfor
 
   fits_close, fcb
