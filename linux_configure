@@ -10,7 +10,9 @@ rm -rf build
 mkdir build
 cd build
 
+#  -DIDL_ROOT_DIR:PATH=/opt/share/idl8.6/idl86 \
+
 cmake \
   -DCMAKE_INSTALL_PREFIX:PATH=~/software/ucomp-pipeline${FLAGS} \
-  -DIDL_ROOT_DIR:PATH=/opt/share/idl8.6/idl86 \
+  -DIDL_ROOT_DIR:PATH=/opt/share/idl8.7.3/idl87 \
   ..
