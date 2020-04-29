@@ -24,6 +24,7 @@ pro ucomp_db_create_tables, config_filename
 
   date = '20190101'   ; using arbitrary date
   run = ucomp_run(date, mode, config_filename, /no_log)
+  if (not obj_valid(run)) then goto, done
 
   if (~run->config('database/update')) then begin
     mg_log, 'config file indicates no updating database, exiting...', $
