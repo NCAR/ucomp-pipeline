@@ -9,8 +9,20 @@
 ; :Params:
 ;   raw_files : in, optional, type=strarr
 ;     raw files to inventory, default is all raw files in the `l0_dir`
+;
+; :Keywords:
+;   data_types : out, optional, type=strarr
+;     set to a named variable to retrieve the data types of the given files
+;   wave_regions : out, optional, type=strarr
+;     set to a named variable to retrieve the wave regions of the given files
+;   n_extensions : out, optional, type=lonarr
+;     set to a named variable to retrieve the number of extensions for each of
+;     the given files
 ;-
-pro ucomp_run::make_raw_inventory, raw_files
+pro ucomp_run::make_raw_inventory, raw_files, $
+                                   data_types=data_types, $
+                                   wave_regions=wave_regions, $
+                                   n_extensions=n_extensions
   compile_opt strictarr
 
   self->getProperty, logger_name=logger_name
@@ -26,15 +38,23 @@ pro ucomp_run::make_raw_inventory, raw_files
     endif
   endelse
 
+  data_types = n_raw_files eq 0L ? !null : strarr(n_raw_files)
+  wave_regions = n_raw_files eq 0L ? !null : strarr(n_raw_files)
+  n_extensions = n_raw_files eq 0L ? !null : strarr(n_raw_files)
+
   mg_log, '%d raw files', n_raw_files, name=logger_name, /info
   for f = 0L, n_raw_files - 1L do begin
     file = ucomp_file(_raw_files[f])
 
-    mg_log, '%s.%s [%s] %s', $
+    mg_log, '%s.%s [%s nm] %s', $
             file.ut_date, file.ut_time, $
             file.wave_type, $
             file.data_type, $
             name=logger_name, /debug
+
+    data_types[f] = file.data_type
+    wave_regions[f] = file.wave_type
+    n_extensions[f] = file.n_extensions
 
     ; store files by data type and wave type
 

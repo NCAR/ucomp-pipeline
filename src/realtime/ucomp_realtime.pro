@@ -54,6 +54,9 @@ pro ucomp_realtime, date, config_filename
 
   mg_log, 'starting processing for %d...', date, name=run.logger_name, /info
 
+  processing_dir = filepath(run.date, root=run->config('processing/basedir'))
+  if (~file_test(processing_dir, /directory)) then file_mkdir, processing_dir
+
   run->lock, is_available=is_available
   if (~is_available) then goto, done
 
@@ -76,11 +79,15 @@ pro ucomp_realtime, date, config_filename
 
   mg_log, '%d new files', n_new_files, name=run.logger_name, /info
   for f = 0L, n_new_files - 1L do begin
-    mg_log, '%s', new_filenames[f], name=run.logger_name, /debug
+    mg_log, 'found %s', new_filenames[f], name=run.logger_name, /debug
   endfor
 
-  ucomp_update_catalog, new_filenames, catalog_filename
-  run->make_raw_inventory, new_filenames
+  run->make_raw_inventory, new_filenames, $
+                           data_types=data_types, $
+                           wave_regions=wave_regions, $
+                           n_extensions=n_extensions
+  ucomp_update_catalog, catalog_filename, $
+                        new_filenames, data_types, wave_regions, n_extensions
 
   ;== create quicklook L0.5 files
 
