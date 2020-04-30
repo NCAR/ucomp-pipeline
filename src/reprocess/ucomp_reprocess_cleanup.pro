@@ -15,12 +15,15 @@ pro ucomp_reprocess_cleanup, run=run
 
   ; remove's lock file indicating the day was already processed
   run->unlock
-  
+
+  ; clear databse of entries from the date
   ucomp_db_clearday, run=run
 
+  ; completely remove process directory for the date
   date_dir = filepath(run.date, root=run->config('processing/basedir'))
   file_delete, date_dir, /recursive, /allow_nonexistent
 
+  ; remove results that have been distributed for the date
   archive_basedir = run->config('results/archive_basedir')
   if (n_elements(archive_basedir) gt 0L) then begin
     ucomp_clearday, run.date, archive_basedir, 'archive', $
