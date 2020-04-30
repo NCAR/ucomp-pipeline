@@ -4,28 +4,27 @@
 ; Insert all the database entries for a given wave type for a run.
 ;
 ; :Params:
-;   wave_type : in, required, type=string
+;   wave_region : in, required, type=string
 ;     wave type
 ;
 ; :Keywords:
 ;   run : in, required, type=object
 ;     UCoMP run object
 ;-
-pro ucomp_db_update, wave_type, run=run
+pro ucomp_db_update, wave_region, run=run
   compile_opt strictarr
 
-  mg_log, 'updating database for %s nm...', wave_type, $
+  mg_log, 'updating database for %s nm...', wave_region, $
           name=run.logger_name, /info
 
-  ; get the files for the given wave_type
-
-  files = run->get_files(wave_type=wave_type, count=n_files)
+  ; get the files for the given wave_region
+  files = run->get_files(wave_region=wave_region, count=n_files)
   if (n_files eq 0L) then begin
     mg_log, 'no files to insert', name=run.logger_name, /info
     goto, done
   endif
 
-  sci_files = run->get_files(data_type='sci', wave_type=wave_type, $
+  sci_files = run->get_files(data_type='sci', wave_region=wave_region, $
                              count=n_sci_files)
   if (n_sci_files eq 0L) then begin
     mg_log, 'no science files to insert', name=run.logger_name, /info

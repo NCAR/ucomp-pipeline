@@ -17,8 +17,8 @@ pro ucomp_l1_engineering_plots, run=run
     mg_log, 'no engineering/basedir to save plots', name=run.logger_name, /warn
   endif
 
-  ucomp_wave_type_histogram, filepath(string(run.date, format='(%"%s.wave_types.png")'), $
+  ucomp_wave_region_histogram, filepath(string(run.date, format='(%"%s.wave_regions.png")'), $
                                       subdir=ucomp_decompose_date(run.date), $
                                       root=engineering_basedir), $
-                             run=run
+                               run=run
 end

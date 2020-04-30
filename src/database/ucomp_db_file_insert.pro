@@ -53,7 +53,7 @@ pro ucomp_db_file_insert, l1_files, obsday_index, sw_index, db, $
                  producttype_index, $
                  filetype_index, $
                  file.quality_bitmask, $
-                 long(file.wave_type), $
+                 long(file.wave_region), $
                  file.n_unique_wavelengths, $
                  sw_index, $
                  status=status, $

@@ -4,21 +4,21 @@
 ; Do the L0 -> L1 processing for a specific wave type.
 ;
 ; :Params:
-;   wave_type : in, required, type=string
+;   wave_region : in, required, type=string
 ;     wave type to be processed
 ;
 ; :Keywords:
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-pro ucomp_l1_process, wave_type, run=run
+pro ucomp_l1_process, wave_region, run=run
   compile_opt strictarr
 
-  mg_log, 'L1 processing for %s nm...', wave_type, name=run.logger_name, /info
+  mg_log, 'L1 processing for %s nm...', wave_region, name=run.logger_name, /info
 
-  files = run->get_files(data_type='sci', wave_type=wave_type, count=n_files)
+  files = run->get_files(data_type='sci', wave_region=wave_region, count=n_files)
   if (n_files eq 0L) then begin
-    mg_log, 'no files @ %s nm', wave_type, name=run.logger_name, /debug
+    mg_log, 'no files @ %s nm', wave_region, name=run.logger_name, /debug
     return
   endif
 
@@ -27,7 +27,7 @@ pro ucomp_l1_process, wave_type, run=run
   t0 = systime(/seconds)
   for f = 0L, n_files - 1L do begin
     mg_log, mg_format('%*d/%d @ %s: %s', n_digits, /simple), $
-            f + 1, n_files, wave_type, file_basename(files[f].raw_filename), $
+            f + 1, n_files, wave_region, file_basename(files[f].raw_filename), $
             name=run.logger_name, /info
     if (files[f].ok) then begin
       ucomp_l1_process_file, files[f], run=run

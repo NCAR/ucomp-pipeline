@@ -48,13 +48,13 @@ pro ucomp_archive, date, config_filename
 
   ;== archive
 
-  wave_types = run->config('options/wave_types')
+  wave_regions = run->config('options/wave_region')
 
   ucomp_pipeline_step, 'ucomp_l0_archive', run=run
 
-  for w = 0L, n_elements(wave_types) - 1L do begin
-    ucomp_pipeline_step, 'ucomp_l1_archive', wave_types[w], run=run
-    ucomp_pipeline_step, 'ucomp_l2_archive', wave_types[w], run=run
+  for w = 0L, n_elements(wave_regions) - 1L do begin
+    ucomp_pipeline_step, 'ucomp_l1_archive', wave_regions[w], run=run
+    ucomp_pipeline_step, 'ucomp_l2_archive', wave_regions[w], run=run
   endfor
 
 

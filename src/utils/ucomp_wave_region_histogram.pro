@@ -15,14 +15,14 @@
 ;   bin_size : in, optional, type=integer, default=15
 ;     size of bin in minutes
 ;-
-pro ucomp_wave_type_histogram, output_filename, $
-                               run=run, $
-                               bin_size=bin_size
+pro ucomp_wave_region_histogram, output_filename, $
+                                 run=run, $
+                                 bin_size=bin_size
   compile_opt strictarr
 
-  mg_log, 'producing wave type histgram...', name=run.logger_name, /info
+  mg_log, 'producing wave region histgram...', name=run.logger_name, /info
 
-  ; create wave_type histogram
+  ; create wave_region histogram
 
   start_time = 06   ; 24-hour time
   ;end_time   = 19   ; 24-hour time
@@ -34,15 +34,14 @@ pro ucomp_wave_type_histogram, output_filename, $
   max_files  = max_rate * _bin_size
   n_bins     = long((end_time  - start_time) / (_bin_size / 60.0))
 
-  ;wave_types       = run->config('options/wave_types')
-  run->getProperty, all_wave_types=wave_types
-print, wave_types
-  n_wave_types     = n_elements(wave_types)
-  histograms       = lonarr(n_wave_types, n_bins)
-  n_files_per_type = lonarr(n_wave_types)
+  ;wave_regions     = run->config('options/wave_regions')
+  run->getProperty, all_wave_regions=wave_regions
+  n_wave_regions   = n_elements(wave_regions)
+  histograms       = lonarr(n_wave_regions, n_bins)
+  n_files_per_type = lonarr(n_wave_regions)
 
-  for t = 0L, n_wave_types - 1L do begin
-    files = run->get_files(wave_type=wave_types[t], count=n_files)
+  for t = 0L, n_wave_regions - 1L do begin
+    files = run->get_files(wave_region=wave_regions[t], count=n_files)
 
     n_files_per_type[t] = n_files
     if (n_files eq 0L) then continue
@@ -61,24 +60,24 @@ print, wave_types
     endif
   endfor
 
-  colors = lonarr(n_wave_types)
-  for t = 0L, n_wave_types - 1L do begin
-    hex_color = run->config(wave_types[t] + '/color')
+  colors = lonarr(n_wave_regions)
+  for t = 0L, n_wave_regions - 1L do begin
+    hex_color = run->config(wave_regions[t] + '/color')
     reads, hex_color, color, format='(Z)'
     colors[t] = color
   endfor
 
-  ind = where(n_files_per_type gt 0L, n_nonzero_wave_types)
-  if (n_nonzero_wave_types eq 0) then begin
+  ind = where(n_files_per_type gt 0L, n_nonzero_wave_regions)
+  if (n_nonzero_wave_regions eq 0) then begin
     mg_log, 'no files to plot', name=run.logger_name, /warn
     return
   endif
-  histograms = histograms[ind, *]
-  colors     = colors[ind]
-  wave_types = wave_types[ind]
-  wave_names = wave_types
-  for w = 0L, n_nonzero_wave_types - 1L do begin
-    wave_names[w] = run->line(wave_types[w], 'name')
+  histograms   = histograms[ind, *]
+  colors       = colors[ind]
+  wave_regions = wave_regions[ind]
+  wave_names   = wave_regions
+  for w = 0L, n_nonzero_wave_regions - 1L do begin
+    wave_names[w] = run->line(wave_regions[w], 'name')
   endfor
 
   ; display plot
@@ -100,7 +99,7 @@ print, wave_types
                        position=[0.075, 0.25, 0.75, 0.95]
 
   square = mg_usersym(/square, /fill)
-  mg_legend, item_name=wave_types + ' [' + wave_names + ']: '+ strtrim(sums, 2), $
+  mg_legend, item_name=wave_regions + ' [' + wave_names + ']: '+ strtrim(sums, 2), $
              item_color=colors, $
              item_psym=square, $
              item_symsize=1.5, $

@@ -4,23 +4,23 @@
 ; Package and distribute level 1 products to the appropriate locations.
 ;
 ; :Params:
-;   wave_type : in, required, type=string
+;   wave_region : in, required, type=string
 ;     wavelength type to distribute, i.e., '1074'
 ;
 ; :Keywords:
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-pro ucomp_l1_distribute, wave_type, run=run
+pro ucomp_l1_distribute, wave_region, run=run
   compile_opt strictarr
 
-  if (~run->config(wave_type + '/distribute_l1')) then begin
-    mg_log, 'skipping distributing %s nm L1 data', wave_type, $
+  if (~run->config(wave_region + '/distribute_l1')) then begin
+    mg_log, 'skipping distributing %s nm L1 data', wave_region, $
             name=run.logger, /info
     goto, done
   endif
 
-  ucomp_l1_archive, wave_type, run=run
+  ucomp_l1_archive, wave_region, run=run
 
   ; TODO: copy L1 data into archive, etc. directories
   archive_basedir = run->config('results/archive_basedir')
@@ -37,13 +37,13 @@ pro ucomp_l1_distribute, wave_type, run=run
                            subdir=[run.date, 'level1'], $
                            root=run->config('processing/basedir'))
 
-    files = run->get_files(wave_type=wave_type, count=n_files)
+    files = run->get_files(wave_region=wave_region, count=n_files)
     for f = 0L, n_files - 1L do begin
       file_copy, filepath(files[f].l1_basename, root=process_dir), $
                  archive_dir, $
                  /overwrite
     endfor
-    mg_log, 'copied %d %s nm files to archive', n_files, wave_type, $
+    mg_log, 'copied %d %s nm files to archive', n_files, wave_region, $
             name=run.logger_name, /info
   endif else begin
     mg_log, 'results/archive_basedir not specified', name=run.logger, /warn
