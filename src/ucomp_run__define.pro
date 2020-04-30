@@ -427,6 +427,11 @@ end
 function ucomp_run::line, line, option_name
   compile_opt strictarr
 
+  if (n_elements(line) eq 0L) then begin
+    self.lines->getProperty, spec=spec
+    return, spec->sections(count=n_sections)
+  endif
+
   value = self.lines->get(option_name, section=line, found=found)
   return, value
 end
