@@ -15,12 +15,15 @@
 ;     wave regions of `new_files`
 ;   n_extensions : in, required, type=lonarr
 ;     number of extensions of `new_files`
+;   exposure : in, required, type=fltarr
+;     exposure time [ms]
 ;-
 pro ucomp_update_catalog, catalog_filename, $
                           new_files, $
                           data_types, $
                           wave_regions, $
-                          n_extensions
+                          n_extensions, $
+                          exposures
   compile_opt strictarr
 
   if (n_elements(new_files) eq 0L) then return
@@ -36,8 +39,8 @@ pro ucomp_update_catalog, catalog_filename, $
   for f = 0L, n_elements(new_files) - 1L do begin
     printf, lun, $
             file_basename(new_files[f]), $
-            data_types[f], wave_regions[f], n_extensions[f], $
-            format='(%"%-40s %7s %7s nm %7d exts")'
+            data_types[f], wave_regions[f], exposures[f], n_extensions[f], $
+            format='(%"%-40s %7s %7s nm %7.2f ms %7d exts")'
   endfor
 
   free_lun, lun

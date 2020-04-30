@@ -85,9 +85,10 @@ pro ucomp_realtime, date, config_filename
   run->make_raw_inventory, new_filenames, $
                            data_types=data_types, $
                            wave_regions=wave_regions, $
-                           n_extensions=n_extensions
+                           n_extensions=n_extensions, $
+                           exposures=exposures
   ucomp_update_catalog, catalog_filename, $
-                        new_filenames, data_types, wave_regions, n_extensions
+                        new_filenames, data_types, wave_regions, n_extensions, exposures
 
   ;== create quicklook L0.5 files
 

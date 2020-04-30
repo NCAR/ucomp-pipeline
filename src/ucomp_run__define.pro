@@ -18,11 +18,14 @@
 ;   n_extensions : out, optional, type=lonarr
 ;     set to a named variable to retrieve the number of extensions for each of
 ;     the given files
+;  exposures : out, optional, type=fltarr
+;     set to a named variable to retrieve the exposure [ms] for the given files
 ;-
 pro ucomp_run::make_raw_inventory, raw_files, $
                                    data_types=data_types, $
                                    wave_regions=wave_regions, $
-                                   n_extensions=n_extensions
+                                   n_extensions=n_extensions, $
+                                   exposures=exposures
   compile_opt strictarr
 
   self->getProperty, logger_name=logger_name
@@ -40,7 +43,8 @@ pro ucomp_run::make_raw_inventory, raw_files, $
 
   data_types = n_raw_files eq 0L ? !null : strarr(n_raw_files)
   wave_regions = n_raw_files eq 0L ? !null : strarr(n_raw_files)
-  n_extensions = n_raw_files eq 0L ? !null : strarr(n_raw_files)
+  n_extensions = n_raw_files eq 0L ? !null : lonarr(n_raw_files)
+  exposures = n_raw_files eq 0L ? !null : fltarr(n_raw_files)
 
   mg_log, '%d raw files', n_raw_files, name=logger_name, /info
   for f = 0L, n_raw_files - 1L do begin
@@ -55,6 +59,7 @@ pro ucomp_run::make_raw_inventory, raw_files, $
     data_types[f] = file.data_type
     wave_regions[f] = file.wave_type
     n_extensions[f] = file.n_extensions
+    exposures[f] = file.exposure
 
     ; store files by data type and wave type
 
