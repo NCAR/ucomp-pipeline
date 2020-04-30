@@ -25,7 +25,8 @@ pro ucomp_wave_type_histogram, output_filename, $
   ; create wave_type histogram
 
   start_time = 06   ; 24-hour time
-  end_time   = 19   ; 24-hour time
+  ;end_time   = 19   ; 24-hour time
+  end_time   = 20   ; 24-hour time
 
   _bin_size  = mg_default(bin_size, 15)   ; minutes
   max_rate   = 1.33                       ; max rate in files/minute
@@ -33,7 +34,9 @@ pro ucomp_wave_type_histogram, output_filename, $
   max_files  = max_rate * _bin_size
   n_bins     = long((end_time  - start_time) / (_bin_size / 60.0))
 
-  wave_types       = run->config('options/wave_types')
+  ;wave_types       = run->config('options/wave_types')
+  run->getProperty, all_wave_types=wave_types
+print, wave_types
   n_wave_types     = n_elements(wave_types)
   histograms       = lonarr(n_wave_types, n_bins)
   n_files_per_type = lonarr(n_wave_types)

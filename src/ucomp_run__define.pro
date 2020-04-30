@@ -22,10 +22,11 @@
 ;     set to a named variable to retrieve the exposure [ms] for the given files
 ;-
 pro ucomp_run::make_raw_inventory, raw_files, $
-                                   data_types=data_types, $
-                                   wave_regions=wave_regions, $
                                    n_extensions=n_extensions, $
-                                   exposures=exposures
+                                   data_types=data_types, $
+                                   exposures=exposures, $
+                                   wave_regions=wave_regions, $
+                                   n_points=n_points
   compile_opt strictarr
 
   self->getProperty, logger_name=logger_name
@@ -41,10 +42,11 @@ pro ucomp_run::make_raw_inventory, raw_files, $
     endif
   endelse
 
-  data_types = n_raw_files eq 0L ? !null : strarr(n_raw_files)
-  wave_regions = n_raw_files eq 0L ? !null : strarr(n_raw_files)
   n_extensions = n_raw_files eq 0L ? !null : lonarr(n_raw_files)
+  data_types = n_raw_files eq 0L ? !null : strarr(n_raw_files)
   exposures = n_raw_files eq 0L ? !null : fltarr(n_raw_files)
+  wave_regions = n_raw_files eq 0L ? !null : strarr(n_raw_files)
+  n_points = n_raw_files eq 0L ? !null : lonarr(n_raw_files)
 
   mg_log, '%d raw files', n_raw_files, name=logger_name, /info
   for f = 0L, n_raw_files - 1L do begin
@@ -56,10 +58,11 @@ pro ucomp_run::make_raw_inventory, raw_files, $
             file.data_type, $
             name=logger_name, /debug
 
-    data_types[f] = file.data_type
-    wave_regions[f] = file.wave_type
     n_extensions[f] = file.n_extensions
+    data_types[f] = file.data_type
     exposures[f] = file.exposure
+    wave_regions[f] = file.wave_type
+    n_points[f] = file.n_unique_wavelengths
 
     ; store files by data type and wave type
 
