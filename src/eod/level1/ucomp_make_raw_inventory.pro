@@ -11,7 +11,16 @@ pro ucomp_make_raw_inventory, run=run
   compile_opt strictarr
 
   ; do the inventory
-  run->make_raw_inventory
+  run->make_raw_inventory, data_types=data_types, $
+                           wave_regions=wave_regions, $
+                           n_extensions=n_extensions, $
+                           exposures=exposures
+
+  catalog_filename = filepath(string(run.date, format='(%"%s.ucomp.catalog.txt")'), $
+                              subdir=run.date, $
+                              root=run->config('processing/basedir'))
+  ucomp_update_catalog, catalog_filename, $
+                        new_filenames, data_types, wave_regions, n_extensions, exposures
 
   ; write the inventory files
   process_dir = filepath(run.date, $
