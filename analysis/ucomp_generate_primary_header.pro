@@ -16,7 +16,7 @@ function ucomp_generate_primary_header
   primary_hash['dateobs'] = string(systime(/julian), format=dt_format)
   primary_hash['dateend'] = string(systime(/julian) + 15.0/24.0/60.0/60.0, format=dt_format)
 
-  primary_hash['wave_type'] = '1074'
+  primary_hash['wave_region'] = '1074'
   primary_hash['datatype'] = 'sci'
   primary_hash['exptime'] = 1.0e-6
   primary_hash['numsum'] = 4
