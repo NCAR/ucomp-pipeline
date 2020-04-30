@@ -18,13 +18,15 @@ pro ucomp_make_darks, run=run
   if (n_dark_files eq 0L) then goto, done
 
   dark_times = fltarr(n_dark_files)
-  nx = run->epoch('nx')
-  ny = run->epoch('ny')
+
+  datetime = strmid(file_basename((dark_files[0]).raw_filename), 0, 15)
+  nx = run->epoch('nx', datetime=datetime)
+  ny = run->epoch('ny', datetime=datetime)
   averaged_dark_images = fltarr(nx, ny, n_dark_files)
 
   for d = 0L, n_dark_files - 1L do begin
     dark_file = dark_files[d]
-    mg_log, '%d/%d: processing dark %s', $
+    mg_log, '%d/%d: processing %s', $
             d + 1, n_dark_files, file_basename(dark_file.raw_filename), $
             name=run.logger_name, /debug
 
