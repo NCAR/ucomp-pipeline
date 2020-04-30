@@ -18,6 +18,9 @@ pro ucomp_reprocess_cleanup, run=run
   
   ucomp_db_clearday, run=run
 
+  date_dir = filepath(run.date, root=run->config('processing/basedir'))
+  file_delete, date_dir, /recursive, /allow_nonexistent
+
   archive_basedir = run->config('results/archive_basedir')
   if (n_elements(archive_basedir) gt 0L) then begin
     ucomp_clearday, run.date, archive_basedir, 'archive', $
