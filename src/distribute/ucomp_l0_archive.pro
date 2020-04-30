@@ -40,7 +40,7 @@ pro ucomp_l0_archive, run=run
 
   glob_indices = where(n_files_by_type gt 0L, n_glob_parts)
   if (n_glob_parts eq 0L) then begin
-    mg_log, 'no files to tar', run.logger_name, /warn
+    mg_log, 'no files to tar', name=run.logger_name, /warn
     goto, done
   endif
   glob = strjoin(types[glob_indices], ' ')
