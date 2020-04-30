@@ -41,12 +41,12 @@ pro ucomp_make_raw_inventory, run=run
                         n_points
 
   ; write the inventory files
-  run->getProperty, all_wave_types=all_wave_types
-  for w = 0L, n_elements(all_wave_types) - 1L do begin
-    files = run->get_files(data_type='sci', wave_type=all_wave_types[w], $
+  run->getProperty, all_wave_regions=all_wave_regions
+  for w = 0L, n_elements(all_wave_regions) - 1L do begin
+    files = run->get_files(data_type='sci', wave_region=all_wave_regions[w], $
                            count=n_files)
 
-    basename = string(run.date, all_wave_types[w], format='(%"%d.ucomp.%s.files.txt")')
+    basename = string(run.date, all_wave_regions[w], format='(%"%d.ucomp.%s.files.txt")')
     filename = filepath(basename, root=process_dir)
 
     if (n_files eq 0L) then continue

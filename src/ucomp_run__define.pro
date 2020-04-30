@@ -54,14 +54,14 @@ pro ucomp_run::make_raw_inventory, raw_files, $
 
     mg_log, '%s.%s [%s nm] %s', $
             file.ut_date, file.ut_time, $
-            file.wave_type, $
+            file.wave_region, $
             file.data_type, $
             name=logger_name, /debug
 
     n_extensions[f] = file.n_extensions
     data_types[f] = file.data_type
     exposures[f] = file.exposure
-    wave_regions[f] = file.wave_type
+    wave_regions[f] = file.wave_region
     n_points[f] = file.n_unique_wavelengths
 
     ; store files by data type and wave type
@@ -69,8 +69,8 @@ pro ucomp_run::make_raw_inventory, raw_files, $
     if (~(self.files)->hasKey(file.data_type)) then (self.files)[file.data_type] = hash()
     dtype_hash = (self.files)[file.data_type]
 
-    if (~dtype_hash->hasKey(file.wave_type)) then dtype_hash[file.wave_type] = list()
-    (dtype_hash)[file.wave_type]->add, file
+    if (~dtype_hash->hasKey(file.wave_region)) then dtype_hash[file.wave_region] = list()
+    (dtype_hash)[file.wave_region]->add, file
   endfor
 end
 
@@ -96,7 +96,7 @@ end
 ;   `objarr` of `ucomp_file` objects
 ;
 ; :Keywords:
-;   wave_type : in, optional, type=string
+;   wave_region : in, optional, type=string
 ;     set to wave type of files to return: '1074', '1079', etc.; by default,
 ;     returns files of all wave types
 ;   data_type : in, optional, type=string
@@ -105,30 +105,30 @@ end
 ;   count : out, optional, type=long
 ;     set to a named variable to retrieve the number of files returned
 ;-
-function ucomp_run::get_files, wave_type=wave_type, data_type=data_type, $
+function ucomp_run::get_files, wave_region=wave_region, data_type=data_type, $
                                count=count
   compile_opt strictarr
 
   count = 0L   ; set for all the special cases that return early
 
   case 1 of
-    n_elements(wave_type) eq 0L && n_elements(data_type) eq 0L: begin
+    n_elements(wave_region) eq 0L && n_elements(data_type) eq 0L: begin
         files_list = list()
         foreach dtype_hash, self.files, dtype do begin
-          foreach wtype_list, dtype_hash, wtype do begin
-            files_list->add, wtype_list, /extract
+          foreach wregion_list, dtype_hash, wregion do begin
+            files_list->add, wregion_list, /extract
           endforeach
         endforeach
         files = files_list->toArray()
         count = files_list->count()
         obj_destroy, files_list
       end
-    n_elements(wave_type) eq 0L: begin
+    n_elements(wave_region) eq 0L: begin
         if (~(self.files)->hasKey(data_type)) then return, !null
 
         files_list = list()
-        foreach wtype_list, (self.files)[data_type], wtype do begin
-          files_list->add, wtype_list, /extract
+        foreach wregion_list, (self.files)[data_type], wregion do begin
+          files_list->add, wregion_list, /extract
         endforeach
         files = files_list->toArray()
         count = files_list->count()
@@ -137,8 +137,8 @@ function ucomp_run::get_files, wave_type=wave_type, data_type=data_type, $
     n_elements(data_type) eq 0L: begin
         files_list = list()
         foreach dtype_hash, self.files, dtype do begin
-          if (~dtype_hash->hasKey(wave_type)) then continue
-          files_list->add, dtype_hash[wave_type], /extract
+          if (~dtype_hash->hasKey(wave_region)) then continue
+          files_list->add, dtype_hash[wave_region], /extract
         endforeach
         files = files_list->toArray()
         count = files_list->count()
@@ -146,9 +146,9 @@ function ucomp_run::get_files, wave_type=wave_type, data_type=data_type, $
       end
     else: begin
         if (~(self.files)->hasKey(data_type)) then return, !null
-        if (~((self.files)[data_type])->hasKey(wave_type)) then return, !null
+        if (~((self.files)[data_type])->hasKey(wave_region)) then return, !null
 
-        files_list = ((self.files)[data_type])[wave_type]
+        files_list = ((self.files)[data_type])[wave_region]
         files = files_list->toArray()
         count = files_list->count()
       end
@@ -471,7 +471,7 @@ pro ucomp_run::getProperty, date=date, $
                             mode=mode, $
                             logger_name=logger_name, $
                             config_contents=config_contents, $
-                            all_wave_types=all_wave_types, $
+                            all_wave_regions=all_wave_regions, $
                             t0=t0
   compile_opt strictarr
   on_error, 2
@@ -487,15 +487,15 @@ pro ucomp_run::getProperty, date=date, $
     config_contents = reform(self.options->_toString(/substitute))
   endif
 
-  if (arg_present(all_wave_types)) then begin
-    wtype_hash = hash()
+  if (arg_present(all_wave_regions)) then begin
+    wregion_hash = hash()
     foreach dtype_hash, self.files, dtype do begin
-      foreach wtype_list, dtype_hash, wtype do begin
-        wtype_hash[wtype] = 1B
+      foreach wregion_list, dtype_hash, wregion do begin
+        wregion_hash[wregion] = 1B
       endforeach
     endforeach
-    all_wave_types = (wtype_hash->keys())->toArray()
-    obj_destroy, wtype_hash
+    all_wave_regions = (wregion_hash->keys())->toArray()
+    obj_destroy, wregion_hash
   endif
 
   if (arg_present(t0)) then t0 = self.t0
@@ -594,9 +594,9 @@ pro ucomp_run::cleanup
   ; performance monitoring API
   obj_destroy, [self.calls, self.times]
 
-  foreach wave_type, self.files do begin
-    foreach file, wave_type do obj_destroy, file
-    obj_destroy, wave_type
+  foreach wave_region, self.files do begin
+    foreach file, wave_region do obj_destroy, file
+    obj_destroy, wave_region
   endforeach
   obj_destroy, self.files
 end
@@ -666,7 +666,7 @@ function ucomp_run::init, date, mode, config_filename, no_log=no_log
     return, 0
   endif
 
-  self.files = hash()   ; wave_type (string) -> list of file objects
+  self.files = hash()   ; wave_region (string) -> list of file objects
 
   ; performance monitoring
   self.calls = orderedhash()   ; routine name (string) -> # of calls (long)

@@ -87,17 +87,17 @@ pro ucomp_reprocess, date, config_filename
 
   ;== finish bookkeeping
 
-  for w = 0L, n_elements(wave_types) - 1L do begin
-    ucomp_pipeline_step, 'ucomp_db_update', wave_types[w], run=run
+  for w = 0L, n_elements(wave_regions) - 1L do begin
+    ucomp_pipeline_step, 'ucomp_db_update', wave_regions[w], run=run
   endfor
 
   ucomp_pipeline_step, 'ucomp_l0_distribute', run=run
 
   ucomp_pipeline_step, 'ucomp_get_observerlog', run=run
 
-  for w = 0L, n_elements(wave_types) - 1L do begin
-    ucomp_pipeline_step, 'ucomp_l1_distribute', wave_types[w], run=run
-    ucomp_pipeline_step, 'ucomp_l2_distribute', wave_types[w], run=run
+  for w = 0L, n_elements(wave_regions) - 1L do begin
+    ucomp_pipeline_step, 'ucomp_l1_distribute', wave_regions[w], run=run
+    ucomp_pipeline_step, 'ucomp_l2_distribute', wave_regions[w], run=run
   endfor
 
   ucomp_pipeline_step, 'ucomp_send_notification', run=run

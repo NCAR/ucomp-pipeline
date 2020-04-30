@@ -6,7 +6,7 @@
 ; :Params:
 ;   routine_name : in, required, type=string
 ;     name of routine to call as a string
-;   wave_type : in, optional, type=string
+;   wave_region : in, optional, type=string
 ;     wave type, e.g., '1074', '1079', etc.
 ;
 ; :Keywords:
@@ -17,7 +17,7 @@
 ;   _extra : in, optional, type=keywords
 ;     keywords to pass along to `ROUTINE`
 ;-
-pro ucomp_pipeline_step, routine_name, wave_type, skip=skip, run=run, _extra=e
+pro ucomp_pipeline_step, routine_name, wave_region, skip=skip, run=run, _extra=e
   compile_opt strictarr
 
   if (keyword_set(skip)) then begin
@@ -33,7 +33,7 @@ pro ucomp_pipeline_step, routine_name, wave_type, skip=skip, run=run, _extra=e
     if (n_params() eq 1) then begin
       call_procedure, routine_name, run=run, _extra=e
     endif else begin
-      call_procedure, routine_name, wave_type, run=run, _extra=e
+      call_procedure, routine_name, wave_region, run=run, _extra=e
     endelse
 
     time = run->stop(clock_id)

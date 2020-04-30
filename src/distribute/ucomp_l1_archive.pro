@@ -4,18 +4,18 @@
 ; Archive L1 files for given wave type on the HPSS.
 ;
 ; :Params:
-;   wave_type : in, required, type=string
-;     wavelength type to distribute, i.e., '1074'
+;   wave_region : in, required, type=string
+;     wavelength region to distribute, i.e., '1074'
 ;
 ; :Keywords:
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-pro ucomp_l1_archive, wave_type, run=run
+pro ucomp_l1_archive, wave_region, run=run
   compile_opt strictarr
 
-  if (~run->config(wave_type + '/distribute_l1')) then begin
-    mg_log, 'skipping distributing %s nm L1 data', wave_type, $
+  if (~run->config(wave_region + '/distribute_l1')) then begin
+    mg_log, 'skipping distributing %s nm L1 data', wave_region, $
             name=run.logger, /info
     goto, done
   endif

@@ -19,7 +19,7 @@ function ucomp_file::_overloadHelp, varname
   return, string(varname, $
                  'UCoMP', $
                  self.n_extensions, $
-                 self.wave_type, $
+                 self.wave_region, $
                  self.data_type, $
                  format='(%"%-15s %s  <%d exts, %s nm, %s>")')
 end
@@ -41,7 +41,7 @@ function ucomp_file::_overloadPrint
   self->getProperty, n_unique_wavelengths=n_unique_wavelengths
 
   output = strarr(self.n_extensions + 1L)
-  output[0] = string(self.wave_type, $
+  output[0] = string(self.wave_region, $
                      self.data_type, $
                      self.n_extensions, $
                      n_unique_wavelengths, $
@@ -88,7 +88,7 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
                              date_obs=date_obs, $
                              date_end=date_end, $
                              carrington_rotation=carrington_rotation, $
-                             wave_type=wave_type, $
+                             wave_region=wave_region, $
                              data_type=data_type, $
                              exposure=exposure, $
                              n_extensions=n_extensions, $
@@ -105,7 +105,7 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
     self->getProperty, n_unique_wavelengths=n_unique_wavelengths
     l1_basename = string(self.ut_date, $
                          self.ut_time, $
-                         self.wave_type, $
+                         self.wave_region, $
                          n_unique_wavelengths, $
                          format='(%"%s.%s.ucomp.%s.%d.fts")')
 
@@ -130,7 +130,7 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
 
   if (arg_present(exposure)) then exposure = self.exposure
 
-  if (arg_present(wave_type)) then wave_type = self.wave_type
+  if (arg_present(wave_region)) then wave_region = self.wave_region
   if (arg_present(data_type)) then data_type = self.data_type
 
   if (arg_present(quality_bitmask)) then quality_bitmask = self.quality_bitmask
@@ -179,7 +179,7 @@ pro ucomp_file::_inventory
   ; read a representative, test extension header
   fits_read, fcb, extension_data, extension_header, exten_no=1, /header_only
 
-  self.wave_type = strtrim(long(ucomp_getpar(primary_header, 'FILTER')), 2)
+  self.wave_region = strtrim(long(ucomp_getpar(primary_header, 'FILTER')), 2)
   self.data_type = ucomp_getpar(extension_header, 'DATATYPE')
   self.date_obs  = ucomp_getpar(primary_header, 'DATE-OBS')
 ;  self.date_end  = ucomp_getpar(primary_header, 'DATE-END')
@@ -272,7 +272,7 @@ pro ucomp_file__define
            date_end            : '', $
            n_extensions        : 0L, $
 
-           wave_type           : '', $
+           wave_region         : '', $
            data_type           : '', $
            exposure            : 0.0, $
            occulter_in         : 0B, $
