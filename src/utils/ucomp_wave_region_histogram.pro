@@ -60,9 +60,15 @@ pro ucomp_wave_region_histogram, output_filename, $
     endif
   endfor
 
+  lines = run->line()
+
   colors = lonarr(n_wave_regions)
   for t = 0L, n_wave_regions - 1L do begin
-    hex_color = run->config(wave_regions[t] + '/color')
+    if (mg_in(lines, wave_regions[t])) then begin
+      hex_color = run->config(wave_regions[t] + '/color')
+    endif else begin
+      hex_color = '000000'
+    endelse
     reads, hex_color, color, format='(Z)'
     colors[t] = color
   endfor
@@ -77,14 +83,18 @@ pro ucomp_wave_region_histogram, output_filename, $
   wave_regions = wave_regions[ind]
   wave_names   = wave_regions
   for w = 0L, n_nonzero_wave_regions - 1L do begin
-    wave_names[w] = run->line(wave_regions[w], 'name')
+    if (mg_in(lines, wave_regions[w])) then begin
+      wave_names[w] = run->line(wave_regions[w], 'name')
+    endif else begin
+      wave_names[w] = 'unknown'
+    endelse
   endfor
 
   ; display plot
 
   original_device = !d.name
   set_plot, 'Z'
-  device, set_resolution=[600, 120], set_pixel_depth=24, decomposed=1
+  device, set_resolution=[600, 200], set_pixel_depth=24, decomposed=1
   tvlct, original_rgb, /get
 
   sums = total(histograms, 2, /preserve_type)
@@ -106,7 +116,7 @@ pro ucomp_wave_region_histogram, output_filename, $
              color='000000'x, $
              charsize=0.85, $
              gap=0.075, $
-             line_bump=0.06, $
+             line_bump=0.2125, $
              position=[0.775, 0.15, 0.95, 0.95]
 
   im = tvrd(true=1)
