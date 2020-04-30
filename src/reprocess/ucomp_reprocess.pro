@@ -111,7 +111,7 @@ pro ucomp_reprocess, date, config_filename
   ; unlock raw directory and mark processed if no crash
   if (obj_valid(run)) then begin
     ; only unlock if this process was responsible for locking it
-    if (is_available) then run->unlock, mark_processed=error eq 0
+    if (keyword_set(is_available)) then run->unlock, mark_processed=error eq 0
 
     run->report
     run->report_profiling
