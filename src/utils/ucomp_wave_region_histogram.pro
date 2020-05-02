@@ -25,8 +25,11 @@ pro ucomp_wave_region_histogram, output_filename, $
   ; create wave_region histogram
 
   start_time = 06   ; 24-hour time
-  ;end_time   = 19   ; 24-hour time
-  end_time   = 20   ; 24-hour time
+  end_time   = 19   ; 24-hour time
+
+  all_files = run->get_files()
+  last_hst_time = all_files[-1].hst_time
+  end_time >= long(strmid(last_hst_time, 0, 2)) + (strmid(last_hst_time, 2, 2) ne '00')
 
   _bin_size  = mg_default(bin_size, 15)   ; minutes
   max_rate   = 1.33                       ; max rate in files/minute
