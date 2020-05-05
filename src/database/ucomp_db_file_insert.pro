@@ -29,7 +29,7 @@ pro ucomp_db_file_insert, l1_files, obsday_index, sw_index, db, $
   ; get index for intensity files
   q = 'select * from mlso_producttype where producttype=''intensity'''
   producttype_results = db->query(q, fields=fields)
-  producttype_index = producttype_results.producttype_id	
+  producttype_index = producttype_results.producttype_id
 
   ; get index for FITS files
   q = 'select * from mlso_filetype where filetype=''fits'''
