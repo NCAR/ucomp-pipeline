@@ -81,8 +81,12 @@ pro ucomp_reprocess, date, config_filename
   if (~is_available) then goto, done
 
 
+  ; wave regions to process
+  wave_regions = run->config('options/wave_regions')
+
+
   ; do the end-of-day processing
-  ucomp_eod_steps, run=run
+  ucomp_eod_steps, wave_regions, run=run
 
 
   ;== finish bookkeeping
