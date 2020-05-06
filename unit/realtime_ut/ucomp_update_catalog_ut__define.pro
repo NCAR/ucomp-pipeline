@@ -4,7 +4,7 @@ function ucomp_update_catalog_ut::test_emptystart
   compile_opt strictarr
 
   new_files = !null
-  ucomp_update_catalog, new_files, self.catalog_filename
+  ucomp_update_catalog, self.catalog_filename, new_files
 
   assert, ~file_test(self.catalog_filename, /regular), 'catalog file exists'
 
@@ -16,7 +16,15 @@ function ucomp_update_catalog_ut::test_start
   compile_opt strictarr
 
   new_files = ['a', 'b', 'c']
-  ucomp_update_catalog, new_files, self.catalog_filename
+
+  n_extensions = [2, 20, 10]
+  data_types = strarr(3) + 'sci'
+  exposures = fltarr(3) + 80.0
+  wave_regions = fltarr(3) + 10.74
+  n_points = lonarr(3) + 3L
+
+  ucomp_update_catalog, self.catalog_filename, new_files, $
+                        n_extensions, data_types, exposures, wave_regions, n_points
 
   cat = self->read_catalog()
   assert, array_equal(new_files, cat), $
@@ -28,11 +36,19 @@ end
 function ucomp_update_catalog_ut::test_next
   compile_opt strictarr
 
+  n_extensions = [2, 20, 10]
+  data_types = strarr(3) + 'sci'
+  exposures = fltarr(3) + 80.0
+  wave_regions = fltarr(3) + 10.74
+  n_points = lonarr(3) + 3L
+
   new_files1 = ['a', 'b', 'c']
-  ucomp_update_catalog, new_files1, self.catalog_filename
+  ucomp_update_catalog, self.catalog_filename, new_files1, $
+                        n_extensions, data_types, exposures, wave_regions, n_points
 
   new_files2 = ['d', 'e', 'f']
-  ucomp_update_catalog, new_files2, self.catalog_filename
+  ucomp_update_catalog, self.catalog_filename, new_files2, $
+                        n_extensions, data_types, exposures, wave_regions, n_points
 
   cat = self->read_catalog()
   assert, array_equal([new_files1, new_files2], cat), $
@@ -44,11 +60,19 @@ end
 function ucomp_update_catalog_ut::test_basename
   compile_opt strictarr
 
+  n_extensions = [2, 20, 10]
+  data_types = strarr(3) + 'sci'
+  exposures = fltarr(3) + 80.0
+  wave_regions = fltarr(3) + 10.74
+  n_points = lonarr(3) + 3L
+
   new_files1 = ['raw/a', 'raw/b', 'raw/c']
-  ucomp_update_catalog, new_files1, self.catalog_filename
+  ucomp_update_catalog, self.catalog_filename, new_files1, $
+                        n_extensions, data_types, exposures, wave_regions, n_points
 
   new_files2 = ['raw/d', 'raw/e', 'raw/f']
-  ucomp_update_catalog, new_files2, self.catalog_filename
+  ucomp_update_catalog, self.catalog_filename, new_files2, $
+                        n_extensions, data_types, exposures, wave_regions, n_points
 
   cat = self->read_catalog()
   assert, array_equal(file_basename([new_files1, new_files2]), cat), $
@@ -67,6 +91,10 @@ function ucomp_update_catalog_ut::read_catalog
   openr, lun, self.catalog_filename, /get_lun
   readf, lun, lines
   free_lun, lun
+
+  for i = 0L, n_lines - 1L do begin
+    lines[i] = (strsplit(lines[i], /extract))[0]
+  endfor
 
   return, lines
 end
