@@ -48,7 +48,7 @@ function ucomp_new_files, dir, catalog_filename, count=count, error=error
   endelse
 
   ; search dir for matching files
-  all_files = file_search(filepath('*.fts', root=dir), count=n_all_files)
+  all_files = file_search(filepath('*.fts*', root=dir), count=n_all_files)
   if (n_all_files eq 0L) then begin
     all_files = !null
   endif else begin
@@ -65,7 +65,8 @@ function ucomp_new_files, dir, catalog_filename, count=count, error=error
   ; this case should not happen unless something is taking files out of the raw
   ; directory
   if (n_all_files eq 0L) then begin
-    error = 2L
+    ;error = 2L
+    error = 0L
     return, !null
   endif
 
