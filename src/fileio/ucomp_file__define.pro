@@ -95,6 +95,7 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
                              n_extensions=n_extensions, $
                              wavelengths=wavelengths, $
                              n_unique_wavelengths=n_unique_wavelengths, $
+                             unique_wavelengths=unique_wavelengths, $
                              quality_bitmask=quality_bitmask, $
                              ok=ok
   compile_opt strictarr
@@ -144,6 +145,11 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
   if (arg_present(n_unique_wavelengths)) then begin
     w = *self.wavelengths
     n_unique_wavelengths = n_elements(uniq(w, sort(w)))
+  endif
+
+  if (arg_present(unique_wavelengths)) then begin
+    w = *self.wavelengths
+    unique_wavelengths = w[uniq(w, sort(w))]
   endif
 end
 
