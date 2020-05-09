@@ -91,6 +91,7 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
                              wave_region=wave_region, $
                              data_type=data_type, $
                              exposure=exposure, $
+                             gain_mode=gain_mode, $
                              n_extensions=n_extensions, $
                              wavelengths=wavelengths, $
                              n_unique_wavelengths=n_unique_wavelengths, $
@@ -129,6 +130,7 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
   endif
 
   if (arg_present(exposure)) then exposure = self.exposure
+  if (arg_present(gain_mode)) then gain_mode = self.gain_mode
 
   if (arg_present(wave_region)) then wave_region = self.wave_region
   if (arg_present(data_type)) then data_type = self.data_type
@@ -197,8 +199,10 @@ pro ucomp_file::_inventory
     self->setProperty, quality_bitmask=ishft(1, 1)
   endif
 
+  self.gain_mode = strlowcase(ucomp_getpar(primary_header, 'GAIN'))
+
   ; allocate inventory variables
-  *self.wavelengths         = fltarr(self.n_extensions)
+  *self.wavelengths = fltarr(self.n_extensions)
 
   ; TODO: opal, dark shutter, polarizer, polarizer angle,
   ; retarder, etc.
@@ -275,6 +279,7 @@ pro ucomp_file__define
            wave_region         : '', $
            data_type           : '', $
            exposure            : 0.0, $
+           gain_mode           : '', $
            occulter_in         : 0B, $
            cover_in            : 0B, $
 
