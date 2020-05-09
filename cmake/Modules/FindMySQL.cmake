@@ -1,7 +1,7 @@
 # - Find mysqlclient
 # Find the native MySQL includes and library
 #
-#  MYSQL_INCLUDE_DIR - where to find mysql.h, etc.
+#  MYSQL_INCLUDE_DIR - where to find mysql.h, my_global.h, and mysql_version.h
 #  MYSQL_LIBRARIES   - List of libraries when using MySQL.
 #  MYSQL_FOUND       - True if MySQL found.
 
@@ -10,7 +10,7 @@ if (MYSQL_INCLUDE_DIR)
   set(MYSQL_FIND_QUIETLY TRUE)
 endif ()
 
-find_path(MYSQL_INCLUDE_DIR mysql.h
+find_path(MYSQL_INCLUDE_DIR my_global.h
   /usr/local/include/mysql
   /usr/include/mysql
 )
