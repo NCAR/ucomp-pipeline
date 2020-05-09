@@ -33,6 +33,9 @@ pro ucomp_wave_region_histogram, output_filename, $
                 + long(strmid(last_hst_time, 0, 2)) $
                 + (strmid(last_hst_time, 2, 2) ne '00')
 
+  ut_start_time = start_time + 10L
+  ut_end_time = end_time + 10L
+
   _bin_size  = mg_default(bin_size, 15)   ; minutes
   max_rate   = 1.33                       ; max rate in files/minute
 
@@ -103,7 +106,7 @@ pro ucomp_wave_region_histogram, output_filename, $
   tvlct, original_rgb, /get
 
   sums = total(histograms, 2, /preserve_type)
-  mg_stacked_histplot, (_bin_size / 60.0) * findgen(n_bins) + start_time, $
+  mg_stacked_histplot, ((_bin_size / 60.0) * findgen(n_bins) + start_time), $
                        histograms, $
                        axis_color='000000'x, $
                        background='ffffff'x, color=colors, /fill, $
@@ -111,7 +114,13 @@ pro ucomp_wave_region_histogram, output_filename, $
                        ystyle=9, yrange=[0, max_files], yticks=4, $
                        charsize=0.85, $
                        xtitle='Time (HST)', ytitle='# of files', $
-                       position=[0.075, 0.25, 0.75, 0.95]
+                       position=[0.075, 0.20, 0.75, 0.80]
+  axis, start_time, max_files, xaxis=1, /data, $
+        color='000000'x, charsize=0.85, $
+        xticks=end_time - start_time, xminor=4, $
+        xrange=[ut_start_time, ut_end_time], $
+        xtitle='Time (UT)', $
+        xtickname=strtrim((lindgen(n_bins / 4 + 1L) + ut_start_time) mod 24, 2)
 
   square = mg_usersym(/square, /fill)
   mg_legend, item_name=wave_regions + ' [' + wave_names + ']: '+ strtrim(sums, 2), $
@@ -122,7 +131,7 @@ pro ucomp_wave_region_histogram, output_filename, $
              charsize=0.85, $
              gap=0.075, $
              line_bump=0.2125, $
-             position=[0.775, 0.15, 0.95, 0.95]
+             position=[0.7825, 0.10, 0.9575, 0.90]
 
   im = tvrd(true=1)
   tvlct, original_rgb
