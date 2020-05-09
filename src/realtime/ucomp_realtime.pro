@@ -86,6 +86,7 @@ pro ucomp_realtime, date, config_filename
                            n_extensions=n_extensions, $
                            data_types=data_types, $
                            exposures=exposures, $
+                           gain_modes=gain_modess, $
                            wave_regions=wave_regions, $
                            n_points=n_points
 
@@ -94,6 +95,7 @@ pro ucomp_realtime, date, config_filename
                         n_extensions, $
                         data_types, $
                         exposures, $
+                        gain_modes, $
                         wave_regions, $
                         n_points
 

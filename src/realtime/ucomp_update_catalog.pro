@@ -13,8 +13,10 @@
 ;     number of extensions of `new_files`
 ;   data_types : in, required, type=strarr
 ;     data types of `new_files`
-;   exposure : in, required, type=fltarr
+;   exposures : in, required, type=fltarr
 ;     exposure time [ms]
+;   gain_modes : in, required, type=strarr
+;     gain modes, e.g., "high" or "low"
 ;   wave_regions : in, required, type=strarr
 ;     wave regions of `new_files`
 ;   n_points : in, required, type=lonarr
@@ -25,6 +27,7 @@ pro ucomp_update_catalog, catalog_filename, $
                           n_extensions, $
                           data_types, $
                           exposures, $
+                          gain_modes, $
                           wave_regions, $
                           n_points
 
@@ -47,9 +50,10 @@ pro ucomp_update_catalog, catalog_filename, $
             n_extensions[f], $
             data_types[f], $
             exposures[f], $
+            gain_modes[f], $
             wave_regions[f], $
             n_points[f], $
-            format='(%"%-40s %7d exts %7s %7.2f ms %7s nm %7d pts")'
+            format='(%"%-40s %4d exts %-7s %7.2f ms %-5s %7s nm %4d pts")'
   endfor
 
   free_lun, lun
