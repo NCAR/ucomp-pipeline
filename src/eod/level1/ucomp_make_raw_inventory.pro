@@ -57,10 +57,10 @@ pro ucomp_make_raw_inventory, run=run
     for f = 0L, n_files - 1L do begin
       printf, lun, $
               file_basename(files[f].raw_filename), $
-              files[f].data_type, $
               files[f].n_extensions, $
-              strjoin(string(files[f].wavelengths, format='(F0.2)'), ' '), $
-              format='(%"%-30s %-4s %3d %s")'
+              files[f].data_type, $
+              strjoin(string(files[f].unique_wavelengths, format='(F0.2)'), ', '), $
+              format='(%"%-40s %4d exts %6s  %s")'
     endfor
     free_lun, lun
   endfor
@@ -78,10 +78,10 @@ pro ucomp_make_raw_inventory, run=run
     for f = 0L, n_files - 1L do begin
       printf, lun, $
               file_basename(files[f].raw_filename), $
-              files[f].data_type, $
               files[f].n_extensions, $
-              strjoin(string(files[f].wavelengths, format='(F0.2)'), ' '), $
-              format='(%"%-30s %-4s %3d %s")'
+              files[f].data_type, $
+              strjoin(string(files[f].unique_wavelengths, format='(F0.2)'), ', '), $
+              format='(%"%-40s %4d exts %6s  %s")'
     endfor
     free_lun, lun
   endfor
