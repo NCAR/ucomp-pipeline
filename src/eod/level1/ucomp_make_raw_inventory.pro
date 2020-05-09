@@ -21,6 +21,7 @@ pro ucomp_make_raw_inventory, run=run
   run->make_raw_inventory, n_extensions=n_extensions, $
                            data_types=data_types, $
                            exposures=exposures, $
+                           gain_modes=gain_modes, $
                            wave_regions=wave_regions, $
                            n_points=n_points
 
@@ -37,6 +38,7 @@ pro ucomp_make_raw_inventory, run=run
                         n_extensions, $
                         data_types, $
                         exposures, $
+                        gain_modes, $
                         wave_regions, $
                         n_points
 
