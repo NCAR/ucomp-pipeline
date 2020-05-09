@@ -163,11 +163,11 @@ pro ucomp_file::_extract_datetime
   compile_opt strictarr
 
   datetime = strmid(file_basename(self.raw_filename), 0, 15)
-  self.hst_date = strmid(datetime, 0, 8)
-  self.hst_time = strmid(datetime, 9, 6)
-  ucomp_hst2ut, self.hst_date, self.hst_time, ut_date=ut_date, ut_time=ut_time
-  self.ut_date = ut_date
-  self.ut_time = ut_time
+  self.ut_date = strmid(datetime, 0, 8)
+  self.ut_time = strmid(datetime, 9, 6)
+  ucomp_ut2hst, self.ut_date, self.ut_time, hst_date=hst_date, hst_time=hst_time
+  self.hst_date = hst_date
+  self.hst_time = hst_time
 end
 
 
