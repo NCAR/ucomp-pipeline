@@ -32,6 +32,8 @@ pro ucomp_make_darks, run=run
   n_cameras = 2L
   averaged_dark_images = fltarr(nx, ny, n_pol_states, n_cameras, n_dark_files)
 
+  dark_headers = list()
+
   for d = 0L, n_dark_files - 1L do begin
     dark_file = dark_files[d]
     dark_basename = file_basename(dark_file.raw_filename)
@@ -46,9 +48,19 @@ pro ucomp_make_darks, run=run
     dark_times[d] = total(hst_dtime * [1.0, 1.0 / 60.0, 1.0 / 60.0 / 60.0])
 
     fits_open, dark_file.raw_filename, dark_file_fcb
+
+    ; use the primary header of the first dark file as the template for the
+    ; primary header of the master dark file
+    if (d eq 0L) then begin
+      fits_read, dark_file_fcb, empty, primary_header, exten_no=0, /header_only
+    endif
+
     for e = 1L, dark_file_fcb.nextend do begin
       fits_read, dark_file_fcb, dark_image, dark_header, exten_no=e
-      if (e eq 1L) then dark_exposures[d] = ucomp_getpar(dark_header, 'EXPTIME', /float)
+      if (e eq 1L) then begin
+        dark_exposures[d] = ucomp_getpar(dark_header, 'EXPTIME', /float)
+        dark_headers->add, dark_header
+      endif
 
       ; TODO: how does this work, should it be kept per pol state and camera or
       ; averaged together?
@@ -58,6 +70,8 @@ pro ucomp_make_darks, run=run
     fits_close, dark_file_fcb
   endfor
 
+  ; TODO: fix primary header
+
   ; write dark FITS file in the process_basedir/level
 
   output_basename = string(run.date, format='(%"%s.ucomp.dark.fts")')
@@ -66,17 +80,19 @@ pro ucomp_make_darks, run=run
   fits_open, output_filename, output_fcb, /write
   fits_write, output_fcb, 0, primary_header
   for d = 0L, n_dark_files - 1L do begin
+    dark_header = dark_headers[d]
+    ; TODO: fix extension header
     fits_write, output_fcb, $
                 averaged_dark_images[*, *, *, *, d], $
-                dark_header, $   ; TODO: create real headers
+                dark_header, $
                 extname=strmid(file_basename(dark_files[d].raw_filename), 9, 6)
   endfor
 
-  ; TODO: fill in dark_header below with real headers
   fits_write, output_fcb, dark_times, dark_header, extname='Times'
   fits_write, output_fcb, dark_exposures, dark_header, extname='Exposures'
 
   fits_close, output_fcb
 
   done:
+  if (obj_valid(dark_headers)) then obj_destroy, dark_headers
 end
