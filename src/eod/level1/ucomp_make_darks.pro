@@ -1,7 +1,11 @@
 ; docformat = 'rst'
 
 ;+
-; Create an averaged dark for each file and put this into a file.
+; Create an averaged dark for each file and put this into an extension of the
+; master dark file. Primary header of of the master dark file comes from the
+; primary header of the first raw dark file of the day, while the extension
+; header corresponding to each raw dark file comes from the header of the first
+; extension of each raw dark file.
 ;
 ; :Keywords:
 ;   run : in, required, type=object
@@ -15,7 +19,11 @@ pro ucomp_make_darks, run=run
   ; query run object for all the dark files
   dark_files = run->get_files(data_type='dark', count=n_dark_files)
 
-  if (n_dark_files eq 0L) then goto, done
+  if (n_dark_files eq 0L) then begin
+    mg_log, 'no darks, not making master dark file', $
+            name=run.logger_name, /warn
+    goto, done
+  endif
 
   l1_dir = filepath('level1', $
                     subdir=run.date, $
@@ -30,8 +38,8 @@ pro ucomp_make_darks, run=run
   ny = run->epoch('ny', datetime=datetime)
   n_pol_states = 4L
   n_cameras = 2L
-  averaged_dark_images = fltarr(nx, ny, n_pol_states, n_cameras, n_dark_files)
 
+  averaged_dark_images = fltarr(nx, ny, n_pol_states, n_cameras, n_dark_files)
   dark_headers = list()
 
   for d = 0L, n_dark_files - 1L do begin
@@ -72,7 +80,7 @@ pro ucomp_make_darks, run=run
 
   ; TODO: fix primary header
 
-  ; write dark FITS file in the process_basedir/level
+  ; write master dark FITS file in the process_basedir/level
 
   output_basename = string(run.date, format='(%"%s.ucomp.dark.fts")')
   output_filename = filepath(output_basename, root=l1_dir)
@@ -92,6 +100,11 @@ pro ucomp_make_darks, run=run
   fits_write, output_fcb, dark_exposures, dark_header, extname='Exposures'
 
   fits_close, output_fcb
+
+  ; cache darks
+  run->cache_darks, darks=average_dark_images, $
+                    times=dark_times, $
+                    exptimes=dark_exposures
 
   done:
   if (obj_valid(dark_headers)) then obj_destroy, dark_headers
