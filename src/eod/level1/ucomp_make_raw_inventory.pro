@@ -66,6 +66,7 @@ pro ucomp_make_raw_inventory, run=run
   endfor
 
   data_types = ['cal', 'flat', 'dark', 'eng', 'unk']
+  show_wavelengths = [1B, 1B, 0B, 1B, 1B]
   for t = 0L, n_elements(data_types) - 1L do begin
     files = run->get_files(data_type=data_types[t], count=n_files)
 
@@ -79,9 +80,8 @@ pro ucomp_make_raw_inventory, run=run
       printf, lun, $
               file_basename(files[f].raw_filename), $
               files[f].n_extensions, $
-              files[f].data_type, $
-              strjoin(string(files[f].unique_wavelengths, format='(F0.2)'), ', '), $
-              format='(%"%-40s %4d exts %6s  %s")'
+              show_wavelengths[t] ? strjoin(string(files[f].unique_wavelengths, format='(F0.2)'), ', ') : '', $
+              format='(%"%-40s %4d exts  %s")'
     endfor
     free_lun, lun
   endfor
