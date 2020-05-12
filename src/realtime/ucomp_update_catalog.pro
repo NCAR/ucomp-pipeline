@@ -30,8 +30,6 @@ pro ucomp_update_catalog, catalog_filename, $
                           gain_modes, $
                           wave_regions, $
                           n_points
-
-
   compile_opt strictarr
 
   if (n_elements(new_files) eq 0L) then return
@@ -44,6 +42,10 @@ pro ucomp_update_catalog, catalog_filename, $
     openu, lun, catalog_filename, /get_lun, /append
   endelse
 
+  wave_regions += ' nm'
+  dark_indices = where(data_types eq 'dark', n_darks, /null)
+  wave_regions[dark_indices] = '--'
+
   for f = 0L, n_elements(new_files) - 1L do begin
     printf, lun, $
             file_basename(new_files[f]), $
@@ -53,7 +55,7 @@ pro ucomp_update_catalog, catalog_filename, $
             gain_modes[f], $
             wave_regions[f], $
             n_points[f], $
-            format='(%"%-40s %4d exts %6s %7.2f ms %5s %5s nm %4d pts")'
+            format='(%"%-40s %4d exts %6s %7.2f ms %5s %8s %4d pts")'
   endfor
 
   free_lun, lun
