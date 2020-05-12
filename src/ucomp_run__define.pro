@@ -84,17 +84,137 @@ pro ucomp_run::make_raw_inventory, raw_files, $
 end
 
 
+;= handle darks
+
+;+
+; Cache the master dark file.
+;
+; :Params:
+;   filename : in, optional, type=string
+;     filename of master dark file, if not present, then `darks`, `times`, and
+;     `exptimes` must be present
+;
+; :Keywords:
+;   darks : in, optional, type="fltarr(..., n)"
+;     dark images
+;   times : in, optional, type=fltarr(n)
+;     times of the darks [hours into observing day]
+;   exptimes : in, optional, type=fltarr(n)
+;     exposure times of the darks [ms]
+;-
+pro ucomp_run::cache_darks, filename, darks=darks, times=times, exptimes=exptimes
+  compile_opt strictarr
+
+  ; master dark file with extensions 1..n:
+  ;   exts 1 to n - 2:   dark images
+  ;   ext n - 1:         times of the dark images
+  ;   ext n:             exposure times of the dark images 
+
+  if (n_elements(filename) gt 0L) then begin
+    fits_open, filename, fcb
+
+    ; read the first extension to determine the dark size and cache it
+    fits_read, fcb, dark_image, dark_header, exten_no=1
+
+    dims = size(dark_image, /dimensions)
+    dark_size = product(dims, /preserve_type)
+
+    darks = make_array(dimension=[dims, fcb.nextend - 2L], $
+                       type=size(dark_image, /type))
+    darks[0] = dark_image
+
+    ; read the rest of the dark images
+    for e = 2L, fcb.nextend - 2L begin
+      fits_read, fcb, dark_image, dark_header, exten_no=1
+      darks[(e - 1) * dark_size] = dark_image
+    endfor
+
+    ; read the times and exposure times
+    fits_read, fcb, times, times_header, exten_no=fcb.nextend - 1L
+    fits_read, fcb, exptimes, exptimes_header, exten_no=fcb.nextend
+
+    fits_close, fcb
+  endif
+
+  *self.darks = darks
+  *self.dark_times = times
+  *self.dark_exptimes = exptimes
+end
+
+
+;+
+; Discard the dark cache.
+;-
+pro ucomp_run::discard_darks
+  compile_opt strictarr
+
+  *self.darks = !null
+  *self.dark_times = !null
+  *self.dark_exptimes = !null
+end
+
+
 ;+
 ; Retrieve a dark image for a given science image.
 ;
 ; :Params:
 ;   time : in, required, type=string
 ;     time of science image in UT with format "HHMMSS"
+;   exptime : in, required, type=float
+;     exposure time [ms] needed
+;
+; :Keywords:
+;   found : out, optional, type=boolean
+;     set to a named variable to retrieve whether a suitable dark was found
 ;-
-function ucomp_run::get_dark, time
+function ucomp_run::get_dark, time, exptime, $
+                              found=found, $
+                              extensions=extensions, $
+                              coefficients=coefficients
   compile_opt strictarr
 
-  ; TODO: implement
+  found = 0B
+
+  ; find the darks with an exposure time that is close enough to the given
+  ; exptime
+  exptime_threshold = 0.01   ; [ms]
+  valid_indices = where((exptime - *self.dark_exptimes) lt exptime_threshold, $
+                        n_valid_darks)
+  if (n_valid_darks eq 0L) then return, !null
+
+  found = 1B
+
+  ; find closest two darks (or closest dark if before first dark or after last
+  ; dark)
+  valid_darks = (*self.darks)[valid_indices]
+  valid_times = (*self.dark_times)[valid_indices]
+  if (time lt valid_times[0]) then begin               ; before first dark
+    interpolated_dark = valid_darks[0]
+
+    extensions = valid_indices[0] + 1L
+    coefficients = 1.0
+  endif else if (time gt valid_times[-1]) then begin   ; after last dark
+    interpolated_dark = valid_darks[-1]
+
+    extensions = valid_indices[-1] + 1L
+    coefficients = 1.0
+  endif else begin                                     ; between darks
+    index1 = value_locate(valid_times, time)
+    index2 = index1 + 1L
+
+    dark1 = valid_darks[indices[0]]
+    dark2 = valid_darks[indices[1]]
+
+    a1 = (valid_times[index2] - time) / (valid_times[index2] - valid_times[index1])
+    a2 = (time - valid_times[index1]) / (valid_times[index2] - valid_times[index1])
+
+    interpolated_dark = a1 * dark1 + a2 * dark2
+
+    extensions = [index1, index2]
+    coefficients = [a1, a2]
+  endelse
+
+  return, interpolated_dark
 end
 
 
@@ -605,6 +725,9 @@ pro ucomp_run::cleanup
 
   obj_destroy, [self.options, self.epochs, self.lines]
 
+  ; master dark cache
+  ptr_free, self.darks, self.dark_times, self.dark_exptimes
+
   ; performance monitoring API
   obj_destroy, [self.calls, self.times]
 
@@ -682,6 +805,11 @@ function ucomp_run::init, date, mode, config_filename, no_log=no_log
 
   self.files = hash()   ; wave_region (string) -> list of file objects
 
+  ; master dark cache
+  self.darks         = ptr_new(/allocate_heap)
+  self.dark_times    = ptr_new(/allocate_heap)
+  self.dark_exptimes = ptr_new(/allocate_heap)
+
   ; performance monitoring
   self.calls = orderedhash()   ; routine name (string) -> # of calls (long)
   self.times = hash()   ; routine name (string) -> times (float) in seconds
@@ -704,6 +832,11 @@ pro ucomp_run__define
            epochs:  obj_new(), $
            lines:   obj_new(), $
            files:   obj_new(), $
+
+           ; master dark cache
+           darks: ptr_new(), $
+           dark_times: ptr_new(), $
+           dark_exptimes: ptr_new(), $
 
            ; performance
            calls:   obj_new(), $
