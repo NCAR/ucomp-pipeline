@@ -24,8 +24,8 @@ pro ucomp_wave_region_histogram, output_filename, $
 
   ; create wave_region histogram
 
-  start_time = 06   ; 24-hour time
-  end_time   = 19   ; 24-hour time
+  start_time = 06   ; 24-hour time in observing day
+  end_time   = 19   ; 24-hour time in observing day
 
   all_files = run->get_files()
   last_hst_time = all_files[-1].hst_time

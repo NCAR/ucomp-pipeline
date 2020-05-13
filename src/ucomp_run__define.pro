@@ -75,7 +75,7 @@ pro ucomp_run::make_raw_inventory, raw_files, $
 
     ; store files by data type and wave type
 
-    if (~(self.files)->hasKey(file.data_type)) then (self.files)[file.data_type] = hash()
+    if (~(self.files)->hasKey(file.data_type)) then (self.files)[file.data_type] = orderedhash()
     dtype_hash = (self.files)[file.data_type]
 
     if (~dtype_hash->hasKey(file.wave_region)) then dtype_hash[file.wave_region] = list()
@@ -124,7 +124,7 @@ pro ucomp_run::cache_darks, filename, darks=darks, times=times, exptimes=exptime
     darks[0] = dark_image
 
     ; read the rest of the dark images
-    for e = 2L, fcb.nextend - 2L begin
+    for e = 2L, fcb.nextend - 2L do begin
       fits_read, fcb, dark_image, dark_header, exten_no=1
       darks[(e - 1) * dark_size] = dark_image
     endfor
@@ -622,7 +622,7 @@ pro ucomp_run::getProperty, date=date, $
   endif
 
   if (arg_present(all_wave_regions)) then begin
-    wregion_hash = hash()
+    wregion_hash = orderedhash()
     foreach dtype_hash, self.files, dtype do begin
       foreach wregion_list, dtype_hash, wregion do begin
         wregion_hash[wregion] = 1B
@@ -803,7 +803,7 @@ function ucomp_run::init, date, mode, config_filename, no_log=no_log
     return, 0
   endif
 
-  self.files = hash()   ; wave_region (string) -> list of file objects
+  self.files = orderedhash()   ; wave_region (string) -> list of file objects
 
   ; master dark cache
   self.darks         = ptr_new(/allocate_heap)
@@ -812,7 +812,7 @@ function ucomp_run::init, date, mode, config_filename, no_log=no_log
 
   ; performance monitoring
   self.calls = orderedhash()   ; routine name (string) -> # of calls (long)
-  self.times = hash()   ; routine name (string) -> times (float) in seconds
+  self.times = orderedhash()   ; routine name (string) -> times (float) in seconds
 
   return, 1
 end

@@ -14,8 +14,11 @@
 ;     set to a named variable to retrieve the HST date in the form 'YYYYMMDD'
 ;   hst_time : out, optional, type=string
 ;     set to a named variable to retrieve the HST time in the form 'HHMMSS'
+;   hst_hours : out, optional, type=float
+;    set to named variable to retrieve the decimal hours into the HST day
 ;-
-pro ucomp_ut2hst, ut_date, ut_time, hst_date=hst_date, hst_time=hst_time
+pro ucomp_ut2hst, ut_date, ut_time, $
+                  hst_date=hst_date, hst_time=hst_time, hst_hours=hst_hours
   compile_opt strictarr
 
   ymd = long(ucomp_decompose_date(ut_date))
@@ -44,4 +47,5 @@ pro ucomp_ut2hst, ut_date, ut_time, hst_date=hst_date, hst_time=hst_time
 
   hst_date = string(hst_year, hst_month, hst_day, format='(%"%04d%02d%02d")')
   hst_time = string(hst_hours, hst_minutes, hst_seconds, format='(%"%02d%02d%02d")')
+  hst_hours = hst_hours + hst_minutes / 60.0 + hst_seconds / 60.0 / 60.0
 end
