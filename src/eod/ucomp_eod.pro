@@ -89,10 +89,14 @@ pro ucomp_eod, date, config_filename
 
   ;== finish bookkeeping
 
-  for w = 0L, n_elements(wave_regions) - 1L do begin
-    ucomp_pipeline_step, 'ucomp_db_update', wave_regions[w], run=run
-  endfor
-
+  if (run->config('database/update')) then begin
+    all_wave_regions = run->all_lines()
+    for w = 0L, n_elements(wave_regions) - 1L do begin
+      ucomp_pipeline_step, 'ucomp_db_update', wave_regions[w], run=run
+    endfor
+  endif else begin
+    mg_log, 'skipping updating database', name=logger_name, /info
+  endelse
   ucomp_pipeline_step, 'ucomp_l0_distribute', run=run
 
   ucomp_pipeline_step, 'ucomp_get_observerlog', run=run
