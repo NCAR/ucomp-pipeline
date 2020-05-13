@@ -77,10 +77,10 @@ pro ucomp_make_darks, run=run
       if (e eq 1L) then begin
         dark_exposures[d] = ucomp_getpar(dark_header, 'EXPTIME', /float)
 
-        sxaddpar, dark_header, 'T_C0ARR', t_c0arr_comment, after='T_RACK'
-        sxaddpar, dark_header, 'T_C0PCB', t_c0pcb_comment, after='T_C0ARR'
-        sxaddpar, dark_header, 'T_C1ARR', t_c1arr_comment, after='T_C0PCB'
-        sxaddpar, dark_header, 'T_C1PCB', t_c1pcb_comment, after='T_C1ARR'
+        sxaddpar, dark_header, 'T_C0ARR', t_c0arr, t_c0arr_comment, after='T_RACK'
+        sxaddpar, dark_header, 'T_C0PCB', t_c0pcb, t_c0pcb_comment, after='T_C0ARR'
+        sxaddpar, dark_header, 'T_C1ARR', t_c1arr, t_c1arr_comment, after='T_C0PCB'
+        sxaddpar, dark_header, 'T_C1PCB', t_c1pcb, t_c1pcb_comment, after='T_C1ARR'
         dark_headers->add, dark_header
       endif
 
@@ -92,7 +92,12 @@ pro ucomp_make_darks, run=run
     fits_close, dark_file_fcb
   endfor
 
-  ; TODO: fix primary header
+  ; fix primary header
+
+  keywords_to_delete = ['T_C0ARR', 'T_C0PCB', 'T_C1ARR', 'T_C1PCB']
+  for k = 0L, n_elements(keywords_to_delete) - 1L do begin
+    sxdelpar, first_primary_header, keywords_to_delete[k]
+  endfor
 
   ; write master dark FITS file in the process_basedir/level
 
@@ -103,7 +108,7 @@ pro ucomp_make_darks, run=run
   fits_write, output_fcb, 0, first_primary_header
   for d = 0L, n_dark_files - 1L do begin
     dark_header = dark_headers[d]
-    ; TODO: fix extension header
+    ; fix extension header
     fits_write, output_fcb, $
                 averaged_dark_images[*, *, *, *, d], $
                 dark_header, $
