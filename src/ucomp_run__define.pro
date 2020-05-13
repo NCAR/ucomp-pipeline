@@ -565,6 +565,19 @@ function ucomp_run::line, line, option_name
   return, value
 end
 
+;+
+; Retrieve the names of all the lines.
+;
+; :Returns:
+;   strarr
+;-
+function ucomp_run::all_lines
+  compile_opt strictarr
+
+  self.lines->getProperty, spec=spec
+  return, spec->sections()
+end
+
 
 ;= config values
 
