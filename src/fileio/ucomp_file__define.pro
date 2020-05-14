@@ -85,6 +85,7 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
                              hst_time=hst_time, $
                              ut_date=ut_date, $
                              ut_time=ut_time, $
+                             obsday_hours=obsday_hours, $
                              date_obs=date_obs, $
                              date_end=date_end, $
                              carrington_rotation=carrington_rotation, $
@@ -98,9 +99,9 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
                              unique_wavelengths=unique_wavelengths, $
                              quality_bitmask=quality_bitmask, $
                              ok=ok, $
-                             cam0_sensor_temp=cam0_sensor_temp, $
+                             cam0_arr_temp=cam0_arr_temp, $
                              cam0_pcb_temp=cam0_pcb_temp, $
-                             cam1_sensor_temp=cam1_sensor_temp, $
+                             cam1_arr_temp=cam1_arr_temp, $
                              cam1_pcb_temp=cam1_pcb_temp
   compile_opt strictarr
 
@@ -123,6 +124,7 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
   if (arg_present(hst_time)) then hst_time = self.hst_time
   if (arg_present(ut_date)) then ut_date = self.ut_date
   if (arg_present(ut_time)) then ut_time = self.ut_time
+  if (arg_present(obsday_hours)) then obsday_hours = self.obsday_hours
 
   if (arg_present(date_obs)) then date_obs = self.date_obs
   if (arg_present(date_end)) then date_end = self.date_end
@@ -143,9 +145,9 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
   if (arg_present(quality_bitmask)) then quality_bitmask = self.quality_bitmask
   if (arg_present(ok)) then ok = self.quality_bitmask eq 0
 
-  if (arg_present(cam0_sensor_temp)) then cam0_sensor_temp = self.cam0_sensor_temp
+  if (arg_present(cam0_arr_temp)) then cam0_arr_temp = self.cam0_arr_temp
   if (arg_present(cam0_pcb_temp)) then cam0_pcb_temp = self.cam0_pcb_temp
-  if (arg_present(cam1_sensor_temp)) then cam1_sensor_temp = self.cam1_sensor_temp
+  if (arg_present(cam1_arr_temp)) then cam1_arr_temp = self.cam1_arr_temp
   if (arg_present(cam1_pcb_temp)) then cam1_pcb_temp = self.cam1_pcb_temp
 
   ; by extension
@@ -177,6 +179,8 @@ pro ucomp_file::_extract_datetime
   ucomp_ut2hst, self.ut_date, self.ut_time, hst_date=hst_date, hst_time=hst_time
   self.hst_date = hst_date
   self.hst_time = hst_time
+  hrs = [1.0, 1.0 / 60.0, 1.0 / 60.0 / 60.0]
+  self.obsday_hours = total(float(ucomp_decompose_time(hst_time)) * hrs)
 end
 
 
@@ -216,10 +220,10 @@ pro ucomp_file::_inventory
 
   self.gain_mode = strlowcase(ucomp_getpar(primary_header, 'GAIN'))
 
-  self.cam0_sensor_temp = sxpar(primary_header, 'T_C0ARR')
-  self.cam0_pcb_temp    = sxpar(primary_header, 'T_C0PCB')
-  self.cam1_sensor_temp = sxpar(primary_header, 'T_C1ARR')
-  self.cam1_pcb_temp    = sxpar(primary_header, 'T_C1PCB')
+  self.cam0_arr_temp = sxpar(primary_header, 'T_C0ARR')
+  self.cam0_pcb_temp = sxpar(primary_header, 'T_C0PCB')
+  self.cam1_arr_temp = sxpar(primary_header, 'T_C1ARR')
+  self.cam1_pcb_temp = sxpar(primary_header, 'T_C1PCB')
 
   ; allocate inventory variables
   *self.wavelengths = fltarr(self.n_extensions)
@@ -292,6 +296,7 @@ pro ucomp_file__define
            hst_time            : '', $
            ut_date             : '', $
            ut_time             : '', $
+           obsday_hours        : 0.0, $
            date_obs            : '', $
            date_end            : '', $
            n_extensions        : 0L, $
@@ -303,9 +308,9 @@ pro ucomp_file__define
            occulter_in         : 0B, $
            cover_in            : 0B, $
            
-           cam0_sensor_temp    : 0.0, $
+           cam0_arr_temp    : 0.0, $
            cam0_pcb_temp       : 0.0, $
-           cam1_sensor_temp    : 0.0, $
+           cam1_arr_temp    : 0.0, $
            cam1_pcb_temp       : 0.0, $
 
            wavelengths         : ptr_new(), $
