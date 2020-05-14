@@ -7,9 +7,9 @@ create table ucomp_raw (
   quality_id       tinyint (2) not null,
   level_id         tinyint (2) not null,
 
-  cam0_sensor_temp float(8, 3),
+  cam0_arr_temp    float(8, 3),
   cam0_pcb_temp    float(8, 3),
-  cam1_sensor_temp float(8, 3),
+  cam1_arr_temp    float(8, 3),
   cam1_pcb_temp    float(8, 3),
 
   unique(file_name),

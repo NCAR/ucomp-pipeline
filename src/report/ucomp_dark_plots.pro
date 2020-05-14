@@ -11,7 +11,6 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
   ; setup graphics device
   set_plot, 'Z'
   device, decomposed=0, $
-          ;set_pixel_depth=24, $
           set_resolution=[800, 4 * 300]
 
   tvlct, 0, 0, 0, 0
@@ -38,7 +37,7 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
   symsize = 0.75
 
 
-  ; plot of temperatures T_C{0,1}ARR and T_C{0,1}PCB per dark, one plot per camera
+  ; plot of temperatures T_C{0,1}ARR and T_C{0,1}PCB per dark
 
   !p.multi = [0, 1, 4]
 
