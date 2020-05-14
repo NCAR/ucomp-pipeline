@@ -104,7 +104,7 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
         xtitle='Sensor array temperature [C]', $
         xstyle=1, xrange=[tarr_min, tarr_max], $
         ytitle='Intensity [DN]', $
-        ystyle=1, yrange=dark_range
+        ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
   oplot, dark_info.t_c0arr, cam0_dark_means, $
         psym=6, symsize=symsize, $
         color=camera0_color
@@ -119,7 +119,7 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
         xtitle='PCB board temperature [C]', $
         xstyle=1, xrange=[tpcb_min, tpcb_max], $
         ytitle='Intensity [DN]', $
-        ystyle=1, yrange=dark_range
+        ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
   oplot, dark_info.t_c0pcb, cam0_dark_means, $
         psym=6, symsize=symsize, $
         color=camera0_color
@@ -132,12 +132,12 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
   !p.multi = [1, 1, 4]
 
   plot, dark_info.times, cam0_dark_means, /nodata, $
-        charsize=charsize, title='Intensity vs. time', $
+        charsize=charsize, title='Mean intensity (+/- 1 std dev) vs. time', $
         color=color, background=background_color, $
         xtitle='Time [HST]', $
         xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
         ytitle='Intensity [DN]', $
-        ystyle=1, yrange=dark_range
+        ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
 
   oplot, dark_info.times, cam0_dark_means, $
          psym=-6, symsize=symsize, $
