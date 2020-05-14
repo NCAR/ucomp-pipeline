@@ -93,7 +93,6 @@ pro ucomp_reprocess, date, config_filename
 
   if (run->config('database/update')) then begin
     all_wave_regions = run->all_lines()
-    help, all_wave_regions
     for w = 0L, n_elements(all_wave_regions) - 1L do begin
       ucomp_pipeline_step, 'ucomp_db_update', wave_regions[w], run=run
     endfor
