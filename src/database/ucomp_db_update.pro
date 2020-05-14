@@ -11,21 +11,20 @@
 ;   run : in, required, type=object
 ;     UCoMP run object
 ;-
-pro ucomp_db_update, wave_region, run=run
+pro ucomp_db_update, run=run
   compile_opt strictarr
 
-  mg_log, 'updating database for %s nm...', wave_region, $
+  mg_log, 'updating database...', $
           name=run.logger_name, /info
 
   ; get the files for the given wave_region
-  files = run->get_files(wave_region=wave_region, count=n_files)
-  if (n_files eq 0L) then begin
+  all_files = run->get_files(count=n_all_files)
+  if (n_all_files eq 0L) then begin
     mg_log, 'no files to insert', name=run.logger_name, /info
     goto, done
   endif
 
-  sci_files = run->get_files(data_type='sci', wave_region=wave_region, $
-                             count=n_sci_files)
+  sci_files = run->get_files(data_type='sci', count=n_sci_files)
   if (n_sci_files eq 0L) then begin
     mg_log, 'no science files to insert', name=run.logger_name, /info
   endif
@@ -56,7 +55,7 @@ pro ucomp_db_update, wave_region, run=run
                                 logger_name=run.logger_name)
 
   ; insert records for files
-  ucomp_db_raw_insert, files, obsday_index, db, $
+  ucomp_db_raw_insert, all_files, obsday_index, db, $
                        logger_name=run.logger_name
   ucomp_db_file_insert, sci_files, obsday_index, sw_index, db, $
                         logger_name=run.logger_name
