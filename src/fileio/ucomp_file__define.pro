@@ -97,7 +97,11 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
                              n_unique_wavelengths=n_unique_wavelengths, $
                              unique_wavelengths=unique_wavelengths, $
                              quality_bitmask=quality_bitmask, $
-                             ok=ok
+                             ok=ok, $
+                             cam0_sensor_temp=cam0_sensor_temp, $
+                             cam0_pcb_temp=cam0_pcb_temp, $
+                             cam1_sensor_temp=cam1_sensor_temp, $
+                             cam1_pcb_temp=cam1_pcb_temp
   compile_opt strictarr
 
   ; for the file
@@ -138,6 +142,11 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
 
   if (arg_present(quality_bitmask)) then quality_bitmask = self.quality_bitmask
   if (arg_present(ok)) then ok = self.quality_bitmask eq 0
+
+  if (arg_present(cam0_sensor_temp)) then cam0_sensor_temp = self.cam0_sensor_temp
+  if (arg_present(cam0_pcb_temp)) then cam0_pcb_temp = self.cam0_pcb_temp
+  if (arg_present(cam1_sensor_temp)) then cam1_sensor_temp = self.cam1_sensor_temp
+  if (arg_present(cam1_pcb_temp)) then cam1_pcb_temp = self.cam1_pcb_temp
 
   ; by extension
   if (arg_present(wavelengths)) then wavelengths = *self.wavelengths
@@ -206,6 +215,11 @@ pro ucomp_file::_inventory
   endif
 
   self.gain_mode = strlowcase(ucomp_getpar(primary_header, 'GAIN'))
+
+  self.cam0_sensor_temp = sxpar(primary_header, 'T_C0ARR')
+  self.cam0_pcb_temp    = sxpar(primary_header, 'T_C0PCB')
+  self.cam1_sensor_temp = sxpar(primary_header, 'T_C1ARR')
+  self.cam1_pcb_temp    = sxpar(primary_header, 'T_C1PCB')
 
   ; allocate inventory variables
   *self.wavelengths = fltarr(self.n_extensions)
@@ -288,6 +302,11 @@ pro ucomp_file__define
            gain_mode           : '', $
            occulter_in         : 0B, $
            cover_in            : 0B, $
+           
+           cam0_sensor_temp    : 0.0, $
+           cam0_pcb_temp       : 0.0, $
+           cam1_sensor_temp    : 0.0, $
+           cam1_pcb_temp       : 0.0, $
 
            wavelengths         : ptr_new(), $
 
