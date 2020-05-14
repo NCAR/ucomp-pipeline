@@ -36,14 +36,33 @@ pro ucomp_db_raw_insert, l0_files, obsday_index, db, logger_name=logger_name
     mg_log, 'ingesting %s', file_basename(file.raw_filename), $
             name=logger_name, /info
 
-    q = 'insert into ucomp_raw (file_name, date_obs, date_end, obsday_id, quality_id, level_id) values (''%s'', ''%s'', ''%s'', %d, %d, %d)'
-    db->execute, q, $
-                file_basename(file.raw_filename), $
-                file.date_obs, file.date_end, $
-                obsday_index, quality_index, level_index, $
-                status=status, $
-                error_message=error_message, $
-                sql_statement=sql_cmd
+    fields = [{name: 'file_name', type: '''%s'''}, $
+              {name: 'date_obs', type: '''%s'''}, $
+              {name: 'date_end', type: '''%s'''}, $
+              {name: 'obsday_id', type: '%d'}, $
+              {name: 'quality_id', type: '%d'}, $
+              {name: 'level_id', type: '%d'}, $
+
+              {name: 'cam0_sensor_temp', type: '%f'}, $
+              {name: 'cam0_pcb_temp', type: '%f'}, $
+              {name: 'cam1_sensor_temp', type: '%f'}, $
+              {name: 'cam1_pcb_temp', type: '%f'}]
+    sql_cmd = string(strjoin(fields.name, ', '), $
+                     strjoin(fields.type, ', '), $
+                     format='(%"insert into ucomp_raw (%s) values (%s)")')
+    db->execute, sql_cmd, $
+                 file_basename(file.raw_filename), $
+                 file.date_obs, file.date_end, $
+                 obsday_index, quality_index, level_index, $
+
+                 file.cam0_sensor_temp, $
+                 file.cam0_pcb_temp, $
+                 file.cam1_sensor_temp, $
+                 file.cam1_pcb_temp, $
+
+                 status=status, $
+                 error_message=error_message, $
+                 sql_statement=sql_cmd
     if (status ne 0L) then begin
       mg_log, 'error inserting in ucomp_raw table', name=logger_name, /error
       mg_log, 'status: %d, error message: %s', status, error_message, $

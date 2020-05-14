@@ -98,7 +98,7 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
   !p.multi = [4, 2, 4]
 
   plot, dark_info.t_c0arr, cam0_dark_means, /nodata, $
-        charsize=charsize, title='Sensor temp vs. intensity (Camera 0)', $
+        charsize=charsize, title='Sensor temperature vs. intensity', $
         psym=6, symsize=symsize, $
         color=color, background=background_color, $
         xtitle='Sensor array temperature [C]', $
@@ -113,7 +113,7 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
         color=camera1_color
 
   plot, dark_info.t_c1pcb, cam1_dark_means, /nodata, $
-        charsize=charsize, title='PCB temp vs. intensity (Camera 1)', $
+        charsize=charsize, title='PCB board temperature vs. intensity', $
         psym=6, symsize=symsize, $
         color=color, background=background_color, $
         xtitle='PCB board temperature [C]', $
