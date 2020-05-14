@@ -101,14 +101,21 @@ end
 ;     times of the darks [hours into observing day]
 ;   exptimes : in, optional, type=fltarr(n)
 ;     exposure times of the darks [ms]
+;   gain_modes : in, optional, type=bytarr(n)
+;     gain modes of the darks [ms]
 ;-
-pro ucomp_run::cache_darks, filename, darks=darks, times=times, exptimes=exptimes
+pro ucomp_run::cache_darks, filename, $
+                            darks=darks, $
+                            times=times, $
+                            exptimes=exptimes, $
+                            gain_modes=gain_modes
   compile_opt strictarr
 
   ; master dark file with extensions 1..n:
-  ;   exts 1 to n - 2:   dark images
-  ;   ext n - 1:         times of the dark images
-  ;   ext n:             exposure times of the dark images 
+  ;   exts 1 to n - 3:   dark images
+  ;   ext n - 2:         times of the dark images
+  ;   ext n - 1:         exposure times of the dark images 
+  ;   ext n:             gain modes of the dark images 
 
   if (n_elements(filename) gt 0L) then begin
     fits_open, filename, fcb
@@ -124,14 +131,15 @@ pro ucomp_run::cache_darks, filename, darks=darks, times=times, exptimes=exptime
     darks[0] = dark_image
 
     ; read the rest of the dark images
-    for e = 2L, fcb.nextend - 2L do begin
+    for e = 2L, fcb.nextend - 3L do begin   ; there are 3 "index" extensions at end of file
       fits_read, fcb, dark_image, dark_header, exten_no=1
       darks[(e - 1) * dark_size] = dark_image
     endfor
 
     ; read the times and exposure times
-    fits_read, fcb, times, times_header, exten_no=fcb.nextend - 1L
-    fits_read, fcb, exptimes, exptimes_header, exten_no=fcb.nextend
+    fits_read, fcb, times, times_header, exten_no=fcb.nextend - 2L
+    fits_read, fcb, exptimes, exptimes_header, exten_no=fcb.nextend - 1L
+    fits_read, fcb, gain_modes, gain_modes_header, exten_no=fcb.nextend
 
     fits_close, fcb
   endif
@@ -139,6 +147,7 @@ pro ucomp_run::cache_darks, filename, darks=darks, times=times, exptimes=exptime
   *self.darks = darks
   *self.dark_times = times
   *self.dark_exptimes = exptimes
+  *self.dark_gain_modes = gain_modes
 end
 
 
@@ -151,6 +160,7 @@ pro ucomp_run::discard_darks
   *self.darks = !null
   *self.dark_times = !null
   *self.dark_exptimes = !null
+  *self.dark_mode_gains = !null
 end
 
 
@@ -162,12 +172,14 @@ end
 ;     time of science image in UT with format "HHMMSS"
 ;   exptime : in, required, type=float
 ;     exposure time [ms] needed
+;   gain_mode : in, required, type=string
+;     gain mode of required dark, i.e., "high" or "low"
 ;
 ; :Keywords:
 ;   found : out, optional, type=boolean
 ;     set to a named variable to retrieve whether a suitable dark was found
 ;-
-function ucomp_run::get_dark, time, exptime, $
+function ucomp_run::get_dark, time, exptime, gain_mode, $
                               found=found, $
                               extensions=extensions, $
                               coefficients=coefficients
@@ -178,7 +190,9 @@ function ucomp_run::get_dark, time, exptime, $
   ; find the darks with an exposure time that is close enough to the given
   ; exptime
   exptime_threshold = 0.01   ; [ms]
-  valid_indices = where((exptime - *self.dark_exptimes) lt exptime_threshold, $
+  gain_index = gain_mode eq 'high'
+  valid_indices = where((exptime - *self.dark_exptimes) lt exptime_threshold $
+                          and (*self.dark_gain_modes eq gain_index), $
                         n_valid_darks)
   if (n_valid_darks eq 0L) then return, !null
 
@@ -819,9 +833,10 @@ function ucomp_run::init, date, mode, config_filename, no_log=no_log
   self.files = orderedhash()   ; wave_region (string) -> list of file objects
 
   ; master dark cache
-  self.darks         = ptr_new(/allocate_heap)
-  self.dark_times    = ptr_new(/allocate_heap)
-  self.dark_exptimes = ptr_new(/allocate_heap)
+  self.darks           = ptr_new(/allocate_heap)
+  self.dark_times      = ptr_new(/allocate_heap)
+  self.dark_exptimes   = ptr_new(/allocate_heap)
+  self.dark_gain_modes = ptr_new(/allocate_heap)
 
   ; performance monitoring
   self.calls = orderedhash()   ; routine name (string) -> # of calls (long)
@@ -850,6 +865,7 @@ pro ucomp_run__define
            darks: ptr_new(), $
            dark_times: ptr_new(), $
            dark_exptimes: ptr_new(), $
+           dark_gain_modes: ptr_new(), $
 
            ; performance
            calls:   obj_new(), $
