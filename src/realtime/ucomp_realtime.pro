@@ -55,7 +55,7 @@ pro ucomp_realtime, date, config_filename
   mg_log, 'starting processing for %d...', date, name=run.logger_name, /info
 
   processing_dir = filepath(run.date, root=run->config('processing/basedir'))
-  if (~file_test(processing_dir, /directory)) then file_mkdir, processing_dir
+  ucomp_mkdir, processing_dir, logger_name=run.logger_name
 
   run->lock, is_available=is_available
   if (~is_available) then goto, done
@@ -97,7 +97,8 @@ pro ucomp_realtime, date, config_filename
                         exposures, $
                         gain_modes, $
                         wave_regions, $
-                        n_points
+                        n_points, $
+                        logger_name=logger_name
 
 
   ;== create quicklook L0.5 files

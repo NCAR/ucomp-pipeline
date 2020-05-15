@@ -66,10 +66,8 @@ pro ucomp_eod, date, config_filename
 
   ; copy config file to processing dir, creating dir if needed
   process_dir = filepath(date, root=run->config('processing/basedir'))
-  if (~file_test(process_dir, /directory)) then begin
-    file_mkdir, process_dir
-    ucomp_fix_permissions, process_dir, /directory, logger_name=run.logger_name
-  endif
+  ucomp_mkdir, process_dir, logger_name=run.logger_name
+
   file_copy, config_filename, $
              filepath(string(date, format='(%"%s.ucomp.cfg")'), $
                       root=process_dir), $
