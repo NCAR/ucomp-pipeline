@@ -3,6 +3,8 @@
 pro ucomp_dark_plots, dark_info, dark_images, run=run
   compile_opt strictarr
 
+  mg_log, 'making dark plots', name=run.logger_name, /info
+
   ; save original graphics settings
   original_device = !d.name
   device, get_decomposed=original_decomposed
@@ -49,10 +51,10 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
         ytitle='Temperature [C]', $
         ystyle=1, yrange=[tarr_min, tarr_max]
   oplot, dark_info.times, dark_info.t_c0arr, $
-         psym=-6, symsize=symsize, $
+         psym=6, symsize=symsize, $
          linestyle=0, color=camera0_color
   oplot, dark_info.times, dark_info.t_c1arr, $
-         psym=-6, symsize=symsize, $
+         psym=6, symsize=symsize, $
          linestyle=0, color=camera1_color
 
   xyouts, 0.95, 0.75 + 0.80 * 0.25, /normal, $
@@ -68,10 +70,10 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
         ytitle='Temperature [C]', $
         ystyle=1, yrange=[tpcb_min, tpcb_max]
   oplot, dark_info.times, dark_info.t_c0pcb, $
-         psym=-6, symsize=symsize, $
+         psym=6, symsize=symsize, $
          linestyle=0, color=camera0_color
   oplot, dark_info.times, dark_info.t_c1pcb, $
-         psym=-6, symsize=symsize, $
+         psym=6, symsize=symsize, $
          linestyle=0, color=camera1_color
 
   xyouts, 0.95, 0.50 + 0.80 * 0.25, /normal, $
@@ -139,23 +141,23 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
         ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
 
   oplot, dark_info.times, cam0_dark_means, $
-         psym=-6, symsize=symsize, $
+         psym=6, symsize=symsize, $
          linestyle=0, color=camera0_color
   oplot, dark_info.times, cam0_dark_means - cam0_dark_stddev, $
-         psym=-6, symsize=0.5 * symsize, $
+         psym=6, symsize=0.5 * symsize, $
          linestyle=1, color=camera0_color
   oplot, dark_info.times, cam0_dark_means + cam0_dark_stddev, $
-         psym=-6, symsize=0.5 * symsize, $
+         psym=6, symsize=0.5 * symsize, $
          linestyle=1, color=camera0_color
 
   oplot, dark_info.times, cam1_dark_means, $
-         psym=-6, symsize=symsize, $
+         psym=6, symsize=symsize, $
          linestyle=0, color=camera1_color
   oplot, dark_info.times, cam1_dark_means - cam1_dark_stddev, $
-         psym=-6, symsize=0.5 * symsize, $
+         psym=6, symsize=0.5 * symsize, $
          linestyle=1, color=camera1_color
   oplot, dark_info.times, cam1_dark_means + cam1_dark_stddev, $
-         psym=-6, symsize=0.5 * symsize, $
+         psym=6, symsize=0.5 * symsize, $
          linestyle=1, color=camera1_color
 
   xyouts, 0.95, 0.00 + 0.80 * 0.25, /normal, $
@@ -175,4 +177,6 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
   tvlct, original_rgb
   device, decomposed=original_decomposed
   set_plot, original_device
+
+  mg_log, 'done', name=run.logger_name, /info
 end
