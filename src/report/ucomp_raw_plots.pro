@@ -102,9 +102,12 @@ pro ucomp_raw_plots, run=run
 
 
   ; save plots image file
+  eng_dir = filepath('', $
+                     subdir=ucomp_decompose_date(run.date), $
+                     root=run->config('engineering/basedir'))
+  if (~file_test(eng_dir, /directory)) then ucomp_mkdir, eng_dir
   output_filename = filepath(string(run.date, format='(%"%s.ucomp.raw.gif")'), $
-                             subdir=ucomp_decompose_date(run.date), $
-                             root=run->config('engineering/basedir'))
+                             root=eng_dir)
   write_gif, output_filename, tvrd(), r, g, b
 
   done:

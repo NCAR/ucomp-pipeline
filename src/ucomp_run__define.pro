@@ -111,6 +111,9 @@ pro ucomp_run::cache_darks, filename, $
                             gain_modes=gain_modes
   compile_opt strictarr
 
+  self->getProperty, logger_name=logger_name
+  mg_log, 'caching darks...', name=logger_name, /info
+
   ; master dark file with extensions 1..n:
   ;   exts 1 to n - 3:   dark images
   ;   ext n - 2:         times of the dark images
@@ -421,9 +424,8 @@ pro ucomp_run::report_profiling
                      subdir=ucomp_decompose_date(self.date), $
                      root=engineering_basedir)
   if (~file_test(eng_dir, /directory)) then begin
-    file_mkdir, eng_dir
     self->getProperty, logger_name=logger_name
-    ucomp_fix_permissions, eng_dir, /directory, logger_name=logger_name
+    ucomp_mkdir, eng_dir, logger_name=logger_name
   endif
 
   basename = string(self.date, format='(%"%s.ucomp.profiler.csv")')
@@ -491,9 +493,8 @@ pro ucomp_run::report
                      subdir=ucomp_decompose_date(self.date), $
                      root=self->config('engineering/basedir'))
   if (~file_test(eng_dir, /directory)) then begin
-    file_mkdir, eng_dir
     self->getProperty, logger_name=logger_name
-    ucomp_fix_permissions, eng_dir, /directory, logger_name=logger_name
+    ucomp_mkdir, eng_dir, logger_name=logger_name
   endif
 
   basename = string(self.date, format='(%"%s.ucomp.perf.txt")')
@@ -721,9 +722,8 @@ pro ucomp_run::_setup_logger
   basename = string(self.date, self.mode, format='(%"%s.ucomp.%s.log")')
   filename = filepath(basename, root=log_dir)
   if (~file_test(log_dir, /directory)) then begin
-    file_mkdir, log_dir
     self->getProperty, logger_name=logger_name
-    ucomp_fix_permissions, log_dir, /directory, logger_name=logger_name
+    ucomp_mkdir, log_dir, logger_name=logger_name
   endif
 
   ; rotate logs

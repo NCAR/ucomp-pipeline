@@ -51,10 +51,7 @@ pro ucomp_l1_process_file, file, run=run
   l1_dirname = filepath('', $
                          subdir=[run.date, 'level1'], $
                          root=run->config('processing/basedir'))
-  if (~file_test(l1_dirname, /directory)) then begin
-    file_mkdir, l1_dirname
-    ucomp_fix_permissions, l1_dirname, /directory, logger_name=run.logger_name
-  endif
+  ucomp_mkdir, l1_dirname, logger_name=run.logger_name
 
   l1_filename = filepath(file.l1_basename, root=l1_dirname)
 

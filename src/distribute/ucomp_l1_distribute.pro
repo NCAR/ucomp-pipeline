@@ -28,10 +28,7 @@ pro ucomp_l1_distribute, wave_region, run=run
     archive_dir = filepath('', $
                            subdir=ucomp_decompose_date(run.date), $
                            root=archive_basedir)
-    if (~file_test(archive_dir)) then begin
-      file_mkdir, archive_dir
-      ucomp_fix_permissions, archive_dir, /directory, logger_name=run.logger_name
-    endif
+    ucomp_mkdir, archive_dir, logger_name=run.logger_name
 
     process_dir = filepath('', $
                            subdir=[run.date, 'level1'], $

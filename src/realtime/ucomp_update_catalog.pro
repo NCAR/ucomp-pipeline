@@ -29,14 +29,15 @@ pro ucomp_update_catalog, catalog_filename, $
                           exposures, $
                           gain_modes, $
                           wave_regions, $
-                          n_points
+                          n_points, $
+                          logger_name=logger_name
   compile_opt strictarr
 
   if (n_elements(new_files) eq 0L) then return
 
   if (~file_test(catalog_filename, /regular)) then begin
     dir = file_dirname(catalog_filename)
-    if (~file_test(dir, /directory)) then file_mkdir, dir
+    ucomp_mkdir, dir, logger_name=logger_name
     openw, lun, catalog_filename, /get_lun
   endif else begin
     openu, lun, catalog_filename, /get_lun, /append
