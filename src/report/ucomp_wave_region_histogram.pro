@@ -106,6 +106,7 @@ pro ucomp_wave_region_histogram, output_filename, $
   tvlct, original_rgb, /get
 
   sums = total(histograms, 2, /preserve_type)
+  max_files >= max(total(histograms, 1, /preserve_type))
   mg_stacked_histplot, ((_bin_size / 60.0) * findgen(n_bins) + start_time), $
                        histograms, $
                        axis_color='000000'x, $
@@ -139,10 +140,7 @@ pro ucomp_wave_region_histogram, output_filename, $
 
   ; make directory for output file, if it doesn't already exist
   dir_name = file_dirname(output_filename)
-  if (~file_test(dir_name, /directory)) then begin
-    file_mkdir, dir_name
-    ucomp_fix_permissions, dir_name, /directory, logger_name=run.logger_name
-  endif
+  ucomp_mkdir, dir_name, logger_name=run.logger_name
 
   write_png, output_filename, im
 end
