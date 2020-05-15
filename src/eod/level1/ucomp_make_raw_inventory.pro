@@ -12,10 +12,7 @@ pro ucomp_make_raw_inventory, run=run
 
   process_dir = filepath(run.date, $
                          root=run->config('processing/basedir'))
-  if (~file_test(process_dir, /directory)) then begin
-    file_mkdir, process_dir
-    ucomp_fix_permissions, process_dir, /directory, logger_name=run.logger_name
-  endif
+  ucomp_mkdir, process_dir, logger_name=run.logger_name
 
   ; do the inventory
   run->make_raw_inventory, n_extensions=n_extensions, $
@@ -40,7 +37,8 @@ pro ucomp_make_raw_inventory, run=run
                         exposures, $
                         gain_modes, $
                         wave_regions, $
-                        n_points
+                        n_points, $
+                        logger_name=run.logger_name
 
   ; write the inventory files
   run->getProperty, all_wave_regions=all_wave_regions

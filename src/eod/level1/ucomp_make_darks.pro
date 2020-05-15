@@ -27,7 +27,7 @@ pro ucomp_make_darks, run=run
   l1_dir = filepath('level1', $
                     subdir=run.date, $
                     root=run->config('processing/basedir'))
-  if (~file_test(l1_dir, /directory)) then file_mkdir, l1_dir
+  ucomp_mkdir, l1_dir, logger_name=run.logger_name
 
   dark_times = fltarr(n_dark_files)
   dark_exposures = fltarr(n_dark_files)

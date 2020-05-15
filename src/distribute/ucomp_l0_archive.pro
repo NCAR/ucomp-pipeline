@@ -75,35 +75,27 @@ pro ucomp_l0_archive, run=run
   ; put link to L0 tarball in HPSS directory
   hpss_gateway = run->config('results/hpss_gateway')
   if (run->config('raw/send_to_hpss')) then begin
-    if (~run->config('eod/reprocess')) then begin
-      if (n_elements(hpss_gateway) gt 0L) then begin
-        ; create HPSS gateway directory if needed
-        if (~file_test(hpss_gateway, /directory)) then begin
-          file_mkdir, hpss_gateway
-          ucomp_fix_permissions, hpss_gateway, /directory, $
-                                 logger_name=run.logger_name
-        endif
+    if (n_elements(hpss_gateway) gt 0L) then begin
+      ; create HPSS gateway directory if needed
+      ucomp_mkdir, hpss_gateway, logger_name=run.logger_name
 
-        dst_tarfile = filepath(tarfile, root=hpss_gateway)
+      dst_tarfile = filepath(tarfile, root=hpss_gateway)
 
-        ; remove old links to tarballs
-        ; need to test for dangling symlink separately because a link to a
-        ; non-existent file will return 0 from FILE_TEST with just /SYMLINK
-        if (file_test(dst_tarfile, /symlink) $
-            || file_test(dst_tarfile, /dangling_symlink)) then begin
-          mg_log, 'removing link to tarball in HPSS gateway', $
-                  name=run.logger_name, /warn
-          file_delete, dst_tarfile
-        endif
-
-        file_link, filepath(tarfile, root=l0_dir), $
-                   dst_tarfile
-      endif else begin
-        mg_log, 'no HPSS gateway set, not sending to HPSS', $
+      ; remove old links to tarballs
+      ; need to test for dangling symlink separately because a link to a
+      ; non-existent file will return 0 from FILE_TEST with just /SYMLINK
+      if (file_test(dst_tarfile, /symlink) $
+          || file_test(dst_tarfile, /dangling_symlink)) then begin
+        mg_log, 'removing link to tarball in HPSS gateway', $
                 name=run.logger_name, /warn
-      endelse
+        file_delete, dst_tarfile
+      endif
+
+      file_link, filepath(tarfile, root=l0_dir), $
+                 dst_tarfile
     endif else begin
-      mg_log, 'reprocessing, not sending to HPSS', name=run.logger_name, /info
+      mg_log, 'no HPSS gateway set, not sending to HPSS', $
+              name=run.logger_name, /warn
     endelse
   endif else begin
     mg_log, 'skipping sending to HPSS', name=run.logger_name, /info
