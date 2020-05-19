@@ -1,7 +1,7 @@
 ; docformat = 'rst'
 
 ;+
-; Apply dark.
+; Apply the dark and gain.
 ;
 ; :Params:
 ;   file : in, required, type=object
@@ -17,7 +17,7 @@
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-pro ucomp_apply_dark, file, primary_header, data, headers, run=run
+pro ucomp_apply_dark_gain, file, primary_header, data, headers, run=run
   compile_opt strictarr
 
   ; TODO: implement
