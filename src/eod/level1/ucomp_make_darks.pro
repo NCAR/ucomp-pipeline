@@ -31,7 +31,7 @@ pro ucomp_make_darks, run=run
 
   dark_times = fltarr(n_dark_files)
   dark_exposures = fltarr(n_dark_files)
-  dark_gain_modes = bytarr(n_dark_files)
+  dark_gain_modes = intarr(n_dark_files)
 
   datetime = strmid(file_basename((dark_files[0]).raw_filename), 0, 15)
   nx = run->epoch('nx', datetime=datetime)
@@ -42,6 +42,11 @@ pro ucomp_make_darks, run=run
   averaged_dark_images = fltarr(nx, ny, n_pol_states, n_cameras, n_dark_files)
   dark_headers = list()
   dark_info = list()
+
+  n_tcam = 0L
+  tcam_means = fltarr(n_pol_states, n_cameras)
+  n_rcam = 0L
+  rcam_means = fltarr(n_pol_states, n_cameras)
 
   ; the keywords that need to be moved from the primary header in the raw files
   ; to the extensions in the master dark file
@@ -89,8 +94,28 @@ pro ucomp_make_darks, run=run
 
     for e = 1L, dark_file_fcb.nextend do begin
       fits_read, dark_file_fcb, dark_image, dark_header, exten_no=e
+
+      onband = strtrim(sxpar(dark_header, 'ONBAND'), 2)
+      if (onband eq 'tcam') then begin
+        tcam_means += total(reform(dark_image, nx * ny, n_pol_states, n_cameras), $
+                            1, $
+                            /preserve_type)
+        n_tcam += 1L
+      endif else if (onband eq 'rcam') then begin
+        rcam_means += total(reform(dark_image, nx * ny, n_pol_states, n_cameras), $
+                            1, $
+                            /preserve_type)
+        n_rcam += 1L
+      endif else begin
+        mg_log, 'unknown ONBAND mode: %s', onband, name=run.logger_name, /warn
+      endelse
+
+
       if (e eq 1L) then begin
         dark_exposures[d] = ucomp_getpar(dark_header, 'EXPTIME', /float)
+        sxaddpar, dark_header, 'RAWFILE', dark_basename, $
+                  ' corresponding raw dark filename', $
+                  before='DATATYPE'
 
         for k = 0L, n_elements(move_keywords) - 1L do begin
           after = k eq 0L ? 'T_RACK' : move_keywords[k - 1L]
@@ -133,11 +158,14 @@ pro ucomp_make_darks, run=run
                 extname=strmid(file_basename(dark_files[d].raw_filename), 9, 6)
   endfor
 
-  ; TODO: remove many keywords from headers of the index extensions
+  mkhdr, times_header, dark_times, /extend, /image
+  fits_write, output_fcb, dark_times, times_header, extname='Times'
 
-  fits_write, output_fcb, dark_times, dark_header, extname='Times'
-  fits_write, output_fcb, dark_exposures, dark_header, extname='Exposures'
-  fits_write, output_fcb, dark_gain_modes, dark_header, extname='Gain modes'
+  mkhdr, exposures_header, dark_exposures, /extend, /image
+  fits_write, output_fcb, dark_exposures, exposures_header, extname='Exposures'
+
+  mkhdr, gain_modes_header, dark_gain_modes, /extend, /image
+  fits_write, output_fcb, dark_gain_modes, gain_modes_header, extname='Gain modes'
 
   fits_close, output_fcb
 
@@ -148,6 +176,23 @@ pro ucomp_make_darks, run=run
                     gain_modes=dark_gain_modes
 
   
+  tcam_means /= n_tcam
+  rcam_means /= n_rcam
+
+  for p = 0L, n_pol_states - 1L do begin
+    mg_log, '%d tcam dark means, pol state %d: %s', $
+            n_tcam, p, $
+            strjoin(strtrim(string(tcam_means[p, *], format='(F0.2)'), 2), ', '), $
+            name=run.logger_name, /debug
+  endfor
+
+  for p = 0L, n_pol_states - 1L do begin
+    mg_log, '%d rcam dark means, pol state %d: %s', $
+            n_rcam, p, $
+            strjoin(strtrim(string(rcam_means[p, *], format='(F0.2)'), 2), ', '), $
+            name=run.logger_name, /debug
+  endfor
+
   ucomp_dark_plots, dark_info->toArray(), averaged_dark_images, run=run
 
   done:
