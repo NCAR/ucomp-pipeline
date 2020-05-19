@@ -99,12 +99,12 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
   !p.multi = [4, 2, 4]
 
   plot, dark_info.t_c0arr, cam0_dark_means, /nodata, $
-        charsize=charsize, title='Sensor temperature vs. intensity', $
+        charsize=charsize, title='Dark sensor temperature vs. counts', $
         psym=6, symsize=symsize, $
         color=color, background=background_color, $
         xtitle='Sensor array temperature [C]', $
         xstyle=1, xrange=[tarr_min, tarr_max], $
-        ytitle='Intensity [DN]', $
+        ytitle='Counts [DN]', $
         ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
   oplot, dark_info.t_c0arr, cam0_dark_means, $
         psym=6, symsize=symsize, $
@@ -114,12 +114,12 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
         color=camera1_color
 
   plot, dark_info.t_c1pcb, cam1_dark_means, /nodata, $
-        charsize=charsize, title='PCB board temperature vs. intensity', $
+        charsize=charsize, title='Dark PCB board temperature vs. counts', $
         psym=6, symsize=symsize, $
         color=color, background=background_color, $
         xtitle='PCB board temperature [C]', $
         xstyle=1, xrange=[tpcb_min, tpcb_max], $
-        ytitle='Intensity [DN]', $
+        ytitle='Counts [DN]', $
         ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
   oplot, dark_info.t_c0pcb, cam0_dark_means, $
         psym=6, symsize=symsize, $
@@ -133,11 +133,11 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
   !p.multi = [1, 1, 4]
 
   plot, dark_info.times, cam0_dark_means, /nodata, $
-        charsize=charsize, title='Mean intensity (+/- 1 std dev) vs. time', $
+        charsize=charsize, title='Dark mean counts (+/- 1 std dev) vs. time', $
         color=color, background=background_color, $
         xtitle='Time [HST]', $
         xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
-        ytitle='Intensity [DN]', $
+        ytitle='Counts [DN]', $
         ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
 
   oplot, dark_info.times, cam0_dark_means, $
