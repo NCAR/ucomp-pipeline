@@ -68,6 +68,9 @@ pro ucomp_make_flats, wave_region, run=run
       fits_read, flat_file_fcb, flat_image, flat_header, exten_no=e
       if (e eq 1L) then begin
         flat_exposures[f] = ucomp_getpar(flat_header, 'EXPTIME', /float)
+        sxaddpar, flat_header, 'RAWFILE', flat_basename, $
+                  ' corresponding raw flat filename', $
+                  before='DATATYPE'
         flat_headers->add, flat_header
       endif
 
@@ -97,8 +100,11 @@ pro ucomp_make_flats, wave_region, run=run
                 extname=strmid(file_basename(flat_files[f].raw_filename), 9, 6)
   endfor
 
-  fits_write, output_fcb, flat_times, flat_header, extname='Times'
-  fits_write, output_fcb, flat_exposures, flat_header, extname='Exposures'
+  mkhdr, times_header, flat_times, /extend, /image
+  fits_write, output_fcb, flat_times, times_header, extname='Times'
+
+  mkhdr, times_header, flat_exposures, /extend, /image
+  fits_write, output_fcb, flat_exposures, exposures_header, extname='Exposures'
 
   fits_close, output_fcb
 
