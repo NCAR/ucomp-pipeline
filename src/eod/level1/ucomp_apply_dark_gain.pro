@@ -21,4 +21,13 @@ pro ucomp_apply_dark_gain, file, primary_header, data, headers, run=run
   compile_opt strictarr
 
   ; TODO: implement
+
+  ; TODO: for each extension in file
+  dark = run->get_dark(time, exptime, gain_mode, found=found)
+  flat = run->get_flat(time, exptime, gain_mode, pol_state, wavelength, found=found)
+  ; TODO: need to broadcast dark to correction size
+  im = (im - dark) / (im - flat)
+  im *= gain_transmission
+
+  ; TODO: send back to file
 end
