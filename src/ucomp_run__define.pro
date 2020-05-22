@@ -91,8 +91,8 @@ end
 ;
 ; :Params:
 ;   filename : in, optional, type=string
-;     filename of master dark file, if not present, then `darks`, `times`, and
-;     `exptimes` must be present
+;     filename of master dark file, if not present, then `darks`, `times`,
+;     `exptimes`, and `gain_modes` must be present
 ;
 ; :Keywords:
 ;   darks : in, optional, type="fltarr(..., n)"
@@ -129,13 +129,13 @@ pro ucomp_run::cache_darks, filename, $
     dims = size(dark_image, /dimensions)
     dark_size = product(dims, /preserve_type)
 
-    darks = make_array(dimension=[dims, fcb.nextend - 2L], $
+    darks = make_array(dimension=[dims, fcb.nextend - 3L], $
                        type=size(dark_image, /type))
     darks[0] = dark_image
 
     ; read the rest of the dark images
     for e = 2L, fcb.nextend - 3L do begin   ; there are 3 "index" extensions at end of file
-      fits_read, fcb, dark_image, dark_header, exten_no=1
+      fits_read, fcb, dark_image, dark_header, exten_no=e
       darks[(e - 1) * dark_size] = dark_image
     endfor
 
@@ -304,19 +304,136 @@ function ucomp_run::get_files, wave_region=wave_region, data_type=data_type, $
 end
 
 
+;= handle flats
+
+;+
+; Cache the master flat files.
+;
+; :Params:
+;   filenames : in, optional, type=strarr
+;     filename of master flat files, if not present, then `flats`, `times`,
+;     `exptimes`, `wavelengths`, and `gain_modes` must be present
+;
+; :Keywords:
+;   flats : in, optional, type="fltarr(nx, ny, n_pol_states, n_cameras, n)"
+;     flat images
+;   times : in, optional, type=fltarr(n)
+;     times of the darks [hours into observing day]
+;   exptimes : in, optional, type=fltarr(n)
+;     exposure times of the darks [ms]
+;   wavelengthss : in, optional, type=fltarr(n)
+;     wavelengths of the darks [nm]
+;   gain_modes : in, optional, type=bytarr(n)
+;     gain modes of the darks [ms]
+;-
+pro ucomp_run::cache_flats, filenames, $
+                            flats=flats, $
+                            times=times, $
+                            exptimes=exptimes, $
+                            wavelengths=wavelengths, $
+                            gain_modes=gain_modes
+  compile_opt strictarr
+
+  self->getProperty, logger_name=logger_name
+  mg_log, 'caching flats...', name=logger_name, /info
+
+  ; master flat file with extensions 1..n:
+  ;   exts 1 to n - 4:   flat images
+  ;   ext n - 3:         times of the flat images
+  ;   ext n - 2:         exposure times of the flat images 
+  ;   ext n - 1:         wavelengths of the flat images
+  ;   ext n:             gain modes of the flat images 
+
+  if (n_elements(filenames) gt 0L) then begin
+    ; determine total number of flats in all flat files
+    n_flats = 0L
+    for f = 0L, n_elements(filenames) - 1L do begin
+      fits_open, filenames[f], fcb
+      n_flats += fcb.nextend - 4L  ; not including the index extensions
+      fits_close, fcb
+    endfor
+
+    flats = fltarr(nx, ny, n_pol_states, n_cameras, n_flats)
+    times = fltarr(n_flats)
+    exptimes = fltarr(n_flats)
+    wavelengths = fltarr(n_flats)
+    gain_modes = lonarr(n_flats)
+
+    i = 0L
+    for f = 0L, n_elemens(filenames) - 1L do begin
+      fits_open, filenames[f], fcb
+
+      for e = 1L, fcb.nextend - 4L do begin   ; there are 4 "index" extensions at end of file
+        fits_read, fcb, flat_image, flat_header, exten_no=e
+        flats[*, *, *, *, i + e - 1L] = flat_image
+      endfor
+
+      ; read index extensions
+      fits_read, fcb, flat_times, times_header, exten_no=fcb.nextend - 3L
+      fits_read, fcb, flat_exptimes, exptimes_header, exten_no=fcb.nextend - 2L
+      fits_read, fcb, flat_wavelengths, wavelengths_header, exten_no=fcb.nextend - 1L
+      fits_read, fcb, flat_gain_modes, gain_modes_header, exten_no=fcb.nextend
+
+      times[i] = flat_times
+      exptimes[i] = flat_exptimes
+      wavelengths[i] = flat_wavelengths
+      gain_modes[i] = flat_gain_modes
+
+      fits_close, fcb
+    endfor
+  endif
+
+  *self.flats = flats
+  *self.flat_times = times
+  *self.flat_exptimes = exptimes
+  *self.flat_wavelengths = wavelengths
+  *self.flat_gain_modes = gain_modes
+end
+
+
 ;+
 ; Retrieve a flat image for a given science image.
 ;
 ; :Params:
 ;   time : in, required, type=string
 ;     time of science image in UT with format "HHMMSS"
+;   exptime : in, required, type=float
+;     exposure time [ms] needed
+;   gain_mode : in, required, type=string
+;     gain mode of required dark, i.e., "high" or "low"
 ;   wavelength : in, required, type=float
 ;     wavelength of science image in nm
+;
+; :Keywords:
+;   found : out, optional, type=boolean
+;     set to a named variable to retrieve whether a suitable dark was found
 ;-
-function ucomp_run::get_flat, time, wavelength
+function ucomp_run::get_flat, time, exptime, gain_mode, wavelength, $
+                              found=found, $
+                              extensions=extensions
   compile_opt strictarr
 
-  ; TODO: implement
+  found = 0B
+
+  ; find the darks with an exposure time and wavelength that is close enough to
+  ; the given exptime and wavelength
+  exptime_threshold = 0.01      ; [ms]
+  wavelength_threshold = 0.001  ; [nm]
+
+  gain_index = gain_mode eq 'high'
+  valid_indices = where(abs(exptime - *self.flat_exptimes) lt exptime_threshold $
+                          and abs(wavelenngth - *self.flat_wavelengths) lt wavelength_threshold $
+                          and (*self.flat_gain_modes eq gain_index), $
+                        n_valid_flats)
+  if (n_valid_flats eq 0L) then return, !null
+
+  ; find index of valid flat taken nearest specificed time
+  !null = min(abs(time - (*self.flat_times)[valid_indices]), nearest_time_index)
+
+  ; convert nearest time index from index into valid flats to index into all flats
+  nearest_time_index = valid_indices[nearest_time_index]
+
+  return, reform((*self.flats)[nearest_time_index])
 end
 
 
@@ -750,6 +867,11 @@ end
 pro ucomp_run::cleanup
   compile_opt strictarr
 
+  ptr_free, self.darks, self.dark_times, self.dark_exptimes, $
+            self.dark_gain_modes
+  ptr_free, self.flats, self.flat_times, self.flat_exptimes, $
+            self.flat_wavelengths, self.flat_gain_modes
+
   obj_destroy, [self.options, self.epochs, self.lines]
 
   ; master dark cache
@@ -833,10 +955,16 @@ function ucomp_run::init, date, mode, config_filename, no_log=no_log
   self.files = orderedhash()   ; wave_region (string) -> list of file objects
 
   ; master dark cache
-  self.darks           = ptr_new(/allocate_heap)
-  self.dark_times      = ptr_new(/allocate_heap)
-  self.dark_exptimes   = ptr_new(/allocate_heap)
-  self.dark_gain_modes = ptr_new(/allocate_heap)
+  self.darks            = ptr_new(/allocate_heap)
+  self.dark_times       = ptr_new(/allocate_heap)
+  self.dark_exptimes    = ptr_new(/allocate_heap)
+  self.dark_gain_modes  = ptr_new(/allocate_heap)
+
+  self.flats            = ptr_new(/allocate_heap)
+  self.flat_times       = ptr_new(/allocate_heap)
+  self.flat_exptimes    = ptr_new(/allocate_heap)
+  self.flat_wavelengths = ptr_new(/allocate_heap)
+  self.flat_gain_modes  = ptr_new(/allocate_heap)
 
   ; performance monitoring
   self.calls = orderedhash()   ; routine name (string) -> # of calls (long)
@@ -866,6 +994,13 @@ pro ucomp_run__define
            dark_times: ptr_new(), $
            dark_exptimes: ptr_new(), $
            dark_gain_modes: ptr_new(), $
+
+           ; master flat cache
+           flats: ptr_new(), $
+           flat_times: ptr_new(), $
+           flat_exptimes: ptr_new(), $
+           flat_wavelengths: ptr_new(), $
+           flat_gain_modes: ptr_new(), $
 
            ; performance
            calls:   obj_new(), $

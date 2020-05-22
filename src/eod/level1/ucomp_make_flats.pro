@@ -33,6 +33,8 @@ pro ucomp_make_flats, wave_region, run=run
 
   flat_times = fltarr(n_flat_files)
   flat_exposures = fltarr(n_flat_files)
+  flat_wavelengths = fltarr(n_flat_files)
+  flat_gain_modes = intarr(n_flat_files)
 
   datetime = strmid(file_basename((flat_files[0]).raw_filename), 0, 15)
   nx = run->epoch('nx', datetime=datetime)
@@ -42,6 +44,11 @@ pro ucomp_make_flats, wave_region, run=run
 
   averaged_flat_images = fltarr(nx, ny, n_pol_states, n_cameras, n_flat_files)
   flat_headers = list()
+
+  ; the keywords that need to be moved from the primary header in the raw files
+  ; to the extensions in the master flat file
+  move_keywords = ['T_C0ARR', 'T_C0PCB', 'T_C1ARR', 'T_C1PCB', $
+                   'GAIN', 'FILTER', 'OCCLTR-X', 'OCCLTR-Y', 'O1FOCUS']
 
   for f = 0L, n_flat_files - 1L do begin
     flat_file = flat_files[f]
@@ -60,17 +67,37 @@ pro ucomp_make_flats, wave_region, run=run
 
     ; use the primary header of the first flat file as the template for the
     ; primary header of the master flat file
-    if (f eq 0L) then begin
-      fits_read, flat_file_fcb, empty, primary_header, exten_no=0, /header_only
-    endif
+    fits_read, flat_file_fcb, empty, primary_header, exten_no=0, /header_only
+    if (f eq 0L) then first_primary_header = primary_header
+
+    move_keywords_hash = hash()
+    for k = 0L, n_elements(move_keywords) - 1L do begin
+      move_keywords_hash[move_keywords[k]] = sxpar(primary_header, $
+                                                   move_keywords[k], $
+                                                   comment=comment)
+      move_keywords_hash[move_keywords[k] + '_COMMENT'] = comment
+    endfor
+
+    flat_gain_modes[f] = strtrim(move_keywords_hash['GAIN'], 2) eq 'high'
 
     for e = 1L, flat_file_fcb.nextend do begin
       fits_read, flat_file_fcb, flat_image, flat_header, exten_no=e
       if (e eq 1L) then begin
         flat_exposures[f] = ucomp_getpar(flat_header, 'EXPTIME', /float)
+        flat_wavelengths[f] = ucomp_getpar(flat_header, 'WAVELNG', /float)
+
         sxaddpar, flat_header, 'RAWFILE', flat_basename, $
                   ' corresponding raw flat filename', $
                   before='DATATYPE'
+
+        for k = 0L, n_elements(move_keywords) - 1L do begin
+          after = k eq 0L ? 'T_RACK' : move_keywords[k - 1L]
+          sxaddpar, flat_header, move_keywords[k], $
+                    move_keywords_hash[move_keywords[k]], $
+                    move_keywords_hash[move_keywords[k] + '_COMMENT'], $
+                    after=after
+        endfor
+        obj_destroy, move_keywords_hash
         flat_headers->add, flat_header
       endif
 
@@ -82,7 +109,11 @@ pro ucomp_make_flats, wave_region, run=run
     fits_close, flat_file_fcb
   endfor
 
-  ; TODO: fix primary header
+  ; fix primary header
+
+  for k = 0L, n_elements(move_keywords) - 1L do begin
+    sxdelpar, first_primary_header, move_keywords[k]
+  endfor
 
   ; write master flat FITS file in the process_basedir/level
 
@@ -90,7 +121,7 @@ pro ucomp_make_flats, wave_region, run=run
   output_filename = filepath(output_basename, root=l1_dir)
 
   fits_open, output_filename, output_fcb, /write
-  fits_write, output_fcb, 0, primary_header
+  fits_write, output_fcb, 0, first_primary_header
   for f = 0L, n_flat_files - 1L do begin
     flat_header = flat_headers[f]
     ; TODO: fix extension header
@@ -103,10 +134,23 @@ pro ucomp_make_flats, wave_region, run=run
   mkhdr, times_header, flat_times, /extend, /image
   fits_write, output_fcb, flat_times, times_header, extname='Times'
 
-  mkhdr, times_header, flat_exposures, /extend, /image
+  mkhdr, exposures_header, flat_exposures, /extend, /image
   fits_write, output_fcb, flat_exposures, exposures_header, extname='Exposures'
 
+  mkhdr, wavelengths_header, flat_wavelengths, /extend, /image
+  fits_write, output_fcb, flat_wavelengths, wavelengths_header, extname='Wavelengths'
+
+  mkhdr, gain_modes_header, flat_gain_modes, /extend, /image
+  fits_write, output_fcb, flat_gain_modes, gain_modes_header, extname='Gain modes'
+
   fits_close, output_fcb
+
+  ; cache flats
+  run->cache_flats, flats=averaged_flat_images, $
+                    times=flat_times, $
+                    exptimes=flat_exposures, $
+                    wavelengths=flat_wavelengths, $
+                    gain_modes=flat_gain_modes
 
   done:
   if (obj_valid(flat_headers)) then obj_destroy, flat_headers
