@@ -39,7 +39,7 @@ pro ucomp_make_darks, run=run
   n_pol_states = 4L
   n_cameras = 2L
 
-  averaged_dark_images = fltarr(nx, ny, n_pol_states, n_cameras, n_dark_files)
+  dark_images = fltarr(nx, ny, n_pol_states, n_cameras, n_dark_files)
   dark_headers = list()
   dark_info = list()
 
@@ -128,11 +128,10 @@ pro ucomp_make_darks, run=run
         dark_headers->add, dark_header
       endif
 
-      ; TODO: how does this work, should it be kept per pol state and camera or
-      ; averaged together?
-      averaged_dark_images[*, *, *, *, d] += dark_image
+      dark_images[*, *, *, *, d] += dark_image
     endfor
-    averaged_dark_images[*, *, *, *, d] /= dark_file_fcb.nextend
+
+    dark_images[*, *, *, *, d] /= dark_file_fcb.nextend
     fits_close, dark_file_fcb
   endfor
 
@@ -141,6 +140,10 @@ pro ucomp_make_darks, run=run
   for k = 0L, n_elements(move_keywords) - 1L do begin
     sxdelpar, first_primary_header, move_keywords[k]
   endfor
+
+  averaged_dark_images = mean(reform(dark_images, $
+                                     nx, ny, n_pol_states * n_cameras, n_dark_files), $
+                              dimension=3)
 
   ; write master dark FITS file in the process_basedir/level1
 
@@ -153,7 +156,7 @@ pro ucomp_make_darks, run=run
     dark_header = dark_headers[d]
     ; fix extension header
     fits_write, output_fcb, $
-                averaged_dark_images[*, *, *, *, d], $
+                averaged_dark_images[*, *, d], $
                 dark_header, $
                 extname=strmid(file_basename(dark_files[d].raw_filename), 9, 6)
   endfor
@@ -193,7 +196,7 @@ pro ucomp_make_darks, run=run
             name=run.logger_name, /debug
   endfor
 
-  ucomp_dark_plots, dark_info->toArray(), averaged_dark_images, run=run
+  ucomp_dark_plots, dark_info->toArray(), dark_images, run=run
 
   done:
   if (obj_valid(dark_headers)) then obj_destroy, dark_headers

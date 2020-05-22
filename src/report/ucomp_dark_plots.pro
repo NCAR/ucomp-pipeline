@@ -149,6 +149,7 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
   oplot, dark_info.times, cam0_dark_means + cam0_dark_stddev, $
          psym=6, symsize=0.5 * symsize, $
          linestyle=1, color=camera0_color
+  ; TODO: plot vertical line from -stddev to +stddev?
 
   oplot, dark_info.times, cam1_dark_means, $
          psym=6, symsize=symsize, $
@@ -159,6 +160,7 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
   oplot, dark_info.times, cam1_dark_means + cam1_dark_stddev, $
          psym=6, symsize=0.5 * symsize, $
          linestyle=1, color=camera1_color
+  ; TODO: plot vertical line from -stddev to +stddev?
 
   xyouts, 0.95, 0.00 + 0.80 * 0.25, /normal, $
           'camera 0', alignment=1.0, color=camera0_color
