@@ -27,11 +27,9 @@ pro ucomp_l1_process_file, file, run=run
                  file, primary_header, data, headers, run=run
   ucomp_l1_step, 'ucomp_average_data', $
                  file, primary_header, data, headers, run=run
-  ucomp_l1_step, 'ucomp_apply_dark', $
-                 file, primary_header, data, headers, run=run
   ucomp_l1_step, 'ucomp_stray_light', $
                  file, primary_header, data, headers, run=run
-  ucomp_l1_step, 'ucomp_apply_gain', $
+  ucomp_l1_step, 'ucomp_apply_dark_gain', $
                  file, primary_header, data, headers, run=run
   ucomp_l1_step, 'ucomp_continuum_correction', $
                  file, primary_header, data, headers, run=run
@@ -55,8 +53,8 @@ pro ucomp_l1_process_file, file, run=run
 
   l1_filename = filepath(file.l1_basename, root=l1_dirname)
 
-  clock_id = run->start('ucomp_write_l1_file')
-  ucomp_write_l1_file, l1_filename, primary_header, data, headers
+  clock_id = run->start('ucomp_write_fits_file')
+  ucomp_write_fits_file, l1_filename, primary_header, data, headers
   !null = run->stop(clock_id)
 
   obj_destroy, headers
