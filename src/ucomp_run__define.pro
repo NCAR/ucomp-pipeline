@@ -151,6 +151,8 @@ pro ucomp_run::cache_darks, filename, $
   *self.dark_times = times
   *self.dark_exptimes = exptimes
   *self.dark_gain_modes = gain_modes
+
+  mg_log, '%d darks cached', n_elements(times), name=logger_name, /info
 end
 
 
@@ -169,6 +171,9 @@ end
 
 ;+
 ; Retrieve a dark image for a given science image.
+;
+; :Returns:
+;   interpolated by time dark image, `fltarr(nx, ny, np, nc)`
 ;
 ; :Params:
 ;   time : in, required, type=string
@@ -365,7 +370,7 @@ pro ucomp_run::cache_flats, filenames, $
 
       for e = 1L, fcb.nextend - 4L do begin   ; there are 4 "index" extensions at end of file
         fits_read, fcb, flat_image, flat_header, exten_no=e
-        flats[*, *, *, *, i + e - 1L] = flat_image
+        flats[0, 0, 0, 0, i + e - 1L] = flat_image
       endfor
 
       ; read index extensions
@@ -383,16 +388,46 @@ pro ucomp_run::cache_flats, filenames, $
     endfor
   endif
 
-  *self.flats = flats
-  *self.flat_times = times
-  *self.flat_exptimes = exptimes
-  *self.flat_wavelengths = wavelengths
-  *self.flat_gain_modes = gain_modes
+  ; concatenate over the last (5th, i.e., index 4) dimension if flats are
+  ; already present
+  if (n_elements(*self.flats) eq 0L) then begin
+    *self.flats = flats
+  endif else begin
+    dims = size(*self.flats, /dimensions)
+    n_existing_flats = n_elements(*self.flat_times)
+    n_appending_flats = n_elements(times)
+
+    new_dims = [dims[0:3], n_existing_flats + n_appending_flats]
+    new_flats = make_array(new_dims, type=size(flats, /type))
+    new_flats[0, 0, 0, 0, 0] = *self.flats
+    new_flats[0, 0, 0, 0, n_existing_flats] = flats
+
+    *self.flats = new_flats
+  endelse
+
+  *self.flat_times = n_elements(*self.flat_times) eq 0L $
+                       ? times $
+                       : [*self.flat_times, times]
+  *self.flat_exptimes = n_elements(*self.flat_exptimes) eq 0L $
+                          ? exptimes $
+                          : [*self.flat_exptimes, exptimes]
+  *self.flat_wavelengths = n_elements(*self.flat_wavelengths) eq 0L $
+                             ? wavelengths $
+                             : [*self.flat_wavelengths, wavelengths]
+  *self.flat_gain_modes = n_elements(*self.flat_gain_modes) eq 0L $
+                            ? gain_modes $
+                            : [*self.flat_gain_modes, gain_modes]
+
+  mg_log, '%d flats cached', n_elements(times), name=logger_name, /info
+  mg_log, '%d total flats cached', n_elements(*self.flat_times), name=logger_name, /info
 end
 
 
 ;+
 ; Retrieve a flat image for a given science image.
+;
+; :Returns:
+;   flat image, `fltarr(nx, ny, np, nc)`
 ;
 ; :Params:
 ;   time : in, required, type=string
@@ -433,7 +468,7 @@ function ucomp_run::get_flat, time, exptime, gain_mode, wavelength, $
   ; convert nearest time index from index into valid flats to index into all flats
   nearest_time_index = valid_indices[nearest_time_index]
 
-  return, reform((*self.flats)[nearest_time_index])
+  return, reform((*self.flats)[*, *, *, *, nearest_time_index])
 end
 
 
