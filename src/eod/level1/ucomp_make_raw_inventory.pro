@@ -17,7 +17,7 @@ pro ucomp_make_raw_inventory, run=run
   ; do the inventory
   run->make_raw_inventory, n_extensions=n_extensions, $
                            data_types=data_types, $
-                           exposures=exposures, $
+                           exptimes=exptimes, $
                            gain_modes=gain_modes, $
                            wave_regions=wave_regions, $
                            n_points=n_points
@@ -34,7 +34,7 @@ pro ucomp_make_raw_inventory, run=run
                         new_filenames, $
                         n_extensions, $
                         data_types, $
-                        exposures, $
+                        exptimes, $
                         gain_modes, $
                         wave_regions, $
                         n_points, $
@@ -78,7 +78,9 @@ pro ucomp_make_raw_inventory, run=run
       printf, lun, $
               file_basename(files[f].raw_filename), $
               files[f].n_extensions, $
-              show_wavelengths[t] ? strjoin(string(files[f].unique_wavelengths, format='(F0.2)'), ', ') : '', $
+              show_wavelengths[t] $
+                ? strjoin(string(files[f].unique_wavelengths, format='(F0.2)'), ', ') $
+                : '', $
               format='(%"%-40s %4d exts  %s")'
     endfor
     free_lun, lun

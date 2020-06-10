@@ -18,8 +18,8 @@
 ;   n_extensions : out, optional, type=lonarr
 ;     set to a named variable to retrieve the number of extensions for each of
 ;     the given files
-;  exposures : out, optional, type=fltarr
-;     set to a named variable to retrieve the exposure [ms] for the given files
+;  exptimes : out, optional, type=fltarr
+;     set to a named variable to retrieve the exptime [ms] for the given files
 ;  gain_modes : out, optional, type=strarr
 ;     set to a named variable to retrieve the gain modes [high/low] for the
 ;     given files
@@ -30,7 +30,7 @@
 pro ucomp_run::make_raw_inventory, raw_files, $
                                    n_extensions=n_extensions, $
                                    data_types=data_types, $
-                                   exposures=exposures, $
+                                   exptimes=exptimes, $
                                    gain_modes=gain_modes, $
                                    wave_regions=wave_regions, $
                                    n_points=n_points
@@ -51,7 +51,7 @@ pro ucomp_run::make_raw_inventory, raw_files, $
 
   n_extensions = n_raw_files eq 0L ? !null : lonarr(n_raw_files)
   data_types   = n_raw_files eq 0L ? !null : strarr(n_raw_files)
-  exposures    = n_raw_files eq 0L ? !null : fltarr(n_raw_files)
+  exptimes     = n_raw_files eq 0L ? !null : fltarr(n_raw_files)
   gain_modes   = n_raw_files eq 0L ? !null : strarr(n_raw_files)
   wave_regions = n_raw_files eq 0L ? !null : strarr(n_raw_files)
   n_points     = n_raw_files eq 0L ? !null : lonarr(n_raw_files)
@@ -68,7 +68,7 @@ pro ucomp_run::make_raw_inventory, raw_files, $
 
     n_extensions[f] = file.n_extensions
     data_types[f] = file.data_type
-    exposures[f] = file.exposure
+    exptimes[f] = file.exptime
     gain_modes[f] = file.gain_mode
     wave_regions[f] = file.wave_region
     n_points[f] = file.n_unique_wavelengths
@@ -173,11 +173,11 @@ end
 ; Retrieve a dark image for a given science image.
 ;
 ; :Returns:
-;   interpolated by time dark image, `fltarr(nx, ny, np, nc)`
+;   interpolated by time dark image, `fltarr(nx, ny, nc)`
 ;
 ; :Params:
-;   time : in, required, type=string
-;     time of science image in UT with format "HHMMSS"
+;   obsday_hours : in, required, type=float
+;     time of science image in hours into the observing day
 ;   exptime : in, required, type=float
 ;     exposure time [ms] needed
 ;   gain_mode : in, required, type=string
@@ -187,7 +187,7 @@ end
 ;   found : out, optional, type=boolean
 ;     set to a named variable to retrieve whether a suitable dark was found
 ;-
-function ucomp_run::get_dark, time, exptime, gain_mode, $
+function ucomp_run::get_dark, obsday_hours, exptime, gain_mode, $
                               found=found, $
                               extensions=extensions, $
                               coefficients=coefficients
@@ -210,25 +210,25 @@ function ucomp_run::get_dark, time, exptime, gain_mode, $
   ; dark)
   valid_darks = (*self.darks)[valid_indices]
   valid_times = (*self.dark_times)[valid_indices]
-  if (time lt valid_times[0]) then begin               ; before first dark
+  if (obsday_hours lt valid_times[0]) then begin               ; before first dark
     interpolated_dark = valid_darks[0]
 
     extensions = valid_indices[0] + 1L
     coefficients = 1.0
-  endif else if (time gt valid_times[-1]) then begin   ; after last dark
+  endif else if (obsday_hours gt valid_times[-1]) then begin   ; after last dark
     interpolated_dark = valid_darks[-1]
 
     extensions = valid_indices[-1] + 1L
     coefficients = 1.0
   endif else begin                                     ; between darks
-    index1 = value_locate(valid_times, time)
+    index1 = value_locate(valid_times, obsday_hours)
     index2 = index1 + 1L
 
     dark1 = valid_darks[indices[0]]
     dark2 = valid_darks[indices[1]]
 
-    a1 = (valid_times[index2] - time) / (valid_times[index2] - valid_times[index1])
-    a2 = (time - valid_times[index1]) / (valid_times[index2] - valid_times[index1])
+    a1 = (valid_times[index2] - obsday_hours) / (valid_times[index2] - valid_times[index1])
+    a2 = (obsday_hours - valid_times[index1]) / (valid_times[index2] - valid_times[index1])
 
     interpolated_dark = a1 * dark1 + a2 * dark2
 
@@ -430,8 +430,8 @@ end
 ;   flat image, `fltarr(nx, ny, np, nc)`
 ;
 ; :Params:
-;   time : in, required, type=string
-;     time of science image in UT with format "HHMMSS"
+;   obsday_hours : in, required, type=float
+;     time of science image in hours into the observing day
 ;   exptime : in, required, type=float
 ;     exposure time [ms] needed
 ;   gain_mode : in, required, type=string
@@ -443,7 +443,7 @@ end
 ;   found : out, optional, type=boolean
 ;     set to a named variable to retrieve whether a suitable dark was found
 ;-
-function ucomp_run::get_flat, time, exptime, gain_mode, wavelength, $
+function ucomp_run::get_flat, obsday_hours, exptime, gain_mode, wavelength, $
                               found=found, $
                               extensions=extensions
   compile_opt strictarr
@@ -457,13 +457,13 @@ function ucomp_run::get_flat, time, exptime, gain_mode, wavelength, $
 
   gain_index = gain_mode eq 'high'
   valid_indices = where(abs(exptime - *self.flat_exptimes) lt exptime_threshold $
-                          and abs(wavelenngth - *self.flat_wavelengths) lt wavelength_threshold $
+                          and abs(wavelength - *self.flat_wavelengths) lt wavelength_threshold $
                           and (*self.flat_gain_modes eq gain_index), $
                         n_valid_flats)
   if (n_valid_flats eq 0L) then return, !null
 
   ; find index of valid flat taken nearest specificed time
-  !null = min(abs(time - (*self.flat_times)[valid_indices]), nearest_time_index)
+  !null = min(abs(obsday_hours - (*self.flat_times)[valid_indices]), nearest_time_index)
 
   ; convert nearest time index from index into valid flats to index into all flats
   nearest_time_index = valid_indices[nearest_time_index]

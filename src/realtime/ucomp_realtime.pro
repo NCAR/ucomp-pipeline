@@ -85,7 +85,7 @@ pro ucomp_realtime, date, config_filename
   run->make_raw_inventory, new_filenames, $
                            n_extensions=n_extensions, $
                            data_types=data_types, $
-                           exposures=exposures, $
+                           exptimes=exptimes, $
                            gain_modes=gain_modess, $
                            wave_regions=wave_regions, $
                            n_points=n_points
@@ -94,7 +94,7 @@ pro ucomp_realtime, date, config_filename
                         new_filenames, $
                         n_extensions, $
                         data_types, $
-                        exposures, $
+                        exptimes, $
                         gain_modes, $
                         wave_regions, $
                         n_points, $
