@@ -20,14 +20,35 @@
 pro ucomp_apply_dark_gain, file, primary_header, data, headers, run=run
   compile_opt strictarr
 
-  ; TODO: implement
+  n_exts = n_elements(headers)
 
-  ; TODO: for each extension in file
-  dark = run->get_dark(time, exptime, gain_mode, found=found)
-  flat = run->get_flat(time, exptime, gain_mode, pol_state, wavelength, found=found)
-  ; TODO: need to broadcast dark to correction size
-  im = (im - dark) / (im - flat)
-  im *= gain_transmission
+  obsday_hours = file.obsday_hours
+  exptime = file.exptime
+  gain_mode = file.gain_mode
+  wavelengths = file.wavelengths
 
-  ; TODO: send back to file
+  dims = size(data, /dimensions)
+  n_pol_states = dims[2]
+
+  ; for each extension in file
+  for e = 0L, n_exts - 1L do begin
+    dark = run->get_dark(obsday_hours, exptime, gain_mode, found=dark_found)
+    if (~dark_found) then begin
+      mg_log, 'dark not found for ext %d', e + 1, $
+              name=run.logger_name, /warn
+    endif
+
+    flat = run->get_flat(obsday_hours, exptime, gain_mode, wavelengths[e], found=flat_found)
+    if (~flat_found) then begin
+      mg_log, 'flat not found for ext %d', e + 1, $
+              name=run.logger_name, /warn
+    endif
+
+    im = data[*, *, *, *, e]
+    for p = 0L, n_pol_states - 1L do begin
+      im[*, *, p, *] = (im[*, *, p, *] - dark) / (flat[*, *, p, *] - dark)
+    endfor
+    ;im *= gain_transmission
+    data[*, *, *, *, e] = im
+  endfor
 end

@@ -91,7 +91,7 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
                              carrington_rotation=carrington_rotation, $
                              wave_region=wave_region, $
                              data_type=data_type, $
-                             exposure=exposure, $
+                             exptime=exptime, $
                              gain_mode=gain_mode, $
                              n_extensions=n_extensions, $
                              wavelengths=wavelengths, $
@@ -136,7 +136,7 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
          carrington=carrington_rotation
   endif
 
-  if (arg_present(exposure)) then exposure = self.exposure
+  if (arg_present(exptime)) then exptime = self.exptime
   if (arg_present(gain_mode)) then gain_mode = self.gain_mode
 
   if (arg_present(wave_region)) then wave_region = self.wave_region
@@ -231,7 +231,7 @@ pro ucomp_file::_inventory
   ; TODO: opal, dark shutter, polarizer, polarizer angle,
   ; retarder, etc.
 
-  self.exposure = ucomp_getpar(extension_header, 'EXPTIME', /float)
+  self.exptime = ucomp_getpar(extension_header, 'EXPTIME', /float)
 
   ; inventory extensions for things that vary by extension
   for e = 1L, self.n_extensions do begin
@@ -303,14 +303,14 @@ pro ucomp_file__define
 
            wave_region         : '', $
            data_type           : '', $
-           exposure            : 0.0, $
+           exptime             : 0.0, $
            gain_mode           : '', $
            occulter_in         : 0B, $
            cover_in            : 0B, $
            
-           cam0_arr_temp    : 0.0, $
+           cam0_arr_temp       : 0.0, $
            cam0_pcb_temp       : 0.0, $
-           cam1_arr_temp    : 0.0, $
+           cam1_arr_temp       : 0.0, $
            cam1_pcb_temp       : 0.0, $
 
            wavelengths         : ptr_new(), $
