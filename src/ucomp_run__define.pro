@@ -224,8 +224,8 @@ function ucomp_run::get_dark, obsday_hours, exptime, gain_mode, $
     index1 = value_locate(valid_times, obsday_hours)
     index2 = index1 + 1L
 
-    dark1 = valid_darks[indices[0]]
-    dark2 = valid_darks[indices[1]]
+    dark1 = valid_darks[index1]
+    dark2 = valid_darks[index2]
 
     a1 = (valid_times[index2] - obsday_hours) / (valid_times[index2] - valid_times[index1])
     a2 = (obsday_hours - valid_times[index1]) / (valid_times[index2] - valid_times[index1])
@@ -442,9 +442,13 @@ end
 ; :Keywords:
 ;   found : out, optional, type=boolean
 ;     set to a named variable to retrieve whether a suitable dark was found
+;   found_time : out, optional, type=float
+;     set to a named variable to retrieve the time (in hours into the observing
+;     day) of the found flat
 ;-
 function ucomp_run::get_flat, obsday_hours, exptime, gain_mode, wavelength, $
                               found=found, $
+                              time_found=time_found, $
                               extensions=extensions
   compile_opt strictarr
 
@@ -467,6 +471,8 @@ function ucomp_run::get_flat, obsday_hours, exptime, gain_mode, wavelength, $
 
   ; convert nearest time index from index into valid flats to index into all flats
   nearest_time_index = valid_indices[nearest_time_index]
+
+  time_found = (*self.flat_times)[nearest_time_index]
 
   return, reform((*self.flats)[*, *, *, *, nearest_time_index])
 end
