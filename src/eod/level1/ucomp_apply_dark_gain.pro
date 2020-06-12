@@ -32,21 +32,28 @@ pro ucomp_apply_dark_gain, file, primary_header, data, headers, run=run
 
   ; for each extension in file
   for e = 0L, n_exts - 1L do begin
-    dark = run->get_dark(obsday_hours, exptime, gain_mode, found=dark_found)
+    science_dark = run->get_dark(obsday_hours, exptime, gain_mode, found=dark_found)
     if (~dark_found) then begin
       mg_log, 'dark not found for ext %d', e + 1, $
               name=run.logger_name, /warn
     endif
 
-    flat = run->get_flat(obsday_hours, exptime, gain_mode, wavelengths[e], found=flat_found)
+    flat = run->get_flat(obsday_hours, exptime, gain_mode, wavelengths[e], $
+                         found=flat_found, time_found=flat_time)
     if (~flat_found) then begin
       mg_log, 'flat not found for ext %d', e + 1, $
               name=run.logger_name, /warn
     endif
 
+    flat_dark = run->get_dark(flat_time, exptime, gain_mode, found=dark_found)
+    if (~dark_found) then begin
+      mg_log, 'dark not found for ext %d', e + 1, $
+              name=run.logger_name, /warn
+    endif
+
     im = data[*, *, *, *, e]
     for p = 0L, n_pol_states - 1L do begin
-      im[*, *, p, *] = (im[*, *, p, *] - dark) / (flat[*, *, p, *] - dark)
+      im[*, *, p, *] = (im[*, *, p, *] - science_dark) / (flat[*, *, p, *] - flat_dark)
     endfor
     ;im *= gain_transmission
     data[*, *, *, *, e] = im
