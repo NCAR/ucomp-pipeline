@@ -1,9 +1,14 @@
+-- raw files
 create table ucomp_raw (
   raw_id           int (10) auto_increment primary key,
   file_name        char (40) not null,
   date_obs         datetime not null,
   date_end         datetime not null,
   obsday_id        mediumint (5) not null,
+
+  -- TODO: datatype
+  -- TODO: wave_region
+
   quality_id       tinyint (2) not null,
   level_id         tinyint (2) not null,
 
@@ -11,6 +16,10 @@ create table ucomp_raw (
   cam0_pcb_temp    float(8, 3),
   cam1_arr_temp    float(8, 3),
   cam1_pcb_temp    float(8, 3),
+
+  -- TODO: add all temperatures from primary header
+
+  -- TODO: OBS_ keywords
 
   unique(file_name),
 
