@@ -9,6 +9,7 @@ create table ucomp_cal (
   date_obs                datetime not null,
   date_end                datetime not null,
   obsday_id               mediumint (5) not null,
+
   wavelength              float (8, 3),
   n_points                tinyint (2),
   level                   tinyint (2) not null,
@@ -19,8 +20,11 @@ create table ucomp_cal (
   polangle                float (8, 3),
   polarizer               tinyint (1),
   retarder                tinyint (1),
+
+  -- TODO: mean? per camera, pol state?
   median_int_continuum    float (14, 7),   -- dark corrected annulus
   median_int_linecenter   float (14, 7),   -- dark corrected annulus
+
   occltrid                char (10),
 
   ucomp_sw_id             int (10),
