@@ -336,7 +336,9 @@ pro ucomp_run::cache_flats, filenames, $
                             times=times, $
                             exptimes=exptimes, $
                             wavelengths=wavelengths, $
-                            gain_modes=gain_modes
+                            gain_modes=gain_modes, $
+                            extensions=extensions, $
+                            raw_files=raw_files
   compile_opt strictarr
 
   self->getProperty, logger_name=logger_name
@@ -363,6 +365,8 @@ pro ucomp_run::cache_flats, filenames, $
     exptimes = fltarr(n_flats)
     wavelengths = fltarr(n_flats)
     gain_modes = lonarr(n_flats)
+    extensions = lonarr(n_flats)
+    raw_files = strarr(n_flats)
 
     i = 0L
     for f = 0L, n_elemens(filenames) - 1L do begin
@@ -371,6 +375,8 @@ pro ucomp_run::cache_flats, filenames, $
       for e = 1L, fcb.nextend - 4L do begin   ; there are 4 "index" extensions at end of file
         fits_read, fcb, flat_image, flat_header, exten_no=e
         flats[0, 0, 0, 0, i + e - 1L] = flat_image
+        raw_files[e - 1L] = sxpar(flat_header, 'RAWFILE')
+        extensions[e - 1] = e
       endfor
 
       ; read index extensions
@@ -417,6 +423,12 @@ pro ucomp_run::cache_flats, filenames, $
   *self.flat_gain_modes = n_elements(*self.flat_gain_modes) eq 0L $
                             ? gain_modes $
                             : [*self.flat_gain_modes, gain_modes]
+  *self.flat_extensions = n_elements(*self.flat_extensions) eq 0L $
+                            ? extensions $
+                            : [*self.flat_extensions, extensions]
+  *self.flat_raw_files = n_elements(*self.flat_raw_files) eq 0L $
+                            ? raw_files $
+                            : [*self.flat_raw_files, raw_files]
 
   mg_log, '%d flats cached', n_elements(times), name=logger_name, /info
   mg_log, '%d total flats cached', n_elements(*self.flat_times), name=logger_name, /info
@@ -442,14 +454,15 @@ end
 ; :Keywords:
 ;   found : out, optional, type=boolean
 ;     set to a named variable to retrieve whether a suitable dark was found
-;   found_time : out, optional, type=float
+;   time_found : out, optional, type=float
 ;     set to a named variable to retrieve the time (in hours into the observing
 ;     day) of the found flat
 ;-
 function ucomp_run::get_flat, obsday_hours, exptime, gain_mode, wavelength, $
                               found=found, $
                               time_found=time_found, $
-                              extensions=extensions
+                              extension=extension, $
+                              raw_file=raw_file
   compile_opt strictarr
 
   found = 0B
@@ -466,6 +479,8 @@ function ucomp_run::get_flat, obsday_hours, exptime, gain_mode, wavelength, $
                         n_valid_flats)
   if (n_valid_flats eq 0L) then return, !null
 
+  found = 1B
+
   ; find index of valid flat taken nearest specificed time
   !null = min(abs(obsday_hours - (*self.flat_times)[valid_indices]), nearest_time_index)
 
@@ -473,6 +488,8 @@ function ucomp_run::get_flat, obsday_hours, exptime, gain_mode, wavelength, $
   nearest_time_index = valid_indices[nearest_time_index]
 
   time_found = (*self.flat_times)[nearest_time_index]
+  extension = (*self.flat_extensions)[nearest_time_index]
+  raw_file = (*self.flat_raw_files)[nearest_time_index]
 
   return, reform((*self.flats)[*, *, *, *, nearest_time_index])
 end
@@ -911,7 +928,8 @@ pro ucomp_run::cleanup
   ptr_free, self.darks, self.dark_times, self.dark_exptimes, $
             self.dark_gain_modes
   ptr_free, self.flats, self.flat_times, self.flat_exptimes, $
-            self.flat_wavelengths, self.flat_gain_modes
+            self.flat_wavelengths, self.flat_gain_modes, $
+            self.flat_extensions, self.flat_raw_files
 
   obj_destroy, [self.options, self.epochs, self.lines]
 
@@ -1006,6 +1024,8 @@ function ucomp_run::init, date, mode, config_filename, no_log=no_log
   self.flat_exptimes    = ptr_new(/allocate_heap)
   self.flat_wavelengths = ptr_new(/allocate_heap)
   self.flat_gain_modes  = ptr_new(/allocate_heap)
+  self.flat_extensions  = ptr_new(/allocate_heap)
+  self.flat_raw_files   = ptr_new(/allocate_heap)
 
   ; performance monitoring
   self.calls = orderedhash()   ; routine name (string) -> # of calls (long)
@@ -1036,12 +1056,14 @@ pro ucomp_run__define
            dark_exptimes: ptr_new(), $
            dark_gain_modes: ptr_new(), $
 
-           ; master flat cache
-           flats: ptr_new(), $
-           flat_times: ptr_new(), $
-           flat_exptimes: ptr_new(), $
-           flat_wavelengths: ptr_new(), $
-           flat_gain_modes: ptr_new(), $
+           ; master flat cache 
+           flats: ptr_new(), $             ; fltarr(nx, ny, 4, 2, n_flats)
+           flat_times: ptr_new(), $        ; obsday hours
+           flat_exptimes: ptr_new(), $     ; [ms] exposure time
+           flat_wavelengths: ptr_new(), $  ; [nm] wavelengths
+           flat_gain_modes: ptr_new(), $   ; 'high' or 'low'
+           flat_extensions: ptr_new(), $   ; extension into flat file
+           flat_raw_files: ptr_new(), $    ; basename of raw file containing flat
 
            ; performance
            calls:   obj_new(), $
