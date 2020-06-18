@@ -35,6 +35,8 @@ pro ucomp_make_flats, wave_region, run=run
   flat_exposures = fltarr(n_flat_files)
   flat_wavelengths = fltarr(n_flat_files)
   flat_gain_modes = intarr(n_flat_files)
+  flat_extensions = lonarr(n_flat_files)
+  flat_raw_files = strarr(n_flat_files)
 
   datetime = strmid(file_basename((flat_files[0]).raw_filename), 0, 15)
   nx = run->epoch('nx', datetime=datetime)
@@ -79,6 +81,8 @@ pro ucomp_make_flats, wave_region, run=run
     endfor
 
     flat_gain_modes[f] = strtrim(move_keywords_hash['GAIN'], 2) eq 'high'
+    flat_extensions[f] = f + 1L
+    flat_raw_files[f] = flat_basename
 
     for e = 1L, flat_file_fcb.nextend do begin
       fits_read, flat_file_fcb, flat_image, flat_header, exten_no=e
@@ -150,7 +154,9 @@ pro ucomp_make_flats, wave_region, run=run
                     times=flat_times, $
                     exptimes=flat_exposures, $
                     wavelengths=flat_wavelengths, $
-                    gain_modes=flat_gain_modes
+                    gain_modes=flat_gain_modes, $
+                    extensions=flat_extensions, $
+                    raw_files=flat_raw_files
 
   done:
   if (obj_valid(flat_headers)) then obj_destroy, flat_headers
