@@ -32,7 +32,8 @@ pro ucomp_apply_dark_gain, file, primary_header, data, headers, run=run
 
   ; for each extension in file
   for e = 0L, n_exts - 1L do begin
-    science_dark = run->get_dark(obsday_hours, exptime, gain_mode, found=dark_found)
+    science_dark = run->get_dark(obsday_hours, exptime, gain_mode, found=dark_found, $
+                                extensions=dark_extensions, coefficients=dark_coefficients)
     if (~dark_found) then begin
       mg_log, 'dark not found for ext %d', e + 1, $
               name=run.logger_name, /warn
@@ -63,10 +64,16 @@ pro ucomp_apply_dark_gain, file, primary_header, data, headers, run=run
     data[*, *, *, *, e] = im
 
     h = headers[e]
+    for de = 0L, n_elements(dark_extensions) - 1L do begin
+      sxaddpar, h, string(de + 1, format='(%"DARKEXT%d")'), dark_extensions[de], $
+                string(run.date, format='(%" extension in %s.ucomp.dark.fts used")')
+      sxaddpar, h, string(de + 1, format='(%"DARKWGT%d")'), dark_coefficients[de], $
+                string(de + 1, format='(%" weighting coefficient for dark %d")')
+    endfor
     sxaddpar, h, 'FLATFILE', flat_raw_file, ' name of raw flat file'
     sxaddpar, h, 'FLATEXT', flat_extension, $
               string(run.date, ucomp_wave_region(wavelengths[e]), $
-                     format='(%" extension in %s.ucomp.flat.%s.fts")')
+                     format='(%" extension in %s.ucomp.flat.%s.fts used")')
     headers[e] = h
   endfor
 end
