@@ -66,14 +66,13 @@ pro ucomp_apply_dark_gain, file, primary_header, data, headers, run=run
     h = headers[e]
     for de = 0L, n_elements(dark_extensions) - 1L do begin
       sxaddpar, h, string(de + 1, format='(%"DARKEXT%d")'), dark_extensions[de], $
-                string(run.date, format='(%" extension in %s.ucomp.dark.fts used")')
-      sxaddpar, h, string(de + 1, format='(%"DARKWGT%d")'), dark_coefficients[de], $
-                string(de + 1, format='(%" weighting coefficient for dark %d")')
+                string(run.date, dark_coefficients[de], $
+                       format='(%" ext in %s.ucomp.dark.fts used, wt %0.2f")')
     endfor
     sxaddpar, h, 'FLATFILE', flat_raw_file, ' name of raw flat file'
     sxaddpar, h, 'FLATEXT', flat_extension, $
               string(run.date, ucomp_wave_region(wavelengths[e]), $
-                     format='(%" extension in %s.ucomp.flat.%s.fts used")')
+                     format='(%" ext in %s.ucomp.flat.%s.fts used")')
     headers[e] = h
   endfor
 end
