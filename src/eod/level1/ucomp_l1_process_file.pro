@@ -23,16 +23,18 @@ pro ucomp_l1_process_file, file, run=run
                        repair_routine=run->epoch('raw_data_repair_routine')
   !null = run->stop(clock_id)
 
-  ; TODO: move camera non-linearity correction to after dark correction
-  ucomp_l1_step, 'ucomp_camera_correction', $
-                 file, primary_header, data, headers, run=run
-
   ucomp_l1_step, 'ucomp_average_data', $
                  file, primary_header, data, headers, run=run
   ucomp_l1_step, 'ucomp_stray_light', $
                  file, primary_header, data, headers, run=run
-  ucomp_l1_step, 'ucomp_apply_dark_gain', $
+
+  ucomp_l1_step, 'ucomp_apply_dark', $
                  file, primary_header, data, headers, run=run
+  ucomp_l1_step, 'ucomp_camera_correction', $
+                 file, primary_header, data, headers, run=run
+  ucomp_l1_step, 'ucomp_apply_gain', $
+                 file, primary_header, data, headers, run=run
+
   ucomp_l1_step, 'ucomp_continuum_correction', $
                  file, primary_header, data, headers, run=run
   ucomp_l1_step, 'ucomp_alignment', $

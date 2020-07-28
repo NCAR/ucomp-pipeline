@@ -17,7 +17,7 @@
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-pro ucomp_apply_dark_gain, file, primary_header, data, headers, run=run
+pro ucomp_apply_dark, file, primary_header, data, headers, run=run
   compile_opt strictarr
 
   n_exts = n_elements(headers)
@@ -39,28 +39,11 @@ pro ucomp_apply_dark_gain, file, primary_header, data, headers, run=run
               name=run.logger_name, /warn
     endif
 
-    flat = run->get_flat(obsday_hours, exptime, gain_mode, wavelengths[e], $
-                         found=flat_found, time_found=flat_time, $
-                         extension=flat_extension, raw_file=flat_raw_file)
-    if (~flat_found) then begin
-      mg_log, 'flat not found for ext %d', e + 1, $
-              name=run.logger_name, /warn
-      mg_log, 'request %0.2f HST, %0.2f ms, %s gain, %0.2f nm', $
-              obsday_hours, exptime, gain_mode, wavelengths[e], $
-              name=run.logger_name, /warn
-    endif
-
-    flat_dark = run->get_dark(flat_time, exptime, gain_mode, found=dark_found)
-    if (~dark_found) then begin
-      mg_log, 'dark not found for ext %d', e + 1, $
-              name=run.logger_name, /warn
-    endif
-
     im = data[*, *, *, *, e]
     for p = 0L, n_pol_states - 1L do begin
-      im[*, *, p, *] = (im[*, *, p, *] - science_dark) / (flat[*, *, p, *] - flat_dark)
+      im[*, *, p, *] -= science_dark
     endfor
-    ;im *= gain_transmission
+
     data[*, *, *, *, e] = im
 
     h = headers[e]
@@ -69,10 +52,6 @@ pro ucomp_apply_dark_gain, file, primary_header, data, headers, run=run
                 string(run.date, dark_coefficients[de], $
                        format='(%" ext in %s.ucomp.dark.fts used, wt %0.2f")')
     endfor
-    sxaddpar, h, 'FLATFILE', flat_raw_file, ' name of raw flat file'
-    sxaddpar, h, 'FLATEXT', flat_extension, $
-              string(run.date, ucomp_wave_region(wavelengths[e]), $
-                     format='(%" ext in %s.ucomp.flat.%s.fts used")')
     headers[e] = h
   endfor
 end
