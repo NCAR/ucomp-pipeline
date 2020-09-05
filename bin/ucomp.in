@@ -442,31 +442,31 @@ def print_help(args):
     args.parser.print_help()
 
 
-if __name__ == '__main__':
-    name = 'UCoMP pipeline @GIT_VERSION@ [@GIT_REVISION@] (@GIT_BRANCH@)'
+if __name__ == "__main__":
+    name = "UCoMP pipeline @GIT_VERSION@ [@GIT_REVISION@] (@GIT_BRANCH@)"
 
     parser = argparse.ArgumentParser(description=name)
 
     # top-level options
-    parser.add_argument('-v', '--version',
-                        action='version',
+    parser.add_argument("-v", "--version",
+                        action="version",
                         version=name)
 
     # show help if no sub-command given
     parser.set_defaults(func=print_help, parser=parser)
 
-    subparsers = parser.add_subparsers(help='sub-command help')
+    subparsers = parser.add_subparsers(help="sub-command help")
 
-    date_help = '''dates to run on in the form YYYYMMDD including lists (using
+    date_help = """dates to run on in the form YYYYMMDD including lists (using
                    commas) and ranges (using hyphens where end date is not
                    included)
-                '''
-    flags_help = '''FLAGS section of config filename, i.e., file in config/
-                    directory matching ucomp.FLAGS.cfg will be used'''
+                """
+    flags_help = """FLAGS section of config filename, i.e., file in config/
+                    directory matching ucomp.FLAGS.cfg will be used"""
 
     # list sub-command
-    list_parser = subparsers.add_parser('list',
-                                        help='list UCoMP processes')
+    list_parser = subparsers.add_parser("list",
+                                        help="list UCoMP processes")
     list_parser.set_defaults(func=list_processes, parser=list_parser)
 
     # validate sub-command
