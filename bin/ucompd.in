@@ -1,0 +1,91 @@
+#!/usr/bin/env python
+
+import argparse
+import os
+import time
+
+import daemon
+from lockfile.pidlockfile import PIDLockFile
+
+
+def main_loop():
+    while True:
+        time.sleep(1.0)
+
+
+def list_processes(args):
+     pass
+
+
+def start(args):
+    with daemon.DaemonContext(
+            pidfile=lockfile.FileLock('/Users/mgalloy/ucompd.pid')):
+        main_loop()
+
+
+def stop(args):
+    pass
+
+
+def restart(args):
+    stop(args)
+    start(args)
+
+
+def start_logging():
+    pass
+
+
+def print_help(args):
+    args.parser.print_help()
+
+
+if __name__ == "__main__":
+    name = "UCoMP reprocessing daemon @GIT_VERSION@ [@GIT_REVISION@] (@GIT_BRANCH@)"
+
+    parser = argparse.ArgumentParser(description=name)
+
+    # top-level options
+    parser.add_argument("-v", "--version",
+                        action="version",
+                        version=name)
+
+    # show help if no sub-command given
+    parser.set_defaults(func=print_help, parser=parser)
+
+    subparsers = parser.add_subparsers(help="sub-command help")
+
+
+    # list sub-command
+    list_parser = subparsers.add_parser("list",
+                                        help="list UCoMP processes")
+    list_parser.set_defaults(func=list_processes, parser=list_parser)
+
+
+    # start sub-command
+    start_parser = subparsers.add_parser("start",
+                                         help="start UCoMP reprocessing daemon")
+    start_parser.set_defaults(func=start, parser=start_parser)
+
+
+    # stop sub-command
+    stop_parser = subparsers.add_parser("stop",
+                                        help="stop UCoMP reprocessing daemon")
+    stop_parser.add_argument("--force", action="store_true",
+                             help="stop daemon immediately instead of waiting for current job to end")
+    stop_parser.set_defaults(func=stop, parser=stop_parser)
+
+    # start sub-command
+    restart_parser = subparsers.add_parser("restart",
+                                           help="restart UCoMP reprocessing daemon")
+    restart_parser.add_argument("--force", action="store_true",
+                                help="stop daemon immediately instead of waiting for current job to end")
+    restart_parser.set_defaults(func=restart, parser=restart_parser)
+
+
+    # parse args and call appropriate sub-command
+    args = parser.parse_args()
+    if parser.get_default("func"):
+        args.func(args)
+    else:
+        parser.print_help()
