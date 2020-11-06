@@ -104,8 +104,15 @@ end
 ; :Keywords:
 ;   datetime : in, optional, type=string/object
 ;     `mg_datetime` object or string in the form 'YYYYMMDD' or 'YYYYMMDD.HHMMSS'
+;   found : out, optional, type=boolean
+;     set to a named variable to retrieve whether `option` was found, if `FOUND`
+;     is present, errors will not be generated
+;   error_message : out, optional, type=string
+;     set to a named variable to retrieve the error message generated when
+;     `FOUND` is false
 ;-
-function mgffepochparser::get, option, datetime=datetime
+function mgffepochparser::get, option, datetime=datetime, found=found, $
+                               error_message=error_message
   compile_opt strictarr
   on_error, 2
 
@@ -113,12 +120,29 @@ function mgffepochparser::get, option, datetime=datetime
                 ? mg_epoch_parse_datetime(datetime) $
                 : self.datetime
 
-  if (~obj_valid(_datetime)) then message, 'no date for access given'
+  found = 0B
+  error_message = ''
+
+  if (~obj_valid(_datetime)) then begin
+    error_message = 'no date for access given'
+    if (arg_present(found)) then begin
+      value = !null
+      goto, done
+    endif else begin
+      message, error_message
+    endelse
+  endif
 
   ; look at spec to get type, default, and whether to extract
   spec_line = self.spec->get(option, section='DEFAULT', found=spec_found)
   if (~spec_found) then begin
-    message, string(option, format='(%"no specification for %s found")')
+    error_message = string(option, format='(%"no specification for ''%s'' found")')
+    if (arg_present(found)) then begin
+      value = !null
+      goto, done
+    endif else begin
+      message, error_message
+    endelse
   endif
   mg_parse_spec_line, spec_line, $
                       type=type, boolean=boolean, $
@@ -127,7 +151,6 @@ function mgffepochparser::get, option, datetime=datetime
   ; get datetimes (sections) of epoch file and sort them chronologically
   dts = self.epochs->sections()
 
-  found = 0B
   if (n_elements(dts) gt 0L) then begin
     dts = dts[sort(dts)]
     date_index = value_locate(dts, _datetime->strftime('%Y%m%d.%H%M%S'))
@@ -144,11 +167,20 @@ function mgffepochparser::get, option, datetime=datetime
   ; use default if not found
   if (~found) then begin
     if (n_elements(default) eq 0L) then begin
-      message, string(option, format='(%"no value or default given for %s")')
+      error_message = string(option, format='(%"no value or default given for ''%s''")')
+      if (arg_present(found)) then begin
+        value = !null
+        goto, done
+      endif else begin
+        message, error_message
+      endelse
     endif else begin
       value = default
+      found = 1B
     endelse
   endif
+
+  done:
 
   ; if we created a mg_datetime object, destroy it
   if (n_elements(datetime) gt 0L && ~obj_valid(datetime)) then begin
@@ -156,6 +188,101 @@ function mgffepochparser::get, option, datetime=datetime
   endif
 
   return, value
+end
+
+
+;+
+; Find a filtered subset of the epochs that change the value of one of the
+; given options.
+;
+; A new epoch object can be created from filtering an existing epoch in the
+; following manner::
+;
+;     IDL> sub = epochs->filter(option_names)
+;     IDL> new_epochs = mgffepochparser(sub, epochs.spec_filename)
+;
+; :Returns:
+;   `MGffOptions` object
+;
+; :Params:
+;   options : in, required, type=string/strarr
+;     option or array of options to check against the epochs
+;-
+function mgffepochparser::filter, options
+  compile_opt strictarr
+
+  subset = mgffoptions()
+
+  sections = self.epochs->sections(count=n_epochs)
+  for s = 0L, n_epochs - 1L do begin
+    epoch_options = self.epochs->options(section=sections[s])
+    for o = 0L, n_elements(options) - 1L do begin
+      !null = where(epoch_options eq options[o], found)
+      if (found) then begin
+        subset->put, options[o], $
+                     self.epochs->get(options[o], $
+                                      section=sections[s]), $
+                     section=sections[s]
+      endif
+    endfor
+  endfor
+
+  return, subset
+end
+
+
+;= overload methods
+
+;+
+; Print help message about an `MGffEpochParser` object.
+;
+; :Examples:
+;   For example::
+;
+;     IDL> help, config
+;     CONFIG          MGFFEPOCHPARSER  <NEPOCHS=2  NOPTIONS=4>
+;
+; :Returns:
+;   string
+;
+; :Params:
+;   varname : in, required, type=string
+;     `MGffOptions` object variable name
+;-
+function mgffepochparser::_overloadHelp, varname
+  compile_opt strictarr
+
+  !null = self.epochs->sections(count=n_epochs)
+  !null = self.spec->options(section='DEFAULT', count=n_options)
+
+  return, string(varname, obj_class(self), n_epochs, n_options, $
+                 format='(%"%-15s %s  <NEPOCHS=%d  NOPTIONS=%d>")')
+end
+
+
+;+
+; Print `MGffEpochParser` object content in an INI format that can be read by
+; `MG_READ_CONFIG`.
+;
+; :Examples:
+;   For example::
+;
+;     IDL> print, config
+;     [Mark]
+;     City:   Madison
+;     State:  Wisconsin
+;
+;     [Mike]
+;     City:   Boulder
+;     State:  Colorado
+;
+; :Returns:
+;   string
+;-
+function mgffepochparser::_overloadPrint
+  compile_opt strictarr
+
+  return, self.epochs->_toString()
 end
 
 
@@ -171,10 +298,12 @@ pro mgffepochparser::setProperty, datetime=datetime
 end
 
 
-pro mgffepochparser::getProperty, datetime=datetime
+pro mgffepochparser::getProperty, datetime=datetime, $
+                                  spec_filename=spec_filename
   compile_opt strictarr
 
   if (arg_present(datetime)) then datetime = self.datetime
+  if (arg_present(spec_filename)) then spec_filename = self.spec_filename
 end
 
 
@@ -190,8 +319,12 @@ end
 function mgffepochparser::init, epochs_filename, spec_filename
   compile_opt strictarr
 
-  self.epochs = mg_read_config(epochs_filename)
-  self.spec   = mg_read_config(spec_filename)
+  self.epochs = size(epochs_filename, /type) eq 7 $
+                  ? mg_read_config(epochs_filename) $
+                  : epochs_filename
+
+  self.spec_filename = spec_filename
+  self.spec          = mg_read_config(spec_filename)
 
   return, 1
 end
@@ -203,6 +336,7 @@ pro mgffepochparser__define
   define = {mgffepochparser, inherits IDL_object, $
             epochs:   obj_new(), $
             spec:     obj_new(), $
+            spec_filename: '', $
             datetime: obj_new() $
            }
 end
