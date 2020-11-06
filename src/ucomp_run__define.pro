@@ -809,6 +809,7 @@ pro ucomp_run::getProperty, date=date, $
                             logger_name=logger_name, $
                             config_contents=config_contents, $
                             all_wave_regions=all_wave_regions, $
+                            resource_root=resource_root, $
                             t0=t0
   compile_opt strictarr
   on_error, 2
@@ -834,6 +835,8 @@ pro ucomp_run::getProperty, date=date, $
     all_wave_regions = (wregion_hash->keys())->toArray()
     obj_destroy, wregion_hash
   endif
+
+  if (arg_present(resource_root)) then resource_root = self.resource_root
 
   if (arg_present(t0)) then t0 = self.t0
 end
@@ -972,6 +975,10 @@ function ucomp_run::init, date, mode, config_filename, no_log=no_log
 
   self->getProperty, logger_name=logger_name
 
+  self.resource_root = file_expand_path(filepath('resource', $
+                                                 subdir='..', $
+                                                 root=mg_src_root())
+
   ; setup config options
   config_spec_filename = filepath('ucomp.spec.cfg', $
                                   subdir=['..', 'config'], $
@@ -988,8 +995,8 @@ function ucomp_run::init, date, mode, config_filename, no_log=no_log
   if (~keyword_set(no_log)) then self->_setup_logger
 
   ; setup epoch reading
-  epochs_filename = filepath('epochs.cfg', root=mg_src_root())
-  epochs_spec_filename = filepath('epochs.spec.cfg', root=mg_src_root())
+  epochs_filename = filepath('epochs.cfg', root=self.resource_root)
+  epochs_spec_filename = filepath('epochs.spec.cfg', root=self.resource_root)
 
   self.epochs = mgffepochparser(epochs_filename, epochs_spec_filename)
   epochs_valid = self.epochs->is_valid(error_msg=error_msg)
@@ -1000,8 +1007,8 @@ function ucomp_run::init, date, mode, config_filename, no_log=no_log
   endif
 
   ; setup information about lines
-  lines_filename = filepath('lines.cfg', root=mg_src_root())
-  lines_spec_filename = filepath('lines.spec.cfg', root=mg_src_root())
+  lines_filename = filepath('lines.cfg', root=self.resource_root)
+  lines_spec_filename = filepath('lines.spec.cfg', root=self.resource_root)
 
   self.lines = mg_read_config(lines_filename, spec=lines_spec_filename)
   lines_valid = self.lines->is_valid(error_msg=error_msg)
@@ -1049,6 +1056,8 @@ pro ucomp_run__define
            epochs:  obj_new(), $
            lines:   obj_new(), $
            files:   obj_new(), $
+
+           resource_root: '', $
 
            ; master dark cache
            darks: ptr_new(), $
