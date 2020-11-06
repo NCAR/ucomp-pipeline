@@ -26,8 +26,8 @@ function ucomp_apply_distortion, sub_image, dx_c, dy_c
   y = transpose(dindgen(ny, nx) mod ny)
 
   dist_corrected = interpolate(sub_image, $
-                               x + comp_eval_surf(dx_c, dindgen(nx), dindgen(ny)), $
-                               y + comp_eval_surf(dy_c, dindgen(nx), dindgen(ny)), $
+                               x + ucomp_eval_surf(dx_c, dindgen(nx), dindgen(ny)), $
+                               y + ucomp_eval_surf(dy_c, dindgen(nx), dindgen(ny)), $
                                cubic=-0.5, missing=0.0)
   return, dist_corrected
 end
