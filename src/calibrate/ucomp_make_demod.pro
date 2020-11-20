@@ -1,15 +1,36 @@
 ; docformat = 'rst'
 
 ;+
-; Perform the steps of the calibration. Assumed that a raw inventory has
-; already been done.
+; Find the demodulation matrix and write the cal files for each wave region.
+;
+; :Params:
+;   wave_region : in, required, type=string
+;     wave region to find flats for
 ;
 ; :Keywords:
 ;   run : in, required, type=object
 ;     KCor run object
 ;-
-pro ucomp_polarimetric_calibration, run=run
+pro ucomp_make_demod, wave_region, run=run
   compile_opt strictarr
 
-  ; TODO: implement
+  mg_log, 'making demod matrix for %s nm...', wave_region, $
+          name=run.logger_name, /info
+
+  l1_dir = filepath('level1', $
+                    subdir=run.date, $
+                    root=run->config('processing/basedir'))
+  ucomp_mkdir, l1_dir, logger_name=run.logger_name
+
+; TODO: implement, i.e., call into Steve's code
+  mg_log, 'not implemented', name=run.logger_name, /warn
+
+  output_basename = string(run.date, wave_region, $
+                           format='(%"%s.ucomp.demod.%s.fts")')
+  output_filename = filepath(output_basename, root=l1_dir)
+
+; TODO: implement writing
+  mg_log, 'not implemented', name=run.logger_name, /warn
+
+  done:
 end
