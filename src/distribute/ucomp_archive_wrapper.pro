@@ -9,7 +9,7 @@
 ;   config_filename : in, required, type=string
 ;     filename for configuration file to use
 ;-
-pro ucomp_archive, date, config_filename
+pro ucomp_archive_wrapper, date, config_filename
   compile_opt strictarr
 
   ; initialize performance metrics
