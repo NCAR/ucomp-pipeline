@@ -1,8 +1,7 @@
 ; docformat = 'rst'
 
 ;+
-; Run the UCoMP pipeline; this is full processing (or reprocessing) for a day
-; not the quicklook/realtime processing.
+; Run the UCoMP pipeline calibration.
 ;
 ; :Params:
 ;   date : in, required, type=string
@@ -10,10 +9,10 @@
 ;   config_filename : in, required, type=string
 ;     filename for configuration file to use
 ;-
-pro ucomp_eod, date, config_filename
+pro ucomp_calibration_wrapper, date, config_filename
   compile_opt strictarr
 
-  ; initialize performance metrics
+; initialize performance metrics
   t0 = systime(/seconds)
   start_memory = memory(/current)
 
@@ -62,7 +61,7 @@ pro ucomp_eod, date, config_filename
   mg_log, 'using IDL %s on %s', !version.release, !version.os_name, $
           name=run.logger_name, /debug
 
-  mg_log, 'starting end-of-day processing for %d...', date, name=run.logger_name, /info
+  mg_log, 'starting calibration for %d...', date, name=run.logger_name, /info
 
   ; copy config file to processing dir, creating dir if needed
   process_dir = filepath(date, root=run->config('processing/basedir'))
@@ -77,29 +76,11 @@ pro ucomp_eod, date, config_filename
   if (~is_available) then goto, done
 
 
-  ; wave regions to process
-  wave_regions = run->config('options/wave_regions')
-
-
   ; do the end-of-day processing
-  ucomp_eod_steps, wave_regions, run=run
+  ucomp_calibration_steps, run=run
 
 
   ;== finish bookkeeping
-
-  if (run->config('database/update')) then begin
-    ucomp_pipeline_step, 'ucomp_db_update', run=run
-  endif else begin
-    mg_log, 'skipping updating database', name=logger_name, /info
-  endelse
-  ucomp_pipeline_step, 'ucomp_l0_distribute', run=run
-
-  ucomp_pipeline_step, 'ucomp_get_observerlog', run=run
-
-  for w = 0L, n_elements(wave_regions) - 1L do begin
-    ucomp_pipeline_step, 'ucomp_l1_distribute', wave_regions[w], run=run
-    ucomp_pipeline_step, 'ucomp_l2_distribute', wave_regions[w], run=run
-  endfor
 
   ucomp_pipeline_step, 'ucomp_send_notification', run=run
 
@@ -113,9 +94,6 @@ pro ucomp_eod, date, config_filename
   if (obj_valid(run)) then begin
     ; only unlock if this process was responsible for locking it
     if (is_available) then run->unlock, mark_processed=error eq 0
-
-    run->report
-    run->report_profiling
   endif
 
   t1 = systime(/seconds)

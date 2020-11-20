@@ -1,6 +1,15 @@
 ; docformat = 'rst'
 
-pro ucomp_realtime, date, config_filename
+;+
+; Run the realtime UCoMP pipeline.
+;
+; :Params:
+;   date : in, required, type=string
+;     date to process in the form "YYYYMMDD"
+;   config_filename : in, required, type=string
+;     filename for configuration file to use
+;-
+pro ucomp_realtime_wrapper, date, config_filename
   compile_opt strictarr
 
   ; initialize performance metrics
