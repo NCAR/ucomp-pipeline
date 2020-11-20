@@ -21,4 +21,5 @@ pro ucomp_continuum_correction, file, primary_header, data, headers, run=run
   compile_opt strictarr
 
   ; TODO: implement
+  mg_log, 'not implemented', name=run.logger, /warn
 end

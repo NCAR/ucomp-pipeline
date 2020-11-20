@@ -23,4 +23,5 @@ pro ucomp_combine_beams, file, primary_header, data, headers, run=run
   ; TODO: implement for real, the below just averages over the `n_cameras`
   ; dimension to get rid of it
   data = mean(data, dimension=4)
+  mg_log, 'not implemented', name=run.logger, /warn
 end

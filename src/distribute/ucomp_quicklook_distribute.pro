@@ -21,6 +21,7 @@ pro ucomp_quicklook_distribute, files, run=run
   endif
 
   ; TODO: distribute quicklook files to where they need to go
+  mg_log, 'not implemented', name=run.logger, /warn
 
   done:
 end

@@ -32,4 +32,5 @@ pro ucomp_alignment, file, primary_header, data, headers, run=run
   endfor
 
   ; TODO: center on occulter center
+  mg_log, 'not implemented', name=run.logger, /warn
 end

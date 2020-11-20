@@ -24,6 +24,7 @@ pro ucomp_check_cal_quality, run=run
     ucomp_read_raw_data, (files[f]).raw_filename, ext_data=ext_data
 
     ; TODO: check ext_data, set quality_bitmask
+    mg_log, 'not implemented', name=run.logger_name, /warn
     quality_bitmask = 0UL
 
     files[f].quality_bitmask = quality_bitmask
