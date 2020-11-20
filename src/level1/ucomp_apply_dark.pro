@@ -30,9 +30,11 @@ pro ucomp_apply_dark, file, primary_header, data, headers, run=run
   dims = size(data, /dimensions)
   n_pol_states = dims[2]
 
+  cal = run.calibration
+
   ; for each extension in file
   for e = 0L, n_exts - 1L do begin
-    science_dark = run->get_dark(obsday_hours, exptime, gain_mode, found=dark_found, $
+    science_dark = cal->get_dark(obsday_hours, exptime, gain_mode, found=dark_found, $
                                 extensions=dark_extensions, coefficients=dark_coefficients)
     if (~dark_found) then begin
       mg_log, 'dark not found for ext %d', e + 1, $
