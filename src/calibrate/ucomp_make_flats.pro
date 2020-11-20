@@ -7,6 +7,10 @@
 ; header corresponding to each raw flat file comes from the header of the first
 ; extension of each raw flatfile.
 ;
+; :Params:
+;   wave_region : in, required, type=string
+;     wave region to find flats for
+;
 ; :Keywords:
 ;   run : in, required, type=object
 ;     UCoMP run object

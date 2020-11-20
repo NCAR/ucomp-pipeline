@@ -21,10 +21,10 @@
 ;     gain modes of the darks [ms]
 ;-
 pro ucomp_calibration::cache_darks, filename, $
-                            darks=darks, $
-                            times=times, $
-                            exptimes=exptimes, $
-                            gain_modes=gain_modes
+                                    darks=darks, $
+                                    times=times, $
+                                    exptimes=exptimes, $
+                                    gain_modes=gain_modes
   compile_opt strictarr
 
   self.run->getProperty, logger_name=logger_name
@@ -358,6 +358,9 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, waveleng
 end
 
 
+;+
+; Free resources.
+;-
 pro ucomp_calibration::cleanup
   compile_opt strictarr
 
@@ -370,6 +373,16 @@ pro ucomp_calibration::cleanup
 end
 
 
+;+
+; Initialize the calibration object.
+;
+; :Returns:
+;   1 for success, 0 for failure
+;
+; :Keywords:
+;   run : in, required, type=object
+;     UCoMP run object
+;-
 function ucomp_calibration::init, run=run
   compile_opt strictarr
 
@@ -381,6 +394,7 @@ function ucomp_calibration::init, run=run
   self.dark_exptimes    = ptr_new(/allocate_heap)
   self.dark_gain_modes  = ptr_new(/allocate_heap)
 
+  ; master flat cache
   self.flats            = ptr_new(/allocate_heap)
   self.flat_times       = ptr_new(/allocate_heap)
   self.flat_exptimes    = ptr_new(/allocate_heap)
@@ -393,6 +407,9 @@ function ucomp_calibration::init, run=run
 end
 
 
+;+
+; Define the fields of a calibration object.
+;-
 pro ucomp_calibration__define
   compile_opt strictarr
 
@@ -412,6 +429,8 @@ pro ucomp_calibration__define
            flat_wavelengths: ptr_new(), $  ; [nm] wavelengths
            flat_gain_modes: ptr_new(), $   ; 'high' or 'low'
            flat_extensions: ptr_new(), $   ; extension into flat file
-           flat_raw_files: ptr_new() $    ; basename of raw file containing flat
+           flat_raw_files: ptr_new() $     ; basename of raw file containing flat
+
+           ; TODO: demodulation matrices
   }
 end
