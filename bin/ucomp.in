@@ -318,22 +318,22 @@ def parse_date_expr(date_expr):
 
 
 def process_eod(args):
-    launch_processes(args, 'ucomp_eod')
+    launch_processes(args, "ucomp_eod_wrapper")
     notify_completed(args, "end-of-day")
 
 
 def process_rt(args):
-    launch_processes(args, "ucomp_realtime")
+    launch_processes(args, "ucomp_realtime_wrapper")
     notify_completed(args, "realtime")
 
 
 def process_cal(args):
-    launch_processes(args, 'ucomp_calibration')
+    launch_processes(args, 'ucomp_calibration_wrapper')
     notify_completed(args, "calibration")
 
 
 def reprocess(args):
-    launch_processes(args, 'ucomp_reprocess')
+    launch_processes(args, 'ucomp_reprocess_wrapper')
     notify_completed(args, "reprocess")
 
 
@@ -343,7 +343,7 @@ def launch_processes(args, routine):
 
     dates = parse_date_expr(",".join(args.dates))
 
-    if len(dates) != 1 and routine == "ucomp_realtime":
+    if len(dates) != 1 and routine == "ucomp_realtime_wrapper":
         args.parser.error("realtime mode is only valid for a single date")
 
     for d in dates:
@@ -381,7 +381,7 @@ def run_script(args):
 
 # archive sub-command
 def archive(args):
-    launch_processes(args, 'ucomp_archive')
+    launch_processes(args, "ucomp_archive_wrapper")
     notify_completed(args, f"archive")
 
 
@@ -389,7 +389,7 @@ def archive(args):
 
 def simulate(args):
     if len(args.dates) == 0:
-        args.parser.error('too few arguments')
+        args.parser.error("too few arguments")
 
     dates = parse_date_expr(','.join(args.dates))
 
