@@ -30,9 +30,11 @@ pro ucomp_apply_gain, file, primary_header, data, headers, run=run
   dims = size(data, /dimensions)
   n_pol_states = dims[2]
 
+  cal = run.calibration
+
   ; for each extension in file
   for e = 0L, n_exts - 1L do begin
-    flat = run->get_flat(obsday_hours, exptime, gain_mode, wavelengths[e], $
+    flat = cal->get_flat(obsday_hours, exptime, gain_mode, wavelengths[e], $
                          found=flat_found, time_found=flat_time, $
                          extension=flat_extension, raw_file=flat_raw_file)
     if (~flat_found) then begin
@@ -43,7 +45,7 @@ pro ucomp_apply_gain, file, primary_header, data, headers, run=run
               name=run.logger_name, /warn
     endif
 
-    flat_dark = run->get_dark(flat_time, exptime, gain_mode, found=flat_dark_found)
+    flat_dark = cal->get_dark(flat_time, exptime, gain_mode, found=flat_dark_found)
     if (~flat_dark_found) then begin
       mg_log, 'dark not found for flat for ext %d', e + 1, $
               name=run.logger_name, /warn
