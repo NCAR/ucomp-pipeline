@@ -112,6 +112,9 @@ if (mgunit_FOUND)
   add_custom_target(unit
     COMMAND ${IDL_EXECUTABLE} -IDL_STARTUP "\"\"" -IDL_PATH "${CMAKE_CURRENT_SOURCE_DIR}${SEP_CHAR}${CMAKE_CURRENT_SOURCE_DIR}/scripts${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/src${SEP_CHAR}+${CMAKE_CURRENT_BINARY_DIR}/src${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/unit${SEP_CHAR}+${mgunit_DIR}${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/ssw${SEP_CHAR}\"<IDL_DEFAULT>\"" -quiet -e ucomp_run_unittests
   )
+  add_custom_target(regression
+    COMMAND ${IDL_EXECUTABLE} -IDL_STARTUP "\"\"" -IDL_PATH "${CMAKE_CURRENT_SOURCE_DIR}${SEP_CHAR}${CMAKE_CURRENT_SOURCE_DIR}/scripts${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/src${SEP_CHAR}+${CMAKE_CURRENT_BINARY_DIR}/src${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/unit${SEP_CHAR}+${mgunit_DIR}${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/ssw${SEP_CHAR}\"<IDL_DEFAULT>\"" -quiet -e ucomp_run_regressiontests
+  )
 endif ()
 
 # setup installer
