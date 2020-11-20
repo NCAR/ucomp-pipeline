@@ -220,10 +220,10 @@ pro ucomp_file::_inventory
 
   self.gain_mode = strlowcase(ucomp_getpar(primary_header, 'GAIN'))
 
-  self.cam0_arr_temp = sxpar(primary_header, 'T_C0ARR')
-  self.cam0_pcb_temp = sxpar(primary_header, 'T_C0PCB')
-  self.cam1_arr_temp = sxpar(primary_header, 'T_C1ARR')
-  self.cam1_pcb_temp = sxpar(primary_header, 'T_C1PCB')
+  self.cam0_arr_temp = ucomp_getpar(primary_header, 'T_C0ARR')
+  self.cam0_pcb_temp = ucomp_getpar(primary_header, 'T_C0PCB')
+  self.cam1_arr_temp = ucomp_getpar(primary_header, 'T_C1ARR')
+  self.cam1_pcb_temp = ucomp_getpar(primary_header, 'T_C1PCB')
 
   ; allocate inventory variables
   *self.wavelengths = fltarr(self.n_extensions)

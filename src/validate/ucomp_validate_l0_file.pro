@@ -1,7 +1,7 @@
 ; docformat = 'rst'
 
 function ucomp_validate_l0_file_checkspec, keyword_name, specline, $
-                                           keyword_value, n_found, $
+                                           keyword_value, found, $
                                            error_msg=error_msg
   compile_opt strictarr
 
@@ -45,7 +45,7 @@ function ucomp_validate_l0_file_checkspec, keyword_name, specline, $
 
   if (n_elements(values) gt 0L) then values = fix(values, type=type)
 
-  if ((n_found eq 0) && (required eq 0B)) then return, 1B
+  if ((~found) && (required eq 0B)) then return, 1B
 
   keyword_type = size(keyword_value, /type)
   ;if (keyword_type ne type) then begin
@@ -55,7 +55,7 @@ function ucomp_validate_l0_file_checkspec, keyword_name, specline, $
   ;endif
 
   if (n_elements(value) gt 0L) then begin
-    if (n_found eq 0L) then begin
+    if (~found) then begin
       error_msg = string(keyword_name, format='(%"%s: no value")')
       return, 0B
     endif else begin
@@ -108,9 +108,9 @@ function ucomp_validate_l0_file_checkheader, header, spec, $
 
   for k = 0L, n_spec_keywords - 1L do begin
     specline = spec->get(spec_keywords[k], section=type)
-    value = sxpar(header, spec_keywords[k], count=n_found)
+    value = ucomp_getpar(header, spec_keywords[k], found=found)
     is_valid = ucomp_validate_l0_file_checkspec(spec_keywords[k], $
-                                                specline, value, n_found, $
+                                                specline, value, found, $
                                                 error_msg=error_msg)
     if (~is_valid) then begin
       error_list->add, string(location, spec_keywords[k], error_msg, $
