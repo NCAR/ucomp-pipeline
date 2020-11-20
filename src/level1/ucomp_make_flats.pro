@@ -74,9 +74,9 @@ pro ucomp_make_flats, wave_region, run=run
 
     move_keywords_hash = hash()
     for k = 0L, n_elements(move_keywords) - 1L do begin
-      move_keywords_hash[move_keywords[k]] = sxpar(primary_header, $
-                                                   move_keywords[k], $
-                                                   comment=comment)
+      move_keywords_hash[move_keywords[k]] = ucomp_getpar(primary_header, $
+                                                          move_keywords[k], $
+                                                          comment=comment)
       move_keywords_hash[move_keywords[k] + '_COMMENT'] = comment
     endfor
 
@@ -90,16 +90,16 @@ pro ucomp_make_flats, wave_region, run=run
         flat_exposures[f] = ucomp_getpar(flat_header, 'EXPTIME', /float)
         flat_wavelengths[f] = ucomp_getpar(flat_header, 'WAVELNG', /float)
 
-        sxaddpar, flat_header, 'RAWFILE', flat_basename, $
-                  ' corresponding raw flat filename', $
-                  before='DATATYPE'
+        ucomp_addpar, flat_header, 'RAWFILE', flat_basename, $
+                      comment='corresponding raw flat filename', $
+                      before='DATATYPE'
 
         for k = 0L, n_elements(move_keywords) - 1L do begin
           after = k eq 0L ? 'T_RACK' : move_keywords[k - 1L]
-          sxaddpar, flat_header, move_keywords[k], $
-                    move_keywords_hash[move_keywords[k]], $
-                    move_keywords_hash[move_keywords[k] + '_COMMENT'], $
-                    after=after
+          ucomp_addpar, flat_header, move_keywords[k], $
+                        move_keywords_hash[move_keywords[k]], $
+                        comment=move_keywords_hash[move_keywords[k] + '_COMMENT'], $
+                        after=after
         endfor
         obj_destroy, move_keywords_hash
         flat_headers->add, flat_header

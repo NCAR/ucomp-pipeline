@@ -75,16 +75,16 @@ pro ucomp_make_darks, run=run
 
     move_keywords_hash = hash()
     for k = 0L, n_elements(move_keywords) - 1L do begin
-      move_keywords_hash[move_keywords[k]] = sxpar(primary_header, $
-                                                   move_keywords[k], $
-                                                   comment=comment)
+      move_keywords_hash[move_keywords[k]] = ucomp_getpar(primary_header, $
+                                                          move_keywords[k], $
+                                                          comment=comment)
       move_keywords_hash[move_keywords[k] + '_COMMENT'] = comment
     endfor
-    t_c0arr = sxpar(primary_header, 'T_C0ARR', comment=t_c0arr_comment)
-    t_c0pcb = sxpar(primary_header, 'T_C0PCB', comment=t_c0pcb_comment)
-    t_c1arr = sxpar(primary_header, 'T_C1ARR', comment=t_c1arr_comment)
-    t_c1pcb = sxpar(primary_header, 'T_C1PCB', comment=t_c1pcb_comment)
-    dark_info->add, {times: ucomp_dateobs2hours(sxpar(primary_header, 'DATE-OBS')), $
+    t_c0arr = ucomp_getpar(primary_header, 'T_C0ARR', comment=t_c0arr_comment)
+    t_c0pcb = ucomp_getpar(primary_header, 'T_C0PCB', comment=t_c0pcb_comment)
+    t_c1arr = ucomp_getpar(primary_header, 'T_C1ARR', comment=t_c1arr_comment)
+    t_c1pcb = ucomp_getpar(primary_header, 'T_C1PCB', comment=t_c1pcb_comment)
+    dark_info->add, {times: ucomp_dateobs2hours(ucomp_getpar(primary_header, 'DATE-OBS')), $
                      t_c0arr: move_keywords_hash['T_C0ARR'], $
                      t_c0pcb: move_keywords_hash['T_C0PCB'], $
                      t_c1arr: move_keywords_hash['T_C1ARR'], $
@@ -95,7 +95,7 @@ pro ucomp_make_darks, run=run
     for e = 1L, dark_file_fcb.nextend do begin
       fits_read, dark_file_fcb, dark_image, dark_header, exten_no=e
 
-      onband = strtrim(sxpar(dark_header, 'ONBAND'), 2)
+      onband = strtrim(ucomp_getpar(dark_header, 'ONBAND'), 2)
       if (onband eq 'tcam') then begin
         tcam_means += total(reform(dark_image, nx * ny, n_pol_states, n_cameras), $
                             1, $
@@ -113,16 +113,16 @@ pro ucomp_make_darks, run=run
 
       if (e eq 1L) then begin
         dark_exposures[d] = ucomp_getpar(dark_header, 'EXPTIME', /float)
-        sxaddpar, dark_header, 'RAWFILE', dark_basename, $
-                  ' corresponding raw dark filename', $
-                  before='DATATYPE'
+        ucomp_addpar, dark_header, 'RAWFILE', dark_basename, $
+                      comment='corresponding raw dark filename', $
+                      before='DATATYPE'
 
         for k = 0L, n_elements(move_keywords) - 1L do begin
           after = k eq 0L ? 'T_RACK' : move_keywords[k - 1L]
-          sxaddpar, dark_header, move_keywords[k], $
-                    move_keywords_hash[move_keywords[k]], $
-                    move_keywords_hash[move_keywords[k] + '_COMMENT'], $
-                    after=after
+          ucomp_addpar, dark_header, move_keywords[k], $
+                        move_keywords_hash[move_keywords[k]], $
+                        comment=move_keywords_hash[move_keywords[k] + '_COMMENT'], $
+                        after=after
         endfor
         obj_destroy, move_keywords_hash
         dark_headers->add, dark_header

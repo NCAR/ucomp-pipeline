@@ -375,7 +375,7 @@ pro ucomp_run::cache_flats, filenames, $
       for e = 1L, fcb.nextend - 4L do begin   ; there are 4 "index" extensions at end of file
         fits_read, fcb, flat_image, flat_header, exten_no=e
         flats[0, 0, 0, 0, i + e - 1L] = flat_image
-        raw_files[e - 1L] = sxpar(flat_header, 'RAWFILE')
+        raw_files[e - 1L] = ucomp_getpar(flat_header, 'RAWFILE')
         extensions[e - 1] = e
       endfor
 
