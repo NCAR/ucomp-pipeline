@@ -977,7 +977,7 @@ function ucomp_run::init, date, mode, config_filename, no_log=no_log
 
   self.resource_root = file_expand_path(filepath('resource', $
                                                  subdir='..', $
-                                                 root=mg_src_root())
+                                                 root=mg_src_root()))
 
   ; setup config options
   config_spec_filename = filepath('ucomp.spec.cfg', $
