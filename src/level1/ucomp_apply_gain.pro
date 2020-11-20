@@ -59,10 +59,10 @@ pro ucomp_apply_gain, file, primary_header, data, headers, run=run
     data[*, *, *, *, e] = im
 
     h = headers[e]
-    sxaddpar, h, 'FLATFILE', flat_raw_file, ' name of raw flat file'
-    sxaddpar, h, 'FLATEXT', flat_extension, $
-              string(run.date, ucomp_wave_region(wavelengths[e]), $
-                     format='(%" ext in %s.ucomp.flat.%s.fts used")')
+    ucomp_addpar, h, 'FLATFILE', flat_raw_file, comment='name of raw flat file'
+    ucomp_addpar, h, 'FLATEXT', flat_extension, $
+                  comment=string(run.date, ucomp_wave_region(wavelengths[e]), $
+                                 format='(%"ext in %s.ucomp.flat.%s.fts used")')
     headers[e] = h
   endfor
 end

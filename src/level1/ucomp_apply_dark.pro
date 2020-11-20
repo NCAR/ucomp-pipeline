@@ -48,9 +48,9 @@ pro ucomp_apply_dark, file, primary_header, data, headers, run=run
 
     h = headers[e]
     for de = 0L, n_elements(dark_extensions) - 1L do begin
-      sxaddpar, h, string(de + 1, format='(%"DARKEXT%d")'), dark_extensions[de], $
-                string(run.date, dark_coefficients[de], $
-                       format='(%" ext in %s.ucomp.dark.fts used, wt %0.2f")')
+      ucomp_addpar, h, string(de + 1, format='(%"DARKEXT%d")'), dark_extensions[de], $
+                    comment=string(run.date, dark_coefficients[de], $
+                                   format='(%"ext in %s.ucomp.dark.fts used, wt %0.2f")')
     endfor
     headers[e] = h
   endfor
