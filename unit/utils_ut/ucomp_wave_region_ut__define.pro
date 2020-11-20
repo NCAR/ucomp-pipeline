@@ -5,7 +5,7 @@ function ucomp_wave_region_ut::test_basic
 
   value = 691.4
   result = ucomp_wave_region(value)
-  standard = '692'
+  standard = '691'
   assert, result eq standard, 'wrong type for %0.1f', value
   
   return, 1

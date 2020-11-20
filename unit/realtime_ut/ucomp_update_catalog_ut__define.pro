@@ -20,11 +20,13 @@ function ucomp_update_catalog_ut::test_start
   n_extensions = [2, 20, 10]
   data_types = strarr(3) + 'sci'
   exposures = fltarr(3) + 80.0
-  wave_regions = fltarr(3) + 10.74
+  gain_modes = strarr(3) + 'high'
+  wave_regions = strarr(3) + '691'
   n_points = lonarr(3) + 3L
 
   ucomp_update_catalog, self.catalog_filename, new_files, $
-                        n_extensions, data_types, exposures, wave_regions, n_points
+                        n_extensions, data_types, exposures, gain_modes, $
+                        wave_regions, n_points
 
   cat = self->read_catalog()
   assert, array_equal(new_files, cat), $
@@ -39,16 +41,19 @@ function ucomp_update_catalog_ut::test_next
   n_extensions = [2, 20, 10]
   data_types = strarr(3) + 'sci'
   exposures = fltarr(3) + 80.0
-  wave_regions = fltarr(3) + 10.74
+  gain_modes = strarr(3) + 'high'
+  wave_regions = strarr(3) + '691'
   n_points = lonarr(3) + 3L
 
   new_files1 = ['a', 'b', 'c']
   ucomp_update_catalog, self.catalog_filename, new_files1, $
-                        n_extensions, data_types, exposures, wave_regions, n_points
+                        n_extensions, data_types, exposures, gain_modes, $
+                        wave_regions, n_points
 
   new_files2 = ['d', 'e', 'f']
   ucomp_update_catalog, self.catalog_filename, new_files2, $
-                        n_extensions, data_types, exposures, wave_regions, n_points
+                        n_extensions, data_types, exposures, gain_modes, $
+                        wave_regions, n_points
 
   cat = self->read_catalog()
   assert, array_equal([new_files1, new_files2], cat), $
@@ -63,16 +68,19 @@ function ucomp_update_catalog_ut::test_basename
   n_extensions = [2, 20, 10]
   data_types = strarr(3) + 'sci'
   exposures = fltarr(3) + 80.0
-  wave_regions = fltarr(3) + 10.74
+  gain_modes = strarr(3) + 'high'
+  wave_regions = strarr(3) + '691'
   n_points = lonarr(3) + 3L
 
   new_files1 = ['raw/a', 'raw/b', 'raw/c']
   ucomp_update_catalog, self.catalog_filename, new_files1, $
-                        n_extensions, data_types, exposures, wave_regions, n_points
+                        n_extensions, data_types, exposures, gain_modes, $
+                        wave_regions, n_points
 
   new_files2 = ['raw/d', 'raw/e', 'raw/f']
   ucomp_update_catalog, self.catalog_filename, new_files2, $
-                        n_extensions, data_types, exposures, wave_regions, n_points
+                        n_extensions, data_types, exposures, gain_modes, $
+                        wave_regions, n_points
 
   cat = self->read_catalog()
   assert, array_equal(file_basename([new_files1, new_files2]), cat), $
