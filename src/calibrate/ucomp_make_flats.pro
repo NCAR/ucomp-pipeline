@@ -150,7 +150,8 @@ pro ucomp_make_flats, wave_region, run=run
   fits_close, output_fcb
 
   ; cache flats
-  run->cache_flats, flats=averaged_flat_images, $
+  cal = run.calibration
+  cal->cache_flats, flats=averaged_flat_images, $
                     times=flat_times, $
                     exptimes=flat_exposures, $
                     wavelengths=flat_wavelengths, $

@@ -77,6 +77,7 @@ pro ucomp_calibration_wrapper, date, config_filename
 
 
   ; do the end-of-day processing
+  ucomp_pipeline_step, 'ucomp_make_raw_inventory', run=run
   ucomp_calibration_steps, run=run
 
 

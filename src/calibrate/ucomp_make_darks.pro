@@ -173,7 +173,8 @@ pro ucomp_make_darks, run=run
   fits_close, output_fcb
 
   ; cache darks
-  run->cache_darks, darks=averaged_dark_images, $
+  cal = run.calibration
+  cal->cache_darks, darks=averaged_dark_images, $
                     times=dark_times, $
                     exptimes=dark_exposures, $
                     gain_modes=dark_gain_modes
