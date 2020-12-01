@@ -466,7 +466,7 @@ if __name__ == "__main__":
 
     # list sub-command
     list_parser = subparsers.add_parser("list",
-                                        help="list UCoMP processes")
+                                        help="list running UCoMP processes")
     list_parser.set_defaults(func=list_processes, parser=list_parser)
 
     # validate sub-command
@@ -485,7 +485,7 @@ if __name__ == "__main__":
 
     # log sub-command
     log_parser = subparsers.add_parser('log',
-                                       help='filter/display log output')
+                                       help='display, and optionally filter, log output')
     log_parser.add_argument('logfiles', nargs='+',
                             help='UCoMP log filename or date',
                             metavar='logfile')
