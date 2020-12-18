@@ -16,8 +16,14 @@
 ;   found : out, optional, type=boolean
 ;     set to a named variable to retrieve whether a route was found
 ;-
-function ucomp_get_route, routing_file, date, found=found
+function ucomp_get_route, routing_file, date, type, found=found
   compile_opt strictarr
+
+  case strlowcase(type) of
+    'raw': section = 'ucomp-raw'
+    'process': section = 'ucomp-process'
+    else: message, string(type, format='(%"unknown type: %s")')
+  endcase
 
   config = mg_read_config(routing_file)
   date_specs = config->options(section='locations', count=n_date_specs)
