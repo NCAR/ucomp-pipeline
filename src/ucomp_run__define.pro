@@ -450,7 +450,7 @@ function ucomp_run::config, name
 
   if (name eq 'raw/basedir' && n_elements(value) eq 0L) then begin
     routing_file = self.options->get('routing_file', section='raw')
-    value = ucomp_get_route(routing_file, self.date)
+    value = ucomp_get_route(routing_file, self.date, 'raw')
   endif
 
   return, value
