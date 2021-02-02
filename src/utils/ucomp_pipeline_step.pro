@@ -38,6 +38,8 @@ pro ucomp_pipeline_step, routine_name, wave_region, skip=skip, run=run, _extra=e
 
     time = run->stop(clock_id)
 
+    mg_log, /check_math, name=run.logger_name, /warn
+
     mg_log, 'memory usage: %0.1fM', $
             (memory(/highwater) - start_memory) / 1024. / 1024., $
             from=routine_name, name=run.logger_name, /debug
