@@ -589,16 +589,7 @@ end
 pro ucomp_run::cleanup
   compile_opt strictarr
 
-  ptr_free, self.darks, self.dark_times, self.dark_exptimes, $
-            self.dark_gain_modes
-  ptr_free, self.flats, self.flat_times, self.flat_exptimes, $
-            self.flat_wavelengths, self.flat_gain_modes, $
-            self.flat_extensions, self.flat_raw_files
-
   obj_destroy, [self.options, self.epochs, self.lines]
-
-  ; master dark cache
-  ptr_free, self.darks, self.dark_times, self.dark_exptimes
 
   ; performance monitoring API
   obj_destroy, [self.calls, self.times]
