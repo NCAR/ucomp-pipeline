@@ -647,8 +647,8 @@ function ucomp_run::init, date, mode, config_filename, no_log=no_log
   if (~keyword_set(no_log)) then self->_setup_logger
 
   ; setup epoch reading
-  epochs_filename = filepath('epochs.cfg', root=self.resource_root)
-  epochs_spec_filename = filepath('epochs.spec.cfg', root=self.resource_root)
+  epochs_filename = filepath('ucomp.epochs.cfg', root=self.resource_root)
+  epochs_spec_filename = filepath('ucomp.epochs.spec.cfg', root=self.resource_root)
 
   self.epochs = mgffepochparser(epochs_filename, epochs_spec_filename)
   epochs_valid = self.epochs->is_valid(error_msg=error_msg)
@@ -659,8 +659,8 @@ function ucomp_run::init, date, mode, config_filename, no_log=no_log
   endif
 
   ; setup information about lines
-  lines_filename = filepath('lines.cfg', root=self.resource_root)
-  lines_spec_filename = filepath('lines.spec.cfg', root=self.resource_root)
+  lines_filename = filepath('ucomp.lines.cfg', root=self.resource_root)
+  lines_spec_filename = filepath('ucomp.lines.spec.cfg', root=self.resource_root)
 
   self.lines = mg_read_config(lines_filename, spec=lines_spec_filename)
   lines_valid = self.lines->is_valid(error_msg=error_msg)

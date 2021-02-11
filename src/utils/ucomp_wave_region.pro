@@ -18,7 +18,7 @@
 function ucomp_wave_region, wavelength, central_wavelength=central_wavelength
   compile_opt strictarr
 
-  ; TODO: this is information that is leaking from the lines.spec.cfg file
+  ; TODO: this is information that is leaking from the ucomp.lines.spec.cfg file
   wave_regions = ['530', '637', '656', '691', '706', '789', '1074', '1079', '1083']
   wave_centers = [530.3, 637.4, 656.3, 691.8, 706.2, 789.4, 1074.62, 1079.8, 1083.0]
 
