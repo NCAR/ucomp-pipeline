@@ -12,6 +12,19 @@ function ucomp_wave_region_ut::test_basic
 end
 
 
+function ucomp_wave_region_ut::test_center
+  compile_opt strictarr
+
+  value = 691.4
+  result = ucomp_wave_region(value, /central_wavelength)
+  standard = 691.8
+  tolerance = 0.001
+  assert, abs(result - standard) lt tolerance, 'wrong center wavelength for %0.1f', value
+  
+  return, 1
+end
+
+
 function ucomp_wave_region_ut::init, _extra=e
   compile_opt strictarr
 
