@@ -22,13 +22,13 @@ pro ucomp_l1_distribute, wave_region, run=run
 
   ucomp_l1_archive, wave_region, run=run
 
-  ; TODO: copy L1 data into archive, etc. directories
-  archive_basedir = run->config('results/archive_basedir')
-  if (n_elements(archive_basedir) gt 0L) then begin
-    archive_dir = filepath('', $
-                           subdir=ucomp_decompose_date(run.date), $
-                           root=archive_basedir)
-    ucomp_mkdir, archive_dir, logger_name=run.logger_name
+  ; TODO: copy L1 data into web archive, etc. directories
+  web_basedir = run->config('results/web_basedir')
+  if (n_elements(web_basedir) gt 0L) then begin
+    web_dir = filepath('', $
+                       subdir=ucomp_decompose_date(run.date), $
+                       root=web_basedir)
+    ucomp_mkdir, web_dir, logger_name=run.logger_name
 
     process_dir = filepath('', $
                            subdir=[run.date, 'level1'], $
@@ -43,7 +43,7 @@ pro ucomp_l1_distribute, wave_region, run=run
     mg_log, 'copied %d %s nm files to archive', n_files, wave_region, $
             name=run.logger_name, /info
   endif else begin
-    mg_log, 'results/archive_basedir not specified', name=run.logger, /warn
+    mg_log, 'results/web_basedir not specified', name=run.logger, /warn
   endelse
 
   done:
