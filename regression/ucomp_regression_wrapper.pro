@@ -12,7 +12,7 @@ pro ucomp_regression_wrapper, date, config_filename
   compile_opt strictarr
 
   ; run the end-of-day pipeline
-  ucomp_eod_wrapper, date, config_filename
+  ucomp_reprocess_wrapper, date, config_filename
 
   ; setup for regression testing
   mode = 'regress'
@@ -33,7 +33,6 @@ pro ucomp_regression_wrapper, date, config_filename
 
   mg_log, 'starting regression comparisons for %d...', date, name=run.logger_name, /info
 
-  ; TODO: implement
   results_dir = filepath(date, root=run->config('processing/basedir'))
   results = file_search(results_dir, '*', count=n_results)
   results = strmid(results, strlen(results_dir) + 1L)
@@ -45,29 +44,33 @@ pro ucomp_regression_wrapper, date, config_filename
   n_matches = mg_match(results, standards, $
                        a_matches=result_matches, b_matches=standard_matches)
 
-  extra_in_results = mg_complement(result_matches, n_results, $
+  if (n_results gt 0L) then begin
+    extra_in_results = mg_complement(result_matches, n_results, $
                                      count=n_extra_in_results)
-  if (n_extra_in_results gt 0L) then begin
-    mg_log, '%d extra file%s in results', $
-            n_extra_in_results, n_extra_in_results gt 1L ? 's' : '', $
-            name=run.logger_name, /warn
+    if (n_extra_in_results gt 0L) then begin
+      mg_log, '%d extra file%s in results', $
+              n_extra_in_results, n_extra_in_results gt 1L ? 's' : '', $
+              name=run.logger_name, /warn
+    endif
+    for f = 0L, n_extra_in_results - 1L do begin
+      mg_log, '%s in results, but not standards', $
+              results[extra_in_results[f]], name=run.logger_name, /warn
+    endfor
   endif
-  for f = 0L, n_extra_in_results - 1L do begin
-    mg_log, '%s in results, but not standards', $
-            results[extra_in_results[f]], name=run.logger_name, /warn
-  endfor
 
-  missing_in_results = mg_complement(standard_matches, n_standards, $
-                                     count=n_missing_in_results)
-  if (n_missing_in_results gt 0L) then begin
-    mg_log, '%d missing file%s in results', $
-            n_missing_in_results, n_missing_in_results gt 1L ? 's' : '', $
-            name=run.logger_name, /warn
+  if (n_standards gt 0L) then begin
+    missing_in_results = mg_complement(standard_matches, n_standards, $
+                                       count=n_missing_in_results)
+    if (n_missing_in_results gt 0L) then begin
+      mg_log, '%d missing file%s in results', $
+              n_missing_in_results, n_missing_in_results gt 1L ? 's' : '', $
+              name=run.logger_name, /warn
+    endif
+    for f = 0L, n_missing_in_results - 1L do begin
+      mg_log, '%s in standards, but not in results', $
+              standards[missing_in_results[f]], name=run.logger_name, /warn
+    endfor
   endif
-  for f = 0L, n_missing_in_results - 1L do begin
-    mg_log, '%s in standards, but not in results', $
-            standards[missing_in_results[f]], name=run.logger_name, /warn
-  endfor
 
   ; compare matches
   for m = 0L, n_elements(result_matches) - 1L do begin
@@ -99,6 +102,8 @@ pro ucomp_regression_wrapper, date, config_filename
 
   ; cleanup and quit
   done:
+
+  mg_log, 'done', name=run.logger_name, /info
 
   if (obj_valid(run)) then obj_destroy, run
   mg_log, /quit
