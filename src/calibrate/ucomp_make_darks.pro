@@ -119,9 +119,11 @@ pro ucomp_make_darks, run=run
 
         for k = 0L, n_elements(move_keywords) - 1L do begin
           after = k eq 0L ? 'T_RACK' : move_keywords[k - 1L]
+          type = size(move_keywords_hash[move_keywords[k]], /type)
           ucomp_addpar, dark_header, move_keywords[k], $
                         move_keywords_hash[move_keywords[k]], $
                         comment=move_keywords_hash[move_keywords[k] + '_COMMENT'], $
+                        format=type eq 4 || type eq 5 ? '(F0.3)' : !null, $
                         after=after
         endfor
         obj_destroy, move_keywords_hash

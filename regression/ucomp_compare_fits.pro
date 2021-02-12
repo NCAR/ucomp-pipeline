@@ -26,7 +26,8 @@ pro ucomp_compare_fits, result_path, standard_path, logger_name
   endif
 
   if (is_different) then begin
-    mg_log, '%s differs', file_basename(result_path), name=logger_name, /warn
+    mg_log, '%s differs from standard', file_basename(result_path), $
+            name=logger_name, /warn
     for d = 0L, n_elements(differences) - 1L do begin
       mg_log, differences[d], name=logger_name, /warn
     endfor
