@@ -64,7 +64,11 @@ pro ucomp_reprocess_wrapper, date, config_filename
 
   mg_log, 'starting reprocessing for %d...', date, name=run.logger_name, /info
 
-  ucomp_pipeline_step, 'ucomp_reprocess_cleanup', run=run
+  ucomp_pipeline_step, 'ucomp_reprocess_cleanup', is_available=is_available, run=run
+  if (~is_available) then begin
+    mg_log, 'not available for reprocessing', name=run.logger_name, /warn
+    goto, done
+  endif
 
   ; copy config file to processing dir, creating dir if needed
   process_dir = filepath(date, root=run->config('processing/basedir'))

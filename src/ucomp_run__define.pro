@@ -183,20 +183,34 @@ end
 ;   mark_processed : in, optional, type=boolean
 ;     set to indicate that directory should be marked as processed after
 ;     unlocking
+;   reprocess : in, optional, type=boolean
+;     set to remove the mark indicating directory was processed
+;   is_available : out, optional, type=boolean
+;     set to a named variable to retrieve the state of unlock after this
+;     command runs -- if /REPROCESS is set, it will not necessarily be
+;     unlocked
 ;-
-pro ucomp_run::unlock, mark_processed=mark_processed
+pro ucomp_run::unlock, mark_processed=mark_processed, $
+                       reprocess=reprocess, $
+                       is_available=is_available
   compile_opt strictarr
 
   self->getProperty, logger_name=logger_name
-
-  if (~ucomp_state(self.date, run=self)) then begin
-    unlocked = ucomp_state(self.date, /unlock, run=self)
-    mg_log, 'unlocked %s', self.date, name=logger_name, /info
-    if (keyword_set(mark_processed)) then begin
-      processed = ucomp_state(self.date, /processed, run=self)
-      mg_log, 'marked %s as processed', self.date, name=logger_name, /info
-    endif
-  endif
+ 
+  if (ucomp_state(self.date, run=self)) then begin
+    is_available = 1B
+  endif else begin
+    if (keyword_set(reprocess)) then begin
+      is_available = ucomp_state(self.date, /reprocess, run=self)
+    endif else begin
+      is_available = ucomp_state(self.date, /unlock, run=self)
+      mg_log, 'unlocked %s', self.date, name=logger_name, /info
+      if (keyword_set(mark_processed)) then begin
+        is_available = ucomp_state(self.date, /processed, run=self)
+        mg_log, 'marked %s as processed', self.date, name=logger_name, /info
+      endif
+    endelse
+  endelse
 end
 
 

@@ -18,6 +18,8 @@
 ;     set to unlock a `date` dir in the processing directory
 ;   processed : in, optional, type=boolean
 ;     set to set a lock indicating the directory has been processed
+;   reprocess : in, optional, type=boolean
+;     set to remove the mark indicating directory was processed
 ;   run : in, required, type=object
 ;     UCoMP pipeline run object
 ;-
@@ -25,6 +27,7 @@ function ucomp_state, date, $
                       lock=lock, $
                       unlock=unlock, $
                       processed=processed, $
+                      reprocess=reprocess, $
                       run=run
   compile_opt strictarr, logical_predicate
   on_error, 2
@@ -33,12 +36,15 @@ function ucomp_state, date, $
   lock_file = filepath('.lock', root=lock_dir)
   processed_file = filepath('.processed', root=lock_dir)
 
-  available = file_test(lock_dir, /directory) $
-                && ~file_test(lock_file) $
-                && ~file_test(processed_file)
+  if (keyword_set(reprocess) && file_test(processed_file)) then begin
+    file_delete, processed_file
+  endif
+
+  available = ~file_test(lock_file) && ~file_test(processed_file)
 
   if (keyword_set(lock)) then begin
     if (available) then begin
+      ucomp_mkdir, lock_dir, logger_name=run.logger_name
       openw, lun, lock_file, /get_lun
       free_lun, lun
     endif
@@ -60,6 +66,7 @@ function ucomp_state, date, $
   endif
 
   if (keyword_set(processed)) then begin
+    ucomp_mkdir, lock_dir, logger_name=run.logger_name
     openw, lun, processed_file, /get_lun
     free_lun, lun
     return, 1B
