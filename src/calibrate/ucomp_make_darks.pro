@@ -141,6 +141,20 @@ pro ucomp_make_darks, run=run
     sxdelpar, first_primary_header, move_keywords[k]
   endfor
 
+  ; get current date & time
+  current_time = systime(/utc)
+  date_dp = string(bin_date(current_time), $
+                   format='(%"%04d-%02d-%02dT%02d:%02d:%02d")')
+  fxaddpar, first_primary_header, 'DATE_DP', date_dp, ' L1 processing date (UTC)', $
+            after='OBS_PLVE'
+  version = ucomp_version(revision=revision, branch=branch, date=code_date)
+  fxaddpar, first_primary_header, 'DPSWID',  $
+            string(version, revision, $
+                   format='(%"%s [%s]")'), $
+            string(code_date, $
+                   format='(%" L1 data processing software (%s)")'), $
+            after='DATE_DP'
+
   averaged_dark_images = mean(reform(dark_images, $
                                      nx, ny, n_pol_states * n_cameras, n_dark_files), $
                               dimension=3)

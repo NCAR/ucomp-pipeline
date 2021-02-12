@@ -53,7 +53,7 @@ def display_time(seconds, granularity=2):
             if value == 1:
                 name = name.rstrip("s")
             result.append("%d %s" % (value, name))
-    return ' '.join(result[:granularity])
+    return " ".join(result[:granularity])
 
 
 def format_timedelta(timedelta):
@@ -275,7 +275,7 @@ def filter_log(args):
     is_first = False
     for i, f in enumerate(logfiles):
         if len(logfiles) > 1:
-            if i != 0: print('')
+            if i != 0: print("")
             print(f)
             print("-" * len(f))
         filter_file(f, level_index, follow)
@@ -328,18 +328,23 @@ def process_rt(args):
 
 
 def process_cal(args):
-    launch_processes(args, 'ucomp_calibration_wrapper')
+    launch_processes(args, "ucomp_calibration_wrapper")
     notify_completed(args, "calibration")
 
 
 def reprocess(args):
-    launch_processes(args, 'ucomp_reprocess_wrapper')
+    launch_processes(args, "ucomp_reprocess_wrapper")
     notify_completed(args, "reprocess")
+
+
+def regression(args):
+    launch_processes(args, "ucomp_regression_wrapper")
+    notify_completed(args, "regression")
 
 
 def launch_processes(args, routine):
     if len(args.dates) == 0:
-        args.parser.error('too few arguments')
+        args.parser.error("too few arguments")
 
     dates = parse_date_expr(",".join(args.dates))
 
@@ -362,13 +367,13 @@ def launch_processes(args, routine):
 
 
 def wait_for(process):
-    '''Wait for the given process to finish. Returns true if the process was
-       terminated by a keyboard interrupt.'''
+    """Wait for the given process to finish. Returns true if the process was
+       terminated by a keyboard interrupt."""
     try:
         process.wait()
         return 0
     except KeyboardInterrupt:
-        print('killing process %d' % process.pid)
+        print("killing process %d" % process.pid)
         process.kill()
         return 1
 
@@ -391,41 +396,41 @@ def simulate(args):
     if len(args.dates) == 0:
         args.parser.error("too few arguments")
 
-    dates = parse_date_expr(','.join(args.dates))
+    dates = parse_date_expr(",".join(args.dates))
 
     if len(dates) != 1:
-        args.parser.error('simulator is only valid for a single date')
+        args.parser.error("simulator is only valid for a single date")
 
     # read config file to get options
     pipeline_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-    config_basename = 'ucomp.%s.cfg' % args.flags
-    config_filename = os.path.join(pipeline_dir, 'config', config_basename)
+    config_basename = "ucomp.%s.cfg" % args.flags
+    config_filename = os.path.join(pipeline_dir, "config", config_basename)
 
     config = configparser.ConfigParser()
     config.read(config_filename)
 
-    depot_basedir = config.get('simulator', 'depot_basedir')
-    raw_basedir = config.get('raw', 'basedir')
+    depot_basedir = config.get("simulator", "depot_basedir")
+    raw_basedir = config.get("raw", "basedir")
     raw_dir = os.path.join(raw_basedir, dates[0])
 
-    arrival_interval = config.get('simulator', 'arrival_interval', '60.0')
-    launch_interval = config.get('simulator', 'launch_interval', '60.0')
+    arrival_interval = config.get("simulator", "arrival_interval", "60.0")
+    launch_interval = config.get("simulator", "launch_interval", "60.0")
 
     # launch processing simulator
-    processing_cmd = [os.path.join(pipeline_dir, 'bin', 'ucomp_simulate_processing'),
-                      '-f', args.flags,
-                      '--launch-interval', launch_interval,
+    processing_cmd = [os.path.join(pipeline_dir, "bin", "ucomp_simulate_processing"),
+                      "-f", args.flags,
+                      "--launch-interval", launch_interval,
                       dates[0]]
     if args.no_eod:
-        processing_cmd.insert(1, '--no-eod')
+        processing_cmd.insert(1, "--no-eod")
     processing_process = subprocess.Popen(processing_cmd)
 
     time.sleep(5.0)
 
     # launch incoming data simulator
-    data_cmd = [os.path.join(pipeline_dir, 'bin', 'ucomp_simulate_data'),
-                '-r', raw_dir,
-                '--arrival-interval', arrival_interval,
+    data_cmd = [os.path.join(pipeline_dir, "bin", "ucomp_simulate_data"),
+                "-r", raw_dir,
+                "--arrival-interval", arrival_interval,
                 os.path.join(depot_basedir, dates[0])]
     data_process = subprocess.Popen(data_cmd)
 
@@ -433,7 +438,7 @@ def simulate(args):
         while True:
             time.sleep(1.0)
     except KeyboardInterrupt:
-        print('killing data (%d) and processing (%d) subprocesses...' % (data_process.pid, processing_process.pid))
+        print("killing data (%d) and processing (%d) subprocesses..." % (data_process.pid, processing_process.pid))
         processing_process.kill()
         data_process.kill()
 
@@ -484,113 +489,121 @@ if __name__ == "__main__":
     validate_parser.set_defaults(func=validate, parser=validate_parser)
 
     # log sub-command
-    log_parser = subparsers.add_parser('log',
-                                       help='display, and optionally filter, log output')
-    log_parser.add_argument('logfiles', nargs='+',
-                            help='UCoMP log filename or date',
-                            metavar='logfile')
-    level_help = 'filter level: DEBUG INFO WARN ERROR CRITICAL (default DEBUG)'
-    log_parser.add_argument('-l', '--level',
+    log_parser = subparsers.add_parser("log",
+                                       help="display, and optionally filter, log output")
+    log_parser.add_argument("logfiles", nargs="+",
+                            help="UCoMP log filename or date",
+                            metavar="logfile")
+    level_help = "filter level: DEBUG INFO WARN ERROR CRITICAL (default DEBUG)"
+    log_parser.add_argument("-l", "--level",
                             help=level_help)
-    prune_help = 'prune rotated logs with versions higher than MAX_VERSION'
-    log_parser.add_argument('-p', '--prune',
+    prune_help = "prune rotated logs with versions higher than MAX_VERSION"
+    log_parser.add_argument("-p", "--prune",
                             help=prune_help,
-                            metavar='MAX_VERSION')
-    log_parser.add_argument('-f', '--follow',
-                            help='output appended data as file grows',
-                            action='store_true')
-    log_parser.add_argument('-d', '--debug',
-                            help='DEBUG filter level',
-                            action='store_true')
-    log_parser.add_argument('-i', '--info',
-                            help='INFO filter level',
-                            action='store_true')
-    log_parser.add_argument('-w', '--warn',
-                            help='WARN filter level',
-                            action='store_true')
-    log_parser.add_argument('-e', '--error',
-                            help='ERROR filter level',
-                            action='store_true')
-    log_parser.add_argument('-c', '--critical',
-                            help='CRITICAL filter level',
-                            action='store_true')
+                            metavar="MAX_VERSION")
+    log_parser.add_argument("-f", "--follow",
+                            help="output appended data as file grows",
+                            action="store_true")
+    log_parser.add_argument("-d", "--debug",
+                            help="DEBUG filter level",
+                            action="store_true")
+    log_parser.add_argument("-i", "--info",
+                            help="INFO filter level",
+                            action="store_true")
+    log_parser.add_argument("-w", "--warn",
+                            help="WARN filter level",
+                            action="store_true")
+    log_parser.add_argument("-e", "--error",
+                            help="ERROR filter level",
+                            action="store_true")
+    log_parser.add_argument("-c", "--critical",
+                            help="CRITICAL filter level",
+                            action="store_true")
     log_parser.set_defaults(func=filter_log, parser=log_parser)
 
     # eod, rt, cal sub-commands
-    eod_parser = subparsers.add_parser('end-of-day', aliases=['eod'],
-                                       help='run end-of-day pipeline')
-    rt_parser = subparsers.add_parser('realtime', aliases=['rt'],
-                                      help='run realtime pipeline')
-    cal_parser = subparsers.add_parser('calibration', aliases=['cal'],
-                                       help='run calibration')
-    reprocess_parser = subparsers.add_parser('reprocess',
-                                       help='reprocess date(s)')
+    eod_parser = subparsers.add_parser("end-of-day", aliases=["eod"],
+                                       help="run end-of-day pipeline")
+    rt_parser = subparsers.add_parser("realtime", aliases=["rt"],
+                                      help="run realtime pipeline")
+    cal_parser = subparsers.add_parser("calibration", aliases=["cal"],
+                                       help="run calibration")
+    reprocess_parser = subparsers.add_parser("reprocess",
+                                       help="reprocess date(s)")
+    regression_parser = subparsers.add_parser("regression", aliases=["regress"],
+                                       help="check end-of-day against previous results")
+   
+    eod_parser.add_argument("dates", type=str, nargs="*", help=date_help,
+                            metavar="date-expr")
+    rt_parser.add_argument("dates", type=str, nargs="*", help=date_help,
+                            metavar="date-expr")
+    cal_parser.add_argument("dates", type=str, nargs="*", help=date_help,
+                            metavar="date-expr")
+    reprocess_parser.add_argument("dates", type=str, nargs="*", help=date_help,
+                                  metavar="date-expr")
+    regression_parser.add_argument("dates", type=str, nargs="*", help=date_help,
+                                   metavar="date-expr")
 
-    eod_parser.add_argument('dates', type=str, nargs='*', help=date_help,
-                            metavar='date-expr')
-    rt_parser.add_argument('dates', type=str, nargs='*', help=date_help,
-                            metavar='date-expr')
-    cal_parser.add_argument('dates', type=str, nargs='*', help=date_help,
-                            metavar='date-expr')
-    reprocess_parser.add_argument('dates', type=str, nargs='*', help=date_help,
-                                  metavar='date-expr')
+    eod_parser.add_argument("-f", "--flags", type=str, help=flags_help,
+                            default="latest")
+    rt_parser.add_argument("-f", "--flags", type=str, help=flags_help,
+                           default="latest")
+    cal_parser.add_argument("-f", "--flags", type=str, help=flags_help,
+                            default="latest")
+    reprocess_parser.add_argument("-f", "--flags", type=str, help=flags_help,
+                                  default="latest")
+    regression_parser.add_argument("-f", "--flags", type=str, help=flags_help,
+                                   default="latest")
 
-    eod_parser.add_argument('-f', '--flags', type=str, help=flags_help,
-                            default='latest')
-    rt_parser.add_argument('-f', '--flags', type=str, help=flags_help,
-                           default='latest')
-    cal_parser.add_argument('-f', '--flags', type=str, help=flags_help,
-                            default='latest')
-    reprocess_parser.add_argument('-f', '--flags', type=str, help=flags_help,
-                                  default='latest')
-
-    nowait_help = 'set to run all dates simultaneously'
-    eod_parser.add_argument('--no-wait', action='store_true', help=nowait_help)
-    rt_parser.add_argument('--no-wait', action='store_true', help=nowait_help)
-    cal_parser.add_argument('--no-wait', action='store_true', help=nowait_help)
-    reprocess_parser.add_argument('--no-wait', action='store_true', help=nowait_help)
+    nowait_help = "set to run all dates simultaneously"
+    eod_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
+    rt_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
+    cal_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
+    reprocess_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
+    regression_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
 
     eod_parser.set_defaults(func=process_eod, parser=eod_parser)
     rt_parser.set_defaults(func=process_rt, parser=rt_parser)
     cal_parser.set_defaults(func=process_cal, parser=cal_parser)
     reprocess_parser.set_defaults(func=reprocess, parser=reprocess_parser)
+    regression_parser.set_defaults(func=regression, parser=regression_parser)
 
     # script sub-command
-    script_parser = subparsers.add_parser('script',
-                                           help='run a given script on days')
-    script_parser.add_argument('dates', type=str, nargs='*', help=date_help,
-                               metavar='date-expr')
-    script_parser.add_argument('-f', '--flags', type=str, help=flags_help,
-                               default='latest')
-    script_parser.add_argument('-n', '--name', type=str, help="name of script",
+    script_parser = subparsers.add_parser("script",
+                                           help="run a given script on days")
+    script_parser.add_argument("dates", type=str, nargs="*", help=date_help,
+                               metavar="date-expr")
+    script_parser.add_argument("-f", "--flags", type=str, help=flags_help,
+                               default="latest")
+    script_parser.add_argument("-n", "--name", type=str, help="name of script",
                                required=True)
-    script_parser.add_argument('--no-wait', action='store_true', help=nowait_help)
+    script_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
     script_parser.set_defaults(func=run_script, parser=script_parser)
 
     # archive sub-command
-    archive_parser = subparsers.add_parser('archive',
-                                           help='archive files to HPSS')
-    archive_parser.add_argument('dates', type=str, nargs='*', help=date_help,
-                                metavar='date-expr')
-    archive_parser.add_argument('-f', '--flags', type=str, help=flags_help,
-                                default='latest')
+    archive_parser = subparsers.add_parser("archive",
+                                           help="archive files to HPSS")
+    archive_parser.add_argument("dates", type=str, nargs="*", help=date_help,
+                                metavar="date-expr")
+    archive_parser.add_argument("-f", "--flags", type=str, help=flags_help,
+                                default="latest")
     archive_parser.set_defaults(func=archive, parser=archive_parser)
 
     # simulate sub-command
-    simulate_parser = subparsers.add_parser('simulate',
-                                            help='simulate realtime processing')
-    simulate_parser.add_argument('dates', type=str, nargs='*',
-                                 help='date to run on in the form YYYYMMDD',
-                                 metavar='date')
-    simulate_parser.add_argument('-f', '--flags', type=str, help=flags_help,
-                                default='latest')
-    simulate_parser.add_argument('--no-eod', action='store_true',
-                                 help='set to not launch end-of-day processing')
+    simulate_parser = subparsers.add_parser("simulate",
+                                            help="simulate realtime processing")
+    simulate_parser.add_argument("dates", type=str, nargs="*",
+                                 help="date to run on in the form YYYYMMDD",
+                                 metavar="date")
+    simulate_parser.add_argument("-f", "--flags", type=str, help=flags_help,
+                                default="latest")
+    simulate_parser.add_argument("--no-eod", action="store_true",
+                                 help="set to not launch end-of-day processing")
     simulate_parser.set_defaults(func=simulate, parser=simulate_parser)
 
     # parse args and call appropriate sub-command
     args = parser.parse_args()
-    if parser.get_default('func'):
+    if parser.get_default("func"):
         args.func(args)
     else:
         parser.print_help()
