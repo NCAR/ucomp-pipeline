@@ -24,9 +24,9 @@ pro ucomp_reprocess_cleanup, run=run
   file_delete, date_dir, /recursive, /allow_nonexistent
 
   ; remove results that have been distributed for the date
-  archive_basedir = run->config('results/archive_basedir')
-  if (n_elements(archive_basedir) gt 0L) then begin
-    ucomp_clearday, run.date, archive_basedir, 'archive', $
+  web_basedir = run->config('results/web_basedir')
+  if (n_elements(web_basedir) gt 0L) then begin
+    ucomp_clearday, run.date, web_basedir, 'web archive', $
                     logger_name=run.logger_name
   endif
 end
