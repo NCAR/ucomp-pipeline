@@ -12,7 +12,7 @@ import socket
 import subprocess
 import sys
 import time
-
+import warnings
 
 PY3 = sys.version_info[0] == 3
 
@@ -20,6 +20,9 @@ if PY3:
     import configparser
 else:
     import ConfigParser as configparser
+
+from astropy.io import fits
+from astropy.utils.exceptions import AstropyUserWarning
 
 
 POLL_SECS = 0.1
@@ -167,6 +170,58 @@ def validate_file(args):
     print("[%d] %s" % (process.pid, " ".join(cmd)))
     terminated = wait_for(process)
 
+
+# ls sub-command
+
+def file_lines(filename):
+    n_lines = 0
+    
+    with open(filename, "r") as f:
+        for line in f.readlines():
+            n_lines += 1
+    return(n_lines)
+
+
+def list_files(files):
+    for f in files:
+        basename = os.path.basename(f)
+        if os.path.isdir(f):
+            n_subfiles = len(glob.glob(os.path.join(f, "*")))
+            name = f"{basename}/"
+            print(f"{name:36s}  {n_subfiles} files")
+        elif os.path.isfile(f):
+            try:
+                with fits.open(f) as fits_file:
+                    primary_header = fits_file[0].header
+                    header_1 = fits_file[1].header
+                    n_exts = f"{len(fits_file) - 1} exts"
+                    wave_region = f"{primary_header['FILTER']:8.3f} nm" if "FILTER" in primary_header else 11 * "-"
+                    data_type = header_1["DATATYPE"]
+                print(f"{basename:36s}  {n_exts:7s}  {wave_region}  [{data_type}]")
+            except OSError:
+                filename, file_extension = os.path.splitext(f)
+                if file_extension in [".log", ".olog", ".txt", ".cfg", ".tarlist"]:
+                    n_lines = file_lines(f)
+                    s = "s" if n_lines != 1 else ""
+                    print(f"{basename:36s}  {n_lines} line{s}")
+                else:
+                    size = os.stat(f).st_size
+                    print(f"{basename:36s}  {size} bytes")
+        else:
+            print(f"{f} - unknown item")
+
+
+def ls(args):
+    files = [f for f in args.files if os.path.isfile(f)]
+    dirs = [d for d in args.files if os.path.isdir(d)]
+
+    if len(files) == 0 and len(dirs) == 1:
+        items = [f for f in glob.glob(os.path.join(dirs[0], "*"))]
+        files = [f for f in items if os.path.isfile(f)]
+        dirs = [d for d in items if os.path.isdir(d)]
+
+    list_files(sorted(dirs))
+    list_files(sorted(files))
 
 
 # log sub-command
@@ -487,6 +542,15 @@ if __name__ == "__main__":
                                  help="level of file to validate, 0 or 1, default=0",
                                  default="0")
     validate_parser.set_defaults(func=validate, parser=validate_parser)
+
+    # ls sub-command
+    ls_parser = subparsers.add_parser("ls",
+                                      help="list UCoMP data files")
+    ls_parser.add_argument("files", nargs="*",
+                           default=".",
+                           help="UCoMP files(s)",
+                           metavar="file(s)")
+    ls_parser.set_defaults(func=ls, parser=ls_parser)
 
     # log sub-command
     log_parser = subparsers.add_parser("log",
