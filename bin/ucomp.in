@@ -195,8 +195,13 @@ def list_files(files):
                     primary_header = fits_file[0].header
                     header_1 = fits_file[1].header
                     n_exts = f"{len(fits_file) - 1} exts"
-                    wave_region = f"{primary_header['FILTER']:8.3f} nm" if "FILTER" in primary_header else 11 * "-"
-                    data_type = header_1["DATATYPE"]
+                    if "FILTER" in primary_header:
+                        wave_region = primary_header["FILTER"]
+                        if type(wave_region) == float:
+                            wave_region = f"{wave_region:8.3f}"
+                    else:
+                        wave_region = 11 * "-"
+                    data_type = f"{header_1['DATATYPE']}" if "DATATYPE" in header_1 else 3 * "-"
                 print(f"{basename:36s}  {n_exts:7s}  {wave_region}  [{data_type}]")
             except OSError:
                 filename, file_extension = os.path.splitext(f)
