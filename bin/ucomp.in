@@ -194,7 +194,8 @@ def list_files(files):
                 with fits.open(f) as fits_file:
                     primary_header = fits_file[0].header
                     header_1 = fits_file[1].header
-                    n_exts = f"{len(fits_file) - 1} exts"
+                    s = "s" if len(fits_file) != 2 else ""
+                    n_exts = f"{len(fits_file) - 1} ext{s}"
                     if "FILTER" in primary_header:
                         wave_region = primary_header["FILTER"]
                         if type(wave_region) == float:
@@ -202,7 +203,7 @@ def list_files(files):
                     else:
                         wave_region = 11 * "-"
                     data_type = f"{header_1['DATATYPE']}" if "DATATYPE" in header_1 else 3 * "-"
-                print(f"{basename:36s}  {n_exts:7s}  {wave_region}  [{data_type}]")
+                print(f"{basename:36s}  {n_exts:8s}  {wave_region}  [{data_type}]")
             except OSError:
                 filename, file_extension = os.path.splitext(f)
                 if file_extension in [".log", ".olog", ".txt", ".cfg", ".tarlist"]:
