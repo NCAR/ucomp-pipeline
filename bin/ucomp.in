@@ -199,24 +199,23 @@ def list_fits_file_default(f):
     print(f"{basename:36s}  {n_exts:8s}  {wave_region}  [{data_type}]")
 
 
-def value2str(v, width=10):
+def value2str(v):
     if type(v) == str:
-        return(f"{v:{width}s}")
+        return(f"{v:10s}")
     elif type(v) == float:
-        return(f"{v:{width}.3f}")
+        return(f"{v:8.3f}")
     elif type(v) == int:
-        return(f"{v:{width}d}")
+        return(f"{v:8d}")
     elif type(v) == bool:
-        return(f"{v!s:{width}s}")
+        return(f"{v!s:5s}")
     elif v is None:
-        return width * "-"
+        return 5 * "-"
     return(f"{v}")
 
 
 def list_fits_file(f, columns):
     basename = os.path.basename(f)
     line = f"{basename:36s}"
-    clen = 10
     with fits.open(f) as fits_file:
         primary_header = fits_file[0].header
         header_1 = fits_file[1].header
@@ -224,9 +223,7 @@ def list_fits_file(f, columns):
             v = primary_header[c] if c in primary_header else None
             if v is None:
                 v = header_1[c] if c in header_1 else None
-            if v is None:
-                v = clen * "-"
-            v = value2str(v, width=clen)
+            v = value2str(v)
             line += f"  {v}"
     print(line)
 
