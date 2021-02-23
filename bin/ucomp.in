@@ -255,17 +255,19 @@ def list_files(files, columns=None):
 
 
 def ls(args):
-    files = [f for f in args.files if os.path.isfile(f)]
-    dirs = [d for d in args.files if os.path.isdir(d)]
-
-    if len(files) == 0 and len(dirs) == 1:
-        items = [f for f in glob.glob(os.path.join(dirs[0], "*"))]
-        files = [f for f in items if os.path.isfile(f)]
-        dirs = [d for d in items if os.path.isdir(d)]
-
-    list_files(sorted(dirs))
-    list_files(sorted(files), columns=args.columns)
-
+    try:
+        files = [f for f in args.files if os.path.isfile(f)]
+        dirs = [d for d in args.files if os.path.isdir(d)]
+    
+        if len(files) == 0 and len(dirs) == 1:
+            items = [f for f in glob.glob(os.path.join(dirs[0], "*"))]
+            files = [f for f in items if os.path.isfile(f)]
+            dirs = [d for d in items if os.path.isdir(d)]
+    
+        list_files(sorted(dirs))
+        list_files(sorted(files), columns=args.columns)
+    except KeyboardInterrupt:
+        pass
 
 # log sub-command
 
@@ -594,9 +596,8 @@ if __name__ == "__main__":
                            help="UCoMP files(s)",
                            metavar="file(s)")
     ls_parser.add_argument("--columns", type=str, nargs="*",
-                           help="FITS keyword name to display",
+                           help="FITS keyword names to display",
                            default=None)
-    # TODO: add -a, -A, -h, also --columns (which would allow FITS keywords to be specified)
     ls_parser.set_defaults(func=ls, parser=ls_parser)
 
     # log sub-command
