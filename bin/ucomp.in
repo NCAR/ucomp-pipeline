@@ -182,7 +182,56 @@ def file_lines(filename):
     return(n_lines)
 
 
-def list_files(files):
+def list_fits_file_default(f):
+    basename = os.path.basename(f)
+    with fits.open(f) as fits_file:
+        primary_header = fits_file[0].header
+        header_1 = fits_file[1].header
+        s = "s" if len(fits_file) != 2 else ""
+        n_exts = f"{len(fits_file) - 1} ext{s}"
+        if "FILTER" in primary_header:
+            wave_region = primary_header["FILTER"]
+            if type(wave_region) == float:
+                wave_region = f"{wave_region:8.3f}"
+        else:
+            wave_region = 11 * "-"
+        data_type = f"{header_1['DATATYPE']}" if "DATATYPE" in header_1 else 3 * "-"
+    print(f"{basename:36s}  {n_exts:8s}  {wave_region}  [{data_type}]")
+
+
+def value2str(v, width=10):
+    if type(v) == str:
+        return(f"{v:{width}s}")
+    elif type(v) == float:
+        return(f"{v:{width}.3f}")
+    elif type(v) == int:
+        return(f"{v:{width}d}")
+    elif type(v) == bool:
+        return(f"{v!s:{width}s}")
+    elif v is None:
+        return width * "-"
+    return(f"{v}")
+
+
+def list_fits_file(f, columns):
+    basename = os.path.basename(f)
+    line = f"{basename:36s}"
+    clen = 10
+    with fits.open(f) as fits_file:
+        primary_header = fits_file[0].header
+        header_1 = fits_file[1].header
+        for c in columns:
+            v = primary_header[c] if c in primary_header else None
+            if v is None:
+                v = header_1[c] if c in header_1 else None
+            if v is None:
+                v = clen * "-"
+            v = value2str(v, width=clen)
+            line += f"  {v}"
+    print(line)
+
+
+def list_files(files, columns=None):
     for f in files:
         basename = os.path.basename(f)
         if os.path.isdir(f):
@@ -191,19 +240,10 @@ def list_files(files):
             print(f"{name:36s}  {n_subfiles} files")
         elif os.path.isfile(f):
             try:
-                with fits.open(f) as fits_file:
-                    primary_header = fits_file[0].header
-                    header_1 = fits_file[1].header
-                    s = "s" if len(fits_file) != 2 else ""
-                    n_exts = f"{len(fits_file) - 1} ext{s}"
-                    if "FILTER" in primary_header:
-                        wave_region = primary_header["FILTER"]
-                        if type(wave_region) == float:
-                            wave_region = f"{wave_region:8.3f}"
-                    else:
-                        wave_region = 11 * "-"
-                    data_type = f"{header_1['DATATYPE']}" if "DATATYPE" in header_1 else 3 * "-"
-                print(f"{basename:36s}  {n_exts:8s}  {wave_region}  [{data_type}]")
+                if columns is None:
+                    list_fits_file_default(f)
+                else:
+                    list_fits_file(f, columns)
             except OSError:
                 filename, file_extension = os.path.splitext(f)
                 if file_extension in [".log", ".olog", ".txt", ".cfg", ".tarlist"]:
@@ -227,7 +267,7 @@ def ls(args):
         dirs = [d for d in items if os.path.isdir(d)]
 
     list_files(sorted(dirs))
-    list_files(sorted(files))
+    list_files(sorted(files), columns=args.columns)
 
 
 # log sub-command
@@ -556,6 +596,10 @@ if __name__ == "__main__":
                            default=".",
                            help="UCoMP files(s)",
                            metavar="file(s)")
+    ls_parser.add_argument("--columns", type=str, nargs="*",
+                           help="FITS keyword name to display",
+                           default=None)
+    # TODO: add -a, -A, -h, also --columns (which would allow FITS keywords to be specified)
     ls_parser.set_defaults(func=ls, parser=ls_parser)
 
     # log sub-command
