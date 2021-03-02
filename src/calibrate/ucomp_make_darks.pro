@@ -221,7 +221,9 @@ pro ucomp_make_darks, run=run
             name=run.logger_name, /debug
   endfor
 
+  mg_log, /check_math, name=run.logger_name, /warn
   ucomp_dark_plots, dark_info->toArray(), dark_images, run=run
+  math_errors = check_math()  ; plotting causes math errors I can't eliminate
 
   done:
   if (obj_valid(dark_headers)) then obj_destroy, dark_headers
