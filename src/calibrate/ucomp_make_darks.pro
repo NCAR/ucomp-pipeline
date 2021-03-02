@@ -75,10 +75,17 @@ pro ucomp_make_darks, run=run
 
     move_keywords_hash = hash()
     for k = 0L, n_elements(move_keywords) - 1L do begin
-      move_keywords_hash[move_keywords[k]] = ucomp_getpar(primary_header, $
-                                                          move_keywords[k], $
-                                                          comment=comment)
-      move_keywords_hash[move_keywords[k] + '_COMMENT'] = comment
+      keyword_value = ucomp_getpar(primary_header, $
+                                   move_keywords[k], $
+                                   comment=comment, $
+                                   found=found)
+      if (found) then begin
+        move_keywords_hash[move_keywords[k]] = 
+        move_keywords_hash[move_keywords[k] + '_COMMENT'] = comment
+      endif else begin
+        mg_log, 'no %s to move to dark header', move_keywords[k], $
+                name=run.loger_name, /warn
+      endelse
     endfor
     t_c0arr = ucomp_getpar(primary_header, 'T_C0ARR', comment=t_c0arr_comment)
     t_c0pcb = ucomp_getpar(primary_header, 'T_C0PCB', comment=t_c0pcb_comment)
