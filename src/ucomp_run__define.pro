@@ -467,6 +467,11 @@ function ucomp_run::config, name
     value = ucomp_get_route(routing_file, self.date, 'raw')
   endif
 
+  if (name eq 'processing/basedir' && n_elements(value) eq 0L) then begin
+    routing_file = self.options->get('routing_file', section='processing')
+    value = ucomp_get_route(routing_file, self.date, 'process')
+  endif
+
   return, value
 end
 
