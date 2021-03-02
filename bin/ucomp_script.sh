@@ -22,10 +22,12 @@ umask 0002
 # find locations relative to this script
 SCRIPT_LOC=$(canonicalpath $0)
 BIN_DIR=$(dirname ${SCRIPT_LOC})
+PIPE_DIR=$(dirname ${BIN_DIR})
 
 SCRIPT_NAME=$1
 shift
 
+source ${BIN_DIR}/ucomp_parse_args.sh
 source ${BIN_DIR}/ucomp_include.sh
 
 # skip first two lines of output (IDL license info)
