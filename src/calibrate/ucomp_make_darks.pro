@@ -80,7 +80,7 @@ pro ucomp_make_darks, run=run
                                    comment=comment, $
                                    found=found)
       if (found) then begin
-        move_keywords_hash[move_keywords[k]] = keyword_vaue
+        move_keywords_hash[move_keywords[k]] = keyword_value
         move_keywords_hash[move_keywords[k] + '_COMMENT'] = comment
       endif else begin
         mg_log, 'no %s to move to dark header', move_keywords[k], $
