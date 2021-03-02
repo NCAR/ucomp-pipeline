@@ -295,30 +295,33 @@ def filter_file(logfile, level_index, follow):
 
     try:
         with open(logfile, "r") as f:
-            while follow or line != "":
-                line = f.readline()
-                if line == "":
-                    try:
-                        time.sleep(POLL_SECS)
-                    except (IOError, KeyboardInterrupt):
-                        return
-                    continue
-
-                if loglevel_prog.match(line):
-                    matched_last_line = True
-                    try:
-                        print(line.rstrip())
-                    except (IOError, KeyboardInterrupt):
-                        return
-                else:
-                    if matched_last_line:
-                        if logstart_prog.match(line):
-                            matched_last_line = False
-                        else:
-                            try:
-                                print(line.rstrip())
-                            except (IOError, KeyboardInterrupt):
-                                return
+            try:
+                while follow or line != "":
+                    line = f.readline()
+                    if line == "":
+                        try:
+                            time.sleep(POLL_SECS)
+                        except IOError:
+                            return
+                        continue
+    
+                    if loglevel_prog.match(line):
+                        matched_last_line = True
+                        try:
+                            print(line.rstrip())
+                        except IOError:
+                            return
+                    else:
+                        if matched_last_line:
+                            if logstart_prog.match(line):
+                                matched_last_line = False
+                            else:
+                                try:
+                                    print(line.rstrip())
+                                except IOError:
+                                    return
+            except KeyboardInterrupt:
+                return
     except IOError:
         print("Problem reading %s" % logfile)
 
