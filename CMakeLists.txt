@@ -47,12 +47,12 @@ if (GIT_FOUND)
     OUTPUT_VARIABLE GIT_SHORTDATE
   )
   execute_process(
-    COMMAND ${GIT_EXECUTABLE} log -1 --pretty=format:%ad --date=local
+    COMMAND ${GIT_EXECUTABLE} log -1 --pretty=format:%ad "--date=format:%a %b %d %H:%M:%S %Y"
     OUTPUT_STRIP_TRAILING_WHITESPACE
     OUTPUT_VARIABLE GIT_LOCALDATE
   )
 
-  # append a * to version if it is not the exact tagged version
+  # append a -dev to version if it is not the exact tagged version
   execute_process(
     COMMAND ${GIT_EXECUTABLE} describe
     ERROR_QUIET
