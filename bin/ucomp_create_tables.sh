@@ -16,7 +16,9 @@ canonicalpath() {
 # find locations relative to this script
 SCRIPT_LOC=$(canonicalpath $0)
 BIN_DIR=$(dirname ${SCRIPT_LOC})
+PIPE_DIR=$(dirname ${BIN_DIR})
 
+source ${BIN_DIR}/ucomp_parse_args.sh
 source ${BIN_DIR}/ucomp_include.sh
 
 ${IDL} -quiet \
