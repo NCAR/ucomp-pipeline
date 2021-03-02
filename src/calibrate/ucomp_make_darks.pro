@@ -203,10 +203,9 @@ pro ucomp_make_darks, run=run
                     times=dark_times, $
                     exptimes=dark_exposures, $
                     gain_modes=dark_gain_modes
-
   
-  tcam_means /= n_tcam
-  rcam_means /= n_rcam
+  tcam_means /= (n_tcam gt 0L ? n_tcam : 1L)
+  rcam_means /= (n_rcam gt 0L ? n_rcam : 1L)
 
   for p = 0L, n_pol_states - 1L do begin
     mg_log, '%d tcam dark means, pol state %d: %s', $
