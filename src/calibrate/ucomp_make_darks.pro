@@ -125,7 +125,7 @@ pro ucomp_make_darks, run=run
                       before='DATATYPE'
 
         for k = 0L, n_elements(move_keywords) - 1L do begin
-          if (move_keyword_hash->haskey(move_keywords[k])) then begin
+          if (move_keywords_hash->haskey(move_keywords[k])) then begin
             after = k eq 0L ? 'T_RACK' : move_keywords[k - 1L]
             type = size(move_keywords_hash[move_keywords[k]], /type)
             ucomp_addpar, dark_header, move_keywords[k], $
