@@ -51,7 +51,7 @@ pro ucomp_make_darks, run=run
   ; the keywords that need to be moved from the primary header in the raw files
   ; to the extensions in the master dark file
   move_keywords = ['T_C0ARR', 'T_C0PCB', 'T_C1ARR', 'T_C1PCB', $
-                   'GAIN', 'FILTER', 'OCCLTR-X', 'OCCLTR-Y', 'O1FOCUS']
+                   'GAIN', 'FILTER', 'OCCLTR-X', 'OCCLTR-Y', 'O1FOCUSE']
 
   for d = 0L, n_dark_files - 1L do begin
     dark_file = dark_files[d]
