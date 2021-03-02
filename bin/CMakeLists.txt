@@ -14,6 +14,7 @@ install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/ucomp_include.sh
         DESTINATION bin)
 
 install(PROGRAMS ucomp_create_tables.sh
+                 ucomp_eod_today.sh
                  ucomp_script.sh
                  ucomp_validate.sh
                  ucomp_validate_dates.sh
