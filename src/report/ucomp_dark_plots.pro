@@ -176,9 +176,9 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
 
   done:
   !p.multi = 0
-  tvlct, original_rgb
-  device, decomposed=original_decomposed
-  set_plot, original_device
+  if (n_elements(original_rgb) gt 0L) then tvlct, original_rgb
+  if (n_elements(original_decomposed) gt 0L) then device, decomposed=original_decomposed
+  if (n_elements(original_device) gt 0L) then set_plot, original_device
 
   mg_log, 'done', name=run.logger_name, /info
 end
