@@ -7,11 +7,11 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
 
   ; save original graphics settings
   original_device = !d.name
-  device, get_decomposed=original_decomposed
-  tvlct, original_rgb, /get
 
   ; setup graphics device
   set_plot, 'Z'
+  device, get_decomposed=original_decomposed
+  tvlct, original_rgb, /get
   device, decomposed=0, $
           set_resolution=[800, 4 * 300]
 
