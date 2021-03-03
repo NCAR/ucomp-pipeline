@@ -440,6 +440,11 @@ def reprocess(args):
     notify_completed(args, "reprocess")
 
 
+def clearday(args):
+    launch_processes(args, "ucomp_clearday_wrapper")
+    notify_completed(args, "clear day")
+
+
 def regression(args):
     launch_processes(args, "ucomp_regression_wrapper")
     notify_completed(args, "regression")
@@ -645,6 +650,8 @@ if __name__ == "__main__":
                                        help="run calibration")
     reprocess_parser = subparsers.add_parser("reprocess",
                                        help="reprocess date(s)")
+    clearday_parser = subparsers.add_parser("clearday",
+                                            help="date(s) to clear")
     regression_parser = subparsers.add_parser("regression", aliases=["regress"],
                                        help="check end-of-day against previous results")
    
@@ -656,6 +663,8 @@ if __name__ == "__main__":
                             metavar="date-expr")
     reprocess_parser.add_argument("dates", type=str, nargs="*", help=date_help,
                                   metavar="date-expr")
+    clearday_parser.add_argument("dates", type=str, nargs="*", help=date_help,
+                                 metavar="date-expr")
     regression_parser.add_argument("dates", type=str, nargs="*", help=date_help,
                                    metavar="date-expr")
 
@@ -667,6 +676,8 @@ if __name__ == "__main__":
                             default="latest")
     reprocess_parser.add_argument("-f", "--flags", type=str, help=flags_help,
                                   default="latest")
+    clearday_parser.add_argument("-f", "--flags", type=str, help=flags_help,
+                                 default="latest")
     regression_parser.add_argument("-f", "--flags", type=str, help=flags_help,
                                    default="latest")
 
@@ -675,12 +686,14 @@ if __name__ == "__main__":
     rt_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
     cal_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
     reprocess_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
+    clearday_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
     regression_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
 
     eod_parser.set_defaults(func=process_eod, parser=eod_parser)
     rt_parser.set_defaults(func=process_rt, parser=rt_parser)
     cal_parser.set_defaults(func=process_cal, parser=cal_parser)
     reprocess_parser.set_defaults(func=reprocess, parser=reprocess_parser)
+    clearday_parser.set_defaults(func=clearday, parser=reprocess_parser)
     regression_parser.set_defaults(func=regression, parser=regression_parser)
 
     # script sub-command
