@@ -84,10 +84,12 @@ find_package(mgunit)
 # always need IDL's include files
 include_directories(${IDL_INCLUDE_DIR})
 
+# must be done before bin/
+add_subdirectory(lib)
+
 add_subdirectory(bin)
 add_subdirectory(config)
 add_subdirectory(gen)
-add_subdirectory(lib)
 add_subdirectory(regression)
 add_subdirectory(resource)
 add_subdirectory(src)
