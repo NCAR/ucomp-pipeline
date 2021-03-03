@@ -110,6 +110,7 @@ function ucomp_calibration::get_dark, obsday_hours, exptime, gain_mode, $
   compile_opt strictarr
 
   found = 0B
+  if (n_elements(*self.darks) eq 0L) then return, !null
 
   ; find the darks with an exposure time that is close enough to the given
   ; exptime
@@ -329,6 +330,7 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, waveleng
   compile_opt strictarr
 
   found = 0B
+  if (n_elements(*self.flats) eq 0L) then return, !null
 
   ; find the darks with an exposure time and wavelength that is close enough to
   ; the given exptime and wavelength
