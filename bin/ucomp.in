@@ -501,13 +501,10 @@ def archive(args):
 # simulate sub-command
 
 def simulate(args):
-    if len(args.dates) == 0:
-        args.parser.error("too few arguments")
-
-    dates = parse_date_expr(",".join(args.dates))
+    dates = parse_date_expr(",".join(args.date))
 
     if len(dates) != 1:
-        args.parser.error("simulator is only valid for a single date")
+        args.parser.error("simulating is only valid for a single date")
 
     # read config file to get options
     pipeline_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
@@ -539,7 +536,7 @@ def simulate(args):
     data_cmd = [os.path.join(pipeline_dir, "bin", "ucomp_simulate_data"),
                 "-r", raw_dir,
                 "--arrival-interval", arrival_interval,
-                os.path.join(depot_basedir, dates[0])]
+                os.path.join(depot_basedir, date[0])]
     data_process = subprocess.Popen(data_cmd)
 
     try:
@@ -584,7 +581,7 @@ if __name__ == "__main__":
 
     # validate sub-command
     validate_parser = subparsers.add_parser("validate",
-                                            help="validate previously processed dates")
+                                            help="validate previously processed date(s)")
     validate_parser.add_argument("dates", type=str, nargs="*", help=date_help,
                                  metavar="date-expr")
 
@@ -598,7 +595,7 @@ if __name__ == "__main__":
 
     # ls sub-command
     ls_parser = subparsers.add_parser("ls",
-                                      help="list UCoMP data files")
+                                      help="list files with extra UCoMP-specific info")
     ls_parser.add_argument("files", nargs="*",
                            default=".",
                            help="UCoMP files(s)",
@@ -617,7 +614,7 @@ if __name__ == "__main__":
     level_help = "filter level: DEBUG INFO WARN ERROR CRITICAL (default DEBUG)"
     log_parser.add_argument("-l", "--level",
                             help=level_help)
-    prune_help = "prune rotated logs with versions higher than MAX_VERSION"
+    prune_help = "delete rotated logs with versions higher than MAX_VERSION"
     log_parser.add_argument("-p", "--prune",
                             help=prune_help,
                             metavar="MAX_VERSION")
@@ -647,12 +644,12 @@ if __name__ == "__main__":
     rt_parser = subparsers.add_parser("realtime", aliases=["rt"],
                                       help="run realtime pipeline")
     cal_parser = subparsers.add_parser("calibration", aliases=["cal"],
-                                       help="run calibration")
+                                       help="produce calibration files for the date(s)")
     reprocess_parser = subparsers.add_parser("reprocess",
                                        help="reprocess date(s)")
     clearday_parser = subparsers.add_parser("clearday",
-                                            help="date(s) to clear")
-    regression_parser = subparsers.add_parser("regression", aliases=["regress"],
+                                            help="clear database and processing for date(s)")
+    regression_parser = subparsers.add_parser("regress",
                                        help="check end-of-day against previous results")
    
     eod_parser.add_argument("dates", type=str, nargs="*", help=date_help,
@@ -698,7 +695,7 @@ if __name__ == "__main__":
 
     # script sub-command
     script_parser = subparsers.add_parser("script",
-                                           help="run a given script on days")
+                                           help="run a specified script on date(s)")
     script_parser.add_argument("dates", type=str, nargs="*", help=date_help,
                                metavar="date-expr")
     script_parser.add_argument("-f", "--flags", type=str, help=flags_help,
@@ -710,7 +707,7 @@ if __name__ == "__main__":
 
     # archive sub-command
     archive_parser = subparsers.add_parser("archive",
-                                           help="archive files to HPSS")
+                                           help="archive files to long-term storage")
     archive_parser.add_argument("dates", type=str, nargs="*", help=date_help,
                                 metavar="date-expr")
     archive_parser.add_argument("-f", "--flags", type=str, help=flags_help,
@@ -720,9 +717,8 @@ if __name__ == "__main__":
     # simulate sub-command
     simulate_parser = subparsers.add_parser("simulate",
                                             help="simulate realtime processing")
-    simulate_parser.add_argument("dates", type=str, nargs="*",
-                                 help="date to run on in the form YYYYMMDD",
-                                 metavar="date")
+    simulate_parser.add_argument("date", type=str, nargs=1,
+                                 help="date to run on in the form YYYYMMDD")
     simulate_parser.add_argument("-f", "--flags", type=str, help=flags_help,
                                 default="latest")
     simulate_parser.add_argument("--no-eod", action="store_true",
