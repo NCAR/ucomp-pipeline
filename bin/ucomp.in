@@ -565,6 +565,13 @@ if __name__ == "__main__":
     # show help if no sub-command given
     parser.set_defaults(func=print_help, parser=parser)
 
+    # TODO: it would be nice to grouop sub-commands into groups, but that is not
+    # possible with argparse right now
+    # helpers: list, ls, log
+    # processing: rt, eod, cal, reprocess
+    # clearday, archive
+    # testing: regress, simulate, validate
+    # etc: script
     subparsers = parser.add_subparsers(help="sub-command help")
 
     date_help = """dates to run on in the form YYYYMMDD including lists (using
@@ -578,20 +585,6 @@ if __name__ == "__main__":
     list_parser = subparsers.add_parser("list",
                                         help="list running UCoMP processes")
     list_parser.set_defaults(func=list_processes, parser=list_parser)
-
-    # validate sub-command
-    validate_parser = subparsers.add_parser("validate",
-                                            help="validate previously processed date(s)")
-    validate_parser.add_argument("dates", type=str, nargs="*", help=date_help,
-                                 metavar="date-expr")
-
-    validate_parser.add_argument("-f", "--flags", type=str, help=flags_help,
-                                 default="latest")
-    validate_parser.add_argument("--file", type=str, help="validate file, instead of data")
-    validate_parser.add_argument("--level", type=str,
-                                 help="level of file to validate, 0 or 1, default=0",
-                                 default="0")
-    validate_parser.set_defaults(func=validate, parser=validate_parser)
 
     # ls sub-command
     ls_parser = subparsers.add_parser("ls",
@@ -649,8 +642,6 @@ if __name__ == "__main__":
                                        help="reprocess date(s)")
     clearday_parser = subparsers.add_parser("clearday",
                                             help="clear database and processing for date(s)")
-    regression_parser = subparsers.add_parser("regress",
-                                       help="check end-of-day against previous results")
    
     eod_parser.add_argument("dates", type=str, nargs="*", help=date_help,
                             metavar="date-expr")
@@ -662,8 +653,6 @@ if __name__ == "__main__":
                                   metavar="date-expr")
     clearday_parser.add_argument("dates", type=str, nargs="*", help=date_help,
                                  metavar="date-expr")
-    regression_parser.add_argument("dates", type=str, nargs="*", help=date_help,
-                                   metavar="date-expr")
 
     eod_parser.add_argument("-f", "--flags", type=str, help=flags_help,
                             default="latest")
@@ -675,8 +664,6 @@ if __name__ == "__main__":
                                   default="latest")
     clearday_parser.add_argument("-f", "--flags", type=str, help=flags_help,
                                  default="latest")
-    regression_parser.add_argument("-f", "--flags", type=str, help=flags_help,
-                                   default="latest")
 
     nowait_help = "set to run all dates simultaneously"
     eod_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
@@ -684,14 +671,56 @@ if __name__ == "__main__":
     cal_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
     reprocess_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
     clearday_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
-    regression_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
 
     eod_parser.set_defaults(func=process_eod, parser=eod_parser)
     rt_parser.set_defaults(func=process_rt, parser=rt_parser)
     cal_parser.set_defaults(func=process_cal, parser=cal_parser)
     reprocess_parser.set_defaults(func=reprocess, parser=reprocess_parser)
     clearday_parser.set_defaults(func=clearday, parser=reprocess_parser)
+
+    # archive sub-command
+    archive_parser = subparsers.add_parser("archive",
+                                           help="archive files to long-term storage")
+    archive_parser.add_argument("dates", type=str, nargs="*", help=date_help,
+                                metavar="date-expr")
+    archive_parser.add_argument("-f", "--flags", type=str, help=flags_help,
+                                default="latest")
+    archive_parser.set_defaults(func=archive, parser=archive_parser)
+
+    # regression sub-command
+    regression_parser = subparsers.add_parser("regress",
+                                              help="check end-of-day against previous results")
+    regression_parser.add_argument("dates", type=str, nargs="*", help=date_help,
+                                   metavar="date-expr")
+    regression_parser.add_argument("-f", "--flags", type=str, help=flags_help,
+                                   default="latest")
+    regression_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
     regression_parser.set_defaults(func=regression, parser=regression_parser)
+
+    # validate sub-command
+    validate_parser = subparsers.add_parser("validate",
+                                            help="validate previously processed date(s)")
+    validate_parser.add_argument("dates", type=str, nargs="*", help=date_help,
+                                 metavar="date-expr")
+
+    validate_parser.add_argument("-f", "--flags", type=str, help=flags_help,
+                                 default="latest")
+    validate_parser.add_argument("--file", type=str, help="validate file, instead of data")
+    validate_parser.add_argument("--level", type=str,
+                                 help="level of file to validate, 0 or 1, default=0",
+                                 default="0")
+    validate_parser.set_defaults(func=validate, parser=validate_parser)
+
+    # simulate sub-command
+    simulate_parser = subparsers.add_parser("simulate",
+                                            help="simulate realtime processing")
+    simulate_parser.add_argument("date", type=str, nargs=1,
+                                 help="date to run on in the form YYYYMMDD")
+    simulate_parser.add_argument("-f", "--flags", type=str, help=flags_help,
+                                default="latest")
+    simulate_parser.add_argument("--no-eod", action="store_true",
+                                 help="set to not launch end-of-day processing")
+    simulate_parser.set_defaults(func=simulate, parser=simulate_parser)
 
     # script sub-command
     script_parser = subparsers.add_parser("script",
@@ -704,26 +733,6 @@ if __name__ == "__main__":
                                required=True)
     script_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
     script_parser.set_defaults(func=run_script, parser=script_parser)
-
-    # archive sub-command
-    archive_parser = subparsers.add_parser("archive",
-                                           help="archive files to long-term storage")
-    archive_parser.add_argument("dates", type=str, nargs="*", help=date_help,
-                                metavar="date-expr")
-    archive_parser.add_argument("-f", "--flags", type=str, help=flags_help,
-                                default="latest")
-    archive_parser.set_defaults(func=archive, parser=archive_parser)
-
-    # simulate sub-command
-    simulate_parser = subparsers.add_parser("simulate",
-                                            help="simulate realtime processing")
-    simulate_parser.add_argument("date", type=str, nargs=1,
-                                 help="date to run on in the form YYYYMMDD")
-    simulate_parser.add_argument("-f", "--flags", type=str, help=flags_help,
-                                default="latest")
-    simulate_parser.add_argument("--no-eod", action="store_true",
-                                 help="set to not launch end-of-day processing")
-    simulate_parser.set_defaults(func=simulate, parser=simulate_parser)
 
     # parse args and call appropriate sub-command
     args = parser.parse_args()
