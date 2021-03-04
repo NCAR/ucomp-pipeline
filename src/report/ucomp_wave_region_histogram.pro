@@ -28,6 +28,10 @@ pro ucomp_wave_region_histogram, output_filename, $
   end_time   = 19   ; 24-hour time in observing day
 
   all_files = run->get_files()
+  if (n_elements(all_files) eq 0L) then begin
+    mg_log, 'no files in inventory, skipping', name=run.logger_name, /warn
+    goto, done
+  endif
   last_hst_time = all_files[-1].hst_time
   end_time >= 24L * (run.date ne all_files[-1].hst_date) $
                 + long(strmid(last_hst_time, 0, 2)) $
@@ -124,6 +128,7 @@ pro ucomp_wave_region_histogram, output_filename, $
         xtickname=strtrim((lindgen(n_bins / 4 + 1L) + ut_start_time) mod 24, 2)
 
   square = mg_usersym(/square, /fill)
+  legend_position = [0.7825, 0.90 - 0.1 * n_nonzero_wave_regions, 0.9575, 0.90]
   mg_legend, item_name=wave_regions + ' [' + wave_names + ']: '+ strtrim(sums, 2), $
              item_color=colors, $
              item_psym=square, $
@@ -132,7 +137,7 @@ pro ucomp_wave_region_histogram, output_filename, $
              charsize=0.85, $
              gap=0.075, $
              line_bump=0.2125, $
-             position=[0.7825, 0.10, 0.9575, 0.90]
+             position=legend_position
 
   im = tvrd(true=1)
   tvlct, original_rgb
@@ -143,4 +148,25 @@ pro ucomp_wave_region_histogram, output_filename, $
   ucomp_mkdir, dir_name, logger_name=run.logger_name
 
   write_png, output_filename, im
+
+  done:
+end
+
+
+; main-level example program
+
+date = '20210303'
+config_filename = filepath('ucomp.production.cfg', $
+                           subdir=['..', '..', 'config'], $
+                           root=mg_src_root())
+run = ucomp_run(date, 'eod', config_filename, /no_log)
+run->make_raw_inventory
+
+engineering_basedir = run->config('engineering/basedir')
+ucomp_wave_region_histogram, filepath(string(run.date, $
+                                             format='(%"%s.ucomp.wave_regions.png")'), $
+                                      subdir=ucomp_decompose_date(run.date), $
+                                      root=engineering_basedir), $
+                             run=run
+
 end
