@@ -194,9 +194,9 @@ def list_fits_file_default(f):
             if type(wave_region) == float:
                 wave_region = f"{wave_region:8.3f}"
         else:
-            wave_region = 11 * "-"
+            wave_region = 8 * "-"
         data_type = f"{header_1['DATATYPE']}" if "DATATYPE" in header_1 else 3 * "-"
-    print(f"{basename:36s}  {n_exts:8s}  {wave_region}  [{data_type}]")
+    print(f"{basename:38s}  {n_exts:8s}  {wave_region}  [{data_type}]")
 
 
 def value2str(v):
