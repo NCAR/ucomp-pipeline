@@ -81,6 +81,7 @@ end
 ;-
 pro ucomp_file::getProperty, raw_filename=raw_filename, $
                              l1_basename=l1_basename, $
+                             intermediate_name=intermediate_name, $
                              hst_date=hst_date, $
                              hst_time=hst_time, $
                              ut_date=ut_date, $
@@ -108,13 +109,15 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
   ; for the file
   if (arg_present(raw_filename)) then raw_filename = self.raw_filename
   if (arg_present(l1_basename)) then begin
-    ; YYYYMMDD.HHMMSS.ucomp.WAVE.N.fts
+    name = n_elements(intermediate_name) eq 0L ? 'l1' : intermediate_name
+    ; YYYYMMDD.HHMMSS.ucomp.WAVE.NAME.N.fts
     self->getProperty, n_unique_wavelengths=n_unique_wavelengths
     l1_basename = string(self.ut_date, $
                          self.ut_time, $
                          self.wave_region, $
+                         name, $
                          n_unique_wavelengths, $
-                         format='(%"%s.%s.ucomp.%s.%d.fts")')
+                         format='(%"%s.%s.ucomp.%s.%s.%d.fts")')
 
   endif
 
