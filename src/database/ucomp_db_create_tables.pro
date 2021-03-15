@@ -36,15 +36,8 @@ pro ucomp_db_create_tables, config_filename
   db = ucomp_db_connect(run->config('database/config_filename'), $
                         run->config('database/config_section'), $
                         status=status, $
-                        error_message=error_message)
-  if (status eq 0) then begin
-    db->getProperty, host_name=host
-    mg_log, 'connected to %s', host, name=run.logger_name, /info
-  endif else begin
-    mg_log, 'failed to connect to database', name=run.logger_name, /error
-    mg_log, error_message, name=run.logger_name, /error
-    goto, done
-  endelse
+                        log_statements=run->config('database/log_statements'))
+  if (status ne 0) then goto, done
 
   ; tables in the order they need to be created
   tables = 'ucomp_' + ['mission', $

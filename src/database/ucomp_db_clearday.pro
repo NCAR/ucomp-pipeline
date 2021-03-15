@@ -11,32 +11,32 @@ pro ucomp_db_clearday, run=run
   compile_opt strictarr
 
   ; clear database for the day 
-  if (~run->config('database/update')) then begin
+  if (run->config('database/update')) then begin
+    mg_log, 'clearing database for the day', name=run.logger_name, /info
+  endif else begin
     mg_log, 'skipping clearing database', name=run.logger_name, /info
     goto, done
-  endif
-
-  mg_log, 'clearing database for the day', name=run.logger_name, /info
+  endelse
 
   filename = run->config('database/config_filename')
   section = run->config('database/config_section')
 
   if (filename eq '' || section eq '') then begin
-    mg_log, 'config filename or section not specified', $
-            name=run.logger_name, /error
-    mg_log, 'cannot connect to database', $
-            name=run.logger_name, /error
+    mg_log, 'config filename or section not specified', name=run.logger_name, /error
+    mg_log, 'cannot connect to database', name=run.logger_name, /error
     goto, done
   endif
 
   db = ucomp_db_connect(filename, section, $
-                        status=status, logger_name=run.logger_name)
-  if (status eq 0) then goto, done
+                        status=status, $
+                        logger_name=run.logger_name, $
+                        log_statements=run->config('database/log_statements'))
+  if (status ne 0) then goto, done
 
   obsday_index = ucomp_db_obsday_insert(run.date, db, $
                                         status=status, $
                                         logger_name=run.logger_name)
-  if (status ne 0L) then return
+  if (status ne 0L) then goto, done
 
   tables = 'ucomp_' + ['raw', 'file', 'eng', 'sci', 'cal']
   for t = 0L, n_elements(tables) - 1L do begin
@@ -46,4 +46,5 @@ pro ucomp_db_clearday, run=run
   
   done:
   if (arg_present(db)) then obj_destroy, db
+  mg_log, 'done', name=run.logger_name, /info
 end

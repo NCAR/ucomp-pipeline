@@ -14,8 +14,7 @@
 pro ucomp_db_update, run=run
   compile_opt strictarr
 
-  mg_log, 'updating database...', $
-          name=run.logger_name, /info
+  mg_log, 'updating database...', name=run.logger_name, /info
 
   ; get the files for the given wave_region
   all_files = run->get_files(count=n_all_files)
@@ -33,8 +32,9 @@ pro ucomp_db_update, run=run
   db = ucomp_db_connect(run->config('database/config_filename'), $
                         run->config('database/config_section'), $
                         logger_name=run.logger_name, $
+                        log_statements=run->config('database/log_statements'), $
                         status=status)
-  if (status eq 0) then goto, done
+  if (status ne 0) then goto, done
 
   ; get the observing day index for the date
   obsday_index = ucomp_db_obsday_insert(run.date, db, $
