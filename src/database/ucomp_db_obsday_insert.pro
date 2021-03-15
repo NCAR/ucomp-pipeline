@@ -15,7 +15,7 @@
 ;   date : in, required, type=string
 ;     date to insert, if needed
 ;   database : in, required, type=object
-;     `MGdbMySQL` database object
+;     `UCOMPdbMySQL` database object
 ;
 ; :Keywords:
 ;   status : out, optional, type=long

@@ -10,7 +10,7 @@
 ;   table : in, required, type=string
 ;     table to clear, i.e., ucomp_file, ucomp_eng, etc.
 ;   db : in, optional, type=object
-;     `MGdbMySQL` database connection to use
+;     `UCOMPdbMySQL` database connection to use
 ;
 ; :Keywords:
 ;   logger_name : in, required, type=string
