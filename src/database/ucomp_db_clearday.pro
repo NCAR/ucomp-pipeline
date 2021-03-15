@@ -30,16 +30,8 @@ pro ucomp_db_clearday, run=run
   endif
 
   db = ucomp_db_connect(filename, section, $
-                        status=status, $
-                        error_message=error_message)
-  if (status eq 0) then begin
-    db->getProperty, host_name=host
-    mg_log, 'connected to %s', host, name=run.logger_name, /info
-  endif else begin
-    mg_log, 'failed to connect to database', name=run.logger_name, /error
-    mg_log, error_message, name=run.logger_name, /error
-    goto, done
-  endelse
+                        status=status, logger_name=run.logger_name)
+  if (status eq 0) then goto, done
 
   obsday_index = ucomp_db_obsday_insert(run.date, db, $
                                         status=status, $

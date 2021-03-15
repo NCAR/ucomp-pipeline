@@ -1,16 +1,16 @@
 ; docformat = 'rst'
 
 ;+
-; Checks if the current version of the pipeline is in the ucomp_sw database
-; table. If it is, the corresponding sw_id is returned. If it is not, a new
-; entry in the table is created and the new sw_id is returned.
+; Checks if the current version of the pipeline is in the `ucomp_sw` database
+; table. If it is, the corresponding `sw_id` is returned. If it is not, a new
+; entry in the table is created and the new `sw_id` is returned.
 ;
 ; :Returns:
 ;   integer
 ;
 ; :Params:
-;   database : in, required, type=object
-;     `MGdbMySQL` database object
+;   db : in, required, type=object
+;     `UCOMPdbMySQL` database object
 ;
 ; :Keywords:
 ;   status : out, optional, type=long
@@ -41,13 +41,6 @@ function ucomp_db_sw_insert, db, status=status, logger_name=logger_name
                  release_date, version, revision, $
                  status=status, error_message=error_message, sql_statement=sql_cmd
     if (status ne 0L) then begin
-      mg_log, 'error inserting into ucomp_sw table', $
-              name=logger_name, /error
-      mg_log, 'status: %d, error message: %s', status, error_message, $
-              name=logger_name, /error
-      mg_log, 'SQL command: %s', sql_cmd, $
-              name=logger_name, /error
-
       sw_index = 0L
       goto, done
     endif
@@ -64,19 +57,7 @@ function ucomp_db_sw_insert, db, status=status, logger_name=logger_name
       for i = 1L, n_elements(obs_day_index) - 1L do begin
         mg_log, 'deleting redundant sw_id=%d', sw_index[i], $
                 name=logger_name, /warn
-        db->execute, 'delete from ucomp_sw where sw_id=%d', $
-                     sw_index[i], $
-                     status=status, $
-                     error_message=error_message, $
-                     sql_statement=sql_cmd
-        if (status ne 0L) then begin
-          mg_log, 'error deleting redundant ucomp_sw entry', $
-                  name=logger_name, /error
-          mg_log, 'status: %d, error message: %s', status, error_message, $
-                  name=logger_name, /error
-          mg_log, 'SQL command: %s', sql_cmd, $
-                  name=logger_name, /error
-        endif
+        db->execute, 'delete from ucomp_sw where sw_id=%d', sw_index[i]
       endfor
 
       ; keep just the first one
