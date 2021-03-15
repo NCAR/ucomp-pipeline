@@ -21,8 +21,12 @@ if PY3:
 else:
     import ConfigParser as configparser
 
-from astropy.io import fits
-from astropy.utils.exceptions import AstropyUserWarning
+try:
+    from astropy.io import fits
+    from astropy.utils.exceptions import AstropyUserWarning
+    ls_requirements = True
+except ModuleNotFoundError as e:
+    ls_requirements = False
 
 
 POLL_SECS = 0.1
@@ -255,6 +259,9 @@ def list_files(files, columns=None):
 
 
 def ls(args):
+    if not ls_requirements:
+        args.parser.error("missing Python packages required for listing FITS files")
+
     try:
         files = [f for f in args.files if os.path.isfile(f)]
         dirs = [d for d in args.files if os.path.isdir(d)]
