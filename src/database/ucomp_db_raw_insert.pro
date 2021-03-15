@@ -18,17 +18,20 @@
 pro ucomp_db_raw_insert, l0_files, obsday_index, db, logger_name=logger_name
   compile_opt strictarr
 
+  n_files = n_elements(l0_files)
+  mg_log, 'inserting %d files into ucomp_raw', n_files, name=logger_name, /info
+
   ; get index for OK quality data files
   q = 'select * from ucomp_quality where quality=''OK'''
-  quality_results = db->query(q, fields=fields)
+  quality_results = db->query(q, status=status)
+  if (status ne 0L) then goto, done
   quality_index = quality_results.quality_id	
 
   ; get index for raw (level 0) data files
   q = 'select * from ucomp_level where level=''L0'''
-  level_results = db->query(q, fields=fields)
+  level_results = db->query(q, status=status)
+  if (status ne 0L) then goto, done
   level_index = level_results.level_id	
-
-  n_files = n_elements(l0_files)
 
   for f = 0L, n_files - 1L do begin
     file = l0_files[f]
@@ -60,14 +63,8 @@ pro ucomp_db_raw_insert, l0_files, obsday_index, db, logger_name=logger_name
                  file.cam1_arr_temp, $
                  file.cam1_pcb_temp, $
 
-                 status=status, $
-                 error_message=error_message, $
-                 sql_statement=sql_cmd
-    if (status ne 0L) then begin
-      mg_log, 'error inserting in ucomp_raw table', name=logger_name, /error
-      mg_log, 'status: %d, error message: %s', status, error_message, $
-              name=logger_name, /error
-      mg_log, 'SQL command: %s', sql_cmd, name=logger_name, /error
-    endif
+                 status=status
   endfor
+
+  done:
 end

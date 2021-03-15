@@ -98,6 +98,50 @@
 ;-
 
 
+;= reporting methods to be implemented by superclasses
+
+;+
+; Hook for superclasses.
+;
+; :Params:
+;   sql_statement : in, required, type=string
+;     SQL statement to report
+;-
+pro mgdbmysql::report_statement, sql_statement
+  compile_opt strictarr
+end
+
+
+;+
+; Hook for superclasses.
+;
+; :Keywords:
+;   sql_statement : in, required, type=string
+;     SQL statement
+;   status : in, required, type=long
+;      status code from the statement, 0 for success
+;   error_message : in, required, type=string
+;      MySQL error message; "Success" if not error
+;-
+pro mgdbmysql::report_error, sql_statement=sql_cmd, $
+                             status=status, $
+                             error_message=error_message
+  compile_opt strictarr
+end
+
+
+;+
+; Hook for superclasses.
+;
+; :Keywords:
+;   n_warnings : in, required, type=long
+;     number of warnings
+;-
+pro mgdbmysql::report_warnings, sql_statement=sql_cmd, n_warnings=n_warnings
+  compile_opt strictarr
+end
+
+
 ;= helper methods
 
 ;+
@@ -375,9 +419,10 @@ function mgdbmysql::query, sql_query, $
                            status=status, $
                            error_message=error_message, $
                            n_affected_rows=n_affected_rows, $
-                           n_warnings=n_warnings
+                           n_warnings=n_warnings, $
+                           count=count
   compile_opt strictarr
-  on_error, 2
+  ;on_error, 2
   on_ioerror, bad_fmt
 
   case n_params() of
@@ -405,11 +450,13 @@ function mgdbmysql::query, sql_query, $
     21: _sql_query = string(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, format='(%"' + sql_query + '")')
   endcase
 
+  self->report_statement, _sql_query
   status = mg_mysql_query(self.connection, _sql_query)
   if (status ne 0) then begin
     error_message = self->last_error_message()
     if (self.quiet || arg_present(status) || arg_present(error_message)) then begin
-      return, !null
+      query_result = !null
+      goto, reporting
     endif else begin
       message, error_message
     endelse
@@ -426,7 +473,7 @@ function mgdbmysql::query, sql_query, $
     endelse
   endif
 
-  query_result = self->_get_results(result, fields=fields)
+  query_result = self->_get_results(result, fields=fields, n_rows=count)
 
   mg_mysql_free_result, result
 
@@ -434,9 +481,13 @@ function mgdbmysql::query, sql_query, $
     n_affected_rows = mg_mysql_affected_rows(self.connection)
   endif
 
-  if (arg_present(n_warnings)) then begin
-    n_warnings = mg_mysql_warning_count(self.connection)
-  endif
+  reporting:
+  n_warnings = mg_mysql_warning_count(self.connection)
+
+  self->report_error, sql_statement=_sql_query, $
+                      status=status, $
+                      error_message=error_message
+  self->report_warnings, sql_statement=_sql_query, n_warnings=n_warnings
 
   return, query_result
 
@@ -500,6 +551,7 @@ pro mgdbmysql::execute, sql_query, $
   on_error, 2
   on_ioerror, bad_fmt
 
+  n_warnings = 0UL
   sql_query_fmt = '(%"' + sql_query + '")'
   case n_params() of
      0: _sql_query = ''
@@ -748,25 +800,26 @@ pro mgdbmysql::execute, sql_query, $
                             format=sql_query_fmt)
   endcase
 
+  self->report_statement, _sql_query
   status = mg_mysql_query(self.connection, _sql_query)
   if (status ne 0) then begin
     error_message = self->last_error_message()
-    if (self.quiet || arg_present(status) || arg_present(error_message)) then begin
-      return
-    endif else begin
+    if (~self.quiet && ~arg_present(status) && ~arg_present(error_message)) then begin
       message, error_message
-    endelse
+    endif
   endif else begin
     error_message = 'Success'
   endelse
 
-  if (arg_present(n_affected_rows)) then begin
+  if (status eq 0L && arg_present(n_affected_rows)) then begin
     n_affected_rows = mg_mysql_affected_rows(self.connection)
   endif
 
-  if (arg_present(n_warnings)) then begin
-    n_warnings = mg_mysql_warning_count(self.connection)
-  endif
+  n_warnings = mg_mysql_warning_count(self.connection)
+  self->report_error, sql_statement=_sql_query, $
+                      status=status, $
+                      error_message=error_message
+  self->report_warnings, sql_statement=_sql_query, n_warnings=n_warnings
 
   return
 
@@ -893,6 +946,8 @@ end
 ;     name of section in `config_filename` containing connection information;
 ;     this section must contain `user` and `password` with optional values
 ;     for `host`, `database`, `port`, and `socket`
+;   multi_statements : in, optional, type=boolean
+;     set to allow multiple statements separated by ";"
 ;   status : out, optional, type=integer
 ;     set to a named variable to retrieve the status of the connection, 0 for
 ;     success; if not 0, `ERROR_MESSAGE` should be set to a non-empty message
@@ -907,6 +962,7 @@ pro mgdbmysql::connect, host=host, $
                         socket=socket, $
                         config_filename=config_filename, $
                         config_section=config_section, $
+                        multi_statements=multi_statements, $
                         status=status, $
                         error_message=error_message
   compile_opt strictarr
@@ -977,6 +1033,7 @@ pro mgdbmysql::connect, host=host, $
   endelse
 
   flags = 0ULL
+  if (keyword_set(multi_statements)) then flags or= ishft(1ULL, 16)
 
   tmp = mg_mysql_real_connect(self.connection, $
                               self.host, _user, _password, $
@@ -1092,7 +1149,7 @@ pro mgdbmysql::getProperty, quiet=quiet, $
 
   quiet = self.quiet
   if (arg_present(client_info)) then client_info = mg_mysql_get_client_info()
-  if (arg_present(client_version)) then version = mg_mysql_get_client_version()
+  if (arg_present(client_version)) then client_version = mg_mysql_get_client_version()
   connected = self.connected
   if (arg_present(proto_info)) then proto_info = mg_mysql_get_proto_info(self.connection)
   if (arg_present(host_info)) then host_info = mg_mysql_get_host_info(self.connection)

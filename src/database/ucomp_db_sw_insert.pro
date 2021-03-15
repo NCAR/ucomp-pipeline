@@ -22,11 +22,17 @@
 function ucomp_db_sw_insert, db, status=status, logger_name=logger_name
   compile_opt strictarr
 
+  mg_log, 'checking if new row needs to be added to ucomp_sw', $
+          name=logger_name, /info
+
+  sw_index = 0L
   version = ucomp_version(revision=revision)
 
   ; check to see if passed observation day date is in mlso_numfiles table
   q = 'select count(sw_id) from ucomp_sw where sw_version=''%s'' and sw_revision=''%s'''
-  sw_id_results = db->query(q, version, revision)
+  mg_log, q, version, revision, name=logger_name, /debug
+  sw_id_results = db->query(q, version, revision, status=status)
+  if (status ne 0L) then goto, done
   sw_id_count = sw_id_results.count_sw_id_
 
   if (sw_id_count eq 0) then begin
@@ -39,7 +45,7 @@ function ucomp_db_sw_insert, db, status=status, logger_name=logger_name
     ; if not already in table, create a new entry for the sw version/revision
     db->execute, 'insert into ucomp_sw (release_date, sw_version, sw_revision) values (''%s'', ''%s'', ''%s'')', $
                  release_date, version, revision, $
-                 status=status, error_message=error_message, sql_statement=sql_cmd
+                 status=status
     if (status ne 0L) then begin
       sw_index = 0L
       goto, done
@@ -49,7 +55,8 @@ function ucomp_db_sw_insert, db, status=status, logger_name=logger_name
   endif else begin
     ; if it is in the database, get the corresponding index
     q = 'select sw_id from ucomp_sw where sw_version=''%s'' and sw_revision=''%s'''
-    sw_id_results = db->query(q, version, revision)
+    sw_id_results = db->query(q, version, revision, status=status)
+    if (status ne 0L) then goto, done
     sw_index = sw_id_results.sw_id
 
     ; remove multiple entries
@@ -57,7 +64,7 @@ function ucomp_db_sw_insert, db, status=status, logger_name=logger_name
       for i = 1L, n_elements(obs_day_index) - 1L do begin
         mg_log, 'deleting redundant sw_id=%d', sw_index[i], $
                 name=logger_name, /warn
-        db->execute, 'delete from ucomp_sw where sw_id=%d', sw_index[i]
+        db->execute, 'delete from ucomp_sw where sw_id=%d', sw_index[i], status=status
       endfor
 
       ; keep just the first one

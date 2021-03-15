@@ -21,14 +21,27 @@
 ;-
 function ucomp_db_connect, filename, section, $
                            logger_name=logger_name, $
+                           log_statements=log_statements, $
                            status=status
   compile_opt strictarr
 
-  db = ucompdbmysql(logger_name=logger_name)
+  db = ucompdbmysql(logger_name=logger_name, log_statements=log_statements)
   db->connect, config_filename=filename, $
                config_section=section, $
                status=status
   if (status ne 0L) then return, !null
+
+  db->getProperty, host_name=host, $
+                   client_version=client_version, $
+                   client_info=client_info, $
+                   server_version=server_version, $
+                   server_info=server_info, $
+                   proto_info=proto_info, $
+                   host_info=host_info
+  mg_log, 'connected to %s', host, name=logger_name, /info
+  mg_log, 'client version: %s (%d)', client_info, client_version, name=logger_name, /debug
+  mg_log, 'server version: %s (%d)', server_info, server_version, name=logger_name, /debug
+  mg_log, 'connected: %s (%d)', host_info, proto_info, name=logger_name, /debug
 
   return, db
 end
