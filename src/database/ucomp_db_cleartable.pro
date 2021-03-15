@@ -24,17 +24,8 @@ pro ucomp_db_cleartable, obsday_index, table, db, $
   db->execute, 'delete from %s where obsday_id=%d', $
                table, obsday_index, $
                status=status, $
-               error_message=error_message, $
-               sql_statement=sql_cmd, $
                n_affected_rows=n_affected_rows
-  if (status ne 0L) then begin
-    mg_log, 'error clearing %s table', table, $
-            name=logger_name, /error
-    mg_log, 'status: %d, error message: %s', status, error_message, $
-            name=logger_name, /error
-    mg_log, 'SQL command: %s', sql_cmd, $
-            name=logger_name, /error
-  endif else begin
+  if (status eq 0L) then begin
     mg_log, '%d rows deleted', n_affected_rows, name=logger_name, /info
-  endelse
+  endif
 end

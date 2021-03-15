@@ -87,23 +87,3 @@ pro ucompdbmysql__define
             logger_name: '', $
             log_statements: 0B }
 end
-
-
-; main-level example
-
-; the below generates a warning because of date_obs has seconds=60
-db = ucompdbmysql()
-db->connect, config_filename='/home/mgalloy/.mysqldb', $
-             config_section='mgalloy@webdev'
-db->execute, 'insert into kcor_img (file_name, date_obs, date_end, obs_day, carrington_rotation, level, quality, producttype, filetype, numsum, exptime) values (''%s'', ''%s'', ''%s'', %d, %d, %d, %d, %d, %d, %d, %f)', $
-             '20131025_171960_kcor_l1', $
-             '2013-10-25 17:19:60', $
-             '2013-10-25 17:19:44', $
-             1300, 2142, 1, 75, 1, 1, 512, 0.0001, $
-             status=status
-last_insert_id = db->query('select last_insert_id()')
-db->execute, 'delete from kcor_img where img_id=%d', last_insert_id.last_insert_id__
-
-obj_destroy, db
-
-end

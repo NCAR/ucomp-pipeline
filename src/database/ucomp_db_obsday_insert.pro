@@ -32,55 +32,48 @@ function ucomp_db_obsday_insert, date, db, status=status, logger_name=logger_nam
 	
   ; check to see if passed observation day date is in mlso_numfiles table
   q = 'select count(obs_day) from mlso_numfiles where obs_day=''%s'''
-  obs_day_results = db->query(q, obs_day)
+  obs_day_results = db->query(q, obs_day, status=status)
+  if (status ne 0L) then goto, done
   obs_day_count = obs_day_results.count_obs_day_
 
   if (obs_day_count eq 0) then begin
+    mg_log, 'inserting a new row in mlso_numfiles...', name=logger_name, /info
     ; if not already in table, create a new entry for the passed observation day
     db->execute, 'insert into mlso_numfiles (obs_day) values (''%s'') ', $
                  obs_day, $
-                 status=status, error_message=error_message, sql_statement=sql_cmd
-    if (status ne 0L) then begin
-      mg_log, 'error inserting into mlso_numfiles table', $
-              name=logger_name, /error
-      mg_log, 'status: %d, error message: %s', status, error_message, $
-              name=logger_name, /error
-      mg_log, 'SQL command: %s', sql_cmd, $
-              name=logger_name, /error
-    endif
+                 status=status
+    if (status ne 0L) then goto, done
 
-    obs_day_index = db->query('select last_insert_id()')
+    obs_day_index = db->query('select last_insert_id()', status=status)
+    mg_log, 'query status: %d', status, name=logger_name, /debug
+    if (status ne 0L) then goto, done
+    mg_log, 'inserted row for %s with id %d', date, obs_day_index, $
+            name=logger_name, /info
   endif else begin
     ; if it is in the database, get the corresponding index, day_id
     q = 'select day_id from mlso_numfiles where obs_day=''%s'''
-    obs_day_results = db->query(q, obs_day, fields=fields)	
+    obs_day_results = db->query(q, obs_day, status=status)
+    if (status ne 0L) then goto, done
     obs_day_index = obs_day_results.day_id
 
-    ; remove multiple entries
-    if (n_elements(obs_day_index) gt 1L) then begin
-      for i = 1L, n_elements(obs_day_index) - 1L do begin
-        mg_log, 'deleting redundant day_id=%d', obs_day_index[i], $
-                name=logger_name, /warn
-        db->execute, 'delete from mlso_numfiles where day_id=%d', $
-                     obs_day_index[i], $
-                     status=status, $
-                     error_message=error_message, $
-                     sql_statement=sql_cmd
-        if (status ne 0L) then begin
-          mg_log, 'error deleting redundant mlso_numfiles entry', $
-                  name=logger_name, /error
-          mg_log, 'status: %d, error message: %s', status, error_message, $
-                  name=logger_name, /error
-          mg_log, 'SQL command: %s', sql_cmd, $
-                  name=logger_name, /error
-        endif
-      endfor
+    ; remove multiple entries -- this shouldn't happen, it is only correcting
+    ; for a corrupted database table
+    for i = 1L, n_elements(obs_day_index) - 1L do begin
+      mg_log, 'deleting redundant day_id=%d', obs_day_index[i], $
+              name=logger_name, /warn
+      db->execute, 'delete from mlso_numfiles where day_id=%d', $
+                   obs_day_index[i], $
+                   status=status, $
+                   error_message=error_message, $
+                   sql_statement=sql_cmd
+      if (status ne 0L) then goto, done
+    endfor
 
-      ; keep just the first one
-      mg_log, 'keeping day_id=%d', obs_day_index[0], name=logger_name, /debug
-      obs_day_index = obs_day_index[0]
-    endif
+    ; keep just the first one
+    mg_log, 'using day_id=%d', obs_day_index[0], name=logger_name, /debug
+    obs_day_index = obs_day_index[0]
   endelse
-								 
-  return, obs_day_index							 
+
+  done:
+  return, obs_day_index
 end
