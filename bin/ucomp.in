@@ -28,6 +28,15 @@ try:
 except ModuleNotFoundError as e:
     ls_requirements = False
 
+try:
+    import mysql
+    import mysql.connector
+    import packaging.specifiers
+    import packaging.version
+    versions_requirements = True
+except ModuleNotFoundError as e:
+    versions_requirements = False
+
 
 POLL_SECS = 0.1
 
@@ -391,9 +400,172 @@ def filter_log(args):
         filter_file(f, level_index, follow)
 
 
+# versions sub-command
+def versions(args):
+    if not versions_requirements:
+        args.parser.error("missing Python packages required for querying database")
+
+    dates = split_dates(",".join(args.dates), args.parser.error)
+    host, user, password, port, database = get_login(args.flags, args.parser.error)
+
+    versions_list = []
+    try:
+        connection = mysql.connector.connect(host=host, user=user, password=password)
+        cursor = connection.cursor()
+        for d in dates:
+            versions_list.append(get_version(d, cursor))
+    except mysql.connector.Error as e:
+        print(e)
+    finally:
+        cursor.close()
+        connection.close()
+
+    filter = make_version_filter(args.filter)
+
+    if args.oldest:
+        f = [v for v in versions_list if v[1] is not None and v[1][0] != "-"]
+        s = sorted(f, key=lambda v: packaging.version.parse(v[1]))
+        for d, v, r in s:
+            if v != "<unknown>":
+                print(f"{d}: {v:12s} {r:8s}")
+                break
+    elif args.summary:
+        f = [v for v in versions_list if v[1] is not None and v[1][0] != "-"]
+        s = sorted(f, key=lambda v: packaging.version.parse(v[1]))
+        current_version = ''
+        n_dates = 0
+        for d, v, r in s:
+            if v == current_version:
+                n_dates += 1
+            else:
+                if n_dates != 0 and filter(current_version):
+                    plural = "s" if n_dates > 1 else ""
+                    print(f"{current_version}: {n_dates} day{plural}")
+                current_version = v
+                n_dates = 1
+        else:
+            if n_dates > 0 and filter(current_version):
+                plural = "s" if n_dates > 1 else ""
+                print(f"{current_version}: {n_dates} day{plural}")
+    else:
+        for d, v, r in versions_list:
+            if v is not None:
+                print(f"{d}: {v:12s} {r:8s}")
+
+
+def make_version_filter(filter_expression):
+    def null_filter(version):
+        return True
+
+    def filter_function(version):
+        return packaging.version.parse(version) in spec
+
+    if filter_expression is None:
+        return( null_filter)
+
+    spec = packaging.specifiers.SpecifierSet(filter_expression)
+    return(filter_function)
+
+
+def get_version(date, cursor):
+    null_version = "----------"
+    null_revision = "--------"
+    unknown_version = "<unknown>"
+    unknown_revision = "<unknown>"
+
+    year  = date[0:4]
+    month = date[4:6]
+    day   = date[6:8]
+    q = f"select * from MLSO.mlso_numfiles where obs_day='{year}-{month}-{day}';"
+    cursor.execute(q)
+    row = cursor.fetchone()
+    if row is None:
+        return(date, None, None)
+    else:
+        day_id = row[0]
+
+        q = f"select ucomp_sw_id from MLSO.ucomp_eng where obsday_id={day_id} limit 1;"
+        cursor.execute(q)
+        row = cursor.fetchone()
+        if row is None:
+            return(date, null_version, null_revision)
+        else:
+            sw_id = row[0]
+            if sw_id is None:
+                return(date, unknown_version, unknown_revision)
+
+            q = f"select * from MLSO.ucomp_sw where sw_id={sw_id};"
+            cursor.execute(q)
+            row = cursor.fetchone()
+            if row is None:
+                return(date, null_version, null_revision)
+            else:
+                return(date, row[2], row[3])
+
+
+def increment_date(date):
+    format = "%Y%m%d"
+    d = datetime.datetime.strptime(date, format)
+    d += datetime.timedelta(days=1)
+    return(d.strftime(format))
+
+
+def split_dates(date_expr, error):
+    dates = []
+    date_re = re.compile("^[12][0-9]{7}$")
+    date_range_re = re.compile("^[12][0-9]{7}-[12][0-9]{7}$")
+    for d in date_expr.split(","):
+        if date_re.match(d):
+            dates.append(d)
+        elif date_range_re.match(d):
+            start_date = d[0:8]
+            end_date = d[9:17]
+            if end_date <= start_date:
+                error(f"end of range before start of range: {d}")
+            date = start_date
+            while date < end_date:
+                dates.append(date)
+                date = increment_date(date)
+        else:
+            error(f"invalid date expression: {d}")
+
+    return(dates)
+
+
+def get_login(flags, error):
+    config_basename = f"ucomp.{flags}.cfg"
+
+    # construct config file filename
+    config_filename = os.path.join(PIPELINE_DIR, "config", config_basename)
+    if not os.path.isfile(config_filename):
+        basename = os.path.basename(config_filename)
+        error(f"configuration file does not exist: {basename}")
+
+    kcor_config = configparser.ConfigParser()
+    kcor_config.read(config_filename)
+
+    try:
+        mysql_config_filename = kcor_config.get("database", "config_filename")
+        mysql_config_section = kcor_config.get("database", "config_section")
+    except configparser.NoSectionError:
+        args.parser.error("database information not specified")
+
+    mysql_config = configparser.ConfigParser()
+    mysql_config.read(mysql_config_filename)
+
+    try:
+        host = mysql_config.get(mysql_config_section, "host")
+        user = mysql_config.get(mysql_config_section, "user")
+        password = mysql_config.get(mysql_config_section, "password")
+        port = mysql_config.get(mysql_config_section, "port")
+        database = mysql_config.get(mysql_config_section, "database")
+    except configparser.NoSectionError:
+        args.parser.error("incomplete database information")
+
+    return(host, user, password, port, database)
+
 
 # realtime, eod, and calibrate sub-commands
-
 def parse_date_expr(date_expr):
     dates = []
 
@@ -574,7 +746,7 @@ if __name__ == "__main__":
 
     # TODO: it would be nice to grouop sub-commands into groups, but that is not
     # possible with argparse right now
-    # helpers: list, ls, log
+    # helpers: list, ls, log, versions
     # processing: rt, eod, cal, reprocess
     # clearday, archive
     # testing: regress, simulate, validate
@@ -637,6 +809,21 @@ if __name__ == "__main__":
                             help="CRITICAL filter level",
                             action="store_true")
     log_parser.set_defaults(func=filter_log, parser=log_parser)
+
+    # versions sub-command
+    versions_parser = subparsers.add_parser("versions", help="list versions")
+    versions_parser.add_argument("dates", type=str, nargs="*", help=date_help,
+                                 metavar="date-expr")
+    versions_parser.add_argument("-f", "--flags", type=str, help=flags_help,
+                                 default="latest")
+    versions_parser.add_argument("--filter", type=str,
+                                 help="expression to filter versions by",
+                                 default=None)
+    versions_parser.add_argument("-o", "--oldest", action="store_true",
+                                 help="set to only display the oldest version")
+    versions_parser.add_argument("-s", "--summary", action="store_true",
+                                 help="set to display a summary of versions")
+    versions_parser.set_defaults(func=versions, parser=versions_parser)
 
     # eod, rt, cal sub-commands
     eod_parser = subparsers.add_parser("end-of-day", aliases=["eod"],
