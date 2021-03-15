@@ -9,7 +9,7 @@
 ;   obsday_index : in, required, type=integer
 ;     index into mlso_numfiles database table
 ;   database : in, optional, type=object
-;     `MGdbMySQL` database connection to use
+;     `UCOMPdbMySQL` database connection to use
 ;
 ; :Keywords:
 ;   logger_name : in, required, type=string

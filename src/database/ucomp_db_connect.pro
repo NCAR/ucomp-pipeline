@@ -4,7 +4,7 @@
 ; Connect to the database.
 ;
 ; :Returns:
-;   `MGdbMySQL` object, or `!null` if could not connect
+;   `UCOMPdbMySQL` object, or `!null` if could not connect
 ;
 ; :Params:
 ;   filename : in, required, type=string
@@ -20,14 +20,14 @@
 ;     error message if status not 0
 ;-
 function ucomp_db_connect, filename, section, $
-                           status=status, $
-                           error_message=error_message
+                           logger_name=logger_name, $
+                           status=status
   compile_opt strictarr
 
-  db = mgdbmysql()
+  db = ucompdbmysql(logger_name=logger_name)
   db->connect, config_filename=filename, $
                config_section=section, $
-               status=status, error_message=error_message
+               status=status
   if (status ne 0L) then return, !null
 
   return, db

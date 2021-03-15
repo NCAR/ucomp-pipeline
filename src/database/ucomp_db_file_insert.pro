@@ -11,7 +11,7 @@
 ;   sw_index : in, required, type=integer
 ;     index into ucomp_sw database table
 ;   database : in, required, type=object
-;     `MGdbMySQL` database connection to use
+;     `UCOMPdbMySQL` database connection to use
 ;
 ; :Keywords:
 ;   logger_name : in, optional, type=string
