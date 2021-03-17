@@ -207,7 +207,7 @@ pro ucomp_file::_inventory
   if (n_elements(filter) gt 0L && filter ne '') then begin
     self.wave_region = strtrim(long(filter), 2)
   endif else begin
-    self.wave_region = !null
+    self.wave_region = ''
   endelse
 
   self.data_type = ucomp_getpar(extension_header, 'DATATYPE')
