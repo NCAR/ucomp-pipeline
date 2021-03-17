@@ -203,10 +203,15 @@ pro ucomp_file::_inventory
   ; read a representative, test extension header
   fits_read, fcb, extension_data, extension_header, exten_no=1, /header_only
 
-  self.wave_region = strtrim(long(ucomp_getpar(primary_header, 'FILTER')), 2)
+  filter = ucomp_getpar(primary_header, 'FILTER')
+  if (n_elements(filter) gt 0L && filter ne '') then begin
+    self.wave_region = strtrim(long(filter), 2)
+  endif else begin
+    self.wave_region = !null
+  endelse
+
   self.data_type = ucomp_getpar(extension_header, 'DATATYPE')
   self.date_obs  = ucomp_getpar(primary_header, 'DATE-OBS')
-;  self.date_end  = ucomp_getpar(primary_header, 'DATE-END')
 
   cover = ucomp_getpar(extension_header, 'COVER')
   self.cover_in = cover eq 'in'
@@ -301,7 +306,6 @@ pro ucomp_file__define
            ut_time             : '', $
            obsday_hours        : 0.0, $
            date_obs            : '', $
-           date_end            : '', $
            n_extensions        : 0L, $
 
            wave_region         : '', $

@@ -3,7 +3,6 @@ create table ucomp_raw (
   raw_id           int (10) auto_increment primary key,
   file_name        char (40) not null,
   date_obs         datetime not null,
-  date_end         datetime not null,
   obsday_id        mediumint (5) not null,
 
   -- TODO: datatype
