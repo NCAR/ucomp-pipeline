@@ -54,7 +54,7 @@ pro ucomp_make_flats, wave_region, run=run
   ; the keywords that need to be moved from the primary header in the raw files
   ; to the extensions in the master flat file
   move_keywords = ['T_C0ARR', 'T_C0PCB', 'T_C1ARR', 'T_C1PCB', $
-                   'GAIN', 'FILTER', 'OCCLTR-X', 'OCCLTR-Y', 'O1FOCUSE']
+                   'GAIN', 'OCCLTR-X', 'OCCLTR-Y', 'O1FOCUSE']
 
   for f = 0L, n_flat_files - 1L do begin
     flat_file = flat_files[f]
