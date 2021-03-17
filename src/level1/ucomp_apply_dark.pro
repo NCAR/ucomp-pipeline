@@ -35,10 +35,11 @@ pro ucomp_apply_dark, file, primary_header, data, headers, run=run
   ; for each extension in file
   for e = 0L, n_exts - 1L do begin
     science_dark = cal->get_dark(obsday_hours, exptime, gain_mode, found=dark_found, $
-                                extensions=dark_extensions, coefficients=dark_coefficients)
+                                 extensions=dark_extensions, coefficients=dark_coefficients)
     if (~dark_found) then begin
-      mg_log, 'dark not found for ext %d', e + 1, $
+      mg_log, 'dark not found for ext %d, skipping', e + 1, $
               name=run.logger_name, /warn
+      continue
     endif
 
     im = data[*, *, *, *, e]
