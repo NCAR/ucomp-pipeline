@@ -97,6 +97,8 @@ pro ucomp_wave_region_histogram, output_filename, $
   for w = 0L, n_nonzero_wave_regions - 1L do begin
     if (mg_in(lines, wave_regions[w])) then begin
       wave_names[w] = run->line(wave_regions[w], 'name')
+    endif if (wave_regions[w] eq '') then begin
+      wave_names[w] = 'darks'
     endif else begin
       wave_names[w] = 'unknown'
     endelse
