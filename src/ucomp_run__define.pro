@@ -60,9 +60,10 @@ pro ucomp_run::make_raw_inventory, raw_files, $
   for f = 0L, n_raw_files - 1L do begin
     file = ucomp_file(_raw_files[f])
 
-    mg_log, '%s.%s [%s nm] %s', $
-            file.ut_date, file.ut_time, $
-            file.wave_region, $
+    mg_log, '%s.%s [%s] %s', $
+            file.ut_date, $
+            file.ut_time, $
+            file.wave_region eq '' ? '---' : string(file.wave_region, format='(%"%s nm")'), $
             file.data_type, $
             name=logger_name, /debug
 
