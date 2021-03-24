@@ -131,7 +131,9 @@ pro ucomp_wave_region_histogram, output_filename, $
 
   square = mg_usersym(/square, /fill)
   legend_position = [0.7825, 0.90 - 0.1 * n_nonzero_wave_regions, 0.9575, 0.90]
-  mg_legend, item_name=wave_regions + ' [' + wave_names + ']: '+ strtrim(sums, 2), $
+  wave_region_names = wave_regions
+  wave_region_names[where(wave_regions eq '', /null)] = '-'
+  mg_legend, item_name=wave_region_names + ' [' + wave_names + ']: '+ strtrim(sums, 2), $
              item_color=colors, $
              item_psym=square, $
              item_symsize=1.5, $
@@ -157,7 +159,7 @@ end
 
 ; main-level example program
 
-date = '20210303'
+date = '20210323'
 config_filename = filepath('ucomp.production.cfg', $
                            subdir=['..', '..', 'config'], $
                            root=mg_src_root())
