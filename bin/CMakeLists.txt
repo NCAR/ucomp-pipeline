@@ -1,6 +1,7 @@
 configure_file(ucomp_include.sh.in ucomp_include.sh @ONLY)
 configure_file(ucomp.in ucomp @ONLY)
 configure_file(ucompd.in ucompd @ONLY)
+configure_file(ucomp_nightly.sh.in ucomp_nightly.sh @ONLY)
 
 configure_file(ucomp_simulate_data.in ucomp_simulate_data.sh @ONLY)
 configure_file(ucomp_simulate_processing.in ucomp_simulate_processing.sh @ONLY)
