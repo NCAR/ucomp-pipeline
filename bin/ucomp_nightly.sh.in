@@ -1,0 +1,35 @@
+#!/bin/sh
+
+SOURCE_LOCATION=/hao/dawn/Data/UCoMP/ucomp-pipeline.nightly-source
+INSTALL_LOCATION=/hao/dawn/Data/UCoMP/ucomp-pipeline.nightly-install
+
+# remove old checkout
+rm -rf ${SOURCE_LOCATION} ${INSTALL_LOCATION}
+
+# clone repo
+REMOTE=$(@GIT_EXECUTABLE@ config --get remote.origin.url)
+@GIT_EXECUTABLE@ clone ${REMOTE} ${SOURCE_LOCATION}
+
+# configure
+mkdir ${SOURCE_LOCATION}/build
+cd ${SOURCE_LOCATION}/build
+
+IDL_ROOT_DIR=@IDL_ROOT_DIR@
+
+cmake \
+  -DCMAKE_INSTALL_PREFIX:PATH=${INSTALL_LOCATION} \
+  -DIDL_ROOT_DIR:PATH=${IDL_ROOT_DIR} \
+  ..
+ 
+# build
+make
+
+# run unit tests
+make unit
+STATUS=$?
+
+# run regression tests
+
+# send email
+HTTP_LOCATION=https://download.hao.ucar.edu/in/dawn/Data/UCoMP/ucomp-pipeline.nightly-source
+cat ${HTTP_LOCATION} | mail -s "UCoMP nightly results" -r $(whoami)@ucar.edu mgalloy@ucar.edu
