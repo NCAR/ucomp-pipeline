@@ -1,14 +1,46 @@
 #!/bin/sh
 
-SOURCE_LOCATION=/hao/dawn/Data/UCoMP/ucomp-pipeline.nightly-source
-INSTALL_LOCATION=/hao/dawn/Data/UCoMP/ucomp-pipeline.nightly-install
+canonicalpath() {
+  if [ -d $1 ]; then
+    pushd $1 > /dev/null 2>&1
+    echo $PWD
+  elif [ -f $1 ]; then
+    pushd $(dirname $1) > /dev/null 2>&1
+    echo $PWD/$(basename $1)
+  else
+    echo "Invalid path $1"
+  fi
+  popd > /dev/null 2>&1
+}
+
+SCRIPT_LOCATION=$(canonicalpath $0)
+
+DATE=$(date +"%Y-%m-%d")
+
+MACHINE=@NIGHTLY_MACHINE@
+if [ -z "$MACHINE" ]; then
+  SUBJECT="No UCoMP nightly results for ${DATE}"
+  mail -s "${SUBJECT}" -r $(whoami)@ucar.edu $(whoami)@ucar.edu <<< "No NIGHTLY_MACHINE in CMake configuration"
+  exit 1
+fi
+
+LOCATION=/hao/${MACHINE}/Data/UCoMP
+SOURCE_LOCATION=${LOCATION}/ucomp-pipeline.nightly-source
+INSTALL_LOCATION=${LOCATION}/ucomp-pipeline.nightly-install
+
+LOG_DIRNAME=$(mktemp -d -t ucomp.nightly-XXXXXXXXXX)
+MESSAGE_FILENAME=${LOG_DIRNAME}/nightly-message.txt
+LOG_FILENAME=${LOG_DIRNAME}/nightly.log
+
+touch ${LOG_FILENAME}
+touch ${MESSAGE_FILENAME}
 
 # remove old checkout
 rm -rf ${SOURCE_LOCATION} ${INSTALL_LOCATION}
 
 # clone repo
 REMOTE=$(@GIT_EXECUTABLE@ config --get remote.origin.url)
-@GIT_EXECUTABLE@ clone ${REMOTE} ${SOURCE_LOCATION}
+@GIT_EXECUTABLE@ clone ${REMOTE} ${SOURCE_LOCATION} >> ${LOG_FILENAME} 2>&1
 
 # configure
 mkdir ${SOURCE_LOCATION}/build
@@ -19,17 +51,25 @@ IDL_ROOT_DIR=@IDL_ROOT_DIR@
 cmake \
   -DCMAKE_INSTALL_PREFIX:PATH=${INSTALL_LOCATION} \
   -DIDL_ROOT_DIR:PATH=${IDL_ROOT_DIR} \
-  ..
+  .. >> ${LOG_FILENAME} 2>&1
  
 # build
-make
+make >> ${LOG_FILENAME} 2>&1
 
 # run unit tests
-make unit
-STATUS=$?
+make unit >> ${LOG_FILENAME} 2>&1
+
+UNITTESTS_SUMMARY_LINE=$(tail -3 ${LOG_FILENAME} | head -1)
+echo "Unit tests: ${UNITTESTS_SUMMARY_LINE}" >> ${MESSAGE_FILENAME}
+HTTP_LOCATION=https://download.hao.ucar.edu/in/${MACHINE}/Data/UCoMP/ucomp-pipeline.nightly-source/build/unittests.html
+echo -e "\n  ${HTTP_LOCATION}\n" >> ${MESSAGE_FILENAME}
 
 # run regression tests
 
 # send email
-HTTP_LOCATION=https://download.hao.ucar.edu/in/dawn/Data/UCoMP/ucomp-pipeline.nightly-source
-cat ${HTTP_LOCATION} | mail -s "UCoMP nightly results" -r $(whoami)@ucar.edu mgalloy@ucar.edu
+echo "Sent from ${SCRIPT_LOCATION} ($(whoami)@$(hostname))" >> ${MESSAGE_FILENAME}
+SUBJECT="UCoMP nightly results for ${DATE}"
+mail -s "${SUBJECT}" -a "${LOG_FILENAME}" -r $(whoami)@ucar.edu $(whoami)@ucar.edu < ${MESSAGE_FILENAME}
+
+# clean up
+rm -rf ${LOG_DIRNAME}
