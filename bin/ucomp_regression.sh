@@ -26,7 +26,7 @@ LOG_DIR=/hao/twilight/Data/UCoMP/logs.regression
 
 CONFIG=${PIPE_DIR}/config/ucomp.regression.cfg
 STATUS=0
-for day in ${dates[@]}; do
+for day in ${DATES[@]}; do
   ${IDL} -quiet -IDL_QUIET 1 -IDL_STARTUP "" \
     -IDL_PATH ${UCOMP_PATH} -IDL_DLM_PATH ${UCOMP_DLM_PATH} \
     -e "ucomp_regression_wrapper, '${day}', '${CONFIG}'" > /dev/null 2>&1
