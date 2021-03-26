@@ -15,8 +15,10 @@ IDL_ROOT_DIR=/opt/share/idl8.7.3/idl87
 
 cmake \
   -DCMAKE_INSTALL_PREFIX:PATH=~/software/ucomp-pipeline${FLAGS} \
-  -DGIT_EXECUTABLE:PATH=/home/mgalloy/software/bin/git \
+  -DGIT_DIR:PATH=/usr/bin \
   -DIDL_ROOT_DIR:PATH=${IDL_ROOT_DIR} \
   -DNIGHTLY_MACHINE:STRING=dawn \
   -DNIGHTLY_SSH_KEY:STRING=/home/mgalloy/.ssh/id_rsa2 \
   ..
+
+#-DGIT_DIR:PATH=/home/mgalloy/software/bin \
