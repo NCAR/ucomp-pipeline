@@ -11,6 +11,8 @@
 pro ucomp_regression_wrapper, date, config_filename
   compile_opt strictarr
 
+  status = 0L
+
   ; run the end-of-day pipeline
   ucomp_reprocess_wrapper, date, config_filename
 
@@ -48,6 +50,7 @@ pro ucomp_regression_wrapper, date, config_filename
     extra_in_results = mg_complement(result_matches, n_results, $
                                      count=n_extra_in_results)
     if (n_extra_in_results gt 0L) then begin
+      status or= 1L
       mg_log, '%d extra file%s in results', $
               n_extra_in_results, n_extra_in_results gt 1L ? 's' : '', $
               name=run.logger_name, /warn
@@ -62,6 +65,7 @@ pro ucomp_regression_wrapper, date, config_filename
     missing_in_results = mg_complement(standard_matches, n_standards, $
                                        count=n_missing_in_results)
     if (n_missing_in_results gt 0L) then begin
+      status or= 2L
       mg_log, '%d missing file%s in results', $
               n_missing_in_results, n_missing_in_results gt 1L ? 's' : '', $
               name=run.logger_name, /warn
@@ -83,20 +87,24 @@ pro ucomp_regression_wrapper, date, config_filename
     standard_is_dir = file_test(standard_path, /directory)
     if (result_is_dir && standard_is_dir) then continue
     if (result_is_dir && ~standard_is_dir) then begin
+      status or= 4L
       mg_log, 'result %s is a directory, but standard is not', $
               results[result_matches[m]], $
               name=run.logger_name, /warn
     endif
     if (~result_is_dir && standard_is_dir) then begin
+      status or= 4L
       mg_log, 'result %s is a directory, but standard is not', $
               results[result_matches[m]], $
               name=run.logger_name, /warn
     endif
 
     if (stregex(results[result_matches[m]], '.*\.fts(\.gz)?', /boolean)) then begin
-      ucomp_compare_fits, result_path, standard_path, run.logger_name
+      ucomp_compare_fits, result_path, standard_path, run.logger_name, status=compare_status
+      if (compare_status ne 0L) then status or= 4L
     endif else begin
-      ucomp_compare_text, result_path, standard_path, run.logger_name
+      ucomp_compare_text, result_path, standard_path, run.logger_name, status=compare_status
+      if (compare_status ne 0L) then status or= 4L
     endelse
   endfor
 
@@ -107,4 +115,17 @@ pro ucomp_regression_wrapper, date, config_filename
 
   if (obj_valid(run)) then obj_destroy, run
   mg_log, /quit
+
+  exit, /no_confirm, status=status
+end
+
+
+; main-level example
+
+date = '20210204'
+config_filename = filepath('ucomp.regression.cfg', $
+                           subdir=['..', 'config'], $
+                           root=mg_src_root())
+ucomp_regression_wrapper, date, config_filename
+
 end
