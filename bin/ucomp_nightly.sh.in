@@ -73,7 +73,7 @@ make >> ${LOG_FILENAME} 2>&1
 
 # run unit tests
 echo "pwd=$(pwd)" >> ${LOG_FILENAME} 2>&1
-make unit >> ${LOG_FILENAME} 2>&1
+make htmlunit >> ${LOG_FILENAME} 2>&1
 
 UNITTESTS_SUMMARY_LINE=$(tail -3 ${LOG_FILENAME} | head -1)
 echo "Unit tests: ${UNITTESTS_SUMMARY_LINE}" >> ${MESSAGE_FILENAME}
