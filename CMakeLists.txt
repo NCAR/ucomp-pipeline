@@ -20,7 +20,7 @@ set(CMAKE_MODULE_PATH
 
 set(GIT_VERSION "${VERSION}")
 
-find_package(Git)
+find_package(Git 2.7)
 if (GIT_FOUND)
   execute_process(
     COMMAND ${GIT_EXECUTABLE} log -1 --pretty=format:%h
