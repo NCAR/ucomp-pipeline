@@ -17,4 +17,5 @@ cmake \
   -DCMAKE_INSTALL_PREFIX:PATH=~/software/ucomp-pipeline${FLAGS} \
   -DIDL_ROOT_DIR:PATH=${IDL_ROOT_DIR} \
   -DNIGHTLY_MACHINE:STRING=dawn \
+  -DNIGHTLY_SSH_KEY:STRING=/home/mgalloy/.ssh/id_rsa2 \
   ..

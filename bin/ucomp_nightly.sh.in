@@ -14,12 +14,13 @@ canonicalpath() {
 }
 
 SCRIPT_LOCATION=$(canonicalpath $0)
+cd $(dirname $(dirname ${SCRIPT_LOCATION}))
 
 DATE=$(date +"%Y-%m-%d")
 
 MACHINE=@NIGHTLY_MACHINE@
-if [ -z "$MACHINE" ]; then
-  SUBJECT="No UCoMP nightly results for ${DATE}"
+if [ -z "${MACHINE}" ]; then
+  SUBJECT="No machine to run UCoMP nightly tests for ${DATE}"
   mail -s "${SUBJECT}" -r $(whoami)@ucar.edu $(whoami)@ucar.edu <<< "No NIGHTLY_MACHINE in CMake configuration"
   exit 1
 fi
@@ -35,19 +36,33 @@ LOG_FILENAME=${LOG_DIRNAME}/nightly.log
 touch ${LOG_FILENAME}
 touch ${MESSAGE_FILENAME}
 
+echo "SOURCE_LOCATION=${SOURCE_LOCATION}" >> ${LOG_FILENAME} 2>&1
+echo "INSTALL_LOCATION=${INSTALL_LOCATION}" >> ${LOG_FILENAME} 2>&1
+
 # remove old checkout
-rm -rf ${SOURCE_LOCATION} ${INSTALL_LOCATION}
+rm -rf ${SOURCE_LOCATION} ${INSTALL_LOCATION} >> ${LOG_FILENAME} 2>&1
 
 # clone repo
-REMOTE=$(@GIT_EXECUTABLE@ config --get remote.origin.url)
-@GIT_EXECUTABLE@ clone ${REMOTE} ${SOURCE_LOCATION} >> ${LOG_FILENAME} 2>&1
+SSH_KEY=@NIGHTLY_SSH_KEY@
+#REMOTE=$(@GIT_EXECUTABLE@ config --get remote.origin.url)
+REMOTE=git@github.com:NCAR/ucomp-pipeline.git
+echo "REMOTE=${REMOTE}" >> ${LOG_FILENAME} 2>&1
+GIT_COMMAND="@GIT_EXECUTABLE@ clone ${REMOTE} ${SOURCE_LOCATION}"
+echo ${GIT_COMMAND} >> ${LOG_FILENAME} 2>&1
+
+eval $(ssh-agent) >> ${LOG_FILENAME} 2>&1
+ssh-add ${SSH_KEY} >> ${LOG_FILENAME} 2>&1
+ssh-agent bash -c 'ssh-add ${SSH_KEY}; ${GIT_COMMAND}' >> ${LOG_FILENAME} 2>&1
+
+echo ${GIT_COMMAND} >> ${LOG_FILENAME} 2>&1
+${GIT_COMMAND} >> ${LOG_FILENAME} 2>&1
 
 # configure
-mkdir ${SOURCE_LOCATION}/build
-cd ${SOURCE_LOCATION}/build
+mkdir ${SOURCE_LOCATION}/build >> ${LOG_FILENAME} 2>&1
+cd ${SOURCE_LOCATION}/build >> ${LOG_FILENAME} 2>&1
 
 IDL_ROOT_DIR=@IDL_ROOT_DIR@
-
+echo "pwd=$(pwd)" >> ${LOG_FILENAME} 2>&1
 @CMAKE_COMMAND@ \
   -DCMAKE_INSTALL_PREFIX:PATH=${INSTALL_LOCATION} \
   -DIDL_ROOT_DIR:PATH=${IDL_ROOT_DIR} \
@@ -57,6 +72,7 @@ IDL_ROOT_DIR=@IDL_ROOT_DIR@
 make >> ${LOG_FILENAME} 2>&1
 
 # run unit tests
+echo "pwd=$(pwd)" >> ${LOG_FILENAME} 2>&1
 make unit >> ${LOG_FILENAME} 2>&1
 
 UNITTESTS_SUMMARY_LINE=$(tail -3 ${LOG_FILENAME} | head -1)
@@ -68,7 +84,7 @@ echo -e "\n  ${HTTP_LOCATION}\n" >> ${MESSAGE_FILENAME}
 
 # send email
 echo "Sent from ${SCRIPT_LOCATION} ($(whoami)@$(hostname))" >> ${MESSAGE_FILENAME}
-SUBJECT="UCoMP nightly results for ${DATE}"
+SUBJECT="UCoMP nightly test results for ${DATE}"
 mail -s "${SUBJECT}" -a "${LOG_FILENAME}" -r $(whoami)@ucar.edu $(whoami)@ucar.edu < ${MESSAGE_FILENAME}
 
 # clean up
