@@ -47,7 +47,7 @@ SSH_KEY=@NIGHTLY_SSH_KEY@
 #REMOTE=$(@GIT_EXECUTABLE@ config --get remote.origin.url)
 REMOTE=git@github.com:NCAR/ucomp-pipeline.git
 echo "REMOTE=${REMOTE}" >> ${LOG_FILENAME} 2>&1
-GIT_COMMAND="@GIT_EXECUTABLE@ clone ${REMOTE} ${SOURCE_LOCATION}"
+GIT_COMMAND="@GIT_EXECUTABLE@ clone -q ${REMOTE} ${SOURCE_LOCATION}"
 echo ${GIT_COMMAND} >> ${LOG_FILENAME} 2>&1
 
 eval $(ssh-agent) >> ${LOG_FILENAME} 2>&1

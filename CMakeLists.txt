@@ -20,6 +20,7 @@ set(CMAKE_MODULE_PATH
 
 set(GIT_VERSION "${VERSION}")
 
+set(Git_DIR "${GIT_DIR}")
 find_package(Git 2.7)
 if (GIT_FOUND)
   execute_process(
