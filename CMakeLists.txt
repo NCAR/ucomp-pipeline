@@ -69,6 +69,7 @@ else ()
   set(GIT_SHORTDATE "")
 endif ()
 
+message(STATUS "git binary   = ${GIT_EXECUTABLE}")
 message(STATUS "git branch   = ${GIT_BRANCH}")
 message(STATUS "git version  = ${GIT_VERSION}")
 message(STATUS "git revision = ${GIT_REVISION}")
