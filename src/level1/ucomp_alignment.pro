@@ -23,6 +23,7 @@ pro ucomp_alignment, file, primary_header, data, headers, run=run
   ; restore distortion coefficients
   distortion_basename = run->epoch('distortion_basename', datetime=datetime)
   distortion_filename = filepath(distortion_basename, $
+                                 subdir='distortion', $
                                  root=run.resource_root)
   restore, filename=distortion_filename
 
