@@ -82,8 +82,7 @@ HTTP_LOCATION=https://download.hao.ucar.edu/in/${MACHINE}/Data/UCoMP/ucomp-pipel
 echo -e "\n  ${HTTP_LOCATION}\n" >> ${MESSAGE_FILENAME}
 
 # run regression tests
-echo $(dirname ${SCRIPT_LOCATION})/ucomp_regression.sh >> ${LOG_FILENAME}
-$(dirname ${SCRIPT_LOCATION})/ucomp_regression.sh > ${REGRESSION_FILENAME}
+${INSTALL_LOCATION}/bin/ucomp_regression.sh > ${REGRESSION_FILENAME}
 REGRESSION_STATUS=$?
 
 cat ${REGRESSION_FILENAME} >> ${LOG_FILENAME}
