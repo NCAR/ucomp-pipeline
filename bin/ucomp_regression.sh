@@ -21,7 +21,7 @@ PIPE_DIR=$(dirname ${BIN_DIR})
 
 source ${BIN_DIR}/ucomp_include.sh
 
-DATES=(20200825 20210204)
+DATES=(20210312)
 LOG_DIR=/hao/twilight/Data/UCoMP/logs.regression
 
 CONFIG=${PIPE_DIR}/config/ucomp.regression.cfg
