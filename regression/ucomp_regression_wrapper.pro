@@ -61,7 +61,7 @@ pro ucomp_regression_wrapper, date, config_filename
     endfor
   endif
 
-  mg_log, 'after checking results, status %d', status, run.logger_name, /info
+  mg_log, 'after checking results, status %d', status, name=run.logger_name, /info
 
   if (n_standards gt 0L) then begin
     missing_in_results = mg_complement(standard_matches, n_standards, $
@@ -78,7 +78,7 @@ pro ucomp_regression_wrapper, date, config_filename
     endfor
   endif
 
-  mg_log, 'after checking standards, status %d', status, run.logger_name, /info
+  mg_log, 'after checking standards, status %d', status, name=run.logger_name, /info
 
   ; compare matches
   for m = 0L, n_elements(result_matches) - 1L do begin
@@ -112,7 +112,7 @@ pro ucomp_regression_wrapper, date, config_filename
     endelse
   endfor
 
-  mg_log, 'exiting with status %d', status, run.logger_name, /info
+  mg_log, 'exiting with status %d', status, name=run.logger_name, /info
 
   ; cleanup and quit
   done:
