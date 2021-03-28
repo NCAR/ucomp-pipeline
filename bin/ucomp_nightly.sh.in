@@ -70,7 +70,7 @@ PATH=${HOME}/software/bin:${PATH} @CMAKE_COMMAND@ \
   .. >> ${LOG_FILENAME} 2>&1
  
 # build
-make >> ${LOG_FILENAME} 2>&1
+make install >> ${LOG_FILENAME} 2>&1
 
 # run unit tests
 echo "pwd=$(pwd)" >> ${LOG_FILENAME} 2>&1
