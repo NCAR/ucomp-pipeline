@@ -16,6 +16,7 @@ function ucomp_validate_machinelog, run=run
 
   raw_dir = run->config('raw/basedir')
   machinelog_filename = filepath(string(run.date, format='%s.ucomp.machine.log'), $
+                                 subdir=run.date, $
                                  root=raw_dir)
   if (~file_test(machinelog_filename, /regular)) then return, 0B
 
