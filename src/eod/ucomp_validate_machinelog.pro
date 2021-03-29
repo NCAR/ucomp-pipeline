@@ -14,9 +14,8 @@
 function ucomp_validate_machinelog, run=run
   compile_opt strictarr
 
-  raw_dir = run->config('raw/basedir')
+  raw_dir = filepath(run.date, root=run->config('raw/basedir'))
   machinelog_filename = filepath(string(run.date, format='%s.ucomp.machine.log'), $
-                                 subdir=run.date, $
                                  root=raw_dir)
   if (~file_test(machinelog_filename, /regular)) then return, 0B
 
@@ -32,7 +31,7 @@ function ucomp_validate_machinelog, run=run
     free_lun, lun
     for i = 0L, n_lines - 1L do begin
       tokens = strsplit(lines[i], /extract)
-      lines[f] = tokens[0]
+      lines[i] = tokens[0]
     endfor
   endif
 
