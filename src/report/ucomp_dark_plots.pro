@@ -63,7 +63,7 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
           'camera 1', alignment=1.0, color=camera1_color
 
   plot, dark_info.times, dark_info.t_c0pcb, /nodata, $
-        title='Dark PCB board temperatures', charsize=charsize, $
+        title='Dark PCB temperatures', charsize=charsize, $
         color=color, background=background_color, $
         xtitle='Time [HST]', $
         xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
@@ -114,10 +114,10 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
         color=camera1_color
 
   plot, dark_info.t_c1pcb, cam1_dark_means, /nodata, $
-        charsize=charsize, title='Dark PCB board temperature vs. counts', $
+        charsize=charsize, title='Dark PCB temperature vs. counts', $
         psym=6, symsize=symsize, $
         color=color, background=background_color, $
-        xtitle='PCB board temperature [C]', $
+        xtitle='PCB temperature [C]', $
         xstyle=1, xrange=[tpcb_min, tpcb_max], $
         ytitle='Counts [DN]', $
         ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
