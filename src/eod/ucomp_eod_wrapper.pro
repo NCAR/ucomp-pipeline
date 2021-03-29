@@ -20,6 +20,7 @@ pro ucomp_eod_wrapper, date, config_filename
   orig_except = !except
   !except = 0
 
+  is_available = 0B
   mode = 'eod'
   logger_name = string(mode, format='(%"ucomp/%s")')
 
