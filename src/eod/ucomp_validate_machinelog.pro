@@ -27,7 +27,7 @@ function ucomp_validate_machinelog, run=run
 
   if (n_lines gt 0L) then begin
     lines = strarr(n_lines)
-    openr, lun, lines, /get_lun
+    openr, lun, machinelog_filename, /get_lun
     readf, lun, lines
     free_lun, lun
     for i = 0L, n_lines - 1L do begin
