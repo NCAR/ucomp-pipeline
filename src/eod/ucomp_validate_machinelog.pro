@@ -38,14 +38,14 @@ function ucomp_validate_machinelog, run=run
   for i = 0L, n_lines - 1L do begin
     !null = where(lines[i] eq files, n_matches)
     if (n_matches ne 1L) then begin
-      mg_log, 'missing %s in raw files', lines[i], name=run.logger_name, /warn
+      mg_log, 'missing %s in raw files', lines[i], name=run.logger_name, /error
     endif
   endfor
 
   for f = 0L, n_files - 1L do begin
     !null = where(files[f] eq lines, n_matches)
     if (n_matches ne 1L) then begin
-      mg_log, 'missing %s in machine log', files[i], name=run.logger_name, /warn
+      mg_log, 'missing %s in machine log', files[i], name=run.logger_name, /error
     endif
   endfor
 
