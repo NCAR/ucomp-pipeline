@@ -58,9 +58,15 @@ pro ucomp_eod_wrapper, date, config_filename
   ; log starting up pipeline with versions
   version = ucomp_version(revision=revision, branch=branch)
   mg_log, 'ucomp-pipeline %s (%s) [%s]', version, revision, branch, $
-          name=run.logger_name, /info
+          name=run.logger_name, /debug
   mg_log, 'using IDL %s on %s', !version.release, !version.os_name, $
           name=run.logger_name, /debug
+
+  machinelog_present = ucomp_validate_machinelog(run=run)
+  if (~machinelog_present) then begin
+    mg_log, 'machine log not present, exiting', name=run.logger_name, /info
+    goto, done
+  endif
 
   mg_log, 'starting end-of-day processing for %d...', date, name=run.logger_name, /info
 
@@ -77,9 +83,10 @@ pro ucomp_eod_wrapper, date, config_filename
   if (~is_available) then goto, done
 
 
+  ;== process
+
   ; wave regions to process
   wave_regions = run->config('options/wave_regions')
-
 
   ; do the end-of-day processing
   ucomp_eod_steps, wave_regions, run=run
