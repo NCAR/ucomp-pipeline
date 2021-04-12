@@ -59,7 +59,8 @@ pro ucomp_reprocess_wrapper, date, config_filename
   version = ucomp_version(revision=revision, branch=branch)
   mg_log, 'ucomp-pipeline %s (%s) [%s]', version, revision, branch, $
           name=run.logger_name, /info
-  mg_log, 'using IDL %s on %s', !version.release, !version.os_name, $
+  mg_log, 'using IDL %s on %s (%s)', $
+          !version.release, !version.os_name, mg_hostname(), $
           name=run.logger_name, /debug
 
   mg_log, 'starting reprocessing for %d...', date, name=run.logger_name, /info
