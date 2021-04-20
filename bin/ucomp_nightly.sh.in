@@ -14,7 +14,8 @@ canonicalpath() {
 }
 
 SCRIPT_LOCATION=$(canonicalpath $0)
-cd $(dirname $(dirname ${SCRIPT_LOCATION}))
+PIPE_DIR=$(dirname ${SCRIPT_LOCATION})
+cd $(dirname ${PIPE_DIR})
 
 DATE=$(date +"%Y-%m-%d")
 
@@ -57,6 +58,8 @@ ssh-agent bash -c 'ssh-add ${SSH_KEY}; ${GIT_COMMAND}' >> ${LOG_FILENAME} 2>&1
 
 echo ${GIT_COMMAND} >> ${LOG_FILENAME} 2>&1
 ${GIT_COMMAND} >> ${LOG_FILENAME} 2>&1
+
+cp ${PIPE_DIR}/config/ucomp.*.cfg ${LOCATION}/ucomp-pipeline.nightly-source/config
 
 # configure
 mkdir ${SOURCE_LOCATION}/build >> ${LOG_FILENAME} 2>&1
