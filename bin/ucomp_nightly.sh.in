@@ -59,7 +59,9 @@ ssh-agent bash -c 'ssh-add ${SSH_KEY}; ${GIT_COMMAND}' >> ${LOG_FILENAME} 2>&1
 echo ${GIT_COMMAND} >> ${LOG_FILENAME} 2>&1
 ${GIT_COMMAND} >> ${LOG_FILENAME} 2>&1
 
-cp ${PIPE_DIR}/config/ucomp.*.cfg ${LOCATION}/ucomp-pipeline.nightly-source/config
+cp_cmd="cp ${PIPE_DIR}/config/ucomp.*.cfg ${LOCATION}/ucomp-pipeline.nightly-source/config"
+echo ${cp_cmd} >> ${LOG_FILENAME} 2>&1
+${cp_cmd}
 
 # configure
 mkdir ${SOURCE_LOCATION}/build >> ${LOG_FILENAME} 2>&1
