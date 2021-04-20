@@ -88,7 +88,6 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
                              ut_time=ut_time, $
                              obsday_hours=obsday_hours, $
                              date_obs=date_obs, $
-                             date_end=date_end, $
                              carrington_rotation=carrington_rotation, $
                              wave_region=wave_region, $
                              data_type=data_type, $
@@ -130,7 +129,6 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
   if (arg_present(obsday_hours)) then obsday_hours = self.obsday_hours
 
   if (arg_present(date_obs)) then date_obs = self.date_obs
-  if (arg_present(date_end)) then date_end = self.date_end
 
   if (arg_present(carrington_rotation)) then begin
     date_parts = ucomp_decompose_date(self.ut_date)
