@@ -14,8 +14,8 @@ canonicalpath() {
 }
 
 SCRIPT_LOCATION=$(canonicalpath $0)
-PIPE_DIR=$(dirname ${SCRIPT_LOCATION})
-cd $(dirname ${PIPE_DIR})
+PIPE_DIR=$(dirname $(dirname ${SCRIPT_LOCATION}))
+cd ${PIPE_DIR})
 
 DATE=$(date +"%Y-%m-%d")
 
