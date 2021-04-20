@@ -47,6 +47,18 @@ function ucomp_getpar_ut::test_float
 end
 
 
+function ucomp_getpar_ut::test_missing
+  compile_opt strictarr
+  @error_is_pass
+
+  header = ['SGSDIMM = ''1.000'' / SGS Dim Mean [V]', $
+            'SGSDIMS = 2.000 / SGS Dim Std [V]']
+  sgsdimm = ucomp_getpar(header, 'SGSDIMX', /float)
+
+  return, 0
+end
+
+
 function ucomp_getpar_ut::init, _extra=e
   compile_opt strictarr
 
