@@ -359,7 +359,7 @@ def filter_log(args):
                 if os.path.isfile(path2):
                     logfiles.append(path2)
                 else:
-                    parser.error(f + " does not exist")
+                    args.parser.error(f + " does not exist")
         else:
             logfiles.append(f)
 
@@ -393,7 +393,6 @@ def filter_log(args):
         parser.print_help()
         return
 
-    is_first = False
     for i, f in enumerate(logfiles):
         if len(logfiles) > 1:
             if i != 0: print("")
