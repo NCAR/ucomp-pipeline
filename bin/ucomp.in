@@ -3,6 +3,7 @@
 import argparse
 import datetime
 from email.mime.text import MIMEText
+import fnmatch
 import glob
 import os
 import psutil
@@ -401,6 +402,49 @@ def filter_log(args):
         filter_file(f, level_index, follow)
 
 
+# missing sub-command
+def missing(args):
+    dates = parse_date_expr(",".join(args.dates))
+    for d in dates:
+        raw_dir = get_raw_dir(d, args.flags, args.parser.error)
+        present_files = glob.glob(os.path.join(raw_dir, d, "*.fts"))
+        machine_log = os.path.join(raw_dir, d, f"{d}.ucomp.machine.log")
+        with open(machine_log, "r") as f:
+            created_files = [line.split()[0] for line in f]
+
+        present_files = [os.path.basename(f) for f in present_files]
+
+        for cf in created_files:
+            if cf not in present_files:
+                print(cf)
+
+
+def get_raw_dir(date, flags, error):
+    config_basename = f"ucomp.{flags}.cfg"
+
+    # construct config file filename
+    config_filename = os.path.join(PIPELINE_DIR, "config", config_basename)
+    if not os.path.isfile(config_filename):
+        basename = os.path.basename(config_filename)
+        error(f"configuration file does not exist: {basename}")
+
+    ucomp_config = configparser.ConfigParser()
+    ucomp_config.read(config_filename)
+    try:
+        raw_dir = ucomp_config.get("raw", "basedir")
+    except configparser.NoSectionError:
+        error("no raw section in config file")
+    except configparser.NoOptionError:
+        routing_filename = ucomp_config.get("raw", "routing_file")
+        routing_config = configparser.ConfigParser()
+        routing_config.read(routing_filename)
+        date_locations = routing_config.options("ucomp-raw")
+        for date_expr in date_locations:
+            if fnmatch.fnmatch(date, date_expr):
+                return(routing_config.get("ucomp-raw", date_expr))
+    return(raw_dir)
+
+
 # versions sub-command
 def versions(args):
     if not versions_requirements:
@@ -542,12 +586,12 @@ def get_login(flags, error):
         basename = os.path.basename(config_filename)
         error(f"configuration file does not exist: {basename}")
 
-    kcor_config = configparser.ConfigParser()
-    kcor_config.read(config_filename)
+    ucomp_config = configparser.ConfigParser()
+    ucomp_config.read(config_filename)
 
     try:
-        mysql_config_filename = kcor_config.get("database", "config_filename")
-        mysql_config_section = kcor_config.get("database", "config_section")
+        mysql_config_filename = ucomp_config.get("database", "config_filename")
+        mysql_config_section = ucomp_config.get("database", "config_section")
     except configparser.NoSectionError:
         args.parser.error("database information not specified")
 
@@ -810,6 +854,15 @@ if __name__ == "__main__":
                             help="CRITICAL filter level",
                             action="store_true")
     log_parser.set_defaults(func=filter_log, parser=log_parser)
+
+    # missing sub-command
+    missing_parser = subparsers.add_parser("missing",
+       help="list missing files for a given day")
+    missing_parser.add_argument("dates", type=str, nargs="*", help=date_help,
+       metavar="date-expr")
+    missing_parser.add_argument("-f", "--flags", type=str, help=flags_help,
+       default="latest")
+    missing_parser.set_defaults(func=missing, parser=missing_parser)
 
     # versions sub-command
     versions_parser = subparsers.add_parser("versions", help="list versions")
