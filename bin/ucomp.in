@@ -409,8 +409,13 @@ def missing(args):
         raw_dir = get_raw_dir(d, args.flags, args.parser.error)
         present_files = glob.glob(os.path.join(raw_dir, d, "*.fts"))
         machine_log = os.path.join(raw_dir, d, f"{d}.ucomp.machine.log")
-        with open(machine_log, "r") as f:
-            created_files = [line.split()[0] for line in f]
+        if os.path.exists(machine_log):
+            with open(machine_log, "r") as f:
+                created_files = [line.split()[0] for line in f]
+            if len(created_files) == 1 and created_files[0] == os.path.basename(machine_log) + ":":
+                created_files = []
+        else:
+            created_files = []
 
         present_files = [os.path.basename(f) for f in present_files]
 
