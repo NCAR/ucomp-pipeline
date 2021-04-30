@@ -5,6 +5,12 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
 
   mg_log, 'making dark plots', name=run.logger_name, /info
 
+  n_darks = n_elements(dark_info.times)
+  if (n_darks eq 0L) then begin
+    mg_log, 'no darks to plot', name=run.logger_name, /info
+    goto, done
+  endif
+
   ; save original graphics settings
   original_device = !d.name
 
@@ -37,7 +43,6 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
 
   charsize = 2.0
   symsize = 0.75
-
 
   ; plot of temperatures T_C{0,1}ARR and T_C{0,1}PCB per dark
 
@@ -87,10 +92,18 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
   n_dims = size(dark_images, /n_dimensions)
   dims = size(dark_images, /dimensions)
 
-  cam0_dark_means  = mean(dark_images[*, *, *, 0, *], dimension=n_dims)
-  cam1_dark_means  = mean(dark_images[*, *, *, 1, *], dimension=n_dims)
-  cam0_dark_stddev = stddev(dark_images[*, *, *, 0, *], dimension=n_dims)
-  cam1_dark_stddev = stddev(dark_images[*, *, *, 1, *], dimension=n_dims)
+  if (n_darks gt 1L) then begin
+    cam0_dark_means  = mean(dark_images[*, *, *, 0, *], dimension=n_dims)
+    cam1_dark_means  = mean(dark_images[*, *, *, 1, *], dimension=n_dims)
+    cam0_dark_stddev = stddev(dark_images[*, *, *, 0, *], dimension=n_dims)
+    cam1_dark_stddev = stddev(dark_images[*, *, *, 1, *], dimension=n_dims)
+  endif else begin
+    help, dark_images
+    cam0_dark_means  = mean(dark_images[*, *, *, 0, *], dimension=n_dims)
+    cam1_dark_means  = mean(dark_images[*, *, *, 1, *], dimension=n_dims)
+    cam0_dark_stddev = stddev(dark_images[*, *, *, 0, *], dimension=n_dims)
+    cam1_dark_stddev = stddev(dark_images[*, *, *, 1, *], dimension=n_dims)
+  endelse
 
   max_dark_stddev = max(abs([cam0_dark_stddev, cam0_dark_stddev]))
   dark_min    = min(dark_images, max=dark_max)
