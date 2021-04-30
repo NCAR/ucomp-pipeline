@@ -43,17 +43,17 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
 
   !p.multi = [0, 1, 4]
 
-  plot, dark_info.times, dark_info.t_c0arr, /nodata, $
+  plot, [dark_info.times], [dark_info.t_c0arr], /nodata, $
         title='Dark sensor array temperatures', charsize=charsize, $
         color=color, background=background_color, $
         xtitle='Time [HST]', $
         xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
         ytitle='Temperature [C]', $
         ystyle=1, yrange=[tarr_min, tarr_max]
-  oplot, dark_info.times, dark_info.t_c0arr, $
+  oplot, [dark_info.times], [dark_info.t_c0arr], $
          psym=6, symsize=symsize, $
          linestyle=0, color=camera0_color
-  oplot, dark_info.times, dark_info.t_c1arr, $
+  oplot, [dark_info.times], [dark_info.t_c1arr], $
          psym=6, symsize=symsize, $
          linestyle=0, color=camera1_color
 
@@ -62,17 +62,17 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
   xyouts, 0.95, 0.75 + 0.75 * 0.25, /normal, $
           'camera 1', alignment=1.0, color=camera1_color
 
-  plot, dark_info.times, dark_info.t_c0pcb, /nodata, $
+  plot, [dark_info.times], [dark_info.t_c0pcb], /nodata, $
         title='Dark PCB temperatures', charsize=charsize, $
         color=color, background=background_color, $
         xtitle='Time [HST]', $
         xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
         ytitle='Temperature [C]', $
         ystyle=1, yrange=[tpcb_min, tpcb_max]
-  oplot, dark_info.times, dark_info.t_c0pcb, $
+  oplot, [dark_info.times], [dark_info.t_c0pcb], $
          psym=6, symsize=symsize, $
          linestyle=0, color=camera0_color
-  oplot, dark_info.times, dark_info.t_c1pcb, $
+  oplot, [dark_info.times], [dark_info.t_c1pcb], $
          psym=6, symsize=symsize, $
          linestyle=0, color=camera1_color
 
@@ -98,7 +98,7 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
 
   !p.multi = [4, 2, 4]
 
-  plot, dark_info.t_c0arr, cam0_dark_means, /nodata, $
+  plot, [dark_info.t_c0arr], [cam0_dark_means], /nodata, $
         charsize=charsize, title='Dark sensor temperature vs. counts', $
         psym=6, symsize=symsize, $
         color=color, background=background_color, $
@@ -106,14 +106,14 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
         xstyle=1, xrange=[tarr_min, tarr_max], $
         ytitle='Counts [DN]', $
         ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
-  oplot, dark_info.t_c0arr, cam0_dark_means, $
-        psym=6, symsize=symsize, $
-        color=camera0_color
-  oplot, dark_info.t_c1arr, cam1_dark_means, $
-        psym=6, symsize=symsize, $
-        color=camera1_color
+  oplot, [dark_info.t_c0arr], [cam0_dark_means], $
+         psym=6, symsize=symsize, $
+         color=camera0_color
+  oplot, [dark_info.t_c1arr], [cam1_dark_means], $
+         psym=6, symsize=symsize, $
+         color=camera1_color
 
-  plot, dark_info.t_c1pcb, cam1_dark_means, /nodata, $
+  plot, [dark_info.t_c1pcb], [cam1_dark_means], /nodata, $
         charsize=charsize, title='Dark PCB temperature vs. counts', $
         psym=6, symsize=symsize, $
         color=color, background=background_color, $
@@ -121,18 +121,18 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
         xstyle=1, xrange=[tpcb_min, tpcb_max], $
         ytitle='Counts [DN]', $
         ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
-  oplot, dark_info.t_c0pcb, cam0_dark_means, $
-        psym=6, symsize=symsize, $
-        color=camera0_color
-  oplot, dark_info.t_c1pcb, cam1_dark_means, $
-        psym=6, symsize=symsize, $
-        color=camera1_color
+  oplot, [dark_info.t_c0pcb], [cam0_dark_means], $
+         psym=6, symsize=symsize, $
+         color=camera0_color
+  oplot, [dark_info.t_c1pcb], [cam1_dark_means], $
+         psym=6, symsize=symsize, $
+         color=camera1_color
 
 
   ; plot of dark means, std devs, quartiles by time per camera
   !p.multi = [1, 1, 4]
 
-  plot, dark_info.times, cam0_dark_means, /nodata, $
+  plot, [dark_info.times], [cam0_dark_means], /nodata, $
         charsize=charsize, title='Dark mean counts (+/- 1 std dev) vs. time', $
         color=color, background=background_color, $
         xtitle='Time [HST]', $
@@ -140,24 +140,24 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
         ytitle='Counts [DN]', $
         ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
 
-  oplot, dark_info.times, cam0_dark_means, $
+  oplot, [dark_info.times], [cam0_dark_means], $
          psym=6, symsize=symsize, $
          linestyle=0, color=camera0_color
-  oplot, dark_info.times, cam0_dark_means - cam0_dark_stddev, $
+  oplot, [dark_info.times], [cam0_dark_means - cam0_dark_stddev], $
          psym=6, symsize=0.5 * symsize, $
          linestyle=1, color=camera0_color
-  oplot, dark_info.times, cam0_dark_means + cam0_dark_stddev, $
+  oplot, [dark_info.times], [cam0_dark_means + cam0_dark_stddev], $
          psym=6, symsize=0.5 * symsize, $
          linestyle=1, color=camera0_color
   ; TODO: plot vertical line from -stddev to +stddev?
 
-  oplot, dark_info.times, cam1_dark_means, $
+  oplot, [dark_info.times], [cam1_dark_means], $
          psym=6, symsize=symsize, $
          linestyle=0, color=camera1_color
-  oplot, dark_info.times, cam1_dark_means - cam1_dark_stddev, $
+  oplot, [dark_info.times], [cam1_dark_means - cam1_dark_stddev], $
          psym=6, symsize=0.5 * symsize, $
          linestyle=1, color=camera1_color
-  oplot, dark_info.times, cam1_dark_means + cam1_dark_stddev, $
+  oplot, [dark_info.times], [cam1_dark_means + cam1_dark_stddev], $
          psym=6, symsize=0.5 * symsize, $
          linestyle=1, color=camera1_color
   ; TODO: plot vertical line from -stddev to +stddev?
