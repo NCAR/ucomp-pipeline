@@ -104,6 +104,7 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
                              occulter_in=occulter_in, $
                              occultrid=occultrid, $
                              cover_in=cover_in, $
+                             darkshutter_in=darkshutter_in, $
                              opal_in=opal_in, $
                              caloptic_in=caloptic_in, $
                              polangle=polangle, $
@@ -167,6 +168,7 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
   if (arg_present(occulter_in)) then occulter_in = self.occulter_in
   if (arg_present(occultrid)) then occultrid = self.occultrid
   if (arg_present(cover_in)) then cover_in = self.cover_in
+  if (arg_present(darkshutter_in)) then darkshutter_in = self.darkshutter_in
   if (arg_present(opal_in)) then opal_in = self.opal_in
   if (arg_present(caloptic_in)) then caloptic_in = self.caloptic_in
   if (arg_present(polangle)) then polangle = self.polangle
@@ -244,6 +246,8 @@ pro ucomp_file::_inventory
     self->setProperty, quality_bitmask=ishft(1, 1)
   endif
 
+  self.darkshutter_in = ucomp_getpar(extension_header, 'DARKSHUT') eq 'in'
+
   occulter = ucomp_getpar(extension_header, 'OCCLTR')
   self.occulter_in = occulter eq 'in'
   if (occulter ne 'in' && occulter ne 'out') then begin
@@ -269,21 +273,24 @@ pro ucomp_file::_inventory
   ; allocate inventory variables
   *self.wavelengths = fltarr(self.n_extensions)
 
-  ; TODO: opal, dark shutter, polarizer, polarizer angle,
-  ; retarder, etc.
-
   self.exptime = ucomp_getpar(extension_header, 'EXPTIME', /float)
 
   ; inventory extensions for things that vary by extension
+  moving_parts = 0B
   for e = 1L, self.n_extensions do begin
     fits_read, fcb, data, extension_header, exten_no=e, /header_only, $
                /no_abort, message=error_msg
     if (error_msg ne '') then message, error_msg
 
-    ; TODO: check for non-in/out values for CALOPTIC, DARKSHUT, CALPOL
+    moving_parts or= ucomp_getpar(extension_header, 'OCCLTR') eq 'mid'
+    moving_parts or= ucomp_getpar(extension_header, 'COVER') eq 'mid'
+    moving_parts or= ucomp_getpar(extension_header, 'DARKSHUT') eq 'mid'
+    moving_parts or= ucomp_getpar(extension_header, 'DIFFUSR') eq 'mid'
+    moving_parts or= ucomp_getpar(extension_header, 'CALOPTIC') eq 'mid'
 
     (*self.wavelengths)[e - 1] = ucomp_getpar(extension_header, 'WAVELNG', /float)
   endfor
+  if (moving_parts) then self->setProperty, quality_bitmask=ishft(1, 1)
 
   fits_close, fcb
 end
@@ -351,6 +358,7 @@ pro ucomp_file__define
            occulter_in         : 0B, $
            occultrid           : '', $
            cover_in            : 0B, $
+           darkshutter_in      : 0B, $
            opal_in             : 0B, $
            caloptic_in         : 0B, $
            polangle            : 0.0, $
