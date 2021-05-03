@@ -90,15 +90,24 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
                              date_obs=date_obs, $
                              carrington_rotation=carrington_rotation, $
                              wave_region=wave_region, $
+                             center_wavelength=center_wavelength, $
                              data_type=data_type, $
                              exptime=exptime, $
                              gain_mode=gain_mode, $
+                             nd=nd, $
                              n_extensions=n_extensions, $
                              wavelengths=wavelengths, $
                              n_unique_wavelengths=n_unique_wavelengths, $
                              unique_wavelengths=unique_wavelengths, $
                              quality_bitmask=quality_bitmask, $
                              ok=ok, $
+                             occulter_in=occulter_in, $
+                             occultrid=occultrid, $
+                             cover_in=cover_in, $
+                             opal_in=opal_in, $
+                             caloptic_in=caloptic_in, $
+                             polangle=polangle, $
+                             retangle=retangle, $
                              cam0_arr_temp=cam0_arr_temp, $
                              cam0_pcb_temp=cam0_pcb_temp, $
                              cam1_arr_temp=cam1_arr_temp, $
@@ -139,12 +148,29 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
 
   if (arg_present(exptime)) then exptime = self.exptime
   if (arg_present(gain_mode)) then gain_mode = self.gain_mode
+  if (arg_present(nd)) then nd = self.nd
 
   if (arg_present(wave_region)) then wave_region = self.wave_region
+  if (arg_present(center_wavelength)) then begin
+    if (self.wave_region eq '') then begin
+      center_wavelength = 0.0
+    endif else begin
+      center_wavelength = self.run->line(self.wave_region, 'center_wavelength')
+    endelse
+  endif
+
   if (arg_present(data_type)) then data_type = self.data_type
 
   if (arg_present(quality_bitmask)) then quality_bitmask = self.quality_bitmask
   if (arg_present(ok)) then ok = self.quality_bitmask eq 0
+
+  if (arg_present(occulter_in)) then occulter_in = self.occulter_in
+  if (arg_present(occultrid)) then occultrid = self.occultrid
+  if (arg_present(cover_in)) then cover_in = self.cover_in
+  if (arg_present(opal_in)) then opal_in = self.opal_in
+  if (arg_present(caloptic_in)) then caloptic_in = self.caloptic_in
+  if (arg_present(polangle)) then polangle = self.polangle
+  if (arg_present(retangle)) then retangle = self.retangle
 
   if (arg_present(cam0_arr_temp)) then cam0_arr_temp = self.cam0_arr_temp
   if (arg_present(cam0_pcb_temp)) then cam0_pcb_temp = self.cam0_pcb_temp
@@ -223,8 +249,17 @@ pro ucomp_file::_inventory
   if (occulter ne 'in' && occulter ne 'out') then begin
     self->setProperty, quality_bitmask=ishft(1, 1)
   endif
+  self.occultrid = ucomp_getpar(primary_header, 'OCCLTRID')
+
+  self.opal_in = strlowcase(ucomp_getpar(extension_header, 'DIFFUSR')) eq 'in'
+  self.caloptic_in = strlowcase(ucomp_getpar(extension_header, 'CALOPTIC')) eq 'in'
+  self.polangle = ucomp_getpar(extension_header, 'POLANGLE')
+  self.retangle = ucomp_getpar(extension_header, 'RETANGLE')
 
   self.gain_mode = strlowcase(ucomp_getpar(primary_header, 'GAIN'))
+
+  ; TODO: enter this from the headers
+  self.nd = 0L
 
   self.cam0_arr_temp = ucomp_getpar(primary_header, 'T_C0ARR')
   self.cam0_pcb_temp = ucomp_getpar(primary_header, 'T_C0PCB')
@@ -272,17 +307,18 @@ end
 ;   raw_filename : in, required, type=str
 ;     filename of raw UCoMP file
 ;-
-function ucomp_file::init, raw_filename
+function ucomp_file::init, raw_filename, run=run
   compile_opt strictarr
 
   self.raw_filename = raw_filename
+  self.run = run
 
   self->_extract_datetime
 
   self.data_type = 'unk'
 
   ; allocate inventory variables for extensions
-  self.wavelengths         = ptr_new(/allocate_heap)
+  self.wavelengths = ptr_new(/allocate_heap)
 
   self->_inventory
 
@@ -298,6 +334,7 @@ pro ucomp_file__define
 
   !null = {ucomp_file, inherits IDL_Object, $
            raw_filename        : '', $
+           run                 : obj_new(), $
            hst_date            : '', $
            hst_time            : '', $
            ut_date             : '', $
@@ -310,9 +347,15 @@ pro ucomp_file__define
            data_type           : '', $
            exptime             : 0.0, $
            gain_mode           : '', $
+           nd                  : 0L, $
            occulter_in         : 0B, $
+           occultrid           : '', $
            cover_in            : 0B, $
-           
+           opal_in             : 0B, $
+           caloptic_in         : 0B, $
+           polangle            : 0.0, $
+           retangle            : 0.0, $
+
            cam0_arr_temp       : 0.0, $
            cam0_pcb_temp       : 0.0, $
            cam1_arr_temp       : 0.0, $
