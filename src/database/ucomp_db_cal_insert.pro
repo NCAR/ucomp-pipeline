@@ -46,7 +46,8 @@ pro ucomp_db_cal_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
     fields = [{name: 'file_name', type: '''%s'''}, $
               {name: 'date_obs', type: '''%s'''}, $
               {name: 'obsday_id', type: '%d'}, $
-              {name: 'wavelength', type: '%f'}, $
+              {name: 'wave_region', type: '''%s'''}, $
+              {name: 'type', type: '''%s'''}, $
               {name: 'n_points', type: '%d'}, $
 
               {name: 'level', type: '%d'}, $
@@ -55,6 +56,7 @@ pro ucomp_db_cal_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
               {name: 'cover', type: '%d'}, $
               {name: 'opal', type: '%d'}, $
               {name: 'polangle', type: '%f'}, $
+              {name: 'retangle', type: '%f'}, $
               {name: 'caloptic', type: '%d'}, $
 
               {name: 'median_int_continuum', type: '%f'}, $
@@ -69,7 +71,8 @@ pro ucomp_db_cal_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
                  file_basename(file.raw_filename), $
                  file.date_obs, $
                  obsday_index, $
-                 file.center_wavelength, $
+                 file.wave_region, $
+                 file.data_type, $
                  file.n_unique_wavelengths, $
 
                  level_index, $
@@ -78,6 +81,7 @@ pro ucomp_db_cal_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
                  file.cover_in, $
                  file.opal_in, $
                  file.polangle, $
+                 file.retangle, $
                  file.caloptic_in, $
 
                  median_int_continuum, $
