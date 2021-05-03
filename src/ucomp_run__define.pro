@@ -58,7 +58,7 @@ pro ucomp_run::make_raw_inventory, raw_files, $
 
   mg_log, '%d raw files', n_raw_files, name=logger_name, /info
   for f = 0L, n_raw_files - 1L do begin
-    file = ucomp_file(_raw_files[f])
+    file = ucomp_file(_raw_files[f], run=self)
 
     mg_log, '%s.%s [%s] %s', $
             file.ut_date, $

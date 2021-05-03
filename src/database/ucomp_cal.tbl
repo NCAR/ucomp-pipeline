@@ -7,7 +7,6 @@ create table ucomp_cal (
   cal_id                  int (10) auto_increment primary key,
   file_name               char (40) not null,
   date_obs                datetime not null,
-  date_end                datetime not null,
   obsday_id               mediumint (5) not null,
 
   wavelength              float (8, 3),
@@ -18,8 +17,8 @@ create table ucomp_cal (
   cover                   tinyint (1),
   opal                    tinyint (1),
   polangle                float (8, 3),
-  polarizer               tinyint (1),
-  retarder                tinyint (1),
+  retangle                float (8, 3),
+  caloptic                tinyint (1),
 
   -- TODO: mean? per camera, pol state?
   median_int_continuum    float (14, 7),   -- dark corrected annulus

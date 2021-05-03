@@ -28,6 +28,19 @@ pro ucomp_db_update, run=run
     mg_log, 'no science files to insert', name=run.logger_name, /info
   endif
 
+  dark_files = run->get_files(data_type='dark', count=n_dark_files)
+  if (n_dark_files eq 0L) then begin
+    mg_log, 'no dark files to insert', name=run.logger_name, /info
+  endif
+  flat_files = run->get_files(data_type='flat', count=n_flat_files)
+  if (n_flat_files eq 0L) then begin
+    mg_log, 'no flat files to insert', name=run.logger_name, /info
+  endif
+  cal_files = run->get_files(data_type='cal', count=n_cal_files)
+  if (n_cal_files eq 0L) then begin
+    mg_log, 'no cal files to insert', name=run.logger_name, /info
+  endif
+
   ; connect to the database
   db = ucomp_db_connect(run->config('database/config_filename'), $
                         run->config('database/config_section'), $
@@ -52,9 +65,19 @@ pro ucomp_db_update, run=run
                        logger_name=run.logger_name
   ucomp_db_file_insert, sci_files, obsday_index, sw_index, db, $
                         logger_name=run.logger_name
-  ; TODO: update ucomp_eng
-  ; TODO: update ucomp_cal
-  ; TODO: update ucomp_sci
+
+  ucomp_db_eng_insert, all_files, obsday_index, sw_index, db, $
+                       logger_name=run.logger_name
+
+  ucomp_db_cal_insert, dark_files, obsday_index, sw_index, db, $
+                       logger_name=run.logger_name
+  ucomp_db_cal_insert, flat_files, obsday_index, sw_index, db, $
+                       logger_name=run.logger_name
+  ucomp_db_cal_insert, cal_files, obsday_index, sw_index, db, $
+                       logger_name=run.logger_name
+
+  ucomp_db_sci_insert, sci_files, obsday_index, db, $
+                       logger_name=run.logger_name
 
   done:
   if (obj_valid(db)) then obj_destroy, db
