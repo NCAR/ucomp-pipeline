@@ -54,6 +54,7 @@ pro ucomp_db_cal_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
               {name: 'exptime', type: '%f'}, $
               {name: 'nd', type: '%d'}, $
               {name: 'cover', type: '%d'}, $
+              {name: 'darkshutter', type: '%d'}, $
               {name: 'opal', type: '%d'}, $
               {name: 'polangle', type: '%f'}, $
               {name: 'retangle', type: '%f'}, $
@@ -79,6 +80,7 @@ pro ucomp_db_cal_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
                  file.exptime, $
                  file.nd, $
                  file.cover_in, $
+                 file.darkshutter_in, $
                  file.opal_in, $
                  file.polangle, $
                  file.retangle, $
