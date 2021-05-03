@@ -18,8 +18,8 @@ create table ucomp_cal (
   cover                   tinyint (1),
   darkshutter             tinyint (1),
   opal                    tinyint (1),
-  polangle                float (8, 3),  -- change per ext?
-  retangle                float (8, 3),  -- change per ext?
+  polangle                float (8, 3),  -- TODO: does this change per ext?
+  retangle                float (8, 3),  -- TODO: does this change per ext?
   caloptic                tinyint (1),
 
   -- TODO: mean? per camera, pol state?
