@@ -9,7 +9,8 @@ create table ucomp_cal (
   date_obs                datetime not null,
   obsday_id               mediumint (5) not null,
 
-  wavelength              float (8, 3),
+  wave_region             char (8),
+  type                    char (8),
   n_points                tinyint (2),
   level                   tinyint (2) not null,
   exptime                 float (7, 4),
