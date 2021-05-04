@@ -7,3 +7,4 @@ insert into mlso_producttype (producttype, description) values ('quick-invert', 
 insert into mlso_producttype (producttype, description) values ('mean', 'UCoMP mean')
 insert into mlso_producttype (producttype, description) values ('median', 'UCoMP median')
 insert into mlso_producttype (producttype, description) values ('sigma', 'UCoMP sigma')
+insert into mlso_producttype (producttype, description) values ('intensity', 'UCoMP intensity')
