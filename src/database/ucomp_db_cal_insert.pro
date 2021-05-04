@@ -50,7 +50,7 @@ pro ucomp_db_cal_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
               {name: 'type', type: '''%s'''}, $
               {name: 'n_points', type: '%d'}, $
 
-              {name: 'level', type: '%d'}, $
+              {name: 'level_id', type: '%d'}, $
               {name: 'exptime', type: '%f'}, $
               {name: 'nd', type: '%d'}, $
               {name: 'cover', type: '%d'}, $
