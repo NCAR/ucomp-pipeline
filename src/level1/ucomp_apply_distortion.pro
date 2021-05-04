@@ -1,7 +1,7 @@
 ; docformat = 'rst'
 
 ;+
-; Applies distortion correction to a sub-image `sub_image` and given the
+; Applies distortion correction to a sub-image `sub_image` given the
 ; distortion coefficients.
 ;
 ; :Params:
