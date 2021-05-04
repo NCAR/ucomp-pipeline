@@ -19,6 +19,11 @@
 pro ucomp_db_sci_insert, l0_files, obsday_index, db, logger_name=logger_name
   compile_opt strictarr
 
+  if (n_elements(l0_files) eq 0L) then begin
+    mg_log, 'no science file to insert, skipping', name=logger_name, /info
+    goto, done
+  endif
+
   ; TODO: choose science file
   science_files = l0_files[0]
 
