@@ -121,7 +121,7 @@ pro ucomp_db_create_tables, config_filename
   endfor
 
   ; disconnect from database
-  mg_log, 'disconnecting from %s', host, name=run.logger_name, /info
+  mg_log, 'disconnecting from %s', db.host_name, name=run.logger_name, /info
 
   done:
   if (obj_valid(db)) then obj_destroy, db
