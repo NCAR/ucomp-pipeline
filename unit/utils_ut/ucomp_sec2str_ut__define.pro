@@ -10,6 +10,15 @@ function ucomp_sec2str_ut::test_basic
 end
 
 
+function ucomp_sec2str_ut::test_nan
+  compile_opt strictarr
+
+  assert, ucomp_sec2str(!values.f_nan) eq 'unknown time', 'invalid time'
+
+  return, 1
+end
+
+
 function ucomp_sec2str_ut::init, _extra=e
   compile_opt strictarr
 
