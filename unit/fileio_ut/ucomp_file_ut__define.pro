@@ -12,7 +12,7 @@ function ucomp_file_ut::test_basic
   basename = '20210326.172953.92.ucomp.l0.fts'
   filename = filepath(basename, subdir=date, root=raw_basedir)
 
-  file = ucomp_file(filename)
+  file = ucomp_file(filename, run=run)
   assert, obj_valid(file), 'file not valid'
 
   help, file, output=output
@@ -44,6 +44,7 @@ function ucomp_file_ut::test_basic
                      cam1_pcb_temp=cam1_pcb_temp
 
   obj_destroy, file
+  obj_destroy, run
 
   return, 1
 end
