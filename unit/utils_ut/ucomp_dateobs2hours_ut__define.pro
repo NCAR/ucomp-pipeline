@@ -1,5 +1,16 @@
 ; docformat = 'rst'
 
+function ucomp_dateobs2hours_ut::test_basic
+  compile_opt strictarr
+
+  dateobs = '2021-01-01 10:00:00'
+  hours = ucomp_dateobs2hours(dateobs)
+  assert, hours eq 0.0, 'incorrect hours'
+
+  return, 1
+end
+
+
 function ucomp_dateobs2hours_ut::init, _extra=e
   compile_opt strictarr
 
