@@ -54,7 +54,7 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
               {name: 'level_id', type: '%d'}, $
 
               {name: 'focus', type: '%f'}, $
-              {name: 'o1focs', type: '%f'}, $
+              {name: 'o1focus', type: '%f'}, $
 
               {name: 'obs_id', type: '''%s'''}, $
               {name: 'obs_plan', type: '''%s'''}, $
