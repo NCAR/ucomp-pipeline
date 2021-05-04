@@ -92,8 +92,12 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
                              wave_region=wave_region, $
                              center_wavelength=center_wavelength, $
                              data_type=data_type, $
+                             obs_id=obs_id, $
+                             obs_plan=obs_plan, $
                              exptime=exptime, $
                              gain_mode=gain_mode, $
+                             focus=focus, $
+                             o1focus=o1focus, $
                              nd=nd, $
                              n_extensions=n_extensions, $
                              wavelengths=wavelengths, $
@@ -147,6 +151,9 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
          carrington=carrington_rotation
   endif
 
+  if (arg_present(obs_id)) then obs_id = self.obs_id
+  if (arg_present(obs_plan)) then obs_plan = self.obs_plan
+
   if (arg_present(exptime)) then exptime = self.exptime
   if (arg_present(gain_mode)) then gain_mode = self.gain_mode
   if (arg_present(nd)) then nd = self.nd
@@ -164,6 +171,9 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
 
   if (arg_present(quality_bitmask)) then quality_bitmask = self.quality_bitmask
   if (arg_present(ok)) then ok = self.quality_bitmask eq 0
+
+  if (arg_present(focus)) then focus = self.focus
+  if (arg_present(o1focus)) then o1focus = self.o1focus
 
   if (arg_present(occulter_in)) then occulter_in = self.occulter_in
   if (arg_present(occultrid)) then occultrid = self.occultrid
@@ -239,6 +249,9 @@ pro ucomp_file::_inventory
   self.data_type = ucomp_getpar(extension_header, 'DATATYPE')
   self.date_obs  = ucomp_getpar(primary_header, 'DATE-OBS')
 
+  self.obs_id = ucomp_getpar(primary_header, 'OBS_ID')
+  self.obs_plan = ucomp_getpar(primary_header, 'OBS_PLAN')
+
   cover = ucomp_getpar(extension_header, 'COVER')
   self.cover_in = cover eq 'in'
   if (self.cover_in) then self->setProperty, quality_bitmask=ishft(1, 0)
@@ -257,8 +270,8 @@ pro ucomp_file::_inventory
 
   self.opal_in = strlowcase(ucomp_getpar(extension_header, 'DIFFUSR')) eq 'in'
   self.caloptic_in = strlowcase(ucomp_getpar(extension_header, 'CALOPTIC')) eq 'in'
-  self.polangle = ucomp_getpar(extension_header, 'POLANGLE')
-  self.retangle = ucomp_getpar(extension_header, 'RETANGLE')
+  self.polangle = ucomp_getpar(extension_header, 'POLANGLE', /float)
+  self.retangle = ucomp_getpar(extension_header, 'RETANGLE', /float)
 
   self.gain_mode = strlowcase(ucomp_getpar(primary_header, 'GAIN'))
 
@@ -274,6 +287,8 @@ pro ucomp_file::_inventory
   *self.wavelengths = fltarr(self.n_extensions)
 
   self.exptime = ucomp_getpar(extension_header, 'EXPTIME', /float)
+
+  self.o1focus = ucomp_getpar(extension_header, 'O1FOCUS', /float)
 
   ; inventory extensions for things that vary by extension
   moving_parts = 0B
@@ -342,18 +357,26 @@ pro ucomp_file__define
   !null = {ucomp_file, inherits IDL_Object, $
            raw_filename        : '', $
            run                 : obj_new(), $
+
            hst_date            : '', $
            hst_time            : '', $
            ut_date             : '', $
            ut_time             : '', $
            obsday_hours        : 0.0, $
            date_obs            : '', $
+
            n_extensions        : 0L, $
 
            wave_region         : '', $
            data_type           : '', $
+           obs_id              : '', $
+           obs_plan            : '', $
            exptime             : 0.0, $
            gain_mode           : '', $
+
+           focus               : 0.0, $
+           o1focus             : 0.0, $
+
            nd                  : 0L, $
            occulter_in         : 0B, $
            occultrid           : '', $

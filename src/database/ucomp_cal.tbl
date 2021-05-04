@@ -12,7 +12,7 @@ create table ucomp_cal (
   wave_region             char (8),
   type                    char (8),
   n_points                tinyint (2),
-  level                   tinyint (2) not null,
+  level_id                tinyint (2) not null,
   exptime                 float (7, 4),
   nd                      tinyint (2),
   cover                   tinyint (1),
@@ -35,7 +35,7 @@ create table ucomp_cal (
   index (date_obs),
   index (obsday_id),
 
-  foreign key (level) references ucomp_level(level_id),
+  foreign key (level_id) references ucomp_level(level_id),
   foreign key (ucomp_sw_id) references ucomp_sw(sw_id),
 
   foreign key (obsday_id) references mlso_numfiles(day_id)  

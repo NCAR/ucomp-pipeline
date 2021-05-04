@@ -39,31 +39,118 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
     mg_log, 'ingesting %s', file_basename(file.raw_filename), $
             name=logger_name, /info
 
-    ; TODO: implement
-;     fields = [{name: 'file_name', type: '''%s'''}, $
-;               {name: 'date_obs', type: '''%s'''}, $
-;               {name: 'obsday_id', type: '%d'}, $
-;               {name: 'quality_id', type: '%d'}, $
-;               {name: 'level_id', type: '%d'}, $
+    ; TODO: calculate these
+    overlap_angle = 0.0
+    post_angle = 0.0
+    background = 0.0
+    dmodswid = ''
+    distortion = ''
+    sky_pol_factor = 0.0
+    sky_bias = 0.0
+
+    fields = [{name: 'file_name', type: '''%s'''}, $
+              {name: 'date_obs', type: '''%s'''}, $
+              {name: 'obsday_id', type: '%d'}, $
+              {name: 'level_id', type: '%d'}, $
+
+              {name: 'focus', type: '%f'}, $
+              {name: 'o1focs', type: '%f'}, $
+
+              {name: 'obs_id', type: '''%s'''}, $
+              {name: 'obs_plan', type: '''%s'''}, $
+
+              {name: 'cover', type: '%d'}, $
+              {name: 'darkshutter', type: '%d'}, $
+              {name: 'opal', type: '%d'}, $
+              {name: 'polangle', type: '%f'}, $
+              {name: 'retangle', type: '%f'}, $
+              {name: 'caloptic', type: '%d'}, $
+
+              {name: 'ixcnter1', type: '%f'}, $
+              {name: 'iycnter1', type: '%f'}, $
+              {name: 'iradius1', type: '%f'}, $
+              {name: 'ixcnter2', type: '%f'}, $
+              {name: 'iycnter2', type: '%f'}, $
+              {name: 'iradius2', type: '%f'}, $
+
+              {name: 'overlap_angle', type: '%f'}, $
+              {name: 'post_angle', type: '%f'}, $
+
+; wavelength       float (8, 3),
+; ntunes           tinyint (2),
+; pol_list         char (4),
 ; 
-;               {name: 'cam0_arr_temp', type: '%f'}, $
-;               {name: 'cam0_pcb_temp', type: '%f'}, $
-;               {name: 'cam1_arr_temp', type: '%f'}, $
-;               {name: 'cam1_pcb_temp', type: '%f'}]
-;     sql_cmd = string(strjoin(fields.name, ', '), $
-;                      strjoin(fields.type, ', '), $
-;                      format='(%"insert into ucomp_eng (%s) values (%s)")')
-;     db->execute, sql_cmd, $
-;                  file_basename(file.raw_filename), $
-;                  file.date_obs, $
-;                  obsday_index, quality_index, level_index, $
-; 
-;                  file.cam0_arr_temp, $
-;                  file.cam0_pcb_temp, $
-;                  file.cam1_arr_temp, $
-;                  file.cam1_pcb_temp, $
-; 
-;                  status=status
+              {name: 'nextensions', type: '%d'}, $
+; -- extract the rest from from first extension
+
+              {name: 'exptime', type: '%f'}, $
+              {name: 'nd', type: '%d'}, $
+              {name: 'background', type: '%f'}, $
+
+; bodytemp         float (9, 6),  --  temperature of filter body (deg C)
+; basetemp         float (9, 6),  --  base plate temp (deg C)
+; optrtemp         float (9, 6),  --  optical rail temp (deg C)
+; lcvr4tmp         float (9, 6),  --  deg C
+
+              {name: 'occltrid', type: '''%s'''}, $
+
+              {name: 'dmodswid', type: '''%s'''}, $
+              {name: 'distort', type: '''%s'''}, $
+
+; bunit            varchar(12),
+; bzero            float(6, 3),
+; bscale           float(6, 3),
+; labviewid        varchar(20),
+; socketcamid      varchar(20),
+
+              {name: 'sky_pol_factor', type: '%f'}, $
+              {name: 'sky_bias', type: '%f'}, $
+
+              {name: 'ucomp_sw_id', type: '%d'}]
+    sql_cmd = string(strjoin(fields.name, ', '), $
+                     strjoin(fields.type, ', '), $
+                     format='(%"insert into ucomp_eng (%s) values (%s)")')
+    db->execute, sql_cmd, $
+                 file_basename(file.raw_filename), $
+                 file.date_obs, $
+                 obsday_index, $
+                 level_index, $
+
+                 file.focus, $
+                 file.o1focus, $
+
+                 file.obs_id, $
+                 file.obs_plan, $
+
+                 file.cover_in, $
+                 file.darkshutter_in, $
+                 file.opal_in, $
+                 file.polangle, $
+                 file.retangle, $
+                 file.caloptic_in, $
+
+                 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, $
+
+                 overlap_angle, $
+                 post_angle, $
+
+                 file.n_extensions, $
+
+                 file.exptime, $
+                 file.nd, $
+                 background, $
+
+                 file.occultrid, $
+
+                 dmodswid, $
+                 distortion, $
+
+                 sky_pol_factor, $
+                 sky_bias, $
+
+                 sw_index, $
+
+                 status=status
   endfor
 
   done:

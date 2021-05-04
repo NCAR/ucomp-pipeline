@@ -5,19 +5,20 @@ create table ucomp_eng (
   file_name        char (32) not null,
   date_obs         datetime not null,
   obsday_id        mediumint (5) not null,
-  level            tinyint (2) not null,
+  level_id         tinyint (2) not null,
 
   focus            float (6, 2),   -- focus stage position
-  o1focs           float (8, 3),   -- O1 position in mm
+  o1focus          float (8, 3),   -- O1 position in mm
 
   obs_id           char (30),      -- name of current measurement
   obs_plan         char (30),      -- name of current program
 
   cover            tinyint (1),
+  dark             tinyint (1),
   opal             tinyint (1),
   polangle         float (8, 3),
-  polarizer        tinyint (1),
-  retarder         tinyint (1),
+  retangle         tinyint (1),
+  caloptic         tinyint (1),
 
   -- TODO: ask Giuliana if this is sufficient for centering?
   -- distortion corrected centers/radii for occulter
@@ -50,7 +51,7 @@ create table ucomp_eng (
 
   occltrid         char (10),
 
-  -- moved from ucomp_sw, do they belong here?
+  -- TODO: moved from ucomp_sw, do they belong here?
   dmodswid         char(24),
   distort          char(50),
 
@@ -69,7 +70,7 @@ create table ucomp_eng (
 
   index (date_obs),
 
-  foreign key (level) references ucomp_level(level_id),
+  foreign key (level_id) references ucomp_level(level_id),
   foreign key (ucomp_sw_id) references ucomp_sw(sw_id),
 
   foreign key (obsday_id) references mlso_numfiles(day_id)

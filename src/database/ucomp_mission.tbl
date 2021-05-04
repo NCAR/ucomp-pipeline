@@ -8,7 +8,7 @@ create table ucomp_mission (
   date            datetime not null, 
 
   -- added in l1 primary header
-  mlso_url        char (24),
+  mlso_url        char (80),
   bunit           char (15),
   method          char (10),
   wavestep        float (7, 2),
