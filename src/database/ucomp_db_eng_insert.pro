@@ -54,7 +54,7 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
               {name: 'level_id', type: '%d'}, $
 
               {name: 'focus', type: '%f'}, $
-              {name: 'o1focus', type: '%f'}, $
+              {name: 'o1focus', type: '%s'}, $
 
               {name: 'obs_id', type: '''%s'''}, $
               {name: 'obs_plan', type: '''%s'''}, $
@@ -117,7 +117,7 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
                  level_index, $
 
                  file.focus, $
-                 file.o1focus, $
+                 ucomp_db_float(file.o1focus), $
 
                  file.obs_id, $
                  file.obs_plan, $
