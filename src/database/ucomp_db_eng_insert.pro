@@ -83,7 +83,7 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
               {name: 'nextensions', type: '%d'}, $
 ; -- extract the rest from from first extension
 
-              {name: 'exptime', type: '%f'}, $
+              {name: 'exposure', type: '%f'}, $
               {name: 'nd', type: '%d'}, $
               {name: 'background', type: '%f'}, $
 
