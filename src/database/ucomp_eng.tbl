@@ -2,7 +2,7 @@
 
 create table ucomp_eng (
   eng_id           int (10) auto_increment primary key,
-  file_name        char (32) not null,
+  file_name        char (40) not null,
   date_obs         datetime not null,
   obsday_id        mediumint (5) not null,
   level_id         tinyint (2) not null,
