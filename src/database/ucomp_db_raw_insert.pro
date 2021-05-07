@@ -45,10 +45,10 @@ pro ucomp_db_raw_insert, l0_files, obsday_index, db, logger_name=logger_name
               {name: 'quality_id', type: '%d'}, $
               {name: 'level_id', type: '%d'}, $
 
-              {name: 'cam0_arr_temp', type: '%f'}, $
-              {name: 'cam0_pcb_temp', type: '%f'}, $
-              {name: 'cam1_arr_temp', type: '%f'}, $
-              {name: 'cam1_pcb_temp', type: '%f'}]
+              {name: 't_c0arr', type: '%s'}, $
+              {name: 't_c0pcb', type: '%s'}, $
+              {name: 't_c1arr', type: '%s'}, $
+              {name: 't_c1pcb', type: '%s'}]
     sql_cmd = string(strjoin(fields.name, ', '), $
                      strjoin(fields.type, ', '), $
                      format='(%"insert into ucomp_raw (%s) values (%s)")')
@@ -57,10 +57,10 @@ pro ucomp_db_raw_insert, l0_files, obsday_index, db, logger_name=logger_name
                  file.date_obs, $
                  obsday_index, quality_index, level_index, $
 
-                 file.cam0_arr_temp, $
-                 file.cam0_pcb_temp, $
-                 file.cam1_arr_temp, $
-                 file.cam1_pcb_temp, $
+                 ucomp_db_float(file.cam0_arr_temp), $
+                 ucomp_db_float(file.cam0_pcb_temp), $
+                 ucomp_db_float(file.cam1_arr_temp), $
+                 ucomp_db_float(file.cam1_pcb_temp), $
 
                  status=status
   endfor
