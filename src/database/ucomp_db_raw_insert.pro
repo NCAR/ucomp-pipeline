@@ -57,10 +57,10 @@ pro ucomp_db_raw_insert, l0_files, obsday_index, db, logger_name=logger_name
                  file.date_obs, $
                  obsday_index, quality_index, level_index, $
 
-                 ucomp_db_float(file.cam0_arr_temp), $
-                 ucomp_db_float(file.cam0_pcb_temp), $
-                 ucomp_db_float(file.cam1_arr_temp), $
-                 ucomp_db_float(file.cam1_pcb_temp), $
+                 ucomp_db_float(file.t_c0arr), $
+                 ucomp_db_float(file.t_c0pcb), $
+                 ucomp_db_float(file.t_c1arr), $
+                 ucomp_db_float(file.t_c1pcb), $
 
                  status=status
   endfor
