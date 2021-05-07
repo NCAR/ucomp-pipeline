@@ -39,9 +39,7 @@ pro ucomp_db_cal_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
     mg_log, 'ingesting %s', file_basename(file.raw_filename), $
             name=logger_name, /info
 
-    ; TODO: calculate these
-    median_int_continuum = 0.0
-    median_int_linecenter = 0.0
+    ; TODO: calculate median_int_continuum and median_int_linecenter
 
     fields = [{name: 'file_name', type: '''%s'''}, $
               {name: 'date_obs', type: '''%s'''}, $
@@ -60,8 +58,8 @@ pro ucomp_db_cal_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
               {name: 'retangle', type: '%f'}, $
               {name: 'caloptic', type: '%d'}, $
 
-              {name: 'median_int_continuum', type: '%f'}, $
-              {name: 'median_int_linecenter', type: '%f'}, $
+              {name: 'median_int_continuum', type: '%s'}, $
+              {name: 'median_int_linecenter', type: '%s'}, $
 
               {name: 'occltrid', type: '''%s'''}, $
               {name: 'ucomp_sw_id', type: '%d'}]
@@ -86,8 +84,8 @@ pro ucomp_db_cal_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
                  file.retangle, $
                  file.caloptic_in, $
 
-                 median_int_continuum, $
-                 median_int_linecenter, $
+                 ucomp_db_float(median_int_continuum), $
+                 ucomp_db_float(median_int_linecenter), $
 
                  file.occultrid, $
                  sw_index, $
