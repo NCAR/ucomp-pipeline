@@ -113,8 +113,8 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
 
               {name: 'obsswid', type: '''%s'''}, $
 
-              {name: 'sky_pol_factor', type: '%f'}, $
-              {name: 'sky_bias', type: '%f'}, $
+              {name: 'sky_pol_factor', type: '%s'}, $
+              {name: 'sky_bias', type: '%s'}, $
 
               {name: 'ucomp_sw_id', type: '%d'}]
     sql_cmd = string(strjoin(fields.name, ', '), $
@@ -195,8 +195,9 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
                  ucomp_db_float(sky_bias), $
 
                  sw_index, $
-                 sql_statement=sql_statement, status=status
+                 sql_statement=sql_statement, status=status, error_message=error_message
     mg_log, sql_statement, name=logger_name, /debug
+    mg_log, error_message, name=logger_name, /debug
     mg_log, 'status: %d', status, name=logger_name, /debug
   endfor
 
