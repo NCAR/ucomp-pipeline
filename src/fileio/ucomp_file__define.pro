@@ -67,8 +67,28 @@ end
 ;       1 - cover in
 ;       2 - moving optic elements, i.e., occulter, cal optics, etc.
 ;-
-pro ucomp_file::setProperty, quality_bitmask=quality_bitmask
+pro ucomp_file::setProperty, ixcnter1=ixcnter1, $
+                             iycnter1=iycnter1, $
+                             iradius1=iradius1, $
+                             ixcnter2=ixcnter2, $
+                             iycnter2=iycnter2, $
+                             iradius2=iradius2, $
+                             overlap_angle=overlap_angle, $
+                             post_angle=post_angle, $
+                             background=background, $
+                             quality_bitmask=quality_bitmask
   compile_opt strictarr
+
+  if (n_elements(ixcnter1)) then self.ixcnter1 = ixcnter1
+  if (n_elements(iycnter1)) then self.iycnter1 = iycnter1
+  if (n_elements(iradius1)) then self.iradius1 = iradius1
+  if (n_elements(ixcnter2)) then self.ixcnter2 = ixcnter2
+  if (n_elements(iycnter2)) then self.iycnter2 = iycnter2
+  if (n_elements(iradius2)) then self.iradius2 = iradius2
+  if (n_elements(overlap_angle)) then self.overlap_angle = overlap_angle
+  if (n_elements(post_angle)) then self.post_angle = post_angle
+
+  if (n_elements(background)) then self.background = background
 
   if (n_elements(quality_bitmask) gt 0L) then begin
     self.quality_bitmask or= quality_bitmask
@@ -96,6 +116,7 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
                              obs_plan=obs_plan, $
                              exptime=exptime, $
                              gain_mode=gain_mode, $
+                             pol_list=pol_list, $
                              focus=focus, $
                              o1focus=o1focus, $
                              nd=nd, $
@@ -103,20 +124,50 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
                              wavelengths=wavelengths, $
                              n_unique_wavelengths=n_unique_wavelengths, $
                              unique_wavelengths=unique_wavelengths, $
+                             background=background, $
                              quality_bitmask=quality_bitmask, $
                              ok=ok, $
                              occulter_in=occulter_in, $
                              occultrid=occultrid, $
+                             obsswid=obsswid, $
                              cover_in=cover_in, $
                              darkshutter_in=darkshutter_in, $
                              opal_in=opal_in, $
                              caloptic_in=caloptic_in, $
                              polangle=polangle, $
                              retangle=retangle, $
-                             cam0_arr_temp=cam0_arr_temp, $
-                             cam0_pcb_temp=cam0_pcb_temp, $
-                             cam1_arr_temp=cam1_arr_temp, $
-                             cam1_pcb_temp=cam1_pcb_temp
+                             ixcnter1=ixcnter1, $
+                             iycnter1=iycnter1, $
+                             iradius1=iradius1, $
+                             ixcnter2=ixcnter2, $
+                             iycnter2=iycnter2, $
+                             iradius2=iradius2, $
+                             overlap_angle=overlap_angle, $
+                             post_angle=post_angle, $
+                             t_fw=t_fw, $
+                             t_lcvr1=t_lcvr1, $
+                             t_lcvr2=t_lcvr2, $
+                             t_lcvr3=t_lcvr3, $
+                             t_lnb1=t_lnb1, $
+                             t_mod=t_mod, $
+                             t_lnb2=t_lnb2, $
+                             t_lcvr4=t_lcvr4, $
+                             t_lcvr5=t_lcvr5, $
+                             t_rack=t_rack, $
+                             tu_fw=tu_fw, $
+                             tu_lcvr1=tu_lcvr1, $
+                             tu_lcvr2=tu_lcvr2, $
+                             tu_lcvr3=tu_lcvr3, $
+                             tu_lnb1=tu_lnb1, $
+                             tu_mod=tu_mod, $
+                             tu_lnb2=tu_lnb2, $
+                             tu_lcvr4=tu_lcvr4, $
+                             tu_lcvr5=tu_lcvr5, $
+                             tu_rack=tu_rack, $
+                             t_c0arr=t_c0arr, $
+                             t_c0pcb=t_c0pcb, $
+                             t_c1arr=t_c1arr, $
+                             t_c1pcb=t_c1pcb
   compile_opt strictarr
 
   ; for the file
@@ -156,6 +207,7 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
 
   if (arg_present(exptime)) then exptime = self.exptime
   if (arg_present(gain_mode)) then gain_mode = self.gain_mode
+  if (arg_present(pol_list)) then pol_list = self.pol_list
   if (arg_present(nd)) then nd = self.nd
 
   if (arg_present(wave_region)) then wave_region = self.wave_region
@@ -168,6 +220,8 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
   endif
 
   if (arg_present(data_type)) then data_type = self.data_type
+
+  if (arg_present(background)) then background = self.background
 
   if (arg_present(quality_bitmask)) then quality_bitmask = self.quality_bitmask
   if (arg_present(ok)) then ok = self.quality_bitmask eq 0
@@ -184,10 +238,41 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
   if (arg_present(polangle)) then polangle = self.polangle
   if (arg_present(retangle)) then retangle = self.retangle
 
-  if (arg_present(cam0_arr_temp)) then cam0_arr_temp = self.cam0_arr_temp
-  if (arg_present(cam0_pcb_temp)) then cam0_pcb_temp = self.cam0_pcb_temp
-  if (arg_present(cam1_arr_temp)) then cam1_arr_temp = self.cam1_arr_temp
-  if (arg_present(cam1_pcb_temp)) then cam1_pcb_temp = self.cam1_pcb_temp
+  if (arg_present(obsswid)) then obsswid = self.obsswid
+
+  if (arg_present(ixcnter1)) then ixcnter1 = self.ixcnter1
+  if (arg_present(iycnter1)) then iycnter1 = self.iycnter1
+  if (arg_present(iradius1)) then iradius1 = self.iradius1
+  if (arg_present(ixcnter2)) then ixcnter2 = self.ixcnter2
+  if (arg_present(iycnter2)) then iycnter2 = self.iycnter2
+  if (arg_present(iradius2)) then iradius2 = self.iradius2
+  if (arg_present(overlap_angle)) then overlap_angle = self.overlap_angle
+  if (arg_present(post_angle)) then post_angle = self.post_angle
+
+  if (arg_present(t_fw)) then t_fw = self.t_fw
+  if (arg_present(t_lcvr1)) then t_lcvr1 = self.t_lcvr1
+  if (arg_present(t_lcvr2)) then t_lcvr2 = self.t_lcvr2
+  if (arg_present(t_lcvr3)) then t_lcvr3 = self.t_lcvr3
+  if (arg_present(t_lnb1)) then t_lnb1 = self.t_lnb1
+  if (arg_present(t_mod)) then t_mod = self.t_mod
+  if (arg_present(t_lnb2)) then t_lnb2 = self.t_lnb2
+  if (arg_present(t_lcvr4)) then t_lcvr4 = self.t_lcvr4
+  if (arg_present(t_lcvr5)) then t_lcvr5 = self.t_lcvr5
+  if (arg_present(t_rack)) then t_rack = self.t_rack
+  if (arg_present(tu_fw)) then tu_fw = self.tu_fw
+  if (arg_present(tu_lcvr1)) then tu_lcvr1 = self.tu_lcvr1
+  if (arg_present(tu_lcvr2)) then tu_lcvr2 = self.tu_lcvr2
+  if (arg_present(tu_lcvr3)) then tu_lcvr3 = self.tu_lcvr3
+  if (arg_present(tu_lnb1)) then tu_lnb1 = self.tu_lnb1
+  if (arg_present(tu_mod)) then tu_mod = self.tu_mod
+  if (arg_present(tu_lnb2)) then tu_lnb2 = self.tu_lnb2
+  if (arg_present(tu_lcvr4)) then tu_lcvr4 = self.tu_lcvr4
+  if (arg_present(tu_lcvr5)) then tu_lcvr5 = self.tu_lcvr5
+  if (arg_present(tu_rack)) then tu_rack = self.tu_rack
+  if (arg_present(t_c0arr)) then t_c0arr = self.t_c0arr
+  if (arg_present(t_c0pcb)) then t_c0pcb = self.t_c0pcb
+  if (arg_present(t_c1arr)) then t_c1arr = self.t_c1arr
+  if (arg_present(t_c1pcb)) then t_c1pcb = self.t_c1pcb
 
   ; by extension
   if (arg_present(wavelengths)) then wavelengths = *self.wavelengths
@@ -273,15 +358,38 @@ pro ucomp_file::_inventory
   self.polangle = ucomp_getpar(extension_header, 'POLANGLE', /float)
   self.retangle = ucomp_getpar(extension_header, 'RETANGLE', /float)
 
+  self.obsswid = ucomp_getpar(extension_header, 'OBSSWID')
+
   self.gain_mode = strlowcase(ucomp_getpar(primary_header, 'GAIN'))
 
   ; TODO: enter this from the headers
   self.nd = 0L
+  self.pol_list = ''
 
-  self.cam0_arr_temp = ucomp_getpar(primary_header, 'T_C0ARR')
-  self.cam0_pcb_temp = ucomp_getpar(primary_header, 'T_C0PCB')
-  self.cam1_arr_temp = ucomp_getpar(primary_header, 'T_C1ARR')
-  self.cam1_pcb_temp = ucomp_getpar(primary_header, 'T_C1PCB')
+  self.t_fw     = ucomp_getpar(primary_header, 'T_FW')
+  self.t_lcvr1  = ucomp_getpar(primary_header, 'T_LCVR1')
+  self.t_lcvr2  = ucomp_getpar(primary_header, 'T_LCVR2')
+  self.t_lcvr3  = ucomp_getpar(primary_header, 'T_LCVR3')
+  self.t_lnb1   = ucomp_getpar(primary_header, 'T_LNB1')
+  self.t_mod    = ucomp_getpar(primary_header, 'T_MOD')
+  self.t_lnb2   = ucomp_getpar(primary_header, 'T_LNB2')
+  self.t_lcvr4  = ucomp_getpar(primary_header, 'T_LCVR4')
+  self.t_lcvr5  = ucomp_getpar(primary_header, 'T_LCVR5')
+  self.t_rack   = ucomp_getpar(primary_header, 'T_RACK')
+  self.tu_fw    = ucomp_getpar(primary_header, 'TU_FW')
+  self.tu_lcvr1 = ucomp_getpar(primary_header, 'TU_LCVR1')
+  self.tu_lcvr2 = ucomp_getpar(primary_header, 'TU_LCVR2')
+  self.tu_lcvr3 = ucomp_getpar(primary_header, 'TU_LCVR3')
+  self.tu_lnb1  = ucomp_getpar(primary_header, 'TU_LNB1')
+  self.tu_mod   = ucomp_getpar(primary_header, 'TU_MOD')
+  self.tu_lnb2  = ucomp_getpar(primary_header, 'TU_LNB2')
+  self.tu_lcvr4 = ucomp_getpar(primary_header, 'TU_LCVR4')
+  self.tu_lcvr5 = ucomp_getpar(primary_header, 'TU_LCVR5')
+  self.tu_rack  = ucomp_getpar(primary_header, 'TU_RACK')
+  self.t_c0arr  = ucomp_getpar(primary_header, 'T_C0ARR')
+  self.t_c0pcb  = ucomp_getpar(primary_header, 'T_C0PCB')
+  self.t_c1arr  = ucomp_getpar(primary_header, 'T_C1ARR')
+  self.t_c1pcb  = ucomp_getpar(primary_header, 'T_C1PCB')
 
   ; allocate inventory variables
   *self.wavelengths = fltarr(self.n_extensions)
@@ -339,6 +447,17 @@ function ucomp_file::init, raw_filename, run=run
 
   self.data_type = 'unk'
 
+  self.ixcnter1 = !values.f_nan
+  self.iycnter1 = !values.f_nan
+  self.iradius1 = !values.f_nan
+  self.ixcnter2 = !values.f_nan
+  self.iycnter2 = !values.f_nan
+  self.iradius2 = !values.f_nan
+  self.overlap_angle = !values.f_nan
+  self.post_angle = !values.f_nan
+
+  self.background = !values.f_nan
+
   ; allocate inventory variables for extensions
   self.wavelengths = ptr_new(/allocate_heap)
 
@@ -373,6 +492,7 @@ pro ucomp_file__define
            obs_plan            : '', $
            exptime             : 0.0, $
            gain_mode           : '', $
+           pol_list            : '', $
 
            focus               : 0.0, $
            o1focus             : 0.0, $
@@ -387,12 +507,45 @@ pro ucomp_file__define
            polangle            : 0.0, $
            retangle            : 0.0, $
 
-           cam0_arr_temp       : 0.0, $
-           cam0_pcb_temp       : 0.0, $
-           cam1_arr_temp       : 0.0, $
-           cam1_pcb_temp       : 0.0, $
+           obsswid             : '', $
+
+           ixcnter1            : 0.0, $
+           iycnter1            : 0.0, $
+           iradius1            : 0.0, $
+           ixcnter2            : 0.0, $
+           iycnter2            : 0.0, $
+           iradius2            : 0.0, $
+           overlap_angle       : 0.0, $
+           post_angle          : 0.0, $
+
+           t_fw                : 0.0, $
+           t_lcvr1             : 0.0, $
+           t_lcvr2             : 0.0, $
+           t_lcvr3             : 0.0, $
+           t_lnb1              : 0.0, $
+           t_mod               : 0.0, $
+           t_lnb2              : 0.0, $
+           t_lcvr4             : 0.0, $
+           t_lcvr5             : 0.0, $
+           t_rack              : 0.0, $
+           tu_fw               : 0.0, $
+           tu_lcvr1            : 0.0, $
+           tu_lcvr2            : 0.0, $
+           tu_lcvr3            : 0.0, $
+           tu_lnb1             : 0.0, $
+           tu_mod              : 0.0, $
+           tu_lnb2             : 0.0, $
+           tu_lcvr4            : 0.0, $
+           tu_lcvr5            : 0.0, $
+           tu_rack             : 0.0, $
+           t_c0arr             : 0.0, $
+           t_c0pcb             : 0.0, $
+           t_c1arr             : 0.0, $
+           t_c1pcb             : 0.0, $
 
            wavelengths         : ptr_new(), $
+
+           background          : 0.0, $
 
            quality_bitmask     : 0UL $
           }
