@@ -194,11 +194,7 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
                  ucomp_db_float(sky_pol_factor), $
                  ucomp_db_float(sky_bias), $
 
-                 sw_index, $
-                 sql_statement=sql_statement, status=status, error_message=error_message
-    mg_log, sql_statement, name=logger_name, /debug
-    mg_log, error_message, name=logger_name, /debug
-    mg_log, 'status: %d', status, name=logger_name, /debug
+                 sw_index
   endfor
 
   done:
