@@ -358,7 +358,7 @@ pro ucomp_file::_inventory
   self.polangle = ucomp_getpar(extension_header, 'POLANGLE', /float)
   self.retangle = ucomp_getpar(extension_header, 'RETANGLE', /float)
 
-  self.obsswid = ucomp_getpar(extension_header, 'OBSSWID')
+  self.obsswid = ucomp_getpar(primary_header, 'OBSSWID')
 
   self.gain_mode = strlowcase(ucomp_getpar(primary_header, 'GAIN'))
 
