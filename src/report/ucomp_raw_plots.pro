@@ -38,13 +38,13 @@ pro ucomp_raw_plots, run=run
   times = fltarr(n_files)
   for f = 0L, n_files - 1L do times[f] = files[f].obsday_hours
   t_c0arr = fltarr(n_files)
-  for f = 0L, n_files - 1L do t_c0arr[f] = files[f].cam0_arr_temp
+  for f = 0L, n_files - 1L do t_c0arr[f] = files[f].t_c0arr
   t_c0pcb = fltarr(n_files)
-  for f = 0L, n_files - 1L do t_c0pcb[f] = files[f].cam0_pcb_temp
+  for f = 0L, n_files - 1L do t_c0pcb[f] = files[f].t_c0pcb
   t_c1arr = fltarr(n_files)
-  for f = 0L, n_files - 1L do t_c1arr[f] = files[f].cam1_arr_temp
+  for f = 0L, n_files - 1L do t_c1arr[f] = files[f].t_c1arr
   t_c1pcb = fltarr(n_files)
-  for f = 0L, n_files - 1L do t_c1pcb[f] = files[f].cam1_pcb_temp
+  for f = 0L, n_files - 1L do t_c1pcb[f] = files[f].t_c1pcb
 
   tarr_min =  9.0 < floor(min([t_c0arr, t_c1arr]))
   tarr_max = 11.0 > ceil(max([t_c0arr, t_c1arr]))
