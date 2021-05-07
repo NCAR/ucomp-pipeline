@@ -11,10 +11,10 @@ create table ucomp_raw (
   quality_id       tinyint (2) not null,
   level_id         tinyint (2) not null,
 
-  cam0_arr_temp    float(8, 3),
-  cam0_pcb_temp    float(8, 3),
-  cam1_arr_temp    float(8, 3),
-  cam1_pcb_temp    float(8, 3),
+  t_c0arr          float(8, 3),
+  t_c0pcb          float(8, 3),
+  t_c1arr          float(8, 3),
+  t_c1pcb          float(8, 3),
 
   -- TODO: add all temperatures from primary header
 
