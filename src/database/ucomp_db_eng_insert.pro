@@ -39,14 +39,9 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
     mg_log, 'ingesting %s', file_basename(file.raw_filename), $
             name=logger_name, /info
 
-    ; TODO: calculate these
-    overlap_angle = 0.0
-    post_angle = 0.0
-    background = 0.0
+    ; TODO: calculate: sky_pol_factor, sky_bias
     dmodswid = ''
     distortion = ''
-    sky_pol_factor = 0.0
-    sky_bias = 0.0
 
     fields = [{name: 'file_name', type: '''%s'''}, $
               {name: 'date_obs', type: '''%s'''}, $
@@ -66,42 +61,57 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
               {name: 'retangle', type: '%f'}, $
               {name: 'caloptic', type: '%d'}, $
 
-              {name: 'ixcnter1', type: '%f'}, $
-              {name: 'iycnter1', type: '%f'}, $
-              {name: 'iradius1', type: '%f'}, $
-              {name: 'ixcnter2', type: '%f'}, $
-              {name: 'iycnter2', type: '%f'}, $
-              {name: 'iradius2', type: '%f'}, $
+              {name: 'ixcnter1', type: '%s'}, $
+              {name: 'iycnter1', type: '%s'}, $
+              {name: 'iradius1', type: '%s'}, $
+              {name: 'ixcnter2', type: '%s'}, $
+              {name: 'iycnter2', type: '%s'}, $
+              {name: 'iradius2', type: '%s'}, $
 
-              {name: 'overlap_angle', type: '%f'}, $
-              {name: 'post_angle', type: '%f'}, $
+              {name: 'overlap_angle', type: '%s'}, $
+              {name: 'post_angle', type: '%s'}, $
 
-; wavelength       float (8, 3),
-; ntunes           tinyint (2),
-; pol_list         char (4),
-; 
+              {name: 'wave_region', type: '''%s'''}, $
+              {name: 'ntunes', type: '%d'}, $
+              {name: 'pol_list', type: '''%s'''}, $
+
               {name: 'nextensions', type: '%d'}, $
-; -- extract the rest from from first extension
 
               {name: 'exposure', type: '%f'}, $
               {name: 'nd', type: '%d'}, $
-              {name: 'background', type: '%f'}, $
+              {name: 'background', type: '%s'}, $
 
-; bodytemp         float (9, 6),  --  temperature of filter body (deg C)
-; basetemp         float (9, 6),  --  base plate temp (deg C)
-; optrtemp         float (9, 6),  --  optical rail temp (deg C)
-; lcvr4tmp         float (9, 6),  --  deg C
+              {name: 't_fw', type: '%s'}, $
+              {name: 't_lcvr1', type: '%s'}, $
+              {name: 't_lcvr2', type: '%s'}, $
+              {name: 't_lcvr3', type: '%s'}, $
+              {name: 't_lnb1', type: '%s'}, $
+              {name: 't_mod', type: '%s'}, $
+              {name: 't_lnb2', type: '%s'}, $
+              {name: 't_lcvr4', type: '%s'}, $
+              {name: 't_lcvr5', type: '%s'}, $
+              {name: 't_rack', type: '%s'}, $
+              {name: 'tu_fw', type: '%s'}, $
+              {name: 'tu_lcvr1', type: '%s'}, $
+              {name: 'tu_lcvr2', type: '%s'}, $
+              {name: 'tu_lcvr3', type: '%s'}, $
+              {name: 'tu_lnb1', type: '%s'}, $
+              {name: 'tu_mod', type: '%s'}, $
+              {name: 'tu_lnb2', type: '%s'}, $
+              {name: 'tu_lcvr4', type: '%s'}, $
+              {name: 'tu_lcvr5', type: '%s'}, $
+              {name: 'tu_rack', type: '%s'}, $
+              {name: 't_c0arr', type: '%s'}, $
+              {name: 't_c0pcb', type: '%s'}, $
+              {name: 't_c1arr', type: '%s'}, $
+              {name: 't_c1pcb', type: '%s'}, $
 
               {name: 'occltrid', type: '''%s'''}, $
 
               {name: 'dmodswid', type: '''%s'''}, $
               {name: 'distort', type: '''%s'''}, $
 
-; bunit            varchar(12),
-; bzero            float(6, 3),
-; bscale           float(6, 3),
-; labviewid        varchar(20),
-; socketcamid      varchar(20),
+              {name: 'obsswid', type: '''%s'''}, $
 
               {name: 'sky_pol_factor', type: '%f'}, $
               {name: 'sky_bias', type: '%f'}, $
@@ -129,24 +139,60 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
                  file.retangle, $
                  file.caloptic_in, $
 
-                 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, $
+                 ucomp_db_float(file.ixcnter1), $
+                 ucomp_db_float(file.iycnter1), $
+                 ucomp_db_float(file.iradius1), $
+                 ucomp_db_float(file.ixcnter2), $
+                 ucomp_db_float(file.iycnter2), $
+                 ucomp_db_float(file.iradius2), $
 
-                 overlap_angle, $
-                 post_angle, $
+                 ucomp_db_float(file.overlap_angle), $
+                 ucomp_db_float(file.post_angle), $
+
+                 file.wave_region, $
+                 file.n_unique_wavelengths, $
+                 file.pol_list, $
 
                  file.n_extensions, $
 
                  file.exptime, $
                  file.nd, $
-                 background, $
+                 ucomp_db_float(background), $
+
+                 ucomp_db_float(file.t_fw), $
+                 ucomp_db_float(file.t_lcvr1), $
+                 ucomp_db_float(file.t_lcvr2), $
+                 ucomp_db_float(file.t_lcvr3), $
+                 ucomp_db_float(file.t_lnb1), $
+                 ucomp_db_float(file.t_mod), $
+                 ucomp_db_float(file.t_lnb2), $
+                 ucomp_db_float(file.t_lcvr4), $
+                 ucomp_db_float(file.t_lcvr5), $
+                 ucomp_db_float(file.t_rack), $
+                 ucomp_db_float(file.tu_fw), $
+                 ucomp_db_float(file.tu_lcvr1), $
+                 ucomp_db_float(file.tu_lcvr2), $
+                 ucomp_db_float(file.tu_lcvr3), $
+                 ucomp_db_float(file.tu_lnb1), $
+                 ucomp_db_float(file.tu_mod), $
+                 ucomp_db_float(file.tu_lnb2), $
+                 ucomp_db_float(file.tu_lcvr4), $
+                 ucomp_db_float(file.tu_lcvr5), $
+                 ucomp_db_float(file.tu_rack), $
+                 ucomp_db_float(file.t_c0arr), $
+                 ucomp_db_float(file.t_c0pcb), $
+                 ucomp_db_float(file.t_c1arr), $
+                 ucomp_db_float(file.t_c1pcb), $
 
                  file.occultrid, $
 
                  dmodswid, $
                  distortion, $
 
-                 sky_pol_factor, $
-                 sky_bias, $
+                 file.obsswid, $
+
+                 ucomp_db_float(sky_pol_factor), $
+                 ucomp_db_float(sky_bias), $
 
                  sw_index, $
 

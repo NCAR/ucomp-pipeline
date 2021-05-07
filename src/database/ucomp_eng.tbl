@@ -13,6 +13,8 @@ create table ucomp_eng (
   obs_id           char (30),      -- name of current measurement
   obs_plan         char (30),      -- name of current program
 
+  -- TODO: how about gain?
+
   cover            tinyint (1),
   darkshutter      tinyint (1),
   opal             tinyint (1),
@@ -32,7 +34,7 @@ create table ucomp_eng (
   overlap_angle    float(7, 3),
   post_angle       float(7, 3),
 
-  wavelength       float (8, 3),
+  wave_region      char (4),
   ntunes           tinyint (2),
   pol_list         char (4),
 
@@ -44,10 +46,30 @@ create table ucomp_eng (
   nd               tinyint (2),
   background       float (7, 3),  -- median of masked line center background for i
 
-  bodytemp         float (9, 6),  --  temperature of filter body (deg C)
-  basetemp         float (9, 6),  --  base plate temp (deg C)
-  optrtemp         float (9, 6),  --  optical rail temp (deg C)
-  lcvr4tmp         float (9, 6),  --  deg C
+  t_fw             float (9, 6),  --  Filter wheel Temp
+  t_lcvr1          float (9, 6),  --  Lyot LCVR1 Temp
+  t_lcvr2          float (9, 6),  --  Lyot LCVR2 Temp
+  t_lcvr3          float (9, 6),  --  Lyot LCVR2 Temp
+  t_lnb1           float (9, 6),  --  LiNb1 Temp
+  t_mod            float (9, 6),  --  Modulator Temp
+  t_lnb2           float (9, 6),  --  LiNb2 Temp
+  t_lcvr4          float (9, 6),  --  Lyot LCVR4 Temp
+  t_lcvr5          float (9, 6),  --  Lyot LCVR5 Temp
+  t_rack           float (9, 6),  --  Computer Rack Temp
+  tu_fw            float (9, 6),  --  Filter wheel Temp  Unfiltered
+  tu_lcvr1         float (9, 6),  --  Lyot LCVR1 Temp Unfiltered
+  tu_lcvr2         float (9, 6),  --  Lyot LCVR2 Temp Unfiltered
+  tu_lcvr3         float (9, 6),  --  Lyot LCVR2 Temp Unfiltered
+  tu_lnb1          float (9, 6),  --  LiNb1 Temp Unfiltered
+  tu_mod           float (9, 6),  --  Modulator Temp Unfiltered
+  tu_lnb2          float (9, 6),  --  LiNb2 Temp Unfiltered
+  tu_lcvr4         float (9, 6),  --  Lyot LCVR4 Temp Unfiltered
+  tu_lcvr5         float (9, 6),  --  Lyot LCVR5 Temp Unfiltered
+  tu_rack          float (9, 6),  --  Computer Rack Temp Unfiltered
+  t_c0arr          float (9, 6),  --  Camera 0 Sensor array temp
+  t_c0pcb          float (9, 6),  --  Camera 0 PCB board temp
+  t_c1arr          float (9, 6),  --  Camera 1 Sensor array temp
+  t_c1pcb          float (9, 6),  --  Camera 1 PCB board temp
 
   occltrid         char (10),
 
@@ -55,11 +77,7 @@ create table ucomp_eng (
   dmodswid         char(24),
   distort          char(50),
 
-  bunit            varchar(12),
-  bzero            float(6, 3),
-  bscale           float(6, 3),
-  labviewid        varchar(20),
-  socketcamid      varchar(20),
+  obsswid          varchar(30),
 
   sky_pol_factor   float(6, 3),
   sky_bias         float(7, 4),
