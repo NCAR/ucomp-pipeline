@@ -166,7 +166,7 @@ pro ucomp_run::lock, is_available=is_available
   compile_opt strictarr
 
   self->getProperty, logger_name=logger_name
-  basedir = run->config('processing/basedir')
+  basedir = self->config('processing/basedir')
   is_available = ucomp_state(self.date, $
                              basedir=basedir, $
                              logger_name=logger_name)
@@ -201,7 +201,7 @@ pro ucomp_run::unlock, mark_processed=mark_processed, $
   compile_opt strictarr
 
   self->getProperty, logger_name=logger_name
-  basedir = run->config('processing/basedir')
+  basedir = self->config('processing/basedir')
   if (ucomp_state(self.date, basedir=basedi, logger_name=logger_name)) then begin
     is_available = 1B
   endif else begin
