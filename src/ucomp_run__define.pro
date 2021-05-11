@@ -166,10 +166,14 @@ pro ucomp_run::lock, is_available=is_available
   compile_opt strictarr
 
   self->getProperty, logger_name=logger_name
-
-  is_available = ucomp_state(self.date, run=self)
+  basedir = run->config('processing/basedir')
+  is_available = ucomp_state(self.date, $
+                             basedir=basedir, $
+                             logger_name=logger_name)
   if (is_available) then begin
-    !null = ucomp_state(self.date, /lock, run=self)
+    !null = ucomp_state(self.date, /lock, $
+                        basedir=basedir, $
+                        logger_name=logger_name)
     mg_log, 'locked %s', self.date, name=logger_name, /info
   endif else begin
     mg_log, '%s not available, skipping', self.date, name=logger_name, /info
@@ -197,17 +201,23 @@ pro ucomp_run::unlock, mark_processed=mark_processed, $
   compile_opt strictarr
 
   self->getProperty, logger_name=logger_name
- 
-  if (ucomp_state(self.date, run=self)) then begin
+  basedir = run->config('processing/basedir')
+  if (ucomp_state(self.date, basedir=basedi, logger_name=logger_name)) then begin
     is_available = 1B
   endif else begin
     if (keyword_set(reprocess)) then begin
-      is_available = ucomp_state(self.date, /reprocess, run=self)
+      is_available = ucomp_state(self.date, /reprocess, $
+                                 basedir=basedir, $
+                                 logger_name=logger_name)
     endif else begin
-      is_available = ucomp_state(self.date, /unlock, run=self)
+      is_available = ucomp_state(self.date, /unlock, $
+                                 basedir=basedir, $
+                                 logger_name=logger_name)
       mg_log, 'unlocked %s', self.date, name=logger_name, /info
       if (keyword_set(mark_processed)) then begin
-        is_available = ucomp_state(self.date, /processed, run=self)
+        is_available = ucomp_state(self.date, /processed, $
+                                   basedir=basedir, $
+                                   logger_name=logger_name)
         mg_log, 'marked %s as processed', self.date, name=logger_name, /info
       endif
     endelse

@@ -9,7 +9,7 @@ function ucomp_decompose_date_ut::test1
 end
 
 
-function ucomp_decomposed_date_ut::init, _extra=e
+function ucomp_decompose_date_ut::init, _extra=e
   compile_opt strictarr
 
   if (~self->UCoMPutTestCase::init(_extra=e)) then return, 0
