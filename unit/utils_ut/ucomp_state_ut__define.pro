@@ -15,7 +15,7 @@ function ucomp_state_ut::test_lock
   is_available = ucomp_state(date, /unlock, basedir=basedir)
   assert, is_available eq 1B, 'failed unlock'
 
-  file_delete, date_dir, /recursive
+  file_delete, basedir, /recursive
 
   return, 1
 end
@@ -35,7 +35,7 @@ function ucomp_state_ut::test_processed
   is_available = ucomp_state(date, /reprocess, basedir=basedir)
   assert, is_available eq 1B, 'failed reprocess unlock'
 
-  file_delete, date_dir, /recursive
+  file_delete, basedir, /recursive
 
   return, 1
 end
