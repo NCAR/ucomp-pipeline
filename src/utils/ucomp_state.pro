@@ -20,19 +20,22 @@
 ;     set to set a lock indicating the directory has been processed
 ;   reprocess : in, optional, type=boolean
 ;     set to remove the mark indicating directory was processed
-;   run : in, required, type=object
-;     UCoMP pipeline run object
+;   basedir : in, required, type=object
+;     base directory to place lock files in
+;   logger_name : in, optional, type=string
+;     logger to send error messages to
 ;-
 function ucomp_state, date, $
                       lock=lock, $
                       unlock=unlock, $
                       processed=processed, $
                       reprocess=reprocess, $
-                      run=run
+                      basedir=basedir, $
+                      logger_name=logger_name
   compile_opt strictarr, logical_predicate
   on_error, 2
 
-  lock_dir = filepath(date, root=run->config('processing/basedir'))
+  lock_dir = filepath(date, root=basedir)
   lock_file = filepath('.lock', root=lock_dir)
   processed_file = filepath('.processed', root=lock_dir)
 
@@ -44,7 +47,7 @@ function ucomp_state, date, $
 
   if (keyword_set(lock)) then begin
     if (available) then begin
-      ucomp_mkdir, lock_dir, logger_name=run.logger_name
+      ucomp_mkdir, lock_dir, logger_name=logger_name
       openw, lun, lock_file, /get_lun
       free_lun, lun
     endif
@@ -66,7 +69,7 @@ function ucomp_state, date, $
   endif
 
   if (keyword_set(processed)) then begin
-    ucomp_mkdir, lock_dir, logger_name=run.logger_name
+    ucomp_mkdir, lock_dir, logger_name=logger_name
     openw, lun, processed_file, /get_lun
     free_lun, lun
     return, 1B
