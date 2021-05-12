@@ -1,5 +1,117 @@
 ; docformat = 'rst'
 
+function ucomp_run_ut::test_basic
+  compile_opt strictarr
+
+  date = '20210311'
+  config_basename = 'ucomp.unit.cfg'
+  config_filename = filepath(config_basename, $
+                             subdir=['..', 'config'], $
+                             root=mg_src_root())
+  
+  run = ucomp_run(date, 'test', config_filename)
+
+  is_valid = obj_valid(run)
+  obj_destroy, run
+
+  assert, is_valid, 'run object not valid'
+
+  return, 1
+end
+
+
+function ucomp_run_ut::test_properties
+  compile_opt strictarr
+
+  date = '20210311'
+  config_basename = 'ucomp.unit.cfg'
+  config_filename = filepath(config_basename, $
+                             subdir=['..', 'config'], $
+                             root=mg_src_root())
+  
+  run = ucomp_run(date, 'test', config_filename)
+
+  run->getProperty, date=date, $
+                    mode=mode, $
+                    logger_name=logger_name, $
+                    config_contents=config_contents, $
+                    all_wave_regions=all_wave_regions, $
+                    resource_root=resource_root, $
+                    calibration=calibration, $
+                    t0=t0
+  obj_destroy, run
+
+  return, 1
+end
+
+
+function ucomp_run_ut::test_config
+  compile_opt strictarr
+
+  date = '20210311'
+  config_basename = 'ucomp.unit.cfg'
+  config_filename = filepath(config_basename, $
+                             subdir=['..', 'config'], $
+                             root=mg_src_root())
+  
+  run = ucomp_run(date, 'test', config_filename)
+
+  raw_basedir = run->config('raw/basedir')
+
+  obj_destroy, run
+
+  return, 1
+end
+
+
+function ucomp_run_ut::test_line
+  compile_opt strictarr
+
+  date = '20210311'
+  config_basename = 'ucomp.unit.cfg'
+  config_filename = filepath(config_basename, $
+                             subdir=['..', 'config'], $
+                             root=mg_src_root())
+  
+  run = ucomp_run(date, 'test', config_filename)
+
+  lines = run->line()
+  nickname = run->line('530', 'nickname')
+
+  obj_destroy, run
+
+  assert, nickname eq 'green line', 'wrong nickname for line'
+
+  all_lines = ['530', '637', '656', '691', '706', '789', '1074', '1079', '1083']
+  assert, array_equal(lines, all_lines), 'wrong lines'
+
+  return, 1
+end
+
+
+function ucomp_run_ut::test_timing
+  compile_opt strictarr
+
+  date = '20210311'
+  config_basename = 'ucomp.unit.cfg'
+  config_filename = filepath(config_basename, $
+                             subdir=['..', 'config'], $
+                             root=mg_src_root())
+  
+  run = ucomp_run(date, 'test', config_filename)
+
+  x = run->start('x')
+  t1 = run->stop(x)
+
+  x = run->start('x')
+  t2 = run->stop(x)
+
+  obj_destroy, run
+
+  return, 1
+end
+
+
 function ucomp_run_ut::init, _extra=e
   compile_opt strictarr
 
