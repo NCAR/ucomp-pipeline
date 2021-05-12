@@ -64,7 +64,7 @@ pro ucomp_eod_wrapper, date, config_filename
           !version.release, !version.os_name, mg_hostname(), $
           name=run.logger_name, /debug
 
-  machinelog_present = ucomp_validate_machinelog(run=run)
+  machinelog_valid = ucomp_validate_machinelog(present=machinelog_present, run=run)
   if (~machinelog_present) then begin
     mg_log, 'machine log not present, exiting', name=run.logger_name, /info
     goto, done
