@@ -64,6 +64,27 @@ function ucomp_run_ut::test_config
 end
 
 
+function ucomp_run_ut::test_epoch
+  compile_opt strictarr
+
+  date = '20210311'
+  config_basename = 'ucomp.unit.cfg'
+  config_filename = filepath(config_basename, $
+                             subdir=['..', 'config'], $
+                             root=mg_src_root())
+  
+  run = ucomp_run(date, 'test', config_filename)
+
+  process = run->epoch('process', datetime='20210511.080000')
+
+  obj_destroy, run
+
+  assert, process, 'incorrect process value'
+
+  return, 1
+end
+
+
 function ucomp_run_ut::test_line
   compile_opt strictarr
 
