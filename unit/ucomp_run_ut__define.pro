@@ -133,6 +133,39 @@ function ucomp_run_ut::test_timing
 end
 
 
+function ucomp_run_ut::test_lock
+  compile_opt strictarr
+
+  date = '20210311'
+  config_basename = 'ucomp.unit.cfg'
+  config_filename = filepath(config_basename, $
+                             subdir=['..', 'config'], $
+                             root=mg_src_root())
+  
+  run = ucomp_run(date, 'test', config_filename)
+
+  run->lock, is_available=is_available1
+  run->unlock, is_available=is_available2
+
+  run->lock, is_available=is_available3
+  run->unlock, /mark_processed, is_available=is_available4
+
+  run->unlock, /reprocess, is_available=is_available5
+  run->unlock, is_available=is_available6
+
+  obj_destroy, run
+
+  assert, is_available1 eq 1B, 'incorrect is_available1'
+  assert, is_available2 eq 1B, 'incorrect is_available2'
+  assert, is_available3 eq 1B, 'incorrect is_available3'
+  assert, is_available4 eq 1B, 'incorrect is_available4'
+  assert, is_available5 eq 1B, 'incorrect is_available5'
+  assert, is_available5 eq 1B, 'incorrect is_available6'
+
+  return, 1
+end
+
+
 function ucomp_run_ut::init, _extra=e
   compile_opt strictarr
 
