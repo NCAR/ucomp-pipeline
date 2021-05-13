@@ -202,7 +202,7 @@ pro ucomp_run::unlock, mark_processed=mark_processed, $
 
   self->getProperty, logger_name=logger_name
   basedir = self->config('processing/basedir')
-  if (ucomp_state(self.date, basedir=basedi, logger_name=logger_name)) then begin
+  if (ucomp_state(self.date, basedir=basedir, logger_name=logger_name)) then begin
     is_available = 1B
   endif else begin
     if (keyword_set(reprocess)) then begin
