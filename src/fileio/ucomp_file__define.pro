@@ -324,79 +324,79 @@ pro ucomp_file::_inventory
   ; read a representative, test extension header
   fits_read, fcb, extension_data, extension_header, exten_no=1, /header_only
 
-  filter = ucomp_getpar(primary_header, 'FILTER')
+  filter = ucomp_getpar(primary_header, 'FILTER', found=found)
   if (n_elements(filter) gt 0L && filter ne '') then begin
     self.wave_region = strtrim(long(filter), 2)
   endif else begin
     self.wave_region = ''
   endelse
 
-  self.data_type = ucomp_getpar(extension_header, 'DATATYPE')
-  self.date_obs  = ucomp_getpar(primary_header, 'DATE-OBS')
+  self.data_type = ucomp_getpar(extension_header, 'DATATYPE', found=found)
+  self.date_obs  = ucomp_getpar(primary_header, 'DATE-OBS', found=found)
 
-  self.obs_id = ucomp_getpar(primary_header, 'OBS_ID')
-  self.obs_plan = ucomp_getpar(primary_header, 'OBS_PLAN')
+  self.obs_id = ucomp_getpar(primary_header, 'OBS_ID', found=found)
+  self.obs_plan = ucomp_getpar(primary_header, 'OBS_PLAN', found=found)
 
-  cover = ucomp_getpar(extension_header, 'COVER')
+  cover = ucomp_getpar(extension_header, 'COVER', found=found)
   self.cover_in = cover eq 'in'
   if (self.cover_in) then self->setProperty, quality_bitmask=ishft(1, 0)
   if (cover ne 'in' && cover ne 'out') then begin
     self->setProperty, quality_bitmask=ishft(1, 1)
   endif
 
-  self.darkshutter_in = ucomp_getpar(extension_header, 'DARKSHUT') eq 'in'
+  self.darkshutter_in = ucomp_getpar(extension_header, 'DARKSHUT', found=found) eq 'in'
 
-  occulter = ucomp_getpar(extension_header, 'OCCLTR')
+  occulter = ucomp_getpar(extension_header, 'OCCLTR', found=found)
   self.occulter_in = occulter eq 'in'
   if (occulter ne 'in' && occulter ne 'out') then begin
     self->setProperty, quality_bitmask=ishft(1, 1)
   endif
-  self.occultrid = ucomp_getpar(primary_header, 'OCCLTRID')
+  self.occultrid = ucomp_getpar(primary_header, 'OCCLTRID', found=found)
 
-  self.opal_in = strlowcase(ucomp_getpar(extension_header, 'DIFFUSR')) eq 'in'
-  self.caloptic_in = strlowcase(ucomp_getpar(extension_header, 'CALOPTIC')) eq 'in'
-  self.polangle = ucomp_getpar(extension_header, 'POLANGLE', /float)
-  self.retangle = ucomp_getpar(extension_header, 'RETANGLE', /float)
+  self.opal_in = strlowcase(ucomp_getpar(extension_header, 'DIFFUSR', found=found)) eq 'in'
+  self.caloptic_in = strlowcase(ucomp_getpar(extension_header, 'CALOPTIC', found=found)) eq 'in'
+  self.polangle = ucomp_getpar(extension_header, 'POLANGLE', /float, found=found)
+  self.retangle = ucomp_getpar(extension_header, 'RETANGLE', /float, found=found)
 
-  self.obsswid = ucomp_getpar(primary_header, 'OBSSWID')
+  self.obsswid = ucomp_getpar(primary_header, 'OBSSWID', found=found)
 
-  self.gain_mode = strlowcase(ucomp_getpar(primary_header, 'GAIN'))
+  self.gain_mode = strlowcase(ucomp_getpar(primary_header, 'GAIN', found=found))
 
   ; TODO: enter this from the headers
   self.nd = 0L
   self.pol_list = ''
 
-  self.t_fw     = ucomp_getpar(primary_header, 'T_FW', /float)
-  self.t_lcvr1  = ucomp_getpar(primary_header, 'T_LCVR1', /float)
-  self.t_lcvr2  = ucomp_getpar(primary_header, 'T_LCVR2', /float)
-  self.t_lcvr3  = ucomp_getpar(primary_header, 'T_LCVR3', /float)
-  self.t_lnb1   = ucomp_getpar(primary_header, 'T_LNB1', /float)
-  self.t_mod    = ucomp_getpar(primary_header, 'T_MOD', /float)
-  self.t_lnb2   = ucomp_getpar(primary_header, 'T_LNB2', /float)
-  self.t_lcvr4  = ucomp_getpar(primary_header, 'T_LCVR4', /float)
-  self.t_lcvr5  = ucomp_getpar(primary_header, 'T_LCVR5', /float)
-  self.t_rack   = ucomp_getpar(primary_header, 'T_RACK', /float)
-  self.tu_fw    = ucomp_getpar(primary_header, 'TU_FW', /float)
-  self.tu_lcvr1 = ucomp_getpar(primary_header, 'TU_LCVR1', /float)
-  self.tu_lcvr2 = ucomp_getpar(primary_header, 'TU_LCVR2', /float)
-  self.tu_lcvr3 = ucomp_getpar(primary_header, 'TU_LCVR3', /float)
-  self.tu_lnb1  = ucomp_getpar(primary_header, 'TU_LNB1', /float)
-  self.tu_mod   = ucomp_getpar(primary_header, 'TU_MOD', /float)
-  self.tu_lnb2  = ucomp_getpar(primary_header, 'TU_LNB2', /float)
-  self.tu_lcvr4 = ucomp_getpar(primary_header, 'TU_LCVR4', /float)
-  self.tu_lcvr5 = ucomp_getpar(primary_header, 'TU_LCVR5', /float)
-  self.tu_rack  = ucomp_getpar(primary_header, 'TU_RACK', /float)
-  self.t_c0arr  = ucomp_getpar(primary_header, 'T_C0ARR', /float)
-  self.t_c0pcb  = ucomp_getpar(primary_header, 'T_C0PCB', /float)
-  self.t_c1arr  = ucomp_getpar(primary_header, 'T_C1ARR', /float)
-  self.t_c1pcb  = ucomp_getpar(primary_header, 'T_C1PCB', /float)
+  self.t_fw     = ucomp_getpar(primary_header, 'T_FW', /float, found=found)
+  self.t_lcvr1  = ucomp_getpar(primary_header, 'T_LCVR1', /float, found=found)
+  self.t_lcvr2  = ucomp_getpar(primary_header, 'T_LCVR2', /float, found=found)
+  self.t_lcvr3  = ucomp_getpar(primary_header, 'T_LCVR3', /float, found=found)
+  self.t_lnb1   = ucomp_getpar(primary_header, 'T_LNB1', /float, found=found)
+  self.t_mod    = ucomp_getpar(primary_header, 'T_MOD', /float, found=found)
+  self.t_lnb2   = ucomp_getpar(primary_header, 'T_LNB2', /float, found=found)
+  self.t_lcvr4  = ucomp_getpar(primary_header, 'T_LCVR4', /float, found=found)
+  self.t_lcvr5  = ucomp_getpar(primary_header, 'T_LCVR5', /float, found=found)
+  self.t_rack   = ucomp_getpar(primary_header, 'T_RACK', /float, found=found)
+  self.tu_fw    = ucomp_getpar(primary_header, 'TU_FW', /float, found=found)
+  self.tu_lcvr1 = ucomp_getpar(primary_header, 'TU_LCVR1', /float, found=found)
+  self.tu_lcvr2 = ucomp_getpar(primary_header, 'TU_LCVR2', /float, found=found)
+  self.tu_lcvr3 = ucomp_getpar(primary_header, 'TU_LCVR3', /float, found=found)
+  self.tu_lnb1  = ucomp_getpar(primary_header, 'TU_LNB1', /float, found=found)
+  self.tu_mod   = ucomp_getpar(primary_header, 'TU_MOD', /float, found=found)
+  self.tu_lnb2  = ucomp_getpar(primary_header, 'TU_LNB2', /float, found=found)
+  self.tu_lcvr4 = ucomp_getpar(primary_header, 'TU_LCVR4', /float, found=found)
+  self.tu_lcvr5 = ucomp_getpar(primary_header, 'TU_LCVR5', /float, found=found)
+  self.tu_rack  = ucomp_getpar(primary_header, 'TU_RACK', /float, found=found)
+  self.t_c0arr  = ucomp_getpar(primary_header, 'T_C0ARR', /float, found=found)
+  self.t_c0pcb  = ucomp_getpar(primary_header, 'T_C0PCB', /float, found=found)
+  self.t_c1arr  = ucomp_getpar(primary_header, 'T_C1ARR', /float, found=found)
+  self.t_c1pcb  = ucomp_getpar(primary_header, 'T_C1PCB', /float, found=found)
 
   ; allocate inventory variables
   *self.wavelengths = fltarr(self.n_extensions)
 
-  self.exptime = ucomp_getpar(extension_header, 'EXPTIME', /float)
+  self.exptime = ucomp_getpar(extension_header, 'EXPTIME', /float, found=found)
 
-  self.o1focus = ucomp_getpar(extension_header, 'O1FOCUS', /float)
+  self.o1focus = ucomp_getpar(extension_header, 'O1FOCUS', /float, found=found)
 
   ; inventory extensions for things that vary by extension
   moving_parts = 0B
@@ -405,13 +405,13 @@ pro ucomp_file::_inventory
                /no_abort, message=error_msg
     if (error_msg ne '') then message, error_msg
 
-    moving_parts or= ucomp_getpar(extension_header, 'OCCLTR') eq 'mid'
-    moving_parts or= ucomp_getpar(extension_header, 'COVER') eq 'mid'
-    moving_parts or= ucomp_getpar(extension_header, 'DARKSHUT') eq 'mid'
-    moving_parts or= ucomp_getpar(extension_header, 'DIFFUSR') eq 'mid'
-    moving_parts or= ucomp_getpar(extension_header, 'CALOPTIC') eq 'mid'
+    moving_parts or= ucomp_getpar(extension_header, 'OCCLTR', found=found) eq 'mid'
+    moving_parts or= ucomp_getpar(extension_header, 'COVER', found=found) eq 'mid'
+    moving_parts or= ucomp_getpar(extension_header, 'DARKSHUT', found=found) eq 'mid'
+    moving_parts or= ucomp_getpar(extension_header, 'DIFFUSR', found=found) eq 'mid'
+    moving_parts or= ucomp_getpar(extension_header, 'CALOPTIC', found=found) eq 'mid'
 
-    (*self.wavelengths)[e - 1] = ucomp_getpar(extension_header, 'WAVELNG', /float)
+    (*self.wavelengths)[e - 1] = ucomp_getpar(extension_header, 'WAVELNG', /float, found=found)
   endfor
   if (moving_parts) then self->setProperty, quality_bitmask=ishft(1, 1)
 
