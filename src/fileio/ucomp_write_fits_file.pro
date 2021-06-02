@@ -20,7 +20,7 @@ pro ucomp_write_fits_file, filename, primary_header, ext_data, ext_headers
   n_dims = size(ext_data, /n_dimensions)
   dims = size(ext_data, /dimensions)
 
-  n_extensions = n_dims lt 4L ? 1L : dims[3]
+  n_extensions = n_dims lt 4L ? 1L : dims[-1]
 
   fits_open, filename, fcb, /write
   fits_write, fcb, 0.0, primary_header, /no_abort, message=error_msg
