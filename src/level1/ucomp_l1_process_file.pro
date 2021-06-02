@@ -23,7 +23,7 @@ pro ucomp_l1_process_file, file, run=run
                        repair_routine=run->epoch('raw_data_repair_routine')
   !null = run->stop(clock_id)
 
-  ext_data = float(ext_data)
+  data = float(data)
 
   ucomp_l1_step, 'ucomp_average_data', $
                  file, primary_header, data, headers, run=run
