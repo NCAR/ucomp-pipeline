@@ -27,7 +27,7 @@ pro ucomp_create_intensity, file, data, run=run
                                                  root=l1_dirname))
 
   for e = 1L, file.n_extensions do begin
-    im = total(data[*, *, *, e], 3, /preserve_type)
+    im = total(data[*, *, *, e - 1], 3, /preserve_type)
     write_gif, string(e, format=intensity_filename_format), im
   endfor
 end
