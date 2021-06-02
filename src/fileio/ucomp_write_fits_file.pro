@@ -34,7 +34,7 @@ pro ucomp_write_fits_file, filename, primary_header, ext_data, ext_headers
 
     ; set data type for extension data
     ext_header = ext_headers[e - 1]
-    ucomp_addpar, ext_header, 'BITPIX', -32, '32-bit floating point'
+    ucomp_addpar, ext_header, 'BITPIX', -32, comment='32-bit floating point'
     ext_headers[e - 1] = ext_header
 
     fits_write, fcb, $
