@@ -8,7 +8,7 @@
 ;     `ucomp_file` object
 ;   primary_header : in, required, type=strarr
 ;     primary header
-;   data : in, required, type="fltarr(nx, nx, n_cameras, nexts)"
+;   data : in, required, type="fltarr(nx, ny, n_cameras, nexts)"
 ;     extension data
 ;   headers : in, required, type=list
 ;     extension headers as list of `strarr`
