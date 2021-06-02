@@ -41,12 +41,8 @@ pro ucomp_l1_process_file, file, run=run
                  file, primary_header, data, headers, run=run
   ucomp_l1_step, 'ucomp_demodulation', $
                  file, primary_header, data, headers, run=run
-  mg_log, 'dims: %s', strjoin(strtrim(size(data, /dimensions), 2), ', '), $
-          name=run.logger_name, /debug
   ucomp_l1_step, 'ucomp_combine_beams', $
                  file, primary_header, data, headers, run=run
-  mg_log, 'dims: %s', strjoin(strtrim(size(data, /dimensions), 2), ', '), $
-          name=run.logger_name, /debug
   ucomp_l1_step, 'ucomp_rotate_north_up', $
                  file, primary_header, data, headers, run=run
   ucomp_l1_step, 'ucomp_masking', $
@@ -63,8 +59,6 @@ pro ucomp_l1_process_file, file, run=run
 
   clock_id = run->start('ucomp_write_fits_file')
 
-  mg_log, 'dims: %s', strjoin(strtrim(size(data, /dimensions), 2), ', '), $
-          name=run.logger_name, /debug
   ucomp_write_fits_file, l1_filename, primary_header, data, headers
 
   ucomp_create_intensity, file, data, run=run
