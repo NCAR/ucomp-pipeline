@@ -27,9 +27,16 @@ pro ucomp_write_fits_file, filename, primary_header, ext_data, ext_headers
   if (error_msg ne '') then message, error_msg
 
   for e = 1L, n_extensions do begin
+    ; define extension name
     datatype = ucomp_getpar(ext_headers[e - 1], 'DATATYPE')
     wavelength = ucomp_getpar(ext_headers[e - 1], 'WAVELNG')
     extname = string(datatype, wavelength, format='(%"%s [%0.3f nm]")')
+
+    ; set data type for extension data
+    ext_header = ext_headers[e - 1]
+    ucomp_addpar, ext_header, 'BITPIX', -32, '32-bit floating point'
+    ext_headers[e - 1] = ext_header
+
     fits_write, fcb, $
                 ext_data[*, *, *, e - 1], $
                 ext_headers[e - 1], $
