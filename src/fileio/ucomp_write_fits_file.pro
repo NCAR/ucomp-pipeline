@@ -32,11 +32,6 @@ pro ucomp_write_fits_file, filename, primary_header, ext_data, ext_headers
     wavelength = ucomp_getpar(ext_headers[e - 1], 'WAVELNG')
     extname = string(datatype, wavelength, format='(%"%s [%0.3f nm]")')
 
-    ; set data type for extension data
-    ext_header = ext_headers[e - 1]
-    ucomp_addpar, ext_header, 'BITPIX', -32, comment='32-bit floating point'
-    ext_headers[e - 1] = ext_header
-
     fits_write, fcb, $
                 ext_data[*, *, *, e - 1], $
                 ext_headers[e - 1], $
