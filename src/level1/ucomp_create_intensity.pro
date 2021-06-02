@@ -22,7 +22,7 @@ pro ucomp_create_intensity, file, data, run=run
   ucomp_mkdir, l1_dirname, logger_name=run.logger_name
 
   intensity_basename_format = string(file_basename(file.l1_basename, '.fts'), $
-                                     format='(%"%s.intensity.ext%%02d.gif")')
+                                     format='(%"%s.int.ext%%02d.gif")')
   intensity_filename_format = mg_format(filepath(intensity_basename_format, $
                                                  root=l1_dirname))
 
