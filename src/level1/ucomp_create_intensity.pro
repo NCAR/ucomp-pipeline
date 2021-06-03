@@ -29,7 +29,7 @@ pro ucomp_create_intensity, file, data, run=run
   for e = 1L, file.n_extensions do begin
     im = total(reform(data[*, *, *, e - 1]), 3, /preserve_type)
     im /= (size(im, /dimensions))[-1]
-    im = bytscl(im, min=57000.0, max=65535.0)
+    im = bytscl(im)
     write_gif, string(e, format=intensity_filename_format), im
   endfor
 end
