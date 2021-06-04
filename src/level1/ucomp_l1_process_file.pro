@@ -60,12 +60,10 @@ pro ucomp_l1_process_file, file, run=run
   l1_filename = filepath(file.l1_basename, root=l1_dirname)
 
   clock_id = run->start('ucomp_write_fits_file')
-
   ucomp_write_fits_file, l1_filename, primary_header, data, headers
+  !null = run->stop(clock_id)
 
   ucomp_create_intensity, file, data, run=run
-
-  !null = run->stop(clock_id)
 
   obj_destroy, headers
 end

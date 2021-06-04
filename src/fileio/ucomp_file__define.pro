@@ -167,7 +167,8 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
                              t_c0arr=t_c0arr, $
                              t_c0pcb=t_c0pcb, $
                              t_c1arr=t_c1arr, $
-                             t_c1pcb=t_c1pcb
+                             t_c1pcb=t_c1pcb, $
+                             numsum=numsum
   compile_opt strictarr
 
   ; for the file
@@ -286,6 +287,7 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
     w = *self.wavelengths
     unique_wavelengths = w[uniq(w, sort(w))]
   endif
+  if (arg_present(numsum)) then numsum = self.numsum
 end
 
 
@@ -394,6 +396,8 @@ pro ucomp_file::_inventory
   ; allocate inventory variables
   *self.wavelengths = fltarr(self.n_extensions)
 
+  self.numsum = ucomp_getpar(extension_header, 'NUMSUM', found=found)
+
   self.exptime = ucomp_getpar(extension_header, 'EXPTIME', /float, found=found)
 
   self.o1focus = ucomp_getpar(extension_header, 'O1FOCUS', /float, found=found)
@@ -493,6 +497,7 @@ pro ucomp_file__define
            exptime             : 0.0, $
            gain_mode           : '', $
            pol_list            : '', $
+           numsum              : 0L, $
 
            focus               : 0.0, $
            o1focus             : 0.0, $

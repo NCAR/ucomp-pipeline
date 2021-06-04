@@ -20,7 +20,8 @@ pro ucomp_make_raw_inventory, run=run
                            exptimes=exptimes, $
                            gain_modes=gain_modes, $
                            wave_regions=wave_regions, $
-                           n_points=n_points
+                           n_points=n_points, $
+                           numsum=numsum
 
   ; make a new catalog file
   catalog_filename = filepath(string(run.date, format='(%"%s.ucomp.catalog.txt")'), $
@@ -38,6 +39,7 @@ pro ucomp_make_raw_inventory, run=run
                         gain_modes, $
                         wave_regions, $
                         n_points, $
+                        numsum, $
                         logger_name=run.logger_name
 
   ; write the inventory files
