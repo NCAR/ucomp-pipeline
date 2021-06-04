@@ -30,6 +30,7 @@ pro ucomp_update_catalog, catalog_filename, $
                           gain_modes, $
                           wave_regions, $
                           n_points, $
+                          numsum, $
                           logger_name=logger_name
   compile_opt strictarr
 
@@ -51,12 +52,13 @@ pro ucomp_update_catalog, catalog_filename, $
     printf, lun, $
             file_basename(new_files[f]), $
             n_extensions[f], $
+            numsum[f], $
             data_types[f], $
             exptimes[f], $
             gain_modes[f], $
             wave_regions[f], $
             n_points[f], $
-            format='(%"%-40s %4d exts %6s %7.2f ms %5s %8s %4d pts")'
+            format='(%"%-38s %3d %4d exts %-5s %6.2f ms %4s %8s %2d pts")'
   endfor
 
   free_lun, lun
