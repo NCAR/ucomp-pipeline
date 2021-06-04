@@ -33,7 +33,8 @@ pro ucomp_run::make_raw_inventory, raw_files, $
                                    exptimes=exptimes, $
                                    gain_modes=gain_modes, $
                                    wave_regions=wave_regions, $
-                                   n_points=n_points
+                                   n_points=n_points, $
+                                   numsum=numsum
   compile_opt strictarr
 
   self->getProperty, logger_name=logger_name
@@ -55,6 +56,7 @@ pro ucomp_run::make_raw_inventory, raw_files, $
   gain_modes   = n_raw_files eq 0L ? !null : strarr(n_raw_files)
   wave_regions = n_raw_files eq 0L ? !null : strarr(n_raw_files)
   n_points     = n_raw_files eq 0L ? !null : lonarr(n_raw_files)
+  numsum       = n_raw_files eq 0L ? !null : lonarr(n_raw_files)
 
   mg_log, '%d raw files', n_raw_files, name=logger_name, /info
   for f = 0L, n_raw_files - 1L do begin
@@ -73,6 +75,7 @@ pro ucomp_run::make_raw_inventory, raw_files, $
     gain_modes[f] = file.gain_mode
     wave_regions[f] = file.wave_region
     n_points[f] = file.n_unique_wavelengths
+    numsum[f] = file.numsum
 
     ; store files by data type and wave type
 

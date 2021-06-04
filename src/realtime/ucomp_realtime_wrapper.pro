@@ -98,7 +98,8 @@ pro ucomp_realtime_wrapper, date, config_filename
                            exptimes=exptimes, $
                            gain_modes=gain_modess, $
                            wave_regions=wave_regions, $
-                           n_points=n_points
+                           n_points=n_points, $
+                           numsum=numsum
 
   ucomp_update_catalog, catalog_filename, $
                         new_filenames, $
@@ -108,6 +109,7 @@ pro ucomp_realtime_wrapper, date, config_filename
                         gain_modes, $
                         wave_regions, $
                         n_points, $
+                        numsum, $
                         logger_name=logger_name
 
 
