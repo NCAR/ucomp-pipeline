@@ -1,7 +1,7 @@
 ; format = 'rst'
 
 ;+
-; Retrieve the transmission value for a given wave region.
+; Retrieve the opal_radiance value for a given wave region.
 ;
 ; :Returns:
 ;   float
@@ -14,8 +14,8 @@
 ;   run : in, required, type=object
 ;     UCoMP run object
 ;-
-function ucomp_transmission, wave_region, run=run
+function ucomp_opal_radiance, wave_region, run=run
   compile_opt strictarr
 
-  return, run->line(wave_region, 'transmission')
+  return, run->line(wave_region, 'opal_radiance')
 end
