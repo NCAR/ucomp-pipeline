@@ -59,7 +59,9 @@ pro ucomp_apply_gain, file, primary_header, data, headers, run=run
       ; correction?
       im[*, *, p, *] /= flat[*, *, p, *] - flat_dark
     endfor
-    ;im *= gain_transmission
+
+    opal_radiance = ucomp_opal_radiance(file.wave_region, run=run)
+    im *= opal_radiance
     data[*, *, *, *, e] = im
 
     h = headers[e]
@@ -67,6 +69,7 @@ pro ucomp_apply_gain, file, primary_header, data, headers, run=run
     ucomp_addpar, h, 'FLATEXT', flat_extension, $
                   comment=string(run.date, ucomp_wave_region(wavelengths[e]), $
                                  format='(%"ext in %s.ucomp.flat.%s.fts used")')
+    ucomp_addpar, h, 'OPALRAD', opal_radiance, 'opal radiance'
     headers[e] = h
   endfor
 end
