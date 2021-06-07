@@ -23,10 +23,11 @@ function ucomp_update_catalog_ut::test_start
   gain_modes = strarr(3) + 'high'
   wave_regions = strarr(3) + '691'
   n_points = lonarr(3) + 3L
+  numsum = lonarr(3) + 14L
 
   ucomp_update_catalog, self.catalog_filename, new_files, $
                         n_extensions, data_types, exposures, gain_modes, $
-                        wave_regions, n_points
+                        wave_regions, n_points, numsum
 
   cat = self->read_catalog()
   assert, array_equal(new_files, cat), $
@@ -44,16 +45,17 @@ function ucomp_update_catalog_ut::test_next
   gain_modes = strarr(3) + 'high'
   wave_regions = strarr(3) + '691'
   n_points = lonarr(3) + 3L
+  numsum = lonarr(3) + 14L
 
   new_files1 = ['a', 'b', 'c']
   ucomp_update_catalog, self.catalog_filename, new_files1, $
                         n_extensions, data_types, exposures, gain_modes, $
-                        wave_regions, n_points
+                        wave_regions, n_points, numsum
 
   new_files2 = ['d', 'e', 'f']
   ucomp_update_catalog, self.catalog_filename, new_files2, $
                         n_extensions, data_types, exposures, gain_modes, $
-                        wave_regions, n_points
+                        wave_regions, n_points, numsum
 
   cat = self->read_catalog()
   assert, array_equal([new_files1, new_files2], cat), $
@@ -71,16 +73,17 @@ function ucomp_update_catalog_ut::test_basename
   gain_modes = strarr(3) + 'high'
   wave_regions = strarr(3) + '691'
   n_points = lonarr(3) + 3L
+  numsum = lonarr(3) + 14L
 
   new_files1 = ['raw/a', 'raw/b', 'raw/c']
   ucomp_update_catalog, self.catalog_filename, new_files1, $
                         n_extensions, data_types, exposures, gain_modes, $
-                        wave_regions, n_points
+                        wave_regions, n_points, numsum
 
   new_files2 = ['raw/d', 'raw/e', 'raw/f']
   ucomp_update_catalog, self.catalog_filename, new_files2, $
                         n_extensions, data_types, exposures, gain_modes, $
-                        wave_regions, n_points
+                        wave_regions, n_points, numsum
 
   cat = self->read_catalog()
   assert, array_equal(file_basename([new_files1, new_files2]), cat), $
