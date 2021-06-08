@@ -58,7 +58,7 @@ pro ucomp_update_catalog, catalog_filename, $
             gain_modes[f], $
             wave_regions[f], $
             n_points[f], $
-            format='(%"%-38s %3d %4d exts %-5s %6.2f ms %4s %8s %2d pts")'
+            format='(%"%-38s %4d exts %3d %-5s %6.2f ms %4s %8s %2d pts")'
   endfor
 
   free_lun, lun
