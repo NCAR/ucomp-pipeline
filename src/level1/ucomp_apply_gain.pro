@@ -69,7 +69,7 @@ pro ucomp_apply_gain, file, primary_header, data, headers, run=run
     ucomp_addpar, h, 'FLATEXT', flat_extension, $
                   comment=string(run.date, ucomp_wave_region(wavelengths[e]), $
                                  format='(%"ext in %s.ucomp.flat.%s.fts used")')
-    ucomp_addpar, h, 'OPALRAD', opal_radiance, 'opal radiance'
+    ucomp_addpar, h, 'OPALRAD', opal_radiance, comment='opal radiance'
     headers[e] = h
   endfor
 end
