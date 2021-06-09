@@ -17,7 +17,7 @@ pro ucomp_l0_distribute, run=run
     goto, done
   endif
 
-  ; send raw files to archive
+  ; send raw files to HPSS
   ucomp_l0_archive, run=run
 
   done:
