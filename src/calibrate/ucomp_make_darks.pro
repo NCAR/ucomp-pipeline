@@ -32,7 +32,6 @@ pro ucomp_make_darks, run=run
   dark_times = fltarr(n_dark_files)
   dark_exposures = fltarr(n_dark_files)
   dark_gain_modes = intarr(n_dark_files)
-  dark_numsum = lonarr(n_dark_files)
 
   datetime = strmid(file_basename((dark_files[0]).raw_filename), 0, 15)
   nx = run->epoch('nx', datetime=datetime)
@@ -140,7 +139,7 @@ pro ucomp_make_darks, run=run
         dark_headers->add, dark_header
       endif
 
-      dark_images[*, *, *, *, d] += dark_image / dark_numsum[d]
+      dark_images[*, *, *, *, d] += dark_image
     endfor
 
     dark_images[*, *, *, *, d] /= dark_file_fcb.nextend
