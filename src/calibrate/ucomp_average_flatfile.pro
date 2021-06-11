@@ -62,7 +62,7 @@ pro ucomp_average_flatfile, ext_data, ext_headers, n_extensions=n_extensions
   endfor
 
   n_extensions = n_groups
-  ext_data = new_ext_data
+  ext_data = reform(new_ext_data, new_dims)
 end
 
 
