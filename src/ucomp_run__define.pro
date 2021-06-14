@@ -489,6 +489,86 @@ function ucomp_run::config, name
 end
 
 
+;+
+; Query whether a given alert should be send. Alerts are a type of notification
+; send *during* the running of the near-realtime pipeline to warn the observers
+; about some non-optimal functioning of the instrument.
+;
+; :Returns:
+;   1B if the alert should be send, 0B otherwise
+;
+; :Params:
+;   type : in, required, type=string
+;     alert type, e.g., "BAD_FITS_KEYWORD"
+;   msg : in, required, type=string/strarr
+;     message to be sent in the alert, not including the filename that is
+;     causing the alert
+;-
+function ucomp_run::can_send_alert, type, msg
+  compile_opt strictarr
+
+  dt_format = '(C(CYI4.4, CMOI2.2, CDI2.2, ".", CHI2.2, CMI2.2, CSI2.2))'
+  alerts_filename = filepath('alerts.log', $
+                            subdir=self.date, $
+                            root=self->config('processing/basedir'))
+
+  n_alerts = file_test(alerts_filename, /regular) ? file_lines(alerts_filename) : 0L
+
+  if (n_alerts eq 0L) then begin
+    openw, lun, alerts_filename, /get_lun
+  endif else begin
+    openu, lun, alerts_filename, /get_lun
+    ; if haven't called this method before, need to check for an alerts.log file
+    ; and read it if present
+    if (n_elements(self.alerts) lt n_alerts) then begin
+      alerts = strarr(n_alerts)
+      readf, lun, alerts
+      for a = 0L, n_alerts - 1L do begin
+        tokens = strsplit(alerts[a], /extract)
+        self.alerts->add, {datetime: tokens[0], type: tokens[1], msg_hash: tokens[2]}
+      endfor
+    endif
+  endelse
+
+  ; determine if alert can be sent
+  msg_hash = mg_sha1(strjoin(msg))
+  foreach a, self.alerts do begin
+    if (a.type eq type && a.msg_hash eq msg_hash) then begin
+      last_match_datetime = a.datetime
+    endif
+  endforeach
+
+  if (n_elements(last_match_datetime) eq 0L) then begin
+    can_send = 1B
+  endif else begin
+    alert_timeout = self->config('alerts/' + type)
+    case 1B of
+      alert_timeout lt 0: can_send = 0B
+      alert_timeout eq 0: can_send = 1B
+      else: begin
+          delta = mg_timeinterval(minutes=alert_timeout)
+          last_dt = mg_datetime(last_match_datetime, format='%Y%m%d.%H%M%S')
+          now = mg_datetime()
+          if (now gt last_time + delta) then begin
+            can_send = 1B
+          endif else can_send = 0B
+          obj_destroy, [now, last_dt, delta]
+        end
+  endelse
+
+  ; if alert can be sent, add alert info to the alerts.log and cache
+  if (can_send) then begin
+    now = string(systime(/seconds, /julian), format=dt_format)
+    printf, lun, now, type, msg_hash, format='(%"%-16s %-30s %s")'
+    self.alerts->add, {datetime: now, type: type, msg_hash: msg_hash}
+  endif
+
+  free_lun, lun
+
+  return, can_send
+end
+
+
 ;= property access
 
 ;+
@@ -631,6 +711,8 @@ pro ucomp_run::cleanup
     obj_destroy, wave_region
   endforeach
   obj_destroy, self.files
+
+  obj_destroy, self.alerts
 end
 
 
@@ -704,6 +786,10 @@ function ucomp_run::init, date, mode, config_filename, no_log=no_log
 
   self.files = orderedhash()   ; wave_region (string) -> list of file objects
 
+  ; list of structures of the form:
+  ;   {datetime: '', type: '', msg_hash: ''}
+  self.alerts = list()
+
   self.calibration = ucomp_calibration(run=self)
 
   ; performance monitoring
@@ -728,6 +814,8 @@ pro ucomp_run__define
            epochs:  obj_new(), $
            lines:   obj_new(), $
            files:   obj_new(), $
+
+           alerts:  obj_new(), $
 
            resource_root: '', $
 
