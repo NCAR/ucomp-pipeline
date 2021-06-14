@@ -185,6 +185,7 @@ function ucomp_run_ut::init, _extra=e
   self->addTestingRoutine, ['ucomp_run::init', $
                             'ucomp_run::_overloadHelp', $
                             'ucomp_run::_overloadPrint', $
+                            'ucomp_run::can_send_alert', $
                             'ucomp_run::config', $
                             'ucomp_run::all_lines', $
                             'ucomp_run::line', $
