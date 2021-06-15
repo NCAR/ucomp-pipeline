@@ -73,7 +73,7 @@ pro ucomp_average_flatfile, primary_header, ext_data, ext_headers, $
   averaged_gain_mode  = bytarr(n_groups)
   averaged_onband     = bytarr(n_groups)
   averaged_wavelength = fltarr(n_groups)
-  extensions     = strarr(n_groups)
+  extensions          = strarr(n_groups)
 
   i = 0L
   for g = 0L, n_groups - 1L do begin
@@ -83,10 +83,10 @@ pro ucomp_average_flatfile, primary_header, ext_data, ext_headers, $
     d = ext_data[*, *, *, *, gi]
     averaged_ext_data[*, *, *, *, g] =  size(d, /n_dimensions) lt 5 ? d : mean(d, dimension=5)
 
-    averaged_exptime[g]    = exptime[gi]
-    averaged_gain_mode[g]  = gain_mode[gi]
-    averaged_onband[g]     = onband[gi]
-    averaged_wavelength[g] = wavelength[gi]
+    averaged_exptime[g]    = exptime[gi[0]]
+    averaged_gain_mode[g]  = gain_mode[gi[0]]
+    averaged_onband[g]     = onband[gi[0]]
+    averaged_wavelength[g] = wavelength[gi[0]]
 
     extensions[g] = strjoin(strtrim(gi + 1L, 2), ',')
 
