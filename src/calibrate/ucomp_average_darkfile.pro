@@ -28,7 +28,7 @@ pro ucomp_average_darkfile, primary_header, ext_data, ext_headers, $
 
   ; group by EXPTIME
   for e = 0L, n_extensions - 1L do begin
-    exptime[e]    = ucomp_getpar(ext_headers[e], 'EXPTIME')
+    exptime[e] = ucomp_getpar(ext_headers[e], 'EXPTIME')
   endfor
 
   ext_ids = string(exptime, format='(%"%0.1f")') + '-' + strtrim(fix(gain_mode), 2)
@@ -48,6 +48,7 @@ pro ucomp_average_darkfile, primary_header, ext_data, ext_headers, $
 
   averaged_exptime    = fltarr(n_groups)
   averaged_gain_mode  = bytarr(n_groups)
+  extensions          = strarr(n_groups)
 
   i = 0L
   for g = 0L, n_groups - 1L do begin
@@ -55,13 +56,19 @@ pro ucomp_average_darkfile, primary_header, ext_data, ext_headers, $
     gi = group_indices[group_starts[g]:group_starts[g+1] - 1]
 
     d = ext_data[*, *, *, *, gi]
-    new_ext_data[*, *, *, *, g] =  size(d, /n_dimensions) lt 5 ? d : mean(d, dimension=5)
+    new_ext_data[*, *, *, *, g] = size(d, /n_dimensions) lt 5 ? d : mean(d, dimension=5)
 
     averaged_exptime[g]    = exptime[gi[0]]
     averaged_gain_mode[g]  = gain_mode[gi[0]]
 
+    extensions[g] = strjoin(strtrim(gi + 1L, 2), ',')
+
     ; grab first header of a group to use as header for the entire group
-    ext_headers->add, ext_headers_array[*, gi[0]]
+    averaged_header = ext_headers_array[*, gi[0]]
+    ucomp_addpar, averaged_header, 'RAWFILE', '', comment='raw dark file'
+    ucomp_addpar, averaged_header, 'RAWEXTS', extensions[g], after='RAWFILE', $
+                  comment='extensions used from RAWFILE'
+    ext_headers->add, averaged_header
   
     i += count
   endfor
@@ -87,6 +94,10 @@ ucomp_average_darkfile, primary_header, ext_data, ext_headers, $
                         n_extensions=n_extensions, $
                         exptime=averaged_exptime, $
                         gain_mode=averaged_gain_mode
-help, ext_data, ext_headers
+help, ext_data, ext_headers, n_extensions
+help, averaged_exptime
+print, averaged_exptime
+help, averaged_gain_mode
+print, averaged_gain_mode
 
 end
