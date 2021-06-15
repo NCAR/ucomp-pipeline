@@ -15,19 +15,23 @@
 ;     set to a named variable to retrieve the new number of extensions after
 ;     averaging
 ;-
-pro ucomp_average_darkfile, ext_data, ext_headers, n_extensions=n_extensions
+pro ucomp_average_darkfile, primary_header, ext_data, ext_headers, $
+                            n_extensions=n_extensions, $
+                            exptime=averaged_exptime, $
+                            gain_mode=averaged_gain_mode
   compile_opt strictarr
 
   n_extensions = n_elements(ext_headers)
 
   exptime    = fltarr(n_extensions)
+  gain_mode  = bytarr(n_extensions) + (ucomp_getpar(primary_header, 'GAIN') eq 'high')
 
   ; group by EXPTIME
   for e = 0L, n_extensions - 1L do begin
     exptime[e]    = ucomp_getpar(ext_headers[e], 'EXPTIME')
   endfor
 
-  ext_ids = string(exptime, format='(%"%0.1f")')
+  ext_ids = string(exptime, format='(%"%0.1f")') + '-' + strtrim(fix(gain_mode), 2)
 
   group_indices = mg_groupby(ext_ids, $
                              n_groups=n_groups, $
@@ -39,19 +43,25 @@ pro ucomp_average_darkfile, ext_data, ext_headers, n_extensions=n_extensions
   new_dims[-1] = n_groups
   new_ext_data = make_array(dimension=new_dims, type=type)
 
-  ext_headers_array = ext_headers->toArray()
+  ext_headers_array = ext_headers->toArray(/transpose)
   ext_headers->remove, /all
+
+  averaged_exptime    = fltarr(n_groups)
+  averaged_gain_mode  = bytarr(n_groups)
 
   i = 0L
   for g = 0L, n_groups - 1L do begin
     count = group_starts[g + 1] - group_starts[g]
-  
-    d = ext_data[*, *, *, *, group_indices[group_starts[g]:group_starts[g+1] - 1]]
+    gi = group_indices[group_starts[g]:group_starts[g+1] - 1]
+
+    d = ext_data[*, *, *, *, gi]
     new_ext_data[*, *, *, *, g] =  size(d, /n_dimensions) lt 5 ? d : mean(d, dimension=5)
-  
-    new_header = ext_headers_array[*, group_indices[group_starts[g]]]
-    ; TODO: modify new_header
-    ext_headers->add, new_header
+
+    averaged_exptime[g]    = exptime[gi[0]]
+    averaged_gain_mode[g]  = gain_mode[gi[0]]
+
+    ; grab first header of a group to use as header for the entire group
+    ext_headers->add, ext_headers_array[*, gi[0]]
   
     i += count
   endfor
@@ -73,7 +83,10 @@ ucomp_read_raw_data, filename, $
                      n_extensions=n_extensions
 ext_data = float(ext_data)
 help, ext_data, ext_headers
-ucomp_average_darkfile, ext_data, ext_headers
+ucomp_average_darkfile, primary_header, ext_data, ext_headers, $
+                        n_extensions=n_extensions, $
+                        exptime=averaged_exptime, $
+                        gain_mode=averaged_gain_mode
 help, ext_data, ext_headers
 
 end

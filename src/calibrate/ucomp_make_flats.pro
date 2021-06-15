@@ -212,5 +212,3 @@ pro ucomp_make_flats, wave_region, run=run
   if (obj_valid(flat_data)) then obj_destroy, flat_data
   if (obj_valid(flat_extnames)) then obj_destroy, flat_extnames
 end
-
-
