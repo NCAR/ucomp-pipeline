@@ -25,6 +25,7 @@ pro ucomp_apply_gain, file, primary_header, data, headers, run=run
   obsday_hours = file.obsday_hours
   exptime = file.exptime
   gain_mode = file.gain_mode
+  onband = file.onband
   wavelengths = file.wavelengths
 
   dims = size(data, /dimensions)
@@ -34,7 +35,7 @@ pro ucomp_apply_gain, file, primary_header, data, headers, run=run
 
   ; for each extension in file
   for e = 0L, n_exts - 1L do begin
-    flat = cal->get_flat(obsday_hours, exptime, gain_mode, wavelengths[e], $
+    flat = cal->get_flat(obsday_hours, exptime, gain_mode, onband, wavelengths[e], $
                          found=flat_found, time_found=flat_time, $
                          extension=flat_extension, raw_file=flat_raw_file)
     if (~flat_found) then begin
