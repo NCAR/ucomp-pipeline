@@ -34,8 +34,11 @@ pro ucomp_addpar, header, name, value, $
     endif else begin
       _comment = ' ' + comment
     endelse
-  endif
+    fxaddpar, header, name, value, _comment, $
+              before=before, after=after, format=format, /null
+  endif else begin
+    fxaddpar, header, name, value, $
+              before=before, after=after, format=format, /null
+  endelse
 
-  fxaddpar, header, name, value, _comment, $
-            before=before, after=after, format=format, /null
 end

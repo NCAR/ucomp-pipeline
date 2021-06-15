@@ -35,17 +35,17 @@ pro ucomp_make_flats, wave_region, run=run
                     root=run->config('processing/basedir'))
   ucomp_mkdir, l1_dir, logger_name=run.logger_name
 
-  flat_times       = list()
-  flat_exposures   = list()
-  flat_wavelengths = list()
-  flat_gain_modes  = list()
-  flat_onbands     = list()
+  flat_times          = list()
+  flat_exposures      = list()
+  flat_wavelengths    = list()
+  flat_gain_modes     = list()
+  flat_onbands        = list()
 
-  flat_raw_files   = list()
+  flat_raw_files      = list()
 
-  flat_data        = list()
-  flat_headers     = list()
-  flat_extnames    = list()
+  flat_data           = list()
+  flat_headers        = list()
+  flat_extnames       = list()
 
   datetime = strmid(file_basename((flat_files[0]).raw_filename), 0, 15)
   nx = run->epoch('nx', datetime=datetime)
@@ -77,13 +77,13 @@ pro ucomp_make_flats, wave_region, run=run
                          ext_data=ext_data, $
                          ext_headers=ext_headers, $
                          n_extensions=n_extensions, $
-                         repair_routine=run->epoch('raw_data_repair_routine')
+                         repair_routine=run->epoch('raw_data_repair_routine', datetime=datetime)
 
     ; use the primary header of the first flat file as the template for the
     ; primary header of the master flat file
     if (f eq 0L) then first_primary_header = primary_header
 
-    ucomp_average_flatfile, ext_data, ext_headers, $
+    ucomp_average_flatfile, primary_header, ext_data, ext_headers, $
                             n_extensions=n_averaged_extensions, $
                             exptime=averaged_exptime, $
                             gain_mode=averaged_gain_mode, $
@@ -102,7 +102,7 @@ pro ucomp_make_flats, wave_region, run=run
                       file_basename(flat_file.raw_filename)
         ucomp_addpar, ext_header, $
                       demoted_keywords[k], $
-                      value,
+                      value, $
                       comment=comment, $
                       format=type eq 4 || type eq 5 ? '(F0.3)' : !null, $
                       after=after
@@ -112,8 +112,8 @@ pro ucomp_make_flats, wave_region, run=run
 
     flat_headers->add, ext_headers, /extract
 
-    flat_raw_files->add, strarr(n_averaged_extenions) + flat_basename, /extract
-    flat_times->add, fltarr(n_averaged_extenions) + flat_time, /extract
+    flat_raw_files->add, strarr(n_averaged_extensions) + flat_basename, /extract
+    flat_times->add, fltarr(n_averaged_extensions) + flat_time, /extract
 
     flat_exposures->add, averaged_exptime, /extract
     flat_wavelengths->add, averaged_wavelength, /extract
@@ -122,9 +122,9 @@ pro ucomp_make_flats, wave_region, run=run
 
     for e = 0L, n_averaged_extensions - 1L do begin
       flat_extnames->add, string(averaged_wavelength[e], $
-                                 averaged_onband[e] ? 'rcam' : 'tcam', $
-                                 format='(%"%0.2f nm [%]")')
-      flat_data[e] = reform(ext_data[*, *, *, *, e])
+                                 averaged_onband[e] ? 'tcam' : 'rcam', $
+                                 format='(%"%0.2f nm [%s]")')
+      flat_data->add, reform(ext_data[*, *, *, *, e])
     endfor
   endfor
 
@@ -156,7 +156,7 @@ pro ucomp_make_flats, wave_region, run=run
   flat_raw_files_array   = flat_raw_files->toArray()
   obj_destroy, [flat_times, $
                 flat_exposures, $
-                flat_waveleneghts, $
+                flat_wavelengths, $
                 flat_gain_modes, $
                 flat_onbands, $
                 flat_raw_files]
@@ -168,7 +168,9 @@ pro ucomp_make_flats, wave_region, run=run
 
   fits_open, output_filename, output_fcb, /write
   fits_write, output_fcb, 0, first_primary_header
+  flat_raw_extensions = strarr(n_elements(flat_headers))
   for f = 0L, n_elements(flat_headers) - 1L do begin
+    flat_raw_extensions[f] = ucomp_getpar(flat_headers[f], 'RAWEXTS')
     fits_write, output_fcb, $
                 flat_data[f], $
                 flat_headers[f], $
@@ -202,7 +204,8 @@ pro ucomp_make_flats, wave_region, run=run
                     wavelengths=flat_wavelengths_array, $
                     gain_modes=flat_gain_modes_array, $
                     onbands=flat_onbands_array, $
-                    raw_files=flat_raw_files_array
+                    raw_files=flat_raw_files_array, $
+                    extensions=flat_raw_extensions
 
   done:
   if (obj_valid(flat_headers)) then obj_destroy, flat_headers
