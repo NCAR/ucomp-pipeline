@@ -185,7 +185,9 @@ pro ucomp_calibration::cache_flats, filenames, $
                                     exptimes=exptimes, $
                                     wavelengths=wavelengths, $
                                     gain_modes=gain_modes, $
-                                    onbands=onbands
+                                    onbands=onbands, $
+                                    raw_files=raw_files, $
+                                    extensions=extensions
   compile_opt strictarr
 
   self.run->getProperty, logger_name=logger_name
@@ -335,7 +337,7 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, onband, 
   wavelength_threshold = 0.001  ; [nm]
 
   gain_index = gain_mode eq 'high'
-  onband_index = onband eq 'rcam'
+  onband_index = onband eq 'tcam'
   valid_indices = where(abs(exptime - *self.flat_exptimes) lt exptime_threshold $
                           and abs(wavelength - *self.flat_wavelengths) lt wavelength_threshold $
                           and (*self.flat_gain_modes eq gain_index) $
@@ -429,7 +431,8 @@ pro ucomp_calibration__define
            flat_times: ptr_new(), $        ; obsday hours
            flat_exptimes: ptr_new(), $     ; [ms] exposure time
            flat_wavelengths: ptr_new(), $  ; [nm] wavelengths
-           flat_gain_modes: ptr_new(), $   ; 'high' or 'low'
+           flat_gain_modes: ptr_new(), $   ; 'low' or 'high'
+           flat_onbands: ptr_new(), $      ; 'tcam' or 'rcam'
            flat_extensions: ptr_new(), $   ; extension into flat file
            flat_raw_files: ptr_new() $     ; basename of raw file containing flat
 

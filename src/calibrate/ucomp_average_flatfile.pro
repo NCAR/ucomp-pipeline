@@ -22,7 +22,7 @@
 ;     extensions where "low" = 0 and "high" = 1
 ;   onband : out, optional, type=bytarr(n_extensions)
 ;     set to a named variable to retrieve the "ONBAND" value for the averaged
-;     extensions where "tcam" = 0 and "rcam" = 1
+;     extensions where "rcam" = 0 and "tcam" = 1
 ;   wavelength : out, optional, type=fltarr(n_extensions)
 ;     set to a named variable to retrieve the "WAVELNG" value for the averaged
 ;     extensions
@@ -30,7 +30,7 @@
 ;     set to a named variable to retrieve the original extensions the averaged
 ;     extensions were computed from
 ;-
-pro ucomp_average_flatfile, ext_data, ext_headers, $
+pro ucomp_average_flatfile, primary_header, ext_data, ext_headers, $
                             n_extensions=n_extensions, $
                             exptime=averaged_exptime, $
                             gain_mode=averaged_gain_mode, $
@@ -41,15 +41,14 @@ pro ucomp_average_flatfile, ext_data, ext_headers, $
   n_extensions = n_elements(ext_headers)
 
   exptime    = fltarr(n_extensions)
-  gain_mode  = bytarr(n_extensions)
+  gain_mode  = bytarr(n_extensions) + (ucomp_getpar(primary_header, 'GAIN') eq 'high')
   onband     = bytarr(n_extensions)
   wavelength = fltarr(n_extensions)
 
   ; group by EXPTIME, GAIN, ONBAND, WAVELNG
   for e = 0L, n_extensions - 1L do begin
     exptime[e]    = ucomp_getpar(ext_headers[e], 'EXPTIME')
-    gain_mode[e]  = ucomp_getpar(ext_headers[e], 'GAIN') eq 'high'
-    onband[e]     = ucomp_getpar(ext_headers[e], 'ONBAND') eq 'rcam'
+    onband[e]     = ucomp_getpar(ext_headers[e], 'ONBAND') eq 'tcam'
     wavelength[e] = ucomp_getpar(ext_headers[e], 'WAVELNG')
   endfor
 
@@ -67,7 +66,7 @@ pro ucomp_average_flatfile, ext_data, ext_headers, $
   averaged_dims[-1] = n_groups
   averaged_ext_data = make_array(dimension=averaged_dims, type=type)
 
-  ext_headers_array = ext_headers->toArray()
+  ext_headers_array = ext_headers->toArray(/transpose)
   ext_headers->remove, /all
 
   averaged_exptime    = fltarr(n_groups)
