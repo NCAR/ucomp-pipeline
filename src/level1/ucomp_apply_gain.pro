@@ -25,7 +25,6 @@ pro ucomp_apply_gain, file, primary_header, data, headers, run=run
   obsday_hours = file.obsday_hours
   exptime = file.exptime
   gain_mode = file.gain_mode
-  onband = file.onband
   wavelengths = file.wavelengths
 
   dims = size(data, /dimensions)
