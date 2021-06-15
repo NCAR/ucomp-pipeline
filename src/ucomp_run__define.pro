@@ -554,6 +554,7 @@ function ucomp_run::can_send_alert, type, msg
           endif else can_send = 0B
           obj_destroy, [now, last_dt, delta]
         end
+      endcase
   endelse
 
   ; if alert can be sent, add alert info to the alerts.log and cache
