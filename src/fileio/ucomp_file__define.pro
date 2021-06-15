@@ -116,6 +116,7 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
                              obs_plan=obs_plan, $
                              exptime=exptime, $
                              gain_mode=gain_mode, $
+                             onband=onband, $
                              pol_list=pol_list, $
                              focus=focus, $
                              o1focus=o1focus, $
@@ -208,6 +209,7 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
 
   if (arg_present(exptime)) then exptime = self.exptime
   if (arg_present(gain_mode)) then gain_mode = self.gain_mode
+  if (arg_present(onband)) then onband = self.onband
   if (arg_present(pol_list)) then pol_list = self.pol_list
   if (arg_present(nd)) then nd = self.nd
 
@@ -363,6 +365,7 @@ pro ucomp_file::_inventory
   self.obsswid = ucomp_getpar(primary_header, 'OBSSWID', found=found)
 
   self.gain_mode = strlowcase(ucomp_getpar(primary_header, 'GAIN', found=found))
+  self.onband = strlowcase(ucomp_getpar(primary_header, 'ONBAND', found=found))
 
   ; TODO: enter this from the headers
   self.nd = 0L
@@ -496,6 +499,7 @@ pro ucomp_file__define
            obs_plan            : '', $
            exptime             : 0.0, $
            gain_mode           : '', $
+           onband              : '', $
            pol_list            : '', $
            numsum              : 0L, $
 

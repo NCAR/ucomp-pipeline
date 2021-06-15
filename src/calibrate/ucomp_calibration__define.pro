@@ -185,8 +185,7 @@ pro ucomp_calibration::cache_flats, filenames, $
                                     exptimes=exptimes, $
                                     wavelengths=wavelengths, $
                                     gain_modes=gain_modes, $
-                                    extensions=extensions, $
-                                    raw_files=raw_files
+                                    onbands=onbands
   compile_opt strictarr
 
   self.run->getProperty, logger_name=logger_name
@@ -208,35 +207,40 @@ pro ucomp_calibration::cache_flats, filenames, $
       fits_close, fcb
     endfor
 
-    flats = fltarr(nx, ny, n_pol_states, n_cameras, n_flats)
-    times = fltarr(n_flats)
-    exptimes = fltarr(n_flats)
+    flats       = fltarr(nx, ny, n_pol_states, n_cameras, n_flats)
+    times       = fltarr(n_flats)
+    exptimes    = fltarr(n_flats)
     wavelengths = fltarr(n_flats)
-    gain_modes = lonarr(n_flats)
-    extensions = lonarr(n_flats)
-    raw_files = strarr(n_flats)
+    gain_modes  = lonarr(n_flats)
+    onbands     = lonarr(n_flats)
+    extensions  = strarr(n_flats)
+    raw_files   = strarr(n_flats)
 
     i = 0L
     for f = 0L, n_elemens(filenames) - 1L do begin
       fits_open, filenames[f], fcb
 
-      for e = 1L, fcb.nextend - 4L do begin   ; there are 4 "index" extensions at end of file
+      for e = 1L, fcb.nextend - 5L do begin   ; there are 5 "index" extensions at end of file
         fits_read, fcb, flat_image, flat_header, exten_no=e
         flats[0, 0, 0, 0, i + e - 1L] = flat_image
         raw_files[e - 1L] = ucomp_getpar(flat_header, 'RAWFILE')
-        extensions[e - 1] = e
+        extensions[e - 1L] = ucomp_getpar(flat_header, 'RAWEXT')
       endfor
 
       ; read index extensions
-      fits_read, fcb, flat_times, times_header, exten_no=fcb.nextend - 3L
-      fits_read, fcb, flat_exptimes, exptimes_header, exten_no=fcb.nextend - 2L
-      fits_read, fcb, flat_wavelengths, wavelengths_header, exten_no=fcb.nextend - 1L
-      fits_read, fcb, flat_gain_modes, gain_modes_header, exten_no=fcb.nextend
+      fits_read, fcb, flat_times, times_header, exten_no=fcb.nextend - 4L
+      fits_read, fcb, flat_exptimes, exptimes_header, exten_no=fcb.nextend - 3L
+      fits_read, fcb, flat_wavelengths, wavelengths_header, exten_no=fcb.nextend - 2L
+      fits_read, fcb, flat_gain_modes, gain_modes_header, exten_no=fcb.nextend - 1L
+      fits_read, fcb, flat_onbands, onbands_header, exten_no=fcb.nextend
 
       times[i] = flat_times
       exptimes[i] = flat_exptimes
       wavelengths[i] = flat_wavelengths
       gain_modes[i] = flat_gain_modes
+      onbands[i] = flat_onbands
+
+      i += n_elements(flat_times)
 
       fits_close, fcb
     endfor
@@ -246,6 +250,12 @@ pro ucomp_calibration::cache_flats, filenames, $
   ; already present
   if (n_elements(*self.flats) eq 0L) then begin
     *self.flats = flats
+    *self.flat_times = times
+    *self.flat_exptimes = exptimes
+    *self.flat_wavelengths = wavelengths
+    *self.flat_gain_modes = gain_modes
+    *self.flat_extensions = extensions
+    *self.flat_raw_files = raw_files
   endif else begin
     dims = size(*self.flats, /dimensions)
     n_existing_flats = n_elements(*self.flat_times)
@@ -257,26 +267,13 @@ pro ucomp_calibration::cache_flats, filenames, $
     new_flats[0, 0, 0, 0, n_existing_flats] = flats
 
     *self.flats = new_flats
+    *self.flat_times = [*self.flat_times, times]
+    *self.flat_exptimes = [*self.flat_exptimes, exptimes]
+    *self.flat_wavelengths = [*self.flat_wavelengths, wavelengths]
+    *self.flat_gain_modes = [*self.flat_gain_modes, gain_modes]
+    *self.flat_extensions = [*self.flat_extensions, extensions]
+    *self.flat_raw_files = [*self.flat_raw_files, raw_files]
   endelse
-
-  *self.flat_times = n_elements(*self.flat_times) eq 0L $
-                       ? times $
-                       : [*self.flat_times, times]
-  *self.flat_exptimes = n_elements(*self.flat_exptimes) eq 0L $
-                          ? exptimes $
-                          : [*self.flat_exptimes, exptimes]
-  *self.flat_wavelengths = n_elements(*self.flat_wavelengths) eq 0L $
-                             ? wavelengths $
-                             : [*self.flat_wavelengths, wavelengths]
-  *self.flat_gain_modes = n_elements(*self.flat_gain_modes) eq 0L $
-                            ? gain_modes $
-                            : [*self.flat_gain_modes, gain_modes]
-  *self.flat_extensions = n_elements(*self.flat_extensions) eq 0L $
-                            ? extensions $
-                            : [*self.flat_extensions, extensions]
-  *self.flat_raw_files = n_elements(*self.flat_raw_files) eq 0L $
-                            ? raw_files $
-                            : [*self.flat_raw_files, raw_files]
 
   mg_log, '%d flats cached', n_elements(times), name=logger_name, /info
   mg_log, '%d total flats cached', n_elements(*self.flat_times), name=logger_name, /info
@@ -322,7 +319,7 @@ end
 ;     set to a named variable to retrieve the time (in hours into the observing
 ;     day) of the found flat
 ;-
-function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, wavelength, $
+function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, onband, wavelength, $
                                       found=found, $
                                       time_found=time_found, $
                                       extension=extension, $
@@ -338,9 +335,11 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, waveleng
   wavelength_threshold = 0.001  ; [nm]
 
   gain_index = gain_mode eq 'high'
+  onband_index = onband eq 'rcam'
   valid_indices = where(abs(exptime - *self.flat_exptimes) lt exptime_threshold $
                           and abs(wavelength - *self.flat_wavelengths) lt wavelength_threshold $
-                          and (*self.flat_gain_modes eq gain_index), $
+                          and (*self.flat_gain_modes eq gain_index) $
+                          and (*self.flat_onbands eq onband_index), $
                         n_valid_flats)
   if (n_valid_flats eq 0L) then return, !null
 
@@ -369,7 +368,7 @@ pro ucomp_calibration::cleanup
   ptr_free, self.darks, self.dark_times, self.dark_exptimes, $
             self.dark_gain_modes
   ptr_free, self.flats, self.flat_times, self.flat_exptimes, $
-            self.flat_wavelengths, self.flat_gain_modes, $
+            self.flat_wavelengths, self.flat_gain_modes, self.flat_onbands, $$
             self.flat_extensions, self.flat_raw_files
 
 end
@@ -402,6 +401,7 @@ function ucomp_calibration::init, run=run
   self.flat_exptimes    = ptr_new(/allocate_heap)
   self.flat_wavelengths = ptr_new(/allocate_heap)
   self.flat_gain_modes  = ptr_new(/allocate_heap)
+  self.flat_onbands     = ptr_new(/allocate_heap)
   self.flat_extensions  = ptr_new(/allocate_heap)
   self.flat_raw_files   = ptr_new(/allocate_heap)
 
