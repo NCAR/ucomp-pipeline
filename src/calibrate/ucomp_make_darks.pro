@@ -29,16 +29,16 @@ pro ucomp_make_darks, run=run
                     root=run->config('processing/basedir'))
   ucomp_mkdir, l1_dir, logger_name=run.logger_name
 
-  dark_times = fltarr(n_dark_files)
-  dark_exposures = fltarr(n_dark_files)
-  dark_gain_modes = intarr(n_dark_files)
-  dark_numsum = lonarr(n_dark_files)
-
   datetime = strmid(file_basename((dark_files[0]).raw_filename), 0, 15)
   nx = run->epoch('nx', datetime=datetime)
   ny = run->epoch('ny', datetime=datetime)
   n_pol_states = 4L
   n_cameras = 2L
+
+  dark_times      = fltarr(n_dark_files)
+  dark_exposures  = fltarr(n_dark_files)
+  dark_gain_modes = intarr(n_dark_files)
+  dark_numsum     = lonarr(n_dark_files)
 
   dark_images = fltarr(nx, ny, n_pol_states, n_cameras, n_dark_files)
   dark_headers = list()
@@ -51,8 +51,8 @@ pro ucomp_make_darks, run=run
 
   ; the keywords that need to be moved from the primary header in the raw files
   ; to the extensions in the master dark file
-  move_keywords = ['T_C0ARR', 'T_C0PCB', 'T_C1ARR', 'T_C1PCB', $
-                   'GAIN', 'FILTER', 'OCCLTR-X', 'OCCLTR-Y', 'O1FOCUSE']
+  demoted_keywords = ['T_C0ARR', 'T_C0PCB', 'T_C1ARR', 'T_C1PCB', $
+                      'GAIN', 'FILTER', 'OCCLTR-X', 'OCCLTR-Y', 'O1FOCUSE']
 
   for d = 0L, n_dark_files - 1L do begin
     dark_file = dark_files[d]
@@ -74,15 +74,15 @@ pro ucomp_make_darks, run=run
     fits_read, dark_file_fcb, empty, primary_header, exten_no=0, /header_only
     if (d eq 0L) then first_primary_header = primary_header
 
-    move_keywords_hash = hash()
-    for k = 0L, n_elements(move_keywords) - 1L do begin
+    demoted_keywords_hash = hash()
+    for k = 0L, n_elements(demoted_keywords) - 1L do begin
       keyword_value = ucomp_getpar(primary_header, $
-                                   move_keywords[k], $
+                                   demoted_keywords[k], $
                                    comment=comment, $
                                    found=found)
       if (found) then begin
-        move_keywords_hash[move_keywords[k]] = keyword_value
-        move_keywords_hash[move_keywords[k] + '_COMMENT'] = comment
+        demoted_keywords_hash[demoted_keywords[k]] = keyword_value
+        demoted_keywords_hash[demoted_keywords[k] + '_COMMENT'] = comment
       endif else begin
         mg_log, 'no %s to move to dark header', move_keywords[k], $
                 name=run.logger_name, /warn
@@ -93,10 +93,10 @@ pro ucomp_make_darks, run=run
     t_c1arr = ucomp_getpar(primary_header, 'T_C1ARR', comment=t_c1arr_comment)
     t_c1pcb = ucomp_getpar(primary_header, 'T_C1PCB', comment=t_c1pcb_comment)
     dark_info->add, {times: ucomp_dateobs2hours(ucomp_getpar(primary_header, 'DATE-OBS')), $
-                     t_c0arr: move_keywords_hash['T_C0ARR'], $
-                     t_c0pcb: move_keywords_hash['T_C0PCB'], $
-                     t_c1arr: move_keywords_hash['T_C1ARR'], $
-                     t_c1pcb: move_keywords_hash['T_C1PCB']}
+                     t_c0arr: demoted_keywords_hash['T_C0ARR'], $
+                     t_c0pcb: demoted_keywords_hash['T_C0PCB'], $
+                     t_c1arr: demoted_keywords_hash['T_C1ARR'], $
+                     t_c1pcb: demoted_keywords_hash['T_C1PCB']}
 
     dark_gain_modes[d] = strtrim(move_keywords_hash['GAIN'], 2) eq 'high'
 
@@ -125,13 +125,13 @@ pro ucomp_make_darks, run=run
                       comment='corresponding raw dark filename', $
                       before='DATATYPE'
 
-        for k = 0L, n_elements(move_keywords) - 1L do begin
-          if (move_keywords_hash->haskey(move_keywords[k])) then begin
-            after = k eq 0L ? 'T_RACK' : move_keywords[k - 1L]
-            type = size(move_keywords_hash[move_keywords[k]], /type)
-            ucomp_addpar, dark_header, move_keywords[k], $
-                          move_keywords_hash[move_keywords[k]], $
-                          comment=move_keywords_hash[move_keywords[k] + '_COMMENT'], $
+        for k = 0L, n_elements(demoted_keywords) - 1L do begin
+          if (demoted_keywords_hash->haskey(demoted_keywords[k])) then begin
+            after = k eq 0L ? 'T_RACK' : demoted_keywords[k - 1L]
+            type = size(move_keywords_hash[demoted_keywords[k]], /type)
+            ucomp_addpar, dark_header, demoted_keywords[k], $
+                          move_keywords_hash[demoted_keywords[k]], $
+                          comment=move_keywords_hash[demoted_keywords[k] + '_COMMENT'], $
                           format=type eq 4 || type eq 5 ? '(F0.3)' : !null, $
                           after=after
           endif
