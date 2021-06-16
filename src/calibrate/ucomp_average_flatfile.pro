@@ -45,7 +45,7 @@ pro ucomp_average_flatfile, primary_header, ext_data, ext_headers, $
   onband     = bytarr(n_extensions)
   wavelength = fltarr(n_extensions)
 
-  ; group by EXPTIME, GAIN, ONBAND, WAVELNG
+  ; group by EXPTIME, ONBAND, WAVELNG
   for e = 0L, n_extensions - 1L do begin
     exptime[e]    = ucomp_getpar(ext_headers[e], 'EXPTIME')
     onband[e]     = ucomp_getpar(ext_headers[e], 'ONBAND') eq 'tcam'
@@ -53,7 +53,6 @@ pro ucomp_average_flatfile, primary_header, ext_data, ext_headers, $
   endfor
 
   ext_ids = string(exptime, format='(%"%0.1f")') $
-              + '-' + strtrim(fix(gain_mode), 2) $
               + '-' + strtrim(fix(onband), 2) $
               + '-' + string(wavelength, format='(%"%0.2f")')
   group_indices = mg_groupby(ext_ids, $
