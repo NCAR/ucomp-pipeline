@@ -35,19 +35,19 @@ pro ucomp_make_darks, run=run
   n_pol_states = 4L
   n_cameras = 2L
 
-  dark_times      = fltarr(n_dark_files)
-  dark_exposures  = fltarr(n_dark_files)
-  dark_gain_modes = intarr(n_dark_files)
-  dark_numsum     = lonarr(n_dark_files)
+  dark_times      = list()
+  dark_exposures  = list()
+  dark_gain_modes = list()
 
-  dark_images = fltarr(nx, ny, n_pol_states, n_cameras, n_dark_files)
-  dark_headers = list()
-  dark_info = list()
+  dark_data       = list()
+  dark_headers    = list()
+  dark_extnames   = list()
+  dark_info       = list()
 
   n_tcam = 0L
-  tcam_means = fltarr(n_pol_states, n_cameras)
+  tcam_means = fltarr(n_pol_states)
   n_rcam = 0L
-  rcam_means = fltarr(n_pol_states, n_cameras)
+  rcam_means = fltarr(n_pol_states)
 
   ; the keywords that need to be moved from the primary header in the raw files
   ; to the extensions in the master dark file
@@ -65,95 +65,86 @@ pro ucomp_make_darks, run=run
                   hst_date=hst_date, hst_time=hst_time
 
     hst_dtime = float(ucomp_decompose_time(hst_time))
-    dark_times[d] = total(hst_dtime * [1.0, 1.0 / 60.0, 1.0 / 60.0 / 60.0])
+    dark_time = total(hst_dtime * [1.0, 1.0 / 60.0, 1.0 / 60.0 / 60.0])
 
-    fits_open, dark_file.raw_filename, dark_file_fcb
+    ucomp_read_raw_data, dark_file.raw_filename, $
+                         primary_data=primary_data, $
+                         primary_header=primary_header, $
+                         ext_data=ext_data, $
+                         ext_headers=ext_headers, $
+                         n_extensions=n_extensions, $
+                         repair_routine=run->epoch('raw_data_repair_routine', datetime=datetime)
 
     ; use the primary header of the first dark file as the template for the
     ; primary header of the master dark file
-    fits_read, dark_file_fcb, empty, primary_header, exten_no=0, /header_only
     if (d eq 0L) then first_primary_header = primary_header
 
-    demoted_keywords_hash = hash()
+    ucomp_average_darkfile, primary_header, ext_data, ext_headers, $
+                            n_extensions=n_averaged_extensions, $
+                            exptime=averaged_exptime, $
+                            gain_mode=averaged_gain_mode
+
+    ; move demoted_keywords from primary header to extension headers
     for k = 0L, n_elements(demoted_keywords) - 1L do begin
-      keyword_value = ucomp_getpar(primary_header, $
-                                   demoted_keywords[k], $
-                                   comment=comment, $
-                                   found=found)
-      if (found) then begin
-        demoted_keywords_hash[demoted_keywords[k]] = keyword_value
-        demoted_keywords_hash[demoted_keywords[k] + '_COMMENT'] = comment
-      endif else begin
-        mg_log, 'no %s to move to dark header', move_keywords[k], $
-                name=run.logger_name, /warn
-      endelse
+      value = ucomp_getpar(primary_header, demoted_keywords[k], comment=comment)
+      type = size(value, /type)
+      after = k eq 0L ? 'T_RACK' : demoted_keywords[k]
+      for e = 0L, n_averaged_extensions - 1L do begin
+        ext_header = ext_headers[e]
+        ucomp_addpar, ext_header, $
+                      'RAWFILE', $
+                      file_basename(dark_file.raw_filename)
+        ucomp_addpar, ext_header, $
+                      demoted_keywords[k], $
+                      value, $
+                      comment=comment, $
+                      format=type eq 4 || type eq 5 ? '(F0.3)' : !null, $
+                      after=after
+        ext_headers[e] = ext_header
+      endfor
     endfor
+
+    dark_headers->add, ext_headers, /extract
+
+    dark_times->add, fltarr(n_averaged_extensions) + dark_time, /extract
+
+    dark_exposures->add, averaged_exptime, /extract
+    dark_gain_modes->add, averaged_gain_mode, /extract
+
+    for e = 0L, n_averaged_extensions - 1L do begin
+      dark_extnames->add, strmid(file_basename(dark_files[d].raw_filename), 9, 6)
+
+      dark_image = reform(ext_data[*, *, *, *, e])
+      dark_data->add, dark_image
+
+      rcam_means += total(reform(dark_image[*, *, *, 0], nx * ny, n_pol_states), $
+                          1, $
+                          /preserve_type)
+      n_rcam += 1L
+      tcam_means += total(reform(dark_image[*, *, *, 1], nx * ny, n_pol_states), $
+                          1, $
+                          /preserve_type)
+      n_tcam += 1L
+    endfor
+
     t_c0arr = ucomp_getpar(primary_header, 'T_C0ARR', comment=t_c0arr_comment)
     t_c0pcb = ucomp_getpar(primary_header, 'T_C0PCB', comment=t_c0pcb_comment)
     t_c1arr = ucomp_getpar(primary_header, 'T_C1ARR', comment=t_c1arr_comment)
     t_c1pcb = ucomp_getpar(primary_header, 'T_C1PCB', comment=t_c1pcb_comment)
     dark_info->add, {times: ucomp_dateobs2hours(ucomp_getpar(primary_header, 'DATE-OBS')), $
-                     t_c0arr: demoted_keywords_hash['T_C0ARR'], $
-                     t_c0pcb: demoted_keywords_hash['T_C0PCB'], $
-                     t_c1arr: demoted_keywords_hash['T_C1ARR'], $
-                     t_c1pcb: demoted_keywords_hash['T_C1PCB']}
-
-    dark_gain_modes[d] = strtrim(move_keywords_hash['GAIN'], 2) eq 'high'
-
-    for e = 1L, dark_file_fcb.nextend do begin
-      fits_read, dark_file_fcb, dark_image, dark_header, exten_no=e
-
-      onband = strtrim(ucomp_getpar(dark_header, 'ONBAND'), 2)
-      if (onband eq 'tcam') then begin
-        tcam_means += total(reform(dark_image, nx * ny, n_pol_states, n_cameras), $
-                            1, $
-                            /preserve_type)
-        n_tcam += 1L
-      endif else if (onband eq 'rcam') then begin
-        rcam_means += total(reform(dark_image, nx * ny, n_pol_states, n_cameras), $
-                            1, $
-                            /preserve_type)
-        n_rcam += 1L
-      endif else begin
-        mg_log, 'unknown ONBAND mode: %s', onband, name=run.logger_name, /warn
-      endelse
-
-
-      if (e eq 1L) then begin
-        dark_exposures[d] = ucomp_getpar(dark_header, 'EXPTIME', /float)
-        ucomp_addpar, dark_header, 'RAWFILE', dark_basename, $
-                      comment='corresponding raw dark filename', $
-                      before='DATATYPE'
-
-        for k = 0L, n_elements(demoted_keywords) - 1L do begin
-          if (demoted_keywords_hash->haskey(demoted_keywords[k])) then begin
-            after = k eq 0L ? 'T_RACK' : demoted_keywords[k - 1L]
-            type = size(move_keywords_hash[demoted_keywords[k]], /type)
-            ucomp_addpar, dark_header, demoted_keywords[k], $
-                          move_keywords_hash[demoted_keywords[k]], $
-                          comment=move_keywords_hash[demoted_keywords[k] + '_COMMENT'], $
-                          format=type eq 4 || type eq 5 ? '(F0.3)' : !null, $
-                          after=after
-          endif
-        endfor
-        obj_destroy, move_keywords_hash
-        dark_headers->add, dark_header
-      endif
-
-      dark_images[*, *, *, *, d] += dark_image / dark_numsum[d]
-    endfor
-
-    dark_images[*, *, *, *, d] /= dark_file_fcb.nextend
-    fits_close, dark_file_fcb
+                     t_c0arr: t_c0arr, $
+                     t_c0pcb: t_c0pcb, $
+                     t_c1arr: t_c1arr, $
+                     t_c1pcb: t_c1pcb}
   endfor
 
-  ; fix primary header
-
-  for k = 0L, n_elements(move_keywords) - 1L do begin
-    sxdelpar, first_primary_header, move_keywords[k]
+  ; remove keywords that were moved from the primary header to the extension
+  ; headers from the primary header
+  for k = 0L, n_elements(demoted_keywords) - 1L do begin
+    sxdelpar, first_primary_header, demoted_keywords[k]
   endfor
 
-  ; get current date & time
+  ; add a few more keywords to master dark file primary header
   current_time = systime(/utc)
   date_dp = string(bin_date(current_time), $
                    format='(%"%04d-%02d-%02dT%02d:%02d:%02d")')
@@ -167,9 +158,12 @@ pro ucomp_make_darks, run=run
                    format='(%" L1 data processing software (%s)")'), $
             after='DATE_DP'
 
-  averaged_dark_images = mean(reform(dark_images, $
-                                     nx, ny, n_pol_states * n_cameras, n_dark_files), $
-                              dimension=3)
+  dark_times_array      = dark_times->toArray()
+  dark_exposures_array  = dark_exposures->toArray()
+  dark_gain_modes_array = dark_gain_modes->toArray()
+  obj_destroy, [dark_times, $
+                dark_exposures, $s
+                dark_gain_modes]
 
   ; write master dark FITS file in the process_basedir/level1
 
@@ -178,31 +172,31 @@ pro ucomp_make_darks, run=run
 
   fits_open, output_filename, output_fcb, /write
   fits_write, output_fcb, 0, first_primary_header
-  for d = 0L, n_dark_files - 1L do begin
-    dark_header = dark_headers[d]
-    ; fix extension header
+  for d = 0L, n_elements(dark_headers) - 1L do begin
     fits_write, output_fcb, $
-                averaged_dark_images[*, *, d], $
-                dark_header, $
-                extname=strmid(file_basename(dark_files[d].raw_filename), 9, 6)
+                dark_data[d], $
+                dark_headers[d], $
+                extname=dark_extnames[d]
   endfor
 
-  mkhdr, times_header, dark_times, /extend, /image
-  fits_write, output_fcb, dark_times, times_header, extname='Times'
+  mkhdr, times_header, dark_times_array, /extend, /image
+  fits_write, output_fcb, dark_times_array, times_header, extname='Times'
 
-  mkhdr, exposures_header, dark_exposures, /extend, /image
-  fits_write, output_fcb, dark_exposures, exposures_header, extname='Exposures'
+  mkhdr, exposures_header, dark_exposures_array, /extend, /image
+  fits_write, output_fcb, dark_exposures_array, exposures_header, extname='Exposures'
 
-  mkhdr, gain_modes_header, dark_gain_modes, /extend, /image
-  fits_write, output_fcb, dark_gain_modes, gain_modes_header, extname='Gain modes'
+  mkhdr, gain_modes_header, dark_gain_modes_array, /extend, /image
+  fits_write, output_fcb, dark_gain_modes_array, gain_modes_header, extname='Gain modes'
 
   fits_close, output_fcb
+
+  averaged_dark_images = dark_data->toArray(/transpose)
 
   ; cache darks
   cal = run.calibration
   cal->cache_darks, darks=averaged_dark_images, $
-                    times=dark_times, $
-                    exptimes=dark_exposures, $
+                    times=dark_times_array, $
+                    exptimes=dark_exposures_array, $
                     gain_modes=dark_gain_modes
   
   tcam_means /= (n_tcam gt 0L ? n_tcam : 1L)
@@ -223,10 +217,12 @@ pro ucomp_make_darks, run=run
   endfor
 
   mg_log, /check_math, name=run.logger_name, /warn
-  ucomp_dark_plots, dark_info->toArray(), dark_images, run=run
+  ucomp_dark_plots, dark_info->toArray(), averaged_dark_images, run=run
   math_errors = check_math()  ; plotting causes math errors I can't eliminate
 
   done:
   if (obj_valid(dark_headers)) then obj_destroy, dark_headers
+  if (obj_valid(dark_data)) then obj_destroy, dark_data
+  if (obj_valid(dark_extnames)) then obj_destroy, dark_extnames
   if (obj_valid(dark_info)) then obj_destroy, dark_info
 end
