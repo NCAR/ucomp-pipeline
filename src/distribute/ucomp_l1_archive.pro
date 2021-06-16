@@ -14,13 +14,13 @@
 pro ucomp_l1_archive, wave_region, run=run
   compile_opt strictarr
 
+  cd, current=original_dir
+
   if (~run->config(wave_region + '/distribute_l1')) then begin
     mg_log, 'skipping distributing %s nm L1 data', wave_region, $
             name=run.logger, /info
     goto, done
   endif
-
-  cd, current=original_dir
 
   l1_dir = filepath('level1', subdir=run.date, $
                     root=run->config('processing/basedir'))

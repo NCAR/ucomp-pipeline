@@ -30,7 +30,7 @@ pro ucomp_l0_archive, run=run
   endif
 
   ; determine the types of files in tarball
-  types = ['*.ucomp.fts*', $
+  types = ['*.ucomp.*.fts*', $
            '*.log', $
            'scripts/*']
   n_files_by_type = lonarr(n_elements(types))
