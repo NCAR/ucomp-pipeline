@@ -723,7 +723,9 @@ def run_script(args):
 
 # archive sub-command
 def archive(args):
-    launch_processes(args, "ucomp_archive_wrapper")
+    if args.level is None:
+        args.parser.error("no level specified")
+    launch_processes(args, f"ucomp_l{args.level}_archive_wrapper")
     notify_completed(args, f"archive")
 
 
@@ -938,6 +940,9 @@ if __name__ == "__main__":
                                 metavar="date-expr")
     archive_parser.add_argument("-f", "--flags", type=str, help=flags_help,
                                 default="latest")
+    archive_parser.add_argument("-l", "--level", type=str, default=None,
+                                help="level to archive: 0, 1, or 2")
+    archive_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
     archive_parser.set_defaults(func=archive, parser=archive_parser)
 
     # regression sub-command
