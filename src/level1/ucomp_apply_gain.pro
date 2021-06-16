@@ -41,8 +41,8 @@ pro ucomp_apply_gain, file, primary_header, data, headers, run=run
     if (~flat_found) then begin
       mg_log, 'flat not found for ext %d, skipping', e + 1, $
               name=run.logger_name, /warn
-      mg_log, 'request %0.2f HST, %0.2f ms, %s gain, %0.2f nm', $
-              obsday_hours, exptime, gain_mode, wavelengths[e], $
+      mg_log, 'request %0.2f HST, %0.2f ms, %s gain, %s, %0.2f nm', $
+              obsday_hours, exptime, gain_mode, onband, wavelengths[e], $
               name=run.logger_name, /warn
       continue
     endif

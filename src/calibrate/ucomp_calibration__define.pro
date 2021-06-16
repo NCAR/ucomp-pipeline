@@ -28,7 +28,6 @@ pro ucomp_calibration::cache_darks, filename, $
   compile_opt strictarr
 
   self.run->getProperty, logger_name=logger_name
-  mg_log, 'caching darks...', name=logger_name, /info
 
   ; master dark file with extensions 1..n:
   ;   exts 1 to n - 3:   dark images
@@ -116,7 +115,7 @@ function ucomp_calibration::get_dark, obsday_hours, exptime, gain_mode, $
   ; exptime
   exptime_threshold = 0.01   ; [ms]
   gain_index = gain_mode eq 'high'
-  valid_indices = where((exptime - *self.dark_exptimes) lt exptime_threshold $
+  valid_indices = where(abs(exptime - *self.dark_exptimes) lt exptime_threshold $
                           and (*self.dark_gain_modes eq gain_index), $
                         n_valid_darks)
   if (n_valid_darks eq 0L) then return, !null
@@ -191,7 +190,6 @@ pro ucomp_calibration::cache_flats, filenames, $
   compile_opt strictarr
 
   self.run->getProperty, logger_name=logger_name
-  mg_log, 'caching flats...', name=logger_name, /info
 
   ; master flat file with extensions 1..n:
   ;   exts 1 to n - 4:   flat images
@@ -236,11 +234,11 @@ pro ucomp_calibration::cache_flats, filenames, $
       fits_read, fcb, flat_gain_modes, gain_modes_header, exten_no=fcb.nextend - 1L
       fits_read, fcb, flat_onbands, onbands_header, exten_no=fcb.nextend
 
-      times[i] = flat_times
-      exptimes[i] = flat_exptimes
+      times[i]       = flat_times
+      exptimes[i]    = flat_exptimes
       wavelengths[i] = flat_wavelengths
-      gain_modes[i] = flat_gain_modes
-      onbands[i] = flat_onbands
+      gain_modes[i]  = flat_gain_modes
+      onbands[i]     = flat_onbands
 
       i += n_elements(flat_times)
 
@@ -256,6 +254,7 @@ pro ucomp_calibration::cache_flats, filenames, $
     *self.flat_exptimes = exptimes
     *self.flat_wavelengths = wavelengths
     *self.flat_gain_modes = gain_modes
+    *self.flat_onbands = onbands
     *self.flat_extensions = extensions
     *self.flat_raw_files = raw_files
   endif else begin
@@ -273,6 +272,7 @@ pro ucomp_calibration::cache_flats, filenames, $
     *self.flat_exptimes = [*self.flat_exptimes, exptimes]
     *self.flat_wavelengths = [*self.flat_wavelengths, wavelengths]
     *self.flat_gain_modes = [*self.flat_gain_modes, gain_modes]
+    *self.flat_onbands = [*self.flat_onbands, onbands]
     *self.flat_extensions = [*self.flat_extensions, extensions]
     *self.flat_raw_files = [*self.flat_raw_files, raw_files]
   endelse
@@ -338,8 +338,8 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, onband, 
 
   gain_index = gain_mode eq 'high'
   onband_index = onband eq 'tcam'
-  valid_indices = where(abs(exptime - *self.flat_exptimes) lt exptime_threshold $
-                          and abs(wavelength - *self.flat_wavelengths) lt wavelength_threshold $
+  valid_indices = where((abs(exptime - *self.flat_exptimes) lt exptime_threshold) $
+                          and (abs(wavelength - *self.flat_wavelengths) lt wavelength_threshold) $
                           and (*self.flat_gain_modes eq gain_index) $
                           and (*self.flat_onbands eq onband_index), $
                         n_valid_flats)

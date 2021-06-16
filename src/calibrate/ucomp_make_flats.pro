@@ -189,8 +189,8 @@ pro ucomp_make_flats, wave_region, run=run
   mkhdr, gain_modes_header, flat_gain_modes_array, /extend, /image
   fits_write, output_fcb, flat_gain_modes_array, gain_modes_header, extname='Gain modes'
 
-  mkhdr, gain_modes_header, flat_onbands_array, /extend, /image
-  fits_write, output_fcb, flat_onbands_array, nbands_header, extname='Onbands'
+  mkhdr, onbands_header, flat_onbands_array, /extend, /image
+  fits_write, output_fcb, flat_onbands_array, onbands_header, extname='Onbands'
 
   fits_close, output_fcb
 
