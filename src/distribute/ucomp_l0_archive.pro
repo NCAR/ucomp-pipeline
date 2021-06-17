@@ -40,7 +40,7 @@ pro ucomp_l0_archive, run=run
 
   ; don't make tarball if no FITS files
   if (n_files_by_type[0] eq 0L) then begin
-    mg_log, 'no files to tar', name=run.logger_name, /warn
+    mg_log, 'no FITS files to tar', name=run.logger_name, /warn
     goto, done
   endif
 
