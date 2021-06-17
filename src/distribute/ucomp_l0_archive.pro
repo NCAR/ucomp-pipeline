@@ -19,7 +19,6 @@ pro ucomp_l0_archive, run=run
   endif
   cd, l0_dir
 
-  ; make tarball of L0 data
   tarfile  = string(run.date, format='(%"%s.ucomp.l0.tgz")')
   tarlist  = string(run.date, format='(%"%s.ucomp.l0.tarlist")')
 
@@ -30,7 +29,7 @@ pro ucomp_l0_archive, run=run
   endif
 
   ; determine the types of files in tarball
-  types = ['*.ucomp.*.fts*', $
+  types = ['*.ucomp.*.fts*', $   ; must keep FITS files first in the list
            '*.log', $
            'scripts/*']
   n_files_by_type = lonarr(n_elements(types))
@@ -39,11 +38,14 @@ pro ucomp_l0_archive, run=run
     n_files_by_type[t] = n_files
   endfor
 
-  glob_indices = where(n_files_by_type gt 0L, n_glob_parts)
-  if (n_glob_parts eq 0L) then begin
+  ; don't make tarball if no FITS files
+  if (n_files_by_type[0] eq 0L) then begin
     mg_log, 'no files to tar', name=run.logger_name, /warn
     goto, done
   endif
+
+  ; make glob based on what is present
+  glob_indices = where(n_files_by_type gt 0L, n_glob_parts)
   glob = strjoin(types[glob_indices], ' ')
 
   ; make tarball
