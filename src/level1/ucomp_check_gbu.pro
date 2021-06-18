@@ -38,9 +38,9 @@ pro ucomp_check_gbu, wave_region, run=run
                       subdir=[run.date, 'level1'], $
                       root=run->config('processing/basedir'))
   openw, lun, filename, /get_lun
-  printf, lun, 'Filename', 'Reason', format='(%"%-40s %4d")'
+  printf, lun, 'Filename', 'Reason', format='(%"%-40s %-6s")'
   for f = 0L, n_files - 1L do begin
-    printf, lun, files[f].l1_basename, gbu[f], format='(%"%-40s %4d")'
+    printf, lun, files[f].l1_basename, gbu[f], format='(%"%-40s %6d")'
   endfor
   free_lun, lun
 
