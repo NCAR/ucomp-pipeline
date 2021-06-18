@@ -37,6 +37,8 @@ pro ucomp_l1_step, routine_name, file, primary_header, data, headers, $
                     run=run, _extra=e
     time = run->stop(clock_id)
 
+    mg_log, /check_math, name=run.logger_name, /warn
+
     mg_log, 'done (%s)', ucomp_sec2str(time), $
             from=routine_name, name=run.logger_name, /debug
   endelse
