@@ -252,13 +252,18 @@ def list_files(files, columns=None):
             name = f"{basename}/"
             print(f"{name:38s}  {n_subfiles} files")
         elif os.path.isfile(f):
+            filename, file_extension = os.path.splitext(f)
+            if file_extension == ".tgz":
+                size = os.stat(f).st_size
+                print(f"{basename:38s}  {size} bytes")
+                continue
+
             try:
                 if columns is None:
                     list_fits_file_default(f)
                 else:
                     list_fits_file(f, columns)
             except OSError:
-                filename, file_extension = os.path.splitext(f)
                 if file_extension in [".log", ".olog", ".txt", ".cfg", ".tarlist"]:
                     n_lines = file_lines(f)
                     s = "s" if n_lines != 1 else ""
