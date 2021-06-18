@@ -347,7 +347,7 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, onband, 
 
   found = 1B
 
-  ; find index of valid flat taken nearest specificed time
+  ; find index of valid flat taken nearest specified time
   !null = min(abs(obsday_hours - (*self.flat_times)[valid_indices]), nearest_time_index)
 
   ; convert nearest time index from index into valid flats to index into all flats
