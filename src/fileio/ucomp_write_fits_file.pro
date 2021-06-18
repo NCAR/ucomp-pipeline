@@ -30,7 +30,7 @@ pro ucomp_write_fits_file, filename, primary_header, ext_data, ext_headers
     ; define extension name
     datatype = ucomp_getpar(ext_headers[e - 1], 'DATATYPE')
     wavelength = ucomp_getpar(ext_headers[e - 1], 'WAVELNG')
-    extname = string(datatype, wavelength, format='(%"%s [%0.3f nm]")')
+    extname = string(datatype, wavelength, format='(%"%s [%0.2f nm]")')
 
     fits_write, fcb, $
                 ext_data[*, *, *, e - 1], $
