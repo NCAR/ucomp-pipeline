@@ -66,11 +66,13 @@ pro ucomp_apply_gain, file, primary_header, data, headers, run=run
     data[*, *, *, *, e] = im
 
     h = headers[e]
-    ucomp_addpar, h, 'FLATFILE', flat_raw_file, comment='name of raw flat file'
+    ucomp_addpar, h, 'FLATFILE', flat_raw_file, $
+                  comment='name of raw flat file used'
     ucomp_addpar, h, 'FLATEXT', flat_extension, $
-                  comment=string(run.date, ucomp_wave_region(wavelengths[e]), $
-                                 format='(%"ext in %s.ucomp.flat.%s.fts used")')
-    ucomp_addpar, h, 'OPALRAD', opal_radiance, comment='opal radiance'
+                  comment=string(flat_raw_file, $
+                                 format='(%"ext(s) in %s used for flat correction")')
+    ucomp_addpar, h, 'BOPAL', opal_radiance, $
+                  comment='opal radiance', format='(F0.2)'
     headers[e] = h
   endfor
 end
