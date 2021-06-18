@@ -20,6 +20,14 @@ pro ucomp_regression_wrapper, date, config_filename
 
   status = 0L
 
+  ; error handler
+  catch, error
+  if (error ne 0) then begin
+    catch, /cancel
+    mg_log, /last_error, name=logger_name, /critical
+    goto, done
+  endif
+
   ; run the end-of-day pipeline
   ucomp_reprocess_wrapper, date, config_filename
 
