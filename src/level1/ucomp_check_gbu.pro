@@ -29,7 +29,7 @@ pro ucomp_check_gbu, wave_region, run=run
   ; check various conditions to determine GBU
   gbu = lonarr(n_files)
   for f = 0L, n_files - 1L do begin
-    gbu[f] += 1L * comp_gbu_check_identical_temps(files[f])
+    gbu[f] += 1L * ucomp_gbu_check_identical_temps(files[f])
   endfor
 
   ; write the GBU log
