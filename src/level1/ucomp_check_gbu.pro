@@ -5,7 +5,7 @@
 ;
 ; ::
 ;
-;   1          identical T_LCVR{1,2,3,4,5} temperatures
+;   1          at least two identical T_LCVR{1,2,3,4,5} temperatures
 ;
 ; :Params:
 ;   wave_region : in, required, type=string
@@ -26,6 +26,8 @@ pro ucomp_check_gbu, wave_region, run=run
     return
   endif
 
+  gbu_conditions = [{mask: 1, description: 'at least two identical T_LCVR{1,2,3,4,5} temperatures'}]
+
   ; check various conditions to determine GBU
   gbu = lonarr(n_files)
   for f = 0L, n_files - 1L do begin
@@ -39,9 +41,18 @@ pro ucomp_check_gbu, wave_region, run=run
                       root=run->config('processing/basedir'))
   openw, lun, filename, /get_lun
   printf, lun, 'Filename', 'Reason', format='(%"%-40s %-6s")'
+
   for f = 0L, n_files - 1L do begin
     printf, lun, files[f].l1_basename, gbu[f], format='(%"%-40s %6d")'
   endfor
+
+  printf, lun
+  printf, lun, 'GBU codes'
+  for g = 0L, n_elements(gbu_conditions) - 1L do begin
+    printf, lun, gbu_conditions[g].mask, gbu_conditions[g].description, $
+            format='(%"%4d  %s")'
+  endfor
+
   free_lun, lun
 
   done:
