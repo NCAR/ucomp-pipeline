@@ -33,7 +33,7 @@ pro ucomp_check_gbu, wave_region, run=run
   endfor
 
   ; write the GBU log
-  basename = string(run.date, wave_region, format='(%s.ucomp.%s.gbu.log)')
+  basename = string(run.date, wave_region, format='(%"%s.ucomp.%s.gbu.log")')
   filename = filepath(basename, $
                       subdir=[run.date, 'level1'], $
                       root=run->config('processing/basedir'))
