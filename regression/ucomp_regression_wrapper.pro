@@ -1,6 +1,13 @@
+; docformat = 'rst'
+
 ;+
 ; Run the UCoMP pipeline; this is full processing (or reprocessing) for a day
 ; not the quicklook/realtime processing and test against previous results.
+;
+; Exits with a status to indicate whether the regression test passed (status 0)
+; or failed (status non-zero). A non-zero status is a bitmask with 1 for extra
+; file in results, 2 for missing file in results, and 4 for a difference in a
+; file in the results.
 ;
 ; :Params:
 ;   date : in, required, type=string
@@ -128,7 +135,7 @@ end
 
 ; main-level example
 
-date = '20210204'
+date = '20210312'
 config_filename = filepath('ucomp.regression.cfg', $
                            subdir=['..', 'config'], $
                            root=mg_src_root())
