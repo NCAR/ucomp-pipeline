@@ -365,7 +365,7 @@ pro ucomp_run::report
 
   widths = [35, 32, 10, 10]
   printf, lun, 'routine name', 'total time', '# calls', 'secs/call', $
-          format=mg_format('%*s %*s %*s %*s', widths)
+          format=mg_format('%-*s %*s %*s %*s', widths)
   printf, lun, mg_repstr('-', widths), format='(%"%s %s %s %s")'
   foreach n_calls, self.calls, routine_name do begin
     if (self.times->hasKey(routine_name)) then begin
@@ -416,6 +416,44 @@ function ucomp_run::epoch, option_name, datetime=datetime
   return, value
 end
 
+
+;+
+; Retrieve the distortion coefficients for the epoch in the given date/time.
+;
+; :Keywords:
+;   datetime : in, required, type=string
+;     date/time in the format "YYYYMMDD_HHMMSS"
+;   dx1_c, dy1_c, dx2_c, dy2_c : out, optional, type="fltarr(3, 3)"
+;     set to a named variable to retrieve the corresponding distortion
+;     coefficients
+;-
+pro ucomp_run::get_distortion, datetime=datetime, $
+                               dx1_c=dx1_c, $
+                               dy1_c=dy1_c, $
+                               dx2_c=dx2_c, $
+                               dy2_c=dy2_c
+  compile_opt strictarr
+
+  distortion_basename = run->epoch('distortion_basename', datetime=datetime)
+  if (self.distortion_basename eq distortion_basename) then begin
+    coeffs = *self.distortion_coefficients
+    dx1_c = coeffs.dx1_c
+    dy1_c = coeffs.dy1_c
+    dx2_c = coeffs.dx2_c
+    dy2_c = coeffs.dy2_c
+  endif else
+    self->getProperty, resource_root=resource_root
+    distortion_filename = filepath(distortion_basename, $
+                                      subdir='distortion', $
+                                      root=resource_root)
+    restore, filename=distortion_filename
+    self.distortion_basename = distortion_basename
+    *self.distortion_coefficients = {dx1_c: dx1_c, $
+                                     dy1_c: dy1_c, $
+                                     dx2_c: dx2_c, $
+                                     dy2_c: dy2_c}
+  endelse
+end
 
 ;+
 ; Retrieve the value for a given option name for a given line.
@@ -703,6 +741,7 @@ pro ucomp_run::cleanup
   compile_opt strictarr
 
   obj_destroy, [self.options, self.epochs, self.lines]
+  ptr_free, self.distortion_coefficients
 
   ; performance monitoring API
   obj_destroy, [self.calls, self.times]
@@ -785,6 +824,8 @@ function ucomp_run::init, date, mode, config_filename, no_log=no_log
     return, 0
   endif
 
+  self.distortion_coefficients = ptr_new(/allocate_heap)
+
   self.files = orderedhash()   ; wave_region (string) -> list of file objects
 
   ; list of structures of the form:
@@ -811,9 +852,15 @@ pro ucomp_run__define
            date:    '', $
            mode:    '', $          ; eod, realtime, cal
            t0:      0.0D, $
+
            options: obj_new(), $
-           epochs:  obj_new(), $
+
+           epochs:                  obj_new(), $
+           distortion_basename:     '', $
+           distortion_coefficients: ptr_new(), $
+
            lines:   obj_new(), $
+
            files:   obj_new(), $
 
            alerts:  obj_new(), $

@@ -21,11 +21,12 @@ pro ucomp_alignment, file, primary_header, data, headers, run=run
   compile_opt strictarr
 
   ; restore distortion coefficients
-  distortion_basename = run->epoch('distortion_basename', datetime=datetime)
-  distortion_filename = filepath(distortion_basename, $
-                                 subdir='distortion', $
-                                 root=run.resource_root)
-  restore, filename=distortion_filename
+  datetime = strmid(file_basename(file.raw_filename), 0, 15)
+  run->get_distortion, datetime=datetime, $
+                       dx1_c=dx1_c, $
+                       dy1_c=dy1_c, $
+                       dx2_c=dx2_c, $
+                       dy2_c=dy2_c
 
   for p = 0, 3 do begin
     for e = 0L, file.n_extensions - 1L do begin
@@ -35,5 +36,6 @@ pro ucomp_alignment, file, primary_header, data, headers, run=run
   endfor
 
   ; TODO: center on occulter center
+
   mg_log, 'not implemented', name=run.logger, /warn
 end
