@@ -48,9 +48,10 @@ pro ucomp_check_gbu, wave_region, run=run
 
   printf, lun
   printf, lun, 'GBU codes'
+  printf, lun, 'Code', 'Description', format='(%"%-5s   %s")'
   for g = 0L, n_elements(gbu_conditions) - 1L do begin
     printf, lun, gbu_conditions[g].mask, gbu_conditions[g].description, $
-            format='(%"%4d  %s")'
+            format='(%"%5d   %s")'
   endfor
 
   free_lun, lun
