@@ -25,6 +25,12 @@ pro ucomp_l1_process_file, file, run=run
 
   data = float(data)
 
+  l1_dirname = filepath('', $
+                        subdir=[run.date, 'level1'], $
+                        root=run->config('processing/basedir'))
+  ucomp_mkdir, l1_dirname, logger_name=run.logger_name
+
+
   ucomp_l1_step, 'ucomp_average_data', $
                  file, primary_header, data, headers, run=run
   ucomp_l1_step, 'ucomp_stray_light', $
@@ -41,21 +47,19 @@ pro ucomp_l1_process_file, file, run=run
                  file, primary_header, data, headers, run=run
   ucomp_l1_step, 'ucomp_alignment', $
                  file, primary_header, data, headers, run=run
+
   ucomp_l1_step, 'ucomp_demodulation', $
                  file, primary_header, data, headers, run=run
+
   ucomp_l1_step, 'ucomp_combine_beams', $
                  file, primary_header, data, headers, run=run
   ucomp_l1_step, 'ucomp_rotate_north_up', $
                  file, primary_header, data, headers, run=run
   ucomp_l1_step, 'ucomp_masking', $
                  file, primary_header, data, headers, run=run
+
   ucomp_l1_step, 'ucomp_polarimetric_correction', $
                  file, primary_header, data, headers, run=run
-
-  l1_dirname = filepath('', $
-                         subdir=[run.date, 'level1'], $
-                         root=run->config('processing/basedir'))
-  ucomp_mkdir, l1_dirname, logger_name=run.logger_name
 
   l1_filename = filepath(file.l1_basename, root=l1_dirname)
 
