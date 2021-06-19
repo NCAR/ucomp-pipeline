@@ -30,7 +30,8 @@ for day in ${DATES[@]}; do
   ${IDL} -quiet -IDL_QUIET 1 -IDL_STARTUP "" \
     -IDL_PATH ${UCOMP_PATH} -IDL_DLM_PATH ${UCOMP_DLM_PATH} \
     -e "ucomp_regression_wrapper, '${day}', '${CONFIG}'" > /dev/null 2>&1
-  if [ $? -ne 0 ]; then STATUS=$(( ${STATUS} | $? )); fi
+  DAY_STATUS=$?
+  if [ ${DAY_STATUS} -ne 0 ]; then STATUS=$(( ${STATUS} | ${DAY_STATUS} )); fi
   LOG_FILENAME=${LOG_DIR}/${day}.ucomp.regress.log
   echo ${LOG_FILENAME}
   cat ${LOG_FILENAME}
