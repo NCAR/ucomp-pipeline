@@ -40,7 +40,7 @@ pro ucomp_average_darkfile, primary_header, ext_data, ext_headers, $
   dims = size(ext_data, /dimensions)
   type = size(ext_data, /type)
   new_dims = dims
-  new_dims[-1] = n_groups
+  if (n_elements(dims) ge 5) then new_dims[-1] = n_groups
   new_ext_data = make_array(dimension=new_dims, type=type)
 
   ext_headers_array = ext_headers->toArray(/transpose)
@@ -80,8 +80,10 @@ end
 
 ; main-level example file
 
-basename = '20210611.010332.47.ucomp.l0.fts'
-root = '/hao/dawn/Data/UCoMP/incoming/20210610'
+;basename = '20210611.010332.47.ucomp.l0.fts'
+basename = '20210601.192244.64.ucomp.l0.fts'
+;root = '/hao/dawn/Data/UCoMP/incoming/20210610'
+root = '/hao/dawn/Data/UCoMP/incoming/20210601'
 filename = filepath(basename, root=root)
 ucomp_read_raw_data, filename, $
                      primary_header=primary_header, $
