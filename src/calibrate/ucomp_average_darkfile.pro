@@ -39,7 +39,7 @@ pro ucomp_average_darkfile, primary_header, ext_data, ext_headers, $
 
   dims = size(ext_data, /dimensions)
   type = size(ext_data, /type)
-  new_dims = dims
+  averaged_dims = dims
   if (n_elements(dims) ge 5) then averaged_dims[-1] = n_groups
   averaged_ext_data = make_array(dimension=averaged_dims, type=type)
 
