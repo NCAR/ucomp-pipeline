@@ -434,7 +434,7 @@ pro ucomp_run::get_distortion, datetime=datetime, $
                                dy2_c=dy2_c
   compile_opt strictarr
 
-  distortion_basename = run->epoch('distortion_basename', datetime=datetime)
+  distortion_basename = self->epoch('distortion_basename', datetime=datetime)
   if (self.distortion_basename eq distortion_basename) then begin
     coeffs = *self.distortion_coefficients
     dx1_c = coeffs.dx1_c
