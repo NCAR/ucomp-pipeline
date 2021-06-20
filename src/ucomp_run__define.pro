@@ -441,7 +441,7 @@ pro ucomp_run::get_distortion, datetime=datetime, $
     dy1_c = coeffs.dy1_c
     dx2_c = coeffs.dx2_c
     dy2_c = coeffs.dy2_c
-  endif else
+  endif else begin
     self->getProperty, resource_root=resource_root
     distortion_filename = filepath(distortion_basename, $
                                       subdir='distortion', $
