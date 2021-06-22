@@ -2,8 +2,8 @@
 
 
 ;+
-; Make a histogram plot of the raw files from the day, color coded by wave
-; type.
+; Make a histogram plot of the raw files from the day, color coded by data
+; type, i.e., dark, flat, cal pol, or sci.
 ;
 ; :Params:
 ;   output_filename : in, required, type=string
@@ -15,12 +15,12 @@
 ;   bin_size : in, optional, type=integer, default=15
 ;     size of bin in minutes
 ;-
-pro ucomp_wave_region_histogram, output_filename, $
-                                 run=run, $
-                                 bin_size=bin_size
+pro ucomp_data_type_histogram, output_filename, $
+                               run=run, $
+                               bin_size=bin_size
   compile_opt strictarr
 
-  mg_log, 'producing wave region histogram...', name=run.logger_name, /info
+  mg_log, 'producing data type histogram...', name=run.logger_name, /info
 
   start_time = 06   ; 24-hour time in observing day
   end_time   = 19   ; 24-hour time in observing day
@@ -41,16 +41,17 @@ pro ucomp_wave_region_histogram, output_filename, $
   max_files  = max_rate * _bin_size
   n_bins     = long((end_time - start_time) / (_bin_size / 60.0))
 
-  ;wave_regions     = run->config('options/wave_regions')
-  run->getProperty, all_wave_regions=wave_regions
-  n_wave_regions   = n_elements(wave_regions)
-  histograms       = lonarr(n_wave_regions, n_bins)
-  n_files_per_type = lonarr(n_wave_regions)
+  data_types = ['dark', 'flat', 'cal', 'sci']
+  n_data_types = n_elements(data_types)
+  colors = ['000000'x, 'ca7140'x, '4059ca'x, '40ca4a'x]
 
-  for t = 0L, n_wave_regions - 1L do begin
-    files = run->get_files(wave_region=wave_regions[t], count=n_files)
+  histograms       = lonarr(n_data_types, n_bins)
+  n_files_per_type = lonarr(n_data_types)
 
-    n_files_per_type[t] = n_files
+  for d = 0L, n_data_types - 1L do begin
+    files = run->get_files(data_type=data_types[d], count=n_files)
+
+    n_files_per_type[d] = n_files
     if (n_files eq 0L) then continue
 
     hst_times = fltarr(n_files)
@@ -59,7 +60,7 @@ pro ucomp_wave_region_histogram, output_filename, $
     endfor
 
     if (n_elements(hst_times) gt 0L) then begin
-      histograms[t, *] = histogram(hst_times, $
+      histograms[d, *] = histogram(hst_times, $
                                    min=start_time, $
                                    max=end_time - _bin_size / 60.0, $
                                    nbins=n_bins, $
@@ -67,47 +68,21 @@ pro ucomp_wave_region_histogram, output_filename, $
     endif
   endfor
 
-  lines = run->line()
-
-  colors = lonarr(n_wave_regions)
-  for t = 0L, n_wave_regions - 1L do begin
-    if (mg_in(lines, wave_regions[t])) then begin
-      hex_color = run->config(wave_regions[t] + '/color')
-    endif else begin
-      hex_color = '000000'
-    endelse
-    reads, hex_color, color, format='(Z)'
-    colors[t] = color
-  endfor
-
   ind = where(n_files_per_type gt 0L, n_nonzero_wave_regions)
   if (n_nonzero_wave_regions eq 0) then begin
     mg_log, 'no files to plot', name=run.logger_name, /warn
     return
   endif
-  histograms   = histograms[ind, *]
-  colors       = colors[ind]
-  wave_regions = wave_regions[ind]
-  wave_names   = wave_regions
-  for w = 0L, n_nonzero_wave_regions - 1L do begin
-    if (mg_in(lines, wave_regions[w])) then begin
-      wave_names[w] = run->line(wave_regions[w], 'name')
-    endif else if (wave_regions[w] eq '') then begin
-      wave_names[w] = 'darks'
-    endif else begin
-      wave_names[w] = 'unknown'
-    endelse
-  endfor
 
-  wave_region_names = wave_regions
-  wave_region_names[where(wave_regions eq '', /null)] = '-'
-  item_names = wave_region_names + ' [' + wave_names + ']'
+  histograms   = histograms[ind, *]
+  data_types   = data_types[ind]
+  colors       = colors[ind]
 
   ; display plot
   ucomp_timeline_histogram, output_filename, $
                             histograms, $
                             _bin_size, $
-                            item_names, $
+                            data_types, $
                             start_time=start_time, $
                             end_time=end_time, $
                             ymax=max_files, $
@@ -117,22 +92,22 @@ pro ucomp_wave_region_histogram, output_filename, $
   done:
 end
 
-
 ; main-level example program
 
 date = '20210312'
-config_filename = filepath('ucomp.production.cfg', $
+config_filename = filepath('ucomp.latest.cfg', $
                            subdir=['..', '..', 'config'], $
                            root=mg_src_root())
 run = ucomp_run(date, 'eod', config_filename, /no_log)
 run->make_raw_inventory
 
 engineering_basedir = run->config('engineering/basedir')
-ucomp_wave_region_histogram, filepath(string(run.date, $
-                                             format='(%"%s.ucomp.wave_regions.png")'), $
-                                      subdir=ucomp_decompose_date(run.date), $
-                                      root=engineering_basedir), $
-                             run=run
+output_filename = filepath(string(run.date, $
+                                  format='(%"%s.ucomp.data_types.png")'), $
+                           subdir=ucomp_decompose_date(run.date), $
+                           root=engineering_basedir)
+ucomp_data_type_histogram, output_filename, $
+                           run=run
 obj_destroy, run
 
 end
