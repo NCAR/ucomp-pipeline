@@ -22,4 +22,9 @@ pro ucomp_l1_engineering_plots, run=run
                                       subdir=ucomp_decompose_date(run.date), $
                                       root=engineering_basedir), $
                                run=run
+  ucomp_data_type_histogram, filepath(string(run.date, $
+                                             format='(%"%s.ucomp.data_types.png")'), $
+                                      subdir=ucomp_decompose_date(run.date), $
+                                      root=engineering_basedir), $
+                             run=run
 end
