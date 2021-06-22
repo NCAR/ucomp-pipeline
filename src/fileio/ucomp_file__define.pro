@@ -76,7 +76,8 @@ pro ucomp_file::setProperty, ixcnter1=ixcnter1, $
                              overlap_angle=overlap_angle, $
                              post_angle=post_angle, $
                              background=background, $
-                             quality_bitmask=quality_bitmask
+                             quality_bitmask=quality_bitmask, $
+                             gbu=gbu
   compile_opt strictarr
 
   if (n_elements(ixcnter1)) then self.ixcnter1 = ixcnter1
@@ -92,6 +93,10 @@ pro ucomp_file::setProperty, ixcnter1=ixcnter1, $
 
   if (n_elements(quality_bitmask) gt 0L) then begin
     self.quality_bitmask or= quality_bitmask
+  endif
+
+  if (n_elements(gbu) gt 0L) then begin
+    self.gbu or= gbu
   endif
 end
 
@@ -126,6 +131,7 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
                              unique_wavelengths=unique_wavelengths, $
                              background=background, $
                              quality_bitmask=quality_bitmask, $
+                             gbu=gbu, $
                              ok=ok, $
                              occulter_in=occulter_in, $
                              occultrid=occultrid, $
@@ -225,6 +231,7 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
   if (arg_present(background)) then background = self.background
 
   if (arg_present(quality_bitmask)) then quality_bitmask = self.quality_bitmask
+  if (arg_present(gbu)) then gbu = self.gbu
   if (arg_present(ok)) then ok = self.quality_bitmask eq 0
 
   if (arg_present(focus)) then focus = self.focus
@@ -552,7 +559,8 @@ pro ucomp_file__define
 
            background          : 0.0, $
 
-           quality_bitmask     : 0UL $
+           quality_bitmask     : 0UL, $
+           gbu                 : 0UL $
           }
 end
 
