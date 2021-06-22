@@ -26,12 +26,15 @@ pro ucomp_check_gbu, wave_region, run=run
     return
   endif
 
-  gbu_conditions = [{mask: 1, description: 'at least two identical T_LCVR{1,2,3,4,5} temperatures'}]
+  gbu_conditions = ucomp_gbu_conditions(wave_region, run=run)
 
   ; check various conditions to determine GBU
-  gbu = lonarr(n_files)
   for f = 0L, n_files - 1L do begin
-    gbu[f] += 1L * ucomp_gbu_check_identical_temps(files[f])
+    for g = 0L, n_elements(gbu_conditions) - 1L do begin
+      files[f].gbu = gbu_conditions[g].mask * call_function(gbu_conditions[g].checker, $
+                                                            files[f], $
+                                                            run=run)
+    endfor
   endfor
 
   ; write the GBU log
@@ -43,7 +46,7 @@ pro ucomp_check_gbu, wave_region, run=run
   printf, lun, 'Filename', 'Reason', format='(%"%-40s %-6s")'
 
   for f = 0L, n_files - 1L do begin
-    printf, lun, files[f].l1_basename, gbu[f], format='(%"%-40s %6d")'
+    printf, lun, files[f].l1_basename, files[f].gbu, format='(%"%-40s %6d")'
   endfor
 
   printf, lun
