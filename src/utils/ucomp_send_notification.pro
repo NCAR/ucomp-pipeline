@@ -129,7 +129,12 @@ pro ucomp_send_notification, run=run
                                                      format='(%"%s.ucomp.wave_regions.png")'), $
                                               subdir=ucomp_decompose_date(run.date), $
                                               root=engineering_basedir)
-    attachments = [wave_region_histogram_filename]
+    data_type_histogram_filename = filepath(string(run.date, $
+                                                   format='(%"%s.ucomp.data_types.png")'), $
+                                            subdir=ucomp_decompose_date(run.date), $
+                                            root=engineering_basedir)
+    attachments = [wave_region_histogram_filename, $
+                   data_type_histogram_filename]
   endif
 
   mg_send_mail, email, subject, body_text, $

@@ -35,7 +35,7 @@ pro ucomp_timeline_histogram, output_filename, $
                        axis_color='000000'x, $
                        background='ffffff'x, color=colors, /fill, $
                        xstyle=9, xticks=_end_time - _start_time, xminor=4, $
-                       ystyle=9, yrange=[0, _ymax], yticks=4, $
+                       ystyle=1, yrange=[0, _ymax], yticks=4, $
                        charsize=0.85, $
                        xtitle='Time (HST)', ytitle='# of files', $
                        position=[0.075, 0.20, 0.75, 0.80]
