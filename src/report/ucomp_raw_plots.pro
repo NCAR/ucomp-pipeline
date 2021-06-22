@@ -12,7 +12,7 @@ pro ucomp_raw_plots, run=run
     mg_log, 'plotting %d raw files', n_files, name=run.logger_name, /info
   endelse
 
-  n_plots = 4L
+  n_plots = 7L
 
   ; save original graphics settings
   original_device = !d.name
@@ -22,7 +22,7 @@ pro ucomp_raw_plots, run=run
   device, get_decomposed=original_decomposed
   tvlct, original_rgb, /get
   device, decomposed=0, $
-          set_resolution=[800, n_plots * 300]
+          set_resolution=[800, n_plots * 175]
 
   tvlct, 0, 0, 0, 0
   tvlct, 255, 255, 255, 1
@@ -45,11 +45,23 @@ pro ucomp_raw_plots, run=run
   for f = 0L, n_files - 1L do t_c1arr[f] = files[f].t_c1arr
   t_c1pcb = fltarr(n_files)
   for f = 0L, n_files - 1L do t_c1pcb[f] = files[f].t_c1pcb
+  t_lcvr1 = fltarr(n_files)
+  for f = 0L, n_files - 1L do t_lcvr1[f] = files[f].t_lcvr1
+  t_lcvr2 = fltarr(n_files)
+  for f = 0L, n_files - 1L do t_lcvr2[f] = files[f].t_lcvr2
+  t_lcvr3 = fltarr(n_files)
+  for f = 0L, n_files - 1L do t_lcvr3[f] = files[f].t_lcvr3
+  t_lcvr4 = fltarr(n_files)
+  for f = 0L, n_files - 1L do t_lcvr4[f] = files[f].t_lcvr4
+  t_lcvr5 = fltarr(n_files)
+  for f = 0L, n_files - 1L do t_lcvr5[f] = files[f].t_lcvr5
 
   tarr_min =  9.0 < floor(min([t_c0arr, t_c1arr]))
   tarr_max = 11.0 > ceil(max([t_c0arr, t_c1arr]))
   tpcb_min = 25.0 < floor(min([t_c0pcb, t_c1pcb]))
   tpcb_max = 27.0 > ceil(max([t_c0pcb, t_c1pcb]))
+  tlcvr_min = floor(min([t_lcvr1, t_lcvr2, t_lcvr3, t_lcvr4, t_lcvr5], max=tlcvr_max))
+  tlcvr_max = ceil(tlcvr_max)
 
   start_time = 06   ; 24-hour time in observing day
   end_time   = 19   ; 24-hour time in observing day
@@ -76,9 +88,9 @@ pro ucomp_raw_plots, run=run
          psym=6, symsize=symsize, $
          linestyle=0, color=camera1_color
 
-  xyouts, 0.95, 0.75 + 0.80 * 0.25, /normal, $
+  xyouts, 0.95, 6.0 / n_plots + 0.80 * (1.0 / n_plots), /normal, $
           'camera 0', alignment=1.0, color=camera0_color
-  xyouts, 0.95, 0.75 + 0.75 * 0.25, /normal, $
+  xyouts, 0.95, 6.0 / n_plots + 0.75 * (1.0 / n_plots), /normal, $
           'camera 1', alignment=1.0, color=camera1_color
 
   plot, times, t_c0pcb, /nodata, $
@@ -95,11 +107,50 @@ pro ucomp_raw_plots, run=run
          psym=6, symsize=symsize, $
          linestyle=0, color=camera1_color
 
-  xyouts, 0.95, 0.50 + 0.80 * 0.25, /normal, $
+  xyouts, 0.95, 5.0 / n_plots + 0.80 * (1.0 / n_plots), /normal, $
           'camera 0', alignment=1.0, color=camera0_color
-  xyouts, 0.95, 0.50 + 0.75 * 0.25, /normal, $
+  xyouts, 0.95, 5.0 / n_plots + 0.75 * (1.0 / n_plots), /normal, $
           'camera 1', alignment=1.0, color=camera1_color
 
+  plot, times, t_lcvr1, psym=6, symsize=symsize, $
+        linestyle=0, color=color, $
+        title='LCVR1 temperature', charsize=charsize, $
+        xtitle='Time [HST]', $
+        xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
+        ytitle='Temperature [C]', $
+        ystyle=1, yrange=[tlcvr_min, tlcvr_max]
+
+  plot, times, t_lcvr2, psym=6, symsize=symsize, $
+        linestyle=0, color=color, $
+        title='LCVR2 temperature', charsize=charsize, $
+        xtitle='Time [HST]', $
+        xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
+        ytitle='Temperature [C]', $
+        ystyle=1, yrange=[tlcvr_min, tlcvr_max]
+
+  plot, times, t_lcvr3, psym=6, symsize=symsize, $
+        linestyle=0, color=color, $
+        title='LCVR3 temperature', charsize=charsize, $
+        xtitle='Time [HST]', $
+        xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
+        ytitle='Temperature [C]', $
+        ystyle=1, yrange=[tlcvr_min, tlcvr_max]
+
+  plot, times, t_lcvr4, psym=6, symsize=symsize, $
+        linestyle=0, color=color, $
+        title='LCVR4 temperature', charsize=charsize, $
+        xtitle='Time [HST]', $
+        xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
+        ytitle='Temperature [C]', $
+        ystyle=1, yrange=[tlcvr_min, tlcvr_max]
+
+  plot, times, t_lcvr5, psym=6, symsize=symsize, $
+        linestyle=0, color=color, $
+        title='LCVR5 temperature', charsize=charsize, $
+        xtitle='Time [HST]', $
+        xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
+        ytitle='Temperature [C]', $
+        ystyle=1, yrange=[tlcvr_min, tlcvr_max]
 
   ; save plots image file
   eng_dir = filepath('', $
