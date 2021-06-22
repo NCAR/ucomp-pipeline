@@ -20,7 +20,7 @@ pro ucomp_wave_region_histogram, output_filename, $
                                  bin_size=bin_size
   compile_opt strictarr
 
-  mg_log, 'producing wave region histgram...', name=run.logger_name, /info
+  mg_log, 'producing wave region histogram...', name=run.logger_name, /info
 
   ; create wave_region histogram
 
@@ -36,9 +36,6 @@ pro ucomp_wave_region_histogram, output_filename, $
   end_time >= 24L * (run.date ne all_files[-1].hst_date) $
                 + long(strmid(last_hst_time, 0, 2)) $
                 + (strmid(last_hst_time, 2, 2) ne '00')
-
-  ut_start_time = start_time + 10L
-  ut_end_time = end_time + 10L
 
   _bin_size  = mg_default(bin_size, 15)   ; minutes
   max_rate   = 1.33                       ; max rate in files/minute
@@ -104,54 +101,20 @@ pro ucomp_wave_region_histogram, output_filename, $
     endelse
   endfor
 
-  ; display plot
-
-  original_device = !d.name
-  set_plot, 'Z'
-  device, set_resolution=[600, 200], set_pixel_depth=24, decomposed=1
-  tvlct, original_rgb, /get
-
-  sums = total(histograms, 2, /preserve_type)
-  max_files >= max(total(histograms, 1, /preserve_type))
-  mg_stacked_histplot, ((_bin_size / 60.0) * findgen(n_bins) + start_time), $
-                       histograms, $
-                       axis_color='000000'x, $
-                       background='ffffff'x, color=colors, /fill, $
-                       xstyle=9, xticks=end_time - start_time, xminor=4, $
-                       ystyle=9, yrange=[0, max_files], yticks=4, $
-                       charsize=0.85, $
-                       xtitle='Time (HST)', ytitle='# of files', $
-                       position=[0.075, 0.20, 0.75, 0.80]
-  axis, start_time, max_files, xaxis=1, /data, $
-        color='000000'x, charsize=0.85, $
-        xticks=end_time - start_time, xminor=4, $
-        xrange=[ut_start_time, ut_end_time], $
-        xtitle='Time (UT)', $
-        xtickname=strtrim((lindgen(n_bins / 4 + 1L) + ut_start_time) mod 24, 2)
-
-  square = mg_usersym(/square, /fill)
-  legend_position = [0.7825, 0.90 - 0.1 * n_nonzero_wave_regions, 0.9575, 0.90]
   wave_region_names = wave_regions
   wave_region_names[where(wave_regions eq '', /null)] = '-'
-  mg_legend, item_name=wave_region_names + ' [' + wave_names + ']: '+ strtrim(sums, 2), $
-             item_color=colors, $
-             item_psym=square, $
-             item_symsize=1.5, $
-             color='000000'x, $
-             charsize=0.85, $
-             gap=0.075, $
-             line_bump=0.2125, $
-             position=legend_position
+  item_names = wave_region_names + ' [' + wave_names + ']'
 
-  im = tvrd(true=1)
-  tvlct, original_rgb
-  set_plot, original_device
-
-  ; make directory for output file, if it doesn't already exist
-  dir_name = file_dirname(output_filename)
-  ucomp_mkdir, dir_name, logger_name=run.logger_name
-
-  write_png, output_filename, im
+  ; display plot
+  ucomp_timeline_histogram, output_filename, $
+                            histograms, $
+                            _bin_size, $
+                            item_names, $
+                            start_time=start_time, $
+                            end_time=end_time, $
+                            ymax=max_files, $
+                            colors=colors, $
+                            logger_name=run.logger_name
 
   done:
 end
