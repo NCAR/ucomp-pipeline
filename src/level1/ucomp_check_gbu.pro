@@ -32,8 +32,7 @@ pro ucomp_check_gbu, wave_region, run=run
   for f = 0L, n_files - 1L do begin
     for g = 0L, n_elements(gbu_conditions) - 1L do begin
       files[f].gbu = gbu_conditions[g].mask * call_function(gbu_conditions[g].checker, $
-                                                            files[f], $
-                                                            run=run)
+                                                            files[f])
     endfor
   endfor
 

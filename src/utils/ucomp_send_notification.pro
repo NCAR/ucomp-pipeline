@@ -38,7 +38,7 @@ pro ucomp_send_notification, run=run
   all_files = run->get_files(count=n_all_files)
 
   ; add basic statistics on run
-  body->add, '## Basic statistics'
+  body->add, '# Basic statistics'
   body->add, ''
   body->add, string(n_all_files, format='(%"number of raw files: %d")')
   body->add, ['', ''], /extract
@@ -49,37 +49,63 @@ pro ucomp_send_notification, run=run
   rt_errors = ucomp_log_filter(rt_log_filename, $
                                /error, n_messages=n_rt_errors)
   if (n_rt_errors eq 0L) then begin
-    body-> add, '## No realtime errors in log'
+    body-> add, '# No realtime errors in log'
   endif else begin
-    body->add, string(n_rt_errors, format='(%"## Realtime errors in log (%d errors)")')
+    body->add, string(n_rt_errors, format='(%"# Realtime errors in log (%d errors)")')
     body->add, ''
     body->add, rt_errors, /extract
     body->add, ''
     body->add, string(rt_log_filename, format='(%"see %s for details")')
-    body->add, ''
   endelse
-  body->add, ''
+  body->add, ['', ''], /extract
 
   eod_log_filename = filepath(run.date + '.ucomp.eod.log', $
                               root=run->config('logging/dir'))
   eod_errors = ucomp_log_filter(eod_log_filename, $
                                 /error, n_messages=n_eod_errors)
   if (n_eod_errors eq 0L) then begin
-    body->add, '## No end-of-day errors in log'
+    body->add, '# No end-of-day errors in log'
   endif else begin
-    body->add, string(n_eod_errors, format='(%"## End-of-day errors in log (%d errors)")')
+    body->add, string(n_eod_errors, format='(%"# End-of-day errors in log (%d errors)")')
     body->add, ''
     body->add, eod_errors, /extract
     body->add, ''
     body->add, string(eod_log_filename, format='(%"see %s for details")')
-    body->add, ''
   endelse
-  body->add, ''
+  body->add, ['', ''], /extract
 
   ; add config file
-  body->add, ['## Configuration file used', ''], /extract
-  body->add, run.config_contents, /extract
-  body->add, ['', ''], /extract
+  ; body->add, ['## Configuration file used', ''], /extract
+  ; body->add, run.config_contents, /extract
+  ; body->add, ['', ''], /extract
+
+  wave_regions = run->config('options/wave_regions')
+  for w = 0L, n_elements(wave_regions) - 1L do begin
+    body->add, string(wave_regions[w], format='(%"# %s nm files")')
+    body->add, ''
+
+    files = run->get_files(data_type='sci', wave_region=wave_regions[w], $
+                           count=n_files)
+    if (n_files eq 0L) then begin
+      body->add, string(wave_regions[w], format='(%"no %s nm files")')
+      continue
+    endif
+
+    gbu = ulonarr(n_files)
+    for f = 0L, n_files - 1L do gbu[f] = files[f].gbu
+    !null = where(gbu eq 0UL, n_good_files)
+    body->add, string(n_good_files, format='(%"%d good files")')
+
+    gbu_conditions = ucomp_gbu_conditions(wave_regions[w], run=run)
+    for g = 0L, n_elements(gbu_conditions) - 1L do begin
+      !null = where(gbu_conditions[g].mask and gbu, n_condition_files)
+      if (n_condition_files gt 0L) then begin
+        body->add, string(n_condition_files, gbu_conditions[g].description, $
+                          format='(%"%d files with %s")')
+      endif
+    endfor
+    body->add, ['', ''], /extract
+  endfor
 
   ; TODO: add quality histogram image
 
