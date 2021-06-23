@@ -88,6 +88,7 @@ pro ucomp_send_notification, run=run
                            count=n_files)
     if (n_files eq 0L) then begin
       body->add, string(wave_regions[w], format='(%"no %s nm files")')
+      body->add, ['', ''], /extract
       continue
     endif
 
