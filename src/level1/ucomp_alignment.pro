@@ -28,12 +28,12 @@ pro ucomp_alignment, file, primary_header, data, headers, run=run
                        dx2_c=dx2_c, $
                        dy2_c=dy2_c
 
-  for p = 0, 3 do begin
-    for e = 0L, file.n_extensions - 1L do begin
-      data[*, *, p, 0, e] = ucomp_apply_distortion(data[*, *, p, 0, e], dx1_c, dy1_c)
-      data[*, *, p, 1, e] = ucomp_apply_distortion(data[*, *, p, 1, e], dx2_c, dy2_c)
-    endfor
-  endfor
+  ; for p = 0, 3 do begin
+  ;   for e = 0L, file.n_extensions - 1L do begin
+  ;     data[*, *, p, 0, e] = ucomp_apply_distortion(data[*, *, p, 0, e], dx1_c, dy1_c)
+  ;     data[*, *, p, 1, e] = ucomp_apply_distortion(data[*, *, p, 1, e], dx2_c, dy2_c)
+  ;   endfor
+  ; endfor
 
   ; TODO: center on occulter center
 
