@@ -41,6 +41,7 @@ pro ucomp_apply_dark, file, primary_header, data, headers, run=run
               name=run.logger_name, /warn
       continue
     endif
+    science_dark = mean(science_dark, dimension=3)
 
     im = data[*, *, *, *, e]
     for p = 0L, n_pol_states - 1L do begin
