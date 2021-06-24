@@ -59,7 +59,7 @@ pro ucomp_apply_gain, file, primary_header, data, headers, run=run
     for p = 0L, n_pol_states - 1L do begin
       ; TODO: flat[*, *, p, *] - flat_dark needs to have camera non-linearity
       ; correction?
-      im[*, *, p, *] /= flat[*, *, p, *] - flat_dark
+      im[*, *, p, *] /= reform(flat[*, *, p, *]) - flat_dark
     endfor
 
     opal_radiance = ucomp_opal_radiance(file.wave_region, run=run)
