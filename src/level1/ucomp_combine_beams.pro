@@ -1,7 +1,7 @@
 ; docformat = 'rst'
 
 ;+
-; Combine beams.
+; Off-band subtraction and combine beams.
 ;
 ; :Params:
 ;   file : in, required, type=object
@@ -20,9 +20,12 @@
 pro ucomp_combine_beams, file, primary_header, data, headers, run=run
   compile_opt strictarr
 
+  ; TODO: find extensions with matching wavelengths and opposite ONBAND
+
   ; TODO: implement for real, the below just averages over the `n_cameras`
   ; dimension to get rid of it
   ;data = reform(mean(data, dimension=4))
   data = reform(data[*, *, *, 0, *])
+
   mg_log, 'not implemented', name=run.logger, /warn
 end
