@@ -26,10 +26,34 @@ pro ucomp_create_intensity, file, data, run=run
   intensity_filename_format = mg_format(filepath(intensity_basename_format, $
                                                  root=l1_dirname))
 
+  datetime = strmid(file_basename(file.raw_filename), 0, 15)
+  nx = run->epoch('nx', datetime=datetime)
+  ny = run->epoch('ny', datetime=datetime)
+
+  original_device = !d.name
+  set_plot, 'Z'
+  device, get_decomposed=original_decomposed
+  tvlct, original_rgb, /get
+  device, decomposed=0, $
+          set_resolution=[nx, ny]
+  loadct, 0, /silent
+  tvlct, r, g, b, /get
+
   for e = 1L, file.n_extensions do begin
     im = total(reform(data[*, *, *, e - 1]), 3, /preserve_type)
     im /= (size(im, /dimensions))[-1]
-    im = bytscl(im)
-    write_gif, string(e, format=intensity_filename_format), im
+    im_min = min(im, max=im_max)
+
+    tvscl, bytscl(im)
+    xyouts, 5, 5, /device, alignment=0.0, $
+            string(e, format='(%"ext: %d")')
+    xyouts, nx - 5, 5, /device, alignment=1.0, $
+            string(im_min, im_max, format='(%"min/max: %0.1f/%0.1f")')
+
+    write_gif, string(e, format=intensity_filename_format), tvrd(), r, g, b
   endfor
+
+  tvlct, original_rgb
+  device, decomposed=original_decomposed
+  set_plot, original_device
 end
