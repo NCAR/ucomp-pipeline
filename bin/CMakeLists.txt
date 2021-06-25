@@ -16,6 +16,7 @@ install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/ucomp_include.sh
         DESTINATION bin)
 
 install(PROGRAMS ucomp_create_tables.sh
+                 ucomp_env.sh
                  ucomp_eod_today.sh
                  ucomp_parse_args.sh
                  ucomp_regression.sh
