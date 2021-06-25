@@ -26,6 +26,10 @@ pro ucomp_create_intensity, file, data, run=run
   intensity_filename_format = mg_format(filepath(intensity_basename_format, $
                                                  root=l1_dirname))
 
+  display_min   = run->line(file.wave_region, 'intensity_display_min')
+  display_max   = run->line(file.wave_region, 'intensity_display_max')
+  display_gamma = run->line(file.wave_region, 'intensity_display_gamma')
+
   datetime = strmid(file_basename(file.raw_filename), 0, 15)
   nx = run->epoch('nx', datetime=datetime)
   ny = run->epoch('ny', datetime=datetime)
@@ -37,22 +41,24 @@ pro ucomp_create_intensity, file, data, run=run
   device, decomposed=0, $
           set_resolution=[nx, ny]
   loadct, 0, /silent
+  gamma_ct, display_gamma, /current
   tvlct, r, g, b, /get
 
   for e = 1L, file.n_extensions do begin
     im = total(reform(data[*, *, *, e - 1]), 3, /preserve_type)
     im /= (size(im, /dimensions))[-1]
-    im_min = min(im, max=im_max)
 
-    tvscl, bytscl(im)
+    tvscl, bytscl(im, min=display_min, max=display_max)
     xyouts, 15, 15, /device, alignment=0.0, $
             string(e, format='(%"ext: %d")')
     xyouts, nx - 15, 15, /device, alignment=1.0, $
-            string(im_min, im_max, format='(%"min/max: %0.1f/%0.1f")')
+            string(display_min, display_max, format='(%"min/max: %0.1f/%0.1f")')
 
     write_gif, string(e, format=intensity_filename_format), tvrd(), r, g, b
   endfor
 
+  done:
+  gamma_ct, 1.0, /current   ; reset gamma to linear ramp
   tvlct, original_rgb
   device, decomposed=original_decomposed
   set_plot, original_device
