@@ -79,6 +79,8 @@ pro ucomp_make_flats, wave_region, run=run
                          n_extensions=n_extensions, $
                          repair_routine=run->epoch('raw_data_repair_routine', datetime=datetime)
 
+    ext_data = float(ext_data)
+
     ; use the primary header of the first flat file as the template for the
     ; primary header of the master flat file
     if (f eq 0L) then first_primary_header = primary_header
