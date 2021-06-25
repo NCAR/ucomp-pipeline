@@ -45,9 +45,9 @@ pro ucomp_create_intensity, file, data, run=run
     im_min = min(im, max=im_max)
 
     tvscl, bytscl(im)
-    xyouts, 5, 5, /device, alignment=0.0, $
+    xyouts, 15, 15, /device, alignment=0.0, $
             string(e, format='(%"ext: %d")')
-    xyouts, nx - 5, 5, /device, alignment=1.0, $
+    xyouts, nx - 15, 15, /device, alignment=1.0, $
             string(im_min, im_max, format='(%"min/max: %0.1f/%0.1f")')
 
     write_gif, string(e, format=intensity_filename_format), tvrd(), r, g, b
