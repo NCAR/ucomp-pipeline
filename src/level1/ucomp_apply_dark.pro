@@ -34,6 +34,8 @@ pro ucomp_apply_dark, file, primary_header, data, headers, run=run
 
   ; for each extension in file
   for e = 0L, n_exts - 1L do begin
+    numsum = ucomp_getpar(headers[e], 'NUMSUM')
+
     science_dark = cal->get_dark(obsday_hours, exptime, gain_mode, found=dark_found, $
                                  extensions=dark_extensions, coefficients=dark_coefficients)
     if (~dark_found) then begin
@@ -45,7 +47,7 @@ pro ucomp_apply_dark, file, primary_header, data, headers, run=run
 
     im = data[*, *, *, *, e]
     for p = 0L, n_pol_states - 1L do begin
-      im[*, *, p, *] -= science_dark
+      im[*, *, p, *] -= numsum * science_dark
     endfor
 
     data[*, *, *, *, e] = im
