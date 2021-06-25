@@ -104,9 +104,11 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
     cam1_dark_stddev = stddev(dark_images[*, *, *, 1])
   endelse
 
-  max_dark_stddev = max(abs([cam0_dark_stddev, cam0_dark_stddev]))
-  dark_min    = min(dark_images, max=dark_max)
-  dark_range  = [dark_min - max_dark_stddev, dark_max + max_dark_stddev]
+  ; max_dark_stddev = max(abs([cam0_dark_stddev, cam0_dark_stddev]))
+  ; dark_min    = min(dark_images, max=dark_max)
+  ; dark_range  = [dark_min - max_dark_stddev, dark_max + max_dark_stddev]
+
+  dark_range  = [0.0, 1000.0]
 
   !p.multi = [4, 2, 4]
 
@@ -116,7 +118,7 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
         color=color, background=background_color, $
         xtitle='Sensor array temperature [C]', $
         xstyle=1, xrange=[tarr_min, tarr_max], $
-        ytitle='Counts [DN]', $
+        ytitle='Counts [DN]/NUMSUM', $
         ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
   oplot, [dark_info.t_c0arr], [cam0_dark_means], $
          psym=6, symsize=symsize, $
@@ -131,7 +133,7 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
         color=color, background=background_color, $
         xtitle='PCB temperature [C]', $
         xstyle=1, xrange=[tpcb_min, tpcb_max], $
-        ytitle='Counts [DN]', $
+        ytitle='Counts [DN]/NUMSUM', $
         ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
   oplot, [dark_info.t_c0pcb], [cam0_dark_means], $
          psym=6, symsize=symsize, $
@@ -149,7 +151,7 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
         color=color, background=background_color, $
         xtitle='Time [HST]', $
         xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
-        ytitle='Counts [DN]', $
+        ytitle='Counts [DN]/NUMSUM', $
         ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
 
   oplot, [dark_info.times], [cam0_dark_means], $
