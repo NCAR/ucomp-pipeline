@@ -11,7 +11,7 @@ if __name__ == '__main__':
    parser.add_argument('dir', type=str, default='.', help='directory to catalog')
    args = parser.parse_args()
 
-   fits_files = glob.glob(os.path.join(args.dir, '*.FTS*'))
+   fits_files = glob.glob(os.path.join(args.dir, '*.fts*'))
    for f in fits_files:
       size = os.stat(f).st_size
       print('%s   %d' % (os.path.basename(f), size))
