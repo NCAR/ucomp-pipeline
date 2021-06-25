@@ -41,7 +41,7 @@ pro ucomp_average_darkfile, primary_header, ext_data, ext_headers, $
   type = size(ext_data, /type)
   averaged_dims = dims
   if (n_elements(dims) ge 5) then averaged_dims[-1] = n_groups
-  averaged_ext_data = make_array(dimension=averaged_dims, type=type)
+  averaged_ext_data = make_array(dimension=averaged_dims, type=4)
 
   ext_headers_array = ext_headers->toArray(/transpose)
   ext_headers->remove, /all
@@ -62,6 +62,9 @@ pro ucomp_average_darkfile, primary_header, ext_data, ext_headers, $
     averaged_gain_mode[g]  = gain_mode[gi[0]]
 
     extensions[g] = strjoin(strtrim(gi + 1L, 2), ',')
+
+    numsum = ucomp_getpar(ext_headers_array[*, gi[0]], 'NUMSUM')
+    averaged_ext_data /= numsum
 
     ; grab first header of a group to use as header for the entire group
     averaged_header = ext_headers_array[*, gi[0]]

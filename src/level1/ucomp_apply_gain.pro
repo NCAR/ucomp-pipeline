@@ -35,6 +35,8 @@ pro ucomp_apply_gain, file, primary_header, data, headers, run=run
   ; for each extension in file
   for e = 0L, n_exts - 1L do begin
     onband = ucomp_getpar(headers[e], 'ONBAND')
+    numsum = ucomp_getpar(headers[e], 'NUMSUM')
+
     flat = cal->get_flat(obsday_hours, exptime, gain_mode, onband, wavelengths[e], $
                          found=flat_found, time_found=flat_time, $
                          extension=flat_extension, raw_file=flat_raw_file)
@@ -57,9 +59,7 @@ pro ucomp_apply_gain, file, primary_header, data, headers, run=run
 
     im = data[*, *, *, *, e]
     for p = 0L, n_pol_states - 1L do begin
-      ; TODO: flat[*, *, p, *] - flat_dark needs to have camera non-linearity
-      ; correction?
-      im[*, *, p, *] /= reform(flat[*, *, p, *]) - flat_dark
+      im[*, *, p, *] /= numsum * (reform(flat[*, *, p, *]) - flat_dark)
     endfor
 
     opal_radiance = ucomp_opal_radiance(file.wave_region, run=run)
