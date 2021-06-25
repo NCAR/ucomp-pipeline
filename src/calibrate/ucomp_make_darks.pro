@@ -75,6 +75,8 @@ pro ucomp_make_darks, run=run
                          n_extensions=n_extensions, $
                          repair_routine=run->epoch('raw_data_repair_routine', datetime=datetime)
 
+    ext_data = float(ext_data)
+
     ; use the primary header of the first dark file as the template for the
     ; primary header of the master dark file
     if (d eq 0L) then first_primary_header = primary_header
