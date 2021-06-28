@@ -91,6 +91,8 @@ pro ucomp_make_flats, wave_region, run=run
                             gain_mode=averaged_gain_mode, $
                             onband=averaged_onband, $
                             wavelength=averaged_wavelength
+    mg_log, 'averaging %d to %d flat exts', n_extensions, n_averaged_extensions, $
+            name=run.logger_name, /debug
 
     ; move demoted_keywords from primary header to extension headers
     for k = 0L, n_elements(demoted_keywords) - 1L do begin
