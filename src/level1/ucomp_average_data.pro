@@ -82,5 +82,7 @@ pro ucomp_average_data, file, primary_header, ext_data, ext_headers, run=run
   endif
 
   n_extensions = n_groups
+  file.n_extensions = n_extensions
+
   ext_data = reform(averaged_ext_data, averaged_dims)
 end

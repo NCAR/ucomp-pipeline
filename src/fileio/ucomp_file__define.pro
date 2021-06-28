@@ -77,7 +77,8 @@ pro ucomp_file::setProperty, ixcnter1=ixcnter1, $
                              post_angle=post_angle, $
                              background=background, $
                              quality_bitmask=quality_bitmask, $
-                             gbu=gbu
+                             gbu=gbu, $
+                             n_extensions=n_extensions
   compile_opt strictarr
 
   if (n_elements(ixcnter1)) then self.ixcnter1 = ixcnter1
@@ -95,9 +96,8 @@ pro ucomp_file::setProperty, ixcnter1=ixcnter1, $
     self.quality_bitmask or= quality_bitmask
   endif
 
-  if (n_elements(gbu) gt 0L) then begin
-    self.gbu or= gbu
-  endif
+  if (n_elements(gbu) gt 0L) then self.gbu or= gbu
+  if (n_elements(n_extensions) gt 0L) then self.n_extensions = n_extensions
 end
 
 
