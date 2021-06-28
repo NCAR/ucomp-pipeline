@@ -124,17 +124,14 @@ function ucomp_calibration::get_dark, obsday_hours, exptime, gain_mode, $
 
   ; find closest two darks (or closest dark if before first dark or after last
   ; dark)
-  ;OLD: valid_darks = (*self.darks)[valid_indices]
   valid_darks = (*self.darks)[*, *, *, *, valid_indices]
   valid_times = (*self.dark_times)[valid_indices]
   if (obsday_hours lt valid_times[0]) then begin               ; before first dark
-    ;OLD: interpolated_dark = valid_darks[0]
     interpolated_dark = float(valid_darks[*, *, *, *, 0])
 
     extensions = valid_indices[0] + 1L
     coefficients = 1.0
   endif else if (obsday_hours gt valid_times[n_valid_darks - 1]) then begin   ; after last dark
-    ;OLD: interpolated_dark = valid_darks[-1]
     interpolated_dark = float(valid_darks[*, *, *, *, n_valid_darks - 1])
 
     extensions = valid_indices[n_valid_darks - 1] + 1L
@@ -143,8 +140,6 @@ function ucomp_calibration::get_dark, obsday_hours, exptime, gain_mode, $
     index1 = value_locate(valid_times, obsday_hours)
     index2 = index1 + 1L
 
-    ;OLD: dark1 = valid_darks[index1]
-    ;OLD: dark2 = valid_darks[index2]
     dark1 = valid_darks[*, *, *, *, index1]
     dark2 = valid_darks[*, *, *, *, index2]
 
@@ -267,6 +262,8 @@ pro ucomp_calibration::cache_flats, filenames, $
     n_appending_flats = n_elements(times)
 
     new_dims = [dims[0:3], n_existing_flats + n_appending_flats]
+    mg_log, 'caching flats dimensions [%s]', strjoin(strtrim(new_dims, 2), ', '), $
+            name=logger_name, /debug
     new_flats = make_array(new_dims, type=size(flats, /type))
     new_flats[0, 0, 0, 0, 0] = *self.flats
     new_flats[0, 0, 0, 0, n_existing_flats] = flats
