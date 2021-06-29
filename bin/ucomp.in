@@ -287,11 +287,44 @@ def ls(args):
             items = [f for f in glob.glob(os.path.join(dirs[0], "*"))]
             files = [f for f in items if os.path.isfile(f)]
             dirs = [d for d in items if os.path.isdir(d)]
-    
+
+        if args.keywords is None:
+            columns = None
+        else:
+            columns = args.keywords.split(",")
+
         list_files(sorted(dirs))
-        list_files(sorted(files), columns=args.columns)
+        list_files(sorted(files), columns=columns)
     except KeyboardInterrupt:
         pass
+
+
+# ls sub-command
+
+def cat(args):
+    if not ls_requirements:
+        args.parser.error("missing Python packages required for listing contents of FITS files")
+
+    default_keywords = {"sci": ["DATATYPE", "DATE-BEG", "WAVELNG", "ONBAND"],
+                        "cal": ["DATATYPE", "DATE-BEG", "WAVELNG", "ONBAND", "POLANGLE", "RETANGLE"],
+                        "dark": ["DATATYPE", "DATE-BEG"],
+                        "flat": ["DATATYPE", "DATE-BEG", "WAVELNG", "ONBAND"]}
+    with fits.open(args.file) as fits_file:
+        for e, hdu in enumerate(fits_file):
+            if e == 0:
+                continue
+
+            if args.keywords is None:
+                keywords = default_keywords[hdu.header["DATATYPE"]]
+            else:
+                keywords = args.keywords.split(",")
+
+            line = f"{e:3d}"
+            for k in keywords:
+                value = hdu.header[k]
+                line += "  " + value2str(value)
+            print(line)
+
 
 # log sub-command
 
@@ -803,7 +836,7 @@ if __name__ == "__main__":
 
     # TODO: it would be nice to grouop sub-commands into groups, but that is not
     # possible with argparse right now
-    # helpers: list, ls, log, versions
+    # helpers: list, ls, cat, log, versions
     # processing: rt, eod, cal, reprocess
     # clearday, archive
     # testing: regress, simulate, validate
@@ -829,10 +862,21 @@ if __name__ == "__main__":
                            default=".",
                            help="UCoMP files(s)",
                            metavar="file(s)")
-    ls_parser.add_argument("--columns", type=str, nargs="*",
+    ls_parser.add_argument("--keywords", type=str,
                            help="FITS keyword names to display",
                            default=None)
     ls_parser.set_defaults(func=ls, parser=ls_parser)
+
+    # cat sub-command
+    cat_parser = subparsers.add_parser("cat",
+        help="list the contents of the extensions of a single UCoMP file")
+    cat_parser.add_argument("file",
+       help="UCoMP files",
+       metavar="file")
+    cat_parser.add_argument("--keywords", type=str,
+       help="FITS keyword names to display",
+       default=None)
+    cat_parser.set_defaults(func=cat, parser=cat_parser)
 
     # log sub-command
     log_parser = subparsers.add_parser("log",
