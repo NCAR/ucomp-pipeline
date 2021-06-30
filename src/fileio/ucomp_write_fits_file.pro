@@ -31,9 +31,13 @@ pro ucomp_write_fits_file, filename, primary_header, ext_data, ext_headers
     extname = string(datatype, wavelength, format='(%"%s [%0.2f nm]")')
 
     case n_dims of
+      3: data = ext_data
       4: data = ext_data[*, *, *, e - 1]
       5: data = ext_data[*, *, *, *, e - 1]
-      else: message, 'invalid number of dimensions to write'
+      else: begin
+         dims = strjoin(strtrim(size(ext_data, /dimensions), 2), ', ')
+         message, string(dims, format='(%"invalid number of dimensions to write: [%s]")')
+       endelse
     endcase
     fits_write, fcb, $
                 data, $
