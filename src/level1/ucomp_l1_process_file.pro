@@ -14,6 +14,13 @@
 pro ucomp_l1_process_file, file, run=run
   compile_opt strictarr
 
+  catch, error
+  if (error ne 0L) then begin
+    mg_log, !error_state.msg, name=run.logger_name, /warn
+    mg_log, 'skipping rest of level 1 processing for file', name=run.logger_name, /warn
+    goto, done
+  endif
+
   run.datetime = string(file.hst_date, file.hst_time, format='(%"%s.%s")')
   clock_id = run->start('ucomp_read_raw_data')
   ucomp_read_raw_data, file.raw_filename, $
@@ -69,5 +76,6 @@ pro ucomp_l1_process_file, file, run=run
 
   ucomp_create_intensity, file, data, run=run
 
-  obj_destroy, headers
+  done:
+  if (obj_valid(headers)) then obj_destroy, headers
 end
