@@ -12,7 +12,7 @@
 ;     primary header
 ;   data : in, required, type="fltarr(nx, nx, nexts)"
 ;     extension data
-;   headers : in, requiredd, type=list
+;   headers : in, required, type=list
 ;     extension headers as list of `strarr`
 ;
 ; :Keywords:
@@ -21,7 +21,7 @@
 ;   run : in, required, type=object
 ;     UCoMP run object
 ;   _extra : in, optional, type=keywords
-;     keywords to pass along to `ROUTINE`
+;     keywords to pass along to `ROUTINE_NAME`
 ;-
 pro ucomp_l1_step, routine_name, file, primary_header, data, headers, $
                    skip=skip, run=run, _extra=e
