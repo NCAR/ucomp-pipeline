@@ -89,7 +89,7 @@ pro ucomp_average_flatfile, primary_header, ext_data, ext_headers, $
     extensions[g] = strjoin(strtrim(gi + 1L, 2), ',')
 
     numsum = ucomp_getpar(ext_headers_array[*, gi[0]], 'NUMSUM')
-    averaged_ext_data /= numsum
+    averaged_ext_data[*, *, *, *, g] /= numsum
 
     ; grab first header of a group to use as header for the entire group
     averaged_header = ext_headers_array[*, gi[0]]
