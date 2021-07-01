@@ -48,7 +48,7 @@ pro ucomp_combine_beams, file, primary_header, ext_data, ext_headers, run=run
 
   n_matches = mg_match(ext_ids, match_ids, b_matches=match_indices)
   if (n_matches ne n_extensions) then begin
-    mg_log, 'matches not found for all extensions', name=run.logger_name, /warning
+    message, 'matches not found for all extensions'
     goto, done
   endif
 
@@ -68,11 +68,11 @@ pro ucomp_combine_beams, file, primary_header, ext_data, ext_headers, run=run
 
     ; combine index m and index match_indices[m]
     if (onband[m]) then begin
-      c0 = [1.0, -1.0]
-      c1 = [-1.0, 1.0]
-    endif else begin
       c0 = [-1.0, 1.0]
       c1 = [1.0, -1.0]
+    endif else begin
+      c0 = [1.0, -1.0]
+      c1 = [-1.0, 1.0]
     endelse
 
     mg_log, 'ext %d cam 0: %d ext %d + %d ext %d', $
