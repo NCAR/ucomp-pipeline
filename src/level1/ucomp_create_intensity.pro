@@ -45,8 +45,12 @@ pro ucomp_create_intensity, file, data, run=run
   tvlct, r, g, b, /get
 
   for e = 1L, file.n_extensions do begin
-    im = total(reform(data[*, *, *, e - 1]), 3, /preserve_type)
-    im /= (size(im, /dimensions))[-1]
+    if (file.n_extensions eq 1L) then begin
+      im = total(reform(data), 3, /preserve_type)
+    endif else begin
+      im = total(reform(data[*, *, *, e - 1]), 3, /preserve_type)
+      im /= (size(im, /dimensions))[-1]
+    endelse
 
     tvscl, bytscl(im, min=display_min, max=display_max)
     xyouts, 15, 15, /device, alignment=0.0, $
