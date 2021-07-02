@@ -17,7 +17,7 @@
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-pro ucomp_alignment, file, primary_header, data, headers, run=run
+pro ucomp_l1_alignment, file, primary_header, data, headers, run=run
   compile_opt strictarr
 
   ; restore distortion coefficients

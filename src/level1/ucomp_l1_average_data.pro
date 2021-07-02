@@ -18,7 +18,7 @@
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-pro ucomp_average_data, file, primary_header, ext_data, ext_headers, run=run
+pro ucomp_l1_average_data, file, primary_header, ext_data, ext_headers, run=run
   compile_opt strictarr
 
   n_extensions = n_elements(ext_headers)
