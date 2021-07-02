@@ -33,6 +33,6 @@ fi
 
 ${IDL} -quiet -IDL_QUIET 1 -IDL_STARTUP "" \
   -IDL_PATH ${UCOMP_PATH} -IDL_DLM_PATH ${UCOMP_DLM_PATH} \
-  -e "ucomp_validate_dates, '${DATE}', '${CONFIG}'"
+  -e "ucomp_verify_dates, '${DATE}', '${CONFIG}'"
 
 exit $?

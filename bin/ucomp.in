@@ -146,19 +146,19 @@ def list_processes(args):
                                             format_timedelta(time_running), p["cmdline"]))
 
 
-# validate sub-command
+# verify sub-command
 
-def validate(args):
+def verify(args):
     if len(args.dates) == 0:
         args.parser.error("too few arguments")
 
     if args.file is not None:
-        validate_file(args)
+        verify_file(args)
         return
 
     cmd = [os.path.join(PIPELINE_DIR,
                         "bin",
-                        "ucomp_validate_dates.sh"),
+                        "ucomp_verify_dates.sh"),
            args.flags,
            ",".join(args.dates)]
 
@@ -168,13 +168,13 @@ def validate(args):
         terminated = wait_for(process)
 
 
-def validate_file(args):
+def verify_file(args):
     if len(args.dates) > 1:
         args.parser.error("too many date arguments")
 
     cmd = [os.path.join(PIPELINE_DIR,
                         "bin",
-                        "ucomp_validate_file.sh"),
+                        "ucomp_verify_file.sh"),
            args.flags,
            args.dates[0],
            args.file,
@@ -845,7 +845,7 @@ if __name__ == "__main__":
     # helpers: list, ls, cat, log, versions
     # processing: rt, eod, cal, reprocess
     # clearday, archive
-    # testing: regress, simulate, validate
+    # testing: regress, simulate, verify
     # etc: script
     subparsers = parser.add_subparsers(help="sub-command help")
 
@@ -1010,19 +1010,19 @@ if __name__ == "__main__":
     regression_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
     regression_parser.set_defaults(func=regression, parser=regression_parser)
 
-    # validate sub-command
-    validate_parser = subparsers.add_parser("validate",
-                                            help="validate previously processed date(s)")
-    validate_parser.add_argument("dates", type=str, nargs="*", help=date_help,
-                                 metavar="date-expr")
+    # verify sub-command
+    verify_parser = subparsers.add_parser("verify",
+                                          help="verify previously processed date(s)")
+    verify_parser.add_argument("dates", type=str, nargs="*", help=date_help,
+                               metavar="date-expr")
 
-    validate_parser.add_argument("-f", "--flags", type=str, help=flags_help,
-                                 default="latest")
-    validate_parser.add_argument("--file", type=str, help="validate file, instead of data")
-    validate_parser.add_argument("--level", type=str,
-                                 help="level of file to validate, 0 or 1, default=0",
-                                 default="0")
-    validate_parser.set_defaults(func=validate, parser=validate_parser)
+    verify_parser.add_argument("-f", "--flags", type=str, help=flags_help,
+                               default="latest")
+    verify_parser.add_argument("--file", type=str, help="verify file, instead of data")
+    verify_parser.add_argument("--level", type=str,
+                               help="level of file to verify, 0 or 1, default=0",
+                               default="0")
+    verify_parser.set_defaults(func=verify, parser=verify_parser)
 
     # simulate sub-command
     simulate_parser = subparsers.add_parser("simulate",

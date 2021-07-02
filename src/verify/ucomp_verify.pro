@@ -16,8 +16,8 @@
 ;   run : in, required, type=object
 ;     UCoMP run object
 ;-
-pro ucomp_validate_hpss, date, filename, filesize, $
-                         logger_name=logger_name, run=run
+pro ucomp_verify_hpss, date, filename, filesize, $
+                       logger_name=logger_name, run=run
   compile_opt strictarr
 
   hsi_cmd = string(run.hsi, filename, format='(%"%s ls -l %s")')
@@ -79,7 +79,7 @@ end
 
 
 ;+
-; Validate the integrity of the data for a given date.
+; Verify the integrity of the data for a given date.
 ;
 ; :Params:
 ;   date : in, required, type=string
@@ -92,11 +92,11 @@ end
 ;     set to a named variable to retrieve the status of the date: 0 for success,
 ;     anything else indicates a problem
 ;-
-pro ucomp_validate, date, config_filename, status=status
+pro ucomp_verify, date, config_filename, status=status
   compile_opt strictarr
 
   status = 0L
-  logger_name = 'ucomp/validate'
+  logger_name = 'ucomp/verify'
 
   if (n_elements(config_filename) eq 0L) then begin
     mg_log, 'date argument is missing', name=logger_name, /error
@@ -118,7 +118,7 @@ pro ucomp_validate, date, config_filename, status=status
     goto, done
   endif
 
-  run = ucomp_run(date, 'validate', config_fullpath)
+  run = ucomp_run(date, 'verify', config_fullpath)
   if (not obj_valid(run)) then goto, done
 
   mg_log, name=logger_name, logger=logger
@@ -140,13 +140,13 @@ end
 
 ; main-level example program
 
-logger_name = 'ucomp/validate'
-cfile = 'ucomp.mgalloy.mlsodata.production.cfg'
+logger_name = 'ucomp/verify'
+cfile = 'ucomp.production.cfg'
 config_filename = filepath(cfile, subdir=['..', 'config'], root=mg_src_root())
 
 dates = ['20180708']
 for d = 0L, n_elements(dates) - 1L do begin
-  ucomp_validate, dates[d], config_filename=config_filename
+  ucomp_verify, dates[d], config_filename=config_filename
 
   if (d lt n_elements(dates) - 1L) then begin
     mg_log, name=logger_name, logger=logger
