@@ -1,7 +1,7 @@
 ; docformat = 'rst'
 
 ;+
-; Perform continuum correction.
+; Perform demodulation.
 ;
 ; :Params:
 ;   file : in, required, type=object
@@ -17,7 +17,7 @@
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-pro ucomp_continuum_correction, file, primary_header, data, headers, run=run
+pro ucomp_l1_demodulation, file, primary_header, data, headers, run=run
   compile_opt strictarr
 
   ; TODO: implement

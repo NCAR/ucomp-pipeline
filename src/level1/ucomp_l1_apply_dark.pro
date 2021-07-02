@@ -17,7 +17,7 @@
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-pro ucomp_apply_dark, file, primary_header, data, headers, run=run
+pro ucomp_l1_apply_dark, file, primary_header, data, headers, run=run
   compile_opt strictarr
 
   n_exts = n_elements(headers)

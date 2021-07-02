@@ -39,7 +39,7 @@ pro ucomp_l1_step, routine_name, file, primary_header, data, headers, $
 
     mg_log, /check_math, name=run.logger_name, /warn
 
-    ucomp_write_intermediate_file, strmid(routine_name, 6), $
+    ucomp_write_intermediate_file, strmid(routine_name, 9), $
                                    file, primary_header, data, headers, $
                                    run=run
 
