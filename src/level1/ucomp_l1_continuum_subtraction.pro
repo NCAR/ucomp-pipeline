@@ -1,9 +1,10 @@
 ; docformat = 'rst'
 
 ;+
-; Off-band (continuum) subtraction and combine beams.
+; Off-band (continuum) subtraction.
 ;
-; After UCOMP_AVERAGE, there should be only a single match for each extension.
+; After `UCOMP_L1_AVERAGE_DATA`, there should be only a single match for each
+; extension.
 ;
 ; :Params:
 ;   file : in, required, type=object
@@ -19,7 +20,7 @@
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-pro ucomp_combine_beams, file, primary_header, ext_data, ext_headers, run=run
+pro ucomp_l1_continuum_subtraction, file, primary_header, ext_data, ext_headers, run=run
   compile_opt strictarr
 
   ; find extensions with matching wavelengths and opposite ONBAND
@@ -98,9 +99,6 @@ pro ucomp_combine_beams, file, primary_header, ext_data, ext_headers, run=run
 
   ext_data = combined_ext_data
   file.n_extensions = n_elements(ext_headers)
-
-  ; TODO: average combined "cameras", now we are just taking "camera 0"
-  ext_data = reform(ext_data[*, *, *, 0, *])
 
   done:
 end

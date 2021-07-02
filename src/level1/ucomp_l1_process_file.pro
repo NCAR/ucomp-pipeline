@@ -38,34 +38,36 @@ pro ucomp_l1_process_file, file, run=run
   ucomp_mkdir, l1_dirname, logger_name=run.logger_name
 
 
-  ucomp_l1_step, 'ucomp_average_data', $
+  ucomp_l1_step, 'ucomp_l1_average_data', $
                  file, primary_header, data, headers, run=run
-  ucomp_l1_step, 'ucomp_stray_light', $
-                 file, primary_header, data, headers, run=run
-
-  ucomp_l1_step, 'ucomp_apply_dark', $
-                 file, primary_header, data, headers, run=run
-  ucomp_l1_step, 'ucomp_camera_correction', $
-                 file, primary_header, data, headers, run=run
-  ucomp_l1_step, 'ucomp_apply_gain', $
+  ucomp_l1_step, 'ucomp_l1_stray_light', $
                  file, primary_header, data, headers, run=run
 
-  ucomp_l1_step, 'ucomp_continuum_correction', $
+  ucomp_l1_step, 'ucomp_l1_apply_dark', $
                  file, primary_header, data, headers, run=run
-  ucomp_l1_step, 'ucomp_alignment', $
+  ucomp_l1_step, 'ucomp_l1_camera_correction', $
                  file, primary_header, data, headers, run=run
-
-  ucomp_l1_step, 'ucomp_demodulation', $
-                 file, primary_header, data, headers, run=run
-
-  ucomp_l1_step, 'ucomp_combine_beams', $
-                 file, primary_header, data, headers, run=run
-  ucomp_l1_step, 'ucomp_rotate_north_up', $
-                 file, primary_header, data, headers, run=run
-  ucomp_l1_step, 'ucomp_masking', $
+  ucomp_l1_step, 'ucomp_l1_apply_gain', $
                  file, primary_header, data, headers, run=run
 
-  ucomp_l1_step, 'ucomp_polarimetric_correction', $
+  ucomp_l1_step, 'ucomp_l1_continuum_correction', $
+                 file, primary_header, data, headers, run=run
+  ucomp_l1_step, 'ucomp_l1_alignment', $
+                 file, primary_header, data, headers, run=run
+
+  ucomp_l1_step, 'ucomp_l1_demodulation', $
+                 file, primary_header, data, headers, run=run
+
+  ucomp_l1_step, 'ucomp_l1_continuum_subtraction', $
+                 file, primary_header, data, headers, run=run
+  ucomp_l1_step, 'ucomp_l1_combine_cameras', $
+                 file, primary_header, data, headers, run=run
+  ucomp_l1_step, 'ucomp_l1_rotate_north_up', $
+                 file, primary_header, data, headers, run=run
+  ucomp_l1_step, 'ucomp_l1_masking', $
+                 file, primary_header, data, headers, run=run
+
+  ucomp_l1_step, 'ucomp_l1_polarimetric_correction', $
                  file, primary_header, data, headers, run=run
 
   l1_filename = filepath(file.l1_basename, root=l1_dirname)
