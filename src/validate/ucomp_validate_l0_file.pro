@@ -67,7 +67,7 @@ function ucomp_validate_l0_file_checkspec, keyword_name, specline, $
   endif
 
   if (n_elements(values) gt 0L) then begin
-    if (n_found eq 0L) then begin
+    if (~found) then begin
       error_msg = string(keyword_name, format='(%"%s: no value")')
       return, 0B
     endif else begin
@@ -190,9 +190,9 @@ end
 ;     filename of the specification of L0 keyword format
 ;
 ; :Keywords:
-;   error_msg : out, optional, type=string
-;     set to a named variable to retrieve the problem with the file (at least
-;     the first problem encountered), empty string if no problem
+;   error_msg : out, optional, type=strarr
+;     set to a named variable to retrieve the problem(s) with the file, empty
+;     string if no problem
 ;-
 function ucomp_validate_l0_file, filename, validation_spec, $
                                  error_msg=error_msg
@@ -275,6 +275,7 @@ filename = filepath(basename, $
 
 ; read spec
 l0_header_spec_filename = filepath('ucomp.l0.validation.cfg', $
+                                   subdir=['..', '..', 'resource', 'validation']
                                    root=mg_src_root())
 
 is_valid = ucomp_validate_l0_file(filename, l0_header_spec_filename, error_msg=error_msg)

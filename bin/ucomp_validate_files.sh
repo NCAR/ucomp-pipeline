@@ -23,28 +23,15 @@ PIPE_DIR=$(dirname ${BIN_DIR})
 source ${BIN_DIR}/ucomp_parse_args.sh
 source ${BIN_DIR}/ucomp_include.sh
 
-# reset DATE because it's different in ucomp_include.sh
-if [[ $# -lt 2 ]]; then
-  DATE=$(date +"%Y%m%d" -d "-1 day")
-else
-  DATE=$2
-fi
-
-if [[ $# -lt 3 ]]; then
-  # TODO: error, filename must be specified
-  FILENAME=
-else
-  FILENAME=$3
-fi
 
 if [[ $# -lt 4 ]]; then
-  LEVEL=0
-else
-  LEVEL=$4
+  echo "syntax: $0 flags date level filenames"
+  exit 1
 fi
+
+LEVEL=$3
+FILENAMES=$4
 
 ${IDL} -quiet -IDL_QUIET 1 -IDL_STARTUP "" \
   -IDL_PATH ${UCOMP_PATH} -IDL_DLM_PATH ${UCOMP_DLM_PATH} \
-  -e "ucomp_validate_file, '${DATE}', '${CONFIG}', '${FILENAME}', ${LEVEL}"
-
-exit $?
+  -e "ucomp_validate_file_wrapper, '${DATE}', '${CONFIG}', ${LEVEL}, '${FILENAMES}'"
