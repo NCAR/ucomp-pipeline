@@ -21,8 +21,8 @@ install(PROGRAMS ucomp_create_tables.sh
                  ucomp_parse_args.sh
                  ucomp_regression.sh
                  ucomp_script.sh
-                 ucomp_validate.sh
-                 ucomp_validate_dates.sh
-                 ucomp_validate_file.sh
+                 ucomp_verify.sh
+                 ucomp_verify_dates.sh
+                 ucomp_validate_files.sh
                  ucomp_make_t1log
         DESTINATION bin)
