@@ -11,7 +11,7 @@ pro ucomp_validate_l0, run=run
   endif
 
   ; get list of level 0 files
-  raw_dir = filepath(run.date, root=self->config('raw/basedir'))
+  raw_dir = filepath(run.date, root=run->config('raw/basedir'))
   raw_files = file_search(filepath('*.fts*', root=raw_dir), count=n_raw_files)
 
 
