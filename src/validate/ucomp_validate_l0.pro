@@ -14,7 +14,6 @@ pro ucomp_validate_l0, run=run
   raw_dir = filepath(run.date, root=run->config('raw/basedir'))
   raw_files = file_search(filepath('*.fts*', root=raw_dir), count=n_raw_files)
 
-
   n_invalid = 0L
   for f = 0L, n_raw_files - 1L do begin
     is_valid = ucomp_validate_l0_file(raw_files[f], l0_spec_filename, $
