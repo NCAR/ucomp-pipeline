@@ -82,7 +82,7 @@ make install >> ${LOG_FILENAME} 2>&1
 echo "pwd=$(pwd)" >> ${LOG_FILENAME} 2>&1
 make htmlunit >> ${LOG_FILENAME} 2>&1
 
-UNITTESTS_SUMMARY_LINE=$(tail -5 ${LOG_FILENAME} | head -1)
+UNITTESTS_SUMMARY_LINE="5 $(tail -5 ${LOG_FILENAME} | head -1)"
 echo "Unit tests: ${UNITTESTS_SUMMARY_LINE}" >> ${MESSAGE_FILENAME}
 HTTP_LOCATION=https://download.hao.ucar.edu/in/${MACHINE}/Data/UCoMP/ucomp-pipeline.nightly-source/build/unittests.html
 echo -e "\n  ${HTTP_LOCATION}\n" >> ${MESSAGE_FILENAME}
