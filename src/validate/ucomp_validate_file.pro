@@ -1,8 +1,8 @@
 ; docformat = 'rst'
 
-function ucomp_validate_l0_file_checkspec, keyword_name, specline, $
-                                           keyword_value, found, $
-                                           error_msg=error_msg
+function ucomp_validate_file_checkspec, keyword_name, specline, $
+                                        keyword_value, found, $
+                                        error_msg=error_msg
   compile_opt strictarr
 
   required = 0B
@@ -83,9 +83,9 @@ function ucomp_validate_l0_file_checkspec, keyword_name, specline, $
 end
 
 
-function ucomp_validate_l0_file_checkheader, header, spec, $
-                                             extension=extension, $
-                                             error_list=error_list
+function ucomp_validate_file_checkheader, header, spec, $
+                                          extension=extension, $
+                                          error_list=error_list
   compile_opt strictarr
 
   type = n_elements(extension) eq 0L ? 'primary' : 'extension'
@@ -109,9 +109,9 @@ function ucomp_validate_l0_file_checkheader, header, spec, $
   for k = 0L, n_spec_keywords - 1L do begin
     specline = spec->get(spec_keywords[k], section=type)
     value = ucomp_getpar(header, spec_keywords[k], found=found)
-    is_valid = ucomp_validate_l0_file_checkspec(spec_keywords[k], $
-                                                specline, value, found, $
-                                                error_msg=error_msg)
+    is_valid = ucomp_validate_file_checkspec(spec_keywords[k], $
+                                             specline, value, found, $
+                                             error_msg=error_msg)
     if (~is_valid) then begin
       error_list->add, string(location, spec_keywords[k], error_msg, $
                               format='(%"%s: %s: %s")')
@@ -132,9 +132,9 @@ function ucomp_validate_l0_file_checkheader, header, spec, $
 end
 
 
-function ucomp_validate_l0_file_checkdata, data, spec, $
-                                           n_extensions=n_extensions, $
-                                           error_list=error_list
+function ucomp_validate_file_checkdata, data, spec, $
+                                        n_extensions=n_extensions, $
+                                        error_list=error_list
   compile_opt strictarr
 
   is_valid = 1B
@@ -178,24 +178,24 @@ end
 
 
 ;+
-; Validate an L0 file against the specification.
+; Validate a FITS file against the specification.
 ;
 ; :Returns:
 ;   1 if valid, 0 if not
 ;
 ; :Params:
 ;   filename : in, required, type=string
-;     L0 file to validate
+;     FITS file to validate
 ;   validation_spec : in, required, type=string
-;     filename of the specification of L0 keyword format
+;     filename of the specification of FITS keyword format
 ;
 ; :Keywords:
 ;   error_msg : out, optional, type=strarr
 ;     set to a named variable to retrieve the problem(s) with the file, empty
 ;     string if no problem
 ;-
-function ucomp_validate_l0_file, filename, validation_spec, $
-                                 error_msg=error_msg
+function ucomp_validate_file, filename, validation_spec, $
+                              error_msg=error_msg
   compile_opt strictarr
 
   error_list = list()
@@ -223,29 +223,27 @@ function ucomp_validate_l0_file, filename, validation_spec, $
                        ext_headers=ext_headers, $
                        n_extensions=n_extensions
 
-  l0_spec = mg_read_config(validation_spec)
+  spec = mg_read_config(validation_spec)
 
   ; check primary data
-  is_valid = ucomp_validate_l0_file_checkdata(primary_data, l0_spec, $
-                                              error_list=error_list)
+  is_valid = ucomp_validate_file_checkdata(primary_data, spec, $
+                                           error_list=error_list)
 
   ; check primary header against header spec
-  is_valid = ucomp_validate_l0_file_checkheader(primary_header, $
-                                                l0_spec, $
-                                                error_list=error_list)
+  is_valid = ucomp_validate_file_checkheader(primary_header, spec, $
+                                             error_list=error_list)
 
   ; check extension data
-  is_valid = ucomp_validate_l0_file_checkdata(ext_data, l0_spec, $
-                                              n_extensions=n_extensions, $
-                                              error_list=error_list)
+  is_valid = ucomp_validate_file_checkdata(ext_data, spec, $
+                                           n_extensions=n_extensions, $
+                                           error_list=error_list)
 
   ; check extensions
   for e = 1, n_extensions do begin
     ; check ext header against spec
-    is_valid = ucomp_validate_l0_file_checkheader(ext_headers[e - 1], $
-                                                  l0_spec, $
-                                                  extension=e, $
-                                                  error_list=error_list)
+    is_valid = ucomp_validate_file_checkheader(ext_headers[e - 1], spec, $
+                                               extension=e, $
+                                               error_list=error_list)
   endfor
 
   done:
@@ -253,7 +251,7 @@ function ucomp_validate_l0_file, filename, validation_spec, $
   error_msg = error_list->toArray()
 
   ; cleanup
-  if (obj_valid(l0_header_spec)) then obj_destroy, l0_header_spec
+  if (obj_valid(spec)) then obj_destroy, spec
   if (obj_valid(ext_headers)) then obj_destroy, ext_headers
   if (obj_valid(error_list)) then obj_destroy, error_list
 
@@ -263,22 +261,21 @@ end
 
 ; main-level example program
 
-raw_basedir = '/hao/twilight/Data/UCoMP/raw.test'
+raw_basedir = '/hao/dawn/Data/UCoMP/incoming'
 
-date='20190220'
-date='20191009'
+date = '20210704'
 
-basename = '20191009.152516.70565.ucomp.FTS'
+basename = '20210704.180012.58.ucomp.691.l0.fts'
 filename = filepath(basename, $
                     subdir=[date], $
                     root=raw_basedir)
 
 ; read spec
 l0_header_spec_filename = filepath('ucomp.l0.validation.cfg', $
-                                   subdir=['..', '..', 'resource', 'validation']
+                                   subdir=['..', '..', 'resource', 'validation'], $
                                    root=mg_src_root())
 
-is_valid = ucomp_validate_l0_file(filename, l0_header_spec_filename, error_msg=error_msg)
+is_valid = ucomp_validate_file(filename, l0_header_spec_filename, error_msg=error_msg)
 print, is_valid ? 'Valid' : 'Not valid'
 if (~is_valid) then begin
   print, transpose(error_msg)
