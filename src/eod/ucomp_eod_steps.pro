@@ -12,7 +12,7 @@ pro ucomp_eod_steps, wave_regions, run=run
 
   ;== level 0
 
-  ucomp_pipeline_step, 'ucomp_validate_l0', run=run
+  ucomp_pipeline_step, 'ucomp_validate', 'l0', run=run
 
 
   ;== level 1
@@ -28,7 +28,7 @@ pro ucomp_eod_steps, wave_regions, run=run
   endfor
 
   ucomp_pipeline_step, 'ucomp_l1_engineering_plots', run=run
-  ucomp_pipeline_step, 'ucomp_validate_l1', run=run
+  ucomp_pipeline_step, 'ucomp_validate', 'l1', run=run
 
 
   ;== level 2
