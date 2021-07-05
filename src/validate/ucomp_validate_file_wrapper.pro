@@ -19,18 +19,19 @@ pro ucomp_validate_file_wrapper, date, config_filename, level, filename_string
   run = ucomp_run(date, 'validate', config_filename, /no_log)
   if (not obj_valid(run)) then goto, done
 
-  l0_header_spec_filename = run->config("validation/l0_specification")
+  option_name = string(level, format='(%"validation/l%d_specification")')
+  header_spec_filename = run->config(option_name)
 
-  if (level ne 0L) then begin
-    print, 'only level 0 files are supported currently'
+  if (n_elements(header_spec_filename) eq 0L) then begin
+    print, 'no spec filename found for ' + option_name
     goto, done
   endif
 
   filenames = strsplit(filename_string, /extract, count=n_files)
   for f = 0L, n_files - 1L do begin
-    is_valid = ucomp_validate_l0_file(filenames[f], $
-                                      l0_header_spec_filename, $
-                                      error_msg=error_msg)
+    is_valid = ucomp_validate_file(filenames[f], $
+                                   header_spec_filename, $
+                                   error_msg=error_msg)
     print, file_basename(filenames[f]), is_valid ? 'valid' : 'not valid', $
            format='(%"%s: %s")'
     if (~is_valid) then begin
