@@ -16,8 +16,8 @@ pro ucomp_validate_l0, run=run
 
   n_invalid = 0L
   for f = 0L, n_raw_files - 1L do begin
-    is_valid = ucomp_validate_l0_file(raw_files[f], l0_spec_filename, $
-                                      error_msg=error_msg)
+    is_valid = ucomp_validate_file(raw_files[f], l0_spec_filename, $
+                                   error_msg=error_msg)
     if (~is_valid) then begin
       n_invalid += 1L
       mg_log, '%s not valid', file_basename(raw_files[f]), name=run.logger_name, /warn
