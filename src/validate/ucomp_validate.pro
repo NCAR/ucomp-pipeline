@@ -9,7 +9,7 @@ pro ucomp_validate, level_name, run=run
   compile_opt strictarr
 
   ; get validation spec
-  option_name = string(level_name, format='(%""validation/%s_specification"")')
+  option_name = string(level_name, format='(%"validation/%s_specification")')
   spec_filename = run->config(option_name)
   if (n_elements(spec_filename) eq 0L) then begin
     mg_log, 'no %s validation spec, skipping', level_name, $
