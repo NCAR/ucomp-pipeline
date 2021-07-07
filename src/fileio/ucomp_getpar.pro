@@ -1,7 +1,8 @@
 ; docformat = 'rst'
 
 ;+
-; Wrapper to retrieve UCoMP keyword values more conveniently.
+; Wrapper to retrieve UCoMP keyword values more conveniently. Removes trailing
+; spaces of string values.
 ;
 ; :Returns:
 ;   value of keyword to look up, `!null` if not found
@@ -45,6 +46,8 @@ function ucomp_getpar, header, name, float=float, found=found, comment=comment, 
       else:
     endcase
   endif
+
+  if (size(value, /type) eq 7) then value = strtrim(value)
 
   return, value
 end
