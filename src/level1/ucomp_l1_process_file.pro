@@ -60,6 +60,7 @@ pro ucomp_l1_process_file, file, run=run
 
   ucomp_l1_step, 'ucomp_l1_continuum_subtraction', $
                  file, primary_header, data, headers, run=run
+
   ucomp_l1_step, 'ucomp_l1_combine_cameras', $
                  file, primary_header, data, headers, run=run
   ucomp_l1_step, 'ucomp_l1_rotate_north_up', $
@@ -68,6 +69,9 @@ pro ucomp_l1_process_file, file, run=run
                  file, primary_header, data, headers, run=run
 
   ucomp_l1_step, 'ucomp_l1_polarimetric_correction', $
+                 file, primary_header, data, headers, run=run
+
+  ucomp_l1_step, 'ucomp_l1_promote_header', $
                  file, primary_header, data, headers, run=run
 
   l1_filename = filepath(file.l1_basename, root=l1_dirname)
