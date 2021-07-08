@@ -19,8 +19,14 @@ pro ucomp_validate, level_name, run=run
 
   ; get list of files
   case level_name of
-    'l0': option_section = 'raw'
-    'l1': option_section = 'processing'
+    'l0': begin
+            option_section = 'raw'
+            validate_datatype = 1B
+          end
+    'l1': begin
+            option_section = 'processing'
+            validate_datatype = 0B
+          end
     else: begin
         mg_log, 'validating %s not supported', level_name, $
                 name=run.logger_name, /error
@@ -34,6 +40,7 @@ pro ucomp_validate, level_name, run=run
   n_invalid = 0L
   for f = 0L, n_files - 1L do begin
     is_valid = ucomp_validate_file(files[f], spec_filename, $
+                                   validate_datatype=validate_datatype, $
                                    error_msg=error_msg)
     if (~is_valid) then begin
       n_invalid += 1L
