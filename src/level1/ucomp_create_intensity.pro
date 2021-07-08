@@ -47,9 +47,9 @@ pro ucomp_create_intensity, file, data, run=run
   for e = 1L, file.n_extensions do begin
     for c = 0L, 1L do begin
       if (file.n_extensions gt 1L) then begin
-        im = reform(data[*, *, c])
+        im = reform(data[*, *, *, c, e - 1L])
       endif else begin
-        im = reform(data[*, *, *, c, e - 1])
+        im = reform(data[*, *, *, c])
       endelse
       im = total(im, 3, /preserve_type)
 
