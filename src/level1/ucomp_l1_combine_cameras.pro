@@ -20,8 +20,10 @@
 pro ucomp_l1_combine_cameras, file, primary_header, ext_data, ext_headers, run=run
   compile_opt strictarr
 
-  ; TODO: average combined "cameras", now we are just taking "camera 0"
-  ;ext_data = reform(ext_data[*, *, *, 0, *])
-  ; TODO: implement
+  ; TODO: rotate cameras to same geometric configuration
+  ; TODO: translate images to place center of occulter on center of image
+  ; TODO: average on camera dimension
+  ; ext_data = mean(ext_data, dimension=4, /preserve_type)
+
   mg_log, 'not implemented', name=run.logger, /warn
 end
