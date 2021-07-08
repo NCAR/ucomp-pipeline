@@ -190,11 +190,14 @@ end
 ;     filename of the specification of FITS keyword format
 ;
 ; :Keywords:
+;   validate_datatype : in, optional, type=boolean
+;     set to validate the DATATYPE keyword of each extension header
 ;   error_msg : out, optional, type=strarr
 ;     set to a named variable to retrieve the problem(s) with the file, empty
 ;     string if no problem
 ;-
 function ucomp_validate_file, filename, validation_spec, $
+                              validate_datatype=validate_datatype, $
                               error_msg=error_msg
   compile_opt strictarr
 
@@ -226,24 +229,25 @@ function ucomp_validate_file, filename, validation_spec, $
   spec = mg_read_config(validation_spec)
 
   ; check primary data
-  is_valid = ucomp_validate_file_checkdata(primary_data, spec, $
-                                           error_list=error_list)
+  is_valid and= ucomp_validate_file_checkdata(primary_data, spec, $
+                                              error_list=error_list)
 
   ; check primary header against header spec
-  is_valid = ucomp_validate_file_checkheader(primary_header, spec, $
-                                             error_list=error_list)
+  is_valid and= ucomp_validate_file_checkheader(primary_header, spec, $
+                                                error_list=error_list)
 
   ; check extension data
-  is_valid = ucomp_validate_file_checkdata(ext_data, spec, $
-                                           n_extensions=n_extensions, $
-                                           error_list=error_list)
+  is_valid and= ucomp_validate_file_checkdata(ext_data, spec, $
+                                              n_extensions=n_extensions, $
+                                              error_list=error_list)
 
   ; check extensions
   for e = 1, n_extensions do begin
     ; check ext header against spec
-    is_valid = ucomp_validate_file_checkheader(ext_headers[e - 1], spec, $
-                                               extension=e, $
-                                               error_list=error_list)
+    is_valid and= ucomp_validate_file_checkheader(ext_headers[e - 1], spec, $
+                                                  extension=e, $
+                                                  error_list=error_list)
+    is_valid and= ucomp_validate_datatype(ext_headers[e - 1])
   endfor
 
   done:
