@@ -13,16 +13,25 @@ pro ucomp_l0_archive, run=run
   cd, current=original_dir
 
   l0_dir = filepath(run.date, root=run->config('raw/basedir'))
-  if (~file_test(l0_dir)) then begin
+  if (~file_test(l0_dir, /directory)) then begin
     mg_log, 'raw directory does not exist', name=run.logger_name, /error
     goto, done
   endif
   cd, l0_dir
 
-  tarfile  = string(run.date, format='(%"%s.ucomp.l0.tgz")')
-  tarlist  = string(run.date, format='(%"%s.ucomp.l0.tarlist")')
+  process_l0_dir = filepath('level0', $
+                            subdir=run.date, $
+                            root=run->config('processing/basedir'))
+  if (~file_test(process_l0_dir, /directory)) then begin
+    ucomp_mkdir, process_l0_dir, logger_name=run.logger_name
+  endif
 
-  ; skip sending L0 to HPSS if tarball already exists
+  tarfile_basename = string(run.date, format='(%"%s.ucomp.l0.tgz")')
+  tarlist_basename = string(run.date, format='(%"%s.ucomp.l0.tarlist")')
+  tarfile = filepath(tarfile_basename, root=process_l0_dir)
+  tarlist = filepath(tarlist_basename, root=process_l0_dir)
+
+  ; skip sending L0 to archive if tarball already exists
   if (file_test(tarfile, /regular)) then begin
     mg_log, 'L0 tarball already exists, skipping', name=run.logger_name, /warn
     goto, done
@@ -52,7 +61,8 @@ pro ucomp_l0_archive, run=run
   tar_cmd = string(tarfile, $
                    glob, $
                    format='(%"tar cf %s %s")')
-  mg_log, 'creating tarfile %s...', tarfile, name=run.logger_name, /info
+  mg_log, 'creating tarfile %s...', file_basename(tarfile), $
+          name=run.logger_name, /info
   spawn, tar_cmd, result, error_result, exit_status=status
   if (status ne 0L) then begin
     mg_log, 'problem tarring files with command: %s', tar_cmd, $
