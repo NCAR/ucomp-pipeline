@@ -73,7 +73,9 @@ pro ucomp_l1_apply_gain, file, primary_header, data, headers, run=run
                   comment=string(flat_raw_file, $
                                  format='(%"ext(s) in %s used for flat correction")')
     ucomp_addpar, h, 'BOPAL', opal_radiance, $
-                  comment='opal radiance', format='(F0.2)'
+                  comment='[B/Bsun] opal radiance', format='(F0.2)'
+    ucomp_addpar, h, 'BUNIT', 'B/Bsun', $
+                  comment='brightness with respect to solar disk'
     headers[e] = h
   endfor
 end
