@@ -10,6 +10,7 @@ add_subdirectory(report)
 add_subdirectory(reprocess)
 add_subdirectory(utils)
 add_subdirectory(validate)
+add_subdirectory(verify)
 
 configure_file(ucomp_version.pro.in ucomp_version.pro)
 
