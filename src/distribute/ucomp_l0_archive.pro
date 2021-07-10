@@ -104,7 +104,7 @@ pro ucomp_l0_archive, run=run
         file_delete, dst_tarfile
       endif
 
-      file_link, filepath(tarfile, root=l0_dir), $
+      file_link, tarfile, $
                  dst_tarfile
     endif else begin
       mg_log, 'no archive gateway set, not sending to archive', $
