@@ -92,7 +92,7 @@ pro ucomp_l0_archive, run=run
       ; create archive gateway directory if needed
       ucomp_mkdir, archive_gateway, logger_name=run.logger_name
 
-      dst_tarfile = filepath(tarfile, root=archive_gateway)
+      dst_tarfile = filepath(tarfile_basename, root=archive_gateway)
 
       ; remove old links to tarballs
       ; NOTE: need to test for dangling symlink separately because a link to a
