@@ -41,5 +41,5 @@ pro ucomp_compare_text, result_path, standard_path, logger_name, status=status
   readf, standard_lun, standard
   free_lun, standard_lun
 
-  return, array_equal(result, standard)
+  status = array_equal(result, standard) eq 0
 end
