@@ -329,6 +329,11 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, onband, 
                                       raw_file=raw_file
   compile_opt strictarr
 
+  ; TODO: should science data and flats match number of tunings? i.e., a science
+  ; image from a file with 5 wavelength tunings shouldn't have 1 of the
+  ; wavelengths flat corrected from flats at one time and the other wavelengths
+  ; flat corrected from flats at another time
+
   found = 0B
   if (n_elements(*self.flats) eq 0L) then return, !null
 
