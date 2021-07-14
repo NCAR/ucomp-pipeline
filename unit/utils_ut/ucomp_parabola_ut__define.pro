@@ -3,7 +3,7 @@
 function ucomp_parabola_ut::test_basic
   compile_opt strictarr
 
-  coeffs = randomu(seed, 3)
+  coeffs = randomu(seed, 3, /double)
   x = randomu(seed, 3)
   x = x[sort(x)]
   y = coeffs[0] + x * (coeffs[1] + x * coeffs[2])
