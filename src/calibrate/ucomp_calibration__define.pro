@@ -329,16 +329,18 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, onband, 
                                       raw_file=raw_file
   compile_opt strictarr
 
-  ; TODO: should science data and flats match number of tunings? i.e., a science
-  ; image from a file with 5 wavelength tunings shouldn't have 1 of the
-  ; wavelengths flat corrected from flats at one time and the other wavelengths
-  ; flat corrected from flats at another time
+  ; Science data and flats should match number of tunings, i.e., a science
+  ; image from a file with 5 wavelength tunings should be corrected with a flat
+  ; from a file with 5 tunings. For now, it looks like this will be taken care
+  ; of by the recipes: appropriate flats will always be taken after other flats,
+  ; but before science images so that when looking backwards in time, the
+  ; correct flats will be nearest in time.
 
   found = 0B
   if (n_elements(*self.flats) eq 0L) then return, !null
 
   ; find the darks with an exposure time and wavelength that is close enough to
-  ; the given exptime and wavelength
+  ; the given exposure time and wavelength
   exptime_threshold = 0.01      ; [ms]
   wavelength_threshold = 0.001  ; [nm]
 
@@ -347,7 +349,8 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, onband, 
   valid_indices = where((abs(exptime - *self.flat_exptimes) lt exptime_threshold) $
                           and (abs(wavelength - *self.flat_wavelengths) lt wavelength_threshold) $
                           and (*self.flat_gain_modes eq gain_index) $
-                          and (*self.flat_onbands eq onband_index), $
+                          and (*self.flat_onbands eq onband_index) $
+                          and (obsday_hours gt *self.flat_times), $
                         n_valid_flats)
   if (n_valid_flats eq 0L) then return, !null
 
