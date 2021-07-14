@@ -18,6 +18,7 @@ PIPE_DIR=$(dirname $(dirname ${SCRIPT_LOCATION}))
 cd ${PIPE_DIR}
 
 DATE=$(date +"%Y-%m-%d")
+SHORT_DATE=$(date +"%Y%m%d")
 
 MACHINE=@NIGHTLY_MACHINE@
 if [ -z "${MACHINE}" ]; then
@@ -100,7 +101,8 @@ else
 fi
 echo -e "${REGRESSION_MESSAGE}\n" >> ${MESSAGE_FILENAME}
 
-${INSTALL_LOCATION}/bin/ucomp log -w ${REGRESSION_FILENAME} >> ${MESSAGE_FILENAME}
+REGRESSION_LOG=/hao/${MACHINE}/Data/UCoMP/logs.regression/${SHORT_DATE}.ucomp.regress.log
+${INSTALL_LOCATION}/bin/ucomp log -w ${REGRESSION_LOG} >> ${MESSAGE_FILENAME}
 
 # send email
 echo -e "\nSent from ${SCRIPT_LOCATION} ($(whoami)@$(hostname))" >> ${MESSAGE_FILENAME}
