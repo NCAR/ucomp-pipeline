@@ -100,8 +100,10 @@ else
 fi
 echo -e "${REGRESSION_MESSAGE}\n" >> ${MESSAGE_FILENAME}
 
+${INSTALL_LOCATION}/bin/ucomp log -w ${REGRESSION_FILENAME} >> ${MESSAGE_FILENAME}
+
 # send email
-echo "Sent from ${SCRIPT_LOCATION} ($(whoami)@$(hostname))" >> ${MESSAGE_FILENAME}
+echo -e "\nSent from ${SCRIPT_LOCATION} ($(whoami)@$(hostname))" >> ${MESSAGE_FILENAME}
 SUBJECT="UCoMP nightly test results for ${DATE}"
 mail -s "${SUBJECT}" -a "${LOG_FILENAME}" -a "${REGRESSION_FILENAME}" -r $(whoami)@ucar.edu $(whoami)@ucar.edu < ${MESSAGE_FILENAME}
 
