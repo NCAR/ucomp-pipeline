@@ -74,6 +74,7 @@ echo "pwd=$(pwd)" >> ${LOG_FILENAME} 2>&1
 PATH=${HOME}/software/bin:${PATH} @CMAKE_COMMAND@ \
   -DCMAKE_INSTALL_PREFIX:PATH=${INSTALL_LOCATION} \
   -DIDL_ROOT_DIR:PATH=@IDL_ROOT_DIR@ \
+  -DPython3_ROOT_DIR:PATH=@Python3_ROOT_DIR@ \
   .. >> ${LOG_FILENAME} 2>&1
  
 # build
