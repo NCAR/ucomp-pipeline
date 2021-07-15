@@ -6,7 +6,7 @@ set(VERSION_PATCH "0")
 set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
 # required version of CMake
-cmake_minimum_required(VERSION 3.1.3)
+cmake_minimum_required(VERSION 3.12)
 cmake_policy(SET CMP0017 NEW)
 if (POLICY CMP0042)
   cmake_policy(SET CMP0042 NEW)
@@ -73,6 +73,8 @@ message(STATUS "git binary   = ${GIT_EXECUTABLE}")
 message(STATUS "git branch   = ${GIT_BRANCH}")
 message(STATUS "git version  = ${GIT_VERSION}")
 message(STATUS "git revision = ${GIT_REVISION}")
+
+find_package(Python3 COMPONENTS Interpreter Development)
 
 include(${CMAKE_SOURCE_DIR}/cmake/GetDate.cmake)
 LONG_TODAY(ucomp_pipeline_BUILD_DATE)
