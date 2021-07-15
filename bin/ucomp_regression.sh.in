@@ -22,7 +22,8 @@ PIPE_DIR=$(dirname ${BIN_DIR})
 source ${BIN_DIR}/ucomp_include.sh
 
 DATES=(20210312)
-LOG_DIR=/hao/@NIGHTLY_MACHINE@/Data/UCoMP/logs.regression
+MACHINE=@NIGHTLY_MACHINE@
+LOG_DIR=/hao/${MACHINE}/Data/UCoMP/logs.regression
 
 CONFIG=${PIPE_DIR}/config/ucomp.regression.cfg
 STATUS=0
