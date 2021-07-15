@@ -12,10 +12,12 @@ cd build
 
 #IDL_ROOT_DIR=/opt/share/idl8.6/idl86
 IDL_ROOT_DIR=/opt/share/idl8.7.3/idl87
+PYTHON_ROOT_DIR=/home/mgalloy/anaconda3
 
 cmake \
   -DCMAKE_INSTALL_PREFIX:PATH=~/software/ucomp-pipeline${FLAGS} \
   -DIDL_ROOT_DIR:PATH=${IDL_ROOT_DIR} \
+  -DPython3_ROOT_DIR:PATH=${PYTHON_ROOT_DIR} \
   -DNIGHTLY_MACHINE:STRING=dawn \
   -DNIGHTLY_SSH_KEY:STRING=/home/mgalloy/.ssh/id_rsa2 \
   ..
