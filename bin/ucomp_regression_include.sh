@@ -1,0 +1,3 @@
+#!/bin/sh
+
+REGRESSION_DATES=(20210312)
