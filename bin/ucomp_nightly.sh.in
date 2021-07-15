@@ -102,11 +102,16 @@ else
 fi
 echo -e "${REGRESSION_MESSAGE}\n" >> ${MESSAGE_FILENAME}
 
-REGRESSION_LOG=/hao/${MACHINE}/Data/UCoMP/logs.regression/${SHORT_DATE}.ucomp.regress.log
-${INSTALL_LOCATION}/bin/ucomp log -w ${REGRESSION_LOG} >> ${MESSAGE_FILENAME}
+source ${BIN_DIR}/ucomp_regression_include.sh
+for day in ${REGRESSION_DATES[@]}; do
+  REGRESSION_LOG=/hao/${MACHINE}/Data/UCoMP/logs.regression/${day}.ucomp.regress.log
+  echo "${day}"
+  ${INSTALL_LOCATION}/bin/ucomp log -w ${REGRESSION_LOG} >> ${MESSAGE_FILENAME}
+  echo ""
+done
 
 # send email
-echo -e "\nSent from ${SCRIPT_LOCATION} ($(whoami)@$(hostname))" >> ${MESSAGE_FILENAME}
+echo "Sent from ${SCRIPT_LOCATION} ($(whoami)@$(hostname))" >> ${MESSAGE_FILENAME}
 SUBJECT="UCoMP nightly test results for ${DATE}"
 mail -s "${SUBJECT}" -a "${LOG_FILENAME}" -a "${REGRESSION_FILENAME}" -r $(whoami)@ucar.edu $(whoami)@ucar.edu < ${MESSAGE_FILENAME}
 
