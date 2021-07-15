@@ -102,7 +102,7 @@ else
 fi
 echo -e "${REGRESSION_MESSAGE}\n" >> ${MESSAGE_FILENAME}
 
-source ${BIN_DIR}/ucomp_regression_include.sh
+source ${INSTALL_LOCATION}/bin/ucomp_regression_include.sh
 for day in ${REGRESSION_DATES[@]}; do
   REGRESSION_LOG=/hao/${MACHINE}/Data/UCoMP/logs.regression/${day}.ucomp.regress.log
   echo "${day}"
