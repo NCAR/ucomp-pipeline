@@ -105,9 +105,10 @@ echo -e "${REGRESSION_MESSAGE}\n" >> ${MESSAGE_FILENAME}
 source ${INSTALL_LOCATION}/bin/ucomp_regression_include.sh
 for day in ${REGRESSION_DATES[@]}; do
   REGRESSION_LOG=/hao/${MACHINE}/Data/UCoMP/logs.regression/${day}.ucomp.regress.log
-  echo "${day}"
+  echo "${day}" >> ${MESSAGE_FILENAME}
+  echo "--------" >> ${MESSAGE_FILENAME}
   ${INSTALL_LOCATION}/bin/ucomp log -w ${REGRESSION_LOG} >> ${MESSAGE_FILENAME}
-  echo ""
+  echo "" >> ${MESSAGE_FILENAME}
 done
 
 # send email
