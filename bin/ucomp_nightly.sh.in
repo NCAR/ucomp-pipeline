@@ -18,7 +18,6 @@ PIPE_DIR=$(dirname $(dirname ${SCRIPT_LOCATION}))
 cd ${PIPE_DIR}
 
 DATE=$(date +"%Y-%m-%d")
-SHORT_DATE=$(date +"%Y%m%d")
 
 MACHINE=@NIGHTLY_MACHINE@
 if [ -z "${MACHINE}" ]; then
@@ -75,6 +74,7 @@ PATH=${HOME}/software/bin:${PATH} @CMAKE_COMMAND@ \
   -DCMAKE_INSTALL_PREFIX:PATH=${INSTALL_LOCATION} \
   -DIDL_ROOT_DIR:PATH=@IDL_ROOT_DIR@ \
   -DPython3_ROOT_DIR:PATH=@Python3_ROOT_DIR@ \
+  -DNIGHTLY_MACHINE:STRING=@NIGHTLY_MACHINE@ \
   .. >> ${LOG_FILENAME} 2>&1
  
 # build
@@ -106,7 +106,7 @@ source ${INSTALL_LOCATION}/bin/ucomp_regression_include.sh
 for day in ${REGRESSION_DATES[@]}; do
   REGRESSION_LOG=/hao/${MACHINE}/Data/UCoMP/logs.regression/${day}.ucomp.regress.log
   echo "${day}" >> ${MESSAGE_FILENAME}
-  echo "--------" >> ${MESSAGE_FILENAME}
+  echo "--------------------" >> ${MESSAGE_FILENAME}
   ${INSTALL_LOCATION}/bin/ucomp log -w ${REGRESSION_LOG} >> ${MESSAGE_FILENAME}
   echo "" >> ${MESSAGE_FILENAME}
 done
