@@ -15,16 +15,16 @@ function ucomp_gbu_check_identical_temps, file
 
   tolerance = 0.001
 
-  return, (abs(file.t_lcvr1 - file.t_lcvr2) lt tolerance) $
-            || (abs(file.t_lcvr1 - file.t_lcvr3) lt tolerance) $
-            || (abs(file.t_lcvr1 - file.t_lcvr4) lt tolerance) $
-            || (abs(file.t_lcvr1 - file.t_lcvr5) lt tolerance) $
-            || (abs(file.t_lcvr2 - file.t_lcvr3) lt tolerance) $
-            || (abs(file.t_lcvr2 - file.t_lcvr4) lt tolerance) $
-            || (abs(file.t_lcvr2 - file.t_lcvr5) lt tolerance) $
-            || (abs(file.t_lcvr3 - file.t_lcvr4) lt tolerance) $
-            || (abs(file.t_lcvr3 - file.t_lcvr5) lt tolerance) $
-            || (abs(file.t_lcvr4 - file.t_lcvr5) lt tolerance)
+  return, (abs(file.tu_lcvr1 - file.tu_lcvr2) lt tolerance) $
+            || (abs(file.tu_lcvr1 - file.tu_lcvr3) lt tolerance) $
+            || (abs(file.tu_lcvr1 - file.tu_lcvr4) lt tolerance) $
+            || (abs(file.tu_lcvr1 - file.tu_lcvr5) lt tolerance) $
+            || (abs(file.tu_lcvr2 - file.tu_lcvr3) lt tolerance) $
+            || (abs(file.tu_lcvr2 - file.tu_lcvr4) lt tolerance) $
+            || (abs(file.tu_lcvr2 - file.tu_lcvr5) lt tolerance) $
+            || (abs(file.tu_lcvr3 - file.tu_lcvr4) lt tolerance) $
+            || (abs(file.tu_lcvr3 - file.tu_lcvr5) lt tolerance) $
+            || (abs(file.tu_lcvr4 - file.tu_lcvr5) lt tolerance)
 end
 
 

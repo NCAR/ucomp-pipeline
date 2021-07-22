@@ -13,6 +13,6 @@ function ucomp_gbu_conditions, wave_region, run=run
 
   gbu_conditions = [{mask: 1UL, $
                      checker: 'ucomp_gbu_check_identical_temps', $
-                     description: 'at least two identical T_LCVR{1,2,3,4,5} temperatures'}]
+                     description: 'at least two identical TU_LCVR{1,2,3,4,5} temperatures'}]
   return, gbu_conditions
 end
