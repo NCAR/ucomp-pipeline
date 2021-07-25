@@ -120,10 +120,16 @@ pro ucomp_regression_wrapper, date, config_filename
 
     if (stregex(results[result_matches[m]], '.*\.fts(\.gz)?', /boolean)) then begin
       ucomp_compare_fits, result_path, standard_path, run.logger_name, status=compare_status
-      if (compare_status ne 0L) then status or= 4L
+      if (compare_status ne 0L) then begin
+        mg_log, 'FITS file does not match standard', name=run.logger_name, /warn
+        status or= 4L
+      endif
     endif else begin
       ucomp_compare_text, result_path, standard_path, run.logger_name, status=compare_status
-      if (compare_status ne 0L) then status or= 4L
+      if (compare_status ne 0L) then begin
+        mg_log, 'FITS file does not match standard', name=run.logger_name, /warn
+        status or= 4L
+      endif
     endelse
   endfor
 
