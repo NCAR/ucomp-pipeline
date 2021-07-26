@@ -38,6 +38,7 @@ pro ucomp_make_darks, run=run
   dark_times      = list()
   dark_exposures  = list()
   dark_gain_modes = list()
+  dark_raw_files  = list()
 
   dark_data       = list()
   dark_headers    = list()
@@ -106,12 +107,15 @@ pro ucomp_make_darks, run=run
       endfor
     endfor
 
+    averaged_raw_files = starr(n_averaged_extensions) + file_basename(dark_file.raw_filename)
+
     dark_headers->add, ext_headers, /extract
 
     dark_times->add, fltarr(n_averaged_extensions) + dark_time, /extract
 
     dark_exposures->add, averaged_exptime, /extract
     dark_gain_modes->add, averaged_gain_mode, /extract
+    dark_raw_files->add, averaged_raw_files, /extract
 
     for e = 0L, n_averaged_extensions - 1L do begin
       dark_extnames->add, strmid(file_basename(dark_files[d].raw_filename), 9, 6)
@@ -163,9 +167,11 @@ pro ucomp_make_darks, run=run
   dark_times_array      = dark_times->toArray()
   dark_exposures_array  = dark_exposures->toArray()
   dark_gain_modes_array = dark_gain_modes->toArray()
+  dark_raw_files_array  = dark_raw_files->toArray()
   obj_destroy, [dark_times, $
-                dark_exposures, $s
-                dark_gain_modes]
+                dark_exposures, $
+                dark_gain_modes, $
+                dark_raw_files]
 
   ; write master dark FITS file in the process_basedir/level1
 
@@ -199,7 +205,8 @@ pro ucomp_make_darks, run=run
   cal->cache_darks, darks=averaged_dark_images, $
                     times=dark_times_array, $
                     exptimes=dark_exposures_array, $
-                    gain_modes=dark_gain_modes_array
+                    gain_modes=dark_gain_modes_array, $
+                    raw_files=dark_raw_files_array
   
   tcam_means /= (n_tcam gt 0L ? n_tcam : 1L)
   rcam_means /= (n_rcam gt 0L ? n_rcam : 1L)
