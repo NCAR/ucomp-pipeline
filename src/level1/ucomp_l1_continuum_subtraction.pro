@@ -19,9 +19,14 @@
 ; :Keywords:
 ;   run : in, required, type=object
 ;     `ucomp_run` object
+;   status : out, optional, type=integer
+;     set to a named variable to retrieve the status of the step; 0 for success
 ;-
-pro ucomp_l1_continuum_subtraction, file, primary_header, ext_data, ext_headers, run=run
+pro ucomp_l1_continuum_subtraction, file, primary_header, ext_data, ext_headers, $
+                                    run=run, status=status
   compile_opt strictarr
+
+  status = 0L
 
   ; find extensions with matching wavelengths and opposite ONBAND
   n_extensions = n_elements(ext_headers)
@@ -50,6 +55,7 @@ pro ucomp_l1_continuum_subtraction, file, primary_header, ext_data, ext_headers,
   n_matches = mg_match(ext_ids, match_ids, b_matches=match_indices)
   if (n_matches ne n_extensions) then begin
     message, 'matches not found for all extensions'
+    status = 1L
     goto, done
   endif
 
