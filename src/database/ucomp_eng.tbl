@@ -46,30 +46,30 @@ create table ucomp_eng (
   nd               tinyint (2),
   background       float (7, 3),  -- median of masked line center background for i
 
-  t_fw             float (9, 6),  --  Filter wheel Temp
-  t_lcvr1          float (9, 6),  --  Lyot LCVR1 Temp
-  t_lcvr2          float (9, 6),  --  Lyot LCVR2 Temp
-  t_lcvr3          float (9, 6),  --  Lyot LCVR2 Temp
-  t_lnb1           float (9, 6),  --  LiNb1 Temp
-  t_mod            float (9, 6),  --  Modulator Temp
-  t_lnb2           float (9, 6),  --  LiNb2 Temp
-  t_lcvr4          float (9, 6),  --  Lyot LCVR4 Temp
-  t_lcvr5          float (9, 6),  --  Lyot LCVR5 Temp
-  t_rack           float (9, 6),  --  Computer Rack Temp
-  tu_fw            float (9, 6),  --  Filter wheel Temp  Unfiltered
-  tu_lcvr1         float (9, 6),  --  Lyot LCVR1 Temp Unfiltered
-  tu_lcvr2         float (9, 6),  --  Lyot LCVR2 Temp Unfiltered
-  tu_lcvr3         float (9, 6),  --  Lyot LCVR2 Temp Unfiltered
-  tu_lnb1          float (9, 6),  --  LiNb1 Temp Unfiltered
-  tu_mod           float (9, 6),  --  Modulator Temp Unfiltered
-  tu_lnb2          float (9, 6),  --  LiNb2 Temp Unfiltered
-  tu_lcvr4         float (9, 6),  --  Lyot LCVR4 Temp Unfiltered
-  tu_lcvr5         float (9, 6),  --  Lyot LCVR5 Temp Unfiltered
-  tu_rack          float (9, 6),  --  Computer Rack Temp Unfiltered
-  t_c0arr          float (9, 6),  --  Camera 0 Sensor array temp
-  t_c0pcb          float (9, 6),  --  Camera 0 PCB board temp
-  t_c1arr          float (9, 6),  --  Camera 1 Sensor array temp
-  t_c1pcb          float (9, 6),  --  Camera 1 PCB board temp
+  t_base           float (9, 6),  -- filter wheel temp
+  t_lcvr1          float (9, 6),  -- Lyot LCVR1 temp
+  t_lcvr2          float (9, 6),  -- Lyot LCVR2 temp
+  t_lcvr3          float (9, 6),  -- Lyot LCVR2 temp
+  t_lnb1           float (9, 6),  -- LiNb1 temp
+  t_mod            float (9, 6),  -- modulator temp
+  t_lnb2           float (9, 6),  -- LiNb2 temp
+  t_lcvr4          float (9, 6),  -- Lyot LCVR4 temp
+  t_lcvr5          float (9, 6),  -- Lyot LCVR5 temp
+  t_rack           float (9, 6),  -- computer Rack temp
+  tu_base          float (9, 6),  -- filter wheel temp unfiltered
+  tu_lcvr1         float (9, 6),  -- Lyot LCVR1 temp unfiltered
+  tu_lcvr2         float (9, 6),  -- Lyot LCVR2 temp unfiltered
+  tu_lcvr3         float (9, 6),  -- Lyot LCVR2 temp unfiltered
+  tu_lnb1          float (9, 6),  -- LiNb1 temp unfiltered
+  tu_mod           float (9, 6),  -- modulator temp unfiltered
+  tu_lnb2          float (9, 6),  -- LiNb2 temp unfiltered
+  tu_lcvr4         float (9, 6),  -- Lyot LCVR4 temp unfiltered
+  tu_lcvr5         float (9, 6),  -- Lyot LCVR5 temp unfiltered
+  tu_rack          float (9, 6),  -- computer Rack temp unfiltered
+  t_c0arr          float (9, 6),  -- camera 0 Sensor array temp
+  t_c0pcb          float (9, 6),  -- camera 0 PCB board temp
+  t_c1arr          float (9, 6),  -- camera 1 Sensor array temp
+  t_c1pcb          float (9, 6),  -- camera 1 PCB board temp
 
   occltrid         char (10),
 
