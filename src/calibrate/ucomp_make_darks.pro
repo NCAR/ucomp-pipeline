@@ -107,7 +107,7 @@ pro ucomp_make_darks, run=run
       endfor
     endfor
 
-    averaged_raw_files = starr(n_averaged_extensions) + file_basename(dark_file.raw_filename)
+    averaged_raw_files = strarr(n_averaged_extensions) + file_basename(dark_file.raw_filename)
 
     dark_headers->add, ext_headers, /extract
 
