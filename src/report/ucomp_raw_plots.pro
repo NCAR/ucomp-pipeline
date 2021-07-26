@@ -12,7 +12,7 @@ pro ucomp_raw_plots, run=run
     mg_log, 'plotting %d raw files', n_files, name=run.logger_name, /info
   endelse
 
-  n_plots = 7L
+  n_plots = 8L
 
   ; save original graphics settings
   original_device = !d.name
@@ -41,6 +41,12 @@ pro ucomp_raw_plots, run=run
 
   times = fltarr(n_files)
   for f = 0L, n_files - 1L do times[f] = files[f].obsday_hours
+
+  t_base = fltarr(n_files)
+  for f = 0L, n_files - 1L do t_base[f] = files[f].t_base
+  tu_base = fltarr(n_files)
+  for f = 0L, n_files - 1L do tu_base[f] = files[f].tu_base
+
   t_c0arr = fltarr(n_files)
   for f = 0L, n_files - 1L do t_c0arr[f] = files[f].t_c0arr
   t_c0pcb = fltarr(n_files)
@@ -76,6 +82,9 @@ pro ucomp_raw_plots, run=run
   tarr_max = 11.0 > ceil(max([t_c0arr, t_c1arr]))
   tpcb_min = 25.0 < floor(min([t_c0pcb, t_c1pcb]))
   tpcb_max = 27.0 > ceil(max([t_c0pcb, t_c1pcb]))
+
+  tbase_min = floor(min([t_base, tu_base]))
+  tbase_max = ceil(max([t_base, tu_base]))
 
   tlcvr_min = floor(min([t_lcvr1, t_lcvr2, t_lcvr3, t_lcvr4, t_lcvr5, $
                          tu_lcvr1, tu_lcvr2, tu_lcvr3, tu_lcvr4, tu_lcvr5], $
@@ -135,6 +144,20 @@ pro ucomp_raw_plots, run=run
          'T_ temps', alignment=1.0, color=t_color
   xyouts, 0.95, 4.0 / n_plots + 0.75 * (1.0 / n_plots), /normal, $
          'TU_ temps', alignment=1.0, color=tu_color
+
+  plot, times, t_base, /nodata, $
+        title='Raw base temperatures', charsize=charsize, $
+        color=color, background=background_color, $
+        xtitle='Time [HST]', $
+        xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
+        ytitle='Temperature [C]', $
+        ystyle=1, yrange=[tbase_min, tbase_max]
+  oplot, times, t_base, $
+         psym=6, symsize=symsize, $
+         linestyle=0, color=camera0_color
+  oplot, times, tu_base, $
+         psym=6, symsize=symsize, $
+         linestyle=0, color=camera1_color
 
   plot, times, t_lcvr1, psym=6, symsize=symsize, /nodata, $
         linestyle=0, color=color, $

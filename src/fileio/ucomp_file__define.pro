@@ -150,7 +150,7 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
                              iradius2=iradius2, $
                              overlap_angle=overlap_angle, $
                              post_angle=post_angle, $
-                             t_fw=t_fw, $
+                             t_base=t_base, $
                              t_lcvr1=t_lcvr1, $
                              t_lcvr2=t_lcvr2, $
                              t_lcvr3=t_lcvr3, $
@@ -160,7 +160,7 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
                              t_lcvr4=t_lcvr4, $
                              t_lcvr5=t_lcvr5, $
                              t_rack=t_rack, $
-                             tu_fw=tu_fw, $
+                             tu_base=tu_base, $
                              tu_lcvr1=tu_lcvr1, $
                              tu_lcvr2=tu_lcvr2, $
                              tu_lcvr3=tu_lcvr3, $
@@ -257,7 +257,7 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
   if (arg_present(overlap_angle)) then overlap_angle = self.overlap_angle
   if (arg_present(post_angle)) then post_angle = self.post_angle
 
-  if (arg_present(t_fw)) then t_fw = self.t_fw
+  if (arg_present(t_base)) then t_base = self.t_base
   if (arg_present(t_lcvr1)) then t_lcvr1 = self.t_lcvr1
   if (arg_present(t_lcvr2)) then t_lcvr2 = self.t_lcvr2
   if (arg_present(t_lcvr3)) then t_lcvr3 = self.t_lcvr3
@@ -267,7 +267,7 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
   if (arg_present(t_lcvr4)) then t_lcvr4 = self.t_lcvr4
   if (arg_present(t_lcvr5)) then t_lcvr5 = self.t_lcvr5
   if (arg_present(t_rack)) then t_rack = self.t_rack
-  if (arg_present(tu_fw)) then tu_fw = self.tu_fw
+  if (arg_present(tu_base)) then tu_base = self.tu_base
   if (arg_present(tu_lcvr1)) then tu_lcvr1 = self.tu_lcvr1
   if (arg_present(tu_lcvr2)) then tu_lcvr2 = self.tu_lcvr2
   if (arg_present(tu_lcvr3)) then tu_lcvr3 = self.tu_lcvr3
@@ -375,7 +375,7 @@ pro ucomp_file::_inventory
   self.nd = 0L
   self.pol_list = ''
 
-  self.t_fw     = ucomp_getpar(primary_header, 'T_FW', /float, found=found)
+  self.t_base   = ucomp_getpar(primary_header, 'T_BASE', /float, found=found)
   self.t_lcvr1  = ucomp_getpar(primary_header, 'T_LCVR1', /float, found=found)
   self.t_lcvr2  = ucomp_getpar(primary_header, 'T_LCVR2', /float, found=found)
   self.t_lcvr3  = ucomp_getpar(primary_header, 'T_LCVR3', /float, found=found)
@@ -385,7 +385,7 @@ pro ucomp_file::_inventory
   self.t_lcvr4  = ucomp_getpar(primary_header, 'T_LCVR4', /float, found=found)
   self.t_lcvr5  = ucomp_getpar(primary_header, 'T_LCVR5', /float, found=found)
   self.t_rack   = ucomp_getpar(primary_header, 'T_RACK', /float, found=found)
-  self.tu_fw    = ucomp_getpar(primary_header, 'TU_FW', /float, found=found)
+  self.tu_base  = ucomp_getpar(primary_header, 'TU_BASE', /float, found=found)
   self.tu_lcvr1 = ucomp_getpar(primary_header, 'TU_LCVR1', /float, found=found)
   self.tu_lcvr2 = ucomp_getpar(primary_header, 'TU_LCVR2', /float, found=found)
   self.tu_lcvr3 = ucomp_getpar(primary_header, 'TU_LCVR3', /float, found=found)
@@ -530,7 +530,7 @@ pro ucomp_file__define
            overlap_angle       : 0.0, $
            post_angle          : 0.0, $
 
-           t_fw                : 0.0, $
+           t_base              : 0.0, $
            t_lcvr1             : 0.0, $
            t_lcvr2             : 0.0, $
            t_lcvr3             : 0.0, $
@@ -540,7 +540,7 @@ pro ucomp_file__define
            t_lcvr4             : 0.0, $
            t_lcvr5             : 0.0, $
            t_rack              : 0.0, $
-           tu_fw               : 0.0, $
+           tu_base             : 0.0, $
            tu_lcvr1            : 0.0, $
            tu_lcvr2            : 0.0, $
            tu_lcvr3            : 0.0, $
