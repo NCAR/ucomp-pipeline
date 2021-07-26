@@ -341,6 +341,9 @@ pro ucomp_file::_inventory
   endelse
 
   self.data_type = ucomp_getpar(extension_header, 'DATATYPE', found=found)
+  ; darks don't have a wave_region
+  if (self.data_type eq 'dark') then self.wave_region = ''
+
   self.date_obs  = ucomp_getpar(primary_header, 'DATE-OBS', found=found)
 
   self.obs_id = ucomp_getpar(primary_header, 'OBS_ID', found=found)
