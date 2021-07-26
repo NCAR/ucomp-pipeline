@@ -16,9 +16,13 @@
 ; :Keywords:
 ;   run : in, required, type=object
 ;     `ucomp_run` object
+;   status : out, optional, type=integer
+;     set to a named variable to retrieve the status of the step; 0 for success
 ;-
-pro ucomp_l1_apply_gain, file, primary_header, data, headers, run=run
+pro ucomp_l1_apply_gain, file, primary_header, data, headers, run=run, status=status
   compile_opt strictarr
+
+  status = 0L
 
   n_exts = n_elements(headers)
 
@@ -46,6 +50,7 @@ pro ucomp_l1_apply_gain, file, primary_header, data, headers, run=run
       mg_log, 'request %0.2f HST, %0.2f ms, %s gain, %s, %0.2f nm', $
               obsday_hours, exptime, gain_mode, onband, wavelengths[e], $
               name=run.logger_name, /warn
+      status = 1L
       continue
     endif
 
@@ -53,6 +58,7 @@ pro ucomp_l1_apply_gain, file, primary_header, data, headers, run=run
     if (~flat_dark_found) then begin
       mg_log, 'dark not found for flat for ext %d, skipping', e + 1, $
               name=run.logger_name, /warn
+      status = 2L
       continue
     endif
     flat_dark = mean(flat_dark, dimension=3)
