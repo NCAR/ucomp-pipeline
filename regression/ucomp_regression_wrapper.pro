@@ -149,7 +149,7 @@ end
 
 ; main-level example
 
-date = '20210312'
+date = '20210725'
 config_filename = filepath('ucomp.regression.cfg', $
                            subdir=['..', 'config'], $
                            root=mg_src_root())
