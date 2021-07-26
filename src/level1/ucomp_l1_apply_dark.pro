@@ -16,9 +16,13 @@
 ; :Keywords:
 ;   run : in, required, type=object
 ;     `ucomp_run` object
+;   status : out, optional, type=integer
+;     set to a named variable to retrieve the status of the step; 0 for success
 ;-
-pro ucomp_l1_apply_dark, file, primary_header, data, headers, run=run
+pro ucomp_l1_apply_dark, file, primary_header, data, headers, run=run, status=status
   compile_opt strictarr
+
+  status = 0L
 
   n_exts = n_elements(headers)
 
@@ -41,6 +45,7 @@ pro ucomp_l1_apply_dark, file, primary_header, data, headers, run=run
     if (~dark_found) then begin
       mg_log, 'dark not found for ext %d, skipping', e + 1, $
               name=run.logger_name, /warn
+      status = 1L
       continue
     endif
     science_dark = mean(science_dark, dimension=3)

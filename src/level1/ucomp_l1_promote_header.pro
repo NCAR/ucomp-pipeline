@@ -16,9 +16,14 @@
 ; :Keywords:
 ;   run : in, required, type=object
 ;     `ucomp_run` object
+;   status : out, optional, type=integer
+;     set to a named variable to retrieve the status of the step; 0 for success
 ;-
-pro ucomp_l1_promote_header, file, primary_header, data, headers, run=run
+pro ucomp_l1_promote_header, file, primary_header, data, headers, $
+                             run=run, status=status
   compile_opt strictarr
+
+  status = 0L
 
   ucomp_addpar, primary_header, 'LEVEL', 'L1', comment='level 1 calibrated'
 

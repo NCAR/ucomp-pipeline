@@ -16,9 +16,14 @@
 ; :Keywords:
 ;   run : in, required, type=object
 ;     `ucomp_run` object
+;   status : out, optional, type=integer
+;     set to a named variable to retrieve the status of the step; 0 for success
 ;-
-pro ucomp_l1_polarimetric_correction, file, primary_header, data, headers, run=run
+pro ucomp_l1_polarimetric_correction, file, primary_header, data, headers, $
+                                      run=run, status=status
   compile_opt strictarr
+
+  status = 0L
 
   ; TODO: implement
   ; call `UCOMP_POLARIMETRIC_TRANSFORM`

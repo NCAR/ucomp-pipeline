@@ -26,6 +26,7 @@
 pro ucomp_l1_step, routine_name, file, primary_header, data, headers, $
                    skip=skip, run=run, _extra=e
   compile_opt strictarr
+  on_error, 2
 
   if (keyword_set(skip)) then begin
     mg_log, 'skipping', from=routine_name, name=run.logger_name, /debug
@@ -34,14 +35,18 @@ pro ucomp_l1_step, routine_name, file, primary_header, data, headers, $
 
     clock_id = run->start(routine_name)
     call_procedure, routine_name, file, primary_header, data, headers, $
-                    run=run, _extra=e
+                    run=run, status=status, _extra=e
     time = run->stop(clock_id)
 
     mg_log, /check_math, name=run.logger_name, /warn
 
-    ucomp_write_intermediate_file, strmid(routine_name, 9), $
-                                   file, primary_header, data, headers, $
-                                   run=run
+    if (status eq 0L) then begin
+      ucomp_write_intermediate_file, strmid(routine_name, 9), $
+                                     file, primary_header, data, headers, $
+                                     run=run
+    endif else begin
+      message, string(routine_name, status, format='(%"%s failed with status %d")')
+    endelse
 
     mg_log, 'done (%s)', ucomp_sec2str(time), $
             from=routine_name, name=run.logger_name, /debug
