@@ -81,7 +81,7 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
               {name: 'nd', type: '%d'}, $
               {name: 'background', type: '%s'}, $
 
-              {name: 't_fw', type: '%s'}, $
+              {name: 't_base', type: '%s'}, $
               {name: 't_lcvr1', type: '%s'}, $
               {name: 't_lcvr2', type: '%s'}, $
               {name: 't_lcvr3', type: '%s'}, $
@@ -91,7 +91,7 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
               {name: 't_lcvr4', type: '%s'}, $
               {name: 't_lcvr5', type: '%s'}, $
               {name: 't_rack', type: '%s'}, $
-              {name: 'tu_fw', type: '%s'}, $
+              {name: 'tu_base', type: '%s'}, $
               {name: 'tu_lcvr1', type: '%s'}, $
               {name: 'tu_lcvr2', type: '%s'}, $
               {name: 'tu_lcvr3', type: '%s'}, $
@@ -159,7 +159,7 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
                  file.nd, $
                  ucomp_db_float(background), $
 
-                 ucomp_db_float(file.t_fw), $
+                 ucomp_db_float(file.t_base), $
                  ucomp_db_float(file.t_lcvr1), $
                  ucomp_db_float(file.t_lcvr2), $
                  ucomp_db_float(file.t_lcvr3), $
@@ -169,7 +169,7 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
                  ucomp_db_float(file.t_lcvr4), $
                  ucomp_db_float(file.t_lcvr5), $
                  ucomp_db_float(file.t_rack), $
-                 ucomp_db_float(file.tu_fw), $
+                 ucomp_db_float(file.tu_base), $
                  ucomp_db_float(file.tu_lcvr1), $
                  ucomp_db_float(file.tu_lcvr2), $
                  ucomp_db_float(file.tu_lcvr3), $
