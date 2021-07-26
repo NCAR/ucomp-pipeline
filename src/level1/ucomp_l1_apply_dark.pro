@@ -41,7 +41,7 @@ pro ucomp_l1_apply_dark, file, primary_header, data, headers, run=run, status=st
     numsum = ucomp_getpar(headers[e], 'NUMSUM')
 
     science_dark = cal->get_dark(obsday_hours, exptime, gain_mode, found=dark_found, $
-                                 master_dark_extensions=master_dark_extensions, $
+                                 master_extensions=master_dark_extensions, $
                                  raw_filenames=raw_dark_filenames, $
                                  coefficients=dark_coefficients)
     if (~dark_found) then begin
