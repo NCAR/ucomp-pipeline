@@ -267,9 +267,9 @@ end
 
 raw_basedir = '/hao/dawn/Data/UCoMP/incoming'
 
-date = '20210704'
+date = '20210725'
 
-basename = '20210704.180012.58.ucomp.691.l0.fts'
+basename = '20210725.223635.18.ucomp.l0.fts'
 filename = filepath(basename, $
                     subdir=[date], $
                     root=raw_basedir)
