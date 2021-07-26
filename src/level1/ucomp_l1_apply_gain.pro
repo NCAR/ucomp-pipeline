@@ -43,7 +43,8 @@ pro ucomp_l1_apply_gain, file, primary_header, data, headers, run=run, status=st
 
     flat = cal->get_flat(obsday_hours, exptime, gain_mode, onband, wavelengths[e], $
                          found=flat_found, time_found=flat_time, $
-                         extension=flat_extension, raw_file=flat_raw_file)
+                         master_extension=master_flat_extension, $
+                         raw_extension=raw_flat_extension, raw_file=flat_raw_file)
     if (~flat_found) then begin
       mg_log, 'flat not found for ext %d, skipping', e + 1, $
               name=run.logger_name, /warn
@@ -75,13 +76,20 @@ pro ucomp_l1_apply_gain, file, primary_header, data, headers, run=run, status=st
     h = headers[e]
     ucomp_addpar, h, 'FLATFILE', flat_raw_file, $
                   comment='name of raw flat file used'
-    ucomp_addpar, h, 'FLATEXT', flat_extension, $
+    ucomp_addpar, h, 'FLATEXT', raw_flat_extension, $
                   comment=string(flat_raw_file, $
-                                 format='(%"ext(s) in %s used for flat correction")')
+                                 format='(%"ext(s) in %s used for flat correction")'), $
+                  after='FLATFILE'
+    ucomp_addpar, h, 'MFLATEXT', master_flat_extension, $
+                  comment=string(run.date, $
+                                 format='(%"ext in %s.ucomp.flat.fts used")'), $
+                  after='FLATEXT'
+
     ucomp_addpar, h, 'BOPAL', opal_radiance, $
                   comment='[B/Bsun] opal radiance', format='(F0.2)'
     ucomp_addpar, h, 'BUNIT', 'B/Bsun', $
-                  comment='brightness with respect to solar disk'
+                  comment='brightness with respect to solar disk', $
+                  after='BOPAL'
     headers[e] = h
   endfor
 end
