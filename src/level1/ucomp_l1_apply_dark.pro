@@ -41,7 +41,9 @@ pro ucomp_l1_apply_dark, file, primary_header, data, headers, run=run, status=st
     numsum = ucomp_getpar(headers[e], 'NUMSUM')
 
     science_dark = cal->get_dark(obsday_hours, exptime, gain_mode, found=dark_found, $
-                                 extensions=dark_extensions, coefficients=dark_coefficients)
+                                 master_dark_extensions=master_dark_extensions, $
+                                 raw_filenames=raw_dark_filenames, $
+                                 coefficients=dark_coefficients)
     if (~dark_found) then begin
       mg_log, 'dark not found for ext %d, skipping', e + 1, $
               name=run.logger_name, /warn
@@ -58,8 +60,11 @@ pro ucomp_l1_apply_dark, file, primary_header, data, headers, run=run, status=st
     data[*, *, *, *, e] = im
 
     h = headers[e]
-    for de = 0L, n_elements(dark_extensions) - 1L do begin
-      ucomp_addpar, h, string(de + 1, format='(%"DARKEXT%d")'), dark_extensions[de], $
+    for de = 0L, n_elements(master_dark_extensions) - 1L do begin
+      ucomp_addpar, h, string(de + 1, format='(%"RAWDARK%d")'), raw_dark_filenames[de], $
+                    comment=string(dark_coefficients[de], $
+                                   format='(%"raw dark filename used, wt %0.2f")')
+      ucomp_addpar, h, string(de + 1, format='(%"DARKEXT%d")'), master_dark_extensions[de], $
                     comment=string(run.date, dark_coefficients[de], $
                                    format='(%"ext in %s.ucomp.dark.fts used, wt %0.2f")')
     endfor

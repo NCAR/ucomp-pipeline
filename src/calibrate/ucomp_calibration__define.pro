@@ -24,7 +24,8 @@ pro ucomp_calibration::cache_darks, filename, $
                                     darks=darks, $
                                     times=times, $
                                     exptimes=exptimes, $
-                                    gain_modes=gain_modes
+                                    gain_modes=gain_modes, $
+                                    raw_files=raw_files
   compile_opt strictarr
 
   self.run->getProperty, logger_name=logger_name
@@ -51,6 +52,7 @@ pro ucomp_calibration::cache_darks, filename, $
     ; read the rest of the dark images
     for e = 2L, fcb.nextend - 3L do begin   ; there are 3 "index" extensions at end of file
       fits_read, fcb, dark_image, dark_header, exten_no=e
+      raw_files[e - 1L] = ucomp_getpar(dark_header, 'RAWFILE')
       darks[(e - 1) * dark_size] = dark_image
     endfor
 
@@ -66,6 +68,7 @@ pro ucomp_calibration::cache_darks, filename, $
   *self.dark_times = times
   *self.dark_exptimes = exptimes
   *self.dark_gain_modes = gain_modes
+  *self.dark_raw_files = raw_files
 
   mg_log, '%d darks cached', n_elements(times), name=logger_name, /info
 end
@@ -81,6 +84,7 @@ pro ucomp_calibration::discard_darks
   *self.dark_times = !null
   *self.dark_exptimes = !null
   *self.dark_mode_gains = !null
+  *self.dark_raw_files = !null
 end
 
 
@@ -104,7 +108,8 @@ end
 ;-
 function ucomp_calibration::get_dark, obsday_hours, exptime, gain_mode, $
                                       found=found, $
-                                      extensions=extensions, $
+                                      master_extensions=master_extensions, $
+                                      raw_filenames=raw_filenames, $
                                       coefficients=coefficients
   compile_opt strictarr
 
@@ -129,12 +134,12 @@ function ucomp_calibration::get_dark, obsday_hours, exptime, gain_mode, $
   if (obsday_hours lt valid_times[0]) then begin               ; before first dark
     interpolated_dark = float(valid_darks[*, *, *, *, 0])
 
-    extensions = valid_indices[0] + 1L
+    master_extensions = valid_indices[0] + 1L
     coefficients = 1.0
   endif else if (obsday_hours gt valid_times[n_valid_darks - 1]) then begin   ; after last dark
     interpolated_dark = float(valid_darks[*, *, *, *, n_valid_darks - 1])
 
-    extensions = valid_indices[n_valid_darks - 1] + 1L
+    master_extensions = valid_indices[n_valid_darks - 1] + 1L
     coefficients = 1.0
   endif else begin                                     ; between darks
     index1 = value_locate(valid_times, obsday_hours)
@@ -147,7 +152,7 @@ function ucomp_calibration::get_dark, obsday_hours, exptime, gain_mode, $
     a2 = (obsday_hours - valid_times[index1]) / (valid_times[index2] - valid_times[index1])
     interpolated_dark = a1 * dark1 + a2 * dark2
 
-    extensions = [index1, index2]
+    master_extensions = [index1, index2]
     coefficients = [a1, a2]
   endelse
 
@@ -325,7 +330,8 @@ end
 function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, onband, wavelength, $
                                       found=found, $
                                       time_found=time_found, $
-                                      extension=extension, $
+                                      master_extension=master_extension, $
+                                      raw_extension=raw_extension, $
                                       raw_file=raw_file
   compile_opt strictarr
 
@@ -363,7 +369,8 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, onband, 
   nearest_time_index = valid_indices[nearest_time_index]
 
   time_found = (*self.flat_times)[nearest_time_index]
-  extension = (*self.flat_extensions)[nearest_time_index]
+  master_extension = nearest_time_index + 1L   ; convert index to FITS ext
+  raw_extension = (*self.flat_extensions)[nearest_time_index]
   raw_file = (*self.flat_raw_files)[nearest_time_index]
 
   return, float(reform((*self.flats)[*, *, *, *, nearest_time_index]))
@@ -377,7 +384,7 @@ pro ucomp_calibration::cleanup
   compile_opt strictarr
 
   ptr_free, self.darks, self.dark_times, self.dark_exptimes, $
-            self.dark_gain_modes
+            self.dark_gain_modes, self.dark_raw_files
   ptr_free, self.flats, self.flat_times, self.flat_exptimes, $
             self.flat_wavelengths, self.flat_gain_modes, self.flat_onbands, $$
             self.flat_extensions, self.flat_raw_files
@@ -405,6 +412,7 @@ function ucomp_calibration::init, run=run
   self.dark_times       = ptr_new(/allocate_heap)
   self.dark_exptimes    = ptr_new(/allocate_heap)
   self.dark_gain_modes  = ptr_new(/allocate_heap)
+  self.dark_raw_files   = ptr_new(/allocate_heap)
 
   ; master flat cache
   self.flats            = ptr_new(/allocate_heap)
@@ -434,6 +442,7 @@ pro ucomp_calibration__define
            dark_times: ptr_new(), $
            dark_exptimes: ptr_new(), $
            dark_gain_modes: ptr_new(), $
+           dark_raw_files: ptr_new(), $
    
            ; master flat cache 
            flats: ptr_new(), $             ; fltarr(nx, ny, 4, 2, n_flats)
