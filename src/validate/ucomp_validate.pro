@@ -51,7 +51,7 @@ pro ucomp_validate, level_name, run=run
     endif
   endfor
 
-  mg_log, '%d invalid %s files found', n_invalid, level_name, $
+  mg_log, '%d/%d %s files invalid', n_invalid, n_files, level_name, $
           name=run.logger_name, /info
 
   done:
