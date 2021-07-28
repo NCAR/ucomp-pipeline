@@ -116,9 +116,9 @@ pro ucomp_raw_plots, run=run
          psym=6, symsize=symsize, $
          linestyle=0, color=camera1_color
 
-  xyouts, 0.95, 6.0 / n_plots + 0.80 * (1.0 / n_plots), /normal, $
+  xyouts, 0.95, 7.0 / n_plots + 0.80 * (1.0 / n_plots), /normal, $
           'camera 0', alignment=1.0, color=camera0_color
-  xyouts, 0.95, 6.0 / n_plots + 0.75 * (1.0 / n_plots), /normal, $
+  xyouts, 0.95, 7.0 / n_plots + 0.74 * (1.0 / n_plots), /normal, $
           'camera 1', alignment=1.0, color=camera1_color
 
   plot, times, t_c0pcb, /nodata, $
@@ -135,14 +135,14 @@ pro ucomp_raw_plots, run=run
          psym=6, symsize=symsize, $
          linestyle=0, color=camera1_color
 
-  xyouts, 0.95, 5.0 / n_plots + 0.80 * (1.0 / n_plots), /normal, $
+  xyouts, 0.95, 6.0 / n_plots + 0.80 * (1.0 / n_plots), /normal, $
           'camera 0', alignment=1.0, color=camera0_color
-  xyouts, 0.95, 5.0 / n_plots + 0.75 * (1.0 / n_plots), /normal, $
+  xyouts, 0.95, 6.0 / n_plots + 0.74 * (1.0 / n_plots), /normal, $
           'camera 1', alignment=1.0, color=camera1_color
 
-  xyouts, 0.95, 4.0 / n_plots + 0.80 * (1.0 / n_plots), /normal, $
+  xyouts, 0.95, 5.0 / n_plots + 0.80 * (1.0 / n_plots), /normal, $
          'T_ temps', alignment=1.0, color=t_color
-  xyouts, 0.95, 4.0 / n_plots + 0.75 * (1.0 / n_plots), /normal, $
+  xyouts, 0.95, 5.0 / n_plots + 0.74 * (1.0 / n_plots), /normal, $
          'TU_ temps', alignment=1.0, color=tu_color
 
   plot, times, t_base, /nodata, $
