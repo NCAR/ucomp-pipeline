@@ -64,7 +64,7 @@ function ucomp_file_ut::test_basic
                        iradius2=iradius2, $
                        overlap_angle=overlap_angle, $
                        post_angle=post_angle, $
-                       t_fw=t_fw, $
+                       t_base=t_base, $
                        t_lcvr1=t_lcvr1, $
                        t_lcvr2=t_lcvr2, $
                        t_lcvr3=t_lcvr3, $
@@ -74,7 +74,7 @@ function ucomp_file_ut::test_basic
                        t_lcvr4=t_lcvr4, $
                        t_lcvr5=t_lcvr5, $
                        t_rack=t_rack, $
-                       tu_fw=tu_fw, $
+                       tu_base=tu_base, $
                        tu_lcvr1=tu_lcvr1, $
                        tu_lcvr2=tu_lcvr2, $
                        tu_lcvr3=tu_lcvr3, $
@@ -162,7 +162,7 @@ function ucomp_file_ut::test_dark
                      iradius2=iradius2, $
                      overlap_angle=overlap_angle, $
                      post_angle=post_angle, $
-                     t_fw=t_fw, $
+                     t_base=t_base, $
                      t_lcvr1=t_lcvr1, $
                      t_lcvr2=t_lcvr2, $
                      t_lcvr3=t_lcvr3, $
@@ -172,7 +172,7 @@ function ucomp_file_ut::test_dark
                      t_lcvr4=t_lcvr4, $
                      t_lcvr5=t_lcvr5, $
                      t_rack=t_rack, $
-                     tu_fw=tu_fw, $
+                     tu_base=tu_base, $
                      tu_lcvr1=tu_lcvr1, $
                      tu_lcvr2=tu_lcvr2, $
                      tu_lcvr3=tu_lcvr3, $
