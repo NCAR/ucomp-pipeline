@@ -13,10 +13,11 @@
 ;     ucomp_find_occulter, data, radius_guess=radius_guess
 ;
 ; :Uses:
-;   ucomp_radial_derivative, ucomp_circfit
+;   ucomp_radial_derivative, mpfitellipse
 ;
 ; :Returns:
-;   `fltarr(3)`, 
+;   `fltarr(3)` in the form `[x, y, r]`, or, if ELLIPTICAL is set, `fltarr(5)`
+;   in the form `[x, y, semi axis 1, semi axis 2, rotation angle]`
 ;
 ; :Params:
 ;   data : in, required, type="fltarr(nx, ny)"
@@ -47,8 +48,6 @@ function ucomp_find_occulter, data, $
                               elliptical=elliptical
   compile_opt strictarr
 
-  debug = 0   ; 1=debug mode, 1=on, 0=off
-
   ; if guess of radius is input, use it, otherwise use default guess
   _radius_guess = n_elements(radius_guess) eq 0L ? 350.0 : radius_guess
 
@@ -67,34 +66,6 @@ function ucomp_find_occulter, data, $
   p = mpfitellipse(x, y, circular=~keyword_set(elliptical), tilt=keyword_set(elliptical), $
                    /quiet, status=status)
   error = status le 0
-
-  ;radius   = p[0]
-  ;x_center = p[2]
-  ;y_center = p[3]
-
-  ;c = comp_circfit(theta, r, error=error)
-  ;if (error ne 0L) then return, -1L
-
-  ;mg_log, 'h: %0.3f, alpha: %0.3f, radius: %0.3f', c[0], c[1], c[2], $
-  ;        name='comp', /debug
-
-  ;if (debug eq 1) then begin
-  ;  ans = ' '
-  ;  plot, theta, r, psym=3, yrange=[200, 340], ystyle=1, $
-  ;        xtitle='Angle', ytitle='Radial Position', charsize=1.5, $
-  ;        title='find_image_center'
-  ;  rfit = c[0] * cos(theta - c[1]) $
-  ;           + sqrt(c[0]^2 * cos(theta - c[1])^2 - c[0]^2 +c[2]^2)
-  ;  oplot, theta, rfit
-  ;  read, 'enter return', ans
-  ;endif
-
-  ;a = [c[0] * cos(c[1]), c[0] * sin(c[1]), c[2]]
-
-  ; changed this to return real center values
-  ;  return, [x_center - nx / 2.0 - center_guess[0], $
-  ;           y_center - ny / 2.0 - center_guess[1], $
-  ;           radius]
 
   return, p[keyword_set(elliptical) ? [2, 3, 0, 1, 4] : [2, 3, 0]]
 end
