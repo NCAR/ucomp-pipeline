@@ -67,12 +67,12 @@ end
 ;       1 - cover in
 ;       2 - moving optic elements, i.e., occulter, cal optics, etc.
 ;-
-pro ucomp_file::setProperty, ixcnter1=ixcnter1, $
-                             iycnter1=iycnter1, $
-                             iradius1=iradius1, $
-                             ixcnter2=ixcnter2, $
-                             iycnter2=iycnter2, $
-                             iradius2=iradius2, $
+pro ucomp_file::setProperty, rcam_xcenter=rcam_xcenter, $
+                             rcam_ycenter=rcam_ycenter, $
+                             rcam_radius=rcam_radius, $
+                             tcam_xcenter=tcam_xcenter, $
+                             tcam_ycenter=tcam_ycenter, $
+                             tcam_radius=tcam_radius, $
                              overlap_angle=overlap_angle, $
                              post_angle=post_angle, $
                              background=background, $
@@ -81,12 +81,12 @@ pro ucomp_file::setProperty, ixcnter1=ixcnter1, $
                              n_extensions=n_extensions
   compile_opt strictarr
 
-  if (n_elements(ixcnter1)) then self.ixcnter1 = ixcnter1
-  if (n_elements(iycnter1)) then self.iycnter1 = iycnter1
-  if (n_elements(iradius1)) then self.iradius1 = iradius1
-  if (n_elements(ixcnter2)) then self.ixcnter2 = ixcnter2
-  if (n_elements(iycnter2)) then self.iycnter2 = iycnter2
-  if (n_elements(iradius2)) then self.iradius2 = iradius2
+  if (n_elements(rcam_xcenter)) then self.rcam_xcenter = rcam_xcenter
+  if (n_elements(rcam_ycenter)) then self.rcam_ycenter = rcam_ycenter
+  if (n_elements(rcam_radius)) then self.rcam_radius = rcam_radius
+  if (n_elements(tcam_xcenter)) then self.tcam_xcenter = tcam_xcenter
+  if (n_elements(tcam_ycenter)) then self.tcam_ycenter = tcam_ycenter
+  if (n_elements(tcam_radius)) then self.tcam_radius = tcam_radius
   if (n_elements(overlap_angle)) then self.overlap_angle = overlap_angle
   if (n_elements(post_angle)) then self.post_angle = post_angle
 
@@ -142,12 +142,12 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
                              caloptic_in=caloptic_in, $
                              polangle=polangle, $
                              retangle=retangle, $
-                             ixcnter1=ixcnter1, $
-                             iycnter1=iycnter1, $
-                             iradius1=iradius1, $
-                             ixcnter2=ixcnter2, $
-                             iycnter2=iycnter2, $
-                             iradius2=iradius2, $
+                             rcam_xcenter=rcam_xcenter, $
+                             rcam_ycenter=rcam_ycenter, $
+                             rcam_radius=rcam_radius, $
+                             tcam_xcenter=tcam_xcenter, $
+                             tcam_ycenter=tcam_ycenter, $
+                             tcam_radius=tcam_radius, $
                              overlap_angle=overlap_angle, $
                              post_angle=post_angle, $
                              t_base=t_base, $
@@ -248,12 +248,12 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
 
   if (arg_present(obsswid)) then obsswid = self.obsswid
 
-  if (arg_present(ixcnter1)) then ixcnter1 = self.ixcnter1
-  if (arg_present(iycnter1)) then iycnter1 = self.iycnter1
-  if (arg_present(iradius1)) then iradius1 = self.iradius1
-  if (arg_present(ixcnter2)) then ixcnter2 = self.ixcnter2
-  if (arg_present(iycnter2)) then iycnter2 = self.iycnter2
-  if (arg_present(iradius2)) then iradius2 = self.iradius2
+  if (arg_present(rcam_xcenter)) then rcam_xcenter = self.rcam_xcenter
+  if (arg_present(rcam_ycenter)) then rcam_ycenter = self.rcam_ycenter
+  if (arg_present(rcam_radius)) then rcam_radius = self.rcam_radius
+  if (arg_present(tcam_xcenter)) then tcam_xcenter = self.tcam_xcenter
+  if (arg_present(tcam_ycenter)) then tcam_ycenter = self.tcam_ycenter
+  if (arg_present(tcam_radius)) then tcam_radius = self.tcam_radius
   if (arg_present(overlap_angle)) then overlap_angle = self.overlap_angle
   if (arg_present(post_angle)) then post_angle = self.post_angle
 
@@ -461,12 +461,12 @@ function ucomp_file::init, raw_filename, run=run
 
   self.data_type = 'unk'
 
-  self.ixcnter1 = !values.f_nan
-  self.iycnter1 = !values.f_nan
-  self.iradius1 = !values.f_nan
-  self.ixcnter2 = !values.f_nan
-  self.iycnter2 = !values.f_nan
-  self.iradius2 = !values.f_nan
+  self.rcam_xcenter = !values.f_nan
+  self.rcam_ycenter = !values.f_nan
+  self.rcam_radius = !values.f_nan
+  self.tcam_xcenter = !values.f_nan
+  self.tcam_ycenter = !values.f_nan
+  self.tcam_radius = !values.f_nan
   self.overlap_angle = !values.f_nan
   self.post_angle = !values.f_nan
 
@@ -524,12 +524,12 @@ pro ucomp_file__define
 
            obsswid             : '', $
 
-           ixcnter1            : 0.0, $
-           iycnter1            : 0.0, $
-           iradius1            : 0.0, $
-           ixcnter2            : 0.0, $
-           iycnter2            : 0.0, $
-           iradius2            : 0.0, $
+           rcam_xcenter        : 0.0, $
+           rcam_ycenter        : 0.0, $
+           rcam_radius         : 0.0, $
+           tcam_xcenter        : 0.0, $
+           tcam_ycenter        : 0.0, $
+           tcam_radius         : 0.0, $
            overlap_angle       : 0.0, $
            post_angle          : 0.0, $
 

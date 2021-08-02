@@ -24,12 +24,12 @@ create table ucomp_eng (
 
   -- TODO: ask Giuliana if this is sufficient for centering?
   -- distortion corrected centers/radii for occulter
-  ixcnter1         float(8, 4),    -- center x for sub-image 1
-  iycnter1         float(8, 4),    -- center y for sub-image 1
-  iradius1         float(8, 4),    -- radius for sub-image 1
-  ixcnter2         float(8, 4),    -- center x for sub-image 2
-  iycnter2         float(8, 4),    -- center y for sub-image 2
-  iradius2         float(8, 4),    -- radius for sub-image 2
+  rcam_xcenter     float(8, 4),    -- center x for RCAM image
+  rcam_ycenter     float(8, 4),    -- center y for RCAM image
+  rcam_radius      float(8, 4),    -- radius for RCAM image
+  tcam_xcenter     float(8, 4),    -- center x for TCAM image
+  tcam_ycenter     float(8, 4),    -- center y for TCAM image
+  tcam_radius      float(8, 4),    -- radius for TCAM image
 
   overlap_angle    float(7, 3),
   post_angle       float(7, 3),
