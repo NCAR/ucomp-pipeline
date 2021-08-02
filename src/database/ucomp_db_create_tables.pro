@@ -61,6 +61,7 @@ pro ucomp_db_create_tables, config_filename
     mg_log, 'creating %s...', tables[t], name=run.logger_name, /info
 
     definition_filename = filepath(string(tables[t], format='(%"%s.tbl")'), $
+                                   subdir=['..', '..', 'resource', 'databse'], $
                                    root=mg_src_root())
     nlines = file_lines(definition_filename)
     sql_code = strarr(nlines)
@@ -100,6 +101,7 @@ pro ucomp_db_create_tables, config_filename
 
     definition_filename = filepath(string(insert_tables[t], $
                                           format='(%"%s_insert.tbl")'), $
+                                   subdir=['..', '..', 'resource', 'databse'], $
                                    root=mg_src_root())
     nlines = file_lines(definition_filename)
     sql_code = strarr(nlines)
