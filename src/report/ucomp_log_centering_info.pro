@@ -8,7 +8,7 @@
 ;     KCor run object
 ;-
 pro ucomp_log_centering_info, filename, run=run
-  comile_opt strictarr
+  compile_opt strictarr
 
   files = run->get_files(count=n_files)
   if (n_files eq 0L) then goto, done
