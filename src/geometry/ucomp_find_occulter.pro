@@ -64,7 +64,7 @@ function ucomp_find_occulter, data, $
   x = reform(points[0, *])
   y = reform(points[1, *])
   p = mpfitellipse(x, y, circular=~keyword_set(elliptical), tilt=keyword_set(elliptical), $
-                   /quiet, status=status)
+                   /quiet, status=status, bestnorm=chisq)
   error = status le 0
 
   return, p[keyword_set(elliptical) ? [2, 3, 0, 1, 4] : [2, 3, 0]]
