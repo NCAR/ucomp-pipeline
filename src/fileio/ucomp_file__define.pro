@@ -73,7 +73,6 @@ pro ucomp_file::setProperty, rcam_xcenter=rcam_xcenter, $
                              tcam_xcenter=tcam_xcenter, $
                              tcam_ycenter=tcam_ycenter, $
                              tcam_radius=tcam_radius, $
-                             overlap_angle=overlap_angle, $
                              post_angle=post_angle, $
                              background=background, $
                              quality_bitmask=quality_bitmask, $
@@ -87,7 +86,6 @@ pro ucomp_file::setProperty, rcam_xcenter=rcam_xcenter, $
   if (n_elements(tcam_xcenter)) then self.tcam_xcenter = tcam_xcenter
   if (n_elements(tcam_ycenter)) then self.tcam_ycenter = tcam_ycenter
   if (n_elements(tcam_radius)) then self.tcam_radius = tcam_radius
-  if (n_elements(overlap_angle)) then self.overlap_angle = overlap_angle
   if (n_elements(post_angle)) then self.post_angle = post_angle
 
   if (n_elements(background)) then self.background = background
@@ -148,7 +146,6 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
                              tcam_xcenter=tcam_xcenter, $
                              tcam_ycenter=tcam_ycenter, $
                              tcam_radius=tcam_radius, $
-                             overlap_angle=overlap_angle, $
                              post_angle=post_angle, $
                              t_base=t_base, $
                              t_lcvr1=t_lcvr1, $
@@ -254,7 +251,6 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
   if (arg_present(tcam_xcenter)) then tcam_xcenter = self.tcam_xcenter
   if (arg_present(tcam_ycenter)) then tcam_ycenter = self.tcam_ycenter
   if (arg_present(tcam_radius)) then tcam_radius = self.tcam_radius
-  if (arg_present(overlap_angle)) then overlap_angle = self.overlap_angle
   if (arg_present(post_angle)) then post_angle = self.post_angle
 
   if (arg_present(t_base)) then t_base = self.t_base
@@ -467,7 +463,6 @@ function ucomp_file::init, raw_filename, run=run
   self.tcam_xcenter = !values.f_nan
   self.tcam_ycenter = !values.f_nan
   self.tcam_radius = !values.f_nan
-  self.overlap_angle = !values.f_nan
   self.post_angle = !values.f_nan
 
   self.background = !values.f_nan
@@ -530,7 +525,6 @@ pro ucomp_file__define
            tcam_xcenter        : 0.0, $
            tcam_ycenter        : 0.0, $
            tcam_radius         : 0.0, $
-           overlap_angle       : 0.0, $
            post_angle          : 0.0, $
 
            t_base              : 0.0, $
