@@ -68,7 +68,6 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
               {name: 'tcam_ycenter', type: '%s'}, $
               {name: 'tcam_radius', type: '%s'}, $
 
-              {name: 'overlap_angle', type: '%s'}, $
               {name: 'post_angle', type: '%s'}, $
 
               {name: 'wave_region', type: '''%s'''}, $
@@ -146,7 +145,6 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
                  ucomp_db_float(file.tcam_ycenter), $
                  ucomp_db_float(file.tcam_radius), $
 
-                 ucomp_db_float(file.overlap_angle), $
                  ucomp_db_float(file.post_angle), $
 
                  file.wave_region, $

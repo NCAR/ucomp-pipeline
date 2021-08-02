@@ -31,7 +31,6 @@ create table ucomp_eng (
   tcam_ycenter     float(8, 4),    -- center y for TCAM image
   tcam_radius      float(8, 4),    -- radius for TCAM image
 
-  overlap_angle    float(7, 3),
   post_angle       float(7, 3),
 
   wave_region      char (4),
