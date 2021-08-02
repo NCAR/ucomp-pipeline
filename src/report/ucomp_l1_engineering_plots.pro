@@ -29,7 +29,7 @@ pro ucomp_l1_engineering_plots, run=run
                              run=run
 
   ucomp_log_centering_info, filepath(string(run.date, $
-                                            format='(%"%s.centering.log")'), $
+                                            format='(%"%s.ucomp.centering.log")'), $
                                       subdir=ucomp_decompose_date(run.date), $
                                      root=engineering_basedir), $
                             run=run

@@ -15,16 +15,20 @@ pro ucomp_log_centering_info, filename, run=run
 
   openw, lun, filename, /get_lun
   for f = 0L, n_files - 1L do begin
-    if (files[f].ok) then begin
+    if (files[f].ok && files[f].data_type eq 'sci') then begin
       printf, lun, $
               files[f].l1_basename, $
               files[f].rcam_xcenter, $
               files[f].rcam_ycenter, $
               files[f].rcam_radius, $
+              files[f].rcam_chisq, $
+              files[f].rcam_error, $
               files[f].tcam_xcenter, $
               files[f].tcam_ycenter, $
               files[f].tcam_radius, $
-              format='(%"%-30s   %0.2f %0.2f %0.2f   %0.2f %0.2f %0.2f")'
+              files[f].tcam_chisq, $
+              files[f].tcam_error, $
+              format='(%"%-36s   %0.2f %0.2f %0.2f %0.2f %d    %0.2f %0.2f %0.2f %0.2f %d")'
     endif
   endfor
   free_lun, lun

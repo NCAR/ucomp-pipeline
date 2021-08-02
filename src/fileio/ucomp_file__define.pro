@@ -70,9 +70,13 @@ end
 pro ucomp_file::setProperty, rcam_xcenter=rcam_xcenter, $
                              rcam_ycenter=rcam_ycenter, $
                              rcam_radius=rcam_radius, $
+                             rcam_chisq=rcam_chisq, $
+                             rcam_error=rcam_error, $
                              tcam_xcenter=tcam_xcenter, $
                              tcam_ycenter=tcam_ycenter, $
                              tcam_radius=tcam_radius, $
+                             tcam_chisq=tcam_chisq, $
+                             tcam_error=tcam_error, $
                              post_angle=post_angle, $
                              background=background, $
                              quality_bitmask=quality_bitmask, $
@@ -83,9 +87,13 @@ pro ucomp_file::setProperty, rcam_xcenter=rcam_xcenter, $
   if (n_elements(rcam_xcenter)) then self.rcam_xcenter = rcam_xcenter
   if (n_elements(rcam_ycenter)) then self.rcam_ycenter = rcam_ycenter
   if (n_elements(rcam_radius)) then self.rcam_radius = rcam_radius
+  if (n_elements(rcam_chisq)) then self.rcam_chisq = rcam_chisq
+  if (n_elements(rcam_error)) then self.rcam_error = rcam_error
   if (n_elements(tcam_xcenter)) then self.tcam_xcenter = tcam_xcenter
   if (n_elements(tcam_ycenter)) then self.tcam_ycenter = tcam_ycenter
   if (n_elements(tcam_radius)) then self.tcam_radius = tcam_radius
+  if (n_elements(tcam_chisq)) then self.tcam_chisq = tcam_chisq
+  if (n_elements(tcam_error)) then self.tcam_error = tcam_error
   if (n_elements(post_angle)) then self.post_angle = post_angle
 
   if (n_elements(background)) then self.background = background
@@ -143,9 +151,13 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
                              rcam_xcenter=rcam_xcenter, $
                              rcam_ycenter=rcam_ycenter, $
                              rcam_radius=rcam_radius, $
+                             rcam_chisq=rcam_chisq, $
+                             rcam_error=rcam_error, $
                              tcam_xcenter=tcam_xcenter, $
                              tcam_ycenter=tcam_ycenter, $
                              tcam_radius=tcam_radius, $
+                             tcam_chisq=tcam_chisq, $
+                             tcam_error=tcam_error, $
                              post_angle=post_angle, $
                              t_base=t_base, $
                              t_lcvr1=t_lcvr1, $
@@ -248,9 +260,13 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
   if (arg_present(rcam_xcenter)) then rcam_xcenter = self.rcam_xcenter
   if (arg_present(rcam_ycenter)) then rcam_ycenter = self.rcam_ycenter
   if (arg_present(rcam_radius)) then rcam_radius = self.rcam_radius
+  if (arg_present(rcam_chisq)) then rcam_chisq = self.rcam_chisq
+  if (arg_present(rcam_error)) then rcam_error = self.rcam_error
   if (arg_present(tcam_xcenter)) then tcam_xcenter = self.tcam_xcenter
   if (arg_present(tcam_ycenter)) then tcam_ycenter = self.tcam_ycenter
   if (arg_present(tcam_radius)) then tcam_radius = self.tcam_radius
+  if (arg_present(tcam_chisq)) then tcam_chisq = self.tcam_chisq
+  if (arg_present(tcam_error)) then tcam_error = self.tcam_error
   if (arg_present(post_angle)) then post_angle = self.post_angle
 
   if (arg_present(t_base)) then t_base = self.t_base
@@ -460,9 +476,13 @@ function ucomp_file::init, raw_filename, run=run
   self.rcam_xcenter = !values.f_nan
   self.rcam_ycenter = !values.f_nan
   self.rcam_radius = !values.f_nan
+  self.rcam_chisq = !values.f_nan
+  self.rcam_error = -1L
   self.tcam_xcenter = !values.f_nan
   self.tcam_ycenter = !values.f_nan
   self.tcam_radius = !values.f_nan
+  self.tcam_chisq = !values.f_nan
+  self.tcam_error = -1L
   self.post_angle = !values.f_nan
 
   self.background = !values.f_nan
@@ -522,9 +542,13 @@ pro ucomp_file__define
            rcam_xcenter        : 0.0, $
            rcam_ycenter        : 0.0, $
            rcam_radius         : 0.0, $
+           rcam_chisq          : 0.0, $
+           rcam_error          : 0L, $
            tcam_xcenter        : 0.0, $
            tcam_ycenter        : 0.0, $
            tcam_radius         : 0.0, $
+           tcam_chisq          : 0.0, $
+           tcam_error          : 0L, $
            post_angle          : 0.0, $
 
            t_base              : 0.0, $
