@@ -54,11 +54,16 @@ pro ucomp_l1_alignment, file, primary_header, data, headers, run=run, status=sta
 
   rcam_im = total(data[*, *, *, 0, center_wavelength_index], 3) / n_pol_states
   rcam_geometry = ucomp_find_occulter(rcam_im)
+  file.rcam_xcenter = rcam_geometry[0]
+  file.rcam_ycenter = rcam_geometry[1]
+  file.rcam_radius = rcam_geometry[2]
 
   tcam_im = total(data[*, *, *, 1, center_wavelength_index], 3) / n_pol_states
   tcam_geometry = ucomp_find_occulter(tcam_im)
+  file.tcam_xcenter = tcam_geometry[0]
+  file.tcam_ycenter = tcam_geometry[1]
+  file.tcam_radius = tcam_geometry[2]
 
-  ; TODO: save rcam_geometry and tcam_geometry
 
 ;   for p = 0, n_pol_states - 1L do begin
 ;     for e = 0L, file.n_extenions - 1L do begin
