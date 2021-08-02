@@ -1,7 +1,9 @@
 ; docformat = 'rst'
 
 ;+
-; Align images, i.e., distortion correction and centering on center of occulter.
+; Perform geometric operations on the images, i.e., distortion correction,
+; centering images on center of occulter, combining the cameras, and rotating
+; them to be North up.
 ;
 ; :Params:
 ;   file : in, required, type=object
