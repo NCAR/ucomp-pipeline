@@ -61,12 +61,12 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
               {name: 'retangle', type: '%f'}, $
               {name: 'caloptic', type: '%d'}, $
 
-              {name: 'ixcnter1', type: '%s'}, $
-              {name: 'iycnter1', type: '%s'}, $
-              {name: 'iradius1', type: '%s'}, $
-              {name: 'ixcnter2', type: '%s'}, $
-              {name: 'iycnter2', type: '%s'}, $
-              {name: 'iradius2', type: '%s'}, $
+              {name: 'rcam_xcenter', type: '%s'}, $
+              {name: 'rcam_ycenter', type: '%s'}, $
+              {name: 'rcam_radius', type: '%s'}, $
+              {name: 'tcam_xcenter', type: '%s'}, $
+              {name: 'tcam_ycenter', type: '%s'}, $
+              {name: 'tcam_radius', type: '%s'}, $
 
               {name: 'overlap_angle', type: '%s'}, $
               {name: 'post_angle', type: '%s'}, $
@@ -139,12 +139,12 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
                  file.retangle, $
                  file.caloptic_in, $
 
-                 ucomp_db_float(file.ixcnter1), $
-                 ucomp_db_float(file.iycnter1), $
-                 ucomp_db_float(file.iradius1), $
-                 ucomp_db_float(file.ixcnter2), $
-                 ucomp_db_float(file.iycnter2), $
-                 ucomp_db_float(file.iradius2), $
+                 ucomp_db_float(file.rcam_xcenter), $
+                 ucomp_db_float(file.rcam_ycenter), $
+                 ucomp_db_float(file.rcam_radius), $
+                 ucomp_db_float(file.tcam_xcenter), $
+                 ucomp_db_float(file.tcam_ycenter), $
+                 ucomp_db_float(file.tcam_radius), $
 
                  ucomp_db_float(file.overlap_angle), $
                  ucomp_db_float(file.post_angle), $
