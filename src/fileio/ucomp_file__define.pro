@@ -141,6 +141,8 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
                              ok=ok, $
                              occulter_in=occulter_in, $
                              occultrid=occultrid, $
+                             occulter_x=occulter_x, $
+                             occulter_y=occulter_y, $
                              obsswid=obsswid, $
                              cover_in=cover_in, $
                              darkshutter_in=darkshutter_in, $
@@ -248,6 +250,9 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
 
   if (arg_present(occulter_in)) then occulter_in = self.occulter_in
   if (arg_present(occultrid)) then occultrid = self.occultrid
+  if (arg_present(occulter_x)) then occulter_x = self.occulter_x
+  if (arg_present(occulter_y)) then occulter_y = self.occulter_y
+
   if (arg_present(cover_in)) then cover_in = self.cover_in
   if (arg_present(darkshutter_in)) then darkshutter_in = self.darkshutter_in
   if (arg_present(opal_in)) then opal_in = self.opal_in
@@ -376,6 +381,9 @@ pro ucomp_file::_inventory
     self->setProperty, quality_bitmask=ishft(1, 1)
   endif
   self.occultrid = ucomp_getpar(primary_header, 'OCCLTRID', found=found)
+
+  self.occulter_x = ucomp_getpar(primary_header, 'OCCLTR-X')
+  self.occulter_y = ucomp_getpar(primary_header, 'OCCLTR-Y')
 
   self.opal_in = strlowcase(ucomp_getpar(extension_header, 'DIFFUSR', found=found)) eq 'in'
   self.caloptic_in = strlowcase(ucomp_getpar(extension_header, 'CALOPTIC', found=found)) eq 'in'
@@ -539,6 +547,8 @@ pro ucomp_file__define
 
            obsswid             : '', $
 
+           occulter_x          : 0.0, $
+           occulter_y          : 0.0, $
            rcam_xcenter        : 0.0, $
            rcam_ycenter        : 0.0, $
            rcam_radius         : 0.0, $
