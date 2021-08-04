@@ -27,5 +27,4 @@ pro ucomp_l1_polarimetric_correction, file, primary_header, data, headers, $
 
   ; TODO: implement
   ; call `UCOMP_POLARIMETRIC_TRANSFORM`
-  mg_log, 'not implemented', name=run.logger, /warn
 end
