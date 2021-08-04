@@ -118,19 +118,29 @@ pro ucomp_regression_wrapper, date, config_filename
               name=run.logger_name, /warn
     endif
 
-    if (stregex(results[result_matches[m]], '.*\.fts(\.gz)?', /boolean)) then begin
-      ucomp_compare_fits, result_path, standard_path, run.logger_name, status=compare_status
-      if (compare_status ne 0L) then begin
-        mg_log, 'FITS file does not match standard', name=run.logger_name, /warn
-        status or= 4L
-      endif
-    endif else begin
-      ucomp_compare_text, result_path, standard_path, run.logger_name, status=compare_status
-      if (compare_status ne 0L) then begin
-        mg_log, 'text file does not match standard', name=run.logger_name, /warn
-        status or= 4L
-      endif
-    endelse
+    case 1 of
+      stregex(results[result_matches[m]], '.*\.fts(\.gz)?', /boolean): begin
+          ucomp_compare_fits, result_path, standard_path, run.logger_name, status=compare_status
+          if (compare_status ne 0L) then begin
+            mg_log, 'FITS file does not match standard', name=run.logger_name, /warn
+            status or= 4L
+          end
+        end
+      stregex(results[result_matches[m]], '.*\.gif', /boolean): begin
+          ucomp_compare_binary, result_path, standard_path, run.logger_name, status=compare_status
+          if (compare_status ne 0L) then begin
+            mg_log, 'binary file does not match standard', name=run.logger_name, /warn
+            status or= 4L
+          endif
+        end
+      else: begin
+          ucomp_compare_text, result_path, standard_path, run.logger_name, status=compare_status
+          if (compare_status ne 0L) then begin
+            mg_log, 'text file does not match standard', name=run.logger_name, /warn
+            status or= 4L
+          endif
+        end
+    endcase
   endfor
 
   mg_log, 'exiting with status %d', status, name=run.logger_name, /info
