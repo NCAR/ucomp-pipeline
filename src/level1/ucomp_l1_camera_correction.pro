@@ -26,5 +26,4 @@ pro ucomp_l1_camera_correction, file, primary_header, data, headers, $
   status = 0L
 
   ; TODO: implement
-  mg_log, 'not implemented', name=run.logger, /warn
 end

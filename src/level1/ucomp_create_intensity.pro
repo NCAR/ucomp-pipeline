@@ -56,10 +56,15 @@ pro ucomp_create_intensity, file, data, run=run, occulter_annotation=occulter_an
       endif else begin
         im = reform(data[*, *, *, c])
       endelse
+
       im = total(im, 3, /preserve_type)
 
-      scaled_im = bytscl(im, min=display_min, max=display_max, top=n_colors - 1L)
-      mg_log, 'scaled_im: max: %d', max(scaled_im), name=run.logger_name, /debug
+      scaled_im = bytscl(im, $
+                        min=display_min, $
+                        max=display_max, $
+                        top=n_colors - 1L, $
+                        /nan)
+
       tv, scaled_im
       xyouts, 15, 15, /device, alignment=0.0, $
               string(e, format='(%"ext: %d")')
@@ -80,9 +85,11 @@ pro ucomp_create_intensity, file, data, run=run, occulter_annotation=occulter_an
               radius = file.tcam_radius
             end
         endcase
+
         t = findgen(360) * !dtor
         x = radius * cos(t) + x0
         y = radius * sin(t) + y0
+
         plots, x, y, /device, color=occulter_color
         plots, x0, y0, /device, color=occulter_color, psym=1
       endif

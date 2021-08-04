@@ -4,7 +4,7 @@
 ; Create a GIF of a FITS file.
 ;
 ; :Params:
-;   data : in, required, type=lonarr(2)
+;   data : in, required, type=2-d numerical data
 ;     data to create the GIF of
 ;   output_filename : in, required, type=string
 ;     filename of output FITS file
@@ -66,7 +66,11 @@ pro ucomp_create_gif, data, output_filename, $
   tvlct, r, g, b, /get
 
   ; display image
-  tv, bytscl(data^_display_exponent, min=_display_min, max=_display_max, top=top)
+  tv, bytscl(data^_display_exponent, $
+             min=_display_min, $
+             max=_display_max, $
+             top=top, $
+             /nan)
 
   ; annotation
   line_height = 10L
