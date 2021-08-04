@@ -22,15 +22,11 @@ pro ucomp_make_demod, wave_region, run=run
                     root=run->config('processing/basedir'))
   ucomp_mkdir, l1_dir, logger_name=run.logger_name
 
-; TODO: implement, i.e., call into Steve's code
-  mg_log, 'not implemented', name=run.logger_name, /warn
+  ; TODO: implement, i.e., call into Steve's code
 
   output_basename = string(run.date, wave_region, $
                            format='(%"%s.ucomp.demod.%s.fts")')
   output_filename = filepath(output_basename, root=l1_dir)
-
-; TODO: implement writing
-  mg_log, 'not implemented', name=run.logger_name, /warn
 
   done:
 end

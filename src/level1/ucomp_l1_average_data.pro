@@ -42,6 +42,7 @@ pro ucomp_l1_average_data, file, primary_header, ext_data, ext_headers, $
   ext_ids = string(exptime, format='(%"%0.1f")') $
               + '-' + strtrim(fix(onband), 2) $
               + '-' + string(wavelength, format='(%"%0.2f")')
+
   group_indices = mg_groupby(ext_ids, $
                              n_groups=n_groups, $
                              group_starts=group_starts)
@@ -65,7 +66,7 @@ pro ucomp_l1_average_data, file, primary_header, ext_data, ext_headers, $
     gi = group_indices[group_starts[g]:group_starts[g+1] - 1]
 
     d = ext_data[*, *, *, *, gi]
-    averaged_ext_data[*, *, *, *, g] =  size(d, /n_dimensions) lt 5 ? d : mean(d, dimension=5)
+    averaged_ext_data[*, *, *, *, g] = size(d, /n_dimensions) lt 5 ? d : mean(d, dimension=5)
 
     averaged_exptime[g]    = exptime[gi[0]]
     averaged_onband[g]     = onband[gi[0]]
