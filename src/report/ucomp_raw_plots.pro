@@ -28,16 +28,16 @@ pro ucomp_raw_plots, run=run
   tvlct, 255, 255, 255, 1
   tvlct, 255, 0, 0, 2
   tvlct, 0, 0, 255, 3
-  tvlct, 0, 255, 0, 4
-  tvlct, 255, 0, 255, 5
+  tvlct, 0, 136, 0, 4
+  tvlct, 136, 0, 136, 5
   tvlct, r, g, b, /get
 
   color            = 0
   background_color = 1
   camera0_color    = 2
   camera1_color    = 3
-  t_color          = 2
-  tu_color         = 3
+  t_color          = 4
+  tu_color         = 5
 
   times = fltarr(n_files)
   for f = 0L, n_files - 1L do times[f] = files[f].obsday_hours
@@ -118,7 +118,7 @@ pro ucomp_raw_plots, run=run
 
   xyouts, 0.95, 7.0 / n_plots + 0.80 * (1.0 / n_plots), /normal, $
           'camera 0', alignment=1.0, color=camera0_color
-  xyouts, 0.95, 7.0 / n_plots + 0.74 * (1.0 / n_plots), /normal, $
+  xyouts, 0.95, 7.0 / n_plots + 0.72 * (1.0 / n_plots), /normal, $
           'camera 1', alignment=1.0, color=camera1_color
 
   plot, times, t_c0pcb, /nodata, $
@@ -135,14 +135,9 @@ pro ucomp_raw_plots, run=run
          psym=6, symsize=symsize, $
          linestyle=0, color=camera1_color
 
-  xyouts, 0.95, 6.0 / n_plots + 0.80 * (1.0 / n_plots), /normal, $
-          'camera 0', alignment=1.0, color=camera0_color
-  xyouts, 0.95, 6.0 / n_plots + 0.74 * (1.0 / n_plots), /normal, $
-          'camera 1', alignment=1.0, color=camera1_color
-
   xyouts, 0.95, 5.0 / n_plots + 0.80 * (1.0 / n_plots), /normal, $
          'T_ temps', alignment=1.0, color=t_color
-  xyouts, 0.95, 5.0 / n_plots + 0.74 * (1.0 / n_plots), /normal, $
+  xyouts, 0.95, 5.0 / n_plots + 0.72 * (1.0 / n_plots), /normal, $
          'TU_ temps', alignment=1.0, color=tu_color
 
   plot, times, t_base, /nodata, $
@@ -154,10 +149,10 @@ pro ucomp_raw_plots, run=run
         ystyle=1, yrange=[tbase_min, tbase_max]
   oplot, times, t_base, $
          psym=6, symsize=symsize, $
-         linestyle=0, color=camera0_color
+         linestyle=0, color=t_color
   oplot, times, tu_base, $
          psym=6, symsize=symsize, $
-         linestyle=0, color=camera1_color
+         linestyle=0, color=tu_color
 
   plot, times, t_lcvr1, psym=6, symsize=symsize, /nodata, $
         linestyle=0, color=color, $
