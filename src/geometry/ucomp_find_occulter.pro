@@ -83,9 +83,27 @@ end
 
 date = '20210725'
 center_guess = [(1280.0 - 1.0) / 2.0, (1024.0 - 1.0) / 2.0]
-radius_guess = 350.0
+; radius_guess = 350.0
 dradius = 40.0
 display_max = 310.0
+
+
+; min x-occulter
+date = '20210804'
+basename = '20210804.183246.33.ucomp.1074.l0.fts'
+
+; min y-occulter
+; date = '20210802'
+; basename = '20210802.174023.90.ucomp.1074.l0.fts'
+
+; max x-occulter
+; date = '20210801'
+; basename = '20210801.184204.30.ucomp.1074.l0.fts'
+
+; max y-occulter
+; date = '20210805'
+; basename = '20210805.222604.39.ucomp.1074.l0.fts'
+
 
 ; OK (super noisy, hard to tell)
 ; basename = '20210725.230515.ucomp.530.continuum_subtraction.7.fts'
@@ -148,10 +166,10 @@ display_max = 310.0
 ; shifting image 1 by -12.4, 6.6
 
 ; EXCELLENT
-basename = '20210725.230123.ucomp.1074.continuum_subtraction.7.fts'
-radius_guess = 350.0
-display_max = 310.0
-dradius = 20.0
+; basename = '20210725.230123.ucomp.1074.continuum_subtraction.7.fts'
+; radius_guess = 350.0
+; display_max = 310.0
+; dradius = 20.0
 ; camera: 0, x: 625.3, y: 505.4, r: 355.6
 ; camera: 1, x: 660.0, y: 505.8, r: 356.9
 ; shifting image 0 by 14.2, 6.1
@@ -194,13 +212,26 @@ fits_close, fcb
 
 occulter_x = ucomp_getpar(primary_header, 'OCCLTR-X')
 occulter_y = ucomp_getpar(primary_header, 'OCCLTR-Y')
-print, occulter_x, occulter_y, $
-       format='(%"occulter-x: %0.2f, occulter-y: %0.2f")'
+occulter_id = ucomp_getpar(primary_header, 'OCCLTRID')
+print, occulter_id, occulter_x, occulter_y, $
+       format='(%"occulter: %s, occulter-x: %0.2f, occulter-y: %0.2f")'
+
+wave_region = ucomp_getpar(primary_header, 'FILTER')
 
 ; occulter-x: 61.60, occulter-y: -28.31
+if (occulter_id eq 'NONE') then occulter_id = '28'
+arcsec = run->epoch('OC-' + occulter_id + '-arcsec', datetime='20190101')
+mm = run->epoch('OC-' + occulter_id + '-mm', datetime='20190101')
+
+plate_scale = run->line(wave_region, 'plate_scale')
+radius_guess = arcsec / plate_scale
+print, radius_guess, plate_scale, format='radius guess: %0.2f, plate scale: %0.2f'
+print, occulter_x * arcsec / mm, format='x-offset in arcsec: %0.2f'
+print, occulter_x * arcsec / mm / plate_scale, format='x-offset in pixels: %0.2f'
+
 xoffset = occulter_x * [-1.0, 1.0] / 5.0
 yoffset = fltarr(2) + occulter_y / 5.0
-; TODO: adjust radius_guess for occulter
+print, xoffset
 for c = 0, 1 do begin
   im = total(data[*, *, *, c], 3)
   camera_center_guess = center_guess + [xoffset[c], yoffset[c]]
