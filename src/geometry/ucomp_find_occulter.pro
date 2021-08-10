@@ -88,25 +88,33 @@ dradius = 40.0
 display_max = 310.0
 
 
-; min x-occulter
-date = '20210804'
-basename = '20210804.183246.33.ucomp.1074.l0.fts'
+; bad fit
+; occulter: 28, occulter-x: 61.40, occulter-y: 13.00
+; date = '20210806'
+; basename = '20210807.000539.ucomp.1074.demodulation.7.fts'
+; display_max = 600.0
 
-; min y-occulter
-; date = '20210802'
-; basename = '20210802.174023.90.ucomp.1074.l0.fts'
+; min x-occulter
+; date = '20210803'
+; basename = '20210803.180700.ucomp.1074.demodulation.7.fts'
 
 ; max x-occulter
+; occulter: NONE, occulter-x: 61.90, occulter-y: 11.70
 ; date = '20210801'
-; basename = '20210801.184204.30.ucomp.1074.l0.fts'
+; basename = '20210801.192854.ucomp.1074.demodulation.7.fts'
+
+; min y-occulter
+; occulter: NONE, occulter-x: 61.85, occulter-y: 11.40
+date = '20210802'
+basename = '20210802.174023.ucomp.1074.demodulation.7.fts'
 
 ; max y-occulter
 ; date = '20210805'
-; basename = '20210805.222604.39.ucomp.1074.l0.fts'
+; basename = '20210805.222604.ucomp.1074.demodulation.7.fts'
 
 
 ; OK (super noisy, hard to tell)
-; basename = '20210725.230515.ucomp.530.continuum_subtraction.7.fts'
+; basename = '20210725.230515.ucomp.530.demodulation.7.fts'
 ; radius_guess = 335.0
 ; display_max = 310.0
 ; dradius = 20.0
@@ -116,7 +124,7 @@ basename = '20210804.183246.33.ucomp.1074.l0.fts'
 ; shifting image 1 by -11.4, 5.5
 
 ; OK
-; basename = '20210725.230857.ucomp.637.continuum_subtraction.7.fts'
+; basename = '20210725.230857.ucomp.637.demodulation.7.fts'
 ; radius_guess = 350.0
 ; display_max = 50.0
 ; dradius = 20.0
@@ -126,7 +134,7 @@ basename = '20210804.183246.33.ucomp.1074.l0.fts'
 ; shifting image 1 by -14.3, 6.6
 
 ; OK
-; basename = '20210725.225844.ucomp.656.continuum_subtraction.7.fts'
+; basename = '20210725.225844.ucomp.656.demodulation.7.fts'
 ; radius_guess = 350.0
 ; display_max = 310.0
 ; dradius = 20.0
@@ -136,7 +144,7 @@ basename = '20210804.183246.33.ucomp.1074.l0.fts'
 ; shifting image 1 by -14.5, 8.5
 
 ; OK
-; basename = '20210725.231100.ucomp.691.continuum_subtraction.7.fts'
+; basename = '20210725.231100.ucomp.691.demodulation.7.fts'
 ; radius_guess = 350.0
 ; display_max = 10.0
 ; dradius = 20.0
@@ -146,7 +154,7 @@ basename = '20210804.183246.33.ucomp.1074.l0.fts'
 ; shifting image 1 by -13.2, 4.9
 
 ; OK
-; basename = '20210725.231253.ucomp.706.continuum_subtraction.7.fts'
+; basename = '20210725.231253.ucomp.706.demodulation.7.fts'
 ; radius_guess = 350.0
 ; display_max = 50.0
 ; dradius = 20.0
@@ -156,7 +164,7 @@ basename = '20210804.183246.33.ucomp.1074.l0.fts'
 ; shifting image 1 by -14.3, 5.3
 
 ; GOOD
-; basename = '20210725.231447.ucomp.789.continuum_subtraction.7.fts'
+; basename = '20210725.231447.ucomp.789.demodulation.7.fts'
 ; radius_guess = 350.0
 ; display_max = 50.0
 ; dradius = 20.0
@@ -166,7 +174,7 @@ basename = '20210804.183246.33.ucomp.1074.l0.fts'
 ; shifting image 1 by -12.4, 6.6
 
 ; EXCELLENT
-; basename = '20210725.230123.ucomp.1074.continuum_subtraction.7.fts'
+; basename = '20210725.230123.ucomp.1074.demodulation.7.fts'
 ; radius_guess = 350.0
 ; display_max = 310.0
 ; dradius = 20.0
@@ -176,7 +184,7 @@ basename = '20210804.183246.33.ucomp.1074.l0.fts'
 ; shifting image 1 by -20.5, 5.7
 
 ; GOOD
-; basename = '20210725.232333.ucomp.1079.continuum_subtraction.7.fts'
+; basename = '20210725.232333.ucomp.1079.demodulation.7.fts'
 ; radius_guess = 350.0
 ; display_max = 100.0
 ; dradius = 20.0
@@ -207,8 +215,11 @@ filename = filepath(basename, $
 
 fits_open, filename, fcb
 fits_read, fcb, data, primary_header, exten_no=0
-fits_read, fcb, data, header, exten_no=4
+fits_read, fcb, rcam_data, header, exten_no=4
+fits_read, fcb, tcam_data, header, exten_no=11
 fits_close, fcb
+
+date_obs = ucomp_getpar(primary_header, 'DATE-OBS')
 
 occulter_x = ucomp_getpar(primary_header, 'OCCLTR-X')
 occulter_y = ucomp_getpar(primary_header, 'OCCLTR-Y')
@@ -229,19 +240,18 @@ print, radius_guess, plate_scale, format='radius guess: %0.2f, plate scale: %0.2
 print, occulter_x * arcsec / mm, format='x-offset in arcsec: %0.2f'
 print, occulter_x * arcsec / mm / plate_scale, format='x-offset in pixels: %0.2f'
 
-xoffset = occulter_x * [-1.0, 1.0] / 5.0
-yoffset = fltarr(2) + occulter_y / 5.0
-print, xoffset
 for c = 0, 1 do begin
-  im = total(data[*, *, *, c], 3)
-  camera_center_guess = center_guess + [xoffset[c], yoffset[c]]
+  offband_data = c eq 0 ? tcam_data : rcam_data
+  onband_data = c eq 0 ? rcam_data : tcam_data
+  im = total(offband_data[*, *, *, c], 3)
+  camera_center_guess = ucomp_occulter_guess(c, date, occulter_x, occulter_y, run=run)
   geometry = ucomp_find_occulter(im, $
                                  center_guess=camera_center_guess, $
                                  radius_guess=radius_guess, $
                                  dradius=dradius, $
                                  points=points)
 
-  mg_image, bytscl(im, -0.1, display_max), /new, title=string(c, format='Camera %d')
+  mg_image, bytscl(im, -0.1, display_max), /new, title=string(c, format='Offband Camera %d')
   plots, points[0, *], points[1, *], /device, color='0000ff'x, thick=1.0, linestyle=2
   t = findgen(360) * !dtor
   x = geometry[2] * cos(t) + geometry[0]
@@ -260,32 +270,42 @@ for c = 0, 1 do begin
   plots, geometry[0], geometry[1], color='ffff00'x, psym=1
 
   print, c, geometry, format='camera: %d, x: %0.1f, y: %0.1f, r: %0.1f'
+
+  print, c, [geometry[0], geometry[1]] - camera_center_guess, $
+         format='Error in camera %d: %0.2f, %0.2f'
+  print, c, [geometry[0], geometry[1]] - center_guess, $
+         format='Try for camera %d: %0.2f, %0.2f'
+
+  ; im = total(onband_data[*, *, *, c], 3)
+  ; mg_image, bytscl(im, -0.1, display_max), /new, title=string(c, format='Onband Camera %d')
 endfor
 
-im0 = total(data[*, *, *, 0], 3)
-im1 = total(data[*, *, *, 1], 3)
-dims = size(im0, /dimensions)
+offband_im0 = total(tcam_data[*, *, *, 0], 3)
+onband_im0 = total(rcam_data[*, *, *, 0], 3)
+offband_im1 = total(rcam_data[*, *, *, 1], 3)
+onband_im1 = total(tcam_data[*, *, *, 1], 3)
+dims = size(offband_im0, /dimensions)
 camera_center_guess = center_guess + [xoffset[0], yoffset[0]]
-geometry0 = ucomp_find_occulter(im0, $
+geometry0 = ucomp_find_occulter(offband_im0, $
                                 center_guess=camera_center_guess, $
                                 radius_guess=radius_guess, $
                                 dradius=dradius)
 camera_center_guess = center_guess + [xoffset[1], yoffset[1]]
-geometry1 = ucomp_find_occulter(im1, $
+geometry1 = ucomp_find_occulter(offband_im1, $
                                 center_guess=camera_center_guess, $
                                 radius_guess=radius_guess, $
                                 dradius=dradius)
 print, (dims[0] - 1.0) / 2.0 - geometry0[0], $
        (dims[1] - 1.0) / 2.0 - geometry0[1], $
        format='shifting image 0 by %0.1f, %0.1f'
-im0 = ucomp_fshift(im0, $
+im0 = ucomp_fshift(onband_im0, $
                    (dims[0] - 1.0) / 2.0 - geometry0[0], $
                    (dims[1] - 1.0) / 2.0 - geometry0[1], $
                    interp=2)
 print, (dims[0] - 1.0) / 2.0 - geometry1[0], $
        (dims[1] - 1.0) / 2.0 - geometry1[1], $
        format='shifting image 1 by %0.1f, %0.1f'
-im1 = ucomp_fshift(im1, $
+im1 = ucomp_fshift(onband_im1, $
                    (dims[0] - 1.0) / 2.0 - geometry1[0], $
                    (dims[1] - 1.0) / 2.0 - geometry1[1], $
                    interp=2)
@@ -295,8 +315,24 @@ im = (im0 + im1) / 2.0
 
 loadct, 0, /silent
 gamma_ct, 0.7
-mg_image, bytscl(im, -0.1, display_max), /new, title='Combined'
+; mg_image, bytscl(im, -0.1, display_max), /new, title='Combined'
 
 obj_destroy, run
 
 end
+
+; "Correct" x-offsets: OCCLTR_X, cam0_xoffset, cam1_xoffset
+; 61.40, 10.45, -5.930
+; 61.85, -19.04, 23.78
+; 61.90, -20.08, 24.54
+
+; cam0_xoffset = 3868.13 - 62.8305 * occulter_x
+; cam1_xoffset = -3871.04 + 62.9518 * occulter_x
+
+; "Correct" y-offsets: OCCLTR_Y, cam0_yoffset, cam1_yoffset
+; 11.40, 0.13, 1.20
+; 11.70, -0.67, -0.42
+; 13.00, -9.80, -9.48
+
+; cam0_yoffset = 74.1794 - 6.45092 * occulter_y
+; cam1_yoffset = 78.4830 - 6.76313 * occulter_y
