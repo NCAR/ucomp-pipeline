@@ -7,7 +7,7 @@
 ;   `fltarr(2)`
 ;
 ; :Params:
-;   camera : in, required, type=int
+;   camera_index : in, required, type=int
 ;     camera number: 0 (RCAM) or 1 (TCAM)
 ;   datetime : in, required, type=string
 ;     date/time in one of the formats required by `ucomp_run::epoch`
@@ -20,13 +20,14 @@
 ;   run : in, required, type=object
 ;     UCoMP run object
 ;-
-function ucomp_occulter_guess, camera, datetime, occulter_x, occulter_y, run=run
+function ucomp_occulter_guess, camera_index, datetime, occulter_x, occulter_y, $
+                               run=run
   compile_opt strictarr
 
   nx = run->epoch('nx', datetime=datetime)
   ny = run->epoch('ny', datetime=datetime)
 
-  camera_name = camera eq 0 ? 'rcam' : 'tcam'
+  camera_name = camera_index eq 0 ? 'rcam' : 'tcam'
   xcoeffs = run->epoch(camera_name + '_camera_xoffset_coeffs', datetime=datetime)
   ycoeffs = run->epoch(camera_name + '_camera_yoffset_coeffs', datetime=datetime)
 
