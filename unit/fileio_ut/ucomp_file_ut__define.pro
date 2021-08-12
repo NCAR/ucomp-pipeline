@@ -207,11 +207,15 @@ function ucomp_file_ut::init, _extra=e
   if (~self->UCoMPutTestCase::init(_extra=e)) then return, 0
 
   self->addTestingRoutine, ['ucomp_file__define', $
+                            'ucomp_file::setProperty', $
                             'ucomp_file::getProperty', $
                             'ucomp_file::_extract_datetime', $
                             'ucomp_file::_inventory', $
                             'ucomp_file::cleanup']
-  self->addTestingRoutine, ['ucomp_file::init', 'ucomp_file::_overloadHelp'], $
+  self->addTestingRoutine, ['ucomp_file::init', $
+                            'ucomp_file::_overloadHelp', $
+                            'ucomp_file::_overloadPrint', $
+                            'get_occulter_finding_extension'], $
                            /is_function
 
   return, 1
