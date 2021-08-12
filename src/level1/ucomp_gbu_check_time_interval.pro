@@ -25,7 +25,7 @@ function ucomp_gbu_check_time_interval, file
                        repair_routine=run->epoch('raw_data_repair_routine')
 
   for e = 0L, file.n_extensions - 1L do begin
-    date_begin = ucomp_getpar(headers, 'DATE-BEG')
+    date_begin = ucomp_getpar(headers[e], 'DATE-BEG')
     times[e] = ucomp_dateobs2julday(date_begin)
   endfor
 
