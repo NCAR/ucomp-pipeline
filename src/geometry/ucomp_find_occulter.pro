@@ -90,9 +90,9 @@ display_max = 310.0
 
 ; bad fit
 ; occulter: 28, occulter-x: 61.40, occulter-y: 13.00
-; date = '20210806'
-; basename = '20210807.000539.ucomp.1074.demodulation.7.fts'
-; display_max = 600.0
+date = '20210806'
+basename = '20210807.000539.ucomp.1074.demodulation.7.fts'
+display_max = 600.0
 
 ; min x-occulter
 ; date = '20210803'
@@ -105,8 +105,8 @@ display_max = 310.0
 
 ; min y-occulter
 ; occulter: NONE, occulter-x: 61.85, occulter-y: 11.40
-date = '20210802'
-basename = '20210802.174023.ucomp.1074.demodulation.7.fts'
+; date = '20210802'
+; basename = '20210802.174023.ucomp.1074.demodulation.7.fts'
 
 ; max y-occulter
 ; date = '20210805'
@@ -237,8 +237,6 @@ mm = run->epoch('OC-' + occulter_id + '-mm', datetime='20190101')
 plate_scale = run->line(wave_region, 'plate_scale')
 radius_guess = arcsec / plate_scale
 print, radius_guess, plate_scale, format='radius guess: %0.2f, plate scale: %0.2f'
-print, occulter_x * arcsec / mm, format='x-offset in arcsec: %0.2f'
-print, occulter_x * arcsec / mm / plate_scale, format='x-offset in pixels: %0.2f'
 
 for c = 0, 1 do begin
   offband_data = c eq 0 ? tcam_data : rcam_data
@@ -272,9 +270,8 @@ for c = 0, 1 do begin
   print, c, geometry, format='camera: %d, x: %0.1f, y: %0.1f, r: %0.1f'
 
   print, c, [geometry[0], geometry[1]] - camera_center_guess, $
-         format='Error in camera %d: %0.2f, %0.2f'
-  print, c, [geometry[0], geometry[1]] - center_guess, $
-         format='Try for camera %d: %0.2f, %0.2f'
+         geometry[2] - radius_guess, $
+         format='Error in camera %d: x: %0.2f, y: %0.2f, r: %0.2f'
 
   ; im = total(onband_data[*, *, *, c], 3)
   ; mg_image, bytscl(im, -0.1, display_max), /new, title=string(c, format='Onband Camera %d')
@@ -285,12 +282,12 @@ onband_im0 = total(rcam_data[*, *, *, 0], 3)
 offband_im1 = total(rcam_data[*, *, *, 1], 3)
 onband_im1 = total(tcam_data[*, *, *, 1], 3)
 dims = size(offband_im0, /dimensions)
-camera_center_guess = center_guess + [xoffset[0], yoffset[0]]
+camera_center_guess = ucomp_occulter_guess(0, date, occulter_x, occulter_y, run=run)
 geometry0 = ucomp_find_occulter(offband_im0, $
                                 center_guess=camera_center_guess, $
                                 radius_guess=radius_guess, $
                                 dradius=dradius)
-camera_center_guess = center_guess + [xoffset[1], yoffset[1]]
+camera_center_guess = ucomp_occulter_guess(1, date, occulter_x, occulter_y, run=run)
 geometry1 = ucomp_find_occulter(offband_im1, $
                                 center_guess=camera_center_guess, $
                                 radius_guess=radius_guess, $
