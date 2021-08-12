@@ -406,14 +406,15 @@ end
 ;   datetime : in, optional, type=string
 ;     datetime in the form 'YYYYMMDD' or 'YYYYMMDD.HHMMSS'; defaults to the
 ;     value of the `DATETIME` property if this keyword is not given
+;   found : out, optional, type=boolean
+;     set to a named variable to retrieve whether `option_name` was found, if
+;     `FOUND` is present, errors will not be generated
 ;-
-function ucomp_run::epoch, option_name, datetime=datetime
+function ucomp_run::epoch, option_name, datetime=datetime, found=found
   compile_opt strictarr
   on_error, 2
 
-  value = self.epochs->get(option_name, datetime=datetime)
-
-  return, value
+  return, self.epochs->get(option_name, datetime=datetime, found=found)
 end
 
 
