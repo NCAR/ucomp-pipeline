@@ -107,6 +107,32 @@ pro ucomp_file::setProperty, rcam_xcenter=rcam_xcenter, $
 end
 
 
+
+;+
+; Find the extension to use for finding the center of the occulter for the
+; given camera. This extension will be the first extension where the given
+; camera is *offband* and center wavelength.
+;
+; :Returns:
+;   `int`
+;
+; :Params:
+;   camera_index : in, required, type=int
+;     index of camera to find extension for, i.e., 0 for RCAM, 1 for TCAM
+;-
+function ucomp_file::get_occulter_finding_extension, camera_index
+  compile_opt strictarr
+
+  wavelength_tolerance = 0.001
+  center_wavelength = self.run->line(self.wave_region, 'center_wavelength')
+  onband_index = camera_index eq 0L
+  ext_indices = where(abs(*self.wavelengths - center_wavelength) lt wavelength_tolerance $
+                        and (*self.onband_indices eq onband_index), n_exts)
+  if (n_exts eq 0L) then return, !null
+  return, ext_indices[0] + 1L
+end
+
+
 ;+
 ; Get property values.
 ;-
@@ -135,6 +161,7 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
                              wavelengths=wavelengths, $
                              n_unique_wavelengths=n_unique_wavelengths, $
                              unique_wavelengths=unique_wavelengths, $
+                             onband_indices=onband_indices, $
                              background=background, $
                              quality_bitmask=quality_bitmask, $
                              gbu=gbu, $
@@ -311,6 +338,9 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
     w = *self.wavelengths
     unique_wavelengths = w[uniq(w, sort(w))]
   endif
+
+  if (arg_present(onband_indices)) then onband_indices = *self.onband_indices
+
   if (arg_present(numsum)) then numsum = self.numsum
 end
 
@@ -425,6 +455,7 @@ pro ucomp_file::_inventory
 
   ; allocate inventory variables
   *self.wavelengths = fltarr(self.n_extensions)
+  *self.onband_indices = lonarr(self.n_extensions)
 
   self.numsum = ucomp_getpar(extension_header, 'NUMSUM', found=found)
 
@@ -446,6 +477,7 @@ pro ucomp_file::_inventory
     moving_parts or= ucomp_getpar(extension_header, 'CALOPTIC', found=found) eq 'mid'
 
     (*self.wavelengths)[e - 1] = ucomp_getpar(extension_header, 'WAVELNG', /float, found=found)
+    (*self.onband_indices)[e - 1] = ucomp_getpar(extension_header, 'ONBAND', found=found) eq 'tcam'
   endfor
   if (moving_parts) then self->setProperty, quality_bitmask=ishft(1, 1)
 
@@ -459,7 +491,7 @@ end
 pro ucomp_file::cleanup
   compile_opt strictarr
 
-  ptr_free, self.wavelengths
+  ptr_free, self.wavelengths, self.onband_indices
 end
 
 
@@ -497,6 +529,7 @@ function ucomp_file::init, raw_filename, run=run
 
   ; allocate inventory variables for extensions
   self.wavelengths = ptr_new(/allocate_heap)
+  self.onband_indices = ptr_new(/allocate_heap)
 
   self->_inventory
 
@@ -587,6 +620,7 @@ pro ucomp_file__define
            t_c1pcb             : 0.0, $
 
            wavelengths         : ptr_new(), $
+           onband_indices      : ptr_new(), $
 
            background          : 0.0, $
 
