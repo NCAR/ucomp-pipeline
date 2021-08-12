@@ -50,18 +50,17 @@ pro ucomp_l1_alignment, file, primary_header, data, headers, run=run, status=sta
 
   n_pol_states = 4L
   dims = size(data, /dimensions)
-  center_wavelength_index = (file.n_unique_wavelengths - 1L) / 2L
 
-  center_guess = [(dims[0] - 1.0) / 2.0, (dims[1] - 1.0) / 2.0]
-  mm_to_pixels = 5.0   ; TODO: how to calculate this?
-  xoffset = file.occulter_x * [-1.0, 1.0] / mm_to_pixels
-  yoffset = fltarr(2) + file.occulter_y / mm_to_pixels
-  radius_guess = 350.0
+  occulter_x = ucomp_getpar(primary_header, 'OCCLTR-X')
+  occulter_y = ucomp_getpar(primary_header, 'OCCLTR-Y')
+
+  occulter_id = ucomp_getpar(primary_header, 'OCCLTRID')
+  radius_guess = ucomp_radius_guess(occulter_id, file.wave_region, run=run)
   dradius = 20.0
-  rcam_center_guess = center_guess + [xoffset[0], yoffset[0]]
-  tcam_center_guess = center_guess + [xoffset[1], yoffset[1]]
 
-  rcam_im = total(data[*, *, *, 0, center_wavelength_index], 3) / n_pol_states
+  rcam_center_guess = ucomp_occulter_guess(0, date, occulter_x, occulter_y, run=run)
+  rcam_index = file->get_occulter_finding_extension(0) - 1L
+  rcam_im = total(data[*, *, *, 0, rcam_index], 3) / n_pol_states
   rcam_geometry = ucomp_find_occulter(rcam_im, $
                                       center_guess=rcam_center_guess, $
                                       radius_guess=radius_guess, $
@@ -73,7 +72,9 @@ pro ucomp_l1_alignment, file, primary_header, data, headers, run=run, status=sta
   file.rcam_chisq = rcam_chisq
   file.rcam_error = rcam_error
 
-  tcam_im = total(data[*, *, *, 1, center_wavelength_index], 3) / n_pol_states
+  tcam_center_guess = ucomp_occulter_guess(1, date, occulter_x, occulter_y, run=run)
+  tcam_index = file->get_occulter_finding_extension(0) - 1L
+  tcam_im = total(data[*, *, *, 1, tcam_index], 3) / n_pol_states
   tcam_geometry = ucomp_find_occulter(tcam_im, $
                                       center_guess=tcam_center_guess, $
                                       radius_guess=radius_guess, $
