@@ -136,7 +136,8 @@ end
 ;+
 ; Get property values.
 ;-
-pro ucomp_file::getProperty, raw_filename=raw_filename, $
+pro ucomp_file::getProperty, run=run, $
+                             raw_filename=raw_filename, $
                              l1_basename=l1_basename, $
                              intermediate_name=intermediate_name, $
                              hst_date=hst_date, $
@@ -214,6 +215,8 @@ pro ucomp_file::getProperty, raw_filename=raw_filename, $
                              t_c1pcb=t_c1pcb, $
                              numsum=numsum
   compile_opt strictarr
+
+  if (arg_present(run)) then run = self.run
 
   ; for the file
   if (arg_present(raw_filename)) then raw_filename = self.raw_filename

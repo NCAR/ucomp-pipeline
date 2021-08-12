@@ -11,8 +11,17 @@
 function ucomp_gbu_conditions, wave_region, run=run
    compile_opt strictarr
 
-  gbu_conditions = [{mask: 1UL, $
+  ; don't set mask initially, set after creating so that conditions can be
+  ; reordered easily
+  gbu_conditions = [{mask: 0UL, $
                      checker: 'ucomp_gbu_check_identical_temps', $
-                     description: 'at least two identical TU_LCVR{1,2,3,4,5} temperatures'}]
+                     description: 'at least two identical TU_LCVR{1,2,3,4,5} temperatures'}, $
+                    {mask: 0UL, $
+                     checker: 'ucomp_gbu_check_time_interval', $
+                     description: string(run->epoch('max_ext_time'), $
+                                         format='(%"sequential extensions were acquired more than %0.2f secs apart")')}]
+
+  gbu_conditions.mask = 2UL ^ ulindgen(n_elements(gbu_conditions))
+
   return, gbu_conditions
 end
