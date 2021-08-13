@@ -4,7 +4,9 @@ function ucomp_find_geometry, data, $
                               radius_guess=radius_guess, $
                               center_guess=center_guess, $
                               dradius=dradius, $
-                              elliptical=elliptical
+                              elliptical=elliptical, $
+                              post_angle_guess=post_angle_guess, $
+                              post_angle_tolerance=post_angle_tolerance
   compile_opt strictarr
 
   occulter = ucomp_find_occulter(data, $
@@ -16,7 +18,10 @@ function ucomp_find_geometry, data, $
                                  points=points, $
                                  elliptical=elliptical)
 
-  ; TODO: post_angle = ucomp_find_post(data)
+  post_angle = ucomp_find_post(data, $
+                               angle_guess=post_angle_guess, $
+                               angle_tolerance=post_angle_tolerance, $
+                               error=error)
 
   geometry = ucomp_geometry(center_guess=center_guess, $
                             radius_guess=radius_guess, $
