@@ -72,10 +72,12 @@ pro ucomp_create_intensity, file, data, run=run, occulter_annotation=occulter_an
 
       tv, scaled_im
       xyouts, 15, 15, /device, alignment=0.0, $
-              string(e, format='(%"ext: %d")')
+              string(e, format='(%"ext: %d")'), $
+              color=guess_color
       xyouts, nx - 15, 15, /device, alignment=1.0, $
               string(display_min, display_max, display_gamma, $
-                     format='(%"min/max: %0.1f/%0.1f, gamma: %0.1f")')
+                     format='(%"min/max: %0.1f/%0.1f, gamma: %0.1f")'), $
+              color=guess_color
   
       if (keyword_set(occulter_annotation)) then begin
         case c of
