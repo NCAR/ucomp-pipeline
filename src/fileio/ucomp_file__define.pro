@@ -18,10 +18,11 @@ function ucomp_file::_overloadHelp, varname
 
   return, string(varname, $
                  'UCoMP', $
+                 file_basename(self.raw_filename), $
                  self.n_extensions, $
                  self.wave_region, $
                  self.data_type, $
-                 format='(%"%-15s %s  <%d exts, %s nm, %s>")')
+                 format='(%"%-15s %s  <%s, %d exts, %s nm, %s>")')
 end
 
 
@@ -67,34 +68,16 @@ end
 ;       1 - cover in
 ;       2 - moving optic elements, i.e., occulter, cal optics, etc.
 ;-
-pro ucomp_file::setProperty, rcam_xcenter=rcam_xcenter, $
-                             rcam_ycenter=rcam_ycenter, $
-                             rcam_radius=rcam_radius, $
-                             rcam_chisq=rcam_chisq, $
-                             rcam_error=rcam_error, $
-                             tcam_xcenter=tcam_xcenter, $
-                             tcam_ycenter=tcam_ycenter, $
-                             tcam_radius=tcam_radius, $
-                             tcam_chisq=tcam_chisq, $
-                             tcam_error=tcam_error, $
-                             post_angle=post_angle, $
+pro ucomp_file::setProperty, rcam_geometry=rcam_geometry, $
+                             tcam_geometry=tcam_geometry, $
                              background=background, $
                              quality_bitmask=quality_bitmask, $
                              gbu=gbu, $
                              n_extensions=n_extensions
   compile_opt strictarr
 
-  if (n_elements(rcam_xcenter)) then self.rcam_xcenter = rcam_xcenter
-  if (n_elements(rcam_ycenter)) then self.rcam_ycenter = rcam_ycenter
-  if (n_elements(rcam_radius)) then self.rcam_radius = rcam_radius
-  if (n_elements(rcam_chisq)) then self.rcam_chisq = rcam_chisq
-  if (n_elements(rcam_error)) then self.rcam_error = rcam_error
-  if (n_elements(tcam_xcenter)) then self.tcam_xcenter = tcam_xcenter
-  if (n_elements(tcam_ycenter)) then self.tcam_ycenter = tcam_ycenter
-  if (n_elements(tcam_radius)) then self.tcam_radius = tcam_radius
-  if (n_elements(tcam_chisq)) then self.tcam_chisq = tcam_chisq
-  if (n_elements(tcam_error)) then self.tcam_error = tcam_error
-  if (n_elements(post_angle)) then self.post_angle = post_angle
+  if (n_elements(rcam_geometry)) then self.rcam_geometry = rcam_geometry
+  if (n_elements(tcam_geometry)) then self.tcam_geometry = tcam_geometry
 
   if (n_elements(background)) then self.background = background
 
@@ -178,17 +161,8 @@ pro ucomp_file::getProperty, run=run, $
                              caloptic_in=caloptic_in, $
                              polangle=polangle, $
                              retangle=retangle, $
-                             rcam_xcenter=rcam_xcenter, $
-                             rcam_ycenter=rcam_ycenter, $
-                             rcam_radius=rcam_radius, $
-                             rcam_chisq=rcam_chisq, $
-                             rcam_error=rcam_error, $
-                             tcam_xcenter=tcam_xcenter, $
-                             tcam_ycenter=tcam_ycenter, $
-                             tcam_radius=tcam_radius, $
-                             tcam_chisq=tcam_chisq, $
-                             tcam_error=tcam_error, $
-                             post_angle=post_angle, $
+                             rcam_geometry=rcam_geometry, $
+                             tcam_geometry=tcam_geometry, $
                              t_base=t_base, $
                              t_lcvr1=t_lcvr1, $
                              t_lcvr2=t_lcvr2, $
@@ -292,17 +266,8 @@ pro ucomp_file::getProperty, run=run, $
 
   if (arg_present(obsswid)) then obsswid = self.obsswid
 
-  if (arg_present(rcam_xcenter)) then rcam_xcenter = self.rcam_xcenter
-  if (arg_present(rcam_ycenter)) then rcam_ycenter = self.rcam_ycenter
-  if (arg_present(rcam_radius)) then rcam_radius = self.rcam_radius
-  if (arg_present(rcam_chisq)) then rcam_chisq = self.rcam_chisq
-  if (arg_present(rcam_error)) then rcam_error = self.rcam_error
-  if (arg_present(tcam_xcenter)) then tcam_xcenter = self.tcam_xcenter
-  if (arg_present(tcam_ycenter)) then tcam_ycenter = self.tcam_ycenter
-  if (arg_present(tcam_radius)) then tcam_radius = self.tcam_radius
-  if (arg_present(tcam_chisq)) then tcam_chisq = self.tcam_chisq
-  if (arg_present(tcam_error)) then tcam_error = self.tcam_error
-  if (arg_present(post_angle)) then post_angle = self.post_angle
+  if (arg_present(rcam_geometry)) then rcam_geometry = self.rcam_geometry
+  if (arg_present(tcam_geometry)) then tcam_geometry = self.tcam_geometry
 
   if (arg_present(t_base)) then t_base = self.t_base
   if (arg_present(t_lcvr1)) then t_lcvr1 = self.t_lcvr1
@@ -495,6 +460,7 @@ pro ucomp_file::cleanup
   compile_opt strictarr
 
   ptr_free, self.wavelengths, self.onband_indices
+  obj_destroy, [self.rcam_geometry, self.tcam_geometry]
 end
 
 
@@ -515,18 +481,6 @@ function ucomp_file::init, raw_filename, run=run
   self->_extract_datetime
 
   self.data_type = 'unk'
-
-  self.rcam_xcenter = !values.f_nan
-  self.rcam_ycenter = !values.f_nan
-  self.rcam_radius = !values.f_nan
-  self.rcam_chisq = !values.f_nan
-  self.rcam_error = -1L
-  self.tcam_xcenter = !values.f_nan
-  self.tcam_ycenter = !values.f_nan
-  self.tcam_radius = !values.f_nan
-  self.tcam_chisq = !values.f_nan
-  self.tcam_error = -1L
-  self.post_angle = !values.f_nan
 
   self.background = !values.f_nan
 
@@ -585,17 +539,8 @@ pro ucomp_file__define
 
            occulter_x          : 0.0, $
            occulter_y          : 0.0, $
-           rcam_xcenter        : 0.0, $
-           rcam_ycenter        : 0.0, $
-           rcam_radius         : 0.0, $
-           rcam_chisq          : 0.0, $
-           rcam_error          : 0L, $
-           tcam_xcenter        : 0.0, $
-           tcam_ycenter        : 0.0, $
-           tcam_radius         : 0.0, $
-           tcam_chisq          : 0.0, $
-           tcam_error          : 0L, $
-           post_angle          : 0.0, $
+           rcam_geometry       : obj_new(), $
+           tcam_geometry       : obj_new(), $
 
            t_base              : 0.0, $
            t_lcvr1             : 0.0, $

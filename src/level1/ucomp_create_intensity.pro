@@ -41,11 +41,16 @@ pro ucomp_create_intensity, file, data, run=run, occulter_annotation=occulter_an
   device, decomposed=0, $
           set_resolution=[nx, ny]
 
-  n_colors = 255
+  n_colors = 253
   loadct, 0, /silent, ncolors=n_colors
   gamma_ct, display_gamma, /current
-  occulter_color = 255
-  tvlct, 255, 255, 0, occulter_color
+
+  occulter_color = 253
+  tvlct, 0, 255, 255, occulter_color
+  guess_color = 254
+  tvlct, 255, 255, 0, guess_color
+  inflection_color = 255
+  tvlct, 255, 0, 0, inflection_color
 
   tvlct, r, g, b, /get
 
@@ -74,24 +79,10 @@ pro ucomp_create_intensity, file, data, run=run, occulter_annotation=occulter_an
   
       if (keyword_set(occulter_annotation)) then begin
         case c of
-          0: begin
-              x0 = file.rcam_xcenter
-              y0 = file.rcam_ycenter
-              radius = file.rcam_radius
-            end
-          1: begin
-              x0 = file.tcam_xcenter
-              y0 = file.tcam_ycenter
-              radius = file.tcam_radius
-            end
+          0: geometry = file.rcam_geometry
+          1: geometry = file.tcam_geometry
         endcase
-
-        t = findgen(360) * !dtor
-        x = radius * cos(t) + x0
-        y = radius * sin(t) + y0
-
-        plots, x, y, /device, color=occulter_color
-        plots, x0, y0, /device, color=occulter_color, psym=1
+        geometry->display, occulter_color=253, guess_color=254, inflection_color=255
       endif
       write_gif, string(c, e, format=intensity_filename_format), tvrd(), r, g, b
     endfor

@@ -61,30 +61,19 @@ pro ucomp_l1_alignment, file, primary_header, data, headers, run=run, status=sta
   rcam_center_guess = ucomp_occulter_guess(0, date, occulter_x, occulter_y, run=run)
   rcam_index = file->get_occulter_finding_extension(0) - 1L
   rcam_im = total(data[*, *, *, 0, rcam_index], 3) / n_pol_states
-  rcam_geometry = ucomp_find_occulter(rcam_im, $
-                                      center_guess=rcam_center_guess, $
-                                      radius_guess=radius_guess, $
-                                      dradius=dradius, $
-                                      error=rcam_error, chisq=rcam_chisq)
-  file.rcam_xcenter = rcam_geometry[0]
-  file.rcam_ycenter = rcam_geometry[1]
-  file.rcam_radius = rcam_geometry[2]
-  file.rcam_chisq = rcam_chisq
-  file.rcam_error = rcam_error
-
+  file.rcam_geometry = ucomp_find_geometry(rcam_im, $
+                                           center_guess=rcam_center_guess, $
+                                           radius_guess=radius_guess, $
+                                           dradius=dradius)
   tcam_center_guess = ucomp_occulter_guess(1, date, occulter_x, occulter_y, run=run)
   tcam_index = file->get_occulter_finding_extension(0) - 1L
   tcam_im = total(data[*, *, *, 1, tcam_index], 3) / n_pol_states
-  tcam_geometry = ucomp_find_occulter(tcam_im, $
-                                      center_guess=tcam_center_guess, $
-                                      radius_guess=radius_guess, $
-                                      dradius=dradius, $
-                                      error=tcam_error, chisq=tcam_chisq)
-  file.tcam_xcenter = tcam_geometry[0]
-  file.tcam_ycenter = tcam_geometry[1]
-  file.tcam_radius = tcam_geometry[2]
-  file.tcam_chisq = tcam_chisq
-  file.tcam_error = tcam_error
+  file.tcam_geometry = ucomp_find_geometry(tcam_im, $
+                                           center_guess=tcam_center_guess, $
+                                           radius_guess=radius_guess, $
+                                           dradius=dradius)
+
+  ; TODO: put geometry info in the primary header after RCAMNUC
 
 ;   for p = 0, n_pol_states - 1L do begin
 ;     for e = 0L, file.n_extenions - 1L do begin

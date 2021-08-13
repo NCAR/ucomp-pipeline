@@ -17,7 +17,13 @@ pro ucomp_l1_process_file, file, run=run
   catch, error
   if (error ne 0L) then begin
     mg_log, !error_state.msg, name=run.logger_name, /warn
-    mg_log, 'skipping rest of level 1 processing for file', name=run.logger_name, /warn
+    if (!error_state.name eq 'IDL_M_USER_ERR') then begin
+      mg_log, 'skipping rest of level 1 processing for file', $
+              name=run.logger_name, /warn
+    endif else begin
+      catch, /cancel
+      message, /reissue_last
+    endelse
     goto, done
   endif
 

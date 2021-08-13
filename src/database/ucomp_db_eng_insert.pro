@@ -43,6 +43,22 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
     dmodswid = ''
     distortion = ''
 
+    if (obj_valid(file.rcam_geometry) && obj_valid(file.tcam_geometry)) then begin
+      rcam_center = file.rcam_geometry.occulter_center
+      rcam_radius = file.rcam_geometry.occulter_radius
+      tcam_center = file.tcam_geometry.occulter_center
+      tcam_radius = file.tcam_geometry.occulter_radius
+      rcam_post_angle = file.rcam_geometry.post_angle
+      tcam_post_angle = file.tcam_geometry.post_angle
+    endif else begin
+      rcam_center = fltarr(2) + !values.f_nan
+      rcam_radius = !values.f_nan
+      tcam_center = fltarr(2) + !values.f_nan
+      tcam_radius = !values.f_nan
+      rcam_post_angle = !values.f_nan
+      tcam_post_angle = !values.f_nan
+    endelse
+
     fields = [{name: 'file_name', type: '''%s'''}, $
               {name: 'date_obs', type: '''%s'''}, $
               {name: 'obsday_id', type: '%d'}, $
@@ -68,7 +84,8 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
               {name: 'tcam_ycenter', type: '%s'}, $
               {name: 'tcam_radius', type: '%s'}, $
 
-              {name: 'post_angle', type: '%s'}, $
+              {name: 'rcam_post_angle', type: '%s'}, $
+              {name: 'tcam_post_angle', type: '%s'}, $
 
               {name: 'wave_region', type: '''%s'''}, $
               {name: 'ntunes', type: '%d'}, $
@@ -138,14 +155,15 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
                  file.retangle, $
                  file.caloptic_in, $
 
-                 ucomp_db_float(file.rcam_xcenter), $
-                 ucomp_db_float(file.rcam_ycenter), $
-                 ucomp_db_float(file.rcam_radius), $
-                 ucomp_db_float(file.tcam_xcenter), $
-                 ucomp_db_float(file.tcam_ycenter), $
-                 ucomp_db_float(file.tcam_radius), $
+                 ucomp_db_float(rcam_center[0]), $
+                 ucomp_db_float(rcam_center[1]), $
+                 ucomp_db_float(rcam_radius), $
+                 ucomp_db_float(tcam_center[0]), $
+                 ucomp_db_float(tcam_center[1]), $
+                 ucomp_db_float(tcam_radius), $
 
-                 ucomp_db_float(file.post_angle), $
+                 ucomp_db_float(rcam_post_angle), $
+                 ucomp_db_float(tcam_post_angle), $
 
                  file.wave_region, $
                  file.n_unique_wavelengths, $
