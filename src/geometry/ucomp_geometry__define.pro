@@ -42,7 +42,20 @@ pro ucomp_geometry::display, occulter_color=occulter_color, $
 
   plots, self.center_guess[0], self.center_guess[1], /device, $
          color=_guess_color, psym=1
-  
+
+  width = 40.0
+  t = (self.post_angle + 90.0) * !dtor
+  x1 = self.occulter_radius * cos(t) + self.occulter_center[0]
+  y1 = self.occulter_radius * sin(t) + self.occulter_center[1]
+  v = [y1 - self.occulter_center[1], self.occulter_center[0] - x1]
+  v /= sqrt(total(v^2))
+  v *= width
+  v2 = [x1, y1] + v
+  v3 = [x1, y1] - v
+  v4 = [x1 - self.occulter_center[0], y1 - self.occulter_center[1]] + v2
+  v5 = [x1 - self.occulter_center[0], y1 - self.occulter_center[1]] + v3
+  plots, [v2[0], v4[0]], [v2[1], v4[1]], /device, color=_occulter_color
+  plots, [v3[0], v5[0]], [v3[1], v5[1]], /device, color=_occulter_color
 end
 
 

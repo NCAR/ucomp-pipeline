@@ -49,6 +49,7 @@ function ucomp_find_occulter, data, $
                               dradius=dradius, $
                               error=error, $
                               points=points, $
+                              pt_weights=pt_weights, $
                               elliptical=elliptical
   compile_opt strictarr
 
@@ -63,11 +64,13 @@ function ucomp_find_occulter, data, $
   r = ucomp_radial_derivative(data, _radius_guess, _dradius, $
                               angles=angles, $
                               center_guess=center_guess, $
-                              points=points)
+                              points=points, $
+                              pt_weights=pt_weights)
 
   x = reform(points[0, *])
   y = reform(points[1, *])
   p = mpfitellipse(x, y, $
+                   weights=pt_weights, $
                    circular=~keyword_set(elliptical), $
                    tilt=keyword_set(elliptical), $
                    /quiet, $
@@ -84,15 +87,14 @@ end
 date = '20210725'
 center_guess = [(1280.0 - 1.0) / 2.0, (1024.0 - 1.0) / 2.0]
 ; radius_guess = 350.0
-dradius = 40.0
+dradius = 30.0
 display_max = 310.0
 
 
-; bad fit
 ; occulter: 28, occulter-x: 61.40, occulter-y: 13.00
-date = '20210806'
-basename = '20210807.000539.ucomp.1074.demodulation.7.fts'
-display_max = 600.0
+; date = '20210806'
+; basename = '20210807.000539.ucomp.1074.demodulation.7.fts'
+; display_max = 600.0
 
 ; min x-occulter
 ; date = '20210803'
@@ -112,6 +114,8 @@ display_max = 600.0
 ; date = '20210805'
 ; basename = '20210805.222604.ucomp.1074.demodulation.7.fts'
 
+date = '20210806'
+basename = '20210806.192135.ucomp.637.demodulation.7.fts'
 
 ; OK (super noisy, hard to tell)
 ; basename = '20210725.230515.ucomp.530.demodulation.7.fts'
@@ -247,7 +251,9 @@ for c = 0, 1 do begin
                                  center_guess=camera_center_guess, $
                                  radius_guess=radius_guess, $
                                  dradius=dradius, $
-                                 points=points)
+                                 points=points, pt_weights=pt_weights)
+  post_angle = ucomp_find_post(im, geometry[0:1], geometry[2], $
+                               angle_guess=0.0, angle_tolerance=30.0)
 
   mg_image, bytscl(im, -0.1, display_max), /new, title=string(c, format='Offband Camera %d')
   plots, points[0, *], points[1, *], /device, color='0000ff'x, thick=1.0, linestyle=2
@@ -266,6 +272,21 @@ for c = 0, 1 do begin
 
   plots, camera_center_guess[0], camera_center_guess[1], color='00ffff'x, psym=1
   plots, geometry[0], geometry[1], color='ffff00'x, psym=1
+
+  width = 40.0
+  r = geometry[2]
+  t = (post_angle + 90.0) * !dtor
+  x1 = r * cos(t) + geometry[0]
+  y1 = r * sin(t) + geometry[1]
+  v = [y1 - geometry[1], geometry[0] - x1]
+  v /= sqrt(total(v^2))
+  v *= width
+  v2 = [x1, y1] + v
+  v3 = [x1, y1] - v
+  v4 = [x1 - geometry[0], y1 - geometry[1]] + v2
+  v5 = [x1 - geometry[0], y1 - geometry[1]] + v3
+  plots, [v2[0], v4[0]], [v2[1], v4[1]], /device, color='ffff00'x
+  plots, [v3[0], v5[0]], [v3[1], v5[1]], /device, color='ffff00'x
 
   print, c, geometry, format='camera: %d, x: %0.1f, y: %0.1f, r: %0.1f'
 
