@@ -56,13 +56,18 @@ pro ucomp_l1_alignment, file, primary_header, data, headers, run=run, status=sta
 
   occulter_id = ucomp_getpar(primary_header, 'OCCLTRID')
   radius_guess = ucomp_radius_guess(occulter_id, file.wave_region, run=run)
-  dradius = 20.0
+  dradius = 25.0
 
   post_angle_guess = run->epoch('post_angle_guess')
   post_angle_tolerance = run->epoch('post_angle_tolerance')
 
   rcam_center_guess = ucomp_occulter_guess(0, date, occulter_x, occulter_y, run=run)
-  rcam_index = file->get_occulter_finding_extension(0) - 1L
+  rcam_ext = file->get_occulter_finding_extension(0)
+  if (n_elements(rcam_ext) eq 0L) then begin
+    status = 1L
+    goto, done
+  endif
+  rcam_index = rcam_ext - 1L
   rcam_im = total(data[*, *, *, 0, rcam_index], 3) / n_pol_states
   file.rcam_geometry = ucomp_find_geometry(rcam_im, $
                                            center_guess=rcam_center_guess, $
@@ -71,7 +76,12 @@ pro ucomp_l1_alignment, file, primary_header, data, headers, run=run, status=sta
                                            post_angle_guess=post_angle_guess, $
                                            post_angle_tolerance=post_angle_tolerance)
   tcam_center_guess = ucomp_occulter_guess(1, date, occulter_x, occulter_y, run=run)
-  tcam_index = file->get_occulter_finding_extension(0) - 1L
+  tcam_ext = file->get_occulter_finding_extension(1)
+  if (n_elements(tcam_ext) eq 0L) then begin
+    status = 1L
+    goto, done
+  endif
+  tcam_index = tcam_ext - 1L
   tcam_im = total(data[*, *, *, 1, tcam_index], 3) / n_pol_states
   file.tcam_geometry = ucomp_find_geometry(tcam_im, $
                                            center_guess=tcam_center_guess, $
@@ -100,4 +110,5 @@ pro ucomp_l1_alignment, file, primary_header, data, headers, run=run, status=sta
 ;       data[*, *, p, 1, e] = reverse(data[*, *, p, 1, e], 2)
 ;     endfor
 ;   endfor
+  done:
 end
