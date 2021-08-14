@@ -12,9 +12,10 @@
 ; :Params:
 ;   image : in, required, type=`fltarr(nx, ny)`
 ;     the image in which to find the post angle
-;   geometry : in, required, type=object
-;     `ucomp_geometry` object containing the parameters of the occulting disk,
-;     i.e., center and radius
+;   occulter_center : in, required, type=fltarr(2)
+;     occulter center in pixel coordinates
+;   occulter_radius : in, required, type=float
+;     occulter radius in pixels
 ;
 ; :Author:
 ;   MLSO Software Team
@@ -24,10 +25,10 @@
 ;   replaced average with IDL built-in mean 01/07/15 GdT
 ;   see git log for recent changes
 ;-
-function ucomp_find_post, im, geometry, $
+function ucomp_find_post, im, occulter_center, occulter_radius, $
                           angle_guess=angle_guess, $
                           angle_tolerance=angle_tolerance, $
-                          error=error
+                          error=error, err_msg=err_msg
   compile_opt idl2
 
   _angle_guess = mg_default(angle_guess, 180.0)
@@ -40,14 +41,14 @@ function ucomp_find_post, im, geometry, $
   theta = rebin(2.0D * !dpi * findgen(n_theta) / float(n_theta), n_theta, n_radius)
 
   ; this is r from the occulter radius to the field stop radius
-  outer_radius = 700.0
-  r = rebin(transpose((outer_radius - geometry.occulter_radius) * findgen(n_radius) / float(n_radius - 1) $
-                            + occulter.r), n_theta, n_radius)
+  annulus_width = 100.0
+  r = rebin(transpose(annulus_width * findgen(n_radius) / float(n_radius - 1) + occulter_radius), $
+            n_theta, n_radius)
 
   ; convert to rectangular coordinates
   ; occulter.x and occulter.y are the center of the occulter - not the offset
-  x = r * cos(theta) + geometry.occulter_center[0]
-  y = r * sin(theta) + geometry.occulter_center[1]
+  x = r * cos(theta) + occulter_center[0]
+  y = r * sin(theta) + occulter_center[1]
 
   ; use bilinear to extract the values
   new_im = bilinear(im, x, y)
@@ -61,7 +62,7 @@ function ucomp_find_post, im, geometry, $
   ; fit the inverted intensity with a gaussian, use the location of maximum as
   ; a guess for the post position
   y = median(theta_scan) - theta_scan
-  x = findgen(new_nx) / float(new_nx) * 360.0
+  x = findgen(n_theta) / (float(n_theta) - 1.0) * 360.0
 
   lower_limit = _angle_guess + 90.0 - _angle_tolerance
   upper_limit = _angle_guess + 90.0 + _angle_tolerance
@@ -75,13 +76,12 @@ function ucomp_find_post, im, geometry, $
   yfit = mlso_gaussfit(x, y, coeff, $
                        nterms=6, $
                        status=error, $
-                       err_msg=err_msg, $
                        iter=n_iterations, $
                        estimates=estimates)
 
   case error of
     0: err_msg = ''
-    1: err_msg = 'fit chi-square increasing without bound',
+    1: err_msg = 'fit chi-square increasing without bound'
     2: err_msg = string(n_iterations, $
                         format='(%"fit failed to converge after %d iterations")')
     else: err_msg = string(error, format='(%"unknown GAUSSFIT status: %d")')
