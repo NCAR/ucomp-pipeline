@@ -27,10 +27,12 @@ pro ucomp_generate_occulter_guess_coeffs, filename
   endfor
   free_lun, lun
 
-  cam0_coeffs = linfit(occulter, cam0_offset)
-  cam1_coeffs = linfit(occulter, cam1_offset)
+  cam0_coeffs = linfit(occulter, cam0_offset, chisq=cam0_chisq)
+  cam1_coeffs = linfit(occulter, cam1_offset, chisq=cam1_chisq)
   print, cam0_coeffs, format='camera 0 coeffs: %0.4f + %0.4f * occulter'
+  print, cam0_chisq, format='camera 0 chi-squared: %0.2f'
   print, cam1_coeffs, format='camera 1 coeffs: %0.4f + %0.4f * occulter'
+  print, cam1_chisq, format='camera 1 chi-squared: %0.2f'
 end
 
 
