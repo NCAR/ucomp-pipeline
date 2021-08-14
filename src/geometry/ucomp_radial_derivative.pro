@@ -8,7 +8,7 @@
 ; :Examples:
 ;   For example, call it like::
 ;
-;     cent = ucomp_radial_derivative(data, dr)
+;     r = ucomp_radial_derivative(data, dr)
 ;
 ; :Uses:
 ;   parabola
@@ -41,7 +41,8 @@
 function ucomp_radial_derivative, data, radius_guess, dr, $
                                   angles=angles, $
                                   center_guess=center_guess, $
-                                  points=points
+                                  points=points, $
+                                  pt_weights=pt_weights
   compile_opt strictarr
   ;on_error, 2
 
@@ -55,14 +56,6 @@ function ucomp_radial_derivative, data, radius_guess, dr, $
   if (n_elements(center_guess) gt 0L) then begin
     x0 = double(center_guess[0])
     y0 = double(center_guess[1])
-
-    ; TODO: remove when done
-    ; mg_log, 'center guess: %0.1f, %0.1f, %0.1f', $
-    ;         x0, y0, radius_guess, $
-    ;         name='comp', /debug
-    ; mg_log, 'center of image: %0.1f, %0.1f, %0.1f', $
-    ;         (float(dims[0]) - 1.0) / 2.0, (float(dims[1]) - 1.0) / 2.0, radius_guess, $
-    ;         name='comp', /debug 
   endif else begin
     x0 = double(dims[0] - 1.0) / 2.0D 
     y0 = double(dims[1] - 1.0) / 2.0D
@@ -72,6 +65,7 @@ function ucomp_radial_derivative, data, radius_guess, dr, $
 
   ; make radial scans
   points = fltarr(2L, n_scan)
+  pt_weights = fltarr(n_scan)
 
   for s = 0L, n_scan - 1L do begin
     ; angle for radial scan
@@ -84,21 +78,19 @@ function ucomp_radial_derivative, data, radius_guess, dr, $
     y2 = y0 + (radius_guess + dr) * sin(angles[s])
 
     ; dx and dy are spacing in x and y
-    dx = (x2 - x1) / double(n_values - 1)
-    dy = (y2 - y1) / double(n_values - 1)
+    dx = (x2 - x1) / double(n_values - 1.0)
+    dy = (y2 - y1) / double(n_values - 1.0)
 
     ; xx and yy are x- and y-coords to interpolate onto for radial scan
     xx = dindgen(n_values) * dx + x1
     yy = dindgen(n_values) * dy + y1
-
-    ; if (keyword_set(debug)) then plots, xx, yy, color=200, /device
 
     ; compute radial intensity scan
     rad = interpolate(double(data), xx, yy, cubic=-0.5, missing=0.0, /double)
     rad = deriv(rad)    ; take derivative of radial intensity scan
 
     ; find position of maximum derivative, imax
-    mx = max(rad, imax)
+    pt_weights[s] = abs(max(rad, imax))
     imax >= 2L
     imax <= n_values - 3L
 
@@ -112,15 +104,9 @@ function ucomp_radial_derivative, data, radius_guess, dr, $
                                   [rad[imax - 1], $
                                    rad[imax], $
                                    rad[imax + 1]])
-
-    if (keyword_set(debug)) then begin
-      ans = ''
-      mg_log, 'angles: %s', strjoin(strtrim(angles, 2), ', '), name='comp', /debug
-      plot, rad
-      oplot, [radii[s] - radius_guess + dr, radii[s] - radius_guess + dr], [0.0, 2.0 * mx]
-      read, 'enter return:', ans
-    endif
   endfor
+
+  pt_weights /= total(pt_weights, /preserve_type)
 
   return, radii
 end
