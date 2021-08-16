@@ -37,7 +37,7 @@ pro ucomp_log_centering_info, filename, run=run
                 tcam_geometry.occulter_radius, $
                 tcam_geometry.occulter_chisq, $
                 tcam_geometry.occulter_error, $
-                format='(%"%-36s   %0.2f %0.2f %0.2f %0.2f %d   %0.2f %0.2f %0.2f %0.2f %d")'
+                format='(%"%-36s  %6.2f %6.2f %6.2f %6.2f %d  %6.2f %6.2f %6.2f %6.2f %d")'
       endif
     endif
   endfor
