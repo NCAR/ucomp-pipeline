@@ -107,15 +107,15 @@ display_max = 310.0
 
 ; min y-occulter
 ; occulter: NONE, occulter-x: 61.85, occulter-y: 11.40
-; date = '20210802'
-; basename = '20210802.174023.ucomp.1074.demodulation.7.fts'
+date = '20210802'
+basename = '20210802.174023.ucomp.1074.demodulation.7.fts'
 
 ; max y-occulter
 ; date = '20210805'
 ; basename = '20210805.222604.ucomp.1074.demodulation.7.fts'
 
-date = '20210806'
-basename = '20210806.192135.ucomp.637.demodulation.7.fts'
+; date = '20210806'
+; basename = '20210806.192135.ucomp.637.demodulation.7.fts'
 
 ; OK (super noisy, hard to tell)
 ; basename = '20210725.230515.ucomp.530.demodulation.7.fts'
@@ -207,6 +207,9 @@ basename = '20210806.192135.ucomp.637.demodulation.7.fts'
 ; shifting image 0 by 16.1, 7.2
 ; shifting image 1 by -18.6, 9.4
 
+; date = '20210725'
+; basename = '20210725.232533.ucomp.530.demodulation.7.fts'
+
 config_basename = 'ucomp.latest.cfg'
 config_filename = filepath(config_basename, $
                            subdir=['..', '..', 'config'], $
@@ -247,6 +250,8 @@ for c = 0, 1 do begin
   onband_data = c eq 0 ? rcam_data : tcam_data
   im = total(offband_data[*, *, *, c], 3)
   camera_center_guess = ucomp_occulter_guess(c, date, occulter_x, occulter_y, run=run)
+  print, c, camera_center_guess, radius_guess, $
+         format='(%"camera %d guess x: %0.2f, y: %0.2f, r: %0.2f")'
   geometry = ucomp_find_occulter(im, $
                                  center_guess=camera_center_guess, $
                                  radius_guess=radius_guess, $
@@ -293,6 +298,7 @@ for c = 0, 1 do begin
   print, c, [geometry[0], geometry[1]] - camera_center_guess, $
          geometry[2] - radius_guess, $
          format='Error in camera %d: x: %0.2f, y: %0.2f, r: %0.2f'
+  print, c, post_angle, format='(%"camera %d post angle: %0.2f")'
 
   ; im = total(onband_data[*, *, *, c], 3)
   ; mg_image, bytscl(im, -0.1, display_max), /new, title=string(c, format='Onband Camera %d')
