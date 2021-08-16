@@ -210,7 +210,8 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
                  ucomp_db_float(sky_pol_factor), $
                  ucomp_db_float(sky_bias), $
 
-                 sw_index
+                 sw_index, $
+                 status=status
   endfor
 
   done:

@@ -23,17 +23,20 @@ pro ucomp_db_file_insert, l1_files, obsday_index, sw_index, db, $
 
   ; get index for level 1 data files
   q = 'select * from ucomp_level where level=''L1'''
-  level_results = db->query(q, fields=fields)
+  level_results = db->query(q, status=status)
+  if (status ne 0L) then goto, done
   level_index = level_results.level_id	
 
   ; get index for intensity files
   q = 'select * from mlso_producttype where producttype=''intensity'' and description like ''UCoMP%'''
-  producttype_results = db->query(q, fields=fields)
+  producttype_results = db->query(q, status=status)
+  if (status ne 0L) then goto, done
   producttype_index = producttype_results.producttype_id
 
   ; get index for FITS files
   q = 'select * from mlso_filetype where filetype=''fits'''
-  filetype_results = db->query(q, fields=fields)
+  filetype_results = db->query(q, status=status)
+  if (status ne 0L) then goto, done
   filetype_index = filetype_results.filetype_id	
 
   n_files = n_elements(l1_files)
@@ -59,11 +62,8 @@ pro ucomp_db_file_insert, l1_files, obsday_index, sw_index, db, $
                  status=status, $
                  error_message=error_message, $
                  sql_statement=sql_cmd
-    if (status ne 0L) then begin
-      mg_log, 'error inserting in ucomp_file table', name=logger_name, /error
-      mg_log, 'status: %d, error message: %s', status, error_message, $
-              name=logger_name, /error
-      mg_log, 'SQL command: %s', sql_cmd, name=logger_name, /error
-    endif
+    if (status ne 0L) then goto, done
   endfor
+
+  done:
 end
