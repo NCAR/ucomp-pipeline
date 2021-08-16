@@ -5,7 +5,7 @@
 ; messages to the current log.
 ;
 ; :Returns:
-;   returns 1 if machine log is present, 0 otherwise
+;   returns 1 if machine log is present and valid, 0 otherwise
 ;
 ; :Keywords:
 ;   present : out, optional, type=boolean
@@ -17,7 +17,13 @@ function ucomp_validate_machinelog, present=present, run=run
   compile_opt strictarr
 
   present = 0B
+
   raw_dir = filepath(run.date, root=run->config('raw/basedir'))
+  if (~file_test(raw_dir, /directory)) then begin
+    mg_log, 'raw directory does not exist', name=run.logger_name, /warn
+    return, 0B
+  endif
+
   machinelog_filename = filepath(string(run.date, format='%s.ucomp.machine.log'), $
                                  root=raw_dir)
   if (~file_test(machinelog_filename, /regular)) then return, 0B
