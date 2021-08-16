@@ -63,6 +63,7 @@ pro ucomp_db_raw_insert, l0_files, obsday_index, db, logger_name=logger_name
                  ucomp_db_float(file.t_c1pcb), $
 
                  status=status
+    if (status ne 0L) then goto, done
   endfor
 
   done:
