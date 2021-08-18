@@ -480,7 +480,6 @@ def missing(args):
     if args.script:
         raw_remote_server, raw_remote_dir = get_remote_location(args.flags, args.parser.error)
     for d in dates:
-        raw_remote_datedir = os.path.join(raw_remote_dir, d)
         raw_dir = get_raw_dir(d, args.flags, args.parser.error)
         raw_datedir = os.path.join(raw_dir, d)
         present_files = glob.glob(os.path.join(raw_datedir, "*.fts"))
@@ -495,10 +494,13 @@ def missing(args):
 
         present_files = [os.path.basename(f) for f in present_files]
 
-        print("#!/bin/sh")
-        print(f"REMOTE_LOCATION={raw_remote_server}:{raw_remote_datedir}")
-        print(f"LOCAL_LOCATION={raw_datedir}")
-        print()
+        if args.script:
+            raw_remote_datedir = os.path.join(raw_remote_dir, d)
+            print("#!/bin/sh")
+            print(f"REMOTE_LOCATION={raw_remote_server}:{raw_remote_datedir}")
+            print(f"LOCAL_LOCATION={raw_datedir}")
+            print()
+
         for cf in created_files:
             if cf not in present_files:
                 if args.script:
