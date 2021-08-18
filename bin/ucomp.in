@@ -216,7 +216,10 @@ def list_fits_file_default(f):
     print(f"{basename:38s}  {n_exts:8s}  {wave_region:7s}  [{data_type}]")
 
 
-def value2str(v):
+def value2str(v, format=None):
+    if format is not None:
+        template = f"{{v{format}}}"
+        return(template.format(v=v))
     if type(v) == str:
         return(f"{v:10s}")
     elif type(v) == float:
@@ -311,6 +314,9 @@ def cat(args):
                         "dark": ["EXTNAME", "DATATYPE", "DATE-BEG"],
                         "flat": ["EXTNAME", "DATATYPE", "DATE-BEG", "WAVELNG", "ONBAND"],
                         "unknown": ["EXTNAME"]}
+    default_formats = {"EXTNAME": ":25s", "DATATYPE": ":7s", "DATE-BEG": ":22s",
+                       "WAVELNG": ":7.2f", "ONBAND": "!s:5s", "POLANGLE": ":5.1f",
+                       "RETANGLE": ":5.1f"}
     # TODO: add defaults for L1 and master flat/dark files
     try:
         for i, f in enumerate(args.files):
@@ -335,7 +341,8 @@ def cat(args):
                         for k in keywords:
                             if k in hdu.header:
                                 value = hdu.header[k]
-                                line += "  " + value2str(value)
+                                fmt = default_formats[k] if k in default_formats else None
+                                line += "  " + value2str(value, format=fmt)
                             else:
                                 line += "  " + 5 * "-"
                         print(line)
