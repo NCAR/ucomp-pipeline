@@ -477,9 +477,13 @@ def filter_log(args):
 # missing sub-command
 def missing(args):
     dates = parse_date_expr(",".join(args.dates))
+    if args.script:
+        raw_remote_server, raw_remote_dir = get_remote_location(args.flags, args.parser.error)
     for d in dates:
+        raw_remote_datedir = os.path.join(raw_remote_dir, d)
         raw_dir = get_raw_dir(d, args.flags, args.parser.error)
-        present_files = glob.glob(os.path.join(raw_dir, d, "*.fts"))
+        raw_datedir = os.path.join(raw_dir, d)
+        present_files = glob.glob(os.path.join(raw_datedir, "*.fts"))
         machine_log = os.path.join(raw_dir, d, f"{d}.ucomp.machine.log")
         if os.path.exists(machine_log):
             with open(machine_log, "r") as f:
@@ -491,9 +495,36 @@ def missing(args):
 
         present_files = [os.path.basename(f) for f in present_files]
 
+        print("#!/bin/sh")
+        print(f"REMOTE_LOCATION={raw_remote_server}:{raw_remote_datedir}")
+        print(f"LOCAL_LOCATION={raw_datedir}")
+        print()
         for cf in created_files:
             if cf not in present_files:
-                print(cf)
+                if args.script:
+                    print(f"scp $REMOTE_LOCATION/{cf} $LOCAL_LOCATION")
+                else:
+                    print(cf)
+
+
+def get_remote_location(flags, error):
+    config_basename = f"ucomp.{flags}.cfg"
+    # construct config file filename
+    config_filename = os.path.join(PIPELINE_DIR, "config", config_basename)
+    if not os.path.isfile(config_filename):
+        basename = os.path.basename(config_filename)
+        error(f"configuration file does not exist: {basename}")
+
+    ucomp_config = configparser.ConfigParser()
+    ucomp_config.read(config_filename)
+    try:
+        raw_remote_server = ucomp_config.get("verification", "collection_server")
+        raw_remote_dir = ucomp_config.get("verification", "collection_basedir")
+    except configparser.NoSectionError:
+        error("no verification section in config file")
+    except configparser.NoOptionError:
+        error("missing raw remote server options in config file")
+    return(raw_remote_server, raw_remote_dir)
 
 
 def get_raw_dir(date, flags, error):
@@ -960,11 +991,13 @@ if __name__ == "__main__":
 
     # missing sub-command
     missing_parser = subparsers.add_parser("missing",
-       help="list missing files for a given day")
+        help="list missing files for a given day")
     missing_parser.add_argument("dates", type=str, nargs="*", help=date_help,
-       metavar="date-expr")
+        metavar="date-expr")
     missing_parser.add_argument("-f", "--flags", type=str, help=flags_help,
-       default="latest")
+        default="latest")
+    missing_parser.add_argument("-s", "--script", help="create bash script",
+        action="store_true")
     missing_parser.set_defaults(func=missing, parser=missing_parser)
 
     # versions sub-command
