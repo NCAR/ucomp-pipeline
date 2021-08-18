@@ -14,6 +14,8 @@
 function ucomp_gbu_check_time_interval, file
   compile_opt strictarr
 
+  if (file.n_extensions lt 2L) then return, 0L
+
   run = file.run
   times = dblarr(file.n_extensions)
 
