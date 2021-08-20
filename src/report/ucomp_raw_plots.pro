@@ -30,14 +30,23 @@ pro ucomp_raw_plots, run=run
   tvlct, 0, 0, 255, 3
   tvlct, 0, 136, 0, 4
   tvlct, 136, 0, 136, 5
+  tvlct, 175, 0, 0, 6
+  tvlct, 0, 0, 175, 7
+  tvlct, 0, 200, 0, 8
+  tvlct, 200, 0, 200, 9
+
   tvlct, r, g, b, /get
 
-  color            = 0
-  background_color = 1
-  camera0_color    = 2
-  camera1_color    = 3
-  t_color          = 4
-  tu_color         = 5
+  color                 = 0
+  background_color      = 1
+  camera0_color         = 2
+  camera1_color         = 3
+  t_color               = 4
+  tu_color              = 5
+  camera0_outlier_color = 6
+  camera1_outlier_color = 7
+  t_outlier_color       = 8
+  tu_outlier_color      = 9
 
   times = fltarr(n_files)
   for f = 0L, n_files - 1L do times[f] = files[f].obsday_hours
@@ -78,19 +87,6 @@ pro ucomp_raw_plots, run=run
   tu_lcvr5 = fltarr(n_files)
   for f = 0L, n_files - 1L do tu_lcvr5[f] = files[f].tu_lcvr5
 
-  tarr_min =  9.0 < floor(min([t_c0arr, t_c1arr]))
-  tarr_max = 11.0 > ceil(max([t_c0arr, t_c1arr]))
-  tpcb_min = 25.0 < floor(min([t_c0pcb, t_c1pcb]))
-  tpcb_max = 27.0 > ceil(max([t_c0pcb, t_c1pcb]))
-
-  tbase_min = floor(min([t_base, tu_base]))
-  tbase_max = ceil(max([t_base, tu_base]))
-
-  tlcvr_min = floor(min([t_lcvr1, t_lcvr2, t_lcvr3, t_lcvr4, t_lcvr5, $
-                         tu_lcvr1, tu_lcvr2, tu_lcvr3, tu_lcvr4, tu_lcvr5], $
-                    max=tlcvr_max))
-  tlcvr_max = ceil(tlcvr_max)
-
   start_time = 06   ; 24-hour time in observing day
   end_time   = 19   ; 24-hour time in observing day
   end_time  >= ceil(max(times))
@@ -108,13 +104,15 @@ pro ucomp_raw_plots, run=run
         xtitle='Time [HST]', $
         xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
         ytitle='Temperature [C]', $
-        ystyle=1, yrange=[tarr_min, tarr_max]
-  oplot, times, t_c0arr, $
-         psym=6, symsize=symsize, $
-         linestyle=0, color=camera0_color
-  oplot, times, t_c1arr, $
-         psym=6, symsize=symsize, $
-         linestyle=0, color=camera1_color
+        ystyle=1, yrange=run->epoch('array_temp_range', datetime=run.date)
+  mg_range_oplot, times, t_c0arr, $
+                  psym=6, symsize=symsize, clip_psym=5, clip_symsize=symsize, $
+                  linestyle=0, $
+                  color=camera0_color, clip_color=camera0_outlier_color
+  mg_range_oplot, times, t_c1arr, $
+                  psym=6, symsize=symsize, clip_psym=5, clip_symsize=symsize, $
+                  linestyle=0, $
+                  color=camera1_color, clip_color=camera1_outlier_color
 
   xyouts, 0.95, 7.0 / n_plots + 0.80 * (1.0 / n_plots), /normal, $
           'camera 0', alignment=1.0, color=camera0_color
@@ -127,13 +125,15 @@ pro ucomp_raw_plots, run=run
         xtitle='Time [HST]', $
         xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
         ytitle='Temperature [C]', $
-        ystyle=1, yrange=[tpcb_min, tpcb_max]
-  oplot, times, t_c0pcb, $
-         psym=6, symsize=symsize, $
-         linestyle=0, color=camera0_color
-  oplot, times, t_c1pcb, $
-         psym=6, symsize=symsize, $
-         linestyle=0, color=camera1_color
+        ystyle=1, yrange=run->epoch('pcb_temp_range', datetime=run.date)
+  mg_range_oplot, times, t_c0pcb, $
+                  psym=6, symsize=symsize, clip_psym=5, clip_symsize=symsize, $
+                  linestyle=0, $
+                  color=camera0_color, clip_color=camera0_outlier_color
+  mg_range_oplot, times, t_c1pcb, $
+                  psym=6, symsize=symsize, clip_psym=5, clip_symsize=symsize, $
+                  linestyle=0, $
+                  color=camera1_color, clip_color=camera1_outlier_color
 
   xyouts, 0.95, 5.0 / n_plots + 0.80 * (1.0 / n_plots), /normal, $
          'T_ temps', alignment=1.0, color=t_color
@@ -146,13 +146,15 @@ pro ucomp_raw_plots, run=run
         xtitle='Time [HST]', $
         xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
         ytitle='Temperature [C]', $
-        ystyle=1, yrange=[tbase_min, tbase_max]
-  oplot, times, t_base, $
-         psym=6, symsize=symsize, $
-         linestyle=0, color=t_color
-  oplot, times, tu_base, $
-         psym=6, symsize=symsize, $
-         linestyle=0, color=tu_color
+        ystyle=1, yrange=run->epoch('base_temp_range', datetime=run.date)
+  mg_range_oplot, times, t_base, $
+                  psym=6, symsize=symsize, clip_psym=5, clip_symsize=symsize, $
+                  linestyle=0, $
+                  color=t_color, clip_color=t_outlier_color
+  mg_range_oplot, times, tu_base, $
+                  psym=6, symsize=symsize, clip_psym=5, clip_symsize=symsize, $
+                  linestyle=0, $
+                  color=tu_color, clip_color=tu_outlier_color
 
   plot, times, t_lcvr1, psym=6, symsize=symsize, /nodata, $
         linestyle=0, color=color, $
@@ -160,29 +162,45 @@ pro ucomp_raw_plots, run=run
         xtitle='Time [HST]', $
         xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
         ytitle='Temperature [C]', $
-        ystyle=1, yrange=[tlcvr_min, tlcvr_max]
-  oplot, times, t_lcvr1, psym=6, symsize=symsize, linestyle=0, color=t_color
-  oplot, times, tu_lcvr1, psym=6, symsize=symsize, linestyle=0, color=tu_color
-
+        ystyle=1, yrange=run->epoch('lcvr_temp_range', datetime=run.date)
+  mg_range_oplot, times, t_lcvr1, $
+                  psym=6, symsize=symsize, clip_psym=5, clip_symsize=symsize, $
+                  linestyle=0, $
+                  color=t_color, clip_color=t_outlier_color
+  mg_range_oplot, times, tu_lcvr1, $
+                  psym=6, symsize=symsize, clip_psym=5, clip_symsize=symsize, $
+                  linestyle=0, $
+                  color=t_color, clip_color=tu_outlier_color
   plot, times, t_lcvr2, psym=6, symsize=symsize, /nodata, $
         linestyle=0, color=color, $
         title='LCVR2 temperature', charsize=charsize, $
         xtitle='Time [HST]', $
         xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
         ytitle='Temperature [C]', $
-        ystyle=1, yrange=[tlcvr_min, tlcvr_max]
-  oplot, times, t_lcvr2, psym=6, symsize=symsize, linestyle=0, color=t_color
-  oplot, times, tu_lcvr2, psym=6, symsize=symsize, linestyle=0, color=tu_color
-
+        ystyle=1, yrange=run->epoch('lcvr_temp_range', datetime=run.date)
+  mg_range_oplot, times, t_lcvr2, $
+                  psym=6, symsize=symsize, clip_psym=5, clip_symsize=symsize, $
+                  linestyle=0, $
+                  color=t_color, clip_color=t_outlier_color
+  mg_range_oplot, times, tu_lcvr2, $
+                  psym=6, symsize=symsize, clip_psym=5, clip_symsize=symsize, $
+                  linestyle=0, $
+                  color=t_color, clip_color=tu_outlier_color
   plot, times, t_lcvr3, psym=6, symsize=symsize, /nodata, $
         linestyle=0, color=color, $
         title='LCVR3 temperature', charsize=charsize, $
         xtitle='Time [HST]', $
         xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
         ytitle='Temperature [C]', $
-        ystyle=1, yrange=[tlcvr_min, tlcvr_max]
-  oplot, times, t_lcvr3, psym=6, symsize=symsize, linestyle=0, color=t_color
-  oplot, times, tu_lcvr3, psym=6, symsize=symsize, linestyle=0, color=tu_color
+        ystyle=1, yrange=run->epoch('lcvr_temp_range', datetime=run.date)
+  mg_range_oplot, times, t_lcvr3, $
+                  psym=6, symsize=symsize, clip_psym=5, clip_symsize=symsize, $
+                  linestyle=0, $
+                  color=t_color, clip_color=t_outlier_color
+  mg_range_oplot, times, tu_lcvr3, $
+                  psym=6, symsize=symsize, clip_psym=5, clip_symsize=symsize, $
+                  linestyle=0, $
+                  color=t_color, clip_color=tu_outlier_color
 
   plot, times, t_lcvr4, psym=6, symsize=symsize, /nodata, $
         linestyle=0, color=color, $
@@ -190,9 +208,15 @@ pro ucomp_raw_plots, run=run
         xtitle='Time [HST]', $
         xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
         ytitle='Temperature [C]', $
-        ystyle=1, yrange=[tlcvr_min, tlcvr_max]
-  oplot, times, t_lcvr4, psym=6, symsize=symsize, linestyle=0, color=t_color
-  oplot, times, tu_lcvr4, psym=6, symsize=symsize, linestyle=0, color=tu_color
+        ystyle=1, yrange=run->epoch('lcvr_temp_range', datetime=run.date)
+  mg_range_oplot, times, t_lcvr4, $
+                  psym=6, symsize=symsize, clip_psym=5, clip_symsize=symsize, $
+                  linestyle=0, $
+                  color=t_color, clip_color=t_outlier_color
+  mg_range_oplot, times, tu_lcvr4, $
+                  psym=6, symsize=symsize, clip_psym=5, clip_symsize=symsize, $
+                  linestyle=0, $
+                  color=t_color, clip_color=tu_outlier_color
 
   plot, times, t_lcvr5, psym=6, symsize=symsize, /nodata, $
         linestyle=0, color=color, $
@@ -200,9 +224,15 @@ pro ucomp_raw_plots, run=run
         xtitle='Time [HST]', $
         xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
         ytitle='Temperature [C]', $
-        ystyle=1, yrange=[tlcvr_min, tlcvr_max]
-  oplot, times, t_lcvr5, psym=6, symsize=symsize, linestyle=0, color=t_color
-  oplot, times, tu_lcvr5, psym=6, symsize=symsize, linestyle=0, color=tu_color
+        ystyle=1, yrange=run->epoch('lcvr_temp_range', datetime=run.date)
+  mg_range_oplot, times, t_lcvr5, $
+                  psym=6, symsize=symsize, clip_psym=5, clip_symsize=symsize, $
+                  linestyle=0, $
+                  color=t_color, clip_color=t_outlier_color
+  mg_range_oplot, times, tu_lcvr5, $
+                  psym=6, symsize=symsize, clip_psym=5, clip_symsize=symsize, $
+                  linestyle=0, $
+                  color=tu_color, clip_color=tu_outlier_color
 
   ; save plots image file
   eng_dir = filepath('', $
