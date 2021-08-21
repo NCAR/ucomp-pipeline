@@ -13,7 +13,8 @@
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-pro ucomp_create_intensity, file, data, run=run, occulter_annotation=occulter_annotation
+pro ucomp_write_intensity_gif, file, data, run=run, $
+                               occulter_annotation=occulter_annotation
   compile_opt strictarr
 
   l1_dirname = filepath('', $

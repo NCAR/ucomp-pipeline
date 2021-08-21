@@ -41,9 +41,13 @@ pro ucomp_l1_step, routine_name, file, primary_header, data, headers, $
     mg_log, /check_math, from=routine_name, name=run.logger_name, /warn
 
     if (status eq 0L) then begin
-      ucomp_write_intermediate_file, strmid(routine_name, 9), $
+      name = strmid(routine_name, 9)
+      ucomp_write_intermediate_file, name, $
                                      file, primary_header, data, headers, $
                                      run=run
+      ucomp_write_intermediate_gif, name, $
+                                    file, primary_header, data, headers, $
+                                    run=run
     endif else begin
       message, string(routine_name, status, format='(%"%s failed with status %d")')
     endelse
