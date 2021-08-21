@@ -26,4 +26,5 @@ pro ucomp_l1_demodulation, file, primary_header, data, headers, $
   status = 0L
 
   ; TODO: implement
+  ; file.demodulated = 1B
 end

@@ -26,11 +26,12 @@ pro ucomp_write_intermediate_file, name, $
   compile_opt strictarr
 
   if (run->config('intermediate/after_' + name)) then begin
-    l1_dirname = filepath('', $
-                          subdir=[run.date, 'level1'], $
-                          root=run->config('processing/basedir'))
+    intermediate_dirname = filepath('', $
+                                    subdir=[run.date, 'level1', name], $
+                                    root=run->config('processing/basedir'))
     file->getProperty, l1_basename=basename, intermediate_name=name
-    filename = filepath(basename, root=l1_dirname)
+    filename = filepath(basename, root=intermediate_dirname)
+    if (~file_test(intermediate_dirname, /directory)) then file_mkdir, intermediate_dirname
     ucomp_write_fits_file, filename, primary_header, data, headers
   endif
 end
