@@ -68,13 +68,16 @@ end
 ;       1 - cover in
 ;       2 - moving optic elements, i.e., occulter, cal optics, etc.
 ;-
-pro ucomp_file::setProperty, rcam_geometry=rcam_geometry, $
+pro ucomp_file::setProperty, demodulated=demodulated, $
+                             rcam_geometry=rcam_geometry, $
                              tcam_geometry=tcam_geometry, $
                              background=background, $
                              quality_bitmask=quality_bitmask, $
                              gbu=gbu, $
                              n_extensions=n_extensions
   compile_opt strictarr
+
+  if (n_elements(demodulated)) then self.demodulated = demodulated
 
   if (n_elements(rcam_geometry)) then self.rcam_geometry = rcam_geometry
   if (n_elements(tcam_geometry)) then self.tcam_geometry = tcam_geometry
@@ -123,6 +126,7 @@ pro ucomp_file::getProperty, run=run, $
                              raw_filename=raw_filename, $
                              l1_basename=l1_basename, $
                              intermediate_name=intermediate_name, $
+                             demodulated=demodulated, $
                              hst_date=hst_date, $
                              hst_time=hst_time, $
                              ut_date=ut_date, $
@@ -206,6 +210,8 @@ pro ucomp_file::getProperty, run=run, $
                          format='(%"%s.%s.ucomp.%s.%s.%d.fts")')
 
   endif
+
+  if (arg_present(demodulated)) then demodulated = self.demodulated
 
   if (arg_present(n_extensions)) then n_extensions = self.n_extensions
 
@@ -503,6 +509,8 @@ pro ucomp_file__define
   !null = {ucomp_file, inherits IDL_Object, $
            raw_filename        : '', $
            run                 : obj_new(), $
+
+           demodulated         : 0B, $
 
            hst_date            : '', $
            hst_time            : '', $

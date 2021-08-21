@@ -83,8 +83,8 @@ pro ucomp_l1_process_file, file, run=run
   ucomp_write_fits_file, l1_filename, primary_header, data, headers
   !null = run->stop(clock_id)
 
-  ucomp_create_intensity, file, data, run=run, $
-                          occulter_annotation=run->config('centering/annotated_gifs')
+  ucomp_write_intensity_gif, file, data, run=run, $
+                             occulter_annotation=run->config('centering/annotated_gifs')
 
   done:
   if (obj_valid(headers)) then obj_destroy, headers

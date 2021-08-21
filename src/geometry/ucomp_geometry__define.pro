@@ -12,50 +12,60 @@ pro ucomp_geometry::display, occulter_color=occulter_color, $
   _guess_color      = mg_default(guess_color, self.guess_color)
   _inflection_color = mg_default(inflection_color, self.inflection_color)
 
-  points = *self.inflection_points
-
   ; display inflection points
-  plots, points[0, *], points[1, *], /device, $
-         color=self.inflection_color, $
-         thick=1.0, $
-         linestyle=2
+  if (n_elements(*self.inflection_points) gt 0L) then begin
+    points = *self.inflection_points
+    plots, points[0, *], points[1, *], /device, $
+           color=self.inflection_color, $
+           thick=1.0, $
+           linestyle=2
+  endif
+
+  ; display occulter guess
+  if (finite(self.radius_guess)) then begin
+    t = findgen(360) * !dtor
+    inner_x = (self.radius_guess - self.dradius) * cos(t) + self.center_guess[0]
+    inner_y = (self.radius_guess - self.dradius) * sin(t) + self.center_guess[1]
+    plots, inner_x, inner_y, /device, $
+           color=_guess_color, $
+           linestyle=3
+  
+    outer_x = (self.radius_guess + self.dradius) * cos(t) + self.center_guess[0]
+    outer_y = (self.radius_guess + self.dradius) * sin(t) + self.center_guess[1]
+    plots, outer_x, outer_y, /device, $
+           color=_guess_color, $
+           linestyle=3
+  
+    plots, self.center_guess[0], self.center_guess[1], /device, $
+           color=_guess_color, psym=1
+  endif
 
   ; display occulter fit
-  t = findgen(360) * !dtor
-  x = self.occulter_radius * cos(t) + self.occulter_center[0]
-  y = self.occulter_radius * sin(t) + self.occulter_center[1]
-  plots, x, y, /device, color=_occulter_color, thick=2.0, linestyle=3
-  plots, self.occulter_center[0], self.occulter_center[1], /device, $
-         color=_occulter_color, psym=1
+  if (finite(self.occulter_radius)) then begin
+    t = findgen(360) * !dtor
+    x = self.occulter_radius * cos(t) + self.occulter_center[0]
+    y = self.occulter_radius * sin(t) + self.occulter_center[1]
+    plots, x, y, /device, color=_occulter_color, thick=2.0, linestyle=3
+    plots, self.occulter_center[0], self.occulter_center[1], /device, $
+           color=_occulter_color, psym=1
+  endif
 
-  inner_x = (self.radius_guess - self.dradius) * cos(t) + self.center_guess[0]
-  inner_y = (self.radius_guess - self.dradius) * sin(t) + self.center_guess[1]
-  plots, inner_x, inner_y, /device, $
-         color=_guess_color, $
-         linestyle=3
-
-  outer_x = (self.radius_guess + self.dradius) * cos(t) + self.center_guess[0]
-  outer_y = (self.radius_guess + self.dradius) * sin(t) + self.center_guess[1]
-  plots, outer_x, outer_y, /device, $
-         color=_guess_color, $
-         linestyle=3
-
-  plots, self.center_guess[0], self.center_guess[1], /device, $
-         color=_guess_color, psym=1
-
-  width = 40.0
-  t = (self.post_angle + 90.0) * !dtor
-  x1 = self.occulter_radius * cos(t) + self.occulter_center[0]
-  y1 = self.occulter_radius * sin(t) + self.occulter_center[1]
-  v = [y1 - self.occulter_center[1], self.occulter_center[0] - x1]
-  v /= sqrt(total(v^2))
-  v *= width
-  v2 = [x1, y1] + v
-  v3 = [x1, y1] - v
-  v4 = [x1 - self.occulter_center[0], y1 - self.occulter_center[1]] + v2
-  v5 = [x1 - self.occulter_center[0], y1 - self.occulter_center[1]] + v3
-  plots, [v2[0], v4[0]], [v2[1], v4[1]], /device, color=_occulter_color
-  plots, [v3[0], v5[0]], [v3[1], v5[1]], /device, color=_occulter_color
+  ; display post
+  if (finite(self.post_angle)) then begin
+    width = 40.0
+    t = (self.post_angle + 90.0) * !dtor
+    x1 = self.occulter_radius * cos(t) + self.occulter_center[0]
+    y1 = self.occulter_radius * sin(t) + self.occulter_center[1]
+    v = [y1 - self.occulter_center[1], self.occulter_center[0] - x1]
+    v /= sqrt(total(v^2))
+    v *= width
+    v2 = [x1, y1] + v
+    v3 = [x1, y1] - v
+    v4 = [x1 - self.occulter_center[0], y1 - self.occulter_center[1]] + v2
+    v5 = [x1 - self.occulter_center[0], y1 - self.occulter_center[1]] + v3
+    plots, [v2[0], v4[0]], [v2[1], v4[1]], /device, color=_occulter_color
+    plots, [v3[0], v5[0]], [v3[1], v5[1]], /device, color=_occulter_color
+  endif
 end
 
 
@@ -119,7 +129,14 @@ end
 function ucomp_geometry::init, _extra=e
   compile_opt strictarr
 
+  self.center_guess = fltarr(2) + !values.f_nan
+  self.radius_guess = !values.f_nan
   self.inflection_points = ptr_new(/allocate_heap)
+
+  self.occulter_center = fltarr(2) + !values.f_nan
+  self.occulter_radius = !values.f_nan
+
+  self.post_angle = !values.f_nan
 
   self.occulter_color   = 'ffff00'x
   self.guess_color      = '00ffff'x
