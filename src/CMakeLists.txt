@@ -1,3 +1,4 @@
+add_subdirectory(calendar)
 add_subdirectory(calibrate)
 add_subdirectory(database)
 add_subdirectory(display)
