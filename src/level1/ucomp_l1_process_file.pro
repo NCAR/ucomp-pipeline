@@ -62,10 +62,11 @@ pro ucomp_l1_process_file, file, run=run
   ucomp_l1_step, 'ucomp_l1_demodulation', $
                  file, primary_header, data, headers, run=run
 
+  ucomp_l1_step, 'ucomp_l1_distortion', $
+                 file, primary_header, data, headers, run=run
   ucomp_l1_step, 'ucomp_l1_alignment', $
                  file, primary_header, data, headers, run=run
-
-  ucomp_l1_step, 'ucomp_l1_continuum_subtraction', $
+  ucomp_l1_step, 'ucomp_l1_combine_cameras', $
                  file, primary_header, data, headers, run=run
 
   ucomp_l1_step, 'ucomp_l1_masking', $

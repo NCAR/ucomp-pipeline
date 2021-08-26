@@ -12,7 +12,7 @@
 ;   primary_header : in, required, type=strarr
 ;     primary header
 ;   ext_data : in, out, required, type="fltarr(nx, ny, n_pol_states, n_cameras, n_exts)"
-;     extension data
+;     extension data, removes `n_cameras` dimension on output
 ;   ext_headers : in, required, type=list
 ;     extension headers as list of `strarr`
 ;
@@ -42,6 +42,9 @@ pro ucomp_l1_continuum_subtraction, file, primary_header, ext_data, ext_headers,
     wavelength[e] = ucomp_getpar(ext_headers[e], 'WAVELNG')
   endfor
 
+  ; because we have already averaged the file, we can assume there are only
+  ; two extensions with the same wavelength, with opposite ONBAND values
+
   ; ID for each extension
   ext_ids = string(exptime, format='(%"%0.1f")') $
               + '-' + strtrim(fix(onband), 2) $
@@ -62,8 +65,7 @@ pro ucomp_l1_continuum_subtraction, file, primary_header, ext_data, ext_headers,
   dims = size(ext_data, /dimensions)
   type = size(ext_data, /type)
 
-  combined_dims = dims
-  combined_dims[4] = dims[4] / 2
+  combined_dims = [dims[0:2], dims[4] / 2L]
   combined_ext_data = make_array(dimension=combined_dims, type=type)
   ext_headers_array = ext_headers->toArray(/transpose)
   ext_headers->remove, /all
@@ -88,8 +90,11 @@ pro ucomp_l1_continuum_subtraction, file, primary_header, ext_data, ext_headers,
     mg_log, 'ext %d cam 1: %d ext %d + %d ext %d', $
             i + 1L, c1[0], m, c1[1], match_indices[m], $
             name=run.logger_name, /debug
-    combined_ext_data[*, *, *, 0, i] = c0[0] * ext_data[*, *, *, 0, m] + c0[1] * ext_data[*, *, *, 0, match_indices[m]]
-    combined_ext_data[*, *, *, 1, i] = c1[0] * ext_data[*, *, *, 1, m] + c1[1] * ext_data[*, *, *, 1, match_indices[m]]
+
+    ; cam0 is not necessarily RCAM, cam1 is not necessarily TCAM
+    cam0 =  c0[0] * ext_data[*, *, *, 0, m] + c0[1] * ext_data[*, *, *, 0, match_indices[m]]
+    cam1 = = c1[0] * ext_data[*, *, *, 1, m] + c1[1] * ext_data[*, *, *, 1, match_indices[m]]
+    combined_ext_data[*, *, *, i] = (cam0 + cam1) / 2.0
 
     i += 1L
 
