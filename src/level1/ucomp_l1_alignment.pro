@@ -49,6 +49,8 @@ pro ucomp_l1_alignment, file, primary_header, data, headers, run=run, status=sta
   rcam_index = rcam_ext - 1L
   rcam_im = total(data[*, *, *, 0, rcam_index], 3) / n_pol_states
   file.rcam_geometry = ucomp_find_geometry(rcam_im, $
+                                           xsize=run->epoch('nx'), $
+                                           ysize=run->epoch('ny'), $
                                            center_guess=rcam_center_guess, $
                                            radius_guess=radius_guess, $
                                            dradius=dradius, $
@@ -63,6 +65,8 @@ pro ucomp_l1_alignment, file, primary_header, data, headers, run=run, status=sta
   tcam_index = tcam_ext - 1L
   tcam_im = total(data[*, *, *, 1, tcam_index], 3) / n_pol_states
   file.tcam_geometry = ucomp_find_geometry(tcam_im, $
+                                           xsize=run->epoch('nx'), $
+                                           ysize=run->epoch('ny'), $
                                            center_guess=tcam_center_guess, $
                                            radius_guess=radius_guess, $
                                            dradius=dradius, $
@@ -72,15 +76,15 @@ pro ucomp_l1_alignment, file, primary_header, data, headers, run=run, status=sta
   ; TODO: put geometry info in the primary header after RCAMNUC
 
   for p = 0, n_pol_states - 1L do begin
-    for e = 0L, file.n_extenions - 1L do begin
+    for e = 0L, file.n_extensions - 1L do begin
       data[*, *, p, 0, e] = ucomp_fshift(data[*, *, p, 0, e], $
-                                         (dims[0] - 1.0) / 2.0 - rcam_geometry[0], $
-                                         (dims[1] - 1.0) / 2.0 - rcam_geometry[1], $
+                                         (dims[0] - 1.0) / 2.0 - file.rcam_geometry.occulter_center[0], $
+                                         (dims[1] - 1.0) / 2.0 - file.rcam_geometry.occulter_center[1], $
                                          interp=1)
 
       data[*, *, p, 1, e] = ucomp_fshift(data[*, *, p, 1, e], $
-                                         (dims[0] - 1.0) / 2.0 - tcam_geometry[0], $
-                                         (dims[1] - 1.0) / 2.0 - tcam_geometry[1], $
+                                         (dims[0] - 1.0) / 2.0 - file.tcam_geometry.occulter_center[0], $
+                                         (dims[1] - 1.0) / 2.0 - file.tcam_geometry.occulter_center[1], $
                                          interp=1)
 
       ; RCAM is flipped both vertically and horizontally, while TCAM is flipped

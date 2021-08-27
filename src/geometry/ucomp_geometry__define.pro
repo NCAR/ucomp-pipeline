@@ -3,7 +3,8 @@
 
 ;= graphics
 
-pro ucomp_geometry::display, occulter_color=occulter_color, $
+pro ucomp_geometry::display, camera, $
+                             occulter_color=occulter_color, $
                              guess_color=guess_color, $
                              inflection_color=inflection_color
   compile_opt strictarr
@@ -15,8 +16,16 @@ pro ucomp_geometry::display, occulter_color=occulter_color, $
   ; display inflection points
   if (n_elements(*self.inflection_points) gt 0L) then begin
     points = *self.inflection_points
-    plots, points[0, *], points[1, *], /device, $
-           color=self.inflection_color, $
+    xshift = (self.xsize - 1.0) / 2.0 - self.occulter_center[0]
+    yshift = (self.xsize - 1.0) / 2.0 - self.occulter_center[1]
+    x = points[0, *] + xshift
+    y = points[1, *] + yshift
+    x = camera eq 0 ? (self.xsize - x) : x
+    y = self.ysize - y
+    ; TODO: this is not right
+    plots, x, y, $
+           /device, $
+           color=_inflection_color, $
            thick=1.0, $
            linestyle=2
   endif
@@ -24,45 +33,54 @@ pro ucomp_geometry::display, occulter_color=occulter_color, $
   ; display occulter guess
   if (finite(self.radius_guess)) then begin
     t = findgen(360) * !dtor
-    inner_x = (self.radius_guess - self.dradius) * cos(t) + self.center_guess[0]
-    inner_y = (self.radius_guess - self.dradius) * sin(t) + self.center_guess[1]
+    xshift = self.occulter_center[0] - self.center_guess[0]
+    yshift = self.occulter_center[1] - self.center_guess[1]
+    x0 = (self.xsize - 1.0) / 2.0 - xshift
+    y0 = (self.ysize - 1.0) / 2.0 - yshift
+    x0 = camera eq 0 ? (self.xsize - x0) : x0
+    y0 = self.ysize - y0
+    inner_x = (self.radius_guess - self.dradius) * cos(t) + x0
+    inner_y = (self.radius_guess - self.dradius) * sin(t) + y0
     plots, inner_x, inner_y, /device, $
            color=_guess_color, $
            linestyle=3
   
-    outer_x = (self.radius_guess + self.dradius) * cos(t) + self.center_guess[0]
-    outer_y = (self.radius_guess + self.dradius) * sin(t) + self.center_guess[1]
+    outer_x = (self.radius_guess + self.dradius) * cos(t) + x0
+    outer_y = (self.radius_guess + self.dradius) * sin(t) + y0
     plots, outer_x, outer_y, /device, $
            color=_guess_color, $
            linestyle=3
   
-    plots, self.center_guess[0], self.center_guess[1], /device, $
-           color=_guess_color, psym=1
+    plots, x0, y0, /device, color=_guess_color, psym=1
   endif
 
   ; display occulter fit
   if (finite(self.occulter_radius)) then begin
     t = findgen(360) * !dtor
-    x = self.occulter_radius * cos(t) + self.occulter_center[0]
-    y = self.occulter_radius * sin(t) + self.occulter_center[1]
+    x0 = (self.xsize - 1.0) / 2.0
+    y0 = (self.ysize - 1.0) / 2.0
+    x = self.occulter_radius * cos(t) + x0
+    y = self.occulter_radius * sin(t) + y0
     plots, x, y, /device, color=_occulter_color, thick=2.0, linestyle=3
-    plots, self.occulter_center[0], self.occulter_center[1], /device, $
-           color=_occulter_color, psym=1
+    plots, x0, y0, /device, color=_occulter_color, psym=1
   endif
 
   ; display post
   if (finite(self.post_angle)) then begin
     width = 40.0
-    t = (self.post_angle + 90.0) * !dtor
-    x1 = self.occulter_radius * cos(t) + self.occulter_center[0]
-    y1 = self.occulter_radius * sin(t) + self.occulter_center[1]
-    v = [y1 - self.occulter_center[1], self.occulter_center[0] - x1]
+    post_angle = camera eq 0 ? (180.0 + self.post_angle): (180.0 - self.post_angle)
+    t = (post_angle + 90.0)* !dtor
+    x0 = (self.xsize - 1.0) / 2.0
+    y0 = (self.ysize - 1.0) / 2.0
+    x1 = self.occulter_radius * cos(t) + x0
+    y1 = self.occulter_radius * sin(t) + y0
+    v = [y1 - x0, y0 - x1]
     v /= sqrt(total(v^2))
     v *= width
     v2 = [x1, y1] + v
     v3 = [x1, y1] - v
-    v4 = [x1 - self.occulter_center[0], y1 - self.occulter_center[1]] + v2
-    v5 = [x1 - self.occulter_center[0], y1 - self.occulter_center[1]] + v3
+    v4 = [x1 - x0, y1 - y0] + v2
+    v5 = [x1 - x0, y1 - y0] + v3
     plots, [v2[0], v4[0]], [v2[1], v4[1]], /device, color=_occulter_color
     plots, [v3[0], v5[0]], [v3[1], v5[1]], /device, color=_occulter_color
   endif
@@ -71,7 +89,9 @@ end
 
 ;= property access
 
-pro ucomp_geometry::setProperty, center_guess=center_guess, $
+pro ucomp_geometry::setProperty, xsize=xsize, $
+                                 ysize=ysize, $
+                                 center_guess=center_guess, $
                                  radius_guess=radius_guess, $
                                  dradius=dradius, $
                                  inflection_points=inflection_points, $
@@ -82,6 +102,8 @@ pro ucomp_geometry::setProperty, center_guess=center_guess, $
                                  post_angle=post_angle
   compile_opt strictarr
 
+  if (n_elements(xsize) gt 0L) then self.xsize = xsize
+  if (n_elements(ysize) gt 0L) then self.ysize = ysize
   if (n_elements(center_guess) gt 0L) then self.center_guess = center_guess
   if (n_elements(radius_guess) gt 0L) then self.radius_guess = radius_guess
   if (n_elements(dradius) gt 0L) then self.dradius = dradius
@@ -94,7 +116,9 @@ pro ucomp_geometry::setProperty, center_guess=center_guess, $
 end
 
 
-pro ucomp_geometry::getProperty, center_guess=center_guess, $
+pro ucomp_geometry::getProperty, xsize=xsize, $
+                                 ysize=ysize, $
+                                 center_guess=center_guess, $
                                  radius_guess=radius_guess, $
                                  dradius=dradius, $
                                  inflection_points=inflection_points, $
@@ -105,6 +129,8 @@ pro ucomp_geometry::getProperty, center_guess=center_guess, $
                                  post_angle=post_angle
   compile_opt strictarr
 
+  if (arg_present(xsize)) then xsize = self.xsize
+  if (arg_present(ysize)) then ysize = self.ysize
   if (arg_present(center_guess)) then center_guess = self.center_guess
   if (arg_present(radius_guess)) then radius_guess = self.radius_guess
   if (arg_present(dradius)) then dradius = self.dradius
@@ -155,6 +181,8 @@ pro ucomp_geometry__define
   compile_opt strictarr
  
    !null = {ucomp_geometry, inherits IDL_Object, $
+            xsize             : 0L, $
+            ysize             : 0L, $
             center_guess      : fltarr(2), $
             radius_guess      : 0.0, $
             dradius           : 0.0, $

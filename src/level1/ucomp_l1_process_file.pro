@@ -43,40 +43,41 @@ pro ucomp_l1_process_file, file, run=run
                         root=run->config('processing/basedir'))
   ucomp_mkdir, l1_dirname, logger_name=run.logger_name
 
+  step_number = 1L
 
   ucomp_l1_step, 'ucomp_l1_average_data', $
-                 file, primary_header, data, headers, run=run
+                 file, primary_header, data, headers, step_number=step_number, run=run
   ucomp_l1_step, 'ucomp_l1_stray_light', $
-                 file, primary_header, data, headers, run=run
+                 file, primary_header, data, headers, step_number=step_number, run=run
 
   ucomp_l1_step, 'ucomp_l1_apply_dark', $
-                 file, primary_header, data, headers, run=run
+                 file, primary_header, data, headers, step_number=step_number, run=run
   ucomp_l1_step, 'ucomp_l1_camera_correction', $
-                 file, primary_header, data, headers, run=run
+                 file, primary_header, data, headers, step_number=step_number, run=run
   ucomp_l1_step, 'ucomp_l1_apply_gain', $
-                 file, primary_header, data, headers, run=run
+                 file, primary_header, data, headers, step_number=step_number, run=run
 
   ucomp_l1_step, 'ucomp_l1_continuum_correction', $
-                 file, primary_header, data, headers, run=run
+                 file, primary_header, data, headers, step_number=step_number, run=run
 
   ucomp_l1_step, 'ucomp_l1_demodulation', $
-                 file, primary_header, data, headers, run=run
+                 file, primary_header, data, headers, step_number=step_number, run=run
 
   ucomp_l1_step, 'ucomp_l1_distortion', $
-                 file, primary_header, data, headers, run=run
+                 file, primary_header, data, headers, step_number=step_number, run=run
   ucomp_l1_step, 'ucomp_l1_alignment', $
-                 file, primary_header, data, headers, run=run
+                 file, primary_header, data, headers, step_number=step_number, run=run
   ucomp_l1_step, 'ucomp_l1_combine_cameras', $
-                 file, primary_header, data, headers, run=run
+                 file, primary_header, data, headers, step_number=step_number, run=run
 
   ucomp_l1_step, 'ucomp_l1_masking', $
-                 file, primary_header, data, headers, run=run
+                 file, primary_header, data, headers, step_number=step_number, run=run
 
   ucomp_l1_step, 'ucomp_l1_polarimetric_correction', $
-                 file, primary_header, data, headers, run=run
+                 file, primary_header, data, headers, step_number=step_number, run=run
 
   ucomp_l1_step, 'ucomp_l1_promote_header', $
-                 file, primary_header, data, headers, run=run
+                 file, primary_header, data, headers, step_number=step_number, run=run
 
   l1_filename = filepath(file.l1_basename, root=l1_dirname)
 

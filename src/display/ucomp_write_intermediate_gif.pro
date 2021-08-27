@@ -22,7 +22,7 @@
 ;-
 pro ucomp_write_intermediate_gif, name, $
                                   file, primary_header, data, headers, $
-                                  run=run
+                                  step_number=step_number, run=run
   compile_opt strictarr
   on_error, 2
 
@@ -38,16 +38,15 @@ pro ucomp_write_intermediate_gif, name, $
     else: message, string(n_dims, format='(%"wrong number of dimensions: %d")')
   endcase
 
-  intermediate_dirname = filepath('', $
-                                  subdir=[run.date, 'level1', name], $
+  intermediate_dirname = filepath(string(step_number, name, format='(%"%02d-%s")'), $
+                                  subdir=[run.date, 'level1'], $
                                   root=run->config('processing/basedir'))
   file->getProperty, l1_basename=basename, intermediate_name=name
   basename = file_basename(basename, '.fts')
 
   if (~file_test(intermediate_dirname, /directory)) then file_mkdir, intermediate_dirname
 
-  display_min   = run->line(file.wave_region, 'intensity_display_min')
-  display_max   = run->line(file.wave_region, 'intensity_display_max')
+  percent_stretch = 0.01
   display_gamma = run->line(file.wave_region, 'intensity_display_gamma')
 
   datetime = strmid(file_basename(file.raw_filename), 0, 15)
@@ -104,6 +103,9 @@ pro ucomp_write_intermediate_gif, name, $
         im = total(im, 3, /preserve_type)
       endelse
 
+      p = mg_percentiles(im, percentiles=[percent_stretch, 1.0 - percent_stretch])
+      display_min = p[0]
+      display_max = p[1]
       scaled_im = bytscl(im, $
                          min=display_min, $
                          max=display_max, $
@@ -124,7 +126,8 @@ pro ucomp_write_intermediate_gif, name, $
         1: geometry = file.tcam_geometry
       endcase
       if (obj_valid(geometry)) then begin
-        geometry->display, occulter_color=253, $
+        geometry->display, c, $
+                           occulter_color=253, $
                            guess_color=254, $
                            inflection_color=255
       endif
