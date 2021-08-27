@@ -1,7 +1,7 @@
 ; docformat = 'rst'
 
 ;+
-; Off-band (continuum) subtraction.
+; Combine cameras and off-band (continuum) subtraction.
 ;
 ; After `UCOMP_L1_AVERAGE_DATA`, there should be only a single match for each
 ; extension.
@@ -22,8 +22,8 @@
 ;   status : out, optional, type=integer
 ;     set to a named variable to retrieve the status of the step; 0 for success
 ;-
-pro ucomp_l1_continuum_subtraction, file, primary_header, ext_data, ext_headers, $
-                                    run=run, status=status
+pro ucomp_l1_combine_cameras, file, primary_header, ext_data, ext_headers, $
+                              run=run, status=status
   compile_opt strictarr
 
   status = 0L
@@ -92,8 +92,8 @@ pro ucomp_l1_continuum_subtraction, file, primary_header, ext_data, ext_headers,
             name=run.logger_name, /debug
 
     ; cam0 is not necessarily RCAM, cam1 is not necessarily TCAM
-    cam0 =  c0[0] * ext_data[*, *, *, 0, m] + c0[1] * ext_data[*, *, *, 0, match_indices[m]]
-    cam1 = = c1[0] * ext_data[*, *, *, 1, m] + c1[1] * ext_data[*, *, *, 1, match_indices[m]]
+    cam0 = c0[0] * ext_data[*, *, *, 0, m] + c0[1] * ext_data[*, *, *, 0, match_indices[m]]
+    cam1 = c1[0] * ext_data[*, *, *, 1, m] + c1[1] * ext_data[*, *, *, 1, match_indices[m]]
     combined_ext_data[*, *, *, i] = (cam0 + cam1) / 2.0
 
     i += 1L

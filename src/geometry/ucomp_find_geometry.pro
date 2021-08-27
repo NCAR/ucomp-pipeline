@@ -1,6 +1,8 @@
 ; docformat = 'rst'
 
 function ucomp_find_geometry, data, $
+                              xsize=xsize, $
+                              ysize=ysize, $
                               radius_guess=radius_guess, $
                               center_guess=center_guess, $
                               dradius=dradius, $
@@ -25,7 +27,9 @@ function ucomp_find_geometry, data, $
                                angle_tolerance=post_angle_tolerance, $
                                error=error)
 
-  geometry = ucomp_geometry(center_guess=center_guess, $
+  geometry = ucomp_geometry(xsize=xsize, $
+                            ysize=ysize, $
+                            center_guess=center_guess, $
                             radius_guess=radius_guess, $
                             dradius=dradius, $
                             inflection_points=points, $
