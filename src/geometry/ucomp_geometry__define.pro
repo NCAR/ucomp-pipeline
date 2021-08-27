@@ -17,12 +17,11 @@ pro ucomp_geometry::display, camera, $
   if (n_elements(*self.inflection_points) gt 0L) then begin
     points = *self.inflection_points
     xshift = (self.xsize - 1.0) / 2.0 - self.occulter_center[0]
-    yshift = (self.xsize - 1.0) / 2.0 - self.occulter_center[1]
+    yshift = (self.ysize - 1.0) / 2.0 - self.occulter_center[1]
     x = points[0, *] + xshift
     y = points[1, *] + yshift
     x = camera eq 0 ? (self.xsize - x) : x
     y = self.ysize - y
-    ; TODO: this is not right
     plots, x, y, $
            /device, $
            color=_inflection_color, $
