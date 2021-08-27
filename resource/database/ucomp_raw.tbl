@@ -5,20 +5,40 @@ create table ucomp_raw (
   date_obs         datetime not null,
   obsday_id        mediumint (5) not null,
 
-  -- TODO: datatype
-  -- TODO: wave_region
+  -- TODO: datatype (not sure about this, DATATYPE is per ext and can change in a file)
+
+  wave_region      char(4),
 
   quality_id       tinyint (2) not null,
   level_id         tinyint (2) not null,
 
+  obs_id           char (40),      -- name of current measurement
+  obs_plan         char (60),      -- name of current program
+
+  t_rack           float(8, 3),
+  t_lcvr1          float(8, 3),
+  t_lcvr2          float(8, 3),
+  t_lcvr3          float(8, 3),
+  t_lnb1           float(8, 3),
+  t_mod            float(8, 3),
+  t_lnb2           float(8, 3),
+  t_lcvr4          float(8, 3),
+  t_lcvr5          float(8, 3),
+  t_base           float(8, 3),
+  tu_rack          float(8, 3),
+  tu_lcvr1         float(8, 3),
+  tu_lcvr2         float(8, 3),
+  tu_lcvr3         float(8, 3),
+  tu_lnb1          float(8, 3),
+  tu_mod           float(8, 3),
+  tu_lnb2          float(8, 3),
+  tu_lcvr4         float(8, 3),
+  tu_lcvr5         float(8, 3),
+  tu_base          float(8, 3),
   t_c0arr          float(8, 3),
   t_c0pcb          float(8, 3),
   t_c1arr          float(8, 3),
   t_c1pcb          float(8, 3),
-
-  -- TODO: add all temperatures from primary header
-
-  -- TODO: OBS_ keywords
 
   unique(file_name),
 

@@ -24,7 +24,7 @@
 ;     keywords to pass along to `ROUTINE_NAME`
 ;-
 pro ucomp_l1_step, routine_name, file, primary_header, data, headers, $
-                   skip=skip, run=run, _extra=e
+                   step_number=step_number, skip=skip, run=run, _extra=e
   compile_opt strictarr
   on_error, 2
 
@@ -44,10 +44,10 @@ pro ucomp_l1_step, routine_name, file, primary_header, data, headers, $
       name = strmid(routine_name, 9)
       ucomp_write_intermediate_file, name, $
                                      file, primary_header, data, headers, $
-                                     run=run
+                                     step_number=step_number, run=run
       ucomp_write_intermediate_gif, name, $
                                     file, primary_header, data, headers, $
-                                    run=run
+                                    step_number=step_number, run=run
     endif else begin
       message, string(routine_name, status, format='(%"%s failed with status %d")')
     endelse
@@ -55,4 +55,6 @@ pro ucomp_l1_step, routine_name, file, primary_header, data, headers, $
     mg_log, 'done (%s)', ucomp_sec2str(time), $
             from=routine_name, name=run.logger_name, /debug
   endelse
+
+  step_number += 1L
 end

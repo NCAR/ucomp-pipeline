@@ -23,7 +23,7 @@ pro ucomp_write_intensity_gif, file, data, run=run, $
   ucomp_mkdir, l1_dirname, logger_name=run.logger_name
 
   intensity_basename_format = string(file_basename(file.l1_basename, '.fts'), $
-                                     format='(%"%s.int.cam%%d.ext%%02d.gif")')
+                                     format='(%"%s.int.ext%%02d.gif")')
   intensity_filename_format = mg_format(filepath(intensity_basename_format, $
                                                  root=l1_dirname))
 
@@ -56,39 +56,35 @@ pro ucomp_write_intensity_gif, file, data, run=run, $
   tvlct, r, g, b, /get
 
   for e = 1L, file.n_extensions do begin
-    for c = 0L, 1L do begin
-      if (file.n_extensions gt 1L) then begin
-        im = reform(data[*, *, *, c, e - 1L])
-      endif else begin
-        im = reform(data[*, *, *, c])
-      endelse
+    if (file.n_extensions gt 1L) then begin
+      im = reform(data[*, *, *, e - 1L])
+    endif else begin
+      im = reform(data[*, *, *])
+    endelse
 
-      im = total(im, 3, /preserve_type)
+    ; TODO: once demodulation is operational, this will be just indexing
+    im = total(im, 3, /preserve_type)
 
-      scaled_im = bytscl(im, $
-                        min=display_min, $
-                        max=display_max, $
-                        top=n_colors - 1L, $
-                        /nan)
+    scaled_im = bytscl(im, $
+                      min=display_min, $
+                      max=display_max, $
+                      top=n_colors - 1L, $
+                      /nan)
 
-      tv, scaled_im
-      xyouts, 15, 15, /device, alignment=0.0, $
-              string(e, format='(%"ext: %d")'), $
-              color=guess_color
-      xyouts, nx - 15, 15, /device, alignment=1.0, $
-              string(display_min, display_max, display_gamma, $
-                     format='(%"min/max: %0.1f/%0.1f, gamma: %0.1f")'), $
-              color=guess_color
-  
-      if (keyword_set(occulter_annotation)) then begin
-        case c of
-          0: geometry = file.rcam_geometry
-          1: geometry = file.tcam_geometry
-        endcase
-        geometry->display, occulter_color=253, guess_color=254, inflection_color=255
-      endif
-      write_gif, string(c, e, format=intensity_filename_format), tvrd(), r, g, b
-    endfor
+    tv, scaled_im
+    xyouts, 15, 15, /device, alignment=0.0, $
+            string(e, format='(%"ext: %d")'), $
+            color=guess_color
+    xyouts, nx - 15, 15, /device, alignment=1.0, $
+            string(display_min, display_max, display_gamma, $
+                   format='(%"min/max: %0.1f/%0.1f, gamma: %0.1f")'), $
+            color=guess_color
+
+    if (keyword_set(occulter_annotation)) then begin
+      ; TODO: draw occulter on GIF image, use center of image and the mean
+      ; of the two geometry radii
+    endif
+    write_gif, string(e, format=intensity_filename_format), tvrd(), r, g, b
   endfor
 
   done:
