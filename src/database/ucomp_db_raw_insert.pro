@@ -42,9 +42,34 @@ pro ucomp_db_raw_insert, l0_files, obsday_index, db, logger_name=logger_name
     fields = [{name: 'file_name', type: '''%s'''}, $
               {name: 'date_obs', type: '''%s'''}, $
               {name: 'obsday_id', type: '%d'}, $
+
+              {name: 'wave_region', type: '''%s'''}
               {name: 'quality_id', type: '%d'}, $
               {name: 'level_id', type: '%d'}, $
 
+              {name: 'obs_id', type: '''%s'''}
+              {name: 'obs_plan', type: '''%s'''}
+
+              {name: 't_rack', type='%s'}, $
+              {name: 't_lcvr1  ', type='%s'}, $
+              {name: 't_lcvr2  ', type='%s'}, $
+              {name: 't_lcvr3  ', type='%s'}, $
+              {name: 't_lnb1', type='%s'}, $
+              {name: 't_mod', type='%s'}, $
+              {name: 't_lnb2', type='%s'}, $
+              {name: 't_lcvr4', type='%s'}, $
+              {name: 't_lcvr5', type='%s'}, $
+              {name: 't_base', type='%s'}, $
+              {name: 'tu_rack', type='%s'}, $
+              {name: 'tu_lcvr1', type='%s'}, $
+              {name: 'tu_lcvr2', type='%s'}, $
+              {name: 'tu_lcvr3', type='%s'}, $
+              {name: 'tu_lnb1', type='%s'}, $
+              {name: 'tu_mod', type='%s'}, $
+              {name: 'tu_lnb2', type='%s'}, $
+              {name: 'tu_lcvr4', type='%s'}, $
+              {name: 'tu_lcvr5', type='%s'}, $
+              {name: 'tu_base', type='%s'}, $
               {name: 't_c0arr', type: '%s'}, $
               {name: 't_c0pcb', type: '%s'}, $
               {name: 't_c1arr', type: '%s'}, $
@@ -55,8 +80,35 @@ pro ucomp_db_raw_insert, l0_files, obsday_index, db, logger_name=logger_name
     db->execute, sql_cmd, $
                  file_basename(file.raw_filename), $
                  file.date_obs, $
-                 obsday_index, quality_index, level_index, $
+                 obsday_index, $
 
+                 file.wave_region, $
+                 quality_index, $
+                 level_index, $
+
+                 file.obs_id, $
+                 file.obs_plan, $
+
+                 ucomp_db_float(file.t_rack), $
+                 ucomp_db_float(file.t_lcvr1  ), $
+                 ucomp_db_float(file.t_lcvr2  ), $
+                 ucomp_db_float(file.t_lcvr3  ), $
+                 ucomp_db_float(file.t_lnb1), $
+                 ucomp_db_float(file.t_mod), $
+                 ucomp_db_float(file.t_lnb2), $
+                 ucomp_db_float(file.t_lcvr4), $
+                 ucomp_db_float(file.t_lcvr5), $
+                 ucomp_db_float(file.t_base), $
+                 ucomp_db_float(file.tu_rack), $
+                 ucomp_db_float(file.tu_lcvr1), $
+                 ucomp_db_float(file.tu_lcvr2), $
+                 ucomp_db_float(file.tu_lcvr3), $
+                 ucomp_db_float(file.tu_lnb1), $
+                 ucomp_db_float(file.tu_mod), $
+                 ucomp_db_float(file.tu_lnb2), $
+                 ucomp_db_float(file.tu_lcvr4), $
+                 ucomp_db_float(file.tu_lcvr5), $
+                 ucomp_db_float(file.tu_base), $
                  ucomp_db_float(file.t_c0arr), $
                  ucomp_db_float(file.t_c0pcb), $
                  ucomp_db_float(file.t_c1arr), $
