@@ -93,7 +93,8 @@ pro ucomp_l1_continuum_subtraction, file, primary_header, ext_data, ext_headers,
             i + 1L, c1[0], m, c1[1], match_indices[m], $
             name=run.logger_name, /debug
 
-    ; cam0 is not necessarily RCAM, cam1 is not necessarily TCAM
+    ; note: in the following code, cam0 is not necessarily RCAM, cam1 is not
+    ; necessarily TCAM
     cam0 = c0[0] * ext_data[*, *, *, 0, m] + c0[1] * ext_data[*, *, *, 0, match_indices[m]]
     cam1 = c1[0] * ext_data[*, *, *, 1, m] + c1[1] * ext_data[*, *, *, 1, match_indices[m]]
     combined_ext_data[*, *, *, 0, i] = cam0
