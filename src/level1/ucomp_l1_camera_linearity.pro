@@ -1,7 +1,7 @@
 ; docformat = 'rst'
 
 ;+
-; Perform camera corrections.
+; Correct camera non-linearity.
 ;
 ; :Params:
 ;   file : in, required, type=object
@@ -19,8 +19,8 @@
 ;   status : out, optional, type=integer
 ;     set to a named variable to retrieve the status of the step; 0 for success
 ;-
-pro ucomp_l1_camera_correction, file, primary_header, data, headers, $
-                                run=run, status=status
+pro ucomp_l1_camera_linearity, file, primary_header, data, headers, $
+                               run=run, status=status
   compile_opt strictarr
 
   status = 0L

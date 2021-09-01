@@ -47,10 +47,10 @@ pro ucomp_l1_process_file, file, run=run
 
   ucomp_l1_step, 'ucomp_l1_average_data', $
                  file, primary_header, data, headers, step_number=step_number, run=run
-  ucomp_l1_step, 'ucomp_l1_stray_light', $
-                 file, primary_header, data, headers, step_number=step_number, run=run
 
   ucomp_l1_step, 'ucomp_l1_apply_dark', $
+                 file, primary_header, data, headers, step_number=step_number, run=run
+  ucomp_l1_step, 'ucomp_l1_camera_linearity', $
                  file, primary_header, data, headers, step_number=step_number, run=run
   ucomp_l1_step, 'ucomp_l1_camera_correction', $
                  file, primary_header, data, headers, step_number=step_number, run=run
@@ -67,6 +67,8 @@ pro ucomp_l1_process_file, file, run=run
                  file, primary_header, data, headers, step_number=step_number, run=run
   ucomp_l1_step, 'ucomp_l1_alignment', $
                  file, primary_header, data, headers, step_number=step_number, run=run
+  ucomp_l1_step, 'ucomp_l1_continuum_subtraction', $
+                 file, primary_header, data, headers, step_number=step_number, run=run
   ucomp_l1_step, 'ucomp_l1_combine_cameras', $
                  file, primary_header, data, headers, step_number=step_number, run=run
 
@@ -74,6 +76,8 @@ pro ucomp_l1_process_file, file, run=run
                  file, primary_header, data, headers, step_number=step_number, run=run
 
   ucomp_l1_step, 'ucomp_l1_polarimetric_correction', $
+                 file, primary_header, data, headers, step_number=step_number, run=run
+  ucomp_l1_step, 'ucomp_l1_sky_transmission', $
                  file, primary_header, data, headers, step_number=step_number, run=run
 
   ucomp_l1_step, 'ucomp_l1_promote_header', $
