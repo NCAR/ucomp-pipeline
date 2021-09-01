@@ -1,16 +1,16 @@
 ; docformat = 'rst'
 
 ;+
-; Fix stray light.
+; Correct for ratio of sky transmission between science and flat image.
 ;
 ; :Params:
 ;   file : in, required, type=object
 ;     `ucomp_file` object
 ;   primary_header : in, required, type=strarr
 ;     primary header
-;   data : in, required, type="fltarr(nx, ny, nexts)"
+;   data : in, required, type="fltarr(nx, ny, n_pol_states, nexts)"
 ;     extension data
-;   headers : in, requiredd, type=list
+;   headers : in, required, type=list
 ;     extension headers as list of `strarr`
 ;
 ; :Keywords:
@@ -19,8 +19,8 @@
 ;   status : out, optional, type=integer
 ;     set to a named variable to retrieve the status of the step; 0 for success
 ;-
-pro ucomp_l1_stray_light, file, primary_header, data, headers, $
-                          run=run, status=status
+pro ucomp_l1_sky_transmission, file, primary_header, data, headers, $
+                               run=run, status=status
   compile_opt strictarr
 
   status = 0L
