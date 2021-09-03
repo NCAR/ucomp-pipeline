@@ -28,7 +28,7 @@ pro ucomp_l1_combine_cameras, file, primary_header, ext_data, ext_headers, $
 
   status = 0L
 
-  ext_data = mean(ext_data, dimension=4)
+  ext_data = mean(ext_data, dimension=4, /nan)
 
   done:
 end

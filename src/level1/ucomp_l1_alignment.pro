@@ -73,7 +73,14 @@ pro ucomp_l1_alignment, file, primary_header, data, headers, run=run, status=sta
                                            post_angle_guess=post_angle_guess, $
                                            post_angle_tolerance=post_angle_tolerance)
 
-  ; TODO: put geometry info in the primary header after RCAMNUC
+  p_angle = file.p_angle
+  ucomp_addpar, primary_header, 'SOLAR_P0', p_angle, $
+                comment='[deg] solar P angle applied (image has N up)', $
+                format='(f9.3)'
+  file.rcam_geometry.p_angle = p_angle
+  file.tcam_geometry.p_angle = p_angle
+
+  ; TODO: put geometry info, p_angle in the primary header after RCAMNUC
 
   for p = 0, n_pol_states - 1L do begin
     for e = 0L, file.n_extensions - 1L do begin
@@ -89,12 +96,10 @@ pro ucomp_l1_alignment, file, primary_header, data, headers, run=run, status=sta
 
       ; RCAM is flipped both vertically and horizontally, while TCAM is flipped
       ; only vertically
-      data[*, *, p, 0, e] = reverse(reverse(data[*, *, p, 0, e], 1), 2)
-      data[*, *, p, 1, e] = reverse(data[*, *, p, 1, e], 2)
+      data[*, *, p, 0, e] = rot(reverse(reverse(data[*, *, p, 0, e], 1), 2), p_angle, /interp)
+      data[*, *, p, 1, e] = rot(reverse(data[*, *, p, 1, e], 2), p_angle, /interp)
     endfor
   endfor
-
-  ; TODO: rotate the images North up
 
   done:
 end
