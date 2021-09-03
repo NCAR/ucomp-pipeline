@@ -15,14 +15,19 @@ pro ucomp_geometry::display, camera, $
 
   ; display inflection points
   if (n_elements(*self.inflection_points) gt 0L) then begin
+    x_center = (self.xsize - 1.0) / 2.0
+    y_center = (self.ysize - 1.0) / 2.0
     points = *self.inflection_points
-    xshift = (self.xsize - 1.0) / 2.0 - self.occulter_center[0]
-    yshift = (self.ysize - 1.0) / 2.0 - self.occulter_center[1]
+    xshift = x_center - self.occulter_center[0]
+    yshift = y_center - self.occulter_center[1]
     x = points[0, *] + xshift
     y = points[1, *] + yshift
     x = camera eq 0 ? (self.xsize - x) : x
     y = self.ysize - y
-    plots, x, y, $
+    mg_rotate_points, x, y, -self.p_angle, $
+                      new_x=x_rotated, new_y=y_rotated, $
+                      center=[x_center, y_center]
+    plots, x_rotated, y_rotated, $
            /device, $
            color=_inflection_color, $
            thick=1.0, $
@@ -67,8 +72,8 @@ pro ucomp_geometry::display, camera, $
   ; display post
   if (finite(self.post_angle)) then begin
     width = 40.0
-    post_angle = camera eq 0 ? (180.0 + self.post_angle): (180.0 - self.post_angle)
-    t = (post_angle + 90.0)* !dtor
+    post_angle = camera eq 0 ? (180.0 + self.post_angle - self.p_angle): (180.0 - self.post_angle + self.p_angle)
+    t = (post_angle + 90.0) * !dtor
     x0 = (self.xsize - 1.0) / 2.0
     y0 = (self.ysize - 1.0) / 2.0
     x1 = self.occulter_radius * cos(t) + x0
@@ -98,7 +103,8 @@ pro ucomp_geometry::setProperty, xsize=xsize, $
                                  occulter_radius=occulter_radius, $
                                  occulter_chisq=occulter_chisq, $
                                  occulter_error=occulter_error, $
-                                 post_angle=post_angle
+                                 post_angle=post_angle, $
+                                 p_angle=p_angle
   compile_opt strictarr
 
   if (n_elements(xsize) gt 0L) then self.xsize = xsize
@@ -112,6 +118,7 @@ pro ucomp_geometry::setProperty, xsize=xsize, $
   if (n_elements(occulter_chisq) gt 0L) then self.occulter_chisq = occulter_chisq
   if (n_elements(occulter_error) gt 0L) then self.occulter_error = occulter_error
   if (n_elements(post_angle) gt 0L) then self.post_angle = post_angle
+  if (n_elements(p_angle) gt 0L) then self.p_angle = p_angle
 end
 
 
@@ -125,7 +132,8 @@ pro ucomp_geometry::getProperty, xsize=xsize, $
                                  occulter_radius=occulter_radius, $
                                  occulter_chisq=occulter_chisq, $
                                  occulter_error=occulter_error, $
-                                 post_angle=post_angle
+                                 post_angle=post_angle, $
+                                 p_angle=p_angle
   compile_opt strictarr
 
   if (arg_present(xsize)) then xsize = self.xsize
@@ -139,6 +147,7 @@ pro ucomp_geometry::getProperty, xsize=xsize, $
   if (arg_present(occulter_chisq)) then occulter_chisq = self.occulter_chisq
   if (arg_present(occulter_error)) then occulter_error = self.occulter_error
   if (arg_present(post_angle)) then post_angle = self.post_angle
+  if (arg_present(p_angle)) then p_angle = self.p_angle
 end
 
 
@@ -191,6 +200,7 @@ pro ucomp_geometry__define
             occulter_chisq    : 0.0, $
             occulter_error    : 0L, $
             post_angle        : 0.0, $
+            p_angle           : 0.0, $
             occulter_color    : 0UL, $
             guess_color       : 0UL, $
             inflection_color  : 0UL}

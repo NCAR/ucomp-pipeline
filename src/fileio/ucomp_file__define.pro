@@ -134,6 +134,7 @@ pro ucomp_file::getProperty, run=run, $
                              obsday_hours=obsday_hours, $
                              date_obs=date_obs, $
                              carrington_rotation=carrington_rotation, $
+                             p_angle=p_angle, $
                              wave_region=wave_region, $
                              center_wavelength=center_wavelength, $
                              data_type=data_type, $
@@ -223,11 +224,11 @@ pro ucomp_file::getProperty, run=run, $
 
   if (arg_present(date_obs)) then date_obs = self.date_obs
 
-  if (arg_present(carrington_rotation)) then begin
+  if (arg_present(carrington_rotation) || arg_present(p_angle)) then begin
     date_parts = ucomp_decompose_date(self.ut_date)
     hours = ucomp_decompose_time(self.ut_time, /float)
     sun, date_parts[0], date_parts[1], date_parts[2], hours, $
-         carrington=carrington_rotation
+         carrington=carrington_rotation, pa=p_angle
   endif
 
   if (arg_present(obs_id)) then obs_id = self.obs_id
