@@ -47,6 +47,7 @@ pro ucomp_l1_alignment, file, primary_header, data, headers, run=run, status=sta
     goto, done
   endif
   rcam_index = rcam_ext - 1L
+  mg_log, 'looking for occulter in RCAM in ext %d', rcam_ext, name=run.logger_name, /debug
   rcam_im = total(data[*, *, *, 0, rcam_index], 3) / n_pol_states
   file.rcam_geometry = ucomp_find_geometry(rcam_im, $
                                            xsize=run->epoch('nx'), $
@@ -63,6 +64,7 @@ pro ucomp_l1_alignment, file, primary_header, data, headers, run=run, status=sta
     goto, done
   endif
   tcam_index = tcam_ext - 1L
+  mg_log, 'looking for occulter in TCAM in ext %d', tcam_ext, name=run.logger_name, /debug
   tcam_im = total(data[*, *, *, 1, tcam_index], 3) / n_pol_states
   file.tcam_geometry = ucomp_find_geometry(tcam_im, $
                                            xsize=run->epoch('nx'), $

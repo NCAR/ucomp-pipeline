@@ -28,20 +28,20 @@ pro ucomp_l1_average_data, file, primary_header, ext_data, ext_headers, $
 
   n_extensions = n_elements(ext_headers)
 
-  exptime    = fltarr(n_extensions)
-  onband     = bytarr(n_extensions)
-  wavelength = fltarr(n_extensions)
+  exptime     = fltarr(n_extensions)
+  onband      = bytarr(n_extensions)
+  wavelengths = fltarr(n_extensions)
 
   ; group by EXPTIME, ONBAND, WAVELNG
   for e = 0L, n_extensions - 1L do begin
-    exptime[e]    = ucomp_getpar(ext_headers[e], 'EXPTIME')
-    onband[e]     = ucomp_getpar(ext_headers[e], 'ONBAND') eq 'tcam'
-    wavelength[e] = ucomp_getpar(ext_headers[e], 'WAVELNG')
+    exptime[e]     = ucomp_getpar(ext_headers[e], 'EXPTIME')
+    onband[e]      = ucomp_getpar(ext_headers[e], 'ONBAND') eq 'tcam'
+    wavelengths[e] = ucomp_getpar(ext_headers[e], 'WAVELNG')
   endfor
 
   ext_ids = string(exptime, format='(%"%0.1f")') $
               + '-' + strtrim(fix(onband), 2) $
-              + '-' + string(wavelength, format='(%"%0.2f")')
+              + '-' + string(wavelengths, format='(%"%0.2f")')
 
   group_indices = mg_groupby(ext_ids, $
                              n_groups=n_groups, $
@@ -56,10 +56,10 @@ pro ucomp_l1_average_data, file, primary_header, ext_data, ext_headers, $
   ext_headers_array = ext_headers->toArray(/transpose)
   ext_headers->remove, /all
 
-  averaged_exptime    = fltarr(n_groups)
-  averaged_onband     = bytarr(n_groups)
-  averaged_wavelength = fltarr(n_groups)
-  extensions          = strarr(n_groups)
+  averaged_exptime     = fltarr(n_groups)
+  averaged_onband      = bytarr(n_groups)
+  averaged_wavelengths = fltarr(n_groups)
+  extensions           = strarr(n_groups)
 
   for g = 0L, n_groups - 1L do begin
     count = group_starts[g + 1] - group_starts[g]
@@ -68,9 +68,9 @@ pro ucomp_l1_average_data, file, primary_header, ext_data, ext_headers, $
     d = ext_data[*, *, *, *, gi]
     averaged_ext_data[*, *, *, *, g] = size(d, /n_dimensions) lt 5 ? d : mean(d, dimension=5)
 
-    averaged_exptime[g]    = exptime[gi[0]]
-    averaged_onband[g]     = onband[gi[0]]
-    averaged_wavelength[g] = wavelength[gi[0]]
+    averaged_exptime[g]     = exptime[gi[0]]
+    averaged_onband[g]      = onband[gi[0]]
+    averaged_wavelengths[g] = wavelengths[gi[0]]
 
     extensions[g] = strjoin(strtrim(gi + 1L, 2), ',')
 
@@ -83,12 +83,14 @@ pro ucomp_l1_average_data, file, primary_header, ext_data, ext_headers, $
   endfor
 
   if (n_groups ne n_extensions) then begin
-    mg_log, 'reduced file from %s to %d exts', n_extensions, n_groups, $
+    mg_log, 'reduced file from %d to %d exts', n_extensions, n_groups, $
             name=run.logger_name, /debug
   endif
 
   n_extensions = n_groups
-  file.n_extensions = n_extensions
+  file.n_extensions   = n_extensions
+  file.wavelengths    = averaged_wavelengths
+  file.onband_indices = averaged_onband
 
   ext_data = reform(averaged_ext_data, averaged_dims)
 end

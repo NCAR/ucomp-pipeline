@@ -74,7 +74,9 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
                              background=background, $
                              quality_bitmask=quality_bitmask, $
                              gbu=gbu, $
-                             n_extensions=n_extensions
+                             n_extensions=n_extensions, $
+                             wavelengths=wavelengths, $
+                             onband_indices=onband_indices
   compile_opt strictarr
 
   if (n_elements(demodulated)) then self.demodulated = demodulated
@@ -90,6 +92,8 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
 
   if (n_elements(gbu) gt 0L) then self.gbu or= gbu
   if (n_elements(n_extensions) gt 0L) then self.n_extensions = n_extensions
+  if (n_elements(wavelengths) gt 0L) then *self.wavelengths = wavelengths
+  if (n_elements(onband_indices) gt 0L) then *self.onband_indices = onband_indices
 end
 
 
