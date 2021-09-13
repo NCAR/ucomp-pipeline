@@ -96,9 +96,7 @@ pro ucomp_l1_alignment, file, primary_header, data, headers, run=run, status=sta
                                          (dims[1] - 1.0) / 2.0 - file.tcam_geometry.occulter_center[1], $
                                          interp=1)
 
-      ; RCAM is flipped both vertically and horizontally, while TCAM is flipped
-      ; only vertically
-      data[*, *, p, 0, e] = rot(reverse(reverse(data[*, *, p, 0, e], 1), 2), p_angle, /interp)
+      data[*, *, p, 0, e] = rot(reverse(data[*, *, p, 0, e], 2), p_angle, /interp)
       data[*, *, p, 1, e] = rot(reverse(data[*, *, p, 1, e], 2), p_angle, /interp)
     endfor
   endfor
