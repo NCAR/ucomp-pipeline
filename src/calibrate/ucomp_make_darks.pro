@@ -199,6 +199,7 @@ pro ucomp_make_darks, run=run
   fits_close, output_fcb
 
   averaged_dark_images = dark_data->toArray(/transpose)
+  ; TODO: create std dev dark image (where to put it?)
   if (size(averaged_dark_images, /n_dimensions) ge 5L) then begin
     averaged_dark_images = mean(averaged_dark_images, dimension=3)
   endif
