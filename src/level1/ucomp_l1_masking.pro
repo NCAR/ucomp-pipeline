@@ -25,7 +25,7 @@ pro ucomp_l1_masking, file, primary_header, data, headers, $
 
   status = 0L
 
-  ; TODO: implement
+  ; TODO: implement, should this add an extension ot the L1 for the mask?
   ; - occulter
   ; - field
   ; - areas from rotating a rectangular image
