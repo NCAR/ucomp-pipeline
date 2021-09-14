@@ -78,7 +78,7 @@ pro ucomp_geometry::display, camera, $
     y0 = (self.ysize - 1.0) / 2.0
     x1 = self.occulter_radius * cos(t) + x0
     y1 = self.occulter_radius * sin(t) + y0
-    v = [y1 - x0, y0 - x1]
+    v = [y1 - y0, x0 - x1]
     v /= sqrt(total(v^2))
     v *= width
     v2 = [x1, y1] + v
