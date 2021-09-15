@@ -456,6 +456,35 @@ pro ucomp_run::get_distortion, datetime=datetime, $
   endelse
 end
 
+
+;+
+; Get full demodulation matrix for all wave regions.
+;
+; :Returns:
+;    `fltarr(4, 4, 9, 2)`
+;
+; :Keywords:
+;   datetime : in, required, type=string
+;     date/time in the format "YYYYMMDD_HHMMSS"
+;-
+function ucomp_run::get_dmatrix, datetime=datetime
+  compile_opt strictarr
+
+  if (n_elements(*self.dmatrix_coefficients) eq 0L) then begin
+    demodulation_coeffs_basename = self->epoch('demodulation_coeffs_basename', $
+                                               datetime=datetime)
+    demodulation_coeffs_filename = filepath(demodulation_coeffs_basename, $
+                                            subdir='demodulation', $
+                                            root=self.resource_root)
+    ; defines dmx_coefs variable
+    restore, filename=demodulation_coeffs_filename
+    *self.dmatrix_coefficients = dmx_coefs
+  endif
+
+  return, *self.dmatrix_coefficients
+end
+
+
 ;+
 ; Retrieve the value for a given option name for a given line.
 ;
@@ -621,6 +650,7 @@ pro ucomp_run::getProperty, date=date, $
                             all_wave_regions=all_wave_regions, $
                             resource_root=resource_root, $
                             calibration=calibration, $
+                            dmatrix_coefficients=dmatrix_coefficients, $
                             t0=t0
   compile_opt strictarr
   on_error, 2
@@ -650,6 +680,8 @@ pro ucomp_run::getProperty, date=date, $
   if (arg_present(resource_root)) then resource_root = self.resource_root
 
   if (arg_present(calibration)) then calibration = self.calibration
+
+  if (arg_present(dmatrix_coefficients)) then dmatrix_coefficients = *self.dmatrix_coefficients
 
   if (arg_present(t0)) then t0 = self.t0
 end
@@ -743,6 +775,7 @@ pro ucomp_run::cleanup
 
   obj_destroy, [self.options, self.epochs, self.lines]
   ptr_free, self.distortion_coefficients
+  ptr_free, self.dmatrix_coefficients
 
   ; performance monitoring API
   obj_destroy, [self.calls, self.times]
@@ -826,6 +859,7 @@ function ucomp_run::init, date, mode, config_filename, no_log=no_log
   endif
 
   self.distortion_coefficients = ptr_new(/allocate_heap)
+  self.dmatrix_coefficients    = ptr_new(/allocate_heap)
 
   self.files = orderedhash()   ; wave_region (string) -> list of file objects
 
@@ -850,27 +884,29 @@ pro ucomp_run__define
   compile_opt strictarr
 
   !null = {ucomp_run, inherits IDL_Object, $
-           date:    '', $
-           mode:    '', $          ; eod, realtime, cal
-           t0:      0.0D, $
+           date                    : '', $
+           mode                    : '', $   ; eod, realtime, cal
+           t0                      : 0.0D, $
 
-           options: obj_new(), $
+           options                 : obj_new(), $
 
-           epochs:                  obj_new(), $
-           distortion_basename:     '', $
-           distortion_coefficients: ptr_new(), $
+           epochs                  : obj_new(), $
+           distortion_basename     : '', $
+           distortion_coefficients : ptr_new(), $
 
-           lines:   obj_new(), $
+           dmatrix_coefficients    : ptr_new(), $
 
-           files:   obj_new(), $
+           lines                   : obj_new(), $
 
-           alerts:  obj_new(), $
+           files                   : obj_new(), $
 
-           resource_root: '', $
+           alerts                  : obj_new(), $
 
-           calibration : obj_new(), $
+           resource_root           : '', $
+
+           calibration             : obj_new(), $
 
            ; performance
-           calls:   obj_new(), $
-           times:   obj_new()}
+           calls                   : obj_new(), $
+           times                   : obj_new()}
 end
