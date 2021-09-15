@@ -57,13 +57,10 @@ pro ucomp_write_intensity_gif, file, data, run=run, $
 
   for e = 1L, file.n_extensions do begin
     if (file.n_extensions gt 1L) then begin
-      im = reform(data[*, *, *, e - 1L])
+      im = reform(data[*, *, 0, e - 1L])
     endif else begin
-      im = reform(data[*, *, *])
+      im = reform(data[*, *, 0])
     endelse
-
-    ; TODO: once demodulation is operational, this will be just indexing
-    im = total(im, 3, /preserve_type)
 
     scaled_im = bytscl(im, $
                       min=display_min, $

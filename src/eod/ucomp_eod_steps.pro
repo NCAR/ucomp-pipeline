@@ -10,11 +10,6 @@
 pro ucomp_eod_steps, wave_regions, run=run
   compile_opt strictarr
 
-  ;== level 0
-
-  ucomp_pipeline_step, 'ucomp_validate', 'l0', run=run
-
-
   ;== level 1
 
   ucomp_pipeline_step, 'ucomp_make_raw_inventory', run=run
