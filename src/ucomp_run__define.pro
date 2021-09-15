@@ -424,24 +424,24 @@ end
 ; :Keywords:
 ;   datetime : in, required, type=string
 ;     date/time in the format "YYYYMMDD_HHMMSS"
-;   dx1_c, dy1_c, dx2_c, dy2_c : out, optional, type="fltarr(3, 3)"
+;   dx0_c, dy0_c, dx1_c, dy1_c : out, optional, type="fltarr(3, 3)"
 ;     set to a named variable to retrieve the corresponding distortion
 ;     coefficients
 ;-
 pro ucomp_run::get_distortion, datetime=datetime, $
+                               dx0_c=dx0_c, $
+                               dy0_c=dy0_c, $
                                dx1_c=dx1_c, $
-                               dy1_c=dy1_c, $
-                               dx2_c=dx2_c, $
-                               dy2_c=dy2_c
+                               dy1_c=dy1_c
   compile_opt strictarr
 
   distortion_basename = self->epoch('distortion_basename', datetime=datetime)
   if (self.distortion_basename eq distortion_basename) then begin
     coeffs = *self.distortion_coefficients
+    dx0_c = coeffs.dx0_c
+    dy0_c = coeffs.dy0_c
     dx1_c = coeffs.dx1_c
     dy1_c = coeffs.dy1_c
-    dx2_c = coeffs.dx2_c
-    dy2_c = coeffs.dy2_c
   endif else begin
     self->getProperty, resource_root=resource_root
     distortion_filename = filepath(distortion_basename, $
@@ -449,10 +449,10 @@ pro ucomp_run::get_distortion, datetime=datetime, $
                                       root=resource_root)
     restore, filename=distortion_filename
     self.distortion_basename = distortion_basename
-    *self.distortion_coefficients = {dx1_c: dx1_c, $
-                                     dy1_c: dy1_c, $
-                                     dx2_c: dx2_c, $
-                                     dy2_c: dy2_c}
+    *self.distortion_coefficients = {dx0_c: dx0_c, $
+                                     dy0_c: dy0_c, $
+                                     dx1_c: dx1_c, $
+                                     dy1_c: dy1_c}
   endelse
 end
 
