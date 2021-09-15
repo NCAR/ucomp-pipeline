@@ -90,6 +90,11 @@ pro ucomp_eod_wrapper, date, config_filename
   ; wave regions to process
   wave_regions = run->config('options/wave_regions')
 
+
+  ; level 0
+  ucomp_pipeline_step, 'ucomp_validate', 'l0', run=run
+
+
   ; do the end-of-day processing
   ucomp_eod_steps, wave_regions, run=run
 

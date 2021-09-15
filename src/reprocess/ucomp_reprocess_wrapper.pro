@@ -100,8 +100,6 @@ pro ucomp_reprocess_wrapper, date, config_filename
     mg_log, 'skipping updating database', name=logger_name, /info
   endelse
 
-  ucomp_pipeline_step, 'ucomp_l0_distribute', run=run
-
   ucomp_pipeline_step, 'ucomp_get_observerlog', run=run
 
   for w = 0L, n_elements(wave_regions) - 1L do begin
