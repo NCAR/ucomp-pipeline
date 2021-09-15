@@ -86,18 +86,22 @@ pro ucomp_l1_alignment, file, primary_header, data, headers, run=run, status=sta
 
   for p = 0, n_pol_states - 1L do begin
     for e = 0L, file.n_extensions - 1L do begin
+      cam0_xshift = (dims[0] - 1.0) / 2.0 - file.rcam_geometry.occulter_center[0]
+      cam0_yshift = (dims[1] - 1.0) / 2.0 - file.rcam_geometry.occulter_center[1]
       data[*, *, p, 0, e] = ucomp_fshift(data[*, *, p, 0, e], $
-                                         (dims[0] - 1.0) / 2.0 - file.rcam_geometry.occulter_center[0], $
-                                         (dims[1] - 1.0) / 2.0 - file.rcam_geometry.occulter_center[1], $
+                                         cam0_xshift, $
+                                         cam0_yshift, $
                                          interp=1)
 
+      cam1_xshift = (dims[0] - 1.0) / 2.0 - file.tcam_geometry.occulter_center[0]
+      cam1_yshift = (dims[1] - 1.0) / 2.0 - file.tcam_geometry.occulter_center[1]
       data[*, *, p, 1, e] = ucomp_fshift(data[*, *, p, 1, e], $
-                                         (dims[0] - 1.0) / 2.0 - file.tcam_geometry.occulter_center[0], $
-                                         (dims[1] - 1.0) / 2.0 - file.tcam_geometry.occulter_center[1], $
+                                         cam1_xshift, $
+                                         cam1_yshift, $
                                          interp=1)
 
-      data[*, *, p, 0, e] = rot(reverse(data[*, *, p, 0, e], 2), p_angle, /interp)
-      data[*, *, p, 1, e] = rot(reverse(data[*, *, p, 1, e], 2), p_angle, /interp)
+      data[*, *, p, 0, e] = rot(reverse(data[*, *, p, 0, e], 2), p_angle, /interp, missing=0.0)
+      data[*, *, p, 1, e] = rot(reverse(data[*, *, p, 1, e], 2), p_angle, /interp, missing=0.0)
     endfor
   endfor
 
