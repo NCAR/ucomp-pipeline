@@ -93,15 +93,15 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
   dims = size(dark_images, /dimensions)
 
   if (n_darks gt 1L) then begin
-    cam0_dark_means  = mean(dark_images[*, *, *, 0, *], dimension=n_dims)
-    cam1_dark_means  = mean(dark_images[*, *, *, 1, *], dimension=n_dims)
-    cam0_dark_stddev = stddev(dark_images[*, *, *, 0, *], dimension=n_dims)
-    cam1_dark_stddev = stddev(dark_images[*, *, *, 1, *], dimension=n_dims)
+    cam0_dark_means  = mean(dark_images[*, *, 0, *], dimension=n_dims)
+    cam1_dark_means  = mean(dark_images[*, *, 1, *], dimension=n_dims)
+    cam0_dark_stddev = stddev(dark_images[*, *, 0, *], dimension=n_dims)
+    cam1_dark_stddev = stddev(dark_images[*, *, 1, *], dimension=n_dims)
   endif else begin
-    cam0_dark_means  = mean(dark_images[*, *, *, 0])
-    cam1_dark_means  = mean(dark_images[*, *, *, 1])
-    cam0_dark_stddev = stddev(dark_images[*, *, *, 0])
-    cam1_dark_stddev = stddev(dark_images[*, *, *, 1])
+    cam0_dark_means  = mean(dark_images[*, *, 0])
+    cam1_dark_means  = mean(dark_images[*, *, 1])
+    cam0_dark_stddev = stddev(dark_images[*, *, 0])
+    cam1_dark_stddev = stddev(dark_images[*, *, 1])
   endelse
 
   ; max_dark_stddev = max(abs([cam0_dark_stddev, cam0_dark_stddev]))

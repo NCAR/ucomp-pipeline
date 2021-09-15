@@ -129,16 +129,16 @@ function ucomp_calibration::get_dark, obsday_hours, exptime, gain_mode, $
 
   ; find closest two darks (or closest dark if before first dark or after last
   ; dark)
-  valid_darks = (*self.darks)[*, *, *, *, valid_indices]
+  valid_darks = (*self.darks)[*, *, *, valid_indices]
   valid_times = (*self.dark_times)[valid_indices]
   if (obsday_hours lt valid_times[0]) then begin               ; before first dark
-    interpolated_dark = float(valid_darks[*, *, *, *, 0])
+    interpolated_dark = float(valid_darks[*, *, *, 0])
 
     master_extensions = valid_indices[0] + 1L
     raw_filenames = strtrim((*self.dark_raw_files)[valid_indices[0]], 2)
     coefficients = 1.0
   endif else if (obsday_hours gt valid_times[n_valid_darks - 1]) then begin   ; after last dark
-    interpolated_dark = float(valid_darks[*, *, *, *, n_valid_darks - 1])
+    interpolated_dark = float(valid_darks[*, *, *, n_valid_darks - 1])
 
     master_extensions = valid_indices[n_valid_darks - 1] + 1L
     raw_filenames = strtrim((*self.dark_raw_files)[valid_indices[n_valid_darks - 1]], 2)
@@ -147,8 +147,8 @@ function ucomp_calibration::get_dark, obsday_hours, exptime, gain_mode, $
     index1 = value_locate(valid_times, obsday_hours)
     index2 = index1 + 1L
 
-    dark1 = valid_darks[*, *, *, *, index1]
-    dark2 = valid_darks[*, *, *, *, index2]
+    dark1 = valid_darks[*, *, *, index1]
+    dark2 = valid_darks[*, *, *, index2]
 
     a1 = (valid_times[index2] - obsday_hours) / (valid_times[index2] - valid_times[index1])
     a2 = (obsday_hours - valid_times[index1]) / (valid_times[index2] - valid_times[index1])
