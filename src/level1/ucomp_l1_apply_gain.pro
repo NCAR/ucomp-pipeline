@@ -62,7 +62,6 @@ pro ucomp_l1_apply_gain, file, primary_header, data, headers, run=run, status=st
       status = 2L
       continue
     endif
-    flat_dark = mean(flat_dark, dimension=3)
 
     im = data[*, *, *, *, e]
     for p = 0L, n_pol_states - 1L do begin
