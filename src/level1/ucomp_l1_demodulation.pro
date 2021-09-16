@@ -28,8 +28,9 @@ pro ucomp_l1_demodulation, file, primary_header, data, headers, $
   datetime = strmid(file_basename(file.raw_filename), 0, 15)
 
   wave_region_index = where(file.wave_region eq run.all_wave_regions, n_found)
-  full_dmatrix = run->get_dmatrix(datetime=datetime)
-  dmatrix = ucomp_get_dmatrix(full_dmatrix, $
+  mg_log, 'wave region index: %d', wave_region_index, name=run.logger_name, /debug
+  dmatrix_coefficients = run->get_dmatrix_coefficients(datetime=datetime)
+  dmatrix = ucomp_get_dmatrix(dmatrix_coefficients, $
                               file.t_mod, $
                               wave_region_index[0])
 
