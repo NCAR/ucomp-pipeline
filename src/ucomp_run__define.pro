@@ -467,7 +467,7 @@ end
 ;   datetime : in, required, type=string
 ;     date/time in the format "YYYYMMDD_HHMMSS"
 ;-
-function ucomp_run::get_dmatrix, datetime=datetime
+function ucomp_run::get_dmatrix_coefficients, datetime=datetime
   compile_opt strictarr
 
   if (n_elements(*self.dmatrix_coefficients) eq 0L) then begin
@@ -670,7 +670,7 @@ pro ucomp_run::getProperty, date=date, $
     wregion_hash = orderedhash()
     foreach dtype_hash, self.files, dtype do begin
       foreach wregion_list, dtype_hash, wregion do begin
-        wregion_hash[wregion] = 1B
+        if (wregion ne '') then wregion_hash[wregion] = 1B
       endforeach
     endforeach
     all_wave_regions = (wregion_hash->keys())->toArray()
