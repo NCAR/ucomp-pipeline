@@ -30,6 +30,7 @@ pro ucomp_write_intensity_gif, file, data, run=run, $
   display_min   = run->line(file.wave_region, 'intensity_display_min')
   display_max   = run->line(file.wave_region, 'intensity_display_max')
   display_gamma = run->line(file.wave_region, 'intensity_display_gamma')
+  display_power = run->line(file.wave_region, 'intensity_display_power')
 
   datetime = strmid(file_basename(file.raw_filename), 0, 15)
   nx = run->epoch('nx', datetime=datetime)
@@ -62,11 +63,11 @@ pro ucomp_write_intensity_gif, file, data, run=run, $
       im = reform(data[*, *, 0])
     endelse
 
-    scaled_im = bytscl(im, $
-                      min=display_min, $
-                      max=display_max, $
-                      top=n_colors - 1L, $
-                      /nan)
+    scaled_im = bytscl(im^display_power, $
+                       min=display_min, $
+                       max=display_max, $
+                       top=n_colors - 1L, $
+                       /nan)
 
     tv, scaled_im
     xyouts, 15, 15, /device, alignment=0.0, $
