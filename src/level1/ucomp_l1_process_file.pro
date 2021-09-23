@@ -65,8 +65,8 @@ pro ucomp_l1_process_file, file, run=run
 
   ucomp_l1_step, 'ucomp_l1_distortion', $
                  file, primary_header, data, headers, step_number=step_number, run=run
-  ucomp_l1_step, 'ucomp_l1_alignment', $
-                 file, primary_header, data, headers, step_number=step_number, run=run
+  ; ucomp_l1_step, 'ucomp_l1_alignment', $
+  ;                file, primary_header, data, headers, step_number=step_number, run=run
   ucomp_l1_step, 'ucomp_l1_continuum_subtraction', $
                  file, primary_header, data, headers, step_number=step_number, run=run
   ucomp_l1_step, 'ucomp_l1_combine_cameras', $
