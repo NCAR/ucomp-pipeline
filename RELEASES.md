@@ -8,3 +8,4 @@
   apply distortion
   continuum subtraction
   combine cameras
+0.1.1
