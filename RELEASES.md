@@ -1,4 +1,4 @@
-0.1.0
+0.1.0 [Sep 23, 2021]
   create inventory files
   create master dark file
   create master flat file
