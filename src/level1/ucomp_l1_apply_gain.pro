@@ -47,7 +47,7 @@ pro ucomp_l1_apply_gain, file, primary_header, data, headers, run=run, status=st
                          raw_extension=raw_flat_extension, raw_file=flat_raw_file)
     if (~flat_found) then begin
       mg_log, 'flat not found for ext %d, skipping', e + 1, $
-              name=run.logger_name, /warn
+              name=run.logger_name, /error
       mg_log, 'request %0.2f HST, %0.2f ms, %s gain, %s, %0.2f nm', $
               obsday_hours, exptime, gain_mode, onband, wavelengths[e], $
               name=run.logger_name, /warn
@@ -58,7 +58,7 @@ pro ucomp_l1_apply_gain, file, primary_header, data, headers, run=run, status=st
     flat_dark = cal->get_dark(flat_time, exptime, gain_mode, found=flat_dark_found)
     if (~flat_dark_found) then begin
       mg_log, 'dark not found for flat for ext %d, skipping', e + 1, $
-              name=run.logger_name, /warn
+              name=run.logger_name, /error
       status = 2L
       continue
     endif
