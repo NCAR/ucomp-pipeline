@@ -749,9 +749,14 @@ pro ucomp_run::_setup_logger
     ucomp_mkdir, log_dir, logger_name=logger_name
   endif
 
-  ; rotate logs
+  ; rotate logs if not realtime and not already processing
   if (self.mode ne 'realtime') then begin
-    mg_rotate_log, filename, max_version=max_version
+    self->getProperty, logger_name=logger_name
+    basedir = self->config('processing/basedir')
+    is_available = ucomp_state(self.date, $
+                               basedir=basedir, $
+                               logger_name=logger_name)
+    if (is_available) then mg_rotate_log, filename, max_version=max_version
   endif
 
   ; configure logger
