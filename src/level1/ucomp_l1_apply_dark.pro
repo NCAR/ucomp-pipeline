@@ -46,7 +46,7 @@ pro ucomp_l1_apply_dark, file, primary_header, data, headers, run=run, status=st
                                  coefficients=dark_coefficients)
     if (~dark_found) then begin
       mg_log, 'dark not found for ext %d, skipping', e + 1, $
-              name=run.logger_name, /warn
+              name=run.logger_name, /error
       status = 1L
       continue
     endif
