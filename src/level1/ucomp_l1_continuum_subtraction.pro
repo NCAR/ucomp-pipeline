@@ -28,6 +28,12 @@ pro ucomp_l1_continuum_subtraction, file, primary_header, ext_data, ext_headers,
 
   status = 0L
 
+  if (~run->line(file.wave_region, 'subtract_continuum')) then begin
+    mg_log, 'skipping continuum subtraction for %s file', file.wave_region, $
+            name=run.logger_name, /debug
+    goto, done
+  endif
+
   ; find extensions with matching wavelengths and opposite ONBAND
   n_extensions = n_elements(ext_headers)
 
