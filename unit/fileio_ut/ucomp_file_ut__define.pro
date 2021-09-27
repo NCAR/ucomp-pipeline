@@ -197,7 +197,7 @@ function ucomp_file_ut::init, _extra=e
   self->addTestingRoutine, ['ucomp_file::init', $
                             'ucomp_file::_overloadHelp', $
                             'ucomp_file::_overloadPrint', $
-                            'get_occulter_finding_extension'], $
+                            'ucomp_file::get_occulter_finding_extension'], $
                            /is_function
 
   return, 1

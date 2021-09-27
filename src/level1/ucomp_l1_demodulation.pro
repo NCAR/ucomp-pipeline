@@ -35,6 +35,7 @@ pro ucomp_l1_demodulation, file, primary_header, data, headers, $
                               wave_region_index[0])
 
   ; TODO: improve this slow naive version
+  ;data = ucomp_quick_demodulation(dmatrix, data)
 
   ; apply dmatrix to each pixel in each extension in each camera
   dims = size(data, /dimensions)
