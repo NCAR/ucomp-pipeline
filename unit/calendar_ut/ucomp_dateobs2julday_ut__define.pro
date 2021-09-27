@@ -1,6 +1,6 @@
 ; docformat = 'rst'
 
-function ucomp_dateabs2julday_ut::init, _extra=e
+function ucomp_dateobs2julday_ut::init, _extra=e
   compile_opt strictarr
 
   if (~self->MGutTestCase::init(_extra=e)) then return, 0
@@ -13,8 +13,8 @@ function ucomp_dateabs2julday_ut::init, _extra=e
 end
 
 
-pro ucomp_dateabs2julday_ut__define
+pro ucomp_dateobs2julday_ut__define
   compile_opt strictarr
 
-  define = {ucomp_dateabs2julday_ut, inherits MGutTestCase}
+  define = {ucomp_dateobs2julday_ut, inherits MGutTestCase}
 end
