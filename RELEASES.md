@@ -8,5 +8,7 @@
   apply distortion
   continuum subtraction
   combine cameras
-0.1.1
+0.1.1 [Sep 28, 2021]
   promote issues in observing plan that prevent calibration to errors from warnings
+  C implementation of demodulation
+  handle epochs with no OCCLTR-{X,Y} values in FITS headers
