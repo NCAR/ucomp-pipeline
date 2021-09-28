@@ -1,11 +1,12 @@
 ; docformat = 'rst'
 
-function ucomp_quick_demodulation_ut::test_basic
+function ucomp_quick_demodulation_ut::test_basic, output=output
   compile_opt strictarr
 
   data = randomu(seed, 1280, 1024, 4, 2, 10)
   dmatrix = randomu(seed, 4, 4)
 
+  t0 = systime(/seconds)
   standard = data * 0.0
   dims = size(data, /dimensions)
   for x = 0L, dims[0] - 1L do begin
@@ -17,8 +18,11 @@ function ucomp_quick_demodulation_ut::test_basic
       endfor
     endfor
   endfor
-
+  t1 = systime(/seconds)
   result = ucomp_quick_demodulation(dmatrix, data)
+  t2 = systime(/seconds)
+  output = string(t1 - t0, t2 - t1, (t1 - t0) / (t2 - t1), $
+                  format='(%"%0.1fs vs %0.1fs, %0.1fx")')
 
   threshold = 0.0001
   assert, total(abs(result - standard) gt threshold, /integer) eq 0L, $
