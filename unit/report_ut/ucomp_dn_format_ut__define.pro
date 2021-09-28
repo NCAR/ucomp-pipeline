@@ -1,5 +1,17 @@
 ; docformat = 'rst'
 
+function ucomp_dn_format_ut::test_basic
+  compile_opt strictarr
+
+  value = 123456.7
+  result = mg_float2str(long(value), places_sep=',')
+  standard = '123,456'
+  assert, result eq standard, 'incorrect formatted value: %s', result
+
+  return, 1
+end
+
+
 function ucomp_dn_format_ut::init, _extra=e
   compile_opt strictarr
 

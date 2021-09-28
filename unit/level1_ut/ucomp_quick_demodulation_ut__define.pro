@@ -3,7 +3,10 @@
 function ucomp_quick_demodulation_ut::test_basic, output=output
   compile_opt strictarr
 
-  data = randomu(seed, 1280, 1024, 4, 2, 10)
+  xsize = 100   ; 1280
+  ysize = 100   ; 1024
+  n_extensions = 10
+  data = randomu(seed, xsize, ysize, 4, 2, n_extensions)
   dmatrix = randomu(seed, 4, 4)
 
   t0 = systime(/seconds)
