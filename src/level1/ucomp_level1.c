@@ -13,6 +13,7 @@
 
 #include "idl_export.h"
 
+
 // for x = 0L, dims[0] - 1L do begin
 //   for y = 0L, dims[1] - 1L do begin
 //     for c = 0L, dims[3] - 1L do begin
@@ -23,9 +24,44 @@
 //   endfor
 // endfor
 static IDL_VPTR IDL_ucomp_quick_demodulation(int argc, IDL_VPTR *argv) {
-  IDL_VPTR dmatrix = argv[0];
-  IDL_VPTR data    = argv[1];
-  return(data);
+  IDL_VPTR dmatrix_vptr = argv[0];
+  IDL_VPTR data_vptr    = argv[1];
+  int n_dims;
+  int x, n_cols, y, n_rows, p, n_polstates, c, n_cameras, e, n_extensions, d;
+  int p_col, p_row;
+  IDL_VPTR result;
+  float *result_data, *dmatrix, *data;
+
+  result_data = (float *)IDL_VarMakeTempFromTemplate(data_vptr,
+                                                     IDL_TYP_FLOAT,
+                                                     NULL,
+                                                     &result,
+                                                     1);
+  dmatrix = (float *)dmatrix_vptr->value.arr->data;
+  data = (float *)data_vptr->value.arr->data;
+
+  n_dims = data_vptr->value.arr->n_dim;
+  n_cols = data_vptr->value.arr->dim[0];
+  n_rows = data_vptr->value.arr->dim[1];
+  n_polstates = data_vptr->value.arr->dim[2];
+  n_cameras = data_vptr->value.arr->dim[3];
+  n_extensions = n_dims < 5 ? 1 : data_vptr->value.arr->dim[4];
+
+  for (e = 0; e < n_extensions; e++) {
+    for (c = 0; c < n_cameras; c++) {
+      for (y = 0; y < n_rows; y++) {
+        for (x = 0; x < n_cols; x++) {
+          for (p_row = 0; p_row < n_polstates; p_row++) {
+            for (p_col = 0; p_col < n_polstates; p_col++) {
+              result_data[x +  (y  + (p_row + (c + e * n_cameras) * n_polstates) * n_rows) * n_cols] += dmatrix[p_row * n_polstates + p_col] * data[x +  (y +  (p_col + (c + e * n_cameras) * n_polstates) * n_rows) * n_cols];
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return(result);
 }
 
 static IDL_VPTR IDL_ucomp_quick_distortion(int argc, IDL_VPTR *argv) {
@@ -51,7 +87,7 @@ int IDL_Load(void) {
    * tables must be identical to that contained in kcor.dlm.
    */
   static IDL_SYSFUN_DEF2 function_addr[] = {
-    { IDL_ucomp_quick_distortion, "UCOMP_QUICK_DEMODULATION", 2, 2, 0, 0 },
+    { IDL_ucomp_quick_demodulation, "UCOMP_QUICK_DEMODULATION", 2, 2, 0, 0 },
     { IDL_ucomp_quick_distortion, "UCOMP_QUICK_DISTORTION", 5, 5, 0, 0 },
   };
 
