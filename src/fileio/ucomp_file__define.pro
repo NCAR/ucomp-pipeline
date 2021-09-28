@@ -350,6 +350,8 @@ pro ucomp_file::_inventory
   compile_opt strictarr
   on_error, 2
 
+  self.run->setProperty, datetime=strmid(file_basename(self.raw_filename), 0, 15)
+
   fits_open, self.raw_filename, fcb
 
   self.n_extensions = fcb.nextend
@@ -391,8 +393,13 @@ pro ucomp_file::_inventory
   endif
   self.occultrid = ucomp_getpar(primary_header, 'OCCLTRID', found=found)
 
-  self.occulter_x = ucomp_getpar(primary_header, 'OCCLTR-X')
-  self.occulter_y = ucomp_getpar(primary_header, 'OCCLTR-Y')
+  if (self.run->epoch('use_occltr_position')) then begin
+    self.occulter_x = ucomp_getpar(primary_header, 'OCCLTR-X')
+    self.occulter_y = ucomp_getpar(primary_header, 'OCCLTR-Y')
+  endif else begin
+    self.occulter_x = self.run->epoch('occltr_x')
+    self.occulter_y = self.run->epoch('occltr_y')
+  endelse
 
   self.opal_in = strlowcase(ucomp_getpar(extension_header, 'DIFFUSR', found=found)) eq 'in'
   self.caloptic_in = strlowcase(ucomp_getpar(extension_header, 'CALOPTIC', found=found)) eq 'in'
