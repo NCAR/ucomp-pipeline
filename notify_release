@@ -1,0 +1,51 @@
+#!/usr/bin/env python
+
+from email.mime.text import MIMEText
+import os
+import pwd
+import re
+import smtplib
+
+
+template = '''UCoMP pipeline %s was just released. Changes for this version include:
+
+%s
+- UCoMP developer team'''
+
+
+def get_username():
+    return pwd.getpwuid(os.getuid())[0]
+
+
+def main():
+    # get email addresses of people to notify about the release
+    release_notifier_filename = os.path.expanduser('~/.ucomp_release_notifiers')
+    with open(release_notifier_filename, 'r') as f:
+        notifiers = f.read().split()
+
+    # read release notes
+    releases_filename = 'RELEASES.md'
+    with open(releases_filename, 'r') as f:
+        release_notes = f.read()
+
+    # find release notes of current release
+    v = re.compile('^\d+.*$', re.MULTILINE)
+    for m in v.finditer(release_notes): pass
+    version = release_notes[slice(*m.span())]
+    release_notes = release_notes[m.span()[0]:]
+    release_notes = template % (version, release_notes)
+
+    # send email of release notes to notifier emails
+    me = '%s@ucar.edu' % get_username()
+    msg = MIMEText(release_notes)
+    msg['Subject'] = f'Release notes for UCoMP pipeline {version}'
+    msg['From'] = me
+    msg['To'] = ', '.join(notifiers)
+
+    s = smtplib.SMTP('localhost')
+    s.sendmail(me, notifiers, msg.as_string())
+    s.quit()
+
+
+if __name__ == '__main__':
+    main()
