@@ -12,3 +12,4 @@
   promote issues in observing plan that prevent calibration to errors from warnings
   C implementation of demodulation
   handle epochs with no OCCLTR-{X,Y} values in FITS headers
+0.1.2
