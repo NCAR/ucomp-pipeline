@@ -1,16 +1,18 @@
 ; docformat = 'rst'
 
 ;+
-; Calculate the smoothness of a 2-dimensional image.
+; Calculate the smoothness of a 2-dimensional image. A perfectly smooth image
+; would give a roughness of 0.0. Uniformly random data would be approximately
+; 1.0 roughness.
 ;
 ; :Returns:
 ;   float
 ;
 ; :Params:
 ;   im : in, required, type=2-dimensional numeric array
-;     image to compute the smoothness of
+;     image to compute the smoothness/roughness of
 ;-
-function ucomp_smoothness, im
+function ucomp_roughness, im
   compile_opt strictarr
 
   x = float(im)
@@ -38,10 +40,10 @@ im = rebin(reform(findgen(100), 100, 1), 100, 100)
 
 im *= norm / max(im)
 
-print, ucomp_smoothness(im), format='initial image: smoothness=%0.5f'
+print, ucomp_roughness(im), format='initial image: roughness=%0.5f'
 for i = 0L, n_iterations - 1L do begin
   im = smooth(im, 3, /edge_truncate)
-  print, i + 1, ucomp_smoothness(im), format='iteration %02d: smoothness=%0.5f'
+  print, i + 1, ucomp_roughness(im), format='iteration %02d: roughness=%0.5f'
 endfor
 
 end
