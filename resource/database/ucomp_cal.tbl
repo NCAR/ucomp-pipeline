@@ -22,6 +22,10 @@ create table ucomp_cal (
   retangle                float (8, 3),  -- TODO: does this change per ext?
   caloptic                tinyint (1),
 
+  -- TODO: smoothness for flats? just for center wavelength?
+  -- rcam_roughness          float (8, 3)
+  -- tcam_roughness          float (8, 3)
+
   -- TODO: mean? per camera, pol state?
   median_int_continuum    float (14, 7),   -- dark corrected annulus
   median_int_linecenter   float (14, 7),   -- dark corrected annulus
