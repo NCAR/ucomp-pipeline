@@ -32,6 +32,11 @@ except ModuleNotFoundError as e:
 try:
     import mysql
     import mysql.connector
+    database_requirements = True
+except ModuleNotFoundError as e:
+    database_requirements = False
+
+try:
     import packaging.specifiers
     import packaging.version
     versions_requirements = True
@@ -564,8 +569,10 @@ def get_raw_dir(date, flags, error):
 
 # versions sub-command
 def versions(args):
-    if not versions_requirements:
+    if not database_requirements:
         args.parser.error("missing Python packages required for querying database")
+    if not versions_requirements:
+        args.parser.error("missing Python packages required for comparing versions")
 
     dates = split_dates(",".join(args.dates), args.parser.error)
     host, user, password, port, database = get_login(args.flags, args.parser.error)
@@ -725,6 +732,59 @@ def get_login(flags, error):
         args.parser.error("incomplete database information")
 
     return(host, user, password, port, database)
+
+
+# database sub-command
+def database(args):
+    if not database_requirements:
+        args.parser.error("missing Python packages required for querying database")
+
+    host, user, password, port, database = get_login(args.flags, args.parser.error)
+
+    keep_columns = None if args.columns is None else args.columns.split(',')
+
+    try:
+        connection = mysql.connector.connect(host=host, user=user, password=password)
+        cursor = connection.cursor()
+        cursor.execute(args.query)
+        rows = cursor.fetchall()
+        if rows:
+            print_db_rows(keep_columns, cursor.column_names, rows)
+    except mysql.connector.Error as e:
+        print(e)
+    finally:
+        cursor.close()
+        connection.close()
+
+def print_db_rows(keep_columns, columns, rows):
+    # filter rows to get results to be displayed
+    results = [filter_db_row(keep_columns, columns, r) for r in rows]
+
+    # determine max length of each field
+    test_columns = columns if keep_columns is None else keep_columns
+    max_lengths = [0 for i in range(len(test_columns))]
+    alignments = [type_alignment_symbol(f) for f in results[0]]
+    for r in results:
+        lengths = [len(str(f)) for f in r]
+        for i, length in enumerate(lengths):
+            if lengths[i] > max_lengths[i]:
+                max_lengths[i] = lengths[i]
+
+    for r in results:
+        line = '  '.join([f"{{f:{alignments[i]}{max_lengths[i]}s}}".format(f=str(f)) for i, f in enumerate(r)])
+        print(line)
+
+def type_alignment_symbol(x):
+    if type(x) == float or type(x) == int:
+        sym = ">"
+    else:
+        sym = "<"
+    return(sym)
+
+def filter_db_row(keep_columns, columns, row):
+    if keep_columns is None:
+        return(row)
+    return([row[i] for i, c in enumerate(columns) if c in keep_columns])
 
 
 # realtime, eod, and calibrate sub-commands
@@ -902,15 +962,15 @@ if __name__ == "__main__":
 
     # top-level options
     parser.add_argument("-v", "--version",
-                        action="version",
-                        version=name)
+        action="version",
+        version=name)
 
     # show help if no sub-command given
     parser.set_defaults(func=print_help, parser=parser)
 
-    # TODO: it would be nice to grouop sub-commands into groups, but that is not
-    # possible with argparse right now
-    # helpers: list, ls, cat, validate, log, versions
+    # TODO: it would be nice to arrange sub-commands into groups, but that is
+    # not possible with argparse right now
+    # helpers: list, ls, cat, validate, log, versions, database
     # processing: rt, eod, cal, reprocess
     # clearday, archive
     # testing: regress, simulate, verify
@@ -926,19 +986,19 @@ if __name__ == "__main__":
 
     # list sub-command
     list_parser = subparsers.add_parser("list",
-                                        help="list running UCoMP processes")
+        help="list running UCoMP processes")
     list_parser.set_defaults(func=list_processes, parser=list_parser)
 
     # ls sub-command
     ls_parser = subparsers.add_parser("ls",
-                                      help="list files with extra UCoMP-specific info")
+        help="list files with extra UCoMP-specific info")
     ls_parser.add_argument("files", nargs="*",
-                           default=".",
-                           help="UCoMP files(s)",
-                           metavar="file(s)")
+        default=".",
+        help="UCoMP files(s)",
+        metavar="file(s)")
     ls_parser.add_argument("--keywords", type=str,
-                           help="FITS keyword names to display",
-                           default=None)
+        help="FITS keyword names to display",
+        default=None)
     ls_parser.set_defaults(func=ls, parser=ls_parser)
 
     # cat sub-command
@@ -967,35 +1027,35 @@ if __name__ == "__main__":
 
     # log sub-command
     log_parser = subparsers.add_parser("log",
-                                       help="display, and optionally filter, log output")
+        help="display, and optionally filter, log output")
     log_parser.add_argument("logfiles", nargs="+",
-                            help="UCoMP log filename or date",
-                            metavar="logfile")
+        help="UCoMP log filename or date",
+        metavar="logfile")
     level_help = "filter level: DEBUG INFO WARN ERROR CRITICAL (default DEBUG)"
     log_parser.add_argument("-l", "--level",
-                            help=level_help)
+        help=level_help)
     prune_help = "delete rotated logs with versions higher than MAX_VERSION"
     log_parser.add_argument("-p", "--prune",
-                            help=prune_help,
-                            metavar="MAX_VERSION")
+        help=prune_help,
+        metavar="MAX_VERSION")
     log_parser.add_argument("-f", "--follow",
-                            help="output appended data as file grows",
-                            action="store_true")
+        help="output appended data as file grows",
+        action="store_true")
     log_parser.add_argument("-d", "--debug",
-                            help="DEBUG filter level",
-                            action="store_true")
+        help="DEBUG filter level",
+        action="store_true")
     log_parser.add_argument("-i", "--info",
-                            help="INFO filter level",
-                            action="store_true")
+        help="INFO filter level",
+        action="store_true")
     log_parser.add_argument("-w", "--warn",
-                            help="WARN filter level",
-                            action="store_true")
+        help="WARN filter level",
+        action="store_true")
     log_parser.add_argument("-e", "--error",
-                            help="ERROR filter level",
-                            action="store_true")
+        help="ERROR filter level",
+        action="store_true")
     log_parser.add_argument("-c", "--critical",
-                            help="CRITICAL filter level",
-                            action="store_true")
+        help="CRITICAL filter level",
+    action="store_true")
     log_parser.set_defaults(func=filter_log, parser=log_parser)
 
     # missing sub-command
@@ -1012,51 +1072,61 @@ if __name__ == "__main__":
     # versions sub-command
     versions_parser = subparsers.add_parser("versions", help="list versions")
     versions_parser.add_argument("dates", type=str, nargs="*", help=date_help,
-                                 metavar="date-expr")
+        metavar="date-expr")
     versions_parser.add_argument("-f", "--flags", type=str, help=flags_help,
-                                 default="latest")
+        default="latest")
     versions_parser.add_argument("--filter", type=str,
-                                 help="expression to filter versions by",
-                                 default=None)
+        help="expression to filter versions by",
+        default=None)
     versions_parser.add_argument("-o", "--oldest", action="store_true",
-                                 help="set to only display the oldest version")
+        help="set to only display the oldest version")
     versions_parser.add_argument("-s", "--summary", action="store_true",
-                                 help="set to display a summary of versions")
+        help="set to display a summary of versions")
     versions_parser.set_defaults(func=versions, parser=versions_parser)
+
+    # database sub-command
+    database_parser = subparsers.add_parser("database", aliases=["db"],
+        help="database queries")
+    database_parser.add_argument("query", type=str, help="SQL query")
+    database_parser.add_argument("-f", "--flags", type=str, help=flags_help,
+        default="latest")
+    database_parser.add_argument("-c", "--columns", type=str, default=None,
+        help="columns to display")
+    database_parser.set_defaults(func=database, parser=database_parser)
 
     # eod, rt, cal sub-commands
     eod_parser = subparsers.add_parser("end-of-day", aliases=["eod"],
-                                       help="run end-of-day pipeline")
+        help="run end-of-day pipeline")
     rt_parser = subparsers.add_parser("realtime", aliases=["rt"],
-                                      help="run realtime pipeline")
+        help="run realtime pipeline")
     cal_parser = subparsers.add_parser("calibration", aliases=["cal"],
-                                       help="produce calibration files for the date(s)")
+        help="produce calibration files for the date(s)")
     reprocess_parser = subparsers.add_parser("reprocess",
-                                       help="reprocess date(s)")
+        help="reprocess date(s)")
     clearday_parser = subparsers.add_parser("clearday",
-                                            help="clear database and processing for date(s)")
+        help="clear database and processing for date(s)")
    
     eod_parser.add_argument("dates", type=str, nargs="*", help=date_help,
-                            metavar="date-expr")
+        metavar="date-expr")
     rt_parser.add_argument("dates", type=str, nargs="*", help=date_help,
-                            metavar="date-expr")
+        metavar="date-expr")
     cal_parser.add_argument("dates", type=str, nargs="*", help=date_help,
-                            metavar="date-expr")
+        metavar="date-expr")
     reprocess_parser.add_argument("dates", type=str, nargs="*", help=date_help,
-                                  metavar="date-expr")
+        metavar="date-expr")
     clearday_parser.add_argument("dates", type=str, nargs="*", help=date_help,
-                                 metavar="date-expr")
+        metavar="date-expr")
 
     eod_parser.add_argument("-f", "--flags", type=str, help=flags_help,
-                            default="latest")
+        default="latest")
     rt_parser.add_argument("-f", "--flags", type=str, help=flags_help,
-                           default="latest")
+        default="latest")
     cal_parser.add_argument("-f", "--flags", type=str, help=flags_help,
-                            default="latest")
+        default="latest")
     reprocess_parser.add_argument("-f", "--flags", type=str, help=flags_help,
-                                  default="latest")
+        default="latest")
     clearday_parser.add_argument("-f", "--flags", type=str, help=flags_help,
-                                 default="latest")
+        default="latest")
 
     nowait_help = "set to run all dates simultaneously"
     eod_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
@@ -1073,55 +1143,55 @@ if __name__ == "__main__":
 
     # archive sub-command
     archive_parser = subparsers.add_parser("archive",
-                                           help="archive files to long-term storage")
+        help="archive files to long-term storage")
     archive_parser.add_argument("dates", type=str, nargs="*", help=date_help,
-                                metavar="date-expr")
+        metavar="date-expr")
     archive_parser.add_argument("-f", "--flags", type=str, help=flags_help,
-                                default="latest")
+        default="latest")
     archive_parser.add_argument("-l", "--level", type=str, default=None,
-                                help="level to archive: 0, 1, or 2")
+        help="level to archive: 0, 1, or 2")
     archive_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
     archive_parser.set_defaults(func=archive, parser=archive_parser)
 
     # regression sub-command
     regression_parser = subparsers.add_parser("regress",
-                                              help="check end-of-day against previous results")
+        help="check end-of-day against previous results")
     regression_parser.add_argument("dates", type=str, nargs="*", help=date_help,
-                                   metavar="date-expr")
+        metavar="date-expr")
     regression_parser.add_argument("-f", "--flags", type=str, help=flags_help,
-                                   default="latest")
+        default="latest")
     regression_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
     regression_parser.set_defaults(func=regression, parser=regression_parser)
 
     # verify sub-command
     verify_parser = subparsers.add_parser("verify",
-                                          help="verify previously processed date(s)")
+        help="verify previously processed date(s)")
     verify_parser.add_argument("dates", type=str, nargs="*", help=date_help,
-                               metavar="date-expr")
+        metavar="date-expr")
     verify_parser.add_argument("-f", "--flags", type=str, help=flags_help,
-                               default="latest")
+        default="latest")
     verify_parser.set_defaults(func=verify, parser=verify_parser)
 
     # simulate sub-command
     simulate_parser = subparsers.add_parser("simulate",
-                                            help="simulate realtime processing")
+        help="simulate realtime processing")
     simulate_parser.add_argument("date", type=str, nargs=1,
-                                 help="date to run on in the form YYYYMMDD")
+        help="date to run on in the form YYYYMMDD")
     simulate_parser.add_argument("-f", "--flags", type=str, help=flags_help,
-                                default="latest")
+        default="latest")
     simulate_parser.add_argument("--no-eod", action="store_true",
-                                 help="set to not launch end-of-day processing")
+        help="set to not launch end-of-day processing")
     simulate_parser.set_defaults(func=simulate, parser=simulate_parser)
 
     # script sub-command
     script_parser = subparsers.add_parser("script",
-                                           help="run a specified script on date(s)")
+        help="run a specified script on date(s)")
     script_parser.add_argument("dates", type=str, nargs="*", help=date_help,
-                               metavar="date-expr")
+        metavar="date-expr")
     script_parser.add_argument("-f", "--flags", type=str, help=flags_help,
-                               default="latest")
+        default="latest")
     script_parser.add_argument("-n", "--name", type=str, help="name of script",
-                               required=True)
+        required=True)
     script_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
     script_parser.set_defaults(func=run_script, parser=script_parser)
 
