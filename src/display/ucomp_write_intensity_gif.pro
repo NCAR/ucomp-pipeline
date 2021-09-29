@@ -69,7 +69,7 @@ pro ucomp_write_intensity_gif, file, data, run=run, $
   wavelengths = file.wavelengths
   for e = 1L, file.n_extensions do begin
     if (center_wavelength_only) then begin
-      diff = wavelengths[e] - run->line(file.wave_region, 'center_wavelength')
+      diff = wavelengths[e - 1L] - run->line(file.wave_region, 'center_wavelength')
       if (abs(diff) gt 0.01) then continue
     endif
 
