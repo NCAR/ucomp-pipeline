@@ -647,6 +647,7 @@ pro ucomp_run::getProperty, date=date, $
                             mode=mode, $
                             logger_name=logger_name, $
                             config_contents=config_contents, $
+                            config_flag=config_flag, $
                             all_wave_regions=all_wave_regions, $
                             resource_root=resource_root, $
                             calibration=calibration, $
@@ -664,6 +665,14 @@ pro ucomp_run::getProperty, date=date, $
 
   if (arg_present(config_contents)) then begin
     config_contents = reform(self.options->_toString(/substitute))
+  endif
+
+  if (arg_present(config_flag)) then begin
+    config_basename = file_basename(self.config_filename)
+    dot_pos = strpos(config_basename, '.')
+    config_flag = strmid(config_basename, $
+                         dot_pos + 1, $
+                         strpos(config_basename, '.', /reverse_search) - dot_pos - 1)
   endif
 
   if (arg_present(all_wave_regions)) then begin
@@ -829,7 +838,8 @@ function ucomp_run::init, date, mode, config_filename, no_log=no_log
                                   subdir=['..', 'config'], $
                                   root=mg_src_root())
 
-  self.options = mg_read_config(config_filename, spec=config_spec_filename)
+  self.config_filename = config_filename
+  self.options = mg_read_config(self.config_filename, spec=config_spec_filename)
   config_valid = self.options->is_valid(error_msg=error_msg)
   if (~config_valid) then begin
     mg_log, 'invalid configuration file', name=logger_name, /critical
@@ -893,6 +903,7 @@ pro ucomp_run__define
            mode                    : '', $   ; eod, realtime, cal
            t0                      : 0.0D, $
 
+           config_filename         : '', $
            options                 : obj_new(), $
 
            epochs                  : obj_new(), $

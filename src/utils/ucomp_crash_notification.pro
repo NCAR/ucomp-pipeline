@@ -66,8 +66,8 @@ pro ucomp_crash_notification, run=run
 
   credit = string(mg_src_root(/filename), who, format='(%"Sent from %s (%s)")')
 
-  subject = string(name, run.date, $
-                   format='(%"UCoMP crash during %s processing for %s")')
+  subject = string(name, run.date, run.config.flag, $
+                   format='(%"UCoMP crash during %s processing for %s (%s)")')
   body = [body, '', credit]
 
   mg_send_mail, address, subject, body, from=username, error=error
