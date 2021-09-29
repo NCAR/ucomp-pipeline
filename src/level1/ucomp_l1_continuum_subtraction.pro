@@ -118,7 +118,10 @@ pro ucomp_l1_continuum_subtraction, file, primary_header, ext_data, ext_headers,
   endfor
 
   ext_data = combined_ext_data
+
   file.n_extensions = n_elements(ext_headers)
+  file.wavelength = wavelength[match_indices]
+  file.onband_indices = !null
 
   done:
 end
