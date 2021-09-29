@@ -17,15 +17,25 @@ pro ucomp_write_intensity_gif, file, data, run=run, $
                                occulter_annotation=occulter_annotation
   compile_opt strictarr
 
+  center_wavelength_only = run->config('intensity/center_wavelength_gifs_only')
+
   l1_dirname = filepath('', $
                         subdir=[run.date, 'level1'], $
                         root=run->config('processing/basedir'))
   ucomp_mkdir, l1_dirname, logger_name=run.logger_name
 
-  intensity_basename_format = string(file_basename(file.l1_basename, '.fts'), $
-                                     format='(%"%s.int.ext%%02d.gif")')
-  intensity_filename_format = mg_format(filepath(intensity_basename_format, $
-                                                 root=l1_dirname))
+  if (center_wavelength_only) then begin
+    intensity_basename_format = string(file_basename(file.l1_basename, '.fts'), $
+                                       format='(%"%s.int.gif")')
+    intensity_filename_format = filepath(intensity_basename_format, $
+                                         root=l1_dirname)
+  endif else begin
+    intensity_basename_format = string(file_basename(file.l1_basename, '.fts'), $
+                                       format='(%"%s.int.ext%%02d.gif")')
+    intensity_filename_format = mg_format(filepath(intensity_basename_format, $
+                                                   root=l1_dirname))
+  endelse
+  
 
   display_min   = run->line(file.wave_region, 'intensity_display_min')
   display_max   = run->line(file.wave_region, 'intensity_display_max')
@@ -56,7 +66,13 @@ pro ucomp_write_intensity_gif, file, data, run=run, $
 
   tvlct, r, g, b, /get
 
+  wavelengths = file.wavelengths
   for e = 1L, file.n_extensions do begin
+    if (center_wavelength_only) then begin
+      diff = wavelengths[e] - run->line(file.wave_region, 'center_wavelength')
+      if (abs(diff) gt 0.01) then continue
+    endif
+
     if (file.n_extensions gt 1L) then begin
       im = reform(data[*, *, 0, e - 1L])
     endif else begin
@@ -82,7 +98,13 @@ pro ucomp_write_intensity_gif, file, data, run=run, $
       ; TODO: draw occulter on GIF image, use center of image and the mean
       ; of the two geometry radii
     endif
-    write_gif, string(e, format=intensity_filename_format), tvrd(), r, g, b
+
+    if (center_wavelength_only) then begin
+      intensity_filename = intensity_filename_format
+    endif else begin
+      intensity_filename = string(e, format=intensity_filename_format)
+    endelse
+    write_gif, intensity_filename, tvrd(), r, g, b
   endfor
 
   done:
