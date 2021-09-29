@@ -119,7 +119,7 @@ pro ucomp_send_notification, run=run
   body->add, string(ucomp_sec2str(systime(/seconds) - run.t0), $
                     format='(%"Total runtime: %s")')
 
-  subject = string(run.date, format='(%"UCoMP results for %s")')
+  subject = string(run.date, run.config_flag, format='(%"UCoMP results for %s (%s)")')
   body_text = body->toArray()
   obj_destroy, body
 
