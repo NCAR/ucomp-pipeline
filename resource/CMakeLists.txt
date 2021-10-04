@@ -1,5 +1,6 @@
 get_filename_component(DIRNAME "${CMAKE_CURRENT_SOURCE_DIR}" NAME)
 
+add_subdirectory(cameras)
 add_subdirectory(colortables)
 add_subdirectory(database)
 add_subdirectory(demodulation)
