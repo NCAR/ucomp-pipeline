@@ -14,3 +14,4 @@
   handle epochs with no OCCLTR-{X,Y} values in FITS headers
 0.1.2
   option to write only center wavelength intensity or all extensions
+  use non-matching exposure time flats
