@@ -308,7 +308,10 @@ end
 
 
 ;+
-; Retrieve a flat image for a given science image.
+; Retrieve a flat image for a given science image. The exposure time of the
+; found flat will be normalized to the required exposure time given by
+; `exptime`. Other attributes such as `gain_mode`, `onband`, and `wavelength`
+; will be matched exactly.
 ;
 ; :Returns:
 ;   flat image, `fltarr(nx, ny, np, nc)`
@@ -330,7 +333,8 @@ end
 ;     set to a named variable to retrieve the time (in hours into the observing
 ;     day) of the found flat
 ;-
-function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, onband, wavelength, $
+function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
+                                      onband, wavelength, $
                                       found=found, $
                                       time_found=time_found, $
                                       master_extension=master_extension, $
@@ -355,8 +359,7 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, onband, 
 
   gain_index = gain_mode eq 'high'
   onband_index = onband eq 'tcam'
-  valid_indices = where((abs(exptime - *self.flat_exptimes) lt exptime_threshold) $
-                          and (abs(wavelength - *self.flat_wavelengths) lt wavelength_threshold) $
+  valid_indices = where((abs(wavelength - *self.flat_wavelengths) lt wavelength_threshold) $
                           and (*self.flat_gain_modes eq gain_index) $
                           and (*self.flat_onbands eq onband_index) $
                           and (obsday_hours gt *self.flat_times), $
@@ -372,11 +375,14 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, onband, 
   nearest_time_index = valid_indices[nearest_time_index]
 
   time_found = (*self.flat_times)[nearest_time_index]
+  exptime_found = (*self.flat_exptimes)[nearest_time_index]
   master_extension = nearest_time_index + 1L   ; convert index to FITS ext
   raw_extension = (*self.flat_extensions)[nearest_time_index]
   raw_file = (*self.flat_raw_files)[nearest_time_index]
 
-  return, float(reform((*self.flats)[*, *, *, *, nearest_time_index]))
+  flat = float(reform((*self.flats)[*, *, *, *, nearest_time_index]))
+  flat *= exptime / exptime_found
+  return, flat
 end
 
 
