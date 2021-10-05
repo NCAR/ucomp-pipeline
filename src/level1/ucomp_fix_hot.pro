@@ -18,7 +18,9 @@
 ;   adjacent : in, required, type="lonarr(n, 4)"
 ;     pixels adjacent to hot pixels
 ;-
-function UCoMP_Fix_Hot, data, hot=hot, adjacent=adjacent
+function ucomp_fix_hot, data, hot=hot, adjacent=adjacent
+  compile_opt strictarr
+
   fixed = data
   fixed[hot] = median(data[adjacent], dimension=2, /even)
 
