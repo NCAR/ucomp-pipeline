@@ -12,7 +12,7 @@
   promote issues in observing plan that prevent calibration to errors from warnings
   C implementation of demodulation
   handle epochs with no OCCLTR-{X,Y} values in FITS headers
-0.1.2
+0.1.2 [Oct 5, 2021]
   option to write only center wavelength intensity or all extensions
   use non-matching exposure time flats
   fix hot pixels
