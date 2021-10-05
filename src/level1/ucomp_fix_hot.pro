@@ -1,3 +1,5 @@
+; docformat = 'rst'
+
 ;+
 ; Procedure to fix hot pixels in UCoMP images. Replaces data by mean of
 ; adjacent pixels.
