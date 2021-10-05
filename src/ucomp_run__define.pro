@@ -447,14 +447,14 @@ pro ucomp_run::get_hot_pixels, gain_mode, camera_index, $
                                    root=self.resource_root)
     restore, filename=hot_pixels_filename
 
-    *self.hot_pixels[gain_mode, 0] = hot_0
-    *self.hot_pixels[gain_mode, 1] = hot_1
-    *self.adjacent_pixels[gain_mode, 0] = adjacent_0
-    *self.adjacent_pixels[gain_mode, 1] = adjacent_1
+    *self.hot_pixels[gain_index, 0] = hot_0
+    *self.hot_pixels[gain_index, 1] = hot_1
+    *self.adjacent_pixels[gain_index, 0] = adjacent_0
+    *self.adjacent_pixels[gain_index, 1] = adjacent_1
   endif
 
-  hot      = *self.hot_pixels[gain_mode, camera_index]
-  adjacent = *self.adjacent_pixels[gain_mode, camera_index]
+  hot      = *self.hot_pixels[gain_index, camera_index]
+  adjacent = *self.adjacent_pixels[gain_index, camera_index]
 end
 
 
