@@ -419,6 +419,74 @@ end
 
 
 ;+
+; Get hot pixel information for camera and gain.
+;
+; :Params:
+;   gain_mode : in, required, type=string
+;     gain mode, i.e., "high" or "low"
+;   camera_index : in, required, type=integer
+;     camera 0 (RCAM) or 1 (TCAM)
+;
+; :Keywords:
+;   hot : out, optional, type="lonarr(n)"
+;     set to a named variable to retrieve a list of hot pixels
+;   adjacent : out, optional, type="lonarr(n, 4)"
+;     set to a named variable to retrieve a list of hot pixels
+;-
+pro ucomp_run::get_hot_pixels, gain_mode, camera_index, $
+                               hot=hot, $
+                               adjacent=adjacent
+  compile_opt strictarr
+
+  gain_index = gain_mode eq 'high'
+
+  if (n_elements(*self.hot_pixels[gain_index, camera_index]) eq 0L) then begin
+    hot_pixels_basename = string(strlowcase(gain_mode), format='(%"ucomp_hot_%s.sav")')
+    hot_pixels_filename = filepath(hot_pixels_basename, $
+                                   subdir='cameras', $
+                                   root=self.resource_root)
+    restore, filename=hot_pixels_filename
+
+    *self.hot_pixels[gain_mode, 0] = hot_0
+    *self.hot_pixels[gain_mode, 1] = hot_1
+    *self.adjacent_pixels[gain_mode, 0] = adjacent_0
+    *self.adjacent_pixels[gain_mode, 1] = adjacent_1
+  endif
+
+  hot      = *self.hot_pixels[gain_mode, camera_index]
+  adjacent = *self.adjacent_pixels[gain_mode, camera_index]
+end
+
+
+;+
+; Get full demodulation matrix for all wave regions.
+;
+; :Returns:
+;    `fltarr(4, 4, 9, 2)`
+;
+; :Keywords:
+;   datetime : in, required, type=string
+;     date/time in the format "YYYYMMDD_HHMMSS"
+;-
+function ucomp_run::get_dmatrix_coefficients, datetime=datetime
+  compile_opt strictarr
+
+  if (n_elements(*self.dmatrix_coefficients) eq 0L) then begin
+    demodulation_coeffs_basename = self->epoch('demodulation_coeffs_basename', $
+                                               datetime=datetime)
+    demodulation_coeffs_filename = filepath(demodulation_coeffs_basename, $
+                                            subdir='demodulation', $
+                                            root=self.resource_root)
+    ; defines dmx_coefs variable
+    restore, filename=demodulation_coeffs_filename
+    *self.dmatrix_coefficients = dmx_coefs
+  endif
+
+  return, *self.dmatrix_coefficients
+end
+
+
+;+
 ; Retrieve the distortion coefficients for the epoch in the given date/time.
 ;
 ; :Keywords:
@@ -454,34 +522,6 @@ pro ucomp_run::get_distortion, datetime=datetime, $
                                      dx1_c: dx1_c, $
                                      dy1_c: dy1_c}
   endelse
-end
-
-
-;+
-; Get full demodulation matrix for all wave regions.
-;
-; :Returns:
-;    `fltarr(4, 4, 9, 2)`
-;
-; :Keywords:
-;   datetime : in, required, type=string
-;     date/time in the format "YYYYMMDD_HHMMSS"
-;-
-function ucomp_run::get_dmatrix_coefficients, datetime=datetime
-  compile_opt strictarr
-
-  if (n_elements(*self.dmatrix_coefficients) eq 0L) then begin
-    demodulation_coeffs_basename = self->epoch('demodulation_coeffs_basename', $
-                                               datetime=datetime)
-    demodulation_coeffs_filename = filepath(demodulation_coeffs_basename, $
-                                            subdir='demodulation', $
-                                            root=self.resource_root)
-    ; defines dmx_coefs variable
-    restore, filename=demodulation_coeffs_filename
-    *self.dmatrix_coefficients = dmx_coefs
-  endif
-
-  return, *self.dmatrix_coefficients
 end
 
 
@@ -788,6 +828,15 @@ pro ucomp_run::cleanup
   compile_opt strictarr
 
   obj_destroy, [self.options, self.epochs, self.lines]
+  ptr_free, self.hot_pixels[0], $
+            self.hot_pixels[1], $
+            self.hot_pixels[2], $
+            self.hot_pixels[3]
+  ptr_free, self.adjacent_pixels[0], $
+            self.adjacent_pixels[1], $
+            self.adjacent_pixels[2], $
+            self.adjacent_pixels[3]
+
   ptr_free, self.distortion_coefficients
   ptr_free, self.dmatrix_coefficients
 
@@ -873,8 +922,13 @@ function ucomp_run::init, date, mode, config_filename, no_log=no_log
     return, 0
   endif
 
-  self.distortion_coefficients = ptr_new(/allocate_heap)
+  for i = 0L, 3L do begin
+    self.hot_pixels[i] = ptr_new(/allocate_heap)
+    self.adjacent_pixels[i] = ptr_new(/allocate_heap)
+  endfor
+
   self.dmatrix_coefficients    = ptr_new(/allocate_heap)
+  self.distortion_coefficients = ptr_new(/allocate_heap)
 
   self.files = orderedhash()   ; wave_region (string) -> list of file objects
 
@@ -907,10 +961,14 @@ pro ucomp_run__define
            options                 : obj_new(), $
 
            epochs                  : obj_new(), $
-           distortion_basename     : '', $
-           distortion_coefficients : ptr_new(), $
+
+           hot_pixels              : ptrarr(2, 2), $   ; gain, camera
+           adjacent_pixels         : ptrarr(2, 2), $   ; gain, camera
 
            dmatrix_coefficients    : ptr_new(), $
+
+           distortion_basename     : '', $
+           distortion_coefficients : ptr_new(), $
 
            lines                   : obj_new(), $
 
