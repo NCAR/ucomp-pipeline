@@ -16,3 +16,4 @@
   option to write only center wavelength intensity or all extensions
   use non-matching exposure time flats
   fix hot pixels
+0.1.3
