@@ -18,3 +18,4 @@
   fix hot pixels
 0.1.3 [Oct 5, 2021]
   fixes for hot pixel correction
+0.1.4
