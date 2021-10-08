@@ -35,7 +35,7 @@ pro ucomp_l1_camera_correction, file, primary_header, data, headers, $
         data[*, *, p, c, e] = ucomp_fix_hot(data[*, *, p, c, e], $
                                             hot=hot, $
                                             adjacent=adjacent)
-    endfor
+      endfor
     endfor
   endfor
 end
