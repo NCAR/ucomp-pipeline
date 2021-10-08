@@ -18,4 +18,5 @@
   fix hot pixels
 0.1.3 [Oct 5, 2021]
   fixes for hot pixel correction
-0.1.4
+0.1.4 [Oct 8, 2021]
+  comp cat --header option
