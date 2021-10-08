@@ -314,6 +314,23 @@ def cat(args):
     if not ls_requirements:
         args.parser.error("missing Python packages required for listing contents of FITS files")
 
+    if args.header:
+        cat_header(args)
+    else:
+        cat_keywords(args)
+
+
+def cat_header(args):
+    with warnings.catch_warnings():
+        if not args.validate:
+            warnings.simplefilter("ignore", AstropyUserWarning)
+        for file in args.files:
+            with fits.open(file) as f:
+                header = f[args.extension].header
+                print(repr(header))
+
+
+def cat_keywords(args):
     default_keywords = {"sci": ["EXTNAME", "DATATYPE", "DATE-BEG", "WAVELNG", "ONBAND"],
                         "cal": ["EXTNAME", "DATATYPE", "DATE-BEG", "WAVELNG", "ONBAND", "POLANGLE", "RETANGLE"],
                         "dark": ["EXTNAME", "DATATYPE", "DATE-BEG"],
@@ -1007,9 +1024,18 @@ if __name__ == "__main__":
     cat_parser.add_argument("files", nargs="+",
        help="UCoMP files",
        metavar="files")
-    cat_parser.add_argument("--keywords", type=str,
+    cat_parser.add_argument("-k", "--keywords", type=str,
        help="FITS keyword names to display",
        default=None)
+    cat_parser.add_argument("--validate",
+       help="validate header",
+       action="store_true")
+    cat_parser.add_argument("-r", "--header",
+       help="display entire header",
+       action="store_true")
+    cat_parser.add_argument("-e", "--extension", type=int,
+       help="used with --header to specify which extension header to display",
+       default=0)
     cat_parser.set_defaults(func=cat, parser=cat_parser)
 
     # validate sub-command
