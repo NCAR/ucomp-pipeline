@@ -125,10 +125,21 @@ pro ucomp_make_flats, wave_region, run=run
     flat_onbands->add, averaged_onband, /extract
 
     for e = 0L, n_averaged_extensions - 1L do begin
+      flat_image = reform(ext_data[*, *, *, *, e])
+      for c = 0L, n_cameras - 1L do begin
+        run->get_hot_pixels, averaged_gain_mode[e], c, $
+                             hot=hot, adjacent=adjacent
+        for p = 0L, n_polstates - 1L do begin
+          flat_image[*, *, p, c] = ucomp_fix_hot(flat_image[*, *, p, c], $
+                                                 hot=hot, $
+                                                 adjacent=adjacent)
+        endfor
+      endfor
+
       flat_extnames->add, string(averaged_wavelength[e], $
                                  averaged_onband[e] ? 'tcam' : 'rcam', $
                                  format='(%"%0.2f nm [%s]")')
-      flat_data->add, reform(ext_data[*, *, *, *, e])
+      flat_data->add, flat_image
     endfor
   endfor
 

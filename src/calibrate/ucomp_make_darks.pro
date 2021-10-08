@@ -121,6 +121,15 @@ pro ucomp_make_darks, run=run
       dark_extnames->add, strmid(file_basename(dark_files[d].raw_filename), 9, 6)
 
       dark_image = reform(ext_data[*, *, *, *, e])
+      for c = 0L, n_cameras - 1L do begin
+        run->get_hot_pixels, averaged_gain_mode[e], c, $
+                             hot=hot, adjacent=adjacent
+        for p = 0L, n_polstates - 1L do begin
+          dark_image[*, *, p, c] = ucomp_fix_hot(dark_image[*, *, p, c], $
+                                                 hot=hot, $
+                                                 adjacent=adjacent)
+        endfor
+      endfor
       dark_data->add, dark_image
 
       rcam_means += total(reform(dark_image[*, *, *, 0], nx * ny, n_pol_states), $
