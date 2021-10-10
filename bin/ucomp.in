@@ -1013,7 +1013,7 @@ if __name__ == "__main__":
         default=".",
         help="UCoMP files(s)",
         metavar="file(s)")
-    ls_parser.add_argument("--keywords", type=str,
+    ls_parser.add_argument("-k", "--keywords", type=str,
         help="FITS keyword names to display",
         default=None)
     ls_parser.set_defaults(func=ls, parser=ls_parser)
