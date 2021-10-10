@@ -438,10 +438,15 @@ pro ucomp_run::get_hot_pixels, gain_mode, camera_index, $
                                adjacent=adjacent
   compile_opt strictarr
 
-  gain_index = gain_mode eq 'high'
+  if (size(gain_mode, /type) eq 7) then begin
+    gain_index = gain_mode eq 'high'
+  endif else begin
+    gain_index = gain_mode
+  endelse
 
   if (n_elements(*self.hot_pixels[gain_index, camera_index]) eq 0L) then begin
-    hot_pixels_basename = string(strlowcase(gain_mode), format='(%"ucomp_hot_%s.sav")')
+    hot_pixels_basename = string((['low', 'high'])[gain_index], $
+                                 format='(%"ucomp_hot_%s.sav")')
     hot_pixels_filename = filepath(hot_pixels_basename, $
                                    subdir='cameras', $
                                    root=self.resource_root)
