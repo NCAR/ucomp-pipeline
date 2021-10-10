@@ -126,6 +126,10 @@ pro ucomp_make_flats, wave_region, run=run
 
     for e = 0L, n_averaged_extensions - 1L do begin
       flat_image = reform(ext_data[*, *, *, *, e])
+
+      dims = size(ext_data, /dimensions)
+      n_polstates = dims[2]
+      n_cameras = dims[3]
       for c = 0L, n_cameras - 1L do begin
         run->get_hot_pixels, averaged_gain_mode[e], c, $
                              hot=hot, adjacent=adjacent
