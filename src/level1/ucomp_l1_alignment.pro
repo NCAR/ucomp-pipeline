@@ -27,8 +27,8 @@ pro ucomp_l1_alignment, file, primary_header, data, headers, run=run, status=sta
 
   ; center images on occulter center
 
-  n_pol_states = 4L
   dims = size(data, /dimensions)
+  n_pol_states = dims[2]
 
   occulter_x = ucomp_getpar(primary_header, 'OCCLTR-X')
   occulter_y = ucomp_getpar(primary_header, 'OCCLTR-Y')
