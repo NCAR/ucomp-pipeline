@@ -38,13 +38,16 @@ pro ucomp_write_intermediate_gif, name, $
     else: message, string(n_dims, format='(%"wrong number of dimensions: %d")')
   endcase
 
-  intermediate_dirname = filepath(string(step_number, name, format='(%"%02d-%s")'), $
+  intermediate_dirname = filepath(string(step_number, name, $
+                                         format='(%"%02d-%s")'), $
                                   subdir=[run.date, 'level1'], $
                                   root=run->config('processing/basedir'))
   file->getProperty, l1_basename=basename, intermediate_name=name
   basename = file_basename(basename, '.fts')
 
-  if (~file_test(intermediate_dirname, /directory)) then file_mkdir, intermediate_dirname
+  if (~file_test(intermediate_dirname, /directory)) then begin
+    ucomp_mkdir, intermediate_dirname, logger_name=run.logger_name
+  endif
 
   percent_stretch = 0.01
   display_gamma = run->line(file.wave_region, 'intensity_display_gamma')
