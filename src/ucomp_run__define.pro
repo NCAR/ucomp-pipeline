@@ -777,23 +777,27 @@ end
 
 
 ;+
-; Rotate logs and use config file values to setup the logger.
+; Use config file values to setup the logger.
+;
+; :Keywords:
+;   reprocess : in, optional, type=boolean
+;     set to indicate this is a reprocessing, so rotate the logs
 ;-
-pro ucomp_run::_setup_logger
+pro ucomp_run::_setup_logger, reprocess=reprocess
   compile_opt strictarr
   on_error, 2
-
-  ; log message formats
-
-  fmt = '%(time)s %(levelshortname)s: %(routine)s: %(message)s'
-  if (self->config('logging/include_pid')) then fmt = '[%(pid)s] ' + fmt
-  time_fmt = '(C(CYI4, CMOI2.2, CDI2.2, "." CHI2.2, CMI2.2, CSI2.2))'
 
   ; get logging values from config file
   log_dir     = self->config('logging/dir')
   level_name  = self->config('logging/level')
   max_version = self->config('logging/max_version')
   max_width   = self->config('logging/max_width')
+  include_pid = self->config('logging/include_pid')
+
+  ; log message formats
+  fmt = '%(time)s %(levelshortname)s: %(routine)s: %(message)s'
+  if (include_pid) then fmt = '[%(pid)s] ' + fmt
+  time_fmt = '(C(CYI4, CMOI2.2, CDI2.2, "." CHI2.2, CMI2.2, CSI2.2))'
 
   ; setup log directory and file
   basename = string(self.date, self.mode, format='(%"%s.ucomp.%s.log")')
@@ -803,14 +807,9 @@ pro ucomp_run::_setup_logger
     ucomp_mkdir, log_dir, logger_name=logger_name
   endif
 
-  ; rotate logs if not realtime and not already processing
-  if (self.mode ne 'realtime') then begin
-    self->getProperty, logger_name=logger_name
-    basedir = self->config('processing/basedir')
-    is_available = ucomp_state(self.date, $
-                               basedir=basedir, $
-                               logger_name=logger_name)
-    if (is_available) then mg_rotate_log, filename, max_version=max_version
+  ; rotate logs if reprocessing
+  if (keyword_set(reprocess)) then begin
+    mg_rotate_log, filename, max_version=max_version
   endif
 
   ; configure logger
@@ -875,7 +874,8 @@ end
 ;   no_log : in, optional, type=boolean
 ;     set to not initialize the logs
 ;-
-function ucomp_run::init, date, mode, config_filename, no_log=no_log
+function ucomp_run::init, date, mode, config_filename, $
+                          no_log=no_log, reprocess=reprocess
   compile_opt strictarr
 
   self.date = date
@@ -901,7 +901,7 @@ function ucomp_run::init, date, mode, config_filename, no_log=no_log
     return, 0
   endif
 
-  if (~keyword_set(no_log)) then self->_setup_logger
+  if (~keyword_set(no_log)) then self->_setup_logger, reprocess=reprocess
 
   ; setup epoch reading
   epochs_filename = filepath('ucomp.epochs.cfg', root=self.resource_root)
