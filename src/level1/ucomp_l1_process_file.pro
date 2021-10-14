@@ -43,6 +43,13 @@ pro ucomp_l1_process_file, file, run=run
                         root=run->config('processing/basedir'))
   ucomp_mkdir, l1_dirname, logger_name=run.logger_name
 
+  ucomp_l1_step, 'ucomp_l1_check_quality', $
+                 file, primary_header, data, headers, run=run
+  if (~files[f].ok) then begin
+    mg_log, 'skipping for poor quality', name=run.logger_name
+    goto, done
+  endif
+
   step_number = 1L
 
   ucomp_l1_step, 'ucomp_l1_average_data', $
@@ -67,12 +74,12 @@ pro ucomp_l1_process_file, file, run=run
 
   ucomp_l1_step, 'ucomp_l1_distortion', $
                  file, primary_header, data, headers, step_number=step_number, run=run
+  ucomp_l1_step, 'ucomp_l1_alignment', $
+                 file, primary_header, data, headers, step_number=step_number, run=run
   ucomp_l1_step, 'ucomp_l1_continuum_subtraction', $
                  file, primary_header, data, headers, step_number=step_number, run=run
   ucomp_l1_step, 'ucomp_l1_combine_cameras', $
                  file, primary_header, data, headers, step_number=step_number, run=run
-; ucomp_l1_step, 'ucomp_l1_alignment', $
-;                file, primary_header, data, headers, step_number=step_number, run=run
 
   ucomp_l1_step, 'ucomp_l1_masking', $
                  file, primary_header, data, headers, step_number=step_number, run=run
@@ -85,11 +92,14 @@ pro ucomp_l1_process_file, file, run=run
   ucomp_l1_step, 'ucomp_l1_promote_header', $
                  file, primary_header, data, headers, step_number=step_number, run=run
 
+  ucomp_l1_step, 'ucomp_l1_check_gbu', $
+                 file, primary_header, data, headers, run=run
+
   l1_filename = filepath(file.l1_basename, root=l1_dirname)
 
-  clock_id = run->start('ucomp_write_fits_file')
+  ;clock_id = run->start('ucomp_write_fits_file')
   ucomp_write_fits_file, l1_filename, primary_header, data, headers
-  !null = run->stop(clock_id)
+  ;!null = run->stop(clock_id)
 
   ucomp_write_intensity_gif, file, data, run=run, $
                              occulter_annotation=run->config('centering/annotated_gifs')

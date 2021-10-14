@@ -15,7 +15,7 @@
 ;   run : in, required, type=object
 ;     UCoMP run object
 ;-
-pro ucomp_check_gbu, wave_region, run=run
+pro ucomp_write_gbu, wave_region, run=run
   compile_opt strictarr
 
   mg_log, 'checking GBU for %s nm...', wave_region, name=run.logger_name, /info
@@ -27,14 +27,6 @@ pro ucomp_check_gbu, wave_region, run=run
   endif
 
   gbu_conditions = ucomp_gbu_conditions(wave_region, run=run)
-
-  ; check various conditions to determine GBU
-  for f = 0L, n_files - 1L do begin
-    for g = 0L, n_elements(gbu_conditions) - 1L do begin
-      files[f].gbu = gbu_conditions[g].mask * call_function(gbu_conditions[g].checker, $
-                                                            files[f])
-    endfor
-  endfor
 
   ; write the GBU log
   basename = string(run.date, wave_region, format='(%"%s.ucomp.%s.gbu.log")')
