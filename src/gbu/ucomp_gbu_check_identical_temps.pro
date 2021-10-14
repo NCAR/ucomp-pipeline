@@ -9,8 +9,22 @@
 ; :Params:
 ;   file : in, required, type=object
 ;     UCoMP file object
+;   primary_header : in, required, type=strarr
+;     primary header
+;   ext_data : in, out, required, type="fltarr(nx, ny, n_pol_states, n_exts)"
+;     extension data, removes `n_cameras` dimension on output
+;   ext_headers : in, required, type=list
+;     extension headers as list of `strarr`
+;
+; :Keywords:
+;   run : in, required, type=object
+;     `ucomp_run` object
 ;-
-function ucomp_gbu_check_identical_temps, file
+function ucomp_gbu_check_identical_temps, file, $
+                                          primary_header, $
+                                          ext_data, $
+                                          ext_headers, $
+                                          run=run
   compile_opt strictarr
 
   tolerance = 0.001

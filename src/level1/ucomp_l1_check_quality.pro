@@ -3,6 +3,9 @@
 ;+
 ; Check quality (process or not) for each file.
 ;
+; After `UCOMP_L1_CHECK_QUALITY`, the `ok` and `quality_bitmask` fields of the
+; `file` will be set correctly.
+;
 ; :Params:
 ;   file : in, required, type=object
 ;     `ucomp_file` object
@@ -23,10 +26,18 @@ pro ucomp_l1_check_quality, file, primary_header, ext_data, ext_headers, $
                             run=run, status=status
   compile_opt strictarr
 
-  ; TODO: check ext_data, set quality_bitmask
-  quality_bitmask = 0UL
+  status = 0L
 
-  files[f].quality_bitmask = quality_bitmask
+  quality_conditions = ucomp_quality_conditions(file.wave_region, run=run)
+  for q = 0L, n_elements(quality_conditions) - 1L do begin
+    quality = call_function(quality_conditions[q].checker, $
+                            file, $
+                            primary_header, $
+                            ext_data, $
+                            ext_headers, $
+                            run=run)
+    file.quality_bitmask = quality_conditions[q].mask * quality
+  endfor
 
   done:
 end
