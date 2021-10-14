@@ -22,4 +22,5 @@
   comp cat --header option
 0.1.5 [Oct 10, 2021]
   fixes for hot pixel correction
-0.1.6
+0.1.6 [Oct 13, 2021]
+  fixes for large temperature values promoted to doubles
