@@ -19,7 +19,7 @@ pro ucomp_l1_process, wave_region, run=run
   files = run->get_files(data_type='sci', wave_region=wave_region, count=n_files)
   if (n_files eq 0L) then begin
     mg_log, 'no files @ %s nm', wave_region, name=run.logger_name, /debug
-    return
+    goto, done
   endif
 
   n_digits = floor(alog10(n_files)) + 1L
@@ -29,13 +29,11 @@ pro ucomp_l1_process, wave_region, run=run
     mg_log, mg_format('%*d/%d @ %s: %s', n_digits, /simple), $
             f + 1, n_files, wave_region, file_basename(files[f].raw_filename), $
             name=run.logger_name, /info
-    if (files[f].ok) then begin
-      ucomp_l1_process_file, files[f], run=run
-    endif else begin
-      mg_log, 'skipping for poor quality', name=run.logger_name, /info
-    endelse
+    ucomp_l1_process_file, files[f], run=run
   endfor
   t1 = systime(/seconds)
 
   mg_log, '%0.1f secs/file', (t1 - t0) / n_files, name=run.logger_name, /info
+
+  done:
 end
