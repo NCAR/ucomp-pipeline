@@ -42,7 +42,7 @@ pro ucomp_regression_wrapper, date, config_filename
     goto, done
   endif
 
-  run = ucomp_run(date, mode, config_fullpath)
+  run = ucomp_run(date, mode, config_fullpath, /reprocess)
   if (~obj_valid(run)) then begin
     mg_log, 'cannot create run object', name=logger_name, /critical
     goto, done
