@@ -11,7 +11,7 @@
 ;     `ucomp_file` object
 ;   primary_header : in, required, type=strarr
 ;     primary header
-;   ext_data : in, out, required, type="fltarr(nx, ny, n_pol_states, n_cameras, n_exts)"
+;   ext_data : in, out, required, type="fltarr(nx, ny, n_pol_states, n_exts)"
 ;     extension data, removes `n_cameras` dimension on output
 ;   ext_headers : in, required, type=list
 ;     extension headers as list of `strarr`
@@ -30,8 +30,13 @@ pro ucomp_l1_check_gbu, file, primary_header, ext_data, ext_headers, $
 
   gbu_conditions = ucomp_gbu_conditions(wave_region, run=run)
   for g = 0L, n_elements(gbu_conditions) - 1L do begin
-    file.gbu = gbu_conditions[g].mask * call_function(gbu_conditions[g].checker, $
-                                                      file)
+    gbu = call_function(gbu_conditions[g].checker, $
+                        file, $
+                        primary_header, $
+                        ext_data, $
+                        ext_headers, $
+                        run=run)
+    file.gbu = gbu_conditions[g].mask * gbu
   endfor
 
   done:
