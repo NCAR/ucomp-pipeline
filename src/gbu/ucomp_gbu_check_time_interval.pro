@@ -10,8 +10,22 @@
 ; :Params:
 ;   file : in, required, type=object
 ;     UCoMP file object
+;   primary_header : in, required, type=strarr
+;     primary header
+;   ext_data : in, out, required, type="fltarr(nx, ny, n_pol_states, n_exts)"
+;     extension data, removes `n_cameras` dimension on output
+;   ext_headers : in, required, type=list
+;     extension headers as list of `strarr`
+;
+; :Keywords:
+;   run : in, required, type=object
+;     `ucomp_run` object
 ;-
-function ucomp_gbu_check_time_interval, file
+function ucomp_gbu_check_time_interval, file, $
+                                        primary_header, $
+                                        ext_data, $
+                                        ext_headers, $
+                                        run=run
   compile_opt strictarr
 
   if (file.n_extensions lt 2L) then return, 0L
@@ -19,15 +33,8 @@ function ucomp_gbu_check_time_interval, file
   run = file.run
   times = dblarr(file.n_extensions)
 
-  run.datetime = string(file.hst_date, file.hst_time, format='(%"%s.%s")')
-  ucomp_read_raw_data, file.raw_filename, $
-                       primary_header=primary_header, $
-                       ext_data=data, $
-                       ext_headers=headers, $
-                       repair_routine=run->epoch('raw_data_repair_routine')
-
   for e = 0L, file.n_extensions - 1L do begin
-    date_begin = ucomp_getpar(headers[e], 'DATE-BEG')
+    date_begin = ucomp_getpar(ext_headers[e], 'DATE-BEG')
     times[e] = ucomp_dateobs2julday(date_begin)
   endfor
 

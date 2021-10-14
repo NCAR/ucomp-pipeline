@@ -1,7 +1,7 @@
 ; docformat = 'rst'
 
 ;+
-; Return the GBU conditions to check available.
+; Return the GBU conditions to check.
 ;
 ; :Returns:
 ;   array of structures defined::
