@@ -24,3 +24,4 @@
   fixes for hot pixel correction
 0.1.6 [Oct 13, 2021]
   fixes for large temperature values promoted to doubles
+0.1.7
