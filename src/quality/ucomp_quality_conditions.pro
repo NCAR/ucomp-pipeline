@@ -15,7 +15,7 @@ function ucomp_quality_conditions, wave_region, run=run
   ; reordered easily
   quality_conditions = [{mask: 0UL, $
                          checker: 'ucomp_quality_check_null', $
-                         description: 'null quality check'}]]
+                         description: 'null quality check'}]
 
   quality_conditions.mask = 2UL ^ ulindgen(n_elements(quality_conditions))
 
