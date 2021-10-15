@@ -155,15 +155,15 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
                  file.retangle, $
                  file.caloptic_in, $
 
-                 ucomp_db_float(rcam_center[0]), $
-                 ucomp_db_float(rcam_center[1]), $
-                 ucomp_db_float(rcam_radius), $
-                 ucomp_db_float(tcam_center[0]), $
-                 ucomp_db_float(tcam_center[1]), $
-                 ucomp_db_float(tcam_radius), $
+                 ucomp_db_float(rcam_center[0], valid_range=[0.0, 1279.0]), $
+                 ucomp_db_float(rcam_center[1], valid_range=[0.0, 1023.0]), $
+                 ucomp_db_float(rcam_radius, valid_range=[0.0, 820.0]), $
+                 ucomp_db_float(tcam_center[0], valid_range=[0.0, 1279.0]), $
+                 ucomp_db_float(tcam_center[1], valid_range=[0.0, 1023.0]), $
+                 ucomp_db_float(tcam_radius, valid_range=[0.0, 820.0]), $
 
-                 ucomp_db_float(rcam_post_angle), $
-                 ucomp_db_float(tcam_post_angle), $
+                 ucomp_db_float(rcam_post_angle, valid_range=[-360.0, 360.0]), $
+                 ucomp_db_float(tcam_post_angle, valid_range=[-360.0, 360.0]), $
 
                  file.wave_region, $
                  file.n_unique_wavelengths, $
@@ -175,30 +175,30 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
                  file.nd, $
                  ucomp_db_float(background), $
 
-                 ucomp_db_float(file.t_base), $
-                 ucomp_db_float(file.t_lcvr1), $
-                 ucomp_db_float(file.t_lcvr2), $
-                 ucomp_db_float(file.t_lcvr3), $
-                 ucomp_db_float(file.t_lnb1), $
-                 ucomp_db_float(file.t_mod), $
-                 ucomp_db_float(file.t_lnb2), $
-                 ucomp_db_float(file.t_lcvr4), $
-                 ucomp_db_float(file.t_lcvr5), $
-                 ucomp_db_float(file.t_rack), $
-                 ucomp_db_float(file.tu_base), $
-                 ucomp_db_float(file.tu_lcvr1), $
-                 ucomp_db_float(file.tu_lcvr2), $
-                 ucomp_db_float(file.tu_lcvr3), $
-                 ucomp_db_float(file.tu_lnb1), $
-                 ucomp_db_float(file.tu_mod), $
-                 ucomp_db_float(file.tu_lnb2), $
-                 ucomp_db_float(file.tu_lcvr4), $
-                 ucomp_db_float(file.tu_lcvr5), $
-                 ucomp_db_float(file.tu_rack), $
-                 ucomp_db_float(file.t_c0arr), $
-                 ucomp_db_float(file.t_c0pcb), $
-                 ucomp_db_float(file.t_c1arr), $
-                 ucomp_db_float(file.t_c1pcb), $
+                 ucomp_db_float(file.t_base, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.t_lcvr1, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.t_lcvr2, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.t_lcvr3, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.t_lnb1, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.t_mod, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.t_lnb2, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.t_lcvr4, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.t_lcvr5, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.t_rack, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.tu_base, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.tu_lcvr1, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.tu_lcvr2, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.tu_lcvr3, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.tu_lnb1, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.tu_mod, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.tu_lnb2, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.tu_lcvr4, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.tu_lcvr5, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.tu_rack, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.t_c0arr, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.t_c0pcb, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.t_c1arr, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.t_c1pcb, valid_range=[-20.0, 100.0]), $
 
                  file.occultrid, $
 

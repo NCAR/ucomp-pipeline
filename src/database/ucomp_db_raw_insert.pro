@@ -89,30 +89,30 @@ pro ucomp_db_raw_insert, l0_files, obsday_index, db, logger_name=logger_name
                  file.obs_id, $
                  file.obs_plan, $
 
-                 ucomp_db_float(file.t_rack), $
-                 ucomp_db_float(file.t_lcvr1), $
-                 ucomp_db_float(file.t_lcvr2), $
-                 ucomp_db_float(file.t_lcvr3), $
-                 ucomp_db_float(file.t_lnb1), $
-                 ucomp_db_float(file.t_mod), $
-                 ucomp_db_float(file.t_lnb2), $
-                 ucomp_db_float(file.t_lcvr4), $
-                 ucomp_db_float(file.t_lcvr5), $
-                 ucomp_db_float(file.t_base), $
-                 ucomp_db_float(file.tu_rack), $
-                 ucomp_db_float(file.tu_lcvr1), $
-                 ucomp_db_float(file.tu_lcvr2), $
-                 ucomp_db_float(file.tu_lcvr3), $
-                 ucomp_db_float(file.tu_lnb1), $
-                 ucomp_db_float(file.tu_mod), $
-                 ucomp_db_float(file.tu_lnb2), $
-                 ucomp_db_float(file.tu_lcvr4), $
-                 ucomp_db_float(file.tu_lcvr5), $
-                 ucomp_db_float(file.tu_base), $
-                 ucomp_db_float(file.t_c0arr), $
-                 ucomp_db_float(file.t_c0pcb), $
-                 ucomp_db_float(file.t_c1arr), $
-                 ucomp_db_float(file.t_c1pcb), $
+                 ucomp_db_float(file.t_rack, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.t_lcvr1, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.t_lcvr2, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.t_lcvr3, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.t_lnb1, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.t_mod, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.t_lnb2, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.t_lcvr4, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.t_lcvr5, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.t_base, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.tu_rack, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.tu_lcvr1, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.tu_lcvr2, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.tu_lcvr3, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.tu_lnb1, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.tu_mod, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.tu_lnb2, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.tu_lcvr4, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.tu_lcvr5, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.tu_base, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.t_c0arr, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.t_c0pcb, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.t_c1arr, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.t_c1pcb, valid_range=[-20.0, 100.0]), $
 
                  status=status
     if (status ne 0L) then goto, done
