@@ -17,6 +17,9 @@ function ucomp_gbu_conditions, wave_region, run=run
                      checker: 'ucomp_gbu_check_identical_temps', $
                      description: 'at least two identical TU_LCVR{1,2,3,4,5} temperatures'}, $
                     {mask: 0UL, $
+                     checker: 'ucomp_gbu_check_nominal_temps', $
+                     description: 'a temperature is outside the nominal range'}, $
+                    {mask: 0UL, $
                      checker: 'ucomp_gbu_check_time_interval', $
                      description: string(run->epoch('max_ext_time'), $
                                          format='(%"sequential extensions were acquired more than %0.2f secs apart")')}]
