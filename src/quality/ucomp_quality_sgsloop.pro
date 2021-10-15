@@ -1,10 +1,10 @@
 ; docformat = 'rst'
 
 ;+
-; Pass every file.
+; Check that SGSLOOP is high enough.
 ;
 ; :Returns:
-;   0B for every file
+;   1B for files with too low SGSLOOP, 0B for good ones
 ;
 ; :Params:
 ;   file : in, required, type=object
@@ -20,9 +20,9 @@
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-function ucomp_quality_check_null, file, primary_header, ext_data, ext_headers, $
-                                   run=run
+function ucomp_quality_sgsloop, file, primary_header, ext_data, ext_headers, $
+                                run=run
   compile_opt strictarr
 
-  return, 0B
+  return, ucomp_getpar(primary_header, 'SGSLOOP') lt run->epoch('sgsloop_min')
 end
