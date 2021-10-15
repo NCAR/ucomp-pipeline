@@ -78,11 +78,12 @@ pro ucomp_l1_alignment, file, primary_header, data, headers, run=run, status=sta
   p_angle = file.p_angle
   ucomp_addpar, primary_header, 'SOLAR_P0', p_angle, $
                 comment='[deg] solar P angle applied (image has N up)', $
-                format='(f9.3)'
+                format='(f9.3)', after='RCAMNUC'
   file.rcam_geometry.p_angle = p_angle
   file.tcam_geometry.p_angle = p_angle
 
-  ; TODO: put geometry info, p_angle in the primary header after RCAMNUC
+  ; TODO: put geometry info in the primary header after SOLAR_P0
+  ; TODO: embed image in larger image so we don't lose corona when rotating
 
   for p = 0, n_pol_states - 1L do begin
     for e = 0L, file.n_extensions - 1L do begin
