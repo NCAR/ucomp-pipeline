@@ -820,6 +820,8 @@ pro ucomp_run::_setup_logger, reprocess=reprocess
                        max_width=max_width, $
                        level=mg_log_name2level(level_name), $
                        filename=filename
+
+  mg_log, 'reprocess: %s', keyword_set(reprocess) ? 'YES' : 'NO', name=logger_name, /info
 end
 
 
