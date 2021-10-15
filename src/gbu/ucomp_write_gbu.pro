@@ -41,7 +41,7 @@ pro ucomp_write_gbu, wave_region, run=run
   endfor
 
   printf, lun
-  printf, lun, 'GBU codes'
+  printf, lun, 'GBU bitmask codes'
   printf, lun, 'Code', 'Description', format='(%"%-5s   %s")'
   for g = 0L, n_elements(gbu_conditions) - 1L do begin
     printf, lun, gbu_conditions[g].mask, gbu_conditions[g].description, $
