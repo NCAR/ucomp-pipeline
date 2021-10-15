@@ -90,7 +90,7 @@ function ucomp_radial_derivative, data, radius_guess, dr, $
     rad = deriv(rad)    ; take derivative of radial intensity scan
 
     ; find position of maximum derivative, imax
-    pt_weights[s] = abs(max(rad, imax))
+    pt_weights[s] = max(rad, imax)
     imax >= 2L
     imax <= n_values - 3L
 
