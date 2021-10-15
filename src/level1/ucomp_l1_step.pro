@@ -56,5 +56,5 @@ pro ucomp_l1_step, routine_name, file, primary_header, data, headers, $
             from=routine_name, name=run.logger_name, /debug
   endelse
 
-  step_number += 1L
+  if (n_elements(step_number) gt 0L) then step_number += 1L
 end
