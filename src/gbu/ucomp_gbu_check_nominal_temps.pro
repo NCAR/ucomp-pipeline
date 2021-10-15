@@ -36,7 +36,7 @@ function ucomp_gbu_check_nominal_temps, file, $
 
   both_temp_keywords = ['RACK', 'BASE', 'LCVR1', 'LCVR2', 'LCVR3', 'LCVR4', 'LCVR5']
   for t = 0L, n_elements(both_temp_keywords) - 1L do begin
-    temp = ucomp_getpar(primary_header, 'T_' + temp_keywords[t])
+    temp = ucomp_getpar(primary_header, 'T_' + both_temp_keywords[t])
     result = result || (temp lt min_temp) || (temp gt max_temp)
 
     temp = ucomp_getpar(primary_header, 'TU_' + temp_keywords[t])
@@ -44,7 +44,7 @@ function ucomp_gbu_check_nominal_temps, file, $
   endfor
 
   temp_keywords = ['T_C0ARR', 'T_C0PCB', 'T_C1ARR', 'T_C1PCB']
-  for t = 0L, n_elements(both_temp_keywords) - 1L do begin
+  for t = 0L, n_elements(temp_keywords) - 1L do begin
     temp = ucomp_getpar(primary_header, temp_keywords[t])
     result = result || (temp lt min_temp) || (temp gt max_temp)
   endfor
