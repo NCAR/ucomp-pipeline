@@ -39,7 +39,7 @@ function ucomp_gbu_check_nominal_temps, file, $
     temp = ucomp_getpar(primary_header, 'T_' + both_temp_keywords[t])
     result = result || (temp lt min_temp) || (temp gt max_temp)
 
-    temp = ucomp_getpar(primary_header, 'TU_' + temp_keywords[t])
+    temp = ucomp_getpar(primary_header, 'TU_' + both_temp_keywords[t])
     result = result || (temp lt min_temp) || (temp gt max_temp)
   endfor
 
