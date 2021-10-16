@@ -24,5 +24,10 @@ function ucomp_quality_sgsloop, file, primary_header, ext_data, ext_headers, $
                                 run=run
   compile_opt strictarr
 
-  return, ucomp_getpar(primary_header, 'SGSLOOP') lt run->epoch('sgsloop_min')
+  limit = run->epoch('sgsloop_min')
+  for e = 0L, n_elements(ext_headers) - 1L do begin
+    if (ucomp_getpar(ext_headers[e], 'SGSLOOP') lt limit) then return, 0B
+  endfor
+
+  return, 0B
 end
