@@ -57,9 +57,10 @@ pro ucomp_eod_wrapper, date, config_filename
   run->start_profiler
 
   ; log starting up pipeline with versions
+  mg_log, '------------------------------', name=run.logger_name, /info
   version = ucomp_version(revision=revision, branch=branch)
   mg_log, 'ucomp-pipeline %s (%s) [%s]', version, revision, branch, $
-          name=run.logger_name, /debug
+          name=run.logger_name, /info
   mg_log, 'using IDL %s on %s (%s)', $
           !version.release, !version.os_name, mg_hostname(), $
           name=run.logger_name, /debug

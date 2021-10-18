@@ -14,8 +14,8 @@ function ucomp_quality_conditions, wave_region, run=run
   ; don't set mask initially, set after creating so that conditions can be
   ; reordered easily
   quality_conditions = [{mask: 0UL, $
-                         checker: 'ucomp_quality_check_null', $
-                         description: 'null quality check'}]
+                         checker: 'ucomp_quality_sgsloop', $
+                         description: 'check that SGSLOOP is high enough'}]
 
   quality_conditions.mask = 2UL ^ ulindgen(n_elements(quality_conditions))
 
