@@ -3,8 +3,9 @@
 ;+
 ; Combine cameras and off-band (continuum) subtraction.
 ;
-; After `UCOMP_L1_AVERAGE_DATA`, there should be only a single match for each
-; extension.
+; After `UCOMP_L1_AVERAGE_DATA`, there should be only a single extension match
+; for each wavelength.
+; .
 ;
 ; :Params:
 ;   file : in, required, type=object
