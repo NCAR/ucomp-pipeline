@@ -143,6 +143,27 @@ pro ucomp_make_flats, wave_region, run=run
       flat_extnames->add, string(averaged_wavelength[e], $
                                  averaged_onband[e] ? 'tcam' : 'rcam', $
                                  format='(%"%0.2f nm [%s]")')
+
+      is_center_wavelength = abs(averaged_wavelength[e] - run->line(wave_region, 'center_wavelength')) lt 0.001
+      if (is_center_wavelength && averaged_onband[e] eq 0) then begin
+        rcam_roughness = 0.0
+        for p = 0L, n_polstates - 1L do begin
+          rcam_roughness += ucomp_roughness(flat_image[*, *, p, 0])
+        endfor
+        flat_file.rcam_roughness = rcam_roughness / n_polstates
+        mg_log, 'RCAM roughness: %0.3f', flat_file.tcam_roughness, $
+                name=run.logger_name, /debug
+      endif
+      if (is_center_wavelength && averaged_onband[e] eq 1) then begin
+        tcam_roughness = 0.0
+        for p = 0L, n_polstates - 1L do begin
+          tcam_roughness += ucomp_roughness(flat_image[*, *, p, 1])
+        endfor
+        flat_file.tcam_roughness = tcam_roughness / n_polstates
+        mg_log, 'TCAM roughness : %0.3f', flat_file.tcam_roughness, $
+                name=run.logger_name, /debug
+      endif
+
       flat_data->add, flat_image
     endfor
   endfor

@@ -58,6 +58,8 @@ pro ucomp_db_cal_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
               {name: 'retangle', type: '%f'}, $
               {name: 'caloptic', type: '%d'}, $
 
+              {name: 'rcam_roughness', type: '%s'}, $
+              {name: 'tcam_roughness', type: '%s'}, $
               {name: 'median_int_continuum', type: '%s'}, $
               {name: 'median_int_linecenter', type: '%s'}, $
 
@@ -84,6 +86,8 @@ pro ucomp_db_cal_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
                  file.retangle, $
                  file.caloptic_in, $
 
+                 ucomp_db_float(file.rcam_roughness, format='%0.6f'), $
+                 ucomp_db_float(file.tcam_roughness, format='%0.6f'), $
                  ucomp_db_float(median_int_continuum), $
                  ucomp_db_float(median_int_linecenter), $
 
