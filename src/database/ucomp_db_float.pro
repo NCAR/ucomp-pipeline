@@ -15,8 +15,10 @@
 ; :Keywords:
 ;   valid_range : in, optional, type=fltarr(2)
 ;     valid range for `value`, returns 'NULL' if `value` is outside this range
+;   format : in, optional, type=string, default='%f'
+;     format to use on numeric values
 ;-
-function ucomp_db_float, value, valid_range=valid_range
+function ucomp_db_float, value, valid_range=valid_range, format=format
   compile_opt strictarr
 
   if (n_elements(value) eq 0L || ~finite(value)) then return, 'NULL'
@@ -24,5 +26,6 @@ function ucomp_db_float, value, valid_range=valid_range
     if (value le valid_range[0] || value gt valid_range[1]) then return, 'NULL'
   endif
 
-  return, string(value, format='(%"%f")')
+  _format = n_elements(format) eq 0L ? '(%"%f")' : ('(%"' + format + '")')
+  return, string(value, format=_format)
 end

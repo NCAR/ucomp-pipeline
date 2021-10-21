@@ -71,6 +71,8 @@ end
 pro ucomp_file::setProperty, demodulated=demodulated, $
                              rcam_geometry=rcam_geometry, $
                              tcam_geometry=tcam_geometry, $
+                             rcam_roughness=rcam_roughness, $
+                             tcam_roughness=tcam_roughness, $
                              background=background, $
                              quality_bitmask=quality_bitmask, $
                              gbu=gbu, $
@@ -83,6 +85,9 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
 
   if (n_elements(rcam_geometry)) then self.rcam_geometry = rcam_geometry
   if (n_elements(tcam_geometry)) then self.tcam_geometry = tcam_geometry
+
+  if (n_elements(rcam_roughness)) then self.rcam_roughness = rcam_roughness
+  if (n_elements(tcam_roughness)) then self.tcam_roughness = tcam_roughness
 
   if (n_elements(background)) then self.background = background
 
@@ -170,6 +175,8 @@ pro ucomp_file::getProperty, run=run, $
                              caloptic_in=caloptic_in, $
                              polangle=polangle, $
                              retangle=retangle, $
+                             rcam_roughness=rcam_roughness, $
+                             tcam_roughness=tcam_roughness, $
                              rcam_geometry=rcam_geometry, $
                              tcam_geometry=tcam_geometry, $
                              t_base=t_base, $
@@ -274,6 +281,9 @@ pro ucomp_file::getProperty, run=run, $
   if (arg_present(caloptic_in)) then caloptic_in = self.caloptic_in
   if (arg_present(polangle)) then polangle = self.polangle
   if (arg_present(retangle)) then retangle = self.retangle
+
+  if (arg_present(rcam_roughness)) then rcam_roughness = self.rcam_roughness
+  if (arg_present(tcam_roughness)) then tcam_roughness = self.tcam_roughness
 
   if (arg_present(obsswid)) then obsswid = self.obsswid
 
@@ -502,6 +512,9 @@ function ucomp_file::init, raw_filename, run=run
 
   self.background = !values.f_nan
 
+  self.rcam_roughness = !values.f_nan
+  self.tcam_roughness = !values.f_nan
+
   ; allocate inventory variables for extensions
   self.wavelengths = ptr_new(/allocate_heap)
   self.onband_indices = ptr_new(/allocate_heap)
@@ -556,6 +569,10 @@ pro ucomp_file__define
            retangle            : 0.0, $
 
            obsswid             : '', $
+
+           ; for flats only
+           rcam_roughness      : 0.0, $
+           tcam_roughness      : 0.0, $
 
            occulter_x          : 0.0, $
            occulter_y          : 0.0, $
