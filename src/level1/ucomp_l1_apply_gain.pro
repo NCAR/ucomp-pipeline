@@ -39,7 +39,6 @@ pro ucomp_l1_apply_gain, file, primary_header, data, headers, run=run, status=st
   ; for each extension in file
   for e = 0L, n_exts - 1L do begin
     onband = ucomp_getpar(headers[e], 'ONBAND')
-    numsum = ucomp_getpar(headers[e], 'NUMSUM')
 
     flat = cal->get_flat(obsday_hours, exptime, gain_mode, onband, wavelengths[e], $
                          found=flat_found, time_found=flat_time, $
@@ -70,7 +69,7 @@ pro ucomp_l1_apply_gain, file, primary_header, data, headers, run=run, status=st
       if (n_zeros gt 0L) then dark_corrected_flat[zero_indices] = 1.0
 
       p_im = im[*, *, p, *]
-      p_im /= numsum * dark_corrected_flat
+      p_im /= dark_corrected_flat
       if (n_zeros gt 0L) then p_im[zero_indices] = !values.f_nan
       im[*, *, p, *] = p_im
     endfor
