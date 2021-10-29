@@ -13,10 +13,10 @@
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-pro ucomp_write_intensity_gif, file, data, run=run, $
-                               occulter_annotation=occulter_annotation
+pro ucomp_write_intensity_gif, file, data, run=run
   compile_opt strictarr
 
+  occulter_annotation=run->config('centering/annotated_gifs')
   center_wavelength_only = run->config('intensity/center_wavelength_gifs_only')
 
   l1_dirname = filepath('', $
