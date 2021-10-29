@@ -98,6 +98,7 @@ pro ucomp_write_iquv_gif, file, data, run=run
         display_gamma = quv_display_gamma
         display_power = quv_display_power
       endelse
+
       im = rebin(ext_data[*, *, p], $
                  dims[0] / reduce_dims_factor, $
                  dims[1] / reduce_dims_factor)
