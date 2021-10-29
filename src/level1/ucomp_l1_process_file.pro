@@ -97,12 +97,10 @@ pro ucomp_l1_process_file, file, run=run
 
   l1_filename = filepath(file.l1_basename, root=l1_dirname)
 
-  ;clock_id = run->start('ucomp_write_fits_file')
   ucomp_write_fits_file, l1_filename, primary_header, data, headers
-  ;!null = run->stop(clock_id)
 
-  ucomp_write_intensity_gif, file, data, run=run, $
-                             occulter_annotation=run->config('centering/annotated_gifs')
+  ucomp_write_intensity_gif, file, data, run=run
+  ucomp_write_iquv_gif, file, data, run=run
 
   done:
   if (obj_valid(headers)) then obj_destroy, headers
