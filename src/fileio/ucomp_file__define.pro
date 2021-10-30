@@ -203,7 +203,19 @@ pro ucomp_file::getProperty, run=run, $
                              t_c0pcb=t_c0pcb, $
                              t_c1arr=t_c1arr, $
                              t_c1pcb=t_c1pcb, $
-                             numsum=numsum
+                             numsum=numsum, $
+                             sgs_dimv=sgs_dimv, $
+                             sgs_dims=sgs_dims, $
+                             sgs_scint=sgs_scint, $
+                             sgs_sumv=sgs_sumv, $
+                             sgs_sums=sgs_sums, $
+                             sgs_loop=sgs_loop, $
+                             sgs_rav=sgs_rav, $
+                             sgs_ras=sgs_ras, $
+                             sgs_razr=sgs_razr, $
+                             sgs_decv=sgs_decv, $
+                             sgs_decs=sgs_decs, $
+                             sgs_deczr=sgs_deczr
   compile_opt strictarr
 
   if (arg_present(run)) then run = self.run
@@ -331,6 +343,19 @@ pro ucomp_file::getProperty, run=run, $
   if (arg_present(onband_indices)) then onband_indices = *self.onband_indices
 
   if (arg_present(numsum)) then numsum = self.numsum
+
+  if (arg_present(sgs_dimv)) then sgs_dimv = *self.sgs_dimv
+  if (arg_present(sgs_dims)) then sgs_dims = *self.sgs_dims
+  if (arg_present(sgs_scint)) then sgs_scint = *self.sgs_scint
+  if (arg_present(sgs_sumv)) then sgs_sumv = *self.sgs_sumv
+  if (arg_present(sgs_sums)) then sgs_sums = *self.sgs_sums
+  if (arg_present(sgs_loop)) then sgs_loop = *self.sgs_loop
+  if (arg_present(sgs_rav)) then sgs_rav = *self.sgs_rav
+  if (arg_present(sgs_ras)) then sgs_ras = *self.sgs_ras
+  if (arg_present(sgs_razr)) then sgs_razr = *self.sgs_razr
+  if (arg_present(sgs_decv)) then sgs_decv = *self.sgs_decv
+  if (arg_present(sgs_decs)) then sgs_decs = *self.sgs_decs
+  if (arg_present(sgs_deczr)) then sgs_deczr = *self.sgs_deczr
 end
 
 
@@ -461,6 +486,20 @@ pro ucomp_file::_inventory
 
   ; inventory extensions for things that vary by extension
   moving_parts = 0B
+
+  *self.sgs_dimv  = fltarr(self.n_extensions)
+  *self.sgs_dims  = fltarr(self.n_extensions)
+  *self.sgs_scint = fltarr(self.n_extensions)
+  *self.sgs_sumv  = fltarr(self.n_extensions)
+  *self.sgs_sums  = fltarr(self.n_extensions)
+  *self.sgs_loop  = fltarr(self.n_extensions)
+  *self.sgs_rav   = fltarr(self.n_extensions)
+  *self.sgs_ras   = fltarr(self.n_extensions)
+  *self.sgs_razr  = fltarr(self.n_extensions)
+  *self.sgs_decv  = fltarr(self.n_extensions)
+  *self.sgs_decs  = fltarr(self.n_extensions)
+  *self.sgs_deczr = fltarr(self.n_extensions)
+
   for e = 1L, self.n_extensions do begin
     fits_read, fcb, data, extension_header, exten_no=e, /header_only, $
                /no_abort, message=error_msg
@@ -474,6 +513,19 @@ pro ucomp_file::_inventory
 
     (*self.wavelengths)[e - 1] = ucomp_getpar(extension_header, 'WAVELNG', /float, found=found)
     (*self.onband_indices)[e - 1] = ucomp_getpar(extension_header, 'ONBAND', found=found) eq 'tcam'
+
+    (*self.sgs_dimv)[e - 1]  = ucomp_getpar(extension_header, 'SGSDIMV', /float)
+    (*self.sgs_dims)[e - 1]  = ucomp_getpar(extension_header, 'SGSDIMS', /float)
+    (*self.sgs_scint)[e - 1] = ucomp_getpar(extension_header, 'SGSSCINT', /float)
+    (*self.sgs_sumv)[e - 1]  = ucomp_getpar(extension_header, 'SGSSUMV', /float)
+    (*self.sgs_sums)[e - 1]  = ucomp_getpar(extension_header, 'SGSSUMS', /float)
+    (*self.sgs_loop)[e - 1]  = ucomp_getpar(extension_header, 'SGSLOOP', /float)
+    (*self.sgs_rav)[e - 1]   = ucomp_getpar(extension_header, 'SGSRAV', /float)
+    (*self.sgs_ras)[e - 1]   = ucomp_getpar(extension_header, 'SGSRAS', /float)
+    (*self.sgs_razr)[e - 1]  = ucomp_getpar(extension_header, 'SGSRAZR', /float)
+    (*self.sgs_decv)[e - 1]  = ucomp_getpar(extension_header, 'SGSDECV', /float)
+    (*self.sgs_decs)[e - 1]  = ucomp_getpar(extension_header, 'SGSDECS', /float)
+    (*self.sgs_deczr)[e - 1] = ucomp_getpar(extension_header, 'SGSDECZR', /float)
   endfor
   if (moving_parts) then self->setProperty, quality_bitmask=ishft(1, 1)
 
@@ -488,6 +540,9 @@ pro ucomp_file::cleanup
   compile_opt strictarr
 
   ptr_free, self.wavelengths, self.onband_indices
+  ptr_free, self.sgs_dimv, self.sgs_dims, self.sgs_scint, self.sgs_sumv, $
+            self.sgs_sums, self.sgs_loop, self.sgs_rav, self.sgs_ras, $
+            self.sgs_razr, self.sgs_decv, self.sgs_decs, self.sgs_deczr
   obj_destroy, [self.rcam_geometry, self.tcam_geometry]
 end
 
@@ -518,6 +573,19 @@ function ucomp_file::init, raw_filename, run=run
   ; allocate inventory variables for extensions
   self.wavelengths = ptr_new(/allocate_heap)
   self.onband_indices = ptr_new(/allocate_heap)
+
+  self.sgs_dimv  = ptr_new(/allocate_heap)
+  self.sgs_dims  = ptr_new(/allocate_heap)
+  self.sgs_scint = ptr_new(/allocate_heap)
+  self.sgs_sumv  = ptr_new(/allocate_heap)
+  self.sgs_sums  = ptr_new(/allocate_heap)
+  self.sgs_loop  = ptr_new(/allocate_heap)
+  self.sgs_rav   = ptr_new(/allocate_heap)
+  self.sgs_ras   = ptr_new(/allocate_heap)
+  self.sgs_razr  = ptr_new(/allocate_heap)
+  self.sgs_decv  = ptr_new(/allocate_heap)
+  self.sgs_decs  = ptr_new(/allocate_heap)
+  self.sgs_deczr = ptr_new(/allocate_heap)
 
   self->_inventory
 
@@ -608,6 +676,19 @@ pro ucomp_file__define
            onband_indices      : ptr_new(), $
 
            background          : 0.0, $
+
+           sgs_dimv            : ptr_new(), $
+           sgs_dims            : ptr_new(), $
+           sgs_scint           : ptr_new(), $
+           sgs_sumv            : ptr_new(), $
+           sgs_sums            : ptr_new(), $
+           sgs_loop            : ptr_new(), $
+           sgs_rav             : ptr_new(), $
+           sgs_ras             : ptr_new(), $
+           sgs_razr            : ptr_new(), $
+           sgs_decv            : ptr_new(), $
+           sgs_decs            : ptr_new(), $
+           sgs_deczr           : ptr_new(), $
 
            quality_bitmask     : 0UL, $
            gbu                 : 0UL $
