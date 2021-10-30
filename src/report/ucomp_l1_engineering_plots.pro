@@ -17,20 +17,21 @@ pro ucomp_l1_engineering_plots, run=run
     mg_log, 'no engineering/basedir to save plots', name=run.logger_name, /warn
   endif
 
+  engineering_dir = filepath('', $
+                             subdir=ucomp_decompose_date(run.date), $
+                             root=engineering_basedir)
+
   ucomp_wave_region_histogram, filepath(string(run.date, $
                                                format='(%"%s.ucomp.wave_regions.png")'), $
-                                      subdir=ucomp_decompose_date(run.date), $
-                                      root=engineering_basedir), $
+                                      root=engineering_dir), $
                                run=run
   ucomp_data_type_histogram, filepath(string(run.date, $
                                              format='(%"%s.ucomp.data_types.png")'), $
-                                      subdir=ucomp_decompose_date(run.date), $
-                                      root=engineering_basedir), $
+                                      root=engineering_dir), $
                              run=run
-
+  ucomp_sgs_plots, engineering_dir, run=run
   ucomp_log_centering_info, filepath(string(run.date, $
                                             format='(%"%s.ucomp.centering.log")'), $
-                                      subdir=ucomp_decompose_date(run.date), $
-                                     root=engineering_basedir), $
+                                     root=engineering_dir), $
                             run=run
 end
