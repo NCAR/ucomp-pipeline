@@ -32,7 +32,7 @@ end
 ; 14 [14-promote_header]: 41.490608
 
 
-; without /= file.numsum
+; without /= file.numsum (not correct because not normalizing darks/flats)
 
 ; 1 [01-average_data]: 53357.199219 50960.683594
 ; 2 [02-camera_correction]: 53362.082031 50949.320312

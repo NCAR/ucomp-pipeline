@@ -24,4 +24,6 @@
   fixes for hot pixel correction
 0.1.6 [Oct 13, 2021]
   fixes for large temperature values promoted to doubles
-0.1.7
+0.1.7 [Nov 1, 2021]
+  iquv image panels
+  normalizing by NUMSUM during averaging
