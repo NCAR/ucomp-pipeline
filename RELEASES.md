@@ -27,3 +27,4 @@
 0.1.7 [Nov 1, 2021]
   iquv image panels
   normalizing by NUMSUM during averaging
+0.1.8
