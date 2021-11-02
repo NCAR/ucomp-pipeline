@@ -29,3 +29,4 @@
   normalizing by NUMSUM during averaging
 0.1.8 [Nov 2, 2021]
   end-of-day check for data/machine log
+0.1.9
