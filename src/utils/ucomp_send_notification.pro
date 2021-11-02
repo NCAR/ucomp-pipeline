@@ -108,8 +108,6 @@ pro ucomp_send_notification, run=run
     body->add, ['', ''], /extract
   endfor
 
-  ; TODO: add quality histogram image
-
   body->add, string(mg_src_root(/filename), $
                     getenv('USER'), hostname, $
                     format='(%"Sent from %s (%s@%s)")')

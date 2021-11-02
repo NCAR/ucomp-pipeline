@@ -13,10 +13,16 @@
 ;   run : in, required, type=object
 ;     UCoMP run object
 ;-
-function ucomp_validate_machinelog, present=present, run=run
+function ucomp_validate_machinelog, present=present, $
+                                    n_missing_files=n_missing_files, $
+                                    n_extra_files=n_extra_files, $
+                                    n_files=n_files, $
+                                    run=run
   compile_opt strictarr
 
   present = 0B
+  n_missing_files = 0L
+  n_extra_files = 0L
 
   raw_dir = filepath(run.date, root=run->config('raw/basedir'))
   if (~file_test(raw_dir, /directory)) then begin
@@ -52,6 +58,7 @@ function ucomp_validate_machinelog, present=present, run=run
     if (n_matches ne 1L) then begin
       mg_log, 'missing %s in raw files', lines[i], name=run.logger_name, /error
       valid = 0B
+      n_missing_files += 1L
     endif
   endfor
 
@@ -60,6 +67,7 @@ function ucomp_validate_machinelog, present=present, run=run
     if (n_matches ne 1L) then begin
       mg_log, 'missing %s in machine log', files[i], name=run.logger_name, /error
       valid = 0B
+      n_extra_files += 1L
     endif
   endfor
 
