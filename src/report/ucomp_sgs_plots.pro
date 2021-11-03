@@ -168,7 +168,7 @@ pro ucomp_sgs_plots, engineering_dir, run=run
                  xtitle='Hours [UT]', ytitle='SGS RA Error Signal Std Dev [volts]', $
                  xrange=time_range, $
                  /ynozero, ystyle=1, yrange=run->epoch('sgsras_range'), $
-                 background=255, color=0, charsize=1.0, $
+                 background=255, color=0, charsize=n_plots * charsize, $
                  clip_thick=2.0, psym=1
   
   mg_range_plot, hours, sgs_razr, $
