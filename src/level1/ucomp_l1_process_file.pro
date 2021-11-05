@@ -36,8 +36,6 @@ pro ucomp_l1_process_file, file, run=run
                        repair_routine=run->epoch('raw_data_repair_routine')
   !null = run->stop(clock_id)
 
-  data = float(data)
-
   l1_dirname = filepath('', $
                         subdir=[run.date, 'level1'], $
                         root=run->config('processing/basedir'))
