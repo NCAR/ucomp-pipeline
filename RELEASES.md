@@ -29,4 +29,6 @@
   normalizing by NUMSUM during averaging
 0.1.8 [Nov 2, 2021]
   end-of-day check for data/machine log
-0.1.9
+0.1.9 [Nov 5, 2021]
+  fix for crash when T_C{0,1}{ARR,PCB} are not present
+  normalize by NUMSUM by extension
