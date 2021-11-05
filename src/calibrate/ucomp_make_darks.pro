@@ -145,11 +145,11 @@ pro ucomp_make_darks, run=run
       n_tcam += 1L
     endfor
 
-    t_c0arr = ucomp_getpar(primary_header, 'T_C0ARR', comment=t_c0arr_comment)
-    t_c0pcb = ucomp_getpar(primary_header, 'T_C0PCB', comment=t_c0pcb_comment)
-    t_c1arr = ucomp_getpar(primary_header, 'T_C1ARR', comment=t_c1arr_comment)
-    t_c1pcb = ucomp_getpar(primary_header, 'T_C1PCB', comment=t_c1pcb_comment)
-    dark_info->add, {times: ucomp_dateobs2hours(ucomp_getpar(primary_header, 'DATE-OBS')), $
+    t_c0arr = ucomp_getpar(primary_header, 'T_C0ARR', /float)
+    t_c0pcb = ucomp_getpar(primary_header, 'T_C0PCB', /float)
+    t_c1arr = ucomp_getpar(primary_header, 'T_C1ARR', /float)
+    t_c1pcb = ucomp_getpar(primary_header, 'T_C1PCB', /float)
+    dark_info->add, {times: ucomp_dateobs2hours(ucomp_/float'DATE-OBS')), $
                      t_c0arr: float(t_c0arr), $
                      t_c0pcb: float(t_c0pcb), $
                      t_c1arr: float(t_c1arr), $
