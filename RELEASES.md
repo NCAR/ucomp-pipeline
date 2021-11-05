@@ -37,4 +37,4 @@
 0.1.11 [Nov 5, 2021]
   handle undefined temperatures in GBU checks
 0.1.12 [Nov 5, 2021]
-  remove normalizing by NUMSUM from flat/dark creation
+  remove normalization by NUMSUM when creating darks and flats
