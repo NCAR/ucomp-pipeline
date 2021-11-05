@@ -98,8 +98,6 @@ pro ucomp_average_flatfile, primary_header, ext_data, ext_headers, $
 
   n_extensions = n_groups
 
-  ; TODO: the ext_data[0] looks better
-  ;ext_data[0] = reform(averaged_ext_data, averaged_dims)
   ext_data = reform(averaged_ext_data, averaged_dims)
 end
 
