@@ -95,7 +95,4 @@ pro ucomp_l1_average_data, file, primary_header, ext_data, ext_headers, $
   file.onband_indices = averaged_onband
 
   ext_data = reform(averaged_ext_data, averaged_dims)
-
-  mg_log, 'dividing data by NUMSUM (%d)', file.numsum, name=run.logger_name, /debug
-  ext_data /= file.numsum
 end
