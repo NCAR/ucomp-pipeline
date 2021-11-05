@@ -54,9 +54,12 @@ pro ucomp_read_raw_data, filename, $
       fits_read, fcb, data, header, exten_no=e, /no_abort, message=msg
       if (msg ne '') then message, msg
 
+      numsum = ucomp_getpar(header, 'NUMSUM')
+      data = float(data) / numsum
+
       ; need to setup arrays the first time
       if (e eq 1 && arg_present(ext_data)) then begin
-        type = size(data, /type)
+        type = 4   ; always convert to float
         dims = size(data, /dimensions)
 
         ext_data = make_array(dimension=[dims, n_extensions], type=type)
