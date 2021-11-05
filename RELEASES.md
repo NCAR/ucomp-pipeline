@@ -34,3 +34,4 @@
   normalize by NUMSUM by extension
 0.1.10 [Nov 5, 2021]
   fix typo
+0.1.11
