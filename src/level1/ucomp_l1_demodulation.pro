@@ -34,13 +34,6 @@ pro ucomp_l1_demodulation, file, primary_header, data, headers, $
                               file.t_mod, $
                               wave_region_index[0])
 
-  if (datetime eq '20211022.190518') then begin
-    print, wave_region_index, format='(%"wave_region_index: %d")'
-    print, file.t_mod, format='(%"T_MOD: %f")'
-    print, file.wave_region, format='(%"dmatrix for wave region %s")'
-    print, dmatrix
-  endif
-
   if (run->config('options/quick_demodulation')) then begin
     data = ucomp_quick_demodulation(dmatrix, data)
   endif else begin
