@@ -3,13 +3,14 @@
 function ucomp_file_ut::test_basic
   compile_opt strictarr
 
-  date = '20210326'
+  date = '20210810'
   config_filename = filepath('ucomp.production.cfg', $
                              subdir=['..', 'config'], $
                              root=self.root)
   run = ucomp_run(date, 'test', config_filename)
   raw_basedir = run->config('raw/basedir')
-  basenames = ['20210326.172953.92.ucomp.l0.fts', '20210326.173105.54.ucomp.530.l0.fts']
+  basenames = ['20210810.175229.68.ucomp.637.l0.fts', $
+               '20210810.180219.11.ucomp.1074.l0.fts']
 
   for b = 0L, n_elements(basenames) - 1L do begin
     filename = filepath(basenames[b], subdir=date, root=raw_basedir)
@@ -96,13 +97,13 @@ end
 function ucomp_file_ut::test_dark
   compile_opt strictarr
 
-  date = '20210326'
+  date = '20210810'
   config_filename = filepath('ucomp.production.cfg', $
                              subdir=['..', 'config'], $
                              root=self.root)
   run = ucomp_run(date, 'test', config_filename)
   raw_basedir = run->config('raw/basedir')
-  basename = '20210326.172953.92.ucomp.l0.fts'
+  basename = '20210810.170156.99.ucomp.l0.fts'
   filename = filepath(basename, subdir=date, root=raw_basedir)
 
   file = ucomp_file(filename, run=run)
