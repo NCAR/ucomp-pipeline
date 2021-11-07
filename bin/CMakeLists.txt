@@ -19,7 +19,8 @@ install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/ucomp_include.sh
 
 install(PROGRAMS ucomp_create_tables.sh
                  ucomp_env.sh
-                 ucomp_eod_today.sh
+                 ucomp_eod_check_today.sh
+		 ucomp_eod_today.sh
                  ucomp_parse_args.sh
                  ucomp_regression_include.sh
                  ucomp_script.sh
