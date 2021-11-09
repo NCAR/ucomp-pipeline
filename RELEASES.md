@@ -38,3 +38,7 @@
   handle undefined temperatures in GBU checks
 0.1.12 [Nov 5, 2021]
   remove normalization by NUMSUM when creating darks and flats
+0.2.0 [Nov 9, 2021]
+  fix bugs with calculating demodulation matrix
+  fix continuum subtraction step for wave regions that don't subtract continuum
+  adjust display parameters

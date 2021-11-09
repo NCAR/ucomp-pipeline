@@ -34,20 +34,22 @@ pro ucomp_l1_demodulation, file, primary_header, data, headers, $
                               file.t_mod, $
                               wave_region_index[0])
 
-  data = ucomp_quick_demodulation(dmatrix, data)
-
-  ; apply dmatrix to each pixel in each extension in each camera
-  ; dims = size(data, /dimensions)
-  ; n_exts = n_elements(headers)
-  ; for x = 0L, dims[0] - 1L do begin
-  ;   for y = 0L, dims[1] - 1L do begin
-  ;     for c = 0L, dims[3] - 1L do begin
-  ;       for e = 0L, n_exts - 1L do begin
-  ;         data[x, y, *, c, e] = dmatrix ## reform(data[x, y, *, c, e])
-  ;       endfor
-  ;     endfor
-  ;   endfor
-  ; endfor
+  if (run->config('options/quick_demodulation')) then begin
+    data = ucomp_quick_demodulation(dmatrix, data)
+  endif else begin
+    ; apply dmatrix to each pixel in each extension in each camera
+    dims = size(data, /dimensions)
+    n_exts = n_elements(headers)
+    for x = 0L, dims[0] - 1L do begin
+      for y = 0L, dims[1] - 1L do begin
+        for c = 0L, dims[3] - 1L do begin
+          for e = 0L, n_exts - 1L do begin
+            data[x, y, *, c, e] = dmatrix ## reform(data[x, y, *, c, e])
+          endfor
+        endfor
+      endfor
+    endfor
+  endelse
 
   file.demodulated = 1B
 end

@@ -204,21 +204,24 @@ def file_lines(filename):
 
 def list_fits_file_default(f):
     basename = os.path.basename(f)
-    with fits.open(f) as fits_file:
-        primary_header = fits_file[0].header
-        header_1 = fits_file[1].header
-        s = "s" if len(fits_file) != 2 else ""
-        n_exts = f"{len(fits_file) - 1} ext{s}"
-        if "FILTER" in primary_header:
-            wave_region = primary_header["FILTER"]
-            if type(wave_region) == float:
-                wave_region = f"{wave_region:4.0f} nm"
-            elif len(wave_region) > 0:
-                wave_region = f"{wave_region:>4s} nm"
-        else:
-            wave_region = 7 * "-"
-        data_type = f"{header_1['DATATYPE']}" if "DATATYPE" in header_1 else 3 * "-"
-    print(f"{basename:38s}  {n_exts:8s}  {wave_region:7s}  [{data_type}]")
+    try:
+        with fits.open(f) as fits_file:
+            primary_header = fits_file[0].header
+            header_1 = fits_file[1].header
+            s = "s" if len(fits_file) != 2 else ""
+            n_exts = f"{len(fits_file) - 1} ext{s}"
+            if "FILTER" in primary_header:
+                wave_region = primary_header["FILTER"]
+                if type(wave_region) == float:
+                    wave_region = f"{wave_region:4.0f} nm"
+                elif len(wave_region) > 0:
+                    wave_region = f"{wave_region:>4s} nm"
+            else:
+                wave_region = 7 * "-"
+            data_type = f"{header_1['DATATYPE']}" if "DATATYPE" in header_1 else 3 * "-"
+        print(f"{basename:38s}  {n_exts:8s}  {wave_region:7s}  [{data_type}]")
+    except FileNotFoundError:
+        print(f"{basename} not found")
 
 
 def value2str(v, format=None):
@@ -241,16 +244,19 @@ def value2str(v, format=None):
 def list_fits_file(f, columns):
     basename = os.path.basename(f)
     line = f"{basename:38s}"
-    with fits.open(f) as fits_file:
-        primary_header = fits_file[0].header
-        header_1 = fits_file[1].header
-        for c in columns:
-            v = primary_header[c] if c in primary_header else None
-            if v is None:
-                v = header_1[c] if c in header_1 else None
-            v = value2str(v)
-            line += f"  {v}"
-    print(line)
+    try:
+        with fits.open(f) as fits_file:
+            primary_header = fits_file[0].header
+            header_1 = fits_file[1].header
+            for c in columns:
+                v = primary_header[c] if c in primary_header else None
+                if v is None:
+                    v = header_1[c] if c in header_1 else None
+                v = value2str(v)
+                line += f"  {v}"
+        print(line)
+    except FileNotFoundError:
+        print(f"{basename} not found")
 
 
 def list_files(files, columns=None):
@@ -325,10 +331,12 @@ def cat_header(args):
         if not args.validate:
             warnings.simplefilter("ignore", AstropyUserWarning)
         for file in args.files:
-            with fits.open(file) as f:
-                header = f[args.extension].header
-                print(repr(header))
-
+            try:
+                with fits.open(file) as f:
+                    header = f[args.extension].header
+                    print(repr(header))
+            except FileNotFoundError:
+                print(f"{file} not found")
 
 def cat_keywords(args):
     default_keywords = {"sci": ["EXTNAME", "DATATYPE", "DATE-BEG", "WAVELNG", "ONBAND"],
@@ -441,6 +449,7 @@ def filter_file(logfile, level_index, follow):
                                 except IOError:
                                     return
             except KeyboardInterrupt:
+                print()
                 return
     except IOError:
         print("Problem reading %s" % logfile)
