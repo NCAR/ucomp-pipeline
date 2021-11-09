@@ -166,6 +166,27 @@ function ucomp_run_ut::test_lock
 end
 
 
+function ucomp_run_ut::test_all_wave_regions
+  compile_opt strictarr
+
+  date = '20210311'
+  config_basename = 'ucomp.unit.cfg'
+  config_filename = filepath(config_basename, $
+                             subdir=['..', 'config'], $
+                             root=mg_src_root())
+  
+  run = ucomp_run(date, 'test', config_filename)
+
+  assert, array_equal(['530', '637', '656', '691', '706', '789', '1074', '1079', '1083'], $
+                      run.all_wave_regions), $
+          'wrong wave regions'
+
+  obj_destroy, run
+
+  return, 1
+end
+
+
 function ucomp_run_ut::init, _extra=e
   compile_opt strictarr
 
