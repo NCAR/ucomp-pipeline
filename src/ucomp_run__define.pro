@@ -721,14 +721,8 @@ pro ucomp_run::getProperty, date=date, $
   endif
 
   if (arg_present(all_wave_regions)) then begin
-    wregion_hash = orderedhash()
-    foreach dtype_hash, self.files, dtype do begin
-      foreach wregion_list, dtype_hash, wregion do begin
-        if (wregion ne '') then wregion_hash[wregion] = 1B
-      endforeach
-    endforeach
-    all_wave_regions = (wregion_hash->keys())->toArray()
-    obj_destroy, wregion_hash
+    wave_regions = self->line()
+    all_wave_regions = wave_regions[sort(long(wave_regions))]
   endif
 
   if (arg_present(resource_root)) then resource_root = self.resource_root

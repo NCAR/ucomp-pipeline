@@ -23,7 +23,7 @@ function ucomp_get_dmatrix, dmx_coefs, mod_temp, wave_region_index
   compile_opt strictarr
 
   dmx = dmx_coefs[*, *, wave_region_index, 0] $
-          + mod_temp * dmx_coefs[*, *, wave_region_index, 0]
+          + mod_temp * dmx_coefs[*, *, wave_region_index, 1]
 
   return, dmx
 end
