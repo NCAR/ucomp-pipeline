@@ -86,7 +86,7 @@ pro ucomp_l1_continuum_subtraction, file, primary_header, ext_data, ext_headers,
         c0 = [1.0, -1.0]
         c1 = [-1.0, 1.0]
       endelse
-    endif else begin`
+    endif else begin
       mg_log, 'skipping continuum subtraction for %s file', file.wave_region, $
               name=run.logger_name, /debug
       if (onband[m]) then begin
