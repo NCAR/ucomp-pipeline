@@ -44,3 +44,4 @@
   adjust display parameters
 0.2.1 [Nov 10, 2021]
   typo
+0.2.2
