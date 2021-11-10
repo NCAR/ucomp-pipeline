@@ -42,4 +42,5 @@
   fix bugs with calculating demodulation matrix
   fix continuum subtraction step for wave regions that don't subtract continuum
   adjust display parameters
-0.2.1
+0.2.1 [Nov 10, 2021]
+  typo
