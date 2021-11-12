@@ -122,7 +122,9 @@ pro ucomp_eod_check_wrapper, date, config_filename
                      format='(%"UCoMP end-of-day check for %s (%s): %s")')
     mg_send_mail, email, subject, body_text, $
                   from='$(whoami)@ucar.edu'
-  endif
+  endif else begin
+    mg_log, 'machine log and correct data present', name=run.logger_name, /info
+  endelse
 
   ;== cleanup and quit
   done:
