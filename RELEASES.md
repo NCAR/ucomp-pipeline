@@ -44,4 +44,5 @@
   adjust display parameters
 0.2.1 [Nov 10, 2021]
   typo
-0.2.2
+0.2.2 [Nov 11, 2021]
+  handle missing OCCLTR-{X,Y} values
