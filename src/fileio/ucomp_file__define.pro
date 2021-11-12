@@ -429,8 +429,8 @@ pro ucomp_file::_inventory
   self.occultrid = ucomp_getpar(primary_header, 'OCCLTRID', found=found)
 
   if (self.run->epoch('use_occltr_position')) then begin
-    self.occulter_x = ucomp_getpar(primary_header, 'OCCLTR-X')
-    self.occulter_y = ucomp_getpar(primary_header, 'OCCLTR-Y')
+    self.occulter_x = ucomp_getpar(primary_header, 'OCCLTR-X', /float)
+    self.occulter_y = ucomp_getpar(primary_header, 'OCCLTR-Y', /float)
   endif else begin
     self.occulter_x = self.run->epoch('occltr_x')
     self.occulter_y = self.run->epoch('occltr_y')
