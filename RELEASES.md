@@ -46,3 +46,4 @@
   typo
 0.2.2 [Nov 11, 2021]
   handle missing OCCLTR-{X,Y} values
+0.2.3
