@@ -76,6 +76,8 @@ pro ucomp_l1_process_file, file, run=run
   ;                file, primary_header, data, headers, step_number=step_number, run=run
   ucomp_l1_step, 'ucomp_l1_continuum_subtraction', $
                  file, primary_header, data, headers, step_number=step_number, run=run
+  ucomp_l1_step, 'ucomp_l1_debanding', $
+                 file, primary_header, data, headers, step_number=step_number, run=run
   ucomp_l1_step, 'ucomp_l1_combine_cameras', $
                  file, primary_header, data, headers, step_number=step_number, run=run
 

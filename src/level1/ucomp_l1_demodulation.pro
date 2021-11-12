@@ -31,7 +31,7 @@ pro ucomp_l1_demodulation, file, primary_header, data, headers, $
   mg_log, 'wave region index: %d', wave_region_index, name=run.logger_name, /debug
   dmatrix_coefficients = run->get_dmatrix_coefficients(datetime=datetime)
   dmatrix = ucomp_get_dmatrix(dmatrix_coefficients, $
-                              file.t_mod, $
+                              file.tu_mod, $
                               wave_region_index[0])
 
   if (run->config('options/quick_demodulation')) then begin
