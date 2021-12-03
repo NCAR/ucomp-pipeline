@@ -32,7 +32,8 @@ pro ucomp_read_raw_data, filename, $
   compile_opt strictarr
   on_error, 2
 
-  fits_open, filename, fcb
+  fits_open, filename, fcb, /no_abort, message=msg
+  if (msg ne '') then message, msg
 
   n_extensions = fcb.nextend
   if (n_extensions lt 1) then begin
