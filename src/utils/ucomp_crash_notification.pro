@@ -60,9 +60,7 @@ pro ucomp_crash_notification, run=run
     who = 'unknown'
   endelse
 
-  spawn, 'echo $(whoami)', username, error_result, exit_status=status
-  username = status eq 0L ? username[0] : 'ucomp-pipeline'
-  username += '@ucar.edu'
+  username = 'ucomp-pipeline@ucar.edu'
 
   credit = string(mg_src_root(/filename), who, format='(%"Sent from %s (%s)")')
 
