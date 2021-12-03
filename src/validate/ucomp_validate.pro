@@ -39,6 +39,14 @@ pro ucomp_validate, level_name, run=run
 
   n_invalid = 0L
   for f = 0L, n_files - 1L do begin
+    basename = file_basename(files[f])
+    dt = strmid(basename, 0, 15)
+    if (~self->epoch('process', datetime=dt) then begin
+      mg_log, 'skipping %s', basename, name=run.logger_name, /debug
+      n_invalid += 1L
+      continue
+    endif
+
     is_valid = ucomp_validate_file(files[f], spec_filename, $
                                    validate_datatype=validate_datatype, $
                                    error_msg=error_msg)
