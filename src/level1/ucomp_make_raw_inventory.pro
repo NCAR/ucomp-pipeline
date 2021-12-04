@@ -53,6 +53,7 @@ pro ucomp_make_raw_inventory, run=run
 
     if (n_files eq 0L) then continue
 
+    mg_log, 'writing %s...', basename, name=run.logger_name, /info
     openw, lun, filename, /get_lun
     for f = 0L, n_files - 1L do begin
       printf, lun, $

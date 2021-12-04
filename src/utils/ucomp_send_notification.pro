@@ -137,7 +137,7 @@ pro ucomp_send_notification, run=run
   endif
 
   mg_send_mail, email, subject, body_text, $
-                from='$(whoami)@ucar.edu', $
+                from='ucomp-pipeline@ucar.edu', $
                 attachments=attachments
 
   done:
