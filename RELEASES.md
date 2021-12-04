@@ -46,4 +46,6 @@
   typo
 0.2.2 [Nov 11, 2021]
   handle missing OCCLTR-{X,Y} values
-0.2.3
+0.2.3 [Dec 3, 2021]
+  send emails from ucomp-pipeline@ucar.edu
+  epoch for bad level 0 FITS on 20211202
