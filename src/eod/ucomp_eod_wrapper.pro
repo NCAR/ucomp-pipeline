@@ -65,13 +65,16 @@ pro ucomp_eod_wrapper, date, config_filename
           !version.release, !version.os_name, mg_hostname(), $
           name=run.logger_name, /debug
 
+  run->lock, is_available=is_available
+  if (~is_available) then goto, done
+
+  mg_log, 'starting end-of-day processing for %d...', date, name=run.logger_name, /info
+
   machinelog_valid = ucomp_validate_machinelog(present=machinelog_present, run=run)
   if (~machinelog_present) then begin
     mg_log, 'machine log not present, exiting', name=run.logger_name, /info
     goto, done
   endif
-
-  mg_log, 'starting end-of-day processing for %d...', date, name=run.logger_name, /info
 
   ; copy config file to processing dir, creating dir if needed
   process_dir = filepath(date, root=run->config('processing/basedir'))
@@ -81,10 +84,6 @@ pro ucomp_eod_wrapper, date, config_filename
              filepath(string(date, format='(%"%s.ucomp.cfg")'), $
                       root=process_dir), $
              /overwrite
-
-  run->lock, is_available=is_available
-  if (~is_available) then goto, done
-
 
   ;== process
 
