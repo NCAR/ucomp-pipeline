@@ -60,6 +60,13 @@ pro ucomp_run::make_raw_inventory, raw_files, $
 
   mg_log, '%d raw files', n_raw_files, name=logger_name, /info
   for f = 0L, n_raw_files - 1L do begin
+    basename = file_basename(_raw_files[f])
+    dt = strmid(basename, 0, 15)
+    if (~self->epoch('process', datetime=dt)) then begin
+      mg_log, 'skipping %s', dt, name=logger_name, /debug
+      continue
+    endif
+
     file = ucomp_file(_raw_files[f], run=self)
 
     mg_log, '%s.%s [%s] %s', $

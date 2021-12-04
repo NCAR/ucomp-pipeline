@@ -44,6 +44,8 @@ pro ucomp_update_catalog, catalog_filename, $
     openu, lun, catalog_filename, /get_lun, /append
   endelse
 
+  mg_log, 'updating catalog file...', name=logger_name, /info
+
   wave_regions += ' nm'
   dark_indices = where(data_types eq 'dark', n_darks, /null)
   wave_regions[dark_indices] = '--'

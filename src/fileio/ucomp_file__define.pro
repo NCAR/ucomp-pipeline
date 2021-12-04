@@ -387,14 +387,18 @@ pro ucomp_file::_inventory
 
   self.run->setProperty, datetime=strmid(file_basename(self.raw_filename), 0, 15)
 
-  fits_open, self.raw_filename, fcb
+  fits_open, self.raw_filename, fcb, /no_abort, message=msg
+  if (msg ne '') then message, msg
 
   self.n_extensions = fcb.nextend
 
-  fits_read, fcb, primary_data, primary_header, exten_no=0
+  fits_read, fcb, primary_data, primary_header, exten_no=0, /no_abort, message=msg
+  if (msg ne '') then message, msg
 
   ; read a representative, test extension header
-  fits_read, fcb, extension_data, extension_header, exten_no=1, /header_only
+  fits_read, fcb, extension_data, extension_header, exten_no=1, $
+             /header_only, /no_abort, message=msg
+  if (msg ne '') then message, msg
 
   filter = ucomp_getpar(primary_header, 'FILTER', found=found)
   if (n_elements(filter) gt 0L && filter ne '') then begin
