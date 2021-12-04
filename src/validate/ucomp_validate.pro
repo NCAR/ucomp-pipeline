@@ -41,7 +41,7 @@ pro ucomp_validate, level_name, run=run
   for f = 0L, n_files - 1L do begin
     basename = file_basename(files[f])
     dt = strmid(basename, 0, 15)
-    if (~self->epoch('process', datetime=dt) then begin
+    if (~self->epoch('process', datetime=dt)) then begin
       mg_log, 'skipping %s', basename, name=run.logger_name, /debug
       n_invalid += 1L
       continue
