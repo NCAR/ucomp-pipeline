@@ -62,7 +62,7 @@ pro ucomp_run::make_raw_inventory, raw_files, $
   for f = 0L, n_raw_files - 1L do begin
     basename = file_basename(_raw_files[f])
     dt = strmid(basename, 0, 15)
-    if (~self->epoch('process', datetime=dt) then begin
+    if (~self->epoch('process', datetime=dt)) then begin
       mg_log, 'skipping %s', dt, name=logger_name, /debug
       continue
     endif
