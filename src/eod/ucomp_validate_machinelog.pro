@@ -23,6 +23,7 @@ function ucomp_validate_machinelog, present=present, $
   present = 0B
   n_missing_files = 0L
   n_extra_files = 0L
+  n_files = 0L
 
   raw_dir = filepath(run.date, root=run->config('raw/basedir'))
   if (~file_test(raw_dir, /directory)) then begin
