@@ -142,8 +142,11 @@ pro ucomp_file::getProperty, run=run, $
                              ut_time=ut_time, $
                              obsday_hours=obsday_hours, $
                              date_obs=date_obs, $
+                             julian_date=julian_date, $
                              carrington_rotation=carrington_rotation, $
                              p_angle=p_angle, $
+                             b0=b0, $
+                             semidiameter=semidiameter, $
                              wave_region=wave_region, $
                              center_wavelength=center_wavelength, $
                              data_type=data_type, $
@@ -204,6 +207,7 @@ pro ucomp_file::getProperty, run=run, $
                              t_c1arr=t_c1arr, $
                              t_c1pcb=t_c1pcb, $
                              numsum=numsum, $
+                             n_repeats=n_repeats, $
                              sgs_dimv=sgs_dimv, $
                              sgs_dims=sgs_dims, $
                              sgs_scint=sgs_scint, $
@@ -246,12 +250,21 @@ pro ucomp_file::getProperty, run=run, $
   if (arg_present(obsday_hours)) then obsday_hours = self.obsday_hours
 
   if (arg_present(date_obs)) then date_obs = self.date_obs
+  if (arg_present(julian_date)) then begin
+    date_parts = long(ucomp_decompose_date(self.ut_date))
+    time_parts = long(ucomp_decompose_time(self.ut_time))
+    julian_date = julday(date_parts[1], date_parts[2], date_parts[0], $
+                         time_parts[0], time_parts[1], time_parts[2])
+  endif
 
-  if (arg_present(carrington_rotation) || arg_present(p_angle)) then begin
+  if (arg_present(carrington_rotation) $
+        || arg_present(p_angle) $
+        || arg_present(b0) $
+        || arg_present(semidiameter)) then begin
     date_parts = ucomp_decompose_date(self.ut_date)
     hours = ucomp_decompose_time(self.ut_time, /float)
     sun, date_parts[0], date_parts[1], date_parts[2], hours, $
-         carrington=carrington_rotation, pa=p_angle
+         carrington=carrington_rotation, pa=p_angle, lat0=b0, sd=semidiameter
   endif
 
   if (arg_present(obs_id)) then obs_id = self.obs_id
@@ -343,6 +356,7 @@ pro ucomp_file::getProperty, run=run, $
   if (arg_present(onband_indices)) then onband_indices = *self.onband_indices
 
   if (arg_present(numsum)) then numsum = self.numsum
+  if (arg_present(n_repeats)) then n_repeats = self.n_repeats
 
   if (arg_present(sgs_dimv)) then sgs_dimv = *self.sgs_dimv
   if (arg_present(sgs_dims)) then sgs_dims = *self.sgs_dims
@@ -533,6 +547,9 @@ pro ucomp_file::_inventory
   endfor
   if (moving_parts) then self->setProperty, quality_bitmask=ishft(1, 1)
 
+  self->getProperty, n_unique_wavelengths=n_unique_wavelengths
+  self.n_repeats = self.n_extensions / n_unique_wavelengths
+
   fits_close, fcb
 end
 
@@ -617,6 +634,7 @@ pro ucomp_file__define
            date_obs            : '', $
 
            n_extensions        : 0L, $
+           n_repeats           : 0L, $
 
            wave_region         : '', $
            data_type           : '', $
