@@ -49,5 +49,5 @@
 0.2.3 [Dec 3, 2021]
   send emails from ucomp-pipeline@ucar.edu
   epoch for bad level 0 FITS on 20211202
-0.2.4
+0.2.4 [Dec 8, 2021]
   handle no raw directory
