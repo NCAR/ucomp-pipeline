@@ -52,50 +52,16 @@ pro ucomp_l1_promote_header, file, primary_header, data, headers, $
                 comment='number of repeats of wavelength scans'
   ucomp_addpar, primary_header, 'NUM_BEAM', 2, $
                 comment='number of beams'
-  ; TODO: this is in the extensions
-  ; ucomp_addpar, primary_header, 'FLATFILE', flat_file, $
-  ;               comment='name of flat field file'
+
   ucomp_addpar, primary_header, 'JUL_DATE', file.julian_date, $
                 comment='[days] Julian date', $
                 format='F24.16'
 
-  file->getProperty, p_angle=p_angle, b0=b0, semidiameter=semidiameter
-  ucomp_addpar, primary_header, 'SOLAR_P', float(p_angle), $
-                comment='[deg] solar P-Angle'
-  ucomp_addpar, primary_header, 'SOLAR_B', float(b0), $
-                comment='[deg] solar B-Angle'
-  ; TODO: how do I find this? I don't see a SECZ routine in SSW or Steve's code
-  ; ucomp_addpar, primary_header, 'SECANT_Z', float(sec_z), $
-  ;               comment='secant of the Zenith Distance'
-  ucomp_addpar, primary_header, 'SEMIDIAM', float(semidiameter), $
-                comment='[arcsec] solar semi-diameter'
-
-  ; ucomp_addpar, primary_header, 'IMAGESCL', float(image_scale), $
-  ;               comment='[arcsec/pixel] image scale at focal plane'
-  ; ucomp_addpar, primary_header, 'XOFFSET0', float(x_offset_0), $
-  ;               comment='[px] occulter x-Offset 0'
-  ; ucomp_addpar, primary_header, 'YOFFSET0', float(y_offset_0), $
-  ;               comment='[px] occulter y-offest 0'
-  ; ucomp_addpar, primary_header, 'RADIUS0', float(radius_0), $
-  ;               comment='[px] occulter radius 0'
-  ; ucomp_addpar, primary_header, 'FITCHI0', float(chisq_0), $
-  ;               comment='[px] chi-squared for image 0 center fit'
-  ; ucomp_addpar, primary_header, 'XOFFSET1', float(x_offset_1), $
-  ;               comment='[px] occulter x-offset 1'
-  ; ucomp_addpar, primary_header, 'YOFFSET1', float(y_offset_1), $
-  ;               comment='[px] occulter y-offest 1'
-  ; ucomp_addpar, primary_header, 'RADIUS1', float(radius_1), $
-  ;               comment='[px] occulter radius 1'
-  ; ucomp_addpar, primary_header, 'FITCHI1', float(chisq_1), $
-  ;               comment='[px] chi-squared for image 1 center fit'
-  ; ucomp_addpar, primary_header, 'MED_BACK', float(med_back), $
-  ;               comment='[ppm] median of background'
-  ; ucomp_addpar, primary_header, 'RADIUS', float(radius), $
-  ;               comment='[px] occulter average radius'
-  ; ucomp_addpar, primary_header, 'POST_ANG', float(post_ang), $
-  ;               comment='[deg] post angle CCW from north'
-  ; ucomp_addpar, primary_header, 'VCROSSTK', float(ctalk), $
-  ;               comment='Stokes V crosstalk metric'
+  average_radius = ucomp_getpar(primary_header, 'RADIUS')
+  center_wavelength_data = data[*, *, *, file->get_center_wavelength_indices()]
+  file.vcrosstalk_metric = ucomp_vcrosstalk_metric(center_wavelength_data, average_radius)
+  ucomp_addpar, primary_header, 'VCROSSTK', file.vcrosstalk_metric, $
+                comment='Stokes V crosstalk metric'
 
   ; update extension headers
 
