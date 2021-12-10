@@ -76,6 +76,7 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
                              background=background, $
                              quality_bitmask=quality_bitmask, $
                              gbu=gbu, $
+                             vcrosstalk_metric=vcrosstalk_metric, $
                              n_extensions=n_extensions, $
                              wavelengths=wavelengths, $
                              onband_indices=onband_indices
@@ -94,37 +95,28 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
   if (n_elements(quality_bitmask) gt 0L) then begin
     self.quality_bitmask or= quality_bitmask
   endif
-
   if (n_elements(gbu) gt 0L) then self.gbu or= gbu
+  if (n_elements(vcrosstalk_metric) gt 0L) then self.vcrosstalk_metric = vcrosstalk_metric
+
   if (n_elements(n_extensions) gt 0L) then self.n_extensions = n_extensions
   if (n_elements(wavelengths) gt 0L) then *self.wavelengths = wavelengths
   if (n_elements(onband_indices) gt 0L) then *self.onband_indices = onband_indices
 end
 
 
-
 ;+
-; Find the extension to use for finding the center of the occulter for the
-; given camera. This extension will be the first extension where the given
-; camera is *offband* and center wavelength.
+; Find the index/indices of the center wavelength in the file.
 ;
 ; :Returns:
-;   `int`
-;
-; :Params:
-;   camera_index : in, required, type=int
-;     index of camera to find extension for, i.e., 0 for RCAM, 1 for TCAM
+;   `lonarr` or `!null` if the center wavelength is not present
 ;-
-function ucomp_file::get_occulter_finding_extension, camera_index
+function ucomp_file::get_center_wavelength_indices
   compile_opt strictarr
 
   wavelength_tolerance = 0.001
   center_wavelength = self.run->line(self.wave_region, 'center_wavelength')
-  onband_index = camera_index eq 0L
-  ext_indices = where(abs(*self.wavelengths - center_wavelength) lt wavelength_tolerance $
-                        and (*self.onband_indices eq onband_index), n_exts)
-  if (n_exts eq 0L) then return, !null
-  return, ext_indices[0] + 1L
+  ext_indices = where(abs(*self.wavelengths - center_wavelength) lt wavelength_tolerance, /null)
+  return, ext_indices
 end
 
 
@@ -142,8 +134,11 @@ pro ucomp_file::getProperty, run=run, $
                              ut_time=ut_time, $
                              obsday_hours=obsday_hours, $
                              date_obs=date_obs, $
+                             julian_date=julian_date, $
                              carrington_rotation=carrington_rotation, $
                              p_angle=p_angle, $
+                             b0=b0, $
+                             semidiameter=semidiameter, $
                              wave_region=wave_region, $
                              center_wavelength=center_wavelength, $
                              data_type=data_type, $
@@ -164,6 +159,7 @@ pro ucomp_file::getProperty, run=run, $
                              quality_bitmask=quality_bitmask, $
                              gbu=gbu, $
                              ok=ok, $
+                             vcrosstalk_metric=vcrosstalk_metric, $
                              occulter_in=occulter_in, $
                              occultrid=occultrid, $
                              occulter_x=occulter_x, $
@@ -204,6 +200,7 @@ pro ucomp_file::getProperty, run=run, $
                              t_c1arr=t_c1arr, $
                              t_c1pcb=t_c1pcb, $
                              numsum=numsum, $
+                             n_repeats=n_repeats, $
                              sgs_dimv=sgs_dimv, $
                              sgs_dims=sgs_dims, $
                              sgs_scint=sgs_scint, $
@@ -246,12 +243,21 @@ pro ucomp_file::getProperty, run=run, $
   if (arg_present(obsday_hours)) then obsday_hours = self.obsday_hours
 
   if (arg_present(date_obs)) then date_obs = self.date_obs
+  if (arg_present(julian_date)) then begin
+    date_parts = long(ucomp_decompose_date(self.ut_date))
+    time_parts = long(ucomp_decompose_time(self.ut_time))
+    julian_date = julday(date_parts[1], date_parts[2], date_parts[0], $
+                         time_parts[0], time_parts[1], time_parts[2])
+  endif
 
-  if (arg_present(carrington_rotation) || arg_present(p_angle)) then begin
+  if (arg_present(carrington_rotation) $
+        || arg_present(p_angle) $
+        || arg_present(b0) $
+        || arg_present(semidiameter)) then begin
     date_parts = ucomp_decompose_date(self.ut_date)
     hours = ucomp_decompose_time(self.ut_time, /float)
     sun, date_parts[0], date_parts[1], date_parts[2], hours, $
-         carrington=carrington_rotation, pa=p_angle
+         carrington=carrington_rotation, pa=p_angle, lat0=b0, sd=semidiameter
   endif
 
   if (arg_present(obs_id)) then obs_id = self.obs_id
@@ -278,6 +284,7 @@ pro ucomp_file::getProperty, run=run, $
   if (arg_present(quality_bitmask)) then quality_bitmask = self.quality_bitmask
   if (arg_present(gbu)) then gbu = self.gbu
   if (arg_present(ok)) then ok = self.quality_bitmask eq 0
+  if (arg_present(vcrosstalk_metric)) then vcrosstalk_metric = self.vcrosstalk_metric
 
   if (arg_present(focus)) then focus = self.focus
   if (arg_present(o1focus)) then o1focus = self.o1focus
@@ -343,6 +350,7 @@ pro ucomp_file::getProperty, run=run, $
   if (arg_present(onband_indices)) then onband_indices = *self.onband_indices
 
   if (arg_present(numsum)) then numsum = self.numsum
+  if (arg_present(n_repeats)) then n_repeats = self.n_repeats
 
   if (arg_present(sgs_dimv)) then sgs_dimv = *self.sgs_dimv
   if (arg_present(sgs_dims)) then sgs_dims = *self.sgs_dims
@@ -533,6 +541,9 @@ pro ucomp_file::_inventory
   endfor
   if (moving_parts) then self->setProperty, quality_bitmask=ishft(1, 1)
 
+  self->getProperty, n_unique_wavelengths=n_unique_wavelengths
+  self.n_repeats = self.n_extensions / n_unique_wavelengths
+
   fits_close, fcb
 end
 
@@ -617,6 +628,7 @@ pro ucomp_file__define
            date_obs            : '', $
 
            n_extensions        : 0L, $
+           n_repeats           : 0L, $
 
            wave_region         : '', $
            data_type           : '', $
@@ -695,7 +707,8 @@ pro ucomp_file__define
            sgs_deczr           : ptr_new(), $
 
            quality_bitmask     : 0UL, $
-           gbu                 : 0UL $
+           gbu                 : 0UL, $
+           vcrosstalk_metric  : 0.0 $
           }
 end
 
