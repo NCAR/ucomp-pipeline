@@ -25,6 +25,11 @@ pro ucomp_l1_polarimetric_correction, file, primary_header, data, headers, $
 
   status = 0L
 
-  ; TODO: implement
-  ; call `UCOMP_POLARIMETRIC_TRANSFORM`
+  for e = 0L, n_elements(headers) - 1L do begin
+    q = data[*, *, 1, e]
+    u = data[*, *, 2, e]
+    ucomp_polarimetric_transform, q, u, file.p_angle, new_q=new_q, new_u=new_u
+    data[*, *, 1, e] = new_q
+    data[*, *, 2, e] = new_u
+  endfor
 end

@@ -41,14 +41,10 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
   post_angle_tolerance = run->epoch('post_angle_tolerance')
 
   rcam_center_guess = ucomp_occulter_guess(0, date, occulter_x, occulter_y, run=run)
-  rcam_ext = file->get_occulter_finding_extension(0)
-  if (n_elements(rcam_ext) eq 0L) then begin
-    status = 1L
-    goto, done
-  endif
-  rcam_index = rcam_ext - 1L
-  mg_log, 'looking for occulter in RCAM in ext %d', rcam_ext, name=run.logger_name, /debug
-  rcam_im = total(data[*, *, *, 0, rcam_index], 3) / n_pol_states
+  rcam_offband_indices = where(file.onband_indices eq 1, n_rcam_offband)
+  rcam_im = mean(data[*, *, *, 0, rcam_offband_indices], dimension=3, /nan)
+  while (size(rcam_im, /n_dimensions) gt 2L) do rcam_im = mean(rcam_im, dimension=3, /nan)
+  rcam_im = smooth(rcam_im, 2)
   file.rcam_geometry = ucomp_find_geometry(rcam_im, $
                                            xsize=run->epoch('nx'), $
                                            ysize=run->epoch('ny'), $
@@ -57,15 +53,12 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
                                            dradius=dradius, $
                                            post_angle_guess=post_angle_guess, $
                                            post_angle_tolerance=post_angle_tolerance)
+
   tcam_center_guess = ucomp_occulter_guess(1, date, occulter_x, occulter_y, run=run)
-  tcam_ext = file->get_occulter_finding_extension(1)
-  if (n_elements(tcam_ext) eq 0L) then begin
-    status = 1L
-    goto, done
-  endif
-  tcam_index = tcam_ext - 1L
-  mg_log, 'looking for occulter in TCAM in ext %d', tcam_ext, name=run.logger_name, /debug
-  tcam_im = total(data[*, *, *, 1, tcam_index], 3) / n_pol_states
+  tcam_offband_indices = where(file.onband_indices eq 0, n_tcam_offband)
+  tcam_im = mean(data[*, *, *, 1, tcam_offband_indices], dimension=3, /nan)
+  while (size(tcam_im, /n_dimensions) gt 2L) do tcam_im = mean(tcam_im, dimension=3, /nan)
+  tcam_im = smooth(tcam_im, 2)
   file.tcam_geometry = ucomp_find_geometry(tcam_im, $
                                            xsize=run->epoch('nx'), $
                                            ysize=run->epoch('ny'), $
@@ -75,14 +68,48 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
                                            post_angle_guess=post_angle_guess, $
                                            post_angle_tolerance=post_angle_tolerance)
 
-  p_angle = file.p_angle
+  ; ucomp_addpar, primary_header, 'IMAGESCL', float(image_scale), $
+  ;               comment='[arcsec/pixel] image scale at focal plane'
+  ; ucomp_addpar, primary_header, 'XOFFSET0', float(x_offset_0), $
+  ;               comment='[px] occulter x-Offset 0'
+  ; ucomp_addpar, primary_header, 'YOFFSET0', float(y_offset_0), $
+  ;               comment='[px] occulter y-offest 0'
+  ucomp_addpar, primary_header, 'RADIUS0', file.rcam_geometry.occulter_radius, $
+                comment='[px] RCAM occulter radius'
+  ucomp_addpar, primary_header, 'FITCHI0', file.rcam_geometry.occulter_chisq, $
+                comment='[px] chi-squared for RCAM center fit'
+  ; ucomp_addpar, primary_header, 'XOFFSET1', float(x_offset_1), $
+  ;               comment='[px] occulter x-offset 1'
+  ; ucomp_addpar, primary_header, 'YOFFSET1', float(y_offset_1), $
+  ;               comment='[px] occulter y-offest 1'
+  ucomp_addpar, primary_header, 'RADIUS1', file.tcam_geometry.occulter_radius, $
+                comment='[px] TCAM cculter radius'
+  ucomp_addpar, primary_header, 'FITCHI1', file.tcam_geometry.occulter_chisq, $
+                comment='[px] chi-squared for TCAM center fit'
+  ; ucomp_addpar, primary_header, 'MED_BACK', float(med_back), $
+  ;               comment='[ppm] median of background'
+  ; ucomp_addpar, primary_header, 'POST_ANG', file.rcam_geometry.post_ang, $
+  ;               comment='[deg] post angle CCW from north'
+  rcam_radius = file.rcam_geometry.occulter_radius
+  tcam_radius = file.tcam_geometry.occulter_radius
+  average_radius = (rcam_radius + tcam_radius) / 2.0
+  ucomp_addpar, primary_header, 'RADIUS', average_radius, $
+                comment='[px] occulter average radius'
+
+  file->getProperty, p_angle=p_angle, b0=b0, semidiameter=semidiameter
   ucomp_addpar, primary_header, 'SOLAR_P0', p_angle, $
                 comment='[deg] solar P angle applied (image has N up)', $
                 format='(f9.3)'
+  ucomp_addpar, primary_header, 'SOLAR_B', b0, $
+                comment='[deg] solar B-Angle'
+  ; TODO: how do I find this? I don't see a SECZ routine in SSW or Steve's code
+  ; ucomp_addpar, primary_header, 'SECANT_Z', float(sec_z), $
+  ;               comment='secant of the Zenith Distance'
+  ucomp_addpar, primary_header, 'SEMIDIAM', semidiameter, $
+                comment='[arcsec] solar semi-diameter'
+
   file.rcam_geometry.p_angle = p_angle
   file.tcam_geometry.p_angle = p_angle
-
-  ; TODO: put geometry info, p_angle in the primary header after RCAMNUC
 
   done:
 end

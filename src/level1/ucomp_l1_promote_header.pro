@@ -25,6 +25,8 @@ pro ucomp_l1_promote_header, file, primary_header, data, headers, $
 
   status = 0L
 
+  ; update primary header
+
   ucomp_addpar, primary_header, 'LEVEL', 'L1', comment='level 1 calibrated'
 
   current_time = systime(/utc)
@@ -41,4 +43,33 @@ pro ucomp_l1_promote_header, file, primary_header, data, headers, $
                 comment=string(code_date, branch, $
                        format='(%"L1 processing software (%s) [%s]")'), $
                 after='DATE_DP'
+
+  ucomp_addpar, primary_header, 'NUM_WAVE', n_elements(headers), $
+                comment='number of wavelengths'
+  ucomp_addpar, primary_header, 'NUMSUM', file.numsum, $
+                comment='number of camera reads summed together'
+  ucomp_addpar, primary_header, 'NREPEAT', file.n_repeats, $
+                comment='number of repeats of wavelength scans'
+  ucomp_addpar, primary_header, 'NUM_BEAM', 2, $
+                comment='number of beams'
+
+  ucomp_addpar, primary_header, 'JUL_DATE', file.julian_date, $
+                comment='[days] Julian date', $
+                format='F24.16'
+
+  average_radius = ucomp_getpar(primary_header, 'RADIUS')
+  center_wavelength_data = data[*, *, *, file->get_center_wavelength_indices()]
+  file.vcrosstalk_metric = ucomp_vcrosstalk_metric(center_wavelength_data, average_radius)
+  ucomp_addpar, primary_header, 'VCROSSTK', file.vcrosstalk_metric, $
+                comment='Stokes V crosstalk metric'
+
+  ; update extension headers
+
+  remove_keywords = ['COMMENT', 'ONBAND', 'CONTIN', 'V_LCVR1', 'V_LCVR2', $
+                     'V_LCVR3', 'V_LCVR4', 'V_LCVR5', 'NUMSUM']
+  for e = 0L, n_elements(headers) - 1L do begin
+    h = headers[e]
+    for k = 0L, n_elements(remove_keywords) - 1L do sxdelpar, h, remove_keywords[k]
+    headers[e] = h
+  endfor
 end
