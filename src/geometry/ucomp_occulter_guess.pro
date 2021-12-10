@@ -26,7 +26,7 @@ function ucomp_occulter_guess, camera_index, datetime, occulter_x, occulter_y, $
 
   nx = run->epoch('nx', datetime=datetime)
   ny = run->epoch('ny', datetime=datetime)
-; 
+
 ;   camera_name = camera_index eq 0 ? 'rcam' : 'tcam'
 ;   xcoeffs = run->epoch(camera_name + '_camera_xoffset_coeffs', datetime=datetime)
 ;   ycoeffs = run->epoch(camera_name + '_camera_yoffset_coeffs', datetime=datetime)
