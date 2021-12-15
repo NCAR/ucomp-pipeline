@@ -55,3 +55,5 @@
   new two-part method to find occulter
   V crosstalk metric
   adding/removing FITS keywords from level 0 to level 1
+0.2.6 [Dec 15, 2021]
+  fixed logic of when to mark date as processed

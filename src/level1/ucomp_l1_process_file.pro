@@ -63,7 +63,6 @@ pro ucomp_l1_process_file, file, run=run
   ucomp_l1_step, 'ucomp_l1_apply_gain', $
                  file, primary_header, data, headers, step_number=step_number, run=run
 
-
   ucomp_l1_step, 'ucomp_l1_continuum_correction', $
                  file, primary_header, data, headers, step_number=step_number, run=run
 
