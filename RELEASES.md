@@ -57,3 +57,4 @@
   adding/removing FITS keywords from level 0 to level 1
 0.2.6 [Dec 15, 2021]
   fixed logic of when to mark date as processed
+0.2.7
