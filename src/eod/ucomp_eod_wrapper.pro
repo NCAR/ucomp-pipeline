@@ -24,6 +24,8 @@ pro ucomp_eod_wrapper, date, config_filename
   mode = 'eod'
   logger_name = string(mode, format='(%"ucomp/%s")')
 
+  processed = 0B
+
   ; error handler
   catch, error
   if (error ne 0) then begin
@@ -117,6 +119,7 @@ pro ucomp_eod_wrapper, date, config_filename
 
   ucomp_pipeline_step, 'ucomp_send_notification', run=run
 
+  processed = 1B
 
   ;== cleanup and quit
   done:
@@ -126,7 +129,7 @@ pro ucomp_eod_wrapper, date, config_filename
   ; unlock raw directory and mark processed if no crash
   if (obj_valid(run)) then begin
     ; only unlock if this process was responsible for locking it
-    if (is_available) then run->unlock, mark_processed=error eq 0
+    if (is_available) then run->unlock, mark_processed=processed
 
     run->report
     run->report_profiling
