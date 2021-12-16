@@ -28,8 +28,7 @@ pro ucomp_read_raw_data, filename, $
                          ext_data=ext_data, $
                          ext_headers=ext_headers, $
                          n_extensions=n_extensions, $
-                         repair_routine=repair_routine, $
-                         logger_name=logger_name
+                         repair_routine=repair_routine
   compile_opt strictarr
   on_error, 2
 
@@ -38,8 +37,8 @@ pro ucomp_read_raw_data, filename, $
 
   n_extensions = fcb.nextend
   if (n_extensions lt 1) then begin
-    message, string(filename, n_extensions, $
-                    format='(%"%s contains only %d extensions")')
+    message, string(filename, $
+                    format='(%"%s contains no extensions")')
   endif
 
   ; read primary header if requested

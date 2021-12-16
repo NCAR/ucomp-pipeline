@@ -33,8 +33,7 @@ pro ucomp_l1_process_file, file, run=run
                        primary_header=primary_header, $
                        ext_data=data, $
                        ext_headers=headers, $
-                       repair_routine=run->epoch('raw_data_repair_routine'), $
-                       logger_name=run.logger_name
+                       repair_routine=run->epoch('raw_data_repair_routine')
   !null = run->stop(clock_id)
 
   l1_dirname = filepath('', $
