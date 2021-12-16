@@ -26,7 +26,7 @@ function ucomp_quality_sgsloop, file, primary_header, ext_data, ext_headers, $
 
   limit = run->epoch('sgsloop_min')
   for e = 0L, n_elements(ext_headers) - 1L do begin
-    if (ucomp_getpar(ext_headers[e], 'SGSLOOP') lt limit) then return, 0B
+    if (ucomp_getpar(ext_headers[e], 'SGSLOOP') lt limit) then return, 1B
   endfor
 
   return, 0B
