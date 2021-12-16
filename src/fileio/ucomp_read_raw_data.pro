@@ -28,7 +28,8 @@ pro ucomp_read_raw_data, filename, $
                          ext_data=ext_data, $
                          ext_headers=ext_headers, $
                          n_extensions=n_extensions, $
-                         repair_routine=repair_routine
+                         repair_routine=repair_routine, $
+                         logger_name=logger_name
   compile_opt strictarr
   on_error, 2
 

@@ -42,9 +42,15 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
 
   rcam_center_guess = ucomp_occulter_guess(0, date, occulter_x, occulter_y, run=run)
   rcam_offband_indices = where(file.onband_indices eq 1, n_rcam_offband)
+
+  mg_log, /check_math, name=run.logger_name, /warn
   rcam_im = mean(data[*, *, *, 0, rcam_offband_indices], dimension=3, /nan)
   while (size(rcam_im, /n_dimensions) gt 2L) do rcam_im = mean(rcam_im, dimension=3, /nan)
-  rcam_im = smooth(rcam_im, 2)
+  ; if all elements of dimension 3 are NaNs then the above lines will produce
+  ; an floating-point operand error (128)
+  !null = check_math(mask=128)
+
+  rcam_im = smooth(rcam_im, 2, /nan)
   file.rcam_geometry = ucomp_find_geometry(rcam_im, $
                                            xsize=run->epoch('nx'), $
                                            ysize=run->epoch('ny'), $
@@ -56,9 +62,15 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
 
   tcam_center_guess = ucomp_occulter_guess(1, date, occulter_x, occulter_y, run=run)
   tcam_offband_indices = where(file.onband_indices eq 0, n_tcam_offband)
+
+  mg_log, /check_math, name=run.logger_name, /warn
   tcam_im = mean(data[*, *, *, 1, tcam_offband_indices], dimension=3, /nan)
   while (size(tcam_im, /n_dimensions) gt 2L) do tcam_im = mean(tcam_im, dimension=3, /nan)
-  tcam_im = smooth(tcam_im, 2)
+  ; if all elements of dimension 3 are NaNs then the above lines will produce
+  ; an floating-point operand error (128)
+  !null = check_math(mask=128)
+
+  tcam_im = smooth(tcam_im, 2, /nan)
   file.tcam_geometry = ucomp_find_geometry(tcam_im, $
                                            xsize=run->epoch('nx'), $
                                            ysize=run->epoch('ny'), $
