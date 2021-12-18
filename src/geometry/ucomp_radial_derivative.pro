@@ -104,6 +104,12 @@ function ucomp_radial_derivative, data, radius_guess, dr, $
                                   [rad[imax - 1], $
                                    rad[imax], $
                                    rad[imax + 1]])
+    ; if (keyword_set(debug_local)) then begin
+    ;   print, s, 'angle:', angles[s]
+    ;   plot, rad
+    ;   oplot, [cent[s] - radius + dr, cent[s] - radius + dr], [0.0, 2.0 * mx]
+    ;   read, 'enter return:', ans
+    ; endif
   endfor
 
   pt_weights /= total(pt_weights, /preserve_type)
