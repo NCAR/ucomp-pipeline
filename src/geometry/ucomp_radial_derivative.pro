@@ -107,7 +107,8 @@ function ucomp_radial_derivative, data, radius_guess, dr, $
     ; if (keyword_set(debug_local)) then begin
     ;   print, s, 'angle:', angles[s]
     ;   plot, rad
-    ;   oplot, [cent[s] - radius + dr, cent[s] - radius + dr], [0.0, 2.0 * mx]
+    ;   oplot, [radii[s] - radius_guess + dr, radii[s] - radius_guess + dr], $
+    ;          [0.0, 2.0 * point_weights[s]]
     ;   read, 'enter return:', ans
     ; endif
   endfor
