@@ -197,8 +197,7 @@ function ucomp_file_ut::init, _extra=e
                             'ucomp_file::cleanup']
   self->addTestingRoutine, ['ucomp_file::init', $
                             'ucomp_file::_overloadHelp', $
-                            'ucomp_file::_overloadPrint', $
-                            'ucomp_file::get_occulter_finding_extension'], $
+                            'ucomp_file::_overloadPrint'], $
                            /is_function
 
   return, 1

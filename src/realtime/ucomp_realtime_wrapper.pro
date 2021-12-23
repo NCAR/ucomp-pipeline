@@ -101,6 +101,7 @@ pro ucomp_realtime_wrapper, date, config_filename
                            n_points=n_points, $
                            numsum=numsum
 
+  mg_log, 'updating catalog file...', name=run.logger_name, /info
   ucomp_update_catalog, catalog_filename, $
                         new_filenames, $
                         n_extensions, $
@@ -109,8 +110,7 @@ pro ucomp_realtime_wrapper, date, config_filename
                         gain_modes, $
                         wave_regions, $
                         n_points, $
-                        numsum, $
-                        logger_name=logger_name
+                        numsum
 
 
   ;== create quicklook L0.5 files

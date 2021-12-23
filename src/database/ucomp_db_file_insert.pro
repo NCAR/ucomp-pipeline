@@ -46,7 +46,7 @@ pro ucomp_db_file_insert, l1_files, obsday_index, sw_index, db, $
 
     mg_log, 'ingesting %s', file.l1_basename, name=logger_name, /info
 
-    q = 'insert into ucomp_file (file_name, date_obs, obsday_id, carrington_rotation, level_id, producttype_id, filetype_id, quality, wavetype, ntunes, ucomp_sw_id) values (''%s'', ''%s'', %d, %d, %d, %d, %d, %d, %d, %d, %d)'
+    q = 'insert into ucomp_file (file_name, date_obs, obsday_id, carrington_rotation, level_id, producttype_id, filetype_id, quality, wave_region, ntunes, ucomp_sw_id) values (''%s'', ''%s'', %d, %d, %d, %d, %d, %d, %d, %d, %d)'
     db->execute, q, $
                  file.l1_basename, $
                  file.date_obs,$

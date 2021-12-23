@@ -30,8 +30,7 @@ pro ucomp_update_catalog, catalog_filename, $
                           gain_modes, $
                           wave_regions, $
                           n_points, $
-                          numsum, $
-                          logger_name=logger_name
+                          numsum
   compile_opt strictarr
 
   if (n_elements(new_files) eq 0L) then return
@@ -43,8 +42,6 @@ pro ucomp_update_catalog, catalog_filename, $
   endif else begin
     openu, lun, catalog_filename, /get_lun, /append
   endelse
-
-  mg_log, 'updating catalog file...', name=logger_name, /info
 
   wave_regions += ' nm'
   dark_indices = where(data_types eq 'dark', n_darks, /null)

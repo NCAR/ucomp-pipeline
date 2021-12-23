@@ -37,8 +37,8 @@ pro ucomp_read_raw_data, filename, $
 
   n_extensions = fcb.nextend
   if (n_extensions lt 1) then begin
-    message, string(filename, n_extensions, $
-                    format='(%"%s contains only %d extensions")')
+    message, string(filename, $
+                    format='(%"%s contains no extensions")')
   endif
 
   ; read primary header if requested
