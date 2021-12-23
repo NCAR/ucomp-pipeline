@@ -31,6 +31,7 @@ pro ucomp_make_raw_inventory, run=run
   new_filenames = ucomp_new_files(l0_dir, catalog_filename, $
                                   count=n_new_files, error=error)
 
+  mg_log, 'updating catalog file...', name=run.logger_name, /info
   ucomp_update_catalog, catalog_filename, $
                         new_filenames, $
                         n_extensions, $
@@ -39,8 +40,7 @@ pro ucomp_make_raw_inventory, run=run
                         gain_modes, $
                         wave_regions, $
                         n_points, $
-                        numsum, $
-                        logger_name=run.logger_name
+                        numsum
 
   ; write the inventory files
   run->getProperty, all_wave_regions=all_wave_regions

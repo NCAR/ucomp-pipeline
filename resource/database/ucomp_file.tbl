@@ -15,7 +15,7 @@ create table ucomp_file (
 
   quality               tinyint (2),
 
-  wavetype              smallint,
+  wave_region           char (4),
   ntunes                tinyint (2),
 
   ucomp_sw_id           int (10),

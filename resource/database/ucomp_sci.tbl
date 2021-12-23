@@ -7,6 +7,8 @@ create table ucomp_sci (
   date_obs            datetime not null,
   obsday_id           mediumint (5) not null,
 
+  wave_region         char (4),
+
   totali              float (8, 3),
   totalq              float (8, 3),
   totalu              float (8, 3),
