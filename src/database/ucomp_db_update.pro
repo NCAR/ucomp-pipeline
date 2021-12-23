@@ -23,11 +23,6 @@ pro ucomp_db_update, run=run
     goto, done
   endif
 
-  sci_files = run->get_files(data_type='sci', count=n_sci_files)
-  if (n_sci_files eq 0L) then begin
-    mg_log, 'no science files to insert', name=run.logger_name, /info
-  endif
-
   dark_files = run->get_files(data_type='dark', count=n_dark_files)
   if (n_dark_files eq 0L) then begin
     mg_log, 'no dark files to insert', name=run.logger_name, /info
@@ -76,8 +71,18 @@ pro ucomp_db_update, run=run
   ucomp_db_cal_insert, cal_files, obsday_index, sw_index, db, $
                        logger_name=run.logger_name
 
-  ucomp_db_sci_insert, sci_files, obsday_index, db, $
-                       logger_name=run.logger_name
+  wave_regions = run->config('options/wave_regions')
+  for w = 0L, n_elements(wave_regions) - 1L do begin
+    sci_files = run->get_files(data_type='sci', wave_region=wave_regions[w], $
+                               count=n_sci_files)
+    if (n_sci_files eq 0L) then begin
+      mg_log, 'no %s nm science files to insert', wave_regions[w], $
+              name=run.logger_name, /info
+    endif
+
+    ucomp_db_sci_insert, sci_files, obsday_index, sw_index, db, $
+                         logger_name=run.logger_name
+  endfor
 
   done:
   if (obj_valid(db)) then obj_destroy, db
