@@ -60,3 +60,4 @@
 0.2.7 [Dec 22, 2021]
   basic metadata for ucomp_sci database table
   consistency in database table for wave_region
+0.2.8
