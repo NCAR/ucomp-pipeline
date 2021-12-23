@@ -9,6 +9,8 @@ function ucomp_read_raw_data_ut::test_basic
                              root=self.root)
   run = ucomp_run(date, 'test', config_filename)
   raw_basedir = run->config('raw/basedir')
+  obj_destroy, run
+
   basename = '20210326.172953.92.ucomp.l0.fts'
   filename = filepath(basename, subdir=date, root=raw_basedir)
 
@@ -40,8 +42,11 @@ function ucomp_read_raw_data_ut::test_repair
   config_filename = filepath('ucomp.production.cfg', $
                              subdir=['..', 'config'], $
                              root=self.root)
+
   run = ucomp_run(date, 'test', config_filename)
   raw_basedir = run->config('raw/basedir')
+  obj_destroy, run
+
   basename = '20210326.172953.92.ucomp.l0.fts'
   filename = filepath(basename, subdir=date, root=raw_basedir)
 

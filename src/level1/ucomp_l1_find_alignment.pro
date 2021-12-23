@@ -42,9 +42,15 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
 
   rcam_center_guess = ucomp_occulter_guess(0, date, occulter_x, occulter_y, run=run)
   rcam_offband_indices = where(file.onband_indices eq 1, n_rcam_offband)
+
+  mg_log, /check_math, name=run.logger_name, /warn
   rcam_im = mean(data[*, *, *, 0, rcam_offband_indices], dimension=3, /nan)
   while (size(rcam_im, /n_dimensions) gt 2L) do rcam_im = mean(rcam_im, dimension=3, /nan)
-  rcam_im = smooth(rcam_im, 2)
+  ; if all elements of dimension 3 are NaNs then the above lines will produce
+  ; an floating-point operand error (128)
+  !null = check_math(mask=128)
+
+  rcam_im = smooth(rcam_im, 2, /nan)
   file.rcam_geometry = ucomp_find_geometry(rcam_im, $
                                            xsize=run->epoch('nx'), $
                                            ysize=run->epoch('ny'), $
@@ -56,9 +62,15 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
 
   tcam_center_guess = ucomp_occulter_guess(1, date, occulter_x, occulter_y, run=run)
   tcam_offband_indices = where(file.onband_indices eq 0, n_tcam_offband)
+
+  mg_log, /check_math, name=run.logger_name, /warn
   tcam_im = mean(data[*, *, *, 1, tcam_offband_indices], dimension=3, /nan)
   while (size(tcam_im, /n_dimensions) gt 2L) do tcam_im = mean(tcam_im, dimension=3, /nan)
-  tcam_im = smooth(tcam_im, 2)
+  ; if all elements of dimension 3 are NaNs then the above lines will produce
+  ; an floating-point operand error (128)
+  !null = check_math(mask=128)
+
+  tcam_im = smooth(tcam_im, 2, /nan)
   file.tcam_geometry = ucomp_find_geometry(tcam_im, $
                                            xsize=run->epoch('nx'), $
                                            ysize=run->epoch('ny'), $
@@ -96,7 +108,8 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
   ucomp_addpar, primary_header, 'RADIUS', average_radius, $
                 comment='[px] occulter average radius'
 
-  file->getProperty, p_angle=p_angle, b0=b0, semidiameter=semidiameter
+  file->getProperty, p_angle=p_angle, b0=b0, semidiameter=semidiameter, $
+                     distance_au=distance_au
   ucomp_addpar, primary_header, 'SOLAR_P0', p_angle, $
                 comment='[deg] solar P angle applied (image has N up)', $
                 format='(f9.3)'
@@ -107,6 +120,15 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
   ;               comment='secant of the Zenith Distance'
   ucomp_addpar, primary_header, 'SEMIDIAM', semidiameter, $
                 comment='[arcsec] solar semi-diameter'
+  ucomp_addpar, primary_header, 'RSUN_OBS', semidiameter, $
+                comment=string(distance_au * semidiameter, $
+                               format='(%" [arcsec] solar radius using ref radius %0.2f\"")'), $
+                format='(f8.2)'
+  ucomp_addpar, primary_header, 'RSUN', semidiameter, $
+                comment='[arcsec] solar radius (old standard keyword)', $
+                format='(f8.2)'
+  ucomp_addpar, primary_header, 'R_SUN', semidiameter / run->line(file.wave_region, 'plate_scale'), $
+                comment='[pixel] solar radius', format = '(f9.2)'
 
   file.rcam_geometry.p_angle = p_angle
   file.tcam_geometry.p_angle = p_angle
