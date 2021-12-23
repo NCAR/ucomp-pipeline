@@ -108,7 +108,8 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
   ucomp_addpar, primary_header, 'RADIUS', average_radius, $
                 comment='[px] occulter average radius'
 
-  file->getProperty, p_angle=p_angle, b0=b0, semidiameter=semidiameter
+  file->getProperty, p_angle=p_angle, b0=b0, semidiameter=semidiameter, $
+                     distance_au=distance_au
   ucomp_addpar, primary_header, 'SOLAR_P0', p_angle, $
                 comment='[deg] solar P angle applied (image has N up)', $
                 format='(f9.3)'
@@ -119,6 +120,15 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
   ;               comment='secant of the Zenith Distance'
   ucomp_addpar, primary_header, 'SEMIDIAM', semidiameter, $
                 comment='[arcsec] solar semi-diameter'
+  ucomp_addpar, primary_header, 'RSUN_OBS', semidiameter, $
+                comment=string(distance_au * semidiameter, $
+                               format='(%" [arcsec] solar radius using ref radius %0.2f\"")'), $
+                format='(f8.2)'
+  ucomp_addpar, primary_header, 'RSUN', semidiameter, $
+                comment='[arcsec] solar radius (old standard keyword)', $
+                format='(f8.2)'
+  ucomp_addpar, primary_header, 'R_SUN', semidiameter / run->line(file.wave_region, 'plate_scale'), $
+                comment='[pixel] solar radius', format = '(f9.2)'
 
   file.rcam_geometry.p_angle = p_angle
   file.tcam_geometry.p_angle = p_angle
