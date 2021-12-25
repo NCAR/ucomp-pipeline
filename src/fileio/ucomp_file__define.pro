@@ -584,6 +584,7 @@ function ucomp_file::init, raw_filename, run=run
   self.data_type = 'unk'
 
   self.background = !values.f_nan
+  self.vcrosstalk_metric = !values.f_nan
 
   self.rcam_roughness = !values.f_nan
   self.tcam_roughness = !values.f_nan

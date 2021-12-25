@@ -61,3 +61,4 @@
   basic metadata for ucomp_sci database table
   consistency in database table for wave_region
 0.2.8
+  handle odd science files with no center wavelength
