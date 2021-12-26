@@ -108,10 +108,14 @@ end
 
 ; main-level example program
 
-; start_date = '20211101'
-; end_date = '20220101'
-start_date = '20211213'
-end_date = '20211218'
+;  637 nm: plate scale: 2.932629 pixels/arcsec (using 190/271 files)
+;  656 nm: plate scale: 2.905706 pixels/arcsec (using 52/403 files)
+;  789 nm: plate scale: 2.884677 pixels/arcsec (using 164/222 files)
+; 1074 nm: plate scale: 2.815336 pixels/arcsec (using 2052/2655 files)
+; 1079 nm: plate scale: 2.814214 pixels/arcsec (using 176/185 files)
+
+start_date = '20211101'
+end_date = '20220101'
 
 config_basename = 'ucomp.production.cfg'
 config_filename = filepath(config_basename, $
