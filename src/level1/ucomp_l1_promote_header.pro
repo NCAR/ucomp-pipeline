@@ -58,8 +58,11 @@ pro ucomp_l1_promote_header, file, primary_header, data, headers, $
                 format='F24.16'
 
   average_radius = ucomp_getpar(primary_header, 'RADIUS')
-  center_wavelength_data = data[*, *, *, file->get_center_wavelength_indices()]
-  file.vcrosstalk_metric = ucomp_vcrosstalk_metric(center_wavelength_data, average_radius)
+  center_wavelength_indices = file->get_center_wavelength_indices()
+  if (n_elements(center_wavelength_indices) gt 0L) then begin
+    center_wavelength_data = data[*, *, *, center_wavelength_indices]
+    file.vcrosstalk_metric = ucomp_vcrosstalk_metric(center_wavelength_data, average_radius)
+  endif
   ucomp_addpar, primary_header, 'VCROSSTK', file.vcrosstalk_metric, $
                 comment='Stokes V crosstalk metric'
 
