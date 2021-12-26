@@ -62,3 +62,4 @@
   consistency in database table for wave_region
 0.2.8 [Dec 25, 2021]
   handle odd science files with no center wavelength
+0.2.9
