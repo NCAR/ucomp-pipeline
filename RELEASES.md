@@ -60,5 +60,5 @@
 0.2.7 [Dec 22, 2021]
   basic metadata for ucomp_sci database table
   consistency in database table for wave_region
-0.2.8
+0.2.8 [Dec 25, 2021]
   handle odd science files with no center wavelength
