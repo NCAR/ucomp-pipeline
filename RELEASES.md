@@ -63,3 +63,4 @@
 0.2.8 [Dec 25, 2021]
   handle odd science files with no center wavelength
 0.2.9
+  fix sign error in Q
