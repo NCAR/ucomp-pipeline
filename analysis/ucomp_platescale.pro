@@ -27,15 +27,15 @@ end
 pro ucomp_platescale, start_date, end_date, run=run
   compile_opt strictarr
 
-  n_files = hash('530', 0, $
-                 '637', 0, $
-                 '656', 0, $
-                 '691', 0, $
-                 '706', 0, $
-                 '789', 0, $
-                 '1074', 0, $
-                 '1079', 0, $
-                 '1083', 0)
+  n_files = hash('530', hash(), $
+                 '637', hash(), $
+                 '656', hash(), $
+                 '691', hash(), $
+                 '706', hash(), $
+                 '789', hash(), $
+                 '1074', hash(), $
+                 '1079', hash(), $
+                 '1083', hash())
 
   focal_length = hash('530', 2226.62, $
                       '637', 2245.68, $
@@ -56,15 +56,15 @@ pro ucomp_platescale, start_date, end_date, run=run
                    '1074', 0.5, $
                    '1079', 0.5, $
                    '1083', 5.0)
-  good = orderedhash('530', list(), $
-              '637', list(), $
-              '656', list(), $
-              '691', list(), $
-              '706', list(), $
-              '789', list(), $
-              '1074', list(), $
-              '1079', list(), $
-              '1083', list())
+  good = orderedhash('530', hash(), $
+                     '637', hash(), $
+                     '656', hash(), $
+                     '691', hash(), $
+                     '706', hash(), $
+                     '789', hash(), $
+                     '1074', hash(), $
+                     '1079', hash(), $
+                     '1083', hash())
   process_basedir = run->config('processing/basedir')
 
   date = start_date
@@ -79,12 +79,17 @@ pro ucomp_platescale, start_date, end_date, run=run
 
     for f = 0L, n_l1_files - 1L do begin
       info = ucomp_platescale_fileinfo(l1_files[f], run=run)
-      n_files[info.wave_region]++
+      wave_region_hash = good[info.wave_region]
+      if (~wave_region_hash.hasKey(info.occulter_id)) then begin
+        wave_region_hash[info.occulter_id] = list()
+        (n_files[info.wave_region])[info.occulter_id] = 0L
+      endif
+      (n_files[info.wave_region])[info.occulter_id]++
       if (info.fit_chi_0 lt chi_limit[info.wave_region] $
             and info.fit_chi_1 lt chi_limit[info.wave_region]) then begin
         info.platescale = 2062.65 / info.mag / focal_length[info.wave_region]
-        wave_region_list = good[info.wave_region]
-        wave_region_list->add, info
+        occulter_list = wave_region_hash[info.occulter_id]
+        occulter_list->add, info
       endif
     endfor
 
@@ -92,16 +97,23 @@ pro ucomp_platescale, start_date, end_date, run=run
     run.datetime = string(date, format='%s.060000')
   endwhile
 
-  foreach lst, good, wave_region do begin
-    good_wave_region = good[wave_region]
+  foreach good_wave_region, good, wave_region do begin
     if (n_elements(good_wave_region) eq 0L) then continue
-    good_wave_region = good_wave_region->toArray()
-    print, wave_region, mean(good_wave_region.platescale), $
-           n_elements(good_wave_region), n_files[wave_region], $
-           format='%4s nm: plate scale: %0.6f pixels/arcsec (using %d/%d files)'
+    foreach occulter_list, good_wave_region, occulter_id do begin
+      if (n_elements(occulter_list) gt 0L) then begin
+        occulter_array = occulter_list->toArray()
+        print, wave_region, occulter_id, mean(occulter_array.platescale), $
+               n_elements(occulter_list), (n_files[wave_region])[occulter_id], $
+               format='%4s nm [occulter ID: %s]: plate scale: %0.6f pixels/arcsec (using %d/%d files)'
+      endif
+    endforeach
   endforeach
 
-  foreach lst, good do obj_destroy, lst
+  foreach h, good do begin
+    foreach lst, h do obj_destroy, lst
+    obj_destroy, h
+  endforeach
+  foreach h, n_files do obj_destroy, h
   obj_destroy, [focal_length, chi_limit, good, n_files]
 end
 
@@ -114,7 +126,7 @@ end
 ; 1074 nm: plate scale: 2.815336 pixels/arcsec (using 2052/2655 files)
 ; 1079 nm: plate scale: 2.814214 pixels/arcsec (using 176/185 files)
 
-start_date = '20211101'
+start_date = '20210903'
 end_date = '20220101'
 
 config_basename = 'ucomp.production.cfg'
