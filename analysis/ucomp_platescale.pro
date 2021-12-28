@@ -1,6 +1,13 @@
 ; docformat = 'rst'
 
 
+function ucomp_platescale_compute, radius, occulter_radius, focal_length
+  compile_opt strictarr
+
+  return, 2062.65 / (0.01 * radius / occulter_radius) / focal_length
+end
+
+
 function ucomp_platescale_fileinfo, filename, run=run
   compile_opt strictarr
 
@@ -102,9 +109,13 @@ pro ucomp_platescale, start_date, end_date, run=run
     foreach occulter_list, good_wave_region, occulter_id do begin
       if (n_elements(occulter_list) gt 0L) then begin
         occulter_array = occulter_list->toArray()
-        print, wave_region, occulter_id, mean(occulter_array.platescale), $
+        mean_radius = mean(occulter_array.radius)
+        mean_platescale = ucomp_platescale_compute(mean_radius, $
+                                                   occulter_array[0].occulter_radius, $
+                                                   focal_length[wave_region])
+        print, wave_region, occulter_id, mean_radius, mean_platescale, $
                n_elements(occulter_list), (n_files[wave_region])[occulter_id], $
-               format='%4s nm [occulter ID: %s]: plate scale: %0.6f pixels/arcsec (using %d/%d files)'
+               format='%4s nm [occulter ID: %s]: radius: %0.3f, plate scale: %0.6f arcsec/pixels (%d/%d files)'
       endif
     endforeach
   endforeach
@@ -120,14 +131,16 @@ end
 
 ; main-level example program
 
-;  637 nm: plate scale: 2.932629 pixels/arcsec (using 190/271 files)
-;  656 nm: plate scale: 2.905706 pixels/arcsec (using 52/403 files)
-;  789 nm: plate scale: 2.884677 pixels/arcsec (using 164/222 files)
-; 1074 nm: plate scale: 2.815336 pixels/arcsec (using 2052/2655 files)
-; 1079 nm: plate scale: 2.814214 pixels/arcsec (using 176/185 files)
+;  637 nm: plate scale: 2.932629 arcsec/pixels (using 190/271 files)
+;  656 nm: plate scale: 2.905706 arcsec/pixels (using 52/403 files)
+;  789 nm: plate scale: 2.884677 arcsec/pixels (using 164/222 files)
+; 1074 nm: plate scale: 2.815336 arcsec/pixels (using 2052/2655 files)
+; 1079 nm: plate scale: 2.814214 arcsec/pixels (using 176/185 files)
 
-start_date = '20210903'
-end_date = '20220101'
+; start_date = '20210903'
+; end_date = '20220101'
+start_date = '20211001'
+end_date = '20211026'
 
 config_basename = 'ucomp.production.cfg'
 config_filename = filepath(config_basename, $
