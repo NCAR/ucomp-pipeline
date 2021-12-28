@@ -1,6 +1,27 @@
 ; docformat = 'rst'
 
 
+function ucomp_platescale_dateobs2jd, date_obs
+  compile_opt strictarr
+
+  year   = long(strmid(date_obs, 0, 4))
+  month  = long(strmid(date_obs, 5, 2))
+  day    = long(strmid(date_obs, 8, 2))
+  hour   = long(strmid(date_obs, 11, 2))
+  minute = long(strmid(date_obs, 14, 2))
+  second = long(strmid(date_obs, 17, 2))
+  return, julday(month, day, year, hour, minute, second)
+end
+
+
+function ucomp_platescale_date2jd, date
+  compile_opt strictarr
+
+  date_parts = long(ucomp_decompose_date(date))
+  return, julday(date_parts[1], date_parts[2], date_parts[0])
+end
+
+
 function ucomp_platescale_compute, radius, occulter_radius, focal_length
   compile_opt strictarr
 
@@ -13,6 +34,7 @@ function ucomp_platescale_fileinfo, filename, run=run
 
   primary_header = headfits(filename, exten=0)
 
+  date_obs = ucomp_getpar(primary_header, 'DATE-OBS')
   occulter_id = ucomp_getpar(primary_header, 'OCCLTRID')
   wave_region = ucomp_getpar(primary_header, 'FILTER')
   radius = ucomp_getpar(primary_header, 'RADIUS')
@@ -20,7 +42,8 @@ function ucomp_platescale_fileinfo, filename, run=run
   fit_chi_1 = ucomp_getpar(primary_header, 'FITCHI1')
 
   occulter_radius = run->epoch(string(occulter_id, format='OC-%s-mm')) / 2.0
-  return, {occulter_id: occulter_id, $
+  return, {date_obs: date_obs, $
+           occulter_id: occulter_id, $
            occulter_radius: occulter_radius, $
            mag: 0.01 * radius / occulter_radius, $
            platescale: 0.0, $
@@ -104,12 +127,27 @@ pro ucomp_platescale, start_date, end_date, run=run
     run.datetime = string(date, format='%s.060000')
   endwhile
 
+  time_range = [ucomp_platescale_date2jd(start_date), $
+                ucomp_platescale_date2jd(end_date)]
+  radius_range = [340.0, 355.0]
+  charsize = 1.5
+  !p.multi = [0, 1, 6] ;[0, 1, n_elements(n_files)]
+  window, xsize=800, ysize=1200
+
+  !null = label_date(date_format='%Y-%M-%D')
+
   foreach good_wave_region, good, wave_region do begin
     if (n_elements(good_wave_region) eq 0L) then continue
+    plot, findgen(10), /nodata, charsize=charsize, $
+          title=string(wave_region, format='%s nm radii'), $
+          xrange=time_range, yrange=radius_range, ytitle='radius [pixels]', $
+          xtickformat='label_date'
     foreach occulter_list, good_wave_region, occulter_id do begin
       if (n_elements(occulter_list) gt 0L) then begin
         occulter_array = occulter_list->toArray()
         mean_radius = mean(occulter_array.radius)
+        oplot, ucomp_platescale_dateobs2jd(occulter_array.date_obs), $
+               occulter_array.radius, psym=3
         mean_platescale = ucomp_platescale_compute(mean_radius, $
                                                    occulter_array[0].occulter_radius, $
                                                    focal_length[wave_region])
