@@ -130,16 +130,16 @@ pro ucomp_platescale, start_date, end_date, run=run
   time_range = [ucomp_platescale_date2jd(start_date), $
                 ucomp_platescale_date2jd(end_date)]
   radius_range = [340.0, 355.0]
-  charsize = 1.5
-  !p.multi = [0, 1, 6] ;[0, 1, n_elements(n_files)]
-  window, xsize=800, ysize=1200
+  charsize = 1.0
 
-  !null = label_date(date_format='%Y-%M-%D')
+  !null = label_date(date_format='%Y-%N-%D')
 
   foreach good_wave_region, good, wave_region do begin
     if (n_elements(good_wave_region) eq 0L) then continue
+    title = string(wave_region, format='%s nm radii')
+    window, xsize=800, ysize=300, title=title, /free
     plot, findgen(10), /nodata, charsize=charsize, $
-          title=string(wave_region, format='%s nm radii'), $
+          title=title, $
           xrange=time_range, yrange=radius_range, ytitle='radius [pixels]', $
           xtickformat='label_date'
     foreach occulter_list, good_wave_region, occulter_id do begin
