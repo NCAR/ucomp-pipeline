@@ -83,7 +83,7 @@ pro ucomp_platescale, start_date, end_date, run=run
                    '691', 5.0, $
                    '706', 5.0, $
                    '789', 2.0, $
-                   '1074', 0.5, $
+                   '1074', 0.4, $ ; 0.5
                    '1079', 0.5, $
                    '1083', 5.0)
   good = orderedhash('530', hash(), $
@@ -129,7 +129,7 @@ pro ucomp_platescale, start_date, end_date, run=run
 
   time_range = [ucomp_platescale_date2jd(start_date), $
                 ucomp_platescale_date2jd(end_date)]
-  radius_range = [340.0, 355.0]
+  radius_range = [340.0, 360.0]
   charsize = 1.0
 
   !null = label_date(date_format='%Y-%N-%D')
@@ -146,8 +146,8 @@ pro ucomp_platescale, start_date, end_date, run=run
       if (n_elements(occulter_list) gt 0L) then begin
         occulter_array = occulter_list->toArray()
         mean_radius = mean(occulter_array.radius)
-        oplot, ucomp_platescale_dateobs2jd(occulter_array.date_obs), $
-               occulter_array.radius, psym=3
+        oplot, [ucomp_platescale_dateobs2jd(occulter_array.date_obs)], $
+               [occulter_array.radius], psym=3
         mean_platescale = ucomp_platescale_compute(mean_radius, $
                                                    occulter_array[0].occulter_radius, $
                                                    focal_length[wave_region])
@@ -175,10 +175,8 @@ end
 ; 1074 nm: plate scale: 2.815336 arcsec/pixels (using 2052/2655 files)
 ; 1079 nm: plate scale: 2.814214 arcsec/pixels (using 176/185 files)
 
-; start_date = '20210903'
-; end_date = '20220101'
-start_date = '20211001'
-end_date = '20211026'
+start_date = '20210903'
+end_date = '20220101'
 
 config_basename = 'ucomp.production.cfg'
 config_filename = filepath(config_basename, $
