@@ -109,6 +109,20 @@ pro ucomp_write_iquv_gif, file, data, run=run
                          /nan)
 
       tv, scaled_im, p
+      if (p eq 0L) then begin
+        xyouts, 0.075 * dims[0] / reduce_dims_factor, $
+                1.950 * dims[1] / reduce_dims_factor, $
+                /device, $
+                string(run->line(file.wave_region, 'ionization'), $
+                       run->line(file.wave_region, 'center_wavelength'), $
+                       format='(%"%s %0.2f nm")'), $
+                charsize=1.25, color=n_colors - 1L
+        xyouts, 0.075 * dims[0] / reduce_dims_factor, $
+                1.075 * dims[1] / reduce_dims_factor, $
+                /device, $
+                datetime, $
+                charsize=1.25, color=n_colors - 1L
+      endif
       xyouts, (p mod 2 + 0.925) * dims[0] / reduce_dims_factor, $
               ((dims[2] - p - 1L) / 2 + 0.950) * dims[1] / reduce_dims_factor, $
               /device, $
