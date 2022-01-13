@@ -23,10 +23,9 @@ pro ucomp_write_all_iquv_gif, file, data, run=run
                         root=run->config('processing/basedir'))
   ucomp_mkdir, l1_dirname, logger_name=run.logger_name
 
-  iquv_basename_format = string(file_basename(file.l1_basename, '.fts'), $
-                                format='(%"%s.all.iquv.gif")')
-  iquv_filename_format = filepath(iquv_basename_format, $
-                                  root=l1_dirname)
+  iquv_basename = string(file_basename(file.l1_basename, '.fts'), $
+                         format='(%"%s.iquv.all.gif")')
+  iquv_filename = filepath(iquv_basename, root=l1_dirname)
 
   intensity_display_min   = run->line(file.wave_region, 'intensity_display_min')
   intensity_display_max   = run->line(file.wave_region, 'intensity_display_max')
@@ -62,6 +61,10 @@ pro ucomp_write_all_iquv_gif, file, data, run=run
 
   tvlct, r, g, b, /get
 
+  xmargin = 0.05
+  ymargin = 0.03
+  charsize = 0.9
+
   pol_states = ['I', 'Q', 'U', 'V']
   for e = 1L, file.n_extensions do begin
     if (file.n_extensions gt 1L) then begin
@@ -94,7 +97,38 @@ pro ucomp_write_all_iquv_gif, file, data, run=run
                          top=n_colors - 1L, $
                          /nan)
 
-      tv, scaled_im, e - 1L
+      tv, scaled_im, p * file.n_unique_wavelengths + e - 1L
+
+      if (p eq 0L and e eq 1L) then begin
+        xyouts, xmargin * dims[0] / reduce_dims_factor, $
+                (dims[2] - 2.5 * ymargin) * dims[1] / reduce_dims_factor, $
+                /device, $
+                string(run->line(file.wave_region, 'ionization'), $
+                       file.wave_region, $
+                       format='(%"%s!C%s nm")'), $
+                charsize=charsize, color=n_colors - 1L
+        xyouts, xmargin * dims[0] / reduce_dims_factor, $
+                (dims[2] - 1.0 + ymargin) * dims[1] / reduce_dims_factor, $
+                /device, $
+                datetime, $
+                charsize=charsize, color=n_colors - 1L
+      endif
+
+      w = (e - 1L) mod file.n_unique_wavelength
+      if (p eq 0L) then begin
+        xyouts, (w + 0.5) * dims[0] / reduce_dims_factor, $
+                (dims[2] - 3.0 * ymargin) * dims[1] / reduce_dims_factor, $
+                /device, alignment=0.5, $
+                string(file.wavelengths[w], format='(%"%0.2f nm")'), $
+                charsize=charsize, color=n_colors - 1L
+      endif
+      if (w eq file.n_unique_wavelength - 1L) then begin
+        xyouts, (file.n_unique_wavelength - xmargin) * dims[0] / reduce_dims_factor, $
+                (dims[2] - p - 2.5 * ymargin) * dims[1] / reduce_dims_factor, $, $
+                /device, alignment=1.0, $
+                pol_states[p], $
+                charsize=charsize, color=n_colors - 1L
+      endif
     endfor
   endfor
 
