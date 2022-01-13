@@ -62,5 +62,6 @@
   consistency in database table for wave_region
 0.2.8 [Dec 25, 2021]
   handle odd science files with no center wavelength
-0.2.9
+0.2.9 [Jan 12, 2022]
   fix sign error in Q
+  new all wavelengths, all polarization states plot for each science file
