@@ -99,9 +99,12 @@ pro ucomp_l1_process_file, file, run=run
   l1_filename = filepath(file.l1_basename, root=l1_dirname)
 
   ucomp_write_fits_file, l1_filename, primary_header, data, headers
+
   ucomp_write_intensity_gif, file, data, run=run
   ucomp_write_iquv_gif, file, data, run=run
   ucomp_write_all_iquv_gif, file, data, run=run
+
+  ucomp_write_nrgf_gif, file, primary_header, data, run=run
 
   done:
   if (obj_valid(headers)) then obj_destroy, headers
