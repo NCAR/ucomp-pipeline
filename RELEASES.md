@@ -65,3 +65,6 @@
 0.2.9 [Jan 12, 2022]
   fix sign error in Q
   new all wavelengths, all polarization states plot for each science file
+0.2.10 [Jan 21, 2022]
+  experimental NRGF product
+  compress level 0 .tgz files
