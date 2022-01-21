@@ -60,7 +60,7 @@ pro ucomp_l0_archive, run=run
   ; make tarball
   tar_cmd = string(tarfile, $
                    glob, $
-                   format='(%"tar cf %s %s")')
+                   format='(%"tar cfz %s %s")')
   mg_log, 'creating tarfile %s...', file_basename(tarfile), $
           name=run.logger_name, /info
   spawn, tar_cmd, result, error_result, exit_status=status
