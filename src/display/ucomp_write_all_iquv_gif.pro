@@ -77,11 +77,13 @@ pro ucomp_write_all_iquv_gif, file, data, run=run
 
     for p = 0L, dims[2] - 1L do begin
       if (p eq 0) then begin
+        loadct, 0, /silent, ncolors=n_colors
         display_min = intensity_display_min
         display_max = intensity_display_max
         display_gamma = intensity_display_gamma
         display_power = intensity_display_power
       endif else begin
+        loadct, 67, /silent, ncolors=n_colors
         display_min = quv_display_min
         display_max = quv_display_max
         display_gamma = quv_display_gamma
