@@ -69,3 +69,5 @@
   experimental NRGF product
   compress level 0 .tgz files
 0.2.11
+  creates level 0 tarball, not .tgz, for archive
+  new high gain hot pixel data
