@@ -26,7 +26,7 @@ pro ucomp_l0_archive, run=run
     ucomp_mkdir, process_l0_dir, logger_name=run.logger_name
   endif
 
-  tarfile_basename = string(run.date, format='(%"%s.ucomp.l0.tgz")')
+  tarfile_basename = string(run.date, format='(%"%s.ucomp.l0.tar")')
   tarlist_basename = string(run.date, format='(%"%s.ucomp.l0.tarlist")')
   tarfile = filepath(tarfile_basename, root=process_l0_dir)
   tarlist = filepath(tarlist_basename, root=process_l0_dir)
@@ -60,7 +60,7 @@ pro ucomp_l0_archive, run=run
   ; make tarball
   tar_cmd = string(tarfile, $
                    glob, $
-                   format='(%"tar cfz %s %s")')
+                   format='(%"tar cf %s %s")')
   mg_log, 'creating tarfile %s...', file_basename(tarfile), $
           name=run.logger_name, /info
   spawn, tar_cmd, result, error_result, exit_status=status
