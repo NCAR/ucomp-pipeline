@@ -13,7 +13,7 @@
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-pro ucomp_write_intensity_gif, file, data, run=run
+pro ucomp_write_intensity_image, file, data, run=run
   compile_opt strictarr
 
   occulter_annotation=run->config('centering/annotated_gifs')

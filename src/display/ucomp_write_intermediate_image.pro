@@ -20,9 +20,9 @@
 ;   run : in, required, type=object
 ;     UCoMP run object
 ;-
-pro ucomp_write_intermediate_gif, name, $
-                                  file, primary_header, data, headers, $
-                                  step_number=step_number, run=run
+pro ucomp_write_intermediate_image, name, $
+                                    file, primary_header, data, headers, $
+                                    step_number=step_number, run=run
   compile_opt strictarr
   on_error, 2
 
