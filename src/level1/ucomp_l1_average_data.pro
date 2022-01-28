@@ -78,9 +78,11 @@ pro ucomp_l1_average_data, file, primary_header, ext_data, ext_headers, $
 
     ; grab first header of a group to use as header for the entire group
     averaged_header = ext_headers_array[*, gi[0]]
-    ucomp_addpar, averaged_header, 'RAWFILE', '', comment='raw file'
+    ucomp_addpar, averaged_header, 'RAWFILE', $
+                  file_basename(file.raw_filename), $
+                  comment='raw file'
     ucomp_addpar, averaged_header, 'RAWEXTS', extensions[g], after='RAWFILE', $
-                  comment='extensions used from RAWFILE'
+                  comment='extension(s) used from RAWFILE'
     ext_headers->add, averaged_header
   endfor
 

@@ -63,13 +63,12 @@ pro ucomp_l1_apply_gain, file, primary_header, data, headers, run=run, status=st
     endif
 
     im = data[*, *, *, *, e]
-    for p = 0L, n_pol_states - 1L do begin
-      dark_corrected_flat = reform(flat[*, *, p, *]) - flat_dark
-      zero_indices = where(dark_corrected_flat eq 0.0, n_zeros)
-      if (n_zeros gt 0L) then dark_corrected_flat[zero_indices] = 1.0
 
-      p_im = im[*, *, p, *]
-      p_im /= dark_corrected_flat
+    dark_corrected_flat = mean(flat, dimension=3, /nan) - flat_dark
+    zero_indices = where(dark_corrected_flat eq 0.0, n_zeros)
+    if (n_zeros gt 0L) then dark_corrected_flat[zero_indices] = 1.0
+    for p = 0L, n_pol_states - 1L do begin
+      p_im = im[*, *, p, *] / dark_corrected_flat
       if (n_zeros gt 0L) then p_im[zero_indices] = !values.f_nan
       im[*, *, p, *] = p_im
     endfor
@@ -82,13 +81,13 @@ pro ucomp_l1_apply_gain, file, primary_header, data, headers, run=run, status=st
     h = headers[e]
     ucomp_addpar, h, 'FLATFILE', flat_raw_file, $
                   comment='name of raw flat file used'
-    ucomp_addpar, h, 'FLATEXT', raw_flat_extension, $
+    ucomp_addpar, h, 'FLATEXTS', raw_flat_extension, $
                   comment=string(flat_raw_file, $
                                  format='(%"ext(s) in %s used for flat correction")'), $
                   after='FLATFILE'
     ucomp_addpar, h, 'MFLATEXT', master_flat_extension, $
-                  comment=string(run.date, $
-                                 format='(%"ext in %s.ucomp.flat.fts used")'), $
+                  comment=string(run.date, file.wave_region, $
+                                 format='(%"ext in %s.ucomp.flat.%s.fts used")'), $
                   after='FLATEXT'
 
     ucomp_addpar, h, 'BOPAL', opal_radiance, $
