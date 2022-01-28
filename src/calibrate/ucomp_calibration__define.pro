@@ -43,7 +43,7 @@ pro ucomp_calibration::cache_darks, filename, $
     fits_read, fcb, dark_image, dark_header, exten_no=1
 
     dims = size(dark_image, /dimensions)
-    dark_size = product(dims, /preserve_type)
+    dark_size = n_elements(dark_image)
 
     darks = make_array(dimension=[dims, fcb.nextend - 3L], $
                        type=size(dark_image, /type))
@@ -147,8 +147,8 @@ function ucomp_calibration::get_dark, obsday_hours, exptime, gain_mode, $
     index1 = value_locate(valid_times, obsday_hours)
     index2 = index1 + 1L
 
-    dark1 = valid_darks[*, *, *, index1]
-    dark2 = valid_darks[*, *, *, index2]
+    dark1 = valid_darks[*, *, index1]
+    dark2 = valid_darks[*, *, index2]
 
     a1 = (valid_times[index2] - obsday_hours) / (valid_times[index2] - valid_times[index1])
     a2 = (obsday_hours - valid_times[index1]) / (valid_times[index2] - valid_times[index1])
