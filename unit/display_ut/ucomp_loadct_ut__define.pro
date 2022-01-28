@@ -5,9 +5,14 @@ function ucomp_loadct_ut::test_bw
 
   original_device = !d.name
   set_plot, 'Z'
-  ucomp_loadct, 'b/w', rgb=rgb
+  tvlct, original_rgb, /get
+
+  ucomp_loadct, 'intensity'
+  tvlct, rgb, /get
   standard = rebin(reform(bindgen(256), 256, 1), 256, 3)
   assert, array_equal(rgb, standard), 'incorrect color table'
+
+  tvlct, original_rgb
   set_plot, original_device
 
   return, 1
@@ -19,11 +24,17 @@ function ucomp_loadct_ut::test_bw_ncolors
 
   original_device = !d.name
   set_plot, 'Z'
+  tvlct, original_rgb, /get
+
   n_colors = 250
-  ucomp_loadct, 'b/w', n_colors=n_colors, rgb=rgb
+  ucomp_loadct, 'intensity', n_colors=n_colors
+  tvlct, rgb, /get
+
   c = (lindgen(n_colors) * 255) / (n_colors - 1)
   standard = rebin(reform((bindgen(256))[c], n_colors, 1), n_colors, 3)
   assert, array_equal(rgb[0:n_colors - 1, *], standard), 'incorrect color table'
+
+  tvlct, original_rgb
   set_plot, original_device
 
   return, 1
