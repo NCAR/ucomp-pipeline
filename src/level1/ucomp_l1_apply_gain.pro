@@ -64,7 +64,7 @@ pro ucomp_l1_apply_gain, file, primary_header, data, headers, run=run, status=st
 
     im = data[*, *, *, *, e]
 
-    dark_corrected_flat = mean(flat, dimension=3, /nan) - flat_dark
+    dark_corrected_flat = flat - flat_dark
     zero_indices = where(dark_corrected_flat eq 0.0, n_zeros)
     if (n_zeros gt 0L) then dark_corrected_flat[zero_indices] = 1.0
     for p = 0L, n_pol_states - 1L do begin
