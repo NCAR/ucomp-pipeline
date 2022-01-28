@@ -71,3 +71,5 @@
 0.2.11
   creates level 0 tarball, not .tgz, for archive
   new high gain hot pixel data
+  average flats over polarization state
+  save only averaged darks/flats in files
