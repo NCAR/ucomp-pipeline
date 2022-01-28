@@ -92,7 +92,7 @@ pro ucomp_average_flatfile, primary_header, ext_data, ext_headers, $
     averaged_header = ext_headers_array[*, gi[0]]
     ucomp_addpar, averaged_header, 'RAWFILE', '', comment='raw flat file'
     ucomp_addpar, averaged_header, 'RAWEXTS', extensions[g], after='RAWFILE', $
-                  comment='extensions used from RAWFILE'
+                  comment='extension(s) used from RAWFILE'
     ext_headers->add, averaged_header
   endfor
 
