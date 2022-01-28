@@ -58,8 +58,6 @@ pro ucomp_db_update, run=run
   ; insert records for files
   ucomp_db_raw_insert, all_files, obsday_index, db, $
                        logger_name=run.logger_name
-  ucomp_db_file_insert, sci_files, obsday_index, sw_index, db, $
-                        logger_name=run.logger_name
 
   ucomp_db_eng_insert, all_files, obsday_index, sw_index, db, $
                        logger_name=run.logger_name
@@ -80,6 +78,8 @@ pro ucomp_db_update, run=run
               name=run.logger_name, /info
     endif
 
+    ucomp_db_file_insert, sci_files, obsday_index, sw_index, db, $
+                          logger_name=run.logger_name
     ucomp_db_sci_insert, sci_files, obsday_index, sw_index, db, $
                          logger_name=run.logger_name
   endfor
