@@ -45,9 +45,9 @@ pro ucomp_l1_step, routine_name, file, primary_header, data, headers, $
       ucomp_write_intermediate_file, name, $
                                      file, primary_header, data, headers, $
                                      step_number=step_number, run=run
-      ucomp_write_intermediate_gif, name, $
-                                    file, primary_header, data, headers, $
-                                    step_number=step_number, run=run
+      ucomp_write_intermediate_image, name, $
+                                      file, primary_header, data, headers, $
+                                      step_number=step_number, run=run
     endif else begin
       message, string(routine_name, status, format='(%"%s failed with status %d")')
     endelse
