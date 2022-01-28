@@ -68,7 +68,7 @@
 0.2.10 [Jan 21, 2022]
   experimental NRGF product
   compress level 0 .tgz files
-0.2.11
+0.2.11 [Jan 27, 2022]
   creates level 0 tarball, not .tgz, for archive
   new high gain hot pixel data
   average flats over polarization state
