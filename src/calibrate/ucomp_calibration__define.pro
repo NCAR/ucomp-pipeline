@@ -147,8 +147,8 @@ function ucomp_calibration::get_dark, obsday_hours, exptime, gain_mode, $
     index1 = value_locate(valid_times, obsday_hours)
     index2 = index1 + 1L
 
-    dark1 = valid_darks[*, *, index1]
-    dark2 = valid_darks[*, *, index2]
+    dark1 = valid_darks[*, *, *, index1]
+    dark2 = valid_darks[*, *, *, index2]
 
     a1 = (valid_times[index2] - obsday_hours) / (valid_times[index2] - valid_times[index1])
     a2 = (obsday_hours - valid_times[index1]) / (valid_times[index2] - valid_times[index1])
@@ -214,7 +214,8 @@ pro ucomp_calibration::cache_flats, filenames, $
       fits_close, fcb
     endfor
 
-    flats       = fltarr(nx, ny, n_pol_states, n_cameras, n_flats)
+    n_cameras   = 2L
+    flats       = fltarr(nx, ny, n_cameras, n_flats)
     times       = fltarr(n_flats)
     exptimes    = fltarr(n_flats)
     wavelengths = fltarr(n_flats)
@@ -229,7 +230,7 @@ pro ucomp_calibration::cache_flats, filenames, $
 
       for e = 1L, fcb.nextend - 5L do begin   ; there are 5 "index" extensions at end of file
         fits_read, fcb, flat_image, flat_header, exten_no=e
-        flats[0, 0, 0, 0, i + e - 1L] = flat_image
+        flats[0, 0, 0, i + e - 1L] = flat_image
         raw_files[e - 1L] = ucomp_getpar(flat_header, 'RAWFILE')
         extensions[e - 1L] = ucomp_getpar(flat_header, 'RAWEXT')
       endfor
@@ -269,12 +270,12 @@ pro ucomp_calibration::cache_flats, filenames, $
     n_existing_flats = n_elements(*self.flat_times)
     n_appending_flats = n_elements(times)
 
-    new_dims = [dims[0:3], n_existing_flats + n_appending_flats]
+    new_dims = [dims[0:2], n_existing_flats + n_appending_flats]
     mg_log, 'caching flats dimensions [%s]', strjoin(strtrim(new_dims, 2), ', '), $
             name=logger_name, /debug
     new_flats = make_array(new_dims, type=size(flats, /type))
-    new_flats[0, 0, 0, 0, 0] = *self.flats
-    new_flats[0, 0, 0, 0, n_existing_flats] = flats
+    new_flats[0, 0, 0, 0] = *self.flats
+    new_flats[0, 0, 0, n_existing_flats] = flats
 
     *self.flats = new_flats
     *self.flat_times = [*self.flat_times, times]
@@ -380,7 +381,7 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
   raw_extension = (*self.flat_extensions)[nearest_time_index]
   raw_file = (*self.flat_raw_files)[nearest_time_index]
 
-  flat = float(reform((*self.flats)[*, *, *, *, nearest_time_index]))
+  flat = float(reform((*self.flats)[*, *, *, nearest_time_index]))
   flat *= exptime / exptime_found
   return, flat
 end

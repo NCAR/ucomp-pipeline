@@ -138,11 +138,11 @@ pro ucomp_make_darks, run=run
 
       dark_data->add, dark_image
 
-      rcam_means += total(reform(dark_image[*, *, 0], nx * ny, n_pol_states), $
+      rcam_means += total(reform(dark_image[*, *, 0], nx * ny), $
                           1, $
                           /preserve_type)
       n_rcam += 1L
-      tcam_means += total(reform(dark_image[*, *, 1], nx * ny, n_pol_states), $
+      tcam_means += total(reform(dark_image[*, *, 1], nx * ny), $
                           1, $
                           /preserve_type)
       n_tcam += 1L
