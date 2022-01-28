@@ -133,13 +133,16 @@ pro ucomp_make_darks, run=run
                                                  adjacent=adjacent)
         endfor
       endfor
+
+      dark_image = mean(dark_image, dimension=3)
+
       dark_data->add, dark_image
 
-      rcam_means += total(reform(dark_image[*, *, *, 0], nx * ny, n_pol_states), $
+      rcam_means += total(reform(dark_image[*, *, 0], nx * ny, n_pol_states), $
                           1, $
                           /preserve_type)
       n_rcam += 1L
-      tcam_means += total(reform(dark_image[*, *, *, 1], nx * ny, n_pol_states), $
+      tcam_means += total(reform(dark_image[*, *, 1], nx * ny, n_pol_states), $
                           1, $
                           /preserve_type)
       n_tcam += 1L
@@ -211,10 +214,8 @@ pro ucomp_make_darks, run=run
   fits_close, output_fcb
 
   averaged_dark_images = dark_data->toArray(/transpose)
+
   ; TODO: create std dev dark image (where to put it?)
-  if (size(averaged_dark_images, /n_dimensions) ge 5L) then begin
-    averaged_dark_images = mean(averaged_dark_images, dimension=3)
-  endif
 
   ; cache darks
   cal = run.calibration
