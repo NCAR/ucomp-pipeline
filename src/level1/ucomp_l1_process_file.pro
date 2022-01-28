@@ -44,7 +44,7 @@ pro ucomp_l1_process_file, file, run=run
   ucomp_l1_step, 'ucomp_l1_check_quality', $
                  file, primary_header, data, headers, run=run
   if (~file.ok) then begin
-    mg_log, 'skipping for poor quality', name=run.logger_name
+    mg_log, 'skipping for poor quality', name=run.logger_name, /warn
     goto, done
   endif
 
@@ -100,11 +100,11 @@ pro ucomp_l1_process_file, file, run=run
 
   ucomp_write_fits_file, l1_filename, primary_header, data, headers
 
-  ucomp_write_intensity_gif, file, data, run=run
-  ucomp_write_iquv_gif, file, data, run=run
-  ucomp_write_all_iquv_gif, file, data, run=run
+  ucomp_write_intensity_image, file, data, run=run
+  ucomp_write_iquv_image, file, data, run=run
+  ucomp_write_all_iquv_image, file, data, run=run
 
-  ucomp_write_nrgf_gif, file, primary_header, data, run=run
+  ;ucomp_write_nrgf_image, file, primary_header, data, run=run
 
   done:
   if (obj_valid(headers)) then obj_destroy, headers
