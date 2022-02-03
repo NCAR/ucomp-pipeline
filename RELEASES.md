@@ -77,4 +77,5 @@
   config option to not interpolate darks
   fix for V crosstalk metric calculation
   fix for intensity GIF colors
+  new demodulation matrix
 0.2.13
