@@ -26,6 +26,6 @@ function ucomp_vcrosstalk_metric, data, occulter_radius
   max_radius = 1.10 * occulter_radius
   annulus_indices = where(r gt min_radius and r lt max_radius, n_annulus_indices)
 
-  return, total((v[annulus_indices])^2, /preserve_type) * 1.0e6 / n_annulus_indices
+  return, total((v[annulus_indices])^2, /preserve_type) * 1.0e6 / n_annulus_indices^2
 end
 
