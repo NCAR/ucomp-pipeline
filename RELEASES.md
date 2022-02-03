@@ -73,7 +73,7 @@
   new high gain hot pixel data
   average flats over polarization state
   save only averaged darks/flats in files
-0.2.12
+0.2.12 [Feb 3, 2022]
   config option to not interpolate darks
   fix for V crosstalk metric calculation
   fix for intensity GIF colors
