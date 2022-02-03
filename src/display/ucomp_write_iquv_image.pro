@@ -185,7 +185,7 @@ l1_filename = filepath(l1_basename, $
 ucomp_read_l1_data, l1_filename, ext_data=data, n_extensions=n_extensions
 file.n_extensions = n_extensions
 
-ucomp_write_iquv_gif, file, data, run=run
+ucomp_write_iquv_image, file, data, run=run
 
 obj_destroy, file
 obj_destroy, run
