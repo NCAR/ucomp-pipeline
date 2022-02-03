@@ -32,6 +32,6 @@ else
   SUBJECT="UCoMP verification for $START_DATE-$END_DATE (success)"
 fi
 
-mail -s "$SUBJECT" -r $(whoami)@ucar.edu $(cat ~/.ucomp_notifiers) < $LOG_FILENAME
+mail -s "$SUBJECT" -r ucomp-pipeline@ucar.edu $(cat ~/.ucomp_notifiers) < $LOG_FILENAME
 
 rm -f $LOG_FILENAME
