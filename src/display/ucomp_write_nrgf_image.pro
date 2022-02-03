@@ -101,7 +101,7 @@ ucomp_read_l1_data, l1_filename, $
                     n_extensions=n_extensions
 file.n_extensions = n_extensions
 
-ucomp_write_nrgf_gif, file, primary_header, data, run=run
+ucomp_write_nrgf_image, file, primary_header, data, run=run
 
 obj_destroy, file
 obj_destroy, run
