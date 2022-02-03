@@ -51,6 +51,7 @@ pro ucomp_write_intensity_image, file, data, run=run
   device, get_decomposed=original_decomposed
   tvlct, original_rgb, /get
   device, decomposed=0, $
+          set_pixel_depth=8, $
           set_resolution=[nx, ny]
 
   n_colors = 252
@@ -156,7 +157,7 @@ l1_filename = filepath(l1_basename, $
 ucomp_read_l1_data, l1_filename, ext_data=data, n_extensions=n_extensions
 file.n_extensions = n_extensions
 
-ucomp_write_intensity_gif, file, data, run=run
+ucomp_write_intensity_image, file, data, run=run
 
 obj_destroy, file
 obj_destroy, run
