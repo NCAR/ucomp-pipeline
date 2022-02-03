@@ -113,6 +113,8 @@ function ucomp_calibration::get_dark, obsday_hours, exptime, gain_mode, $
                                       coefficients=coefficients
   compile_opt strictarr
 
+  interpolate = self.run->config('calibration/interpolate_darks')
+
   found = 0B
   if (n_elements(*self.darks) eq 0L) then return, !null
 
@@ -144,19 +146,30 @@ function ucomp_calibration::get_dark, obsday_hours, exptime, gain_mode, $
     raw_filenames = strtrim((*self.dark_raw_files)[valid_indices[n_valid_darks - 1]], 2)
     coefficients = 1.0
   endif else begin                                     ; between darks
-    index1 = value_locate(valid_times, obsday_hours)
-    index2 = index1 + 1L
+    if (keyword_set(interpolate)) then begin
+      index1 = value_locate(valid_times, obsday_hours)
+      index2 = index1 + 1L
 
-    dark1 = valid_darks[*, *, *, index1]
-    dark2 = valid_darks[*, *, *, index2]
+      dark1 = valid_darks[*, *, *, index1]
+      dark2 = valid_darks[*, *, *, index2]
 
-    a1 = (valid_times[index2] - obsday_hours) / (valid_times[index2] - valid_times[index1])
-    a2 = (obsday_hours - valid_times[index1]) / (valid_times[index2] - valid_times[index1])
-    interpolated_dark = a1 * dark1 + a2 * dark2
+      a1 = (valid_times[index2] - obsday_hours) / (valid_times[index2] - valid_times[index1])
+      a2 = (obsday_hours - valid_times[index1]) / (valid_times[index2] - valid_times[index1])
+      interpolated_dark = a1 * dark1 + a2 * dark2
 
-    master_extensions = [index1, index2] + 1L
-    raw_filenames = strtrim((*self.dark_raw_files)[[index1, index2]], 2)
-    coefficients = [a1, a2]
+      master_extensions = [index1, index2] + 1L
+      raw_filenames = strtrim((*self.dark_raw_files)[[index1, index2]], 2)
+
+      coefficients = [a1, a2]
+    endif else begin
+      index = value_locate(valid_times, obsday_hours)
+      interpolated_dark = valid_darks[*, *, *, index]
+
+      master_extensions = index + 1L
+      raw_filenames = strtrim((*self.dark_raw_files)[index1], 2)
+
+      coefficients = 1.0
+    endelse
   endelse
 
   return, interpolated_dark
