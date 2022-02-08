@@ -21,7 +21,7 @@ function ucomp_verify_dates_expandrange, start_date, end_date, count=n_days
 end
 
 
-pro ucomp_verify_dates, date_expression, config_filename=config_filename
+pro ucomp_verify_dates, date_expression, config_filename
   compile_opt strictarr
   on_error, 2
 
@@ -49,7 +49,7 @@ pro ucomp_verify_dates, date_expression, config_filename=config_filename
           dates = ucomp_verify_dates_expandrange(endpts[0], endpts[1], $
                                                  count=n_dates)
           for d = 0L, n_dates - 1L do begin
-            ucomp_verify, dates[d], config_filename=config_filename, status=status
+            ucomp_verify, dates[d], config_filename, status=status
             if (status ne 0L) then failed_days->add, dates[d]
 
             mg_log, name='ucomp/verify', logger=logger
