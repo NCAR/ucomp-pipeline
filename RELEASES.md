@@ -82,3 +82,4 @@
   fix for verify sub-command
   fixes for weekly verification
   changing order of hot pixel correction
+0.2.14
