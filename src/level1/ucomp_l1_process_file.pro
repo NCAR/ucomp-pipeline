@@ -18,8 +18,11 @@ pro ucomp_l1_process_file, file, run=run
   if (error ne 0L) then begin
     mg_log, !error_state.msg, name=run.logger_name, /warn
     if (!error_state.name eq 'IDL_M_USER_ERR') then begin
+      ; this is when a routine exited by calling MESSAGE from one of the steps
+      ; of the level 1 processing -- if there was an actual error, it is the
+      ; responsibility of the failing routine to issue a MG_LOG, /ERROR
       mg_log, 'skipping rest of level 1 processing for file', $
-              name=run.logger_name, /error
+              name=run.logger_name, /warn
     endif else begin
       catch, /cancel
       message, /reissue_last
