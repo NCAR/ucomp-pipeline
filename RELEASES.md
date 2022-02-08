@@ -80,3 +80,5 @@
   new demodulation matrix
 0.2.13
   fix for verify sub-command
+  fixes for weekly verification
+  changing order of hot pixel correction
