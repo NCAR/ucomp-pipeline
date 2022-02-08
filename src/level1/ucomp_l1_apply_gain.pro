@@ -33,6 +33,7 @@ pro ucomp_l1_apply_gain, file, primary_header, data, headers, run=run, status=st
 
   dims = size(data, /dimensions)
   n_pol_states = dims[2]
+  n_cameras = dims[3]
 
   cal = run.calibration
 
@@ -67,12 +68,23 @@ pro ucomp_l1_apply_gain, file, primary_header, data, headers, run=run, status=st
     dark_corrected_flat = flat - flat_dark
     zero_indices = where(dark_corrected_flat eq 0.0, n_zeros)
     if (n_zeros gt 0L) then dark_corrected_flat[zero_indices] = 1.0
+
+    ; fix hot pixels before applying the flat
+    for c = 0L, n_cameras - 1L do begin
+      run->get_hot_pixels, gain_mode, c, hot=hot, adjacent=adjacent
+      dark_corrected_flat[*, *, c] = ucomp_fix_hot(dark_corrected_flat[*, *, c], $
+                                                   hot=hot, $
+                                                   adjacent=adjacent)
+    endfor
+
+    ; apply flat
     for p = 0L, n_pol_states - 1L do begin
       p_im = im[*, *, p, *] / dark_corrected_flat
       if (n_zeros gt 0L) then p_im[zero_indices] = !values.f_nan
       im[*, *, p, *] = p_im
     endfor
 
+    ; make flat a gain
     opal_radiance = ucomp_opal_radiance(file.wave_region, run=run)
     im *= opal_radiance
 
