@@ -121,18 +121,18 @@ pro ucomp_make_darks, run=run
       dark_extnames->add, strmid(file_basename(dark_files[d].raw_filename), 9, 6)
 
       dark_image = reform(ext_data[*, *, *, *, e])
-      dims = size(ext_data, /dimensions)
-      n_polstates = dims[2]
-      n_cameras = dims[3]
-      for c = 0L, n_cameras - 1L do begin
-        run->get_hot_pixels, averaged_gain_mode[e], c, $
-                             hot=hot, adjacent=adjacent
-        for p = 0L, n_polstates - 1L do begin
-          dark_image[*, *, p, c] = ucomp_fix_hot(dark_image[*, *, p, c], $
-                                                 hot=hot, $
-                                                 adjacent=adjacent)
-        endfor
-      endfor
+      ; dims = size(ext_data, /dimensions)
+      ; n_polstates = dims[2]
+      ; n_cameras = dims[3]
+      ; for c = 0L, n_cameras - 1L do begin
+      ;   run->get_hot_pixels, averaged_gain_mode[e], c, $
+      ;                        hot=hot, adjacent=adjacent
+      ;   for p = 0L, n_polstates - 1L do begin
+      ;     dark_image[*, *, p, c] = ucomp_fix_hot(dark_image[*, *, p, c], $
+      ;                                            hot=hot, $
+      ;                                            adjacent=adjacent)
+      ;   endfor
+      ; endfor
 
       dark_image = mean(dark_image, dimension=3)
 
