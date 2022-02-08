@@ -146,7 +146,7 @@ config_filename = filepath(cfile, subdir=['..', 'config'], root=mg_src_root())
 
 dates = ['20180708']
 for d = 0L, n_elements(dates) - 1L do begin
-  ucomp_verify, dates[d], config_filename=config_filename
+  ucomp_verify, dates[d], config_filename
 
   if (d lt n_elements(dates) - 1L) then begin
     mg_log, name=logger_name, logger=logger

@@ -23,7 +23,7 @@ BIN_DIR=$(dirname ${SCRIPT_LOC})
 
 LOG_FILENAME=/tmp/ucomp-$RANDOM.log
 
-$BIN_DIR/ucomp_verify_dates.sh "$START_DATE-$END_DATE" &> $LOG_FILENAME
+$BIN_DIR/ucomp_verify_dates.sh production "$START_DATE-$END_DATE" &> $LOG_FILENAME
 N_FAILED_DAYS=$?
 
 if (( N_FAILED_DAYS > 0 )); then

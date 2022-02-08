@@ -50,8 +50,6 @@ pro ucomp_make_flats, wave_region, run=run
   datetime = strmid(file_basename((flat_files[0]).raw_filename), 0, 15)
   nx = run->epoch('nx', datetime=datetime)
   ny = run->epoch('ny', datetime=datetime)
-  n_pol_states = 4L
-  n_cameras = 2L
 
   ; the keywords that need to be moved from the primary header in the raw files
   ; to the extension headers in the master flat file
@@ -127,18 +125,18 @@ pro ucomp_make_flats, wave_region, run=run
     for e = 0L, n_averaged_extensions - 1L do begin
       flat_image = reform(ext_data[*, *, *, *, e])
 
-      dims = size(ext_data, /dimensions)
-      n_polstates = dims[2]
-      n_cameras = dims[3]
-      for c = 0L, n_cameras - 1L do begin
-        run->get_hot_pixels, averaged_gain_mode[e], c, $
-                             hot=hot, adjacent=adjacent
-        for p = 0L, n_polstates - 1L do begin
-          flat_image[*, *, p, c] = ucomp_fix_hot(flat_image[*, *, p, c], $
-                                                 hot=hot, $
-                                                 adjacent=adjacent)
-        endfor
-      endfor
+      ; dims = size(ext_data, /dimensions)
+      ; n_polstates = dims[2]
+      ; n_cameras = dims[3]
+      ; for c = 0L, n_cameras - 1L do begin
+      ;   run->get_hot_pixels, averaged_gain_mode[e], c, $
+      ;                        hot=hot, adjacent=adjacent
+      ;   for p = 0L, n_polstates - 1L do begin
+      ;     flat_image[*, *, p, c] = ucomp_fix_hot(flat_image[*, *, p, c], $
+      ;                                            hot=hot, $
+      ;                                            adjacent=adjacent)
+      ;   endfor
+      ; endfor
 
       flat_image = mean(flat_image, dimension=3)
 
