@@ -80,32 +80,39 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
                                            post_angle_guess=post_angle_guess, $
                                            post_angle_tolerance=post_angle_tolerance)
 
+  ; TODO: I am not sure what this is
   ; ucomp_addpar, primary_header, 'IMAGESCL', float(image_scale), $
   ;               comment='[arcsec/pixel] image scale at focal plane'
-  ; ucomp_addpar, primary_header, 'XOFFSET0', float(x_offset_0), $
-  ;               comment='[px] occulter x-Offset 0'
-  ; ucomp_addpar, primary_header, 'YOFFSET0', float(y_offset_0), $
-  ;               comment='[px] occulter y-offest 0'
-  ucomp_addpar, primary_header, 'RADIUS0', file.rcam_geometry.occulter_radius, $
+
+  rcam = file.rcam_geometry
+  ucomp_addpar, primary_header, 'XOFFSET0', (rcam.xsize - 1.0) / 2.0 - rcam.occulter_center[0], $
+                comment='[px] RCAM occulter x-offset'
+  ucomp_addpar, primary_header, 'YOFFSET0', (rcam.ysize - 1.0) / 2.0 - rcam.occulter_center[1], $
+                comment='[px] RCAM occulter y-offset'
+  ucomp_addpar, primary_header, 'RADIUS0', rcam.occulter_radius, $
                 comment='[px] RCAM occulter radius'
-  ucomp_addpar, primary_header, 'FITCHI0', file.rcam_geometry.occulter_chisq, $
+  ucomp_addpar, primary_header, 'FITCHI0', rcam.occulter_chisq, $
                 comment='[px] chi-squared for RCAM center fit'
-  ; ucomp_addpar, primary_header, 'XOFFSET1', float(x_offset_1), $
-  ;               comment='[px] occulter x-offset 1'
-  ; ucomp_addpar, primary_header, 'YOFFSET1', float(y_offset_1), $
-  ;               comment='[px] occulter y-offest 1'
+
+  tcam = file.tcam_geometry
+  ucomp_addpar, primary_header, 'XOFFSET1', (tcam.xsize - 1.0) / 2.0 - tcam.occulter_center[0], $
+                comment='[px] RCAM occulter x-offset'
+  ucomp_addpar, primary_header, 'YOFFSET1', (tcam.ysize - 1.0) / 2.0 - tcam.occulter_center[1], $
+                comment='[px] TCAM occulter y-offset'
   ucomp_addpar, primary_header, 'RADIUS1', file.tcam_geometry.occulter_radius, $
-                comment='[px] TCAM cculter radius'
+                comment='[px] TCAM occulter radius'
   ucomp_addpar, primary_header, 'FITCHI1', file.tcam_geometry.occulter_chisq, $
                 comment='[px] chi-squared for TCAM center fit'
+
+  ; TODO: add this
   ; ucomp_addpar, primary_header, 'MED_BACK', float(med_back), $
   ;               comment='[ppm] median of background'
-  ; ucomp_addpar, primary_header, 'POST_ANG', file.rcam_geometry.post_ang, $
-  ;               comment='[deg] post angle CCW from north'
-  rcam_radius = file.rcam_geometry.occulter_radius
-  tcam_radius = file.tcam_geometry.occulter_radius
-  average_radius = (rcam_radius + tcam_radius) / 2.0
-  ucomp_addpar, primary_header, 'RADIUS', average_radius, $
+
+  ucomp_addpar, primary_header, 'POST_ANG', $
+                (rcam.post_angle + tcam.post_angle) / 2.0, $
+                comment='[deg] post angle CCW from north'
+  ucomp_addpar, primary_header, 'RADIUS', $
+                (rcam.occulter_radius + tcam.occulter_radius) / 2.0, $
                 comment='[px] occulter average radius'
 
   file->getProperty, p_angle=p_angle, b0=b0, semidiameter=semidiameter, $
@@ -115,19 +122,23 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
                 format='(f9.3)'
   ucomp_addpar, primary_header, 'SOLAR_B', b0, $
                 comment='[deg] solar B-Angle'
+
   ; TODO: how do I find this? I don't see a SECZ routine in SSW or Steve's code
   ; ucomp_addpar, primary_header, 'SECANT_Z', float(sec_z), $
   ;               comment='secant of the Zenith Distance'
+
   ucomp_addpar, primary_header, 'SEMIDIAM', semidiameter, $
                 comment='[arcsec] solar semi-diameter'
   ucomp_addpar, primary_header, 'RSUN_OBS', semidiameter, $
                 comment=string(distance_au * semidiameter, $
                                format='(%" [arcsec] solar radius using ref radius %0.2f\"")'), $
                 format='(f8.2)'
-  ucomp_addpar, primary_header, 'RSUN', semidiameter, $
+  ucomp_addpar, primary_header, 'RSUN', $
+                semidiameter, $
                 comment='[arcsec] solar radius (old standard keyword)', $
                 format='(f8.2)'
-  ucomp_addpar, primary_header, 'R_SUN', semidiameter / run->line(file.wave_region, 'plate_scale'), $
+  ucomp_addpar, primary_header, 'R_SUN', $
+                semidiameter / run->line(file.wave_region, 'plate_scale'), $
                 comment='[pixel] solar radius', format = '(f9.2)'
 
   file.rcam_geometry.p_angle = p_angle
