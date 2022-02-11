@@ -83,3 +83,4 @@
   fixes for weekly verification
   changing order of hot pixel correction
 0.2.14
+  add more geometry FITS keywords like [XY]OFFSET[01], POST_ANG
