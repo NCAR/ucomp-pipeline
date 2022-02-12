@@ -96,7 +96,7 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
 
   tcam = file.tcam_geometry
   ucomp_addpar, primary_header, 'XOFFSET1', (tcam.xsize - 1.0) / 2.0 - tcam.occulter_center[0], $
-                comment='[px] RCAM occulter x-offset'
+                comment='[px] TCAM occulter x-offset'
   ucomp_addpar, primary_header, 'YOFFSET1', (tcam.ysize - 1.0) / 2.0 - tcam.occulter_center[1], $
                 comment='[px] TCAM occulter y-offset'
   ucomp_addpar, primary_header, 'RADIUS1', file.tcam_geometry.occulter_radius, $
