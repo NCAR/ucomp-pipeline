@@ -119,7 +119,10 @@ pro ucomp_realtime_wrapper, date, config_filename
   wave_regions = run->config('options/wave_regions')
   for w = 0L, n_elements(wave_regions) - 1L do begin
     files = run->get_files(data_type='sci', wave_region=wave_regions[w], count=n_files)
-    mg_log, '%d %s nm sci files', n_files, wave_regions[w], name=run.logger_name, /info
+    mg_log, '%d %s nm sci files', n_files, wave_regions[w], $
+            name=run.logger_name, $
+            info=n_files gt 0L, $
+            debug=n_files eq 0L
 
     if (n_files eq 0L) then continue
     n_digits = floor(alog10(n_files)) + 1L
