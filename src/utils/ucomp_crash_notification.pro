@@ -70,7 +70,8 @@ pro ucomp_crash_notification, run=run
 
   mg_send_mail, address, subject, body, from=username, error=error
   if (error ne 0L) then begin
-    mg_log, 'error %d sending crash notification', name=run.logger_name, /error
+    mg_log, 'error %d sending crash notification', error, $
+            name=run.logger_name, /error
   endif
 
   done:
