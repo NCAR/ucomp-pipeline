@@ -97,7 +97,7 @@ pro ucomp_realtime_wrapper, date, config_filename
                              n_extensions=n_extensions, $
                              data_types=data_types, $
                              exptimes=exptimes, $
-                             gain_modes=gain_modess, $
+                             gain_modes=gain_modes, $
                              wave_regions=wave_regions, $
                              n_points=n_points, $
                              numsum=numsum
