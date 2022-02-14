@@ -104,7 +104,7 @@ pro ucomp_l1_apply_gain, file, primary_header, data, headers, run=run, status=st
 
     ucomp_addpar, h, 'BOPAL', opal_radiance, $
                   comment='[B/Bsun] opal radiance', format='(F0.2)'
-    ucomp_addpar, h, 'BUNIT', 'B/Bsun', $
+    ucomp_addpar, h, 'BUNIT', '1.0E-06 B/Bsun', $
                   comment='brightness with respect to solar disk', $
                   after='BOPAL'
     headers[e] = h
