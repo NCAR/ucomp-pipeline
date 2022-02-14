@@ -92,26 +92,27 @@ pro ucomp_realtime_wrapper, date, config_filename
     mg_log, 'found %s', new_filenames[f], name=run.logger_name, /debug
   endfor
 
-  run->make_raw_inventory, new_filenames, $
-                           n_extensions=n_extensions, $
-                           data_types=data_types, $
-                           exptimes=exptimes, $
-                           gain_modes=gain_modess, $
-                           wave_regions=wave_regions, $
-                           n_points=n_points, $
-                           numsum=numsum
+  if (n_new_files gt 0L) then begin
+    run->make_raw_inventory, new_filenames, $
+                             n_extensions=n_extensions, $
+                             data_types=data_types, $
+                             exptimes=exptimes, $
+                             gain_modes=gain_modess, $
+                             wave_regions=wave_regions, $
+                             n_points=n_points, $
+                             numsum=numsum
 
-  mg_log, 'updating catalog file...', name=run.logger_name, /info
-  ucomp_update_catalog, catalog_filename, $
-                        new_filenames, $
-                        n_extensions, $
-                        data_types, $
-                        exptimes, $
-                        gain_modes, $
-                        wave_regions, $
-                        n_points, $
-                        numsum
-
+    mg_log, 'updating catalog file...', name=run.logger_name, /info
+    ucomp_update_catalog, catalog_filename, $
+                          new_filenames, $
+                          n_extensions, $
+                          data_types, $
+                          exptimes, $
+                          gain_modes, $
+                          wave_regions, $
+                          n_points, $
+                          numsum
+  endif
 
   ;== create quicklook L0.5 files
 

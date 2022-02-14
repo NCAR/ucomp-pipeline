@@ -27,6 +27,6 @@ TODAY=$(date +"%Y%m%d")
 
 ${IDL} -quiet -IDL_QUIET 1 -IDL_STARTUP "" \
   -IDL_PATH ${UCOMP_PATH} -IDL_DLM_PATH ${UCOMP_DLM_PATH} \
-  -e "ucomp_eod_wrapper, '${TODAY}', '${CONFIG}'"
+  -e "ucomp_realtime_wrapper, '${TODAY}', '${CONFIG}'"
 
 exit $?
