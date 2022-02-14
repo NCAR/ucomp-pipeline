@@ -16,7 +16,11 @@
 pro ucomp_write_all_iquv_image, file, data, run=run
   compile_opt strictarr
 
-  reduce_dims_factor = 4L
+  case 1 of
+    file.n_unique_wavelengths le 5: reduce_dims_factor = 4L
+    file.n_unique_wavelengths gt 5: reduce_dims_factor = 8L
+    file.n_unique_wavelengths gt 11: reduce_dims_factor = 16L
+  endcase
 
   l1_dirname = filepath('', $
                         subdir=[run.date, 'level1'], $

@@ -86,3 +86,5 @@
   add more geometry FITS keywords like [XY]OFFSET[01], POST_ANG
   prepping for realtime processing launch
 0.2.15
+  handle display of all wavelengths in files with many wavelengths
+  fixes for realtime processing launch
