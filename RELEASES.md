@@ -82,5 +82,6 @@
   fix for verify sub-command
   fixes for weekly verification
   changing order of hot pixel correction
-0.2.14
+0.2.14 [Feb 14, 2022]
   add more geometry FITS keywords like [XY]OFFSET[01], POST_ANG
+  prepping for realtime processing launch
