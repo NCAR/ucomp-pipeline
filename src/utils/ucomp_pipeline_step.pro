@@ -37,6 +37,7 @@ pro ucomp_pipeline_step, routine_name, wave_region, skip=skip, run=run, _ref_ext
     endelse
 
     time = run->stop(clock_id)
+    run->log_memory, routine_name
 
     mg_log, /check_math, from=routine_name, name=run.logger_name, /warn
 
