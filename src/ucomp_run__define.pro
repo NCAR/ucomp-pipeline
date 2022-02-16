@@ -72,7 +72,7 @@ pro ucomp_run::make_raw_inventory, raw_files, $
     mg_log, '%s.%s [%s] %s', $
             file.ut_date, $
             file.ut_time, $
-            file.wave_region eq '' ? '---' : string(file.wave_region, format='(%"%s nm")'), $
+            file.wave_region eq '' ? '-------' : string(file.wave_region, format='(%"%4s nm")'), $
             file.data_type, $
             name=logger_name, /debug
 
@@ -394,6 +394,22 @@ pro ucomp_run::report
   endforeach
 
   free_lun, lun
+end
+
+
+;+
+; Report memory usage.
+;
+; :Params:
+;   routine_name : in, required, type=string
+;     name of routine to log memory usage form
+;-
+pro ucomp_run::log_memory, routine_name
+  compile_opt strictarr
+
+  mg_log, strjoin(strtrim(memory(/l64), 2), ', '), $
+          name=self.memory_logger_name, $
+          from=routine_name
 end
 
 
@@ -821,6 +837,26 @@ pro ucomp_run::_setup_logger, reprocess=reprocess
                        max_width=max_width, $
                        level=mg_log_name2level(level_name), $
                        filename=filename
+
+  ; configure memory logger
+  self.memory_logger_name = 'ucomp/memory'
+  memory_basename = string(self.date, format='(%"%s.ucomp.memory.log")')
+  eng_dir = filepath('', $
+                     subdir=ucomp_decompose_date(self.date), $
+                     root=self->config('engineering/basedir'))
+  if (~file_test(eng_dir, /directory)) then begin
+    ucomp_mkdir, eng_dir, logger_name=logger_name
+  endif
+  memory_filename = filepath(memory_basename, root=eng_dir)
+
+  if (keyword_set(reprocess)) then begin
+    file_delete, memory_filename, /allow_nonexistent
+  endif
+
+  mg_log, name=self.memory_logger_name, logger=memory_logger
+  memory_logger->setProperty, format='%(time)s, %(routine)s, %(message)s', $
+                              time_format=time_fmt, $
+                              filename=memory_filename
 end
 
 
@@ -988,5 +1024,6 @@ pro ucomp_run__define
 
            ; performance
            calls                   : obj_new(), $
-           times                   : obj_new()}
+           times                   : obj_new(), $
+           memory_logger_name      : ''}
 end
