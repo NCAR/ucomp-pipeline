@@ -30,7 +30,7 @@ pro ucomp_l1_process_file, file, run=run
     goto, done
   endif
 
-  run.datetime = string(file.hst_date, file.hst_time, format='(%"%s.%s")')
+  run.datetime = strmid(file_basename(file.raw_filename), 0, 15)
   clock_id = run->start('ucomp_read_raw_data')
   ucomp_read_raw_data, file.raw_filename, $
                        primary_header=primary_header, $
