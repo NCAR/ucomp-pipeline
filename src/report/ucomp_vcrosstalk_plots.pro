@@ -39,9 +39,9 @@ pro ucomp_vcrosstalk_plots_wave_region, date, $
   mg_range_plot, times, vcrosstalk, $
                  title=string(wave_region, date, $
                               format='(%"V crosstalk for %s nm on %s")'), $
-                 psym=6, symsize=0.5, color=0, background=255, $
+                 psym=6, symsize=0.25, color=0, background=255, $
                  xstyle=1, xrange=[6.0, 18.0], xtitle='Hours into HST observing day', $
-                 ystyle=1, yrange=[0.0, 4.0], ytitle='V crosstalk [1.0E-6 B/Bsun]'
+                 ystyle=1, yrange=[0.0, 4.0], ytitle='V crosstalk'
 
   write_gif, filename, tvrd(), r, g, b
 
