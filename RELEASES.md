@@ -89,3 +89,5 @@
   handle display of all wavelengths in files with many wavelengths
   fixes for realtime processing launch
   fix for BUNIT value, actually 1.0E-6 B/Bsun units
+  V crosstalk plot by wave region
+  log memory usage
