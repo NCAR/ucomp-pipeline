@@ -59,6 +59,7 @@ pro ucomp_run::make_raw_inventory, raw_files, $
   numsum       = n_raw_files eq 0L ? !null : lonarr(n_raw_files)
 
   mg_log, '%d raw files', n_raw_files, name=logger_name, /info
+  n_digits = floor(alog10(n_raw_files)) + 1L
   for f = 0L, n_raw_files - 1L do begin
     basename = file_basename(_raw_files[f])
     dt = strmid(basename, 0, 15)
@@ -69,7 +70,9 @@ pro ucomp_run::make_raw_inventory, raw_files, $
 
     file = ucomp_file(_raw_files[f], run=self)
 
-    mg_log, '%s.%s [%s] %s', $
+    mg_log, '%s/%d: %s.%s [%s] %s', $
+            string(f + 1L, format=mg_format('%*d', n_digits)), $
+            n_raw_files, $
             file.ut_date, $
             file.ut_time, $
             file.wave_region eq '' ? '-------' : string(file.wave_region, format='(%"%4s nm")'), $
