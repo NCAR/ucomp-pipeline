@@ -133,6 +133,7 @@ pro ucomp_eod_wrapper, date, config_filename
 
     run->report
     run->report_profiling
+    ucomp_memory_plot, run=run
   endif
 
   t1 = systime(/seconds)
