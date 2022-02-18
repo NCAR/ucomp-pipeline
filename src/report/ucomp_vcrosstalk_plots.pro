@@ -22,7 +22,13 @@ pro ucomp_vcrosstalk_plots_wave_region, date, $
                                         vcrosstalk
   compile_opt strictarr
 
-  basename = string(date, wave_region, format='(%"%s.ucomp.%s.vcrosstalk.gif")')
+  if (n_elements(wave_region) eq 0L) then begin
+    basename = string(date, format='(%"%s.ucomp.vcrosstalk.gif")')
+    title = string(date, format='(%"V crosstalk on %s")')
+  endif else begin
+    basename = string(date, wave_region, format='(%"%s.ucomp.%s.vcrosstalk.gif")')
+    title = string(wave_region, date, format='(%"V crosstalk for %s nm on %s")')
+  endelse
   filename = filepath(basename, root=output_dir)
 
   original_device = !d.name
@@ -37,8 +43,7 @@ pro ucomp_vcrosstalk_plots_wave_region, date, $
   tvlct, r, g, b, /get
 
   mg_range_plot, times, vcrosstalk, $
-                 title=string(wave_region, date, $
-                              format='(%"V crosstalk for %s nm on %s")'), $
+                 title=title, $
                  psym=6, symsize=0.25, color=0, background=255, $
                  xstyle=1, xrange=[6.0, 18.0], xtitle='Hours into HST observing day', $
                  ystyle=1, yrange=[0.0, 4.0], ytitle='V crosstalk'
@@ -88,4 +93,18 @@ pro ucomp_vcrosstalk_plots, output_dir, run=run
     endif
   endfor
 
+  ; all science files
+  files = run->get_files(data_type='sci', count=n_files)
+  times = fltarr(n_files)
+  vcrosstalk = fltarr(n_files)
+  for f = 0L, n_files - 1L do begin
+    times[f] = files[f].obsday_hours
+    vcrosstalk[f] = files[f].vcrosstalk_metric
+  endfor
+
+  ucomp_vcrosstalk_plots_wave_region, run.date, $
+                                      !null, $
+                                      output_dir, $
+                                      times, $
+                                      vcrosstalk
 end
