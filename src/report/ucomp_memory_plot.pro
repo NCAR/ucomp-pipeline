@@ -68,7 +68,10 @@ end
 
 ; main-level example program
 
-date = '20220214'
+;date = '20220105'
+date = '20220209'
+;date = '20220214'
+
 config_basename = 'ucomp.latest.cfg'
 config_filename = filepath(config_basename, $
                            subdir=['..', '..', 'config'], $
