@@ -29,6 +29,11 @@ pro ucomp_l1_combine_cameras, file, primary_header, ext_data, ext_headers, $
 
   status = 0L
 
+  if (~run->config('centering/perform')) then begin
+    mg_log, 'skipping combining camera images', name=run.logger_name, /warn
+    goto, done
+  endif
+
   ext_data = mean(ext_data, dimension=4, /nan)
 
   done:

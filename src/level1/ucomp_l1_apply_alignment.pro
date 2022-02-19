@@ -24,6 +24,12 @@ pro ucomp_l1_apply_alignment, file, primary_header, data, headers, run=run, stat
   compile_opt strictarr
 
   status = 0L
+
+  if (~run->config('centering/perform')) then begin
+    mg_log, 'skipping centering images', name=run.logger_name, /warn
+    goto, done
+  endif
+
   dims = size(data, /dimensions)
   n_pol_states = dims[2]
 
