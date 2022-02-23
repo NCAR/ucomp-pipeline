@@ -97,7 +97,7 @@ pro ucomp_realtime_wrapper, date, config_filename
                              n_extensions=n_extensions, $
                              data_types=data_types, $
                              exptimes=exptimes, $
-                             gain_modes=gain_modess, $
+                             gain_modes=gain_modes, $
                              wave_regions=wave_regions, $
                              n_points=n_points, $
                              numsum=numsum
@@ -117,11 +117,21 @@ pro ucomp_realtime_wrapper, date, config_filename
   ;== create quicklook L0.5 files
 
   wave_regions = run->config('options/wave_regions')
+  types = ['flat', 'cal', 'sci']   ; make sure to keep sci last for loop below
   for w = 0L, n_elements(wave_regions) - 1L do begin
-    files = run->get_files(data_type='sci', wave_region=wave_regions[w], count=n_files)
-    mg_log, '%d %s nm sci files', n_files, wave_regions[w], name=run.logger_name, /info
+    n_wave_files = 0L
+    for t = 0L, n_elements(types) - 1L do begin
+      files = run->get_files(data_type=types[t], $
+                             wave_region=wave_regions[w], $
+                             count=n_files)
+      mg_log, '%d %s nm %s files', n_files, wave_regions[w], types[t], $
+              name=run.logger_name, $
+              info=n_files gt 0L, $
+              debug=n_files eq 0L
+      n_wave_files += n_files
+    endfor
 
-    if (n_files eq 0L) then continue
+    if (n_wave_files eq 0L) then continue
     n_digits = floor(alog10(n_files)) + 1L
 
     for f = 0L, n_files - 1L do begin

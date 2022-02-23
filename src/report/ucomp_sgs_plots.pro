@@ -73,6 +73,8 @@ pro ucomp_sgs_plots, engineering_dir, run=run
   ; set up graphics window & color table for sgs.eng.gif
   original_device = !d.name
   set_plot, 'Z'
+  device, get_decomposed=original_decomposed
+  tvlct, original_rgb, /get
   device, set_resolution=[772, 1000], $
           decomposed=0, $
           set_colors=256, $
@@ -225,4 +227,8 @@ pro ucomp_sgs_plots, engineering_dir, run=run
   write_gif, sgs_dec_gif_filename, tvrd()
 
   done:
+  !p.multi = 0
+  tvlct, original_rgb
+  device, decomposed=original_decomposed
+  set_plot, original_device
 end
