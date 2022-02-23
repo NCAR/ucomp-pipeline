@@ -95,6 +95,8 @@ pro ucomp_vcrosstalk_plots, output_dir, run=run
 
   ; all science files
   files = run->get_files(data_type='sci', count=n_files)
+  if (n_files eq 0L) then goto, done
+
   times = fltarr(n_files)
   vcrosstalk = fltarr(n_files)
   for f = 0L, n_files - 1L do begin
@@ -107,4 +109,6 @@ pro ucomp_vcrosstalk_plots, output_dir, run=run
                                       output_dir, $
                                       times, $
                                       vcrosstalk
+
+  done:
 end
