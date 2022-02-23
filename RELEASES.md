@@ -92,4 +92,5 @@
   V crosstalk plot by wave region
   log memory usage
   initial implementation of verification
-0.2.16
+0.2.16 [Feb 22, 2022]
+  fix for crashing in memory plot creation routine

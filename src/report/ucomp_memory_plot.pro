@@ -60,9 +60,9 @@ pro ucomp_memory_plot, run=run
   write_gif, output_filename, tvrd(), r, g, b
 
   done:
-  tvlct, original_rgb
-  device, decomposed=original_decomposed
-  set_plot, original_device
+  if (n_elements(original_rgb) gt 0L) then  tvlct, original_rgb
+  if (n_elements(original_decomposed) gt 0L) then device, decomposed=original_decomposed
+  if (n_elements(original_device) gt 0L) then set_plot, original_device
 end
 
 
