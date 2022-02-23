@@ -94,3 +94,5 @@
   initial implementation of verification
 0.2.16 [Feb 22, 2022]
   fix for crashing in memory plot creation routine
+0.2.17 [Feb 22, 2022]
+  fix for crashing in SGS plot creation routine
