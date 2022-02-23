@@ -111,7 +111,80 @@ pro ucomp_verify_check_logs, run=run, status=status
 
   status = 0L
 
-  mg_log, 'checking machine log', name=run.logger_name, /info
+  raw_basedir = run->config('raw/basedir')
+  raw_dir = filepath(run.date, root=raw_basedir)
+  raw_files = file_search(filepath('*.fts', root=raw_dir), count=n_raw_files)
+  raw_basenames = file_basename(raw_files)
+  machine_log_filename = filepath(string(run.date, format='(%"%s.ucomp.machine.log")'), $
+                                  root=raw_dir)
+
+  if (~file_test(machine_log_filename, /regular)) then begin
+    mg_log, 'machine log not present', name=run.logger_name, /warn
+    status = 1L
+    return
+  endif
+
+  n_ml_lines = file_lines(machine_log_filename)
+  if (n_ml_lines eq 0L) then begin
+    mg_log, 'machine log empty', name=run.logger_name, /warn
+    status = 1L
+    return
+  endif
+
+  ml_files = strarr(n_ml_lines)
+  ml_sizes = ulon64arr(n_ml_lines)
+  openr, lun, machine_log_filename, /get_lun
+  line = ''
+  for f = 0L, n_ml_lines - 1L do begin
+    readf, lun, line
+    tokens = strsplit(line, /extract)
+    ml_files[f] = tokens[0]
+    ml_sizes[f] = ulong64(tokens[1])
+  endfor
+  free_lun, lun
+
+  if (n_raw_files ne n_ml_lines) then begin
+    mg_log, '%d raw files and %d files in machine log', $
+            n_raw_files, n_ml_lines, $
+            name=run.logger_name, /warn
+    status = 1L
+    return
+  endif
+
+  n_bad = 0L
+  for f = 0L, n_ml_lines - 1L do begin
+    matching_index = where(ml_files[f] eq raw_basenames, n_matches)
+    if (n_matches ne 1L) then begin
+      n_bad += 1L
+      status = 1L
+    endif
+    case 1 of
+      n_matches eq 0: begin
+          mg_log, 'missing %s', ml_files[f], name=run.logger_name, /warn
+          n_bad += 1L
+          status = 1L
+        end
+      n_matches eq 1: begin
+          info = file_info(raw_files[matching_index[0]])
+          if (info.size ne ml_sizes[f]) then begin
+            n_bad += 1L
+            status = 1L
+            mg_log, 'bad size for %s (%d != %d)', $
+                    ml_files[f], info.size, ml_sizes[f], $
+                    name=run.logger_name, /warn
+          endif
+        end
+      n_matches gt 1: begin
+          mg_log, 'multiple %s files', ml_files[f], name=run.logger_name, /warn
+          n_bad += 1L
+          status = 1L
+        end
+    endcase
+  endfor
+
+  if (n_bad gt 0L) then begin
+    mg_log, '%d files not matching machine log', n_bad, name=run.logger_name, /warn
+  endif
 end
 
 
