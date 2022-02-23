@@ -23,6 +23,7 @@ install(PROGRAMS ucomp_create_tables.sh
                  ucomp_env.sh
                  ucomp_eod_check_today.sh
 		 ucomp_eod_today.sh
+                 ucomp_realtime_today.sh
                  ucomp_script.sh
                  ucomp_verify.sh
                  ucomp_verify_dates.sh

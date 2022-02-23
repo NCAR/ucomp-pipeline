@@ -37,6 +37,7 @@ pro ucomp_l1_step, routine_name, file, primary_header, data, headers, $
     call_procedure, routine_name, file, primary_header, data, headers, $
                     run=run, status=status, _extra=e
     time = run->stop(clock_id)
+    run->log_memory, routine_name
 
     mg_log, /check_math, from=routine_name, name=run.logger_name, /warn
 

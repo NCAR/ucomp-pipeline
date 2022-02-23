@@ -74,23 +74,15 @@ pro ucomp_send_notification, run=run
   endelse
   body->add, ['', ''], /extract
 
-  ; add config file
-  ; body->add, ['## Configuration file used', ''], /extract
-  ; body->add, run.config_contents, /extract
-  ; body->add, ['', ''], /extract
-
   wave_regions = run->config('options/wave_regions')
   for w = 0L, n_elements(wave_regions) - 1L do begin
-    body->add, string(wave_regions[w], format='(%"# %s nm files")')
-    body->add, ''
-
     files = run->get_files(data_type='sci', wave_region=wave_regions[w], $
                            count=n_files)
-    if (n_files eq 0L) then begin
-      body->add, string(wave_regions[w], format='(%"no %s nm files")')
-      body->add, ['', ''], /extract
-      continue
-    endif
+
+    if (n_files eq 0L) then continue
+
+    body->add, string(wave_regions[w], format='(%"# %s nm files")')
+    body->add, ''
 
     gbu = ulonarr(n_files)
     for f = 0L, n_files - 1L do gbu[f] = files[f].gbu

@@ -24,18 +24,16 @@ pro ucomp_write_iquv_image, file, data, run=run
                         root=run->config('processing/basedir'))
   ucomp_mkdir, l1_dirname, logger_name=run.logger_name
 
-  if (center_wavelength_only) then begin
-    iquv_basename_format = string(file_basename(file.l1_basename, '.fts'), $
-                                  format='(%"%s.iquv.png")')
-    iquv_filename_format = filepath(iquv_basename_format, $
-                                    root=l1_dirname)
-  endif else begin
-    iquv_basename_format = string(file_basename(file.l1_basename, '.fts'), $
-                                  format='(%"%s.iquv.ext%%02d.png")')
-    iquv_filename_format = mg_format(filepath(iquv_basename_format, $
-                                              root=l1_dirname))
-  endelse
-  
+  perform_centering = run->config('centering/perform')
+  n_cameras = perform_centering ? 1 : 2
+
+  iquv_basename_format = file_basename(file.l1_basename, '.fts')
+  iquv_basename_format += '.iquv'
+  if (~perform_centering) then iquv_basename_format += '.cam%d'
+  if (~center_wavelength_only) then iquv_basename_format += '.ext%02d'
+  iquv_basename_format += '.png'
+  iquv_filename_format = filepath(iquv_basename_format, root=l1_dirname)
+
   intensity_display_min   = run->line(file.wave_region, 'intensity_display_min')
   intensity_display_max   = run->line(file.wave_region, 'intensity_display_max')
   intensity_display_gamma = run->line(file.wave_region, 'intensity_display_gamma')
@@ -78,74 +76,81 @@ pro ucomp_write_iquv_image, file, data, run=run
   wavelengths = file.wavelengths
   pol_states = ['I', 'Q', 'U', 'V']
   for e = 1L, file.n_extensions do begin
-    if (center_wavelength_only) then begin
-      diff = wavelengths[e - 1L] - run->line(file.wave_region, 'center_wavelength')
-      if (abs(diff) gt 0.01) then continue
-    endif
-
-    if (file.n_extensions gt 1L) then begin
-      ext_data = reform(data[*, *, *, e - 1L])
-    endif else begin
-      ext_data = reform(data[*, *, *])
-    endelse
-
-    dims = size(ext_data, /dimensions)
-
-    for p = 0L, dims[2] - 1L do begin
-      if (p eq 0) then begin
-        display_min = intensity_display_min
-        display_max = intensity_display_max
-        display_gamma = intensity_display_gamma
-        display_power = intensity_display_power
-        ct_name = 'intensity'
-      endif else begin
-        display_min = quv_display_min
-        display_max = quv_display_max
-        display_gamma = quv_display_gamma
-        display_power = quv_display_power
-        ct_name = 'quv'
-      endelse
-
-      ucomp_loadct, ct_name, n_colors=n_colors
-      gamma_ct, display_gamma, /current
-
-      im = rebin(ext_data[*, *, p], $
-                 dims[0] / reduce_dims_factor, $
-                 dims[1] / reduce_dims_factor)
-      field_mask = ucomp_field_mask(dims[0] / reduce_dims_factor, $
-                                    dims[1] / reduce_dims_factor, $
-                                    run->epoch('field_radius') / reduce_dims_factor)
-      scaled_im = bytscl((im * field_mask)^display_power, $
-                         min=display_min, $
-                         max=display_max, $
-                         top=n_colors - 1L, $
-                         /nan)
-
-      tv, scaled_im, p
-      if (p eq 0L) then begin
-        xyouts, xmargin * dims[0] / reduce_dims_factor, $
-                (2.0 - ymargin) * dims[1] / reduce_dims_factor, $
-                /device, $
-                string(run->line(file.wave_region, 'ionization'), $
-                       run->line(file.wave_region, 'center_wavelength'), $
-                       format='(%"%s %0.2f nm")'), $
-                charsize=1.25, color=text_color
-        xyouts, xmargin * dims[0] / reduce_dims_factor, $
-                (1.0 + ymargin) * dims[1] / reduce_dims_factor, $
-                /device, $
-                date_stamp, $
-                charsize=1.25, color=text_color
-      endif
-      xyouts, (p mod 2 + 1.0 - xmargin) * dims[0] / reduce_dims_factor, $
-              ((dims[2] - p - 1L) / 2 + 1.0 - ymargin) * dims[1] / reduce_dims_factor, $
-              /device, $
-              pol_states[p], charsize=1.25, color=text_color
+    for c = 0L, n_cameras - 1L do begin
       if (center_wavelength_only) then begin
-        iquv_filename = iquv_filename_format
+        diff = wavelengths[e - 1L] - run->line(file.wave_region, 'center_wavelength')
+        if (abs(diff) gt 0.01) then continue
+      endif
+
+      if (perform_centering) then begin
+        ext_data = reform(data[*, *, *, e - 1L])
       endif else begin
-        iquv_filename = string(e, format=iquv_filename_format)
+        ext_data = reform(data[*, *, *, c, e - 1L])
       endelse
-      ;write_gif, iquv_filename, tvrd(), r, g, b
+
+      dims = size(ext_data, /dimensions)
+
+      for p = 0L, dims[2] - 1L do begin
+        if (p eq 0) then begin
+          display_min = intensity_display_min
+          display_max = intensity_display_max
+          display_gamma = intensity_display_gamma
+          display_power = intensity_display_power
+          ct_name = 'intensity'
+        endif else begin
+          display_min = quv_display_min
+          display_max = quv_display_max
+          display_gamma = quv_display_gamma
+          display_power = quv_display_power
+          ct_name = 'quv'
+        endelse
+
+        ucomp_loadct, ct_name, n_colors=n_colors
+        gamma_ct, display_gamma, /current
+
+        im = rebin(ext_data[*, *, p], $
+                   dims[0] / reduce_dims_factor, $
+                   dims[1] / reduce_dims_factor)
+        field_mask = ucomp_field_mask(dims[0] / reduce_dims_factor, $
+                                      dims[1] / reduce_dims_factor, $
+                                      run->epoch('field_radius') / reduce_dims_factor)
+        scaled_im = bytscl((im * field_mask)^display_power, $
+                           min=display_min, $
+                           max=display_max, $
+                           top=n_colors - 1L, $
+                           /nan)
+
+        tv, scaled_im, p
+        if (p eq 0L) then begin
+          xyouts, xmargin * dims[0] / reduce_dims_factor, $
+                  (2.0 - ymargin) * dims[1] / reduce_dims_factor, $
+                  /device, $
+                  string(run->line(file.wave_region, 'ionization'), $
+                         run->line(file.wave_region, 'center_wavelength'), $
+                         format='(%"%s %0.2f nm")'), $
+                  charsize=1.25, color=text_color
+          xyouts, xmargin * dims[0] / reduce_dims_factor, $
+                  (1.0 + ymargin) * dims[1] / reduce_dims_factor, $
+                  /device, $
+                  date_stamp, $
+                  charsize=1.25, color=text_color
+        endif
+        xyouts, (p mod 2 + 1.0 - xmargin) * dims[0] / reduce_dims_factor, $
+                ((dims[2] - p - 1L) / 2 + 1.0 - ymargin) * dims[1] / reduce_dims_factor, $
+                /device, $
+                pol_states[p], charsize=1.25, color=text_color
+      endfor
+
+      if (~center_wavelength_only and ~perform_centering) then begin
+        iquv_filename = string(c, e, format=iquv_filename_format)
+      endif else if (~center_wavelength_only) then begin
+        iquv_filename = string(e, format=iquv_filename_format)
+      endif else if (~perform_centering) then begin
+        iquv_filename = string(c, format=iquv_filename_format)
+      endif else begin
+        iquv_filename = iquv_filename_format
+      endelse
+
       write_png, iquv_filename, tvrd(true=1)
     endfor
   endfor
