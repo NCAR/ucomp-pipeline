@@ -176,6 +176,7 @@ pro ucomp_file::getProperty, run=run, $
                              tcam_roughness=tcam_roughness, $
                              rcam_geometry=rcam_geometry, $
                              tcam_geometry=tcam_geometry, $
+                             occulter_radius=occulter_radius, $
                              t_base=t_base, $
                              t_lcvr1=t_lcvr1, $
                              t_lcvr2=t_lcvr2, $
@@ -311,6 +312,12 @@ pro ucomp_file::getProperty, run=run, $
 
   if (arg_present(rcam_geometry)) then rcam_geometry = self.rcam_geometry
   if (arg_present(tcam_geometry)) then tcam_geometry = self.tcam_geometry
+
+  if (arg_present(occulter_radius)) then begin
+    self.rcam_geometry->getProperty, occulter_radius=rcam_radius
+    self.tcam_geometry->getProperty, occulter_radius=tcam_radius
+    occulter_radius = (rcam_radius + tcam_radius) / 2.0
+  endif
 
   if (arg_present(t_base)) then t_base = self.t_base
   if (arg_present(t_lcvr1)) then t_lcvr1 = self.t_lcvr1
