@@ -85,9 +85,10 @@
 0.2.14 [Feb 14, 2022]
   add more geometry FITS keywords like [XY]OFFSET[01], POST_ANG
   prepping for realtime processing launch
-0.2.15
+0.2.15 [Feb 22, 2022]
   handle display of all wavelengths in files with many wavelengths
   fixes for realtime processing launch
   fix for BUNIT value, actually 1.0E-6 B/Bsun units
   V crosstalk plot by wave region
   log memory usage
+  initial implementation of verification
