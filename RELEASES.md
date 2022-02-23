@@ -98,3 +98,4 @@
   fix for crashing in SGS plot creation routine
 0.2.18 [Feb 22, 2022]
   fix for crashing in V crosstalk plot creation routine
+0.2.19
