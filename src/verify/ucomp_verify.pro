@@ -2,79 +2,140 @@
 
 
 ;+
-; Verify that the given filename is on the HPSS with correct permissions.
+; Extract the date and time, if present, from the basename of a file.
+;
+; :Returns:
+;   the date in the form "YYYYMMDD"
 ;
 ; :Params:
-;   date : in, required, type=string
-;     date in the form YYYYMMDD
-;   filename : in, required, type=string
-;     HPSS filename to check
-;   filesize : in, required, type=integer
-;     size of given file
+;   basename : in, required, type=string
+;     basename of UCoMP raw or processed file
 ;
 ; :Keywords:
-;   run : in, required, type=object
-;     UCoMP run object
+;   time : out, optional, type=string
+;     time in the form "HHMMSS"
 ;-
-pro ucomp_verify_hpss, date, filename, filesize, $
-                       logger_name=logger_name, run=run
+function ucomp_verify_get_datetime, basename, time=time
+  compile_opt strictarr
+  on_ioerror, bad_time
+
+  date = long(ucomp_decompose_date(strmid(basename, 0, 8)))
+  time = long(ucomp_decompose_time(strmid(basename, 9, 6)))
+
+  return, date
+
+  bad_time:
+  time = [18L, 0L, 0L]
+  return, date
+end
+
+
+;+
+; Make sure the files are for the correct date.
+;-
+pro ucomp_verify_check_files, run=run, status=status
   compile_opt strictarr
 
-  hsi_cmd = string(run.hsi, filename, format='(%"%s ls -l %s")')
+  status = 0L
 
-  spawn, hsi_cmd, hsi_output, hsi_error_output, exit_status=exit_status
-  if (exit_status ne 0L) then begin
-    mg_log, 'problem connecting to HPSS with command: %s', hsi_cmd, $
-            name=logger_name, /error
-    mg_log, '%s', mg_strmerge(hsi_error_output), name=logger_name, /error
-    status = 1
-    goto, hpss_done
-  endif
+  raw_basedir = run->config('raw/basedir')
+  raw_dir = filepath(run.date, root=raw_basedir)
+  files = file_search(raw_dir, '*', count=n_files)
 
-  ; for some reason, hsi puts its output in stderr
-  matches = stregex(hsi_error_output, $
-                    file_basename(filename, '.tgz') + '\.tgz', $
-                    /boolean)
-  ind = where(matches, count)
-  if (count eq 0L) then begin
-    mg_log, '%s tarball for %s not found on HPSS', $
-            file_basename(filename), date, $
-            name=logger_name, /error
-    status = 1L
-    goto, hpss_done
+  ut_offset = - 10.0D / 24.0D   ; shift to HST in days
+  date = ucomp_decompose_date(run.date)
+  date_jd = julday(date[1], date[2], date[0], 0, 0, 0)
+
+  n_bad = 0L
+  for f = 0L, n_files - 1L do begin
+    basename = file_basename(files[f])
+    date = ucomp_verify_get_datetime(basename, time=time)
+    jd = julday(date[1], date[2], date[0], time[0], time[1], time[2]) + ut_offset
+    if ((jd lt date_jd) || (jd - date_jd gt 1.0)) then begin
+      n_bad += 1L
+      mg_log, 'bad date/time for %s [%04d-%02d-%02dT%02d:%02d:%02dZ]', $
+              basename, $
+              date[0], date[1], date[2], time[0], time[1], time[2], $
+              name=run.logger_name, /warn
+    endif
+  endfor
+
+  if (n_bad eq 0L) then begin
+    mg_log, 'dates OK for %d raw files', n_files, $
+            name=run.logger_name, /info
   endif else begin
-    status_line = hsi_error_output[ind[0]]
-    tokens = strsplit(status_line, /extract)
-
-    ; check group ownership of tarball on HPSS
-    if (tokens[3] ne 'cordyn') then begin
-      mg_log, 'incorrect group owner %s for tarball on HPSS', $
-              tokens[3], name=logger_name, /error
-      status = 1L
-      goto, hpss_done
-    endif
-
-    ; check protection of tarball on HPSS
-    if (tokens[0] ne '-rw-rw-r--') then begin
-      mg_log, 'incorrect permissions %s for tarball on HPSS', $
-              tokens[0], name=logger_name, /error
-      status = 1L
-      goto, hpss_done
-    endif
-
-    ; check size of tarball on HPSS
-    if (ulong64(tokens[4]) ne filesize) then begin
-      mg_log, 'incorrect size %sB for tarball on HPSS', $
-              mg_float2str(ulong64(tokens[4]), places_sep=','), $
-              name=logger_name, /error
-      status = 1L
-      goto, hpss_done
-    endif
-
-    mg_log, 'verified %s tarball on HPSS', file_basename(filename), $
-            name=logger_name, /info
-    hpss_done:
+    mg_log, '%d files with bad dates', n_bad, name=run.logger_name, /warn
+    status = 1L
   endelse
+end
+
+
+;+
+; Check the permissions on the files.
+;-
+pro ucomp_verify_check_permissions, run=run, status=status
+  compile_opt strictarr
+
+  status = 0L
+  correct_mode = '664'o
+
+  process_basedir = run->config('processing/basedir')
+  process_dir = filepath(run.date, root=process_basedir)
+  files = file_search(process_dir, '*', count=n_files)
+
+  n_bad = 0L
+  for f = 0L, n_files - 1L do begin
+    info = file_info(files[f])
+    if (info.mode and correct_mode ne correct_mode) then n_bad += 1L
+  endfor
+
+  if (n_bad eq 0L) then begin
+    mg_log, 'permissions OK for %d processed files', n_files, $
+            name=run.logger_name, /info
+  endif else begin
+    mg_log, '%d files with bad permissions', n_bad, name=run.logger_name, /warn
+    status = 1L
+  endelse
+end
+
+
+;+
+; Check the machine log against the data:
+;   - filenames in the machine log match those present in the incoming
+;     directory
+;   - file sizes in the machine log match those present in the incoming
+;     directory 
+;-
+pro ucomp_verify_check_logs, run=run, status=status
+  compile_opt strictarr
+
+  status = 0L
+
+  mg_log, 'checking machine log', name=run.logger_name, /info
+end
+
+
+;+
+; Check the filenames/sizes match those on the collection server.
+;-
+pro ucomp_verify_check_collection_server, run=run, status=status
+  compile_opt strictarr
+
+  status = 0L
+
+  mg_log, 'checking collection server', name=run.logger_name, /info
+end
+
+
+;+
+; Check the filenames/sizes of the tarballs match those on the archive server.
+;-
+pro ucomp_verify_check_archive_server, run=run, status=status
+  compile_opt strictarr
+
+  status = 0L
+
+  mg_log, 'checking archive server', name=run.logger_name, /info
 end
 
 
@@ -91,8 +152,13 @@ end
 ;   status : out, optional, type=integer
 ;     set to a named variable to retrieve the status of the date: 0 for success,
 ;     anything else indicates a problem
+;   log_filename : out, optional, type=string
+;     set to a named variable to retrieve the filename of the log file for the
+;     date
 ;-
-pro ucomp_verify, date, config_filename, status=status
+pro ucomp_verify, date, config_filename, $
+                  status=status, $
+                  log_filename=log_filename
   compile_opt strictarr
 
   status = 0L
@@ -118,13 +184,28 @@ pro ucomp_verify, date, config_filename, status=status
     goto, done
   endif
 
-  run = ucomp_run(date, 'verify', config_fullpath)
+  run = ucomp_run(date, 'verify', config_fullpath, /reprocess)
   if (not obj_valid(run)) then goto, done
 
   mg_log, name=logger_name, logger=logger
-  logger->setProperty, format='%(time)s %(levelshortname)s: %(message)s'
+  logger->getProperty, filename=log_filename
 
-  ; TODO: implement verification
+  mg_log, 'checking %s', run.date, name=run.logger_name, /info
+
+  ucomp_verify_check_files, run=run, status=check_files_status
+  status or= 1L * check_files_status
+
+  ucomp_verify_check_permissions, run=run, status=check_permissions_status
+  status or= 2L * check_permissions_status
+
+  ucomp_verify_check_logs, run=run, status=check_logs_status
+  status or= 4L * check_logs_status
+
+  ucomp_verify_check_collection_server, run=run, status=check_collection_server
+  status or= 8L * check_collection_server
+
+  ucomp_verify_check_archive_server, run=run, status=check_archive_server
+  status or= 16L * check_archive_server
 
   done:
 
