@@ -24,13 +24,6 @@ PIPE_DIR=$(dirname ${BIN_DIR})
 source ${BIN_DIR}/ucomp_parse_args.sh
 source ${BIN_DIR}/ucomp_include.sh
 
-# reset DATE because it's different in ucomp_include.sh
-if [[ $# -lt 1 ]]; then
-  DATE=$(date +"%Y%m%d" -d "-1 day")
-else
-  DATE=$1
-fi
-
 ${IDL} -quiet -IDL_QUIET 1 -IDL_STARTUP "" \
   -IDL_PATH ${UCOMP_PATH} -IDL_DLM_PATH ${UCOMP_DLM_PATH} \
   -e "ucomp_verify_dates, '${DATE}', '${CONFIG}'"
