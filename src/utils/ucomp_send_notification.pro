@@ -83,11 +83,26 @@ pro ucomp_send_notification, run=run
 
     body->add, string(wave_regions[w], format='(%"# %s nm files")')
     body->add, ''
+    body->add, string(n_files, format='(%"%d total files")')
 
+    quality = bytarr(n_files)
     gbu = ulonarr(n_files)
-    for f = 0L, n_files - 1L do gbu[f] = files[f].gbu
-    !null = where(gbu eq 0UL, n_good_files)
+    for f = 0L, n_files - 1L do begin
+      quality[f] = files[f].quality_bitmask
+      gbu[f] = files[f].gbu
+    endfor
+
+    !null = where(gbu eq 0UL and quality eq 0UL, n_good_files)
     body->add, string(n_good_files, format='(%"%d good files")')
+
+    quality_conditions = ucomp_quality_conditions(wave_regions[w], run=run)
+    for q = 0L, n_elements(quality_conditions) - 1L do begin
+      !null = where(quality_conditions[q].mask and quality, n_condition_files)
+      if (n_condition_files gt 0L) then begin
+        body->add, string(n_condition_files, quality_conditions[q].description, $
+                          format='(%"%d files with %s")')
+      endif
+    endfor
 
     gbu_conditions = ucomp_gbu_conditions(wave_regions[w], run=run)
     for g = 0L, n_elements(gbu_conditions) - 1L do begin
