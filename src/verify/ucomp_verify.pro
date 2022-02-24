@@ -182,9 +182,11 @@ pro ucomp_verify_check_logs, run=run, status=status
     endcase
   endfor
 
-  if (n_bad gt 0L) then begin
-    mg_log, '%d files not matching machine log', n_bad, name=run.logger_name, /warn
-  endif
+  if (n_bad eq 0L) then begin
+    mg_log, 'raw files match machine log', name=run.logger_name, /info
+  endif else begin
+    mg_log, '%d raw files not matching machine log', n_bad, name=run.logger_name, /warn
+  endelse
 end
 
 
@@ -208,7 +210,47 @@ pro ucomp_verify_check_archive_server, run=run, status=status
 
   status = 0L
 
-  mg_log, 'checking archive server', name=run.logger_name, /info
+  archive_server = run->config('verification/archive_server')
+  if (n_elements(archive_server) eq 0L) then begin
+    mg_log, 'no archive server specified', name=run.logger_name, /warn
+    status = 1L
+    goto, done
+  endif
+
+  archive_basedir = run->config('verification/archive_basedir')
+  if (n_elements(archive_basedir) eq 0L) then begin
+    mg_log, 'no archive base dir specified', name=run.logger_name, /warn
+    status = 1L
+    goto, done
+  endif
+
+  ssh_key = run->config('verification/ssh_key')
+  year = strmid(run.date, 0, 4)
+  archive_dir = filepath(year, root=archive_basedir)
+
+  l0_basename = string(run.date, format='(%"%s.ucomp.l0.tar")')
+  l0_dir = filepath('', $
+                    subdir=[run.date, 'level0'], $
+                    root=run->config('processing/basedir'))
+  status or= 2UL * ucomp_verify_check_remote_file(l0_basename, $
+                                                  l0_dir, $
+                                                  archive_server, $
+                                                  archive_dir, $
+                                                  ssh_key, $
+                                                  logger_name=run.logger_name)
+
+  ; l1_basename = string(run.date, format='(%"%s.ucomp.l1.tar")')
+  ; l1_dir = filepath('', $
+  ;                   subdir=[run.date, 'level1'], $
+  ;                   root=run->config('processing/basedir'))
+  ; status or= 2UL * ucomp_verify_check_remote_file(l1_basename, $
+  ;                                                 l1_dir, $
+  ;                                                 archive_server, $
+  ;                                                 archive_dir, $
+  ;                                                 ssh_key, $
+  ;                                                 logger_name=run.logger_name)
+
+  done:
 end
 
 
