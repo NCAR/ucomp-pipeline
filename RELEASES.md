@@ -103,3 +103,4 @@
   email notification handles files that don't pass quality
   fix GBU conditions listed in notification email
   full implementation of verification
+0.2.20
