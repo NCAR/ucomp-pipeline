@@ -12,9 +12,9 @@ function ucomp_verify_dates_ut::test_ucomp_verify_dates_expandrange
               '20201222', '20201223', '20201224', '20201225', '20201226', $
               '20201227', '20201228', '20201229', '20201230', '20201231', $
               '20210101', '20210102', '20210103', '20210104', '20210105', $
-              '20210106', '20210107']
+              '20210106']
   assert, array_equal(standard, dates), 'incorrect dates'
-  assert, n_days eq 22, 'incorrect number of days: %d', n_days
+  assert, n_days eq n_elements(standard), 'incorrect number of days: %d', n_days
 
   return, 1
 end
