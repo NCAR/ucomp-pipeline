@@ -17,7 +17,7 @@ function ucomp_quality_conditions, wave_region, run=run
                          checker: 'ucomp_quality_sgsloop', $
                          description: 'SGSLOOP not high enough'}]
 
-  quality_conditions.mask = 2UL ^ (ulindgen(n_elements(quality_conditions)) + 1UL)
+  quality_conditions.mask = 2UL ^ (ulindgen(n_elements(quality_conditions)))
 
   return, quality_conditions
 end
