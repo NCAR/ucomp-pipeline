@@ -15,9 +15,9 @@ function ucomp_quality_conditions, wave_region, run=run
   ; reordered easily
   quality_conditions = [{mask: 0UL, $
                          checker: 'ucomp_quality_sgsloop', $
-                         description: 'check that SGSLOOP is high enough'}]
+                         description: 'SGSLOOP not high enough'}]
 
-  quality_conditions.mask = 2UL ^ ulindgen(n_elements(quality_conditions))
+  quality_conditions.mask = 2UL ^ (ulindgen(n_elements(quality_conditions)) + 1UL)
 
   return, quality_conditions
 end

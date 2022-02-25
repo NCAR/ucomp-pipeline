@@ -98,3 +98,8 @@
   fix for crashing in SGS plot creation routine
 0.2.18 [Feb 22, 2022]
   fix for crashing in V crosstalk plot creation routine
+0.2.19 [Feb 24, 2022]
+  cyan-pink color table for polarization image display
+  email notification handles files that don't pass quality
+  fix GBU conditions listed in notification email
+  full implementation of verification
