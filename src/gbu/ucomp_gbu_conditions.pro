@@ -24,7 +24,7 @@ function ucomp_gbu_conditions, wave_region, run=run
                      description: string(run->epoch('max_ext_time'), $
                                          format='(%"sequential extensions acquired more than %0.2f secs apart")')}]
 
-  gbu_conditions.mask = 2UL ^ (ulindgen(n_elements(gbu_conditions)) + 1UL)
+  gbu_conditions.mask = 2UL ^ (ulindgen(n_elements(gbu_conditions)))
 
   return, gbu_conditions
 end
