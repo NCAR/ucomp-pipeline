@@ -102,3 +102,4 @@
   cyan-pink color table for polarization image display
   email notification handles files that don't pass quality
   fix GBU conditions listed in notification email
+  full implementation of verification
