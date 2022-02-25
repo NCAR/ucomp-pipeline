@@ -38,13 +38,15 @@ pro ucomp_loadct, name, n_colors=n_colors
   compile_opt strictarr
   on_error, 2
 
-  red   = [  0B,   0B, 255B]
+  red   = [255B,   0B,   0B]
   black = [  0B,   0B,   0B]
-  blue  = [255B,   0B,   0B]
+  blue  = [  0B,   0B, 255B]
+  pink  = [255B, 105B, 180B]
+  cyan  = [  0B, 255B, 255B]
 
   case strlowcase(name) of
     'intensity': loadct, 0, /silent, ncolors=n_colors
-    'quv': ucomp_loadct_rgb, mg_makect(red, black, blue, ncolors=n_colors)
+    'quv': ucomp_loadct_rgb, mg_makect(cyan, black, pink, ncolors=n_colors)
     else: message, string(name, format='(%"unknown colortable name: %s")')
   endcase
 end

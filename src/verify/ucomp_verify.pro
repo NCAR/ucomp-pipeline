@@ -182,9 +182,11 @@ pro ucomp_verify_check_logs, run=run, status=status
     endcase
   endfor
 
-  if (n_bad gt 0L) then begin
-    mg_log, '%d files not matching machine log', n_bad, name=run.logger_name, /warn
-  endif
+  if (n_bad eq 0L) then begin
+    mg_log, 'raw files match machine log', name=run.logger_name, /info
+  endif else begin
+    mg_log, '%d raw files not matching machine log', n_bad, name=run.logger_name, /warn
+  endelse
 end
 
 
@@ -194,9 +196,68 @@ end
 pro ucomp_verify_check_collection_server, run=run, status=status
   compile_opt strictarr
 
-  status = 0L
+  status = 0UL
 
-  mg_log, 'checking collection server', name=run.logger_name, /info
+  collection_server = run->config('verification/collection_server')
+  if (n_elements(collection_server) eq 0L) then begin
+    mg_log, 'no collection server specified', name=run.logger_name, /warn
+    status = 11ULL
+    goto, done
+  endif
+
+  collection_basedir = run->config('verification/collection_basedir')
+  if (n_elements(collection_basedir) eq 0L) then begin
+    mg_log, 'no collection basedir specified', name=run.logger_name, /warn
+    status = 1UL
+    goto, done
+  endif
+
+  ssh_options = ''
+  ssh_key = run->config('verification/ssh_key')
+  if (n_elements(ssh_key) gt 0L) then ssh_options += string(ssh_key, format='(%"-i %s")')
+
+  ssh_cmd = string(ssh_options, $
+                   collection_server, $
+                   collection_basedir, $
+                   run.date, $
+                   format='(%"ssh %s %s ls %s/%s/*.fts | wc -l")')
+  spawn, ssh_cmd, ssh_output, ssh_error, exit_status=ssh_status
+  if (ssh_status ne 0L) then begin
+    mg_log, 'problem checking raw files on %s:%s', $
+            collection_server, $
+            collection_basedir, $
+            name=logger_name, /error
+    mg_log, 'command: %s', cmd, name=run.logger_name, /error
+    mg_log, '%s', strjoin(error_output, ' '), name=run.logger_name, /error
+    status or= 1UL
+    goto, done
+  endif
+
+  n_raw_files = long(ssh_output[0])
+
+  raw_basedir = run->config('raw/basedir')
+  raw_dir = filepath(run.date, root=raw_basedir)
+  machine_log_filename = filepath(string(run.date, format='(%"%s.ucomp.machine.log")'), $
+                                  root=raw_dir)
+  if (~file_test(machine_log_filename, /regular)) then begin
+    status or= 1UL
+    mg_log, 'no machine log to check against', name=run.logger_name, /warn
+    goto, done
+  endif
+
+  n_log_lines = file_lines(machine_log_filename)
+  if (n_log_lines ne n_raw_files) then begin
+    mg_log, '# raw files on collection server (%d) does not match # lines in machine log (%d)', $
+            n_raw_files, n_log_lines, $
+            name=run.logger_name, /warn
+    status or= 1UL
+    goto, done
+  endif
+
+  mg_log, 'number of raw files on collection server matches machine log', $
+          name=run.logger_name, /info
+
+  done:
 end
 
 
@@ -208,7 +269,47 @@ pro ucomp_verify_check_archive_server, run=run, status=status
 
   status = 0L
 
-  mg_log, 'checking archive server', name=run.logger_name, /info
+  archive_server = run->config('verification/archive_server')
+  if (n_elements(archive_server) eq 0L) then begin
+    mg_log, 'no archive server specified', name=run.logger_name, /warn
+    status = 1L
+    goto, done
+  endif
+
+  archive_basedir = run->config('verification/archive_basedir')
+  if (n_elements(archive_basedir) eq 0L) then begin
+    mg_log, 'no archive base dir specified', name=run.logger_name, /warn
+    status = 1L
+    goto, done
+  endif
+
+  ssh_key = run->config('verification/ssh_key')
+  year = strmid(run.date, 0, 4)
+  archive_dir = filepath(year, root=archive_basedir)
+
+  l0_basename = string(run.date, format='(%"%s.ucomp.l0.tar")')
+  l0_dir = filepath('', $
+                    subdir=[run.date, 'level0'], $
+                    root=run->config('processing/basedir'))
+  status or= 2UL * ucomp_verify_check_remote_file(l0_basename, $
+                                                  l0_dir, $
+                                                  archive_server, $
+                                                  archive_dir, $
+                                                  ssh_key, $
+                                                  logger_name=run.logger_name)
+
+  ; l1_basename = string(run.date, format='(%"%s.ucomp.l1.tar")')
+  ; l1_dir = filepath('', $
+  ;                   subdir=[run.date, 'level1'], $
+  ;                   root=run->config('processing/basedir'))
+  ; status or= 2UL * ucomp_verify_check_remote_file(l1_basename, $
+  ;                                                 l1_dir, $
+  ;                                                 archive_server, $
+  ;                                                 archive_dir, $
+  ;                                                 ssh_key, $
+  ;                                                 logger_name=run.logger_name)
+
+  done:
 end
 
 
