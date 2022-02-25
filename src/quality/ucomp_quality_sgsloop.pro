@@ -26,7 +26,12 @@ function ucomp_quality_sgsloop, file, primary_header, ext_data, ext_headers, $
 
   limit = run->epoch('sgsloop_min')
   for e = 0L, n_elements(ext_headers) - 1L do begin
-    if (ucomp_getpar(ext_headers[e], 'SGSLOOP') lt limit) then return, 1B
+    sgsloop = ucomp_getpar(ext_headers[e], 'SGSLOOP')
+    if (sgsloop lt limit) then begin
+      mg_log, 'SGSLOOP %0.3f (< %0.3f) in ext %d', sgsloop, limit, e + 1L, $
+              name=run.logger_name, /warn
+      return, 1B
+    endif
   endfor
 
   return, 0B

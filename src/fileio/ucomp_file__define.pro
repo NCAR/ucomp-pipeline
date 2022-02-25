@@ -94,6 +94,8 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
 
   if (n_elements(quality_bitmask) gt 0L) then begin
     self.quality_bitmask or= quality_bitmask
+    mg_log, 'condition quality: %d, new quality: %d', $
+            quality_bitmask, self.quality_bitmask, name=self.run.logger_name, /debug
   endif
   if (n_elements(gbu) gt 0L) then self.gbu or= gbu
   if (n_elements(vcrosstalk_metric) gt 0L) then self.vcrosstalk_metric = vcrosstalk_metric
@@ -434,20 +436,9 @@ pro ucomp_file::_inventory
   self.obs_id = ucomp_getpar(primary_header, 'OBS_ID', found=found)
   self.obs_plan = ucomp_getpar(primary_header, 'OBS_PLAN', found=found)
 
-  cover = ucomp_getpar(extension_header, 'COVER', found=found)
-  self.cover_in = cover eq 'in'
-  if (self.cover_in) then self->setProperty, quality_bitmask=ishft(1, 0)
-  if (cover ne 'in' && cover ne 'out') then begin
-    self->setProperty, quality_bitmask=ishft(1, 1)
-  endif
-
+  self.cover_in = ucomp_getpar(extension_header, 'COVER', found=found) eq 'in'
   self.darkshutter_in = ucomp_getpar(extension_header, 'DARKSHUT', found=found) eq 'in'
-
-  occulter = ucomp_getpar(extension_header, 'OCCLTR', found=found)
-  self.occulter_in = occulter eq 'in'
-  if (occulter ne 'in' && occulter ne 'out') then begin
-    self->setProperty, quality_bitmask=ishft(1, 1)
-  endif
+  self.occulter_in = ucomp_getpar(extension_header, 'OCCLTR', found=found) eq 'in'
   self.occultrid = ucomp_getpar(primary_header, 'OCCLTRID', found=found)
 
   if (self.run->epoch('use_occltr_position')) then begin
@@ -527,12 +518,6 @@ pro ucomp_file::_inventory
                /no_abort, message=error_msg
     if (error_msg ne '') then message, error_msg
 
-    moving_parts or= ucomp_getpar(extension_header, 'OCCLTR', found=found) eq 'mid'
-    moving_parts or= ucomp_getpar(extension_header, 'COVER', found=found) eq 'mid'
-    moving_parts or= ucomp_getpar(extension_header, 'DARKSHUT', found=found) eq 'mid'
-    moving_parts or= ucomp_getpar(extension_header, 'DIFFUSR', found=found) eq 'mid'
-    moving_parts or= ucomp_getpar(extension_header, 'CALOPTIC', found=found) eq 'mid'
-
     (*self.wavelengths)[e - 1] = ucomp_getpar(extension_header, 'WAVELNG', /float, found=found)
     (*self.onband_indices)[e - 1] = ucomp_getpar(extension_header, 'ONBAND', found=found) eq 'tcam'
 
@@ -549,7 +534,6 @@ pro ucomp_file::_inventory
     (*self.sgs_decs)[e - 1]  = ucomp_getpar(extension_header, 'SGSDECS', /float)
     (*self.sgs_deczr)[e - 1] = ucomp_getpar(extension_header, 'SGSDECZR', /float)
   endfor
-  if (moving_parts) then self->setProperty, quality_bitmask=ishft(1, 1)
 
   self->getProperty, n_unique_wavelengths=n_unique_wavelengths
   self.n_repeats = self.n_extensions / n_unique_wavelengths
