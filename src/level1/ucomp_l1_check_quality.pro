@@ -36,10 +36,14 @@ pro ucomp_l1_check_quality, file, primary_header, ext_data, ext_headers, $
                             ext_data, $
                             ext_headers, $
                             run=run)
-    mg_log, 'condition: %d, mask: %d, quality: %d', $
-            q, quality_conditions[q].mask, quality, $
-            name=run.logger_name, /debug
     file.quality_bitmask = quality_conditions[q].mask * quality
+    mg_log, 'mask: %d, quality return: %d, quality bitmask: %d', $
+            quality_conditions[q].mask, $
+            quality, $
+            file.quality_bitmask, $
+            from=quality_conditions[q].checker, $
+            name=run.logger_name, $
+            /debug
   endfor
 
   done:
