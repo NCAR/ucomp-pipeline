@@ -131,7 +131,7 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
                 comment='[arcsec] solar semi-diameter'
   ucomp_addpar, primary_header, 'RSUN_OBS', semidiameter, $
                 comment=string(distance_au * semidiameter, $
-                               format='(%" [arcsec] solar radius using ref radius %0.2f\"")'), $
+                               format='(%"[arcsec] solar radius using ref radius %0.2f\"")'), $
                 format='(f8.2)'
   ucomp_addpar, primary_header, 'RSUN', $
                 semidiameter, $
@@ -139,7 +139,18 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
                 format='(f8.2)'
   ucomp_addpar, primary_header, 'R_SUN', $
                 semidiameter / run->line(file.wave_region, 'plate_scale'), $
-                comment='[pixel] solar radius', format = '(f9.2)'
+                comment='[pixel] solar radius', format='(f9.2)'
+
+  ucomp_addpar, primary_header, $
+                'CDELT1', $
+                run->line(file.wave_region, 'plate_scale'), $
+                comment='[arcsec/pixel] solar X increment = platescale', $
+                format='(f9.4)'
+  ucomp_addpar, primary_header, $
+                'CDELT2', $
+                run->line(file.wave_region, 'plate_scale'), $
+                comment='[arcsec/pixel] solar Y increment = platescale', $
+                format='(f9.4)'
 
   file.rcam_geometry.p_angle = p_angle
   file.tcam_geometry.p_angle = p_angle
