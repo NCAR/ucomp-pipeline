@@ -94,8 +94,6 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
 
   if (n_elements(quality_bitmask) gt 0L) then begin
     self.quality_bitmask or= quality_bitmask
-    mg_log, 'condition quality: %d, new quality: %d', $
-            quality_bitmask, self.quality_bitmask, name=self.run.logger_name, /debug
   endif
   if (n_elements(gbu) gt 0L) then self.gbu or= gbu
   if (n_elements(vcrosstalk_metric) gt 0L) then self.vcrosstalk_metric = vcrosstalk_metric
