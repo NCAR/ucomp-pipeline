@@ -27,16 +27,23 @@ function ucomp_quality_inout, file, primary_header, ext_data, ext_headers, $
 
   status = 0UL
   keywords = ['COVER', 'OCCLTR', 'DARKSHUT', 'DIFFUSR', 'CALOPTIC']
+  n_mid = lonarr(n_elements(keywords))
   for e = 0L, n_elements(ext_headers) - 1L do begin
     for k = 0L, n_elements(keywords) - 1L do begin
       value = strlowcase(ucomp_getpar(ext_headers[e], keywords[k]))
     
       if (value ne 'in' && value ne 'out') then begin
-        mg_log, '%s value %s not in or out', keywords[k], value, $
-                name=run.logger_name, /warn
+        n_keywords[k] += 1L
         status = 1UL
       endif
     endfor
+  endfor
+
+  for k = 0L, n_elements(keywords) - 1L do begin
+    if (n_mid[k] gt 0L) then begin
+      mg_log, '%s value not in or out %d times', keywords[k], n_mid[k], $
+              name=run.logger_name, /warn
+    endif
   endfor
 
   return, status
