@@ -105,7 +105,8 @@
   full implementation of verification
 0.2.20 [Feb 25, 2022]
   fix bugs in quality check
-0.2.21
+0.2.21 [Mar 1, 2022]
   intensity and IQUV movies
   quality logs
   better listing of quality/GBU issues in notification email
+  fix verification bug examining scripts/ directory
