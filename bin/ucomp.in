@@ -165,9 +165,8 @@ def verify(args):
            ",".join(args.dates)]
 
     process = subprocess.Popen(cmd, stderr=subprocess.STDOUT)
-    print("[%d] %s" % (process.pid, " ".join(cmd)))
-    if not args.no_wait:
-        terminated = wait_for(process)
+    if args.verbose: print("[%d] %s" % (process.pid, " ".join(cmd)))
+    terminated = wait_for(process)
 
 
 # ls sub-command
@@ -874,7 +873,7 @@ def launch_processes(args, routine):
                d]
 
         process = subprocess.Popen(cmd, stderr=subprocess.STDOUT)
-        print("[%d] %s" % (process.pid, " ".join(cmd)))
+        if args.verbose: print("[%d] %s" % (process.pid, " ".join(cmd)))
         if not args.no_wait:
             terminated = wait_for(process)
             if terminated: break
@@ -1149,6 +1148,17 @@ if __name__ == "__main__":
     reprocess_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
     clearday_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
 
+    eod_parser.add_argument("--verbose", action="store_true",
+        help="set to show more information on launch")
+    rt_parser.add_argument("--verbose", action="store_true",
+        help="set to show more information on launch")
+    cal_parser.add_argument("--verbose", action="store_true",
+        help="set to show more information on launch")
+    reprocess_parser.add_argument("--verbose", action="store_true",
+        help="set to show more information on launch")
+    clearday_parser.add_argument("--verbose", action="store_true",
+        help="set to show more information on launch")
+
     eod_parser.set_defaults(func=process_eod, parser=eod_parser)
     rt_parser.set_defaults(func=process_rt, parser=rt_parser)
     cal_parser.set_defaults(func=process_cal, parser=cal_parser)
@@ -1165,6 +1175,8 @@ if __name__ == "__main__":
     archive_parser.add_argument("-l", "--level", type=str, default=None,
         help="level to archive: 0, 1, or 2")
     archive_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
+    archive_parser.add_argument("--verbose", action="store_true",
+        help="set to show more information on launch")
     archive_parser.set_defaults(func=archive, parser=archive_parser)
 
     # regression sub-command
@@ -1175,6 +1187,8 @@ if __name__ == "__main__":
     regression_parser.add_argument("-f", "--flags", type=str, help=flags_help,
         default="latest")
     regression_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
+    regression_parser.add_argument("--verbose", action="store_true",
+        help="set to show more information on launch")
     regression_parser.set_defaults(func=regression, parser=regression_parser)
 
     # verify sub-command
@@ -1184,6 +1198,8 @@ if __name__ == "__main__":
         metavar="date-expr")
     verify_parser.add_argument("-f", "--flags", type=str, help=flags_help,
         default="latest")
+    verify_parser.add_argument("--verbose", action="store_true",
+        help="set to show more information on launch")
     verify_parser.set_defaults(func=verify, parser=verify_parser)
 
     # simulate sub-command
@@ -1207,6 +1223,8 @@ if __name__ == "__main__":
     script_parser.add_argument("-n", "--name", type=str, help="name of script",
         required=True)
     script_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
+    script_parser.add_argument("--verbose", action="store_true",
+        help="set to show more information on launch")
     script_parser.set_defaults(func=run_script, parser=script_parser)
 
     # parse args and call appropriate sub-command
