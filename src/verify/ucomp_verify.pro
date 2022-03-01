@@ -104,11 +104,21 @@ end
 ;   - filenames in the machine log match those present in the incoming
 ;     directory
 ;   - file sizes in the machine log match those present in the incoming
-;     directory 
+;     directory
+;
+; :Keywords:
+;   run : in, required, type=object
+;     UCoMP run object
+;   status : out, optional, type=integer
+;     set to a named variable to retrieve the status of the check, 0 for no
+;     error, otherwise for an error
+;   n_raw_files : out, optional, type=integer
+;     set to a named variable to retrieve the number of raw files
 ;-
-pro ucomp_verify_check_logs, run=run, status=status
+pro ucomp_verify_check_logs, run=run, status=status, n_raw_files=n_raw_files
   compile_opt strictarr
 
+  n_raw_files = 0L
   status = 0L
 
   raw_basedir = run->config('raw/basedir')
@@ -125,11 +135,23 @@ pro ucomp_verify_check_logs, run=run, status=status
   endif
 
   n_ml_lines = file_lines(machine_log_filename)
-  if (n_ml_lines eq 0L) then begin
-    mg_log, 'machine log empty', name=run.logger_name, /warn
+  if (n_ml_lines eq 0L && n_raw_files ne 0L) then begin
+    mg_log, 'machine log empty, but there are raw files', $
+            name=run.logger_name, /warn
     status = 1L
     return
   endif
+
+  if (n_raw_files ne n_ml_lines) then begin
+    mg_log, '%d raw files and %d files in machine log', $
+            n_raw_files, n_ml_lines, $
+            name=run.logger_name, /warn
+    status = 1L
+    return
+  endif
+
+  n_bad = 0L
+  if (n_raw_files eq 0L && n_ml_lines eq 0L) then goto, done
 
   ml_files = strarr(n_ml_lines)
   ml_sizes = ulon64arr(n_ml_lines)
@@ -143,15 +165,6 @@ pro ucomp_verify_check_logs, run=run, status=status
   endfor
   free_lun, lun
 
-  if (n_raw_files ne n_ml_lines) then begin
-    mg_log, '%d raw files and %d files in machine log', $
-            n_raw_files, n_ml_lines, $
-            name=run.logger_name, /warn
-    status = 1L
-    return
-  endif
-
-  n_bad = 0L
   for f = 0L, n_ml_lines - 1L do begin
     matching_index = where(ml_files[f] eq raw_basenames, n_matches)
     if (n_matches ne 1L) then begin
@@ -182,6 +195,7 @@ pro ucomp_verify_check_logs, run=run, status=status
     endcase
   endfor
 
+  done:
   if (n_bad eq 0L) then begin
     mg_log, 'raw files match machine log', name=run.logger_name, /info
   endif else begin
@@ -372,14 +386,20 @@ pro ucomp_verify, date, config_filename, $
   ucomp_verify_check_permissions, run=run, status=check_permissions_status
   status or= 2L * check_permissions_status
 
-  ucomp_verify_check_logs, run=run, status=check_logs_status
+  ucomp_verify_check_logs, run=run, status=check_logs_status, $
+                           n_raw_files=n_raw_files
   status or= 4L * check_logs_status
 
   ucomp_verify_check_collection_server, run=run, status=check_collection_server
   status or= 8L * check_collection_server
 
-  ucomp_verify_check_archive_server, run=run, status=check_archive_server
-  status or= 16L * check_archive_server
+  if (n_raw_files gt 0L) then begin
+    ucomp_verify_check_archive_server, run=run, status=check_archive_server
+    status or= 16L * check_archive_server
+  endif else begin
+    mg_log, 'skipping archive server check because no raw files', $
+            name=run.logger_name, /info
+  endelse
 
   done:
 
