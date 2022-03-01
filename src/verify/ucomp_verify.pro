@@ -40,7 +40,7 @@ pro ucomp_verify_check_files, run=run, status=status
 
   raw_basedir = run->config('raw/basedir')
   raw_dir = filepath(run.date, root=raw_basedir)
-  files = file_search(raw_dir, '*', count=n_files)
+  files = file_search(raw_dir, '*.fts*', count=n_files)
 
   ut_offset = - 10.0D / 24.0D   ; shift to HST in days
   date = ucomp_decompose_date(run.date)
