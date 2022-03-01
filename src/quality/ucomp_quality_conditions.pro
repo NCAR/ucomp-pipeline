@@ -18,7 +18,11 @@ function ucomp_quality_conditions, wave_region, run=run
                          description: 'in/out values that are neither in or out'}, $
                         {mask: 0UL, $
                          checker: 'ucomp_quality_sgsloop', $
-                         description: 'SGSLOOP not high enough'}]
+                         description: 'SGSLOOP not high enough'}, $
+                        {mask: 0UL, $
+                         checker: 'ucomp_quality_check_time_interval', $
+                         description: string(run->epoch('max_ext_time'), $
+                                             format='(%"sequential extensions acquired more than %0.2f secs apart")')}]
 
   quality_conditions.mask = 2UL ^ (ulindgen(n_elements(quality_conditions)))
 
