@@ -76,7 +76,8 @@ pro ucomp_send_notification, run=run
 
   wave_regions = run->config('options/wave_regions')
   for w = 0L, n_elements(wave_regions) - 1L do begin
-    files = run->get_files(data_type='sci', wave_region=wave_regions[w], $
+    files = run->get_files(data_type='sci', $
+                           wave_region=wave_regions[w], $
                            count=n_files)
 
     if (n_files eq 0L) then continue
@@ -95,23 +96,36 @@ pro ucomp_send_notification, run=run
     !null = where(gbu eq 0UL and quality eq 0UL, n_good_files)
     body->add, string(n_good_files, format='(%"%d good files")')
 
-    quality_conditions = ucomp_quality_conditions(wave_regions[w], run=run)
-    for q = 0L, n_elements(quality_conditions) - 1L do begin
-      !null = where(quality_conditions[q].mask and quality, n_condition_files)
-      if (n_condition_files gt 0L) then begin
-        body->add, string(n_condition_files, quality_conditions[q].description, $
-                          format='(%"%d files with %s")')
-      endif
-    endfor
+    quality_indices = where(quality gt 0L, n_bad_quality)
+    if (n_bad_quality) then begin
+      body->add, ''
+      body->add, string(n_bad_quality, format='(%"%d bad quality images")')
 
-    gbu_conditions = ucomp_gbu_conditions(wave_regions[w], run=run)
-    for g = 0L, n_elements(gbu_conditions) - 1L do begin
-      !null = where(gbu_conditions[g].mask and gbu, n_condition_files)
-      if (n_condition_files gt 0L) then begin
-        body->add, string(n_condition_files, gbu_conditions[g].description, $
-                          format='(%"%d files with %s")')
-      endif
-    endfor
+      quality_conditions = ucomp_quality_conditions(wave_regions[w], run=run)
+      for q = 0L, n_elements(quality_conditions) - 1L do begin
+        !null = where(quality_conditions[q].mask and quality, n_condition_files)
+        if (n_condition_files gt 0L) then begin
+          body->add, string(n_condition_files, quality_conditions[q].description, $
+                            format='(%"%d files with %s")')
+        endif
+      endfor
+    endif
+
+    gbu_indices = where(gbu gt 0L, n_bad_gbu)
+    if (n_bad_gbu) then begin
+      body->add, ''
+      body->add, string(n_bad_gbu, format='(%"%d bad GBU images")')
+
+      gbu_conditions = ucomp_gbu_conditions(wave_regions[w], run=run)
+      for g = 0L, n_elements(gbu_conditions) - 1L do begin
+        !null = where(gbu_conditions[g].mask and gbu, n_condition_files)
+        if (n_condition_files gt 0L) then begin
+          body->add, string(n_condition_files, gbu_conditions[g].description, $
+                            format='(%"%d files with %s")')
+        endif
+      endfor
+    endif
+
     body->add, ['', ''], /extract
   endfor
 
