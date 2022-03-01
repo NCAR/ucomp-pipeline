@@ -33,7 +33,7 @@ function ucomp_quality_inout, file, primary_header, ext_data, ext_headers, $
       value = strlowcase(ucomp_getpar(ext_headers[e], keywords[k]))
     
       if (value ne 'in' && value ne 'out') then begin
-        n_keywords[k] += 1L
+        n_mid[k] += 1L
         status = 1UL
       endif
     endfor
@@ -41,7 +41,7 @@ function ucomp_quality_inout, file, primary_header, ext_data, ext_headers, $
 
   for k = 0L, n_elements(keywords) - 1L do begin
     if (n_mid[k] gt 0L) then begin
-      mg_log, '%s value not in or out %d times', keywords[k], n_mid[k], $
+      mg_log, '%s value not in or out in %d extensions', keywords[k], n_mid[k], $
               name=run.logger_name, /warn
     endif
   endfor
