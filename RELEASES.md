@@ -110,3 +110,4 @@
   quality logs
   better listing of quality/GBU issues in notification email
   fix verification bug examining scripts/ directory
+0.2.22
