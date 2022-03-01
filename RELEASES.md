@@ -106,3 +106,6 @@
 0.2.20 [Feb 25, 2022]
   fix bugs in quality check
 0.2.21
+  intensity and IQUV movies
+  quality logs
+  better listing of quality/GBU issues in notification email
