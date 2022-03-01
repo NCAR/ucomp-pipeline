@@ -18,12 +18,13 @@ pro ucomp_eod_steps, wave_regions, run=run
 
   for w = 0L, n_elements(wave_regions) - 1L do begin
     ucomp_pipeline_step, 'ucomp_l1_process', wave_regions[w], run=run
+    ucomp_pipeline_step, 'ucomp_write_quality', wave_regions[w], run=run
     ucomp_pipeline_step, 'ucomp_write_gbu', wave_regions[w], run=run
+    ucomp_pipeline_step, 'ucomp_write_movies', wave_regions[w], run=run
   endfor
 
   ucomp_pipeline_step, 'ucomp_l1_engineering_plots', run=run
   ucomp_pipeline_step, 'ucomp_validate', 'l1', run=run
-
 
   ;== level 2
 
