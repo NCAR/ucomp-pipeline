@@ -33,4 +33,5 @@ install(PROGRAMS ucomp_create_tables.sh
 
 install(FILES ucomp_parse_args.sh
               ucomp_regression_include.sh
+              ucomp-completion.bash
         DESTINATION bin)
