@@ -64,7 +64,10 @@ config_filename = filepath(config_basename, $
 run = ucomp_run(date, 'test', config_filename)
 
 ; red: 706, green: 1074, blue: 789
-times = date + '.' + ['230819', '231854', '231337']
+;times = date + '.' + ['230819', '231854', '231337']
+
+; red: 1074, green: 789, blue: 637
+times = date + '.' + ['231854', '231337', '230302']
 
 files = list()
 data_arrays = list()
