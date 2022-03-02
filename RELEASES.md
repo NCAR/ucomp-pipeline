@@ -114,3 +114,4 @@
   handle days with no raw files in verification
 0.2.23 [Mar 2, 2022]
   make mp4 creation optional
+0.2.24
