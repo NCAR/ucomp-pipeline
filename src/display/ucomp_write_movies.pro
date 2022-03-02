@@ -14,9 +14,18 @@
 pro ucomp_write_movies, wave_region, run=run
   compile_opt strictarr
 
+  ffmpeg = run->config('externals/ffmpeg')
+  if (n_elements(ffmpeg) eq 0L) then begin
+    mg_log, 'ffmpeg not specified, skipping movie creation', $
+            name=run.logger_name, /info
+    goto, done
+  endif
+
   ; intensity images
   ucomp_write_intensity_mp4, wave_region, run=run
 
   ; IQUV images
   ucomp_write_iquv_mp4, wave_region, run=run
+
+  done:
 end
