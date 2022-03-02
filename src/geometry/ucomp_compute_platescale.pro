@@ -19,7 +19,7 @@ function ucomp_compute_platescale, radius, occulter_id, wave_region, run=run
   compile_opt strictarr
 
   ; occulter physical diameter [mm]
-  occulter_diameter = run->epochs(occulter_id + '-mm')
+  occulter_diameter = run->epoch(occulter_id + '-mm')
 
   ; magnification of optical system (occulter image radius/occulter radius,
   ; 10 um pixels)
