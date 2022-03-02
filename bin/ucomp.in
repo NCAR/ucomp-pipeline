@@ -15,6 +15,8 @@ import sys
 import time
 import warnings
 
+# import shtab
+
 PY3 = sys.version_info[0] == 3
 
 if PY3:
@@ -1226,6 +1228,10 @@ if __name__ == "__main__":
     script_parser.add_argument("--verbose", action="store_true",
         help="set to show more information on launch")
     script_parser.set_defaults(func=run_script, parser=script_parser)
+
+    # uncomment the following line and the shtab import at the top of this file
+    # to generate a bash completion file
+    # print(shtab.complete(parser, shell="bash"))
 
     # parse args and call appropriate sub-command
     args = parser.parse_args()
