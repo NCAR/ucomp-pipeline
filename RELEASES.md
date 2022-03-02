@@ -115,3 +115,5 @@
 0.2.23 [Mar 2, 2022]
   make mp4 creation optional
 0.2.24
+  add IMAGESCL and MED_BACK FITS keywords
+  updated display min/max values
