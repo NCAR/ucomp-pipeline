@@ -112,4 +112,5 @@
   fix verification bug examining scripts/ directory
 0.2.22 [Mar 1, 2022]
   handle days with no raw files in verification
-0.2.23
+0.2.23 [Mar 2, 2022]
+  make mp4 creation optional
