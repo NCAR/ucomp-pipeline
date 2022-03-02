@@ -80,14 +80,14 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
                                            post_angle_guess=post_angle_guess, $
                                            post_angle_tolerance=post_angle_tolerance)
 
-  ; TODO: I am not sure what this is
-  ; ucomp_addpar, primary_header, 'IMAGESCL', float(image_scale), $
-  ;               comment='[arcsec/pixel] image scale at focal plane'
-
   rcam = file.rcam_geometry
-  ucomp_addpar, primary_header, 'XOFFSET0', (rcam.xsize - 1.0) / 2.0 - rcam.occulter_center[0], $
+  ucomp_addpar, primary_header, $
+                'XOFFSET0', $
+                (rcam.xsize - 1.0) / 2.0 - rcam.occulter_center[0], $
                 comment='[px] RCAM occulter x-offset'
-  ucomp_addpar, primary_header, 'YOFFSET0', (rcam.ysize - 1.0) / 2.0 - rcam.occulter_center[1], $
+  ucomp_addpar, primary_header, $
+                'YOFFSET0', $
+                (rcam.ysize - 1.0) / 2.0 - rcam.occulter_center[1], $
                 comment='[px] RCAM occulter y-offset'
   ucomp_addpar, primary_header, 'RADIUS0', rcam.occulter_radius, $
                 comment='[px] RCAM occulter radius'
@@ -95,25 +95,40 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
                 comment='[px] chi-squared for RCAM center fit'
 
   tcam = file.tcam_geometry
-  ucomp_addpar, primary_header, 'XOFFSET1', (tcam.xsize - 1.0) / 2.0 - tcam.occulter_center[0], $
+  ucomp_addpar, primary_header, $
+                'XOFFSET1', $
+                (tcam.xsize - 1.0) / 2.0 - tcam.occulter_center[0], $
                 comment='[px] TCAM occulter x-offset'
-  ucomp_addpar, primary_header, 'YOFFSET1', (tcam.ysize - 1.0) / 2.0 - tcam.occulter_center[1], $
+  ucomp_addpar, primary_header, $
+                'YOFFSET1', $
+                (tcam.ysize - 1.0) / 2.0 - tcam.occulter_center[1], $
                 comment='[px] TCAM occulter y-offset'
   ucomp_addpar, primary_header, 'RADIUS1', file.tcam_geometry.occulter_radius, $
                 comment='[px] TCAM occulter radius'
   ucomp_addpar, primary_header, 'FITCHI1', file.tcam_geometry.occulter_chisq, $
                 comment='[px] chi-squared for TCAM center fit'
 
-  ; TODO: add this
-  ; ucomp_addpar, primary_header, 'MED_BACK', float(med_back), $
-  ;               comment='[ppm] median of background'
-
   ucomp_addpar, primary_header, 'POST_ANG', $
                 (rcam.post_angle + tcam.post_angle) / 2.0, $
                 comment='[deg] post angle CCW from north'
+  radius = (rcam.occulter_radius + tcam.occulter_radius) / 2.0
   ucomp_addpar, primary_header, 'RADIUS', $
-                (rcam.occulter_radius + tcam.occulter_radius) / 2.0, $
+                radius, $
                 comment='[px] occulter average radius'
+
+  image_scale = ucomp_compute_platescale(radius, occulter_id, file.wave_region, $
+                                         run=run)
+  ucomp_addpar, primary_header, 'IMAGESCL', image_scale, $
+                comment='[arcsec/pixel] image scale at focal plane'
+
+  background = (rcam_im + tcam_in) / 2.0
+  annulus_mask = ucomp_annulus(1.1 * radius, 1.5 * radius)
+  annulus_indices = where(annulus_mask, n_annulus_pts, $
+                          dimensions=size(background, /dimensions))
+  median_background = median(background[annulus_indices])
+  file.median_background = median_background
+  ucomp_addpar, primary_header, 'MED_BACK', median_background, $
+                comment='[ppm] median of background'
 
   file->getProperty, p_angle=p_angle, b0=b0, semidiameter=semidiameter, $
                      distance_au=distance_au

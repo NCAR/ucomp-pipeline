@@ -73,7 +73,7 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
                              tcam_geometry=tcam_geometry, $
                              rcam_roughness=rcam_roughness, $
                              tcam_roughness=tcam_roughness, $
-                             background=background, $
+                             median_background=median_background, $
                              quality_bitmask=quality_bitmask, $
                              gbu=gbu, $
                              vcrosstalk_metric=vcrosstalk_metric, $
@@ -90,7 +90,7 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
   if (n_elements(rcam_roughness)) then self.rcam_roughness = rcam_roughness
   if (n_elements(tcam_roughness)) then self.tcam_roughness = tcam_roughness
 
-  if (n_elements(background)) then self.background = background
+  if (n_elements(median_background)) then self.median_background = median_background
 
   if (n_elements(quality_bitmask) gt 0L) then begin
     self.quality_bitmask or= quality_bitmask
@@ -156,7 +156,7 @@ pro ucomp_file::getProperty, run=run, $
                              n_unique_wavelengths=n_unique_wavelengths, $
                              unique_wavelengths=unique_wavelengths, $
                              onband_indices=onband_indices, $
-                             background=background, $
+                             median_background=median_background, $
                              quality_bitmask=quality_bitmask, $
                              gbu=gbu, $
                              ok=ok, $
@@ -283,7 +283,7 @@ pro ucomp_file::getProperty, run=run, $
 
   if (arg_present(data_type)) then data_type = self.data_type
 
-  if (arg_present(background)) then background = self.background
+  if (arg_present(median_background)) then median_background = self.median_background
 
   if (arg_present(quality_bitmask)) then quality_bitmask = self.quality_bitmask
   if (arg_present(gbu)) then gbu = self.gbu
@@ -572,7 +572,7 @@ function ucomp_file::init, raw_filename, run=run
 
   self.data_type = 'unk'
 
-  self.background = !values.f_nan
+  self.median_background = !values.f_nan
   self.vcrosstalk_metric = !values.f_nan
 
   self.rcam_roughness = !values.f_nan
@@ -647,6 +647,8 @@ pro ucomp_file__define
 
            obsswid             : '', $
 
+           median_background   : 0.0, $
+
            ; for flats only
            rcam_roughness      : 0.0, $
            tcam_roughness      : 0.0, $
@@ -683,8 +685,6 @@ pro ucomp_file__define
 
            wavelengths         : ptr_new(), $
            onband_indices      : ptr_new(), $
-
-           background          : 0.0, $
 
            sgs_dimv            : ptr_new(), $
            sgs_dims            : ptr_new(), $
