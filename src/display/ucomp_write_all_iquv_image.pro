@@ -27,9 +27,6 @@ pro ucomp_write_all_iquv_image, file, data, run=run
                         root=run->config('processing/basedir'))
   ucomp_mkdir, l1_dirname, logger_name=run.logger_name
 
-  perform_centering = run->config('centering/perform')
-  n_cameras = perform_centering ? 1 : 2
-
   iquv_basename_format = file_basename(file.l1_basename, '.fts')
   if (run->config('centering/perform')) then begin
     iquv_basename_format += '.iquv.all.png'
@@ -79,89 +76,79 @@ pro ucomp_write_all_iquv_image, file, data, run=run
   charsize = 1.0
 
   pol_states = ['I', 'Q', 'U', 'V']
-  for c = 0L, n_cameras - 1L do begin
-    for e = 1L, file.n_extensions do begin
-      if (perform_centering) then begin
-        ext_data = reform(data[*, *, *, e - 1L])
+  for e = 1L, file.n_extensions do begin
+    ext_data = reform(data[*, *, *, e - 1L])
+
+    dims = size(ext_data, /dimensions)
+
+    for p = 0L, dims[2] - 1L do begin
+      if (p eq 0) then begin
+        display_min = intensity_display_min
+        display_max = intensity_display_max
+        display_gamma = intensity_display_gamma
+        display_power = intensity_display_power
+        ct_name = 'intensity'
       endif else begin
-        ext_data = reform(data[*, *, *, c, e - 1L])
+        display_min = quv_display_min
+        display_max = quv_display_max
+        display_gamma = quv_display_gamma
+        display_power = quv_display_power
+        ct_name = 'quv'
+        ;ct_name = 'intensity'
       endelse
 
-      dims = size(ext_data, /dimensions)
+      ucomp_loadct, ct_name, n_colors=n_colors
+      gamma_ct, display_gamma, /current
 
-      for p = 0L, dims[2] - 1L do begin
-        if (p eq 0) then begin
-          display_min = intensity_display_min
-          display_max = intensity_display_max
-          display_gamma = intensity_display_gamma
-          display_power = intensity_display_power
-          ct_name = 'intensity'
-        endif else begin
-          display_min = quv_display_min
-          display_max = quv_display_max
-          display_gamma = quv_display_gamma
-          display_power = quv_display_power
-          ct_name = 'quv'
-          ;ct_name = 'intensity'
-        endelse
+      im = rebin(ext_data[*, *, p], $
+                 dims[0] / reduce_dims_factor, $
+                 dims[1] / reduce_dims_factor)
+      field_mask = ucomp_field_mask(dims[0] / reduce_dims_factor, $
+                                    dims[1] / reduce_dims_factor, $
+                                    run->epoch('field_radius') / reduce_dims_factor)
+      scaled_im = bytscl((im * field_mask)^display_power, $
+                         min=display_min, $
+                         max=display_max, $
+                         top=n_colors - 1L, $
+                         /nan)
 
-        ucomp_loadct, ct_name, n_colors=n_colors
-        gamma_ct, display_gamma, /current
+      tv, scaled_im, p * file.n_unique_wavelengths + e - 1L
 
-        im = rebin(ext_data[*, *, p], $
-                   dims[0] / reduce_dims_factor, $
-                   dims[1] / reduce_dims_factor)
-        field_mask = ucomp_field_mask(dims[0] / reduce_dims_factor, $
-                                      dims[1] / reduce_dims_factor, $
-                                      run->epoch('field_radius') / reduce_dims_factor)
-        scaled_im = bytscl((im * field_mask)^display_power, $
-                           min=display_min, $
-                           max=display_max, $
-                           top=n_colors - 1L, $
-                           /nan)
+      if (p eq 0L and e eq 1L) then begin
+        xyouts, xmargin * dims[0] / reduce_dims_factor, $
+                (dims[2] - 2.5 * ymargin) * dims[1] / reduce_dims_factor, $
+                /device, $
+                string(run->line(file.wave_region, 'ionization'), $
+                       file.wave_region, $
+                       format='(%"%s!C%s nm")'), $
+                charsize=charsize, color=text_color
+        xyouts, xmargin * dims[0] / reduce_dims_factor, $
+                (dims[2] - 1.0 + ymargin) * dims[1] / reduce_dims_factor, $
+                /device, $
+                date_stamp, $
+                charsize=charsize, color=text_color
+      endif
 
-        tv, scaled_im, p * file.n_unique_wavelengths + e - 1L
-
-        if (p eq 0L and e eq 1L) then begin
-          xyouts, xmargin * dims[0] / reduce_dims_factor, $
-                  (dims[2] - 2.5 * ymargin) * dims[1] / reduce_dims_factor, $
-                  /device, $
-                  string(run->line(file.wave_region, 'ionization'), $
-                         file.wave_region, $
-                         format='(%"%s!C%s nm")'), $
-                  charsize=charsize, color=text_color
-          xyouts, xmargin * dims[0] / reduce_dims_factor, $
-                  (dims[2] - 1.0 + ymargin) * dims[1] / reduce_dims_factor, $
-                  /device, $
-                  date_stamp, $
-                  charsize=charsize, color=text_color
-        endif
-
-        w = (e - 1L) mod file.n_unique_wavelength
-        if (p eq 0L) then begin
-          xyouts, (w + 0.5) * dims[0] / reduce_dims_factor, $
-                  (dims[2] - 3.0 * ymargin) * dims[1] / reduce_dims_factor, $
-                  /device, alignment=0.5, $
-                  string(file.wavelengths[w], format='(%"%0.2f nm")'), $
-                  charsize=charsize, color=text_color
-        endif
-        if (w eq file.n_unique_wavelength - 1L) then begin
-          xyouts, xmargin * dims[0] / reduce_dims_factor, $
-                  (dims[2] - p - 0.5 - 0.5 * ymargin) * dims[1] / reduce_dims_factor, $, $
-                  /device, $
-                  pol_states[p], $
-                  charsize=charsize, color=text_color
-        endif
-      endfor
+      w = (e - 1L) mod file.n_unique_wavelength
+      if (p eq 0L) then begin
+        xyouts, (w + 0.5) * dims[0] / reduce_dims_factor, $
+                (dims[2] - 3.0 * ymargin) * dims[1] / reduce_dims_factor, $
+                /device, alignment=0.5, $
+                string(file.wavelengths[w], format='(%"%0.2f nm")'), $
+                charsize=charsize, color=text_color
+      endif
+      if (w eq file.n_unique_wavelength - 1L) then begin
+        xyouts, xmargin * dims[0] / reduce_dims_factor, $
+                (dims[2] - p - 0.5 - 0.5 * ymargin) * dims[1] / reduce_dims_factor, $, $
+                /device, $
+                pol_states[p], $
+                charsize=charsize, color=text_color
+      endif
     endfor
-
-    if (perform_centering) then begin
-      iquv_filename = iquv_filename_format
-    endif else begin
-      iquv_filename = string(c, format=iquv_filename_format)
-    endelse
-    write_png, iquv_filename, tvrd(true=1)
   endfor
+
+  iquv_filename = iquv_filename_format
+  write_png, iquv_filename, tvrd(true=1)
 
   done:
   gamma_ct, 1.0, /current   ; reset gamma to linear ramp
