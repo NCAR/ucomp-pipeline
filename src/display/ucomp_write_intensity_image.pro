@@ -24,12 +24,8 @@ pro ucomp_write_intensity_image, file, data, run=run
                         root=run->config('processing/basedir'))
   ucomp_mkdir, l1_dirname, logger_name=run.logger_name
 
-  perform_centering = run->config('centering/perform')
-  n_cameras = perform_centering ? 1 : 2
-
   intensity_basename_format = file_basename(file.l1_basename, '.fts')
   intensity_basename_format += '.int'
-  if (~perform_centering) then intensity_basename_format += '.cam%d'
   if (~center_wavelength_only) then intensity_basename_format += '.ext%02d'
   intensity_basename_format += '.gif'
   intensity_filename_format = filepath(intensity_basename_format, root=l1_dirname)
@@ -71,62 +67,52 @@ pro ucomp_write_intensity_image, file, data, run=run
 
   wavelengths = file.wavelengths
   for e = 1L, file.n_extensions do begin
-    for c = 0L, n_cameras - 1L do begin
-      if (center_wavelength_only) then begin
-        diff = wavelengths[e - 1L] - run->line(file.wave_region, 'center_wavelength')
-        if (abs(diff) gt 0.01) then continue
-      endif
+    if (center_wavelength_only) then begin
+      diff = wavelengths[e - 1L] - run->line(file.wave_region, 'center_wavelength')
+      if (abs(diff) gt 0.01) then continue
+    endif
 
-      if (perform_centering) then begin
-        im = reform(data[*, *, 0, e - 1L])
-      endif else begin
-        im = reform(data[*, *, 0, c, e - 1L])
-      endelse
+    im = reform(data[*, *, 0, e - 1L])
 
-      dims = size(im, /dimensions)
+    dims = size(im, /dimensions)
 
-      field_mask = ucomp_field_mask(dims[0], $
-                                    dims[1], $
-                                    run->epoch('field_radius'))
+    field_mask = ucomp_field_mask(dims[0], $
+                                  dims[1], $
+                                  run->epoch('field_radius'))
 
-      scaled_im = bytscl((im * field_mask)^display_power, $
-                         min=display_min, $
-                         max=display_max, $
-                         top=n_colors - 1L, $
-                         /nan)
+    scaled_im = bytscl((im * field_mask)^display_power, $
+                       min=display_min, $
+                       max=display_max, $
+                       top=n_colors - 1L, $
+                       /nan)
 
-      tv, scaled_im
+    tv, scaled_im
 
-      xyouts, 15, dims[1] - 2.0 * 15.0, /device, $
-              string(run->line(file.wave_region, 'ionization'), $
-                     file.wave_region, $
-                     format='(%"%s %s nm")'), $
-              charsize=charsize, color=text_color
-      xyouts, 15, 15, /device, alignment=0.0, $
-              string(date_stamp, e, format='(%"%s ext: %d")'), $
-              charsize=charsize, color=text_color
-      xyouts, nx - 15, 15, /device, alignment=1.0, $
-              string(display_min, display_max, display_gamma, display_power, $
-                     format='(%"min/max: %0.2f/%0.1f, gamma: %0.1f, exp: %0.2f")'), $
-              charsize=charsize, color=text_color
+    xyouts, 15, dims[1] - 2.0 * 15.0, /device, $
+            string(run->line(file.wave_region, 'ionization'), $
+                   file.wave_region, $
+                   format='(%"%s %s nm")'), $
+            charsize=charsize, color=text_color
+    xyouts, 15, 15, /device, alignment=0.0, $
+            string(date_stamp, e, format='(%"%s ext: %d")'), $
+            charsize=charsize, color=text_color
+    xyouts, nx - 15, 15, /device, alignment=1.0, $
+            string(display_min, display_max, display_gamma, display_power, $
+                   format='(%"min/max: %0.2f/%0.1f, gamma: %0.1f, exp: %0.2f")'), $
+            charsize=charsize, color=text_color
 
-      if (keyword_set(occulter_annotation)) then begin
-        ; TODO: draw occulter on GIF image, use center of image and the mean
-        ; of the two geometry radii
-      endif
+    if (keyword_set(occulter_annotation)) then begin
+      ; TODO: draw occulter on GIF image, use center of image and the mean
+      ; of the two geometry radii
+    endif
 
-      if (~center_wavelength_only and ~perform_centering) then begin
-        intensity_filename = string(c, e, format=intensity_filename_format)
-      endif else if (~center_wavelength_only) then begin
-        intensity_filename = string(e, format=intensity_filename_format)
-      endif else if (~perform_centering) then begin
-        intensity_filename = string(c, format=intensity_filename_format)
-      endif else begin
-        intensity_filename = intensity_filename_format
-      endelse
+    if (center_wavelength_only) then begin
+      intensity_filename = intensity_filename_format
+    endif else begin
+      intensity_filename = string(e, format=intensity_filename_format)
+    endelse
 
-      write_gif, intensity_filename, tvrd(), r, g, b
-    endfor
+    write_gif, intensity_filename, tvrd(), r, g, b
   endfor
 
   done:
