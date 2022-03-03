@@ -14,7 +14,8 @@
 pro ucomp_write_intensity_mp4, wave_region, run=run
   compile_opt strictarr
 
-  mg_log, 'writing intensity mp4 for %s nm', wave_region, name=run.logger_name, /info
+  mg_log, 'creating intensity mp4 for %s nm', wave_region, $
+          name=run.logger_name, /info
 
   perform_centering = run->config('centering/perform')
   if (~perform_centering) then begin
@@ -63,7 +64,8 @@ pro ucomp_write_intensity_mp4, wave_region, run=run
                           root=l1_dirname)
 
   ucomp_create_mp4, image_filenames, mp4_filename, run=run, status=status
-  mg_log, 'wrote intensity mp4 %s for %s nm', mp4_filename, wave_region, $
+  mg_log, 'wrote intensity mp4 %s for %s nm', $
+          file_basename(mp4_filename), wave_region, $
           name=run.logger_name, /info
 
   done:
