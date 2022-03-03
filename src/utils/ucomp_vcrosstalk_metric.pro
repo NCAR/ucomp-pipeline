@@ -19,10 +19,11 @@ function ucomp_vcrosstalk_metric, data, occulter_radius
 
   dims = size(v, /dimensions)
 
-  annulus_indices = ucomp_annulus(1.04 * occulter_radius, $
-                                  1.10 * occulter_radius, $
-                                  dimensions=dims[0:1])
+  annulus_mask = ucomp_annulus(1.04 * occulter_radius, $
+                               1.10 * occulter_radius, $
+                               dimensions=dims[0:1])
+  annulus_indices = where(annulus_mask, n_annulus_pts)
 
-  return, total((v[annulus_indices])^2, /preserve_type) * 1.0e6 / n_annulus_indices / n_annulus_indices
+  return, total((v[annulus_indices])^2, /preserve_type) * 1.0e6 / n_annulus_pts / n_annulus_pts
 end
 

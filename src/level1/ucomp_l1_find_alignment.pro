@@ -121,10 +121,10 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
   ucomp_addpar, primary_header, 'IMAGESCL', image_scale, $
                 comment='[arcsec/pixel] image scale at focal plane'
 
-  background = (rcam_im + tcam_in) / 2.0
-  annulus_mask = ucomp_annulus(1.1 * radius, 1.5 * radius)
-  annulus_indices = where(annulus_mask, n_annulus_pts, $
-                          dimensions=size(background, /dimensions))
+  background = (rcam_im + tcam_im) / 2.0
+  annulus_mask = ucomp_annulus(1.1 * radius, 1.5 * radius, $
+                               dimensions=size(background, /dimensions))
+  annulus_indices = where(annulus_mask, n_annulus_pts)
   median_background = median(background[annulus_indices])
   file.median_background = median_background
   ucomp_addpar, primary_header, 'MED_BACK', median_background, $
