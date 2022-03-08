@@ -14,14 +14,8 @@
 pro ucomp_write_intensity_mp4, wave_region, run=run
   compile_opt strictarr
 
-  mg_log, 'writing intensity mp4 for %s nm', wave_region, name=run.logger_name, /info
-
-  perform_centering = run->config('centering/perform')
-  if (~perform_centering) then begin
-    mg_log, 'skipping writing intensity mp4 because not centering images', $
-            name=run.logger_name, /warn
-    goto, done
-  endif
+  mg_log, 'creating intensity mp4 for %s nm', wave_region, $
+          name=run.logger_name, /info
 
   center_wavelength_only = run->config('intensity/center_wavelength_gifs_only')
   if (~center_wavelength_only) then begin
@@ -63,7 +57,8 @@ pro ucomp_write_intensity_mp4, wave_region, run=run
                           root=l1_dirname)
 
   ucomp_create_mp4, image_filenames, mp4_filename, run=run, status=status
-  mg_log, 'wrote intensity mp4 %s for %s nm', mp4_filename, wave_region, $
+  mg_log, 'wrote intensity mp4 %s', $
+          file_basename(mp4_filename), $
           name=run.logger_name, /info
 
   done:

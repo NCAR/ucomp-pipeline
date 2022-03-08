@@ -45,7 +45,7 @@ function ucomp_file_ut::test_basic
                        wavelengths=wavelengths, $
                        n_unique_wavelengths=n_unique_wavelengths, $
                        unique_wavelengths=unique_wavelengths, $
-                       background=background, $
+                       median_background=median_background, $
                        quality_bitmask=quality_bitmask, $
                        ok=ok, $
                        occulter_in=occulter_in, $
@@ -137,7 +137,7 @@ function ucomp_file_ut::test_dark
                      wavelengths=wavelengths, $
                      n_unique_wavelengths=n_unique_wavelengths, $
                      unique_wavelengths=unique_wavelengths, $
-                     background=background, $
+                     median_background=median_background, $
                      quality_bitmask=quality_bitmask, $
                      ok=ok, $
                      occulter_in=occulter_in, $
