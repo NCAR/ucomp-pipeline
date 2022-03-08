@@ -125,3 +125,4 @@
 0.2.27 [Mar 8, 2022]
   add ssw dependencies
 0.2.28
+  handle selecting files to put into ucomp_sci if there are no OK files

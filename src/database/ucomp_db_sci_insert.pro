@@ -1,6 +1,34 @@
 ; docformat = 'rst'
 
 ;+
+; Select files to put into the database.
+;
+; :Returns:
+;   `objarr` of UCoMP file objects
+;
+; :Params:
+;   files : in, required, type=objarr
+;     `objarr` of UCoMP file objects
+;
+; :Keywords:
+;   count : out, optional, type=integer
+;     set to a named variable to retrieve the number of files returned
+;-
+function ucomp_db_sci_insert_select, files, count=count
+  compile_opt strictarr
+
+  n_files = n_elements(files)
+  count = 1L
+  for f = 0L, n_files - 1L do begin
+    if (files[f].ok) then return, files[f]
+  endfor
+
+  count = 0L
+  return, !null
+end
+
+
+;+
 ; Choose representative science file(s) from an array of L0 FITS files and
 ; enter them into the ucomp_sci database table.
 ;
@@ -28,11 +56,14 @@ pro ucomp_db_sci_insert, l0_files, obsday_index, sw_index, db, $
   endif
 
   ; choose science file -- right now, just the first file
-  science_files = l0_files[0]
-
-  n_files = n_elements(science_files)
-  mg_log, 'inserting %d files into ucomp_sci', n_files, $
-          name=run.logger_name, /info
+  science_files = ucomp_db_sci_insert_select(l0_files, count=n_files)
+  if (n_files eq 0L) then begin
+    mg_log, 'no appropriate files for ucomp_sci', name=run.logger_name, /info
+    goto, done
+  endif else begin
+    mg_log, 'inserting %d files into ucomp_sci', n_files, $
+            name=run.logger_name, /info
+  endelse
 
   process_basedir = run->config('processing/basedir')
   process_dir = filepath(run.date, root=process_basedir)
