@@ -114,6 +114,7 @@
   handle days with no raw files in verification
 0.2.23 [Mar 2, 2022]
   make mp4 creation optional
-0.2.24
+0.2.24 [Mar 7]
   add IMAGESCL and MED_BACK FITS keywords
   updated display min/max values
+  adding more information to ucomp_sci table and creating rolling synoptic maps
