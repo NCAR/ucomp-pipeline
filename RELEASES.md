@@ -118,3 +118,4 @@
   add IMAGESCL and MED_BACK FITS keywords
   updated display min/max values
   adding more information to ucomp_sci table and creating rolling synoptic maps
+0.2.25
