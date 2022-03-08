@@ -120,3 +120,4 @@
   adding more information to ucomp_sci table and creating rolling synoptic maps
 0.2.25 [Mar 8, 2022]
   add library dependency
+0.2.26
