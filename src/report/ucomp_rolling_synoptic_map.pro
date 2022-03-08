@@ -184,7 +184,7 @@ pro ucomp_rolling_synoptic_map, wave_region, db, run=run
     ptr_free, s.intensity, s.intensity_stddev, s.r108, s.r13, s.r18, s.r111
   endfor
 
-  mg_log, 'done', name=logger_name, /info
+  mg_log, 'done', name=run.logger_name, /info
 end
 
 
