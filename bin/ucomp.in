@@ -160,13 +160,15 @@ def verify(args):
     if len(args.dates) == 0:
         args.parser.error("too few arguments")
 
+    dates = ",".join(args.dates)
     cmd = [os.path.join(PIPELINE_DIR,
                         "bin",
                         "ucomp_verify_dates.sh"),
            args.flags,
-           ",".join(args.dates)]
+           dates]
 
     process = subprocess.Popen(cmd, stderr=subprocess.STDOUT)
+    print(f"verifying dates {dates}")
     if args.verbose: print("[%d] %s" % (process.pid, " ".join(cmd)))
     terminated = wait_for(process)
 
@@ -875,6 +877,7 @@ def launch_processes(args, routine):
                d]
 
         process = subprocess.Popen(cmd, stderr=subprocess.STDOUT)
+        print(f"launching script {routine} with {args.flags} flags on {d}")
         if args.verbose: print("[%d] %s" % (process.pid, " ".join(cmd)))
         if not args.no_wait:
             terminated = wait_for(process)

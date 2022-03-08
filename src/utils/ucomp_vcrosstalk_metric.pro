@@ -18,14 +18,12 @@ function ucomp_vcrosstalk_metric, data, occulter_radius
   v = data[*, *, 3]
 
   dims = size(v, /dimensions)
-  x = rebin(reform(findgen(dims[0]), dims[0], 1), dims[0], dims[1]) - (dims[0] - 1.0) / 2.0
-  y = rebin(reform(findgen(dims[1]), 1, dims[1]), dims[0], dims[1]) - (dims[1] - 1.0) / 2.0
-  r = sqrt(x^2 + y^2)
 
-  min_radius = 1.04 * occulter_radius
-  max_radius = 1.10 * occulter_radius
-  annulus_indices = where(r gt min_radius and r lt max_radius, n_annulus_indices)
+  annulus_mask = ucomp_annulus(1.04 * occulter_radius, $
+                               1.10 * occulter_radius, $
+                               dimensions=dims[0:1])
+  annulus_indices = where(annulus_mask, n_annulus_pts)
 
-  return, total((v[annulus_indices])^2, /preserve_type) * 1.0e6 / n_annulus_indices / n_annulus_indices
+  return, total((v[annulus_indices])^2, /preserve_type) * 1.0e6 / n_annulus_pts / n_annulus_pts
 end
 
