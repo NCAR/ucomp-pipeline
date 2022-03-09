@@ -126,3 +126,4 @@
   add ssw dependencies
 0.2.28
   handle selecting files to put into ucomp_sci if there are no OK files
+  plot centering information
