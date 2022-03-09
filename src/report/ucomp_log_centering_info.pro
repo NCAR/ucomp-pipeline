@@ -15,12 +15,6 @@ pro ucomp_log_centering_info, filename, run=run
   files = run->get_files(data_type='sci', count=n_files)
   if (n_files eq 0L) then goto, done
 
-  ; sort the files in chronological order
-  ; basenames = strarr(n_files)
-  ; for f = 0L, n_files - 1L do basenames[f] = files[f].l1_basename
-  ; ind = sort(basenames)
-  ; files = files[ind]
-
   success_fmt = '%6.2f %6.2f %6.2f %6.2f'
   fail_fmt = '%6.2f %6.2f %6.2f %-6s'
 
