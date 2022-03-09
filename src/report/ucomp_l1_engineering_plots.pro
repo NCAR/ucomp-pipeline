@@ -31,8 +31,13 @@ pro ucomp_l1_engineering_plots, run=run
                              run=run
   ucomp_sgs_plots, engineering_dir, run=run
   ucomp_vcrosstalk_plots, engineering_dir, run=run
+
   ucomp_log_centering_info, filepath(string(run.date, $
                                             format='(%"%s.ucomp.centering.log")'), $
                                      root=engineering_dir), $
                             run=run
+  ucomp_plot_centering_info, filepath(string(run.date, $
+                                             format='(%"%s.ucomp.centering.gif")'), $
+                                      root=engineering_dir), $
+                             run=run
 end
