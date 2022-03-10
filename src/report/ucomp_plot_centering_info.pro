@@ -26,7 +26,7 @@ pro ucomp_plot_centering_info, filename, run=run
   set_plot, 'Z'
   device, get_decomposed=original_decomposed
   tvlct, original_rgb, /get
-  device, set_resolution=[1200, 900], $
+  device, set_resolution=[1280, 768], $
           decomposed=0, $
           set_colors=256, $
           z_buffering=0
@@ -69,7 +69,7 @@ pro ucomp_plot_centering_info, filename, run=run
     endif
   endfor
 
-  !null = ucomp_hours_format('minutes')
+  !null = ucomp_hours_format(/minutes)
 
   if (total(finite(rcam_x)) gt 0L) then begin
     mg_range_plot, hours, rcam_x, $
