@@ -127,3 +127,5 @@
 0.2.28 [Mar 10, 2022]
   handle selecting files to put into ucomp_sci if there are no OK files
   plot centering information
+0.2.29 [Mar 11, 2022]
+  use processed flag for a file to determine if OK to use

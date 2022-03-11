@@ -45,7 +45,6 @@ function ucomp_quality_check_time_interval, file, $
 
   max_ext_time = run->epoch('max_ext_time')
   !null = where(diffs gt max_ext_time, n_bad)
-  mg_log, 'n bad: %d', n_bad, name=run.logger_name, /debug
   return, n_bad gt 0L
 end
 
