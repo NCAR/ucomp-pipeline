@@ -76,6 +76,7 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
                              median_background=median_background, $
                              quality_bitmask=quality_bitmask, $
                              gbu=gbu, $
+                             procossed=processed, $
                              vcrosstalk_metric=vcrosstalk_metric, $
                              n_extensions=n_extensions, $
                              wavelengths=wavelengths, $
@@ -96,6 +97,7 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
     self.quality_bitmask or= quality_bitmask
   endif
   if (n_elements(gbu) gt 0L) then self.gbu or= gbu
+  if (n_elements(processed) gt 0L) then self.processed = processed
   if (n_elements(vcrosstalk_metric) gt 0L) then self.vcrosstalk_metric = vcrosstalk_metric
 
   if (n_elements(n_extensions) gt 0L) then self.n_extensions = n_extensions
@@ -160,6 +162,7 @@ pro ucomp_file::getProperty, run=run, $
                              quality_bitmask=quality_bitmask, $
                              gbu=gbu, $
                              ok=ok, $
+                             processed=processed, $
                              vcrosstalk_metric=vcrosstalk_metric, $
                              occulter_in=occulter_in, $
                              occultrid=occultrid, $
@@ -288,6 +291,7 @@ pro ucomp_file::getProperty, run=run, $
   if (arg_present(quality_bitmask)) then quality_bitmask = self.quality_bitmask
   if (arg_present(gbu)) then gbu = self.gbu
   if (arg_present(ok)) then ok = self.quality_bitmask eq 0
+  if (arg_present(processed)) then processed = self.processed
   if (arg_present(vcrosstalk_metric)) then vcrosstalk_metric = self.vcrosstalk_metric
 
   if (arg_present(focus)) then focus = self.focus
@@ -701,6 +705,7 @@ pro ucomp_file__define
 
            quality_bitmask     : 0UL, $
            gbu                 : 0UL, $
+           processed           : 0B, $
            vcrosstalk_metric  : 0.0 $
           }
 end
