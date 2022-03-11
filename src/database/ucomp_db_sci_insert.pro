@@ -20,7 +20,7 @@ function ucomp_db_sci_insert_select, files, count=count
   n_files = n_elements(files)
   count = 1L
   for f = 0L, n_files - 1L do begin
-    if (files[f].ok) then return, files[f]
+    if (files[f].processed) then return, files[f]
   endfor
 
   count = 0L
