@@ -2,7 +2,7 @@ project(ucomp-pipeline)
 
 set(VERSION_MAJOR "0")
 set(VERSION_MINOR "2")
-set(VERSION_PATCH "27")
+set(VERSION_PATCH "28")
 set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
 # required version of CMake
