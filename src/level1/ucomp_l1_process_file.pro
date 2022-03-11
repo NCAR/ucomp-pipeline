@@ -102,6 +102,7 @@ pro ucomp_l1_process_file, file, run=run
   l1_filename = filepath(file.l1_basename, root=l1_dirname)
 
   ucomp_write_fits_file, l1_filename, primary_header, data, headers
+  file.processed = 1B
 
   ucomp_write_intensity_image, file, data, run=run
   ucomp_write_iquv_image, file, data, run=run
