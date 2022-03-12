@@ -93,9 +93,13 @@ pro ucomp_db_sci_insert, l0_files, obsday_index, sw_index, db, $
     center_indices = file->get_center_wavelength_indices()
     center_data = ext_data[*, *, *, center_indices[0]]
 
-    intensity = center_data[*, *, 0]
+    intensity    = center_data[*, *, 0]
     intensity108 = ucomp_annulus_gridmeans(intensity, 1.08, sun_pixels)
-    intensity13 = ucomp_annulus_gridmeans(intensity, 1.3, sun_pixels)
+    intensity13  = ucomp_annulus_gridmeans(intensity, 1.3, sun_pixels)
+
+    linearpol    = sqrt(center_data[*, *, 1]^2 + center_data[*, *, 2]^2)
+    linearpol108 = ucomp_annulus_gridmeans(linearpol, 1.08, sun_pixels)
+    linearpol13  = ucomp_annulus_gridmeans(linearpol, 1.3, sun_pixels)
 
     fields = [{name: 'file_name', type: '''%s'''}, $
               {name: 'date_obs', type: '''%s'''}, $
@@ -103,6 +107,8 @@ pro ucomp_db_sci_insert, l0_files, obsday_index, sw_index, db, $
               {name: 'wave_region', type: '''%s'''}, $
               {name: 'r108i', type: '''%s'''}, $
               {name: 'r13i', type: '''%s'''}, $
+              {name: 'r108l', type: '''%s'''}, $
+              {name: 'r13l', type: '''%s'''}, $
               {name: 'ucomp_sw_id', type: '%d'}]
     sql_cmd = string(strjoin(fields.name, ', '), $
                      strjoin(fields.type, ', '), $
@@ -115,6 +121,8 @@ pro ucomp_db_sci_insert, l0_files, obsday_index, sw_index, db, $
 
                  db->escape_string(intensity108), $
                  db->escape_string(intensity13), $
+                 db->escape_string(linearpol108), $
+                 db->escape_string(linearpol13), $
 
                  sw_index, $
 
