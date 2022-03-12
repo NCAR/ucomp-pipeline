@@ -82,14 +82,14 @@ pro ucomp_db_update, run=run
                           logger_name=run.logger_name
     ucomp_db_sci_insert, sci_files, obsday_index, sw_index, db, run=run
 
-    ucomp_rolling_synoptic_map, wave_regions[w], 'intensity', 'int', 1.06, $
-                                                 'r106i', db, run=run
+    ucomp_rolling_synoptic_map, wave_regions[w], 'intensity', 'int', 1.08, $
+                                                 'r108i', db, run=run
     ucomp_rolling_synoptic_map, wave_regions[w], 'intensity', 'int', 1.3, $
                                                  'r13i', db, run=run
     ucomp_rolling_synoptic_map, wave_regions[w], 'linear polarization', $
                                                  'linpol', $
-                                                 1.06, $
-                                                 'r106l', $
+                                                 1.08, $
+                                                 'r108l', $
                                                  db, $
                                                  run=run
     ucomp_rolling_synoptic_map, wave_regions[w], 'linear polarization', $
