@@ -134,3 +134,5 @@
 0.2.31 [Mar 11, 2022]
   linear polarization synoptic maps
   synoptic maps at 1.08 Rsun
+0.2.32 [Mar 12, 2022]
+  typo in synoptic map database field name
