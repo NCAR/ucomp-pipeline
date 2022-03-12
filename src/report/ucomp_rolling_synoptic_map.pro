@@ -13,7 +13,8 @@
 ;   run : in, required, type=object]
 ;     KCor run object
 ;-
-pro ucomp_rolling_synoptic_map, wave_region, db, run=run
+pro ucomp_rolling_synoptic_map, wave_region, name, flag, height, field, db, $
+                                run=run
   compile_opt strictarr
 
   n_days = 28   ; number of days to include in the plot
@@ -32,8 +33,8 @@ pro ucomp_rolling_synoptic_map, wave_region, db, run=run
   start_date = string(start_date_jd, $
                       format='(C(CYI4.4, "-", CMoI2.2, "-", CDI2.2))')
 
-  query = 'select ucomp_sci.* from ucomp_sci, mlso_numfiles where ucomp_sci.wave_region=\"%s\" and ucomp_sci.obsday_id=mlso_numfiles.day_id and mlso_numfiles.obs_day between ''%s'' and ''%s'''
-  raw_data = db->query(query, wave_region, start_date, end_date, $
+  query = 'select ucomp_sci.date_obs, ucomp_sci.%s from ucomp_sci, mlso_numfiles where ucomp_sci.wave_region=\"%s\" and ucomp_sci.obsday_id=mlso_numfiles.day_id and mlso_numfiles.obs_day between ''%s'' and ''%s'''
+  raw_data = db->query(query, field, wave_region, start_date, end_date, $
                        count=n_rows, error=error, fields=fields, sql_statement=sql)
   if (n_rows gt 0L) then begin
     mg_log, '%d dates between %s and %s', n_rows, start_date, end_date, $
@@ -45,8 +46,7 @@ pro ucomp_rolling_synoptic_map, wave_region, db, run=run
   endelse
 
   ; organize data
-  radius = 1.3
-  intensity = raw_data.r13i
+  product_data = raw_data.(1)
 
   dates = raw_data.date_obs
   n_dates = n_elements(dates)
@@ -54,18 +54,18 @@ pro ucomp_rolling_synoptic_map, wave_region, db, run=run
   map = fltarr(n_days, 720) + !values.f_nan
   means = fltarr(n_days) + !values.f_nan
   for r = 0L, n_dates - 1L do begin
-    decoded = *intensity[r]
+    decoded = *product_data[r]
     if (n_elements(decoded) gt 0L) then begin
-      *intensity[r] = float(*intensity[r], 0, 720)   ; decode byte data to float
+      *product_data[r] = float(*product_data[r], 0, 720)   ; decode byte data to float
     endif
 
     date = dates[r]
     date_index = ucomp_dateobs2julday(date) - start_date_jd - 10.0/24.0
     date_index = floor(date_index)
 
-    if (ptr_valid(intensity[r]) && n_elements(*intensity[r]) gt 0L) then begin
-      map[date_index, *] = *intensity[r]
-      means[date_index] = mean(*intensity[r])
+    if (ptr_valid(product_data[r]) && n_elements(*product_data[r]) gt 0L) then begin
+      map[date_index, *] = *product_data[r]
+      means[date_index] = mean(*product_data[r])
     endif else begin
       map[date_index, *] = !values.f_nan
       means[date_index] = !values.f_nan
@@ -106,11 +106,11 @@ pro ucomp_rolling_synoptic_map, wave_region, db, run=run
   jd_dates = dblarr(n_dates)
   for d = 0L, n_dates - 1L do jd_dates[d] = ucomp_dateobs2julday(dates[d])
 
-  charsize = 1.0
+  charsize = 0.9
   smooth_kernel = [11, 1]
 
-  title = string(wave_region, start_date, end_date, $
-                 format='(%"UCoMP synoptic map for %s nm at r1.3 from %s to %s")')
+  title = string(name, wave_region, start_date, end_date, $
+                 format='(%"UCoMP synoptic map for %s at %s nm at r1.3 from %s to %s")')
   erase, background
   mg_image, reverse(east_limb, 1), reverse(jd_dates), $
             xrange=[end_date_jd, start_date_jd], $
@@ -150,26 +150,32 @@ pro ucomp_rolling_synoptic_map, wave_region, db, run=run
 
   gif_filename = filepath(string(run.date, $
                                  wave_region, $
-                                 100.0 * 1.3, $
-                                 format='(%"%s.ucomp.%s.28day.synoptic.r%03d.gif")'), $
+                                 flag, $
+                                 100.0 * height, $
+                                 format='(%"%s.ucomp.%s.28day.synoptic.%s.r%03d.gif")'), $
                           root=eng_dir)
   write_gif, gif_filename, im, rgb[*, 0], rgb[*, 1], rgb[*, 2]
 
   mkhdr, primary_header, map, /extend
   sxdelpar, primary_header, 'DATE'
-  sxaddpar, primary_header, 'DATE-OBS', start_date, $
-            ' [UTC] start date of synoptic map', after='EXTEND'
-  sxaddpar, primary_header, 'DATE-END', end_date, $
-            ' [UTC] end date of synoptic map', $
-            format='(F0.2)', after='DATE-OBS'
-  sxaddpar, primary_header, 'HEIGHT', radius, $
-            ' [Rsun] height of annulus +/- 0.02 Rsun', $
-            format='(F0.2)', after='DATE-END'
+  ucomp_addpar, primary_header, 'DATE-OBS', start_date, $
+                comment='[UTC] start date of synoptic map', $
+                after='EXTEND'
+  ucomp_addpar, primary_header, 'DATE-END', end_date, $
+                comment='[UTC] end date of synoptic map', $
+                format='(F0.2)', after='DATE-OBS'
+  ucomp_addpar, primary_header, 'PRODUCT', name, $
+                comment='name of product', $
+                after='DATE-END'
+  ucomp_addpar, primary_header, 'HEIGHT', height, $
+                comment='[Rsun] height of annulus +/- 0.02 Rsun', $
+                format='(F0.2)', after='DATE-END'
 
   fits_filename = filepath(string(run.date, $
                                   wave_region, $
-                                  100.0 * radius, $
-                                  format='(%"%s.ucomp.%s.28day.synoptic.r%03d.fts")'), $
+                                  flag, $
+                                  100.0 * height, $
+                                  format='(%"%s.ucomp.%s.28day.synoptic.%s.r%03d.fts")'), $
                            root=eng_dir)
   writefits, fits_filename, map, primary_header
 
@@ -181,7 +187,7 @@ pro ucomp_rolling_synoptic_map, wave_region, db, run=run
 
   for d = 0L, n_elements(data) - 1L do begin
     s = raw_data[d]
-    ptr_free, s.intensity, s.intensity_stddev, s.r108, s.r13, s.r18, s.r111
+    ptr_free, s.(1)
   endfor
 
   mg_log, 'done', name=run.logger_name, /info
@@ -202,7 +208,10 @@ db = ucomp_db_connect(run->config('database/config_filename'), $
                       log_statements=run->config('database/log_statements'), $
                       status=status)
 
-ucomp_rolling_synoptic_map, '1074', db, run=run
+ucomp_rolling_synoptic_map, '1074', 'linear polarization', 'linpol', 1.3, 'r13l', $
+                            db, run=run
+ucomp_rolling_synoptic_map, '1074', 'intensity', 'int', 1.08, 'r108i', $
+                            db, run=run
 
 obj_destroy, db
 obj_destroy, run
