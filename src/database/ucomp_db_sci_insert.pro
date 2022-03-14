@@ -94,21 +94,54 @@ pro ucomp_db_sci_insert, l0_files, obsday_index, sw_index, db, $
     center_data = ext_data[*, *, *, center_indices[0]]
 
     intensity    = center_data[*, *, 0]
+    q            = center_data[*, *, 1]
+    u            = center_data[*, *, 2]
+
+    dims = size(intensity, /dimensions)
+    annulus = ucomp_annulus(1.1, 2.0, dimensions=dims)
+    annulus_indices = where(annulus gt 0.0)
+    total_i = total(intensity[annulus_indices])
+    total_q = total(q[annulus_indices])
+    total_u = total(u[annulus_indices])
+
+    i_profile = ucomp_radial_profile(intensity, sun_pixels, $
+                                     standard_deviation=i_profile_stddev)
+    q_profile = ucomp_radial_profile(q, sun_pixels, $
+                                     standard_deviation=q_profile_stddev)
+    u_profile = ucomp_radial_profile(u, sun_pixels, $
+                                     standard_deviation=u_profile_stddev)
+
     intensity108 = ucomp_annulus_gridmeans(intensity, 1.08, sun_pixels)
     intensity13  = ucomp_annulus_gridmeans(intensity, 1.3, sun_pixels)
 
-    linearpol    = sqrt(center_data[*, *, 1]^2 + center_data[*, *, 2]^2)
+    linearpol    = sqrt(q^2 + u^2)
     linearpol108 = ucomp_annulus_gridmeans(linearpol, 1.08, sun_pixels)
     linearpol13  = ucomp_annulus_gridmeans(linearpol, 1.3, sun_pixels)
+
+    azimuth = ucomp_azimuth(q, u, $
+                            radial_azimuth=radial_azimuth)
+    radial_azimuth108 = ucomp_annulus_gridmeans(radial_azimuth, 1.08, sun_pixels)
+    radial_azimuth13  = ucomp_annulus_gridmeans(radial_azimuth, 1.3, sun_pixels)
 
     fields = [{name: 'file_name', type: '''%s'''}, $
               {name: 'date_obs', type: '''%s'''}, $
               {name: 'obsday_id', type: '%d'}, $
               {name: 'wave_region', type: '''%s'''}, $
+              {name: 'totali', type: '%f'}, $
+              {name: 'totalq', type: '%f'}, $
+              {name: 'totalu', type: '%f'}, $
+              {name: 'intensity', type: '''%s'''}, $
+              {name: 'intensity_stddev', type: '''%s'''}, $
+              {name: 'q', type: '''%s'''}, $
+              {name: 'q_stddev', type: '''%s'''}, $
+              {name: 'u', type: '''%s'''}, $
+              {name: 'u_stddev', type: '''%s'''}, $
               {name: 'r108i', type: '''%s'''}, $
               {name: 'r13i', type: '''%s'''}, $
               {name: 'r108l', type: '''%s'''}, $
               {name: 'r13l', type: '''%s'''}, $
+              {name: 'r108radazi', type: '''%s'''}, $
+              {name: 'r13radazi', type: '''%s'''}, $
               {name: 'ucomp_sw_id', type: '%d'}]
     sql_cmd = string(strjoin(fields.name, ', '), $
                      strjoin(fields.type, ', '), $
@@ -119,10 +152,23 @@ pro ucomp_db_sci_insert, l0_files, obsday_index, sw_index, db, $
                  obsday_index, $
                  file.wave_region, $
 
+                 total_i, $
+                 total_q, $
+                 total_u, $
+
+                 db->escape_string(i_profile), $
+                 db->escape_string(i_profile_stddev), $
+                 db->escape_string(q_profile), $
+                 db->escape_string(q_profile_stddev), $
+                 db->escape_string(u_profile), $
+                 db->escape_string(u_profile_stddev), $
+
                  db->escape_string(intensity108), $
                  db->escape_string(intensity13), $
                  db->escape_string(linearpol108), $
                  db->escape_string(linearpol13), $
+                 db->escape_string(radial_azimuth108), $
+                 db->escape_string(radial_azimuth13), $
 
                  sw_index, $
 
