@@ -6,7 +6,8 @@ function ucomp_doppler_ut::init, _extra=e
   if (~self->MGutTestCase::init(_extra=e)) then return, 0
 
   
-  
+  self->addTestingRoutine, ['ucomp_doppler'], $
+                           /is_function
 
   return, 1
 end
