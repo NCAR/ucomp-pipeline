@@ -123,6 +123,10 @@ pro ucomp_db_sci_insert, l0_files, obsday_index, sw_index, db, $
     radial_azimuth108 = ucomp_annulus_gridmeans(radial_azimuth, 1.08, sun_pixels)
     radial_azimuth13  = ucomp_annulus_gridmeans(radial_azimuth, 1.3, sun_pixels)
 
+    !null = ucomp_doppler(file, ext_data, velocity=velocity, run=run)
+    velocity108 = ucomp_annulus_gridmeans(velocity, 1.08, sun_pixels)
+    velocity13  = ucomp_annulus_gridmeans(velocity, 1.3, sun_pixels)
+
     fields = [{name: 'file_name', type: '''%s'''}, $
               {name: 'date_obs', type: '''%s'''}, $
               {name: 'obsday_id', type: '%d'}, $
@@ -142,6 +146,8 @@ pro ucomp_db_sci_insert, l0_files, obsday_index, sw_index, db, $
               {name: 'r13l', type: '''%s'''}, $
               {name: 'r108radazi', type: '''%s'''}, $
               {name: 'r13radazi', type: '''%s'''}, $
+              {name: 'r108doppler', type: '''%s'''}, $
+              {name: 'r13doppler', type: '''%s'''}, $
               {name: 'ucomp_sw_id', type: '%d'}]
     sql_cmd = string(strjoin(fields.name, ', '), $
                      strjoin(fields.type, ', '), $
@@ -169,6 +175,8 @@ pro ucomp_db_sci_insert, l0_files, obsday_index, sw_index, db, $
                  db->escape_string(linearpol13), $
                  db->escape_string(radial_azimuth108), $
                  db->escape_string(radial_azimuth13), $
+                 db->escape_string(velocity108), $
+                 db->escape_string(velocity13), $
 
                  sw_index, $
 
