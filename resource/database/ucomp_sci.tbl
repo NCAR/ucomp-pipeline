@@ -9,10 +9,14 @@ create table ucomp_sci (
 
   wave_region         char (4),
 
+  -- this is a just a single value, i.e., the total of each quantity in the
+  -- annulus from 1.1 to 2.0 Rsun
   totali              float (8, 3),
   totalq              float (8, 3),
   totalu              float (8, 3),
 
+  -- the below are 720 element float arrays where each element is the mean of
+  -- an annulus from 1.05 to 2.85 Rsun, i.e., 90 annuli of width 0.02 Rsun
   intensity           blob,
   intensity_stddev    blob,
   q                   blob,
@@ -20,6 +24,8 @@ create table ucomp_sci (
   u                   blob,
   u_stddev            blob,
 
+  -- the below are 720 element float arrays at a given radius, i.e., an annulus
+  -- at the given radius +/- 0.02 Rsun broken into 720 bins around the annulus
   r108i               blob,
   r13i                blob,
   r108l               blob,
