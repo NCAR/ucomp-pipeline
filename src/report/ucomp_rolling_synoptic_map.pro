@@ -19,7 +19,7 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, height, field, db, $
 
   n_days = 28   ; number of days to include in the plot
 
-  mg_log, 'producing synoptic plot of last %d days', n_days, $
+  mg_log, 'producing %d day %s synoptic plot', n_days, name, $
           name=run.logger_name, /info
 
   ; query database for data
