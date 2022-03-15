@@ -136,4 +136,6 @@
   synoptic maps at 1.08 Rsun
 0.2.32 [Mar 12, 2022]
   typo in synoptic map database field name
-0.2.33
+0.2.33 [Mar 14, 2022]
+  radial azimuth and doppler velocity synoptic maps
+  plot centering information by wave region
