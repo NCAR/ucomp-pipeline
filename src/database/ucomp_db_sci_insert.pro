@@ -146,8 +146,8 @@ pro ucomp_db_sci_insert, l0_files, obsday_index, sw_index, db, $
               {name: 'r13l', type: '''%s'''}, $
               {name: 'r108radazi', type: '''%s'''}, $
               {name: 'r13radazi', type: '''%s'''}, $
-              {name: 'r108doppler', type: '''%s'''}, $
-              {name: 'r13doppler', type: '''%s'''}, $
+              ; {name: 'r108doppler', type: '''%s'''}, $
+              ; {name: 'r13doppler', type: '''%s'''}, $
               {name: 'ucomp_sw_id', type: '%d'}]
     sql_cmd = string(strjoin(fields.name, ', '), $
                      strjoin(fields.type, ', '), $
@@ -175,8 +175,8 @@ pro ucomp_db_sci_insert, l0_files, obsday_index, sw_index, db, $
                  db->escape_string(linearpol13), $
                  db->escape_string(radial_azimuth108), $
                  db->escape_string(radial_azimuth13), $
-                 db->escape_string(velocity108), $
-                 db->escape_string(velocity13), $
+                 ; db->escape_string(velocity108), $
+                 ; db->escape_string(velocity13), $
 
                  sw_index, $
 
