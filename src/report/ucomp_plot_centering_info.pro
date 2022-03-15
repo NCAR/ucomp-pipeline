@@ -6,17 +6,19 @@
 ; :Params:
 ;   filename : in, required, type=string
 ;     output filename
+;   wave_region : in, required, type=string
+;     wave region to plot
 ;
 ; :Keywords:
 ;   run : in, required, type=object
 ;     KCor run object
 ;-
-pro ucomp_plot_centering_info, filename, run=run
+pro ucomp_plot_centering_info, filename, wave_region, run=run
   compile_opt strictarr
 
   mg_log, 'plotting centering info...', name=run.logger_name, /info
 
-  files = run->get_files(data_type='sci', count=n_files)
+  files = run->get_files(data_type='sci', wave_region=wave_region, count=n_files)
   if (n_files eq 0L) then goto, done
 
   pdate = string(ucomp_decompose_date(run.date), format='(%"%s-%s-%s")')
@@ -73,7 +75,7 @@ pro ucomp_plot_centering_info, filename, run=run
 
   if (total(finite(rcam_x)) gt 0L) then begin
     mg_range_plot, hours, rcam_x, $
-                   title=string(pdate, format='RCAM x-coordinate of occulter center for %s'), $
+                   title=string(wave_region, pdate, format='%s nm RCAM x-coordinate of occulter center for %s'), $
                    xtitle='Hours [UT]', ytitle='x-coordinate [pixels]', $
                    xrange=time_range, xtickformat='ucomp_hours_format', $
                    /ynozero, ystyle=1, yrange=x_range, $
@@ -82,7 +84,7 @@ pro ucomp_plot_centering_info, filename, run=run
   endif
   if (total(finite(rcam_y)) gt 0L) then begin
     mg_range_plot, hours, rcam_y, $
-                   title=string(pdate, format='RCAM y-coordinate of occulter center for %s'), $
+                   title=string(wave_region, pdate, format='%s nm RCAM y-coordinate of occulter center for %s'), $
                    xtitle='Hours [UT]', ytitle='y-coordinate [pixels]', $
                    xstyle=1, xrange=time_range, xtickformat='ucomp_hours_format', $
                    /ynozero, ystyle=1, yrange=y_range, $
@@ -91,7 +93,7 @@ pro ucomp_plot_centering_info, filename, run=run
   endif
   if (total(finite(rcam_r)) gt 0L) then begin
     mg_range_plot, hours, rcam_r, $
-                   title=string(pdate, format='RCAM occulter of radius for %s'), $
+                   title=string(wave_region, pdate, format='%s nm RCAM occulter of radius for %s'), $
                    xtitle='Hours [UT]', ytitle='radius [pixels]', $
                    xstyle=1, xrange=time_range, xtickformat='ucomp_hours_format', $
                    /ynozero, ystyle=1, yrange=r_range, $
@@ -101,7 +103,7 @@ pro ucomp_plot_centering_info, filename, run=run
 
   if (total(finite(tcam_x)) gt 0L) then begin
     mg_range_plot, hours, tcam_x, $
-                   title=string(pdate, format='TCAM x-coordinate of occulter center for %s'), $
+                   title=string(wave_region, pdate, format='%s nm TCAM x-coordinate of occulter center for %s'), $
                    xtitle='Hours [UT]', ytitle='x-coordinate [pixels]', $
                    xstyle=1, xrange=time_range, xtickformat='ucomp_hours_format', $
                    /ynozero, ystyle=1, yrange=x_range, $
@@ -110,7 +112,7 @@ pro ucomp_plot_centering_info, filename, run=run
   endif
   if (total(finite(tcam_y)) gt 0L) then begin
     mg_range_plot, hours, tcam_y, $
-                   title=string(pdate, format='TCAM y-coordinate of occulter center for %s'), $
+                   title=string(wave_region, pdate, format='%s nm TCAM y-coordinate of occulter center for %s'), $
                    xtitle='Hours [UT]', ytitle='y-coordinate [pixels]', $
                    xstyle=1, xrange=time_range, xtickformat='ucomp_hours_format', $
                    /ynozero, ystyle=1, yrange=y_range, $
@@ -119,7 +121,7 @@ pro ucomp_plot_centering_info, filename, run=run
   endif
   if (total(finite(tcam_r)) gt 0L) then begin
     mg_range_plot, hours, tcam_r, $
-                   title=string(pdate, format='TCAM occulter of radius for %s'), $
+                   title=string(wave_region, pdate, format='%s nm TCAM occulter of radius for %s'), $
                    xtitle='Hours [UT]', ytitle='radius [pixels]', $
                    xstyle=1, xrange=time_range, xtickformat='ucomp_hours_format', $
                    /ynozero, ystyle=1, yrange=r_range, $

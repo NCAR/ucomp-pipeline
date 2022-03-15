@@ -98,6 +98,30 @@ pro ucomp_db_update, run=run
                                                  'r13l', $
                                                  db, $
                                                  run=run
+    ucomp_rolling_synoptic_map, wave_regions[w], 'radial azimuth', $
+                                'radazi', $
+                                1.08, $
+                                'r108radazi', $
+                                db, $
+                                run=run
+    ucomp_rolling_synoptic_map, wave_regions[w], 'radial azimith', $
+                                'radazi', $
+                                1.3, $
+                                'r13radazi', $
+                                db, $
+                                run=run
+    ucomp_rolling_synoptic_map, wave_regions[w], 'doppler velocity', $
+                                'doppler', $
+                                1.08, $
+                                'r108doppler', $
+                                db, $
+                                run=run
+    ucomp_rolling_synoptic_map, wave_regions[w], 'doppler velocity', $
+                                'doppler', $
+                                1.3, $
+                                'r13doppler', $
+                                db, $
+                                run=run
   endfor
 
   done:
