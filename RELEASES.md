@@ -139,3 +139,4 @@
 0.2.33 [Mar 14, 2022]
   radial azimuth and doppler velocity synoptic maps
   plot centering information by wave region
+0.2.34
