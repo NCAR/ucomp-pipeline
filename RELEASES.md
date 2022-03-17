@@ -140,3 +140,4 @@
   radial azimuth and doppler velocity synoptic maps
   plot centering information by wave region
 0.2.34
+  improved performance for distortion correction
