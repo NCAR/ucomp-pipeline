@@ -526,12 +526,16 @@ end
 ;   dx0_c, dy0_c, dx1_c, dy1_c : out, optional, type="fltarr(3, 3)"
 ;     set to a named variable to retrieve the corresponding distortion
 ;     coefficients
+;   id : in, optional, type=string
+;     set to a named variable to retrieve a unique identifier for the
+;     coefficients
 ;-
 pro ucomp_run::get_distortion, datetime=datetime, $
                                dx0_c=dx0_c, $
                                dy0_c=dy0_c, $
                                dx1_c=dx1_c, $
-                               dy1_c=dy1_c
+                               dy1_c=dy1_c, $
+                               id=distortion_basename
   compile_opt strictarr
 
   distortion_basename = self->epoch('distortion_basename', datetime=datetime)
