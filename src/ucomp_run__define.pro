@@ -538,6 +538,8 @@ pro ucomp_run::get_distortion, datetime=datetime, $
                                id=distortion_basename
   compile_opt strictarr
 
+  ; TODO: instead of the complicated caching in UCOMP_APPLY_DISTORTION, I
+  ; could just expand the coefficients here to what is ultimately needed
   distortion_basename = self->epoch('distortion_basename', datetime=datetime)
   if (self.distortion_basename eq distortion_basename) then begin
     coeffs = *self.distortion_coefficients
