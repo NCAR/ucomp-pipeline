@@ -22,6 +22,7 @@ pro ucomp_eod_steps, wave_regions, run=run
     ucomp_pipeline_step, 'ucomp_write_gbu', wave_regions[w], run=run
     ucomp_pipeline_step, 'ucomp_write_movies', wave_regions[w], run=run
   endfor
+  !null = ucomp_apply_distortion(/clear_cache)
 
   ucomp_pipeline_step, 'ucomp_l1_engineering_plots', run=run
   ucomp_pipeline_step, 'ucomp_validate', 'l1', run=run
