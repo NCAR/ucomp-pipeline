@@ -13,7 +13,7 @@ pro ucomp_crash_notification, run=run
   help, /last_message, output=help_output
 
   if (~obj_valid(run)) then begin
-    if (n_elements(helpOutput) gt 1L && help_output[0] ne '') then begin
+    if (n_elements(help_output) gt 1L && help_output[0] ne '') then begin
       print, transpose(help_output)
     endif
     goto, done
