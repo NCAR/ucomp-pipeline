@@ -534,12 +534,9 @@ pro ucomp_run::get_distortion, datetime=datetime, $
                                dx0_c=dx0_c, $
                                dy0_c=dy0_c, $
                                dx1_c=dx1_c, $
-                               dy1_c=dy1_c, $
-                               id=distortion_basename
+                               dy1_c=dy1_c
   compile_opt strictarr
 
-  ; TODO: instead of the complicated caching in UCOMP_APPLY_DISTORTION, I
-  ; could just expand the coefficients here to what is ultimately needed
   distortion_basename = self->epoch('distortion_basename', datetime=datetime)
   if (self.distortion_basename eq distortion_basename) then begin
     coeffs = *self.distortion_coefficients
@@ -554,6 +551,18 @@ pro ucomp_run::get_distortion, datetime=datetime, $
                                       root=resource_root)
     restore, filename=distortion_filename
     self.distortion_basename = distortion_basename
+
+    nx = self->epoch('nx', datetime=datetime)
+    ny = self->epoch('ny', datetime=datetime)
+
+    x = dindgen(nx, ny) mod nx
+    y = transpose(dindgen(ny, nx) mod ny)
+
+    dx0_c = x + ucomp_eval_surf(dx0_c, dindgen(nx), dindgen(ny))
+    dy0_c = y + ucomp_eval_surf(dy0_c, dindgen(nx), dindgen(ny))
+    dx1_c = x + ucomp_eval_surf(dx1_c, dindgen(nx), dindgen(ny))
+    dy1_c = y + ucomp_eval_surf(dy1_c, dindgen(nx), dindgen(ny))
+
     *self.distortion_coefficients = {dx0_c: dx0_c, $
                                      dy0_c: dy0_c, $
                                      dx1_c: dx1_c, $
