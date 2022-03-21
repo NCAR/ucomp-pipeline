@@ -526,6 +526,9 @@ end
 ;   dx0_c, dy0_c, dx1_c, dy1_c : out, optional, type="fltarr(3, 3)"
 ;     set to a named variable to retrieve the corresponding distortion
 ;     coefficients
+;   id : in, optional, type=string
+;     set to a named variable to retrieve a unique identifier for the
+;     coefficients
 ;-
 pro ucomp_run::get_distortion, datetime=datetime, $
                                dx0_c=dx0_c, $
@@ -548,6 +551,18 @@ pro ucomp_run::get_distortion, datetime=datetime, $
                                       root=resource_root)
     restore, filename=distortion_filename
     self.distortion_basename = distortion_basename
+
+    nx = self->epoch('nx', datetime=datetime)
+    ny = self->epoch('ny', datetime=datetime)
+
+    x = dindgen(nx, ny) mod nx
+    y = transpose(dindgen(ny, nx) mod ny)
+
+    dx0_c = x + ucomp_eval_surf(dx0_c, dindgen(nx), dindgen(ny))
+    dy0_c = y + ucomp_eval_surf(dy0_c, dindgen(nx), dindgen(ny))
+    dx1_c = x + ucomp_eval_surf(dx1_c, dindgen(nx), dindgen(ny))
+    dy1_c = y + ucomp_eval_surf(dy1_c, dindgen(nx), dindgen(ny))
+
     *self.distortion_coefficients = {dx0_c: dx0_c, $
                                      dy0_c: dy0_c, $
                                      dx1_c: dx1_c, $
