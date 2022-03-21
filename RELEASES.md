@@ -139,5 +139,6 @@
 0.2.33 [Mar 14, 2022]
   radial azimuth and doppler velocity synoptic maps
   plot centering information by wave region
-0.2.34
+0.2.34 [Mar 21, 2022]
   improved performance for distortion correction
+  make sure files to include in movies were fully processed
