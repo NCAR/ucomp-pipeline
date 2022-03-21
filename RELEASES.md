@@ -142,3 +142,4 @@
 0.2.34 [Mar 21, 2022]
   improved performance for distortion correction
   make sure files to include in movies were fully processed
+0.2.35
