@@ -143,3 +143,4 @@
   improved performance for distortion correction
   make sure files to include in movies were fully processed
 0.2.35
+  fix for post angle reporting
