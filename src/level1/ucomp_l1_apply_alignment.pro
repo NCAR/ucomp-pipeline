@@ -33,19 +33,21 @@ pro ucomp_l1_apply_alignment, file, primary_header, data, headers, run=run, stat
   dims = size(data, /dimensions)
   n_pol_states = dims[2]
 
-  ; center images on occulter center
+  rcam_geometry = file.rcam_geometry
+  tcam_geometry = file.tcam_geometry
 
+  ; center images on occulter center
   for p = 0, n_pol_states - 1L do begin
     for e = 0L, file.n_extensions - 1L do begin
-      cam0_xshift = (dims[0] - 1.0) / 2.0 - file.rcam_geometry.occulter_center[0]
-      cam0_yshift = (dims[1] - 1.0) / 2.0 - file.rcam_geometry.occulter_center[1]
+      cam0_xshift = (dims[0] - 1.0) / 2.0 - rcam_geometry.occulter_center[0]
+      cam0_yshift = (dims[1] - 1.0) / 2.0 - rcam_geometry.occulter_center[1]
       data[*, *, p, 0, e] = ucomp_fshift(data[*, *, p, 0, e], $
                                          cam0_xshift, $
                                          cam0_yshift, $
                                          interp=1)
 
-      cam1_xshift = (dims[0] - 1.0) / 2.0 - file.tcam_geometry.occulter_center[0]
-      cam1_yshift = (dims[1] - 1.0) / 2.0 - file.tcam_geometry.occulter_center[1]
+      cam1_xshift = (dims[0] - 1.0) / 2.0 - tcam_geometry.occulter_center[0]
+      cam1_yshift = (dims[1] - 1.0) / 2.0 - tcam_geometry.occulter_center[1]
       data[*, *, p, 1, e] = ucomp_fshift(data[*, *, p, 1, e], $
                                          cam1_xshift, $
                                          cam1_yshift, $
@@ -55,6 +57,11 @@ pro ucomp_l1_apply_alignment, file, primary_header, data, headers, run=run, stat
       data[*, *, p, 1, e] = rot(reverse(data[*, *, p, 1, e], 2), file.p_angle, /interp, missing=0.0)
     endfor
   endfor
+
+  ; apply geometry transformation to post angle found before the above
+  ; transformation
+  rcam_geometry.post_angle = 180.0 - rcam_geometry.post_angle - file.p_angle
+  tcam_geometry.post_angle = 180.0 - tcam_geometry.post_angle - file.p_angle
 
   done:
 end
