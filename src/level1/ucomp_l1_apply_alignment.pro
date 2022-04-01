@@ -63,5 +63,8 @@ pro ucomp_l1_apply_alignment, file, primary_header, data, headers, run=run, stat
   rcam_geometry.post_angle = 180.0 - rcam_geometry.post_angle - file.p_angle
   tcam_geometry.post_angle = 180.0 - tcam_geometry.post_angle - file.p_angle
 
+  ucomp_addpar, primary_header, 'POST_ANG', $
+                (rcam_geometry.post_angle + tcam_geometry.post_angle) / 2.0
+
   done:
 end
