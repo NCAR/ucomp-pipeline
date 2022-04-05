@@ -144,3 +144,6 @@
   make sure files to include in movies were fully processed
 0.2.35
   fix for post angle reporting
+  fix SGS plot colors/formatting
+  using custom FITS writer to control keyword comments better
+
