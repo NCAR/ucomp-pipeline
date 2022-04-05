@@ -39,10 +39,11 @@ pro ucomp_write_fits_file, filename, primary_header, ext_data, ext_headers
          message, string(dims, format='(%"invalid number of dimensions to write: [%s]")')
        endelse
     endcase
-    fits_write, fcb, $
-                data, $
-                ext_headers[e - 1], $
-                extname=extname, /no_abort, message=error_msg
+
+    ucomp_fits_write, fcb, $
+                      data, $
+                      ext_headers[e - 1], $
+                      extname=extname, /no_abort, message=error_msg
     if (error_msg ne '') then message, error_msg
   endfor
   fits_close, fcb
