@@ -13,6 +13,9 @@ create table ucomp_file (
   producttype_id        tinyint (2),
   filetype_id           tinyint (2),
 
+  obs_plan              char (60),
+  obs_id                char (60),
+
   quality               tinyint (2),
 
   wave_region           char (4),

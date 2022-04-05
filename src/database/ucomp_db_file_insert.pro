@@ -41,13 +41,33 @@ pro ucomp_db_file_insert, l1_files, obsday_index, sw_index, db, $
 
   n_files = n_elements(l1_files)
 
+  fields = [{name: 'file_name', type: '''%s'''}, $
+            {name: 'date_obs', type: '''%s'''}, $
+            {name: 'obsday_id', type: '%d'}, $
+            {name: 'carrington_rotation', type: '%d'}, $
+  
+            {name: 'level_id', type: '%d'}, $
+            {name: 'producttype_id', type: '%d'}, $
+            {name: 'filetype_id', type: '%d'}, $
+  
+            {name: 'obs_plan', type: '''%s'''}, $
+            {name: 'obs_id', type: '''%s'''}, $
+  
+            {name: 'quality', type: '%d'}, $
+  
+            {name: 'wave_region', type: '%d'}, $
+            {name: 'ntunes', type: '%d'}, $
+  
+            {name: 'ucomp_sw_id', type: '%d'}]
+  sql_cmd = string(strjoin(fields.name, ', '), $
+                   strjoin(fields.type, ', '), $
+                   format='(%"insert into ucomp_file (%s) values (%s)")')
+
   for f = 0L, n_files - 1L do begin
     file = l1_files[f]
 
     mg_log, 'ingesting %s', file.l1_basename, name=logger_name, /info
-
-    q = 'insert into ucomp_file (file_name, date_obs, obsday_id, carrington_rotation, level_id, producttype_id, filetype_id, quality, wave_region, ntunes, ucomp_sw_id) values (''%s'', ''%s'', %d, %d, %d, %d, %d, %d, %d, %d, %d)'
-    db->execute, q, $
+    db->execute, sql_cmd, $
                  file.l1_basename, $
                  file.date_obs,$
                  obsday_index, $
@@ -55,6 +75,8 @@ pro ucomp_db_file_insert, l1_files, obsday_index, sw_index, db, $
                  level_index, $
                  producttype_index, $
                  filetype_index, $
+                 file.obs_plan, $
+                 file.obs_id, $
                  file.quality_bitmask, $
                  long(file.wave_region), $
                  file.n_unique_wavelengths, $

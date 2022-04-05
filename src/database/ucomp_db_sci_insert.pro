@@ -175,6 +175,7 @@ pro ucomp_db_sci_insert, l0_files, obsday_index, sw_index, db, $
                  db->escape_string(linearpol13), $
                  db->escape_string(radial_azimuth108), $
                  db->escape_string(radial_azimuth13), $
+                 ; TODO: add once we upgrade database
                  ; db->escape_string(velocity108), $
                  ; db->escape_string(velocity13), $
 

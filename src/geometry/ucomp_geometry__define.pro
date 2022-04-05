@@ -71,9 +71,8 @@ pro ucomp_geometry::display, camera, $
 
   ; display post
   if (finite(self.post_angle)) then begin
-    width = 40.0
-    post_angle = camera eq 0 ? (180.0 + self.post_angle - self.p_angle): (180.0 - self.post_angle + self.p_angle)
-    t = (post_angle + 90.0) * !dtor
+    width = 35.0
+    t = (self.post_angle + 90.0) * !dtor
     x0 = (self.xsize - 1.0) / 2.0
     y0 = (self.ysize - 1.0) / 2.0
     x1 = self.occulter_radius * cos(t) + x0

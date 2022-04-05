@@ -375,8 +375,9 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
   onband_index = onband eq 'tcam'
   valid_indices = where((abs(wavelength - *self.flat_wavelengths) lt wavelength_threshold) $
                           and (*self.flat_gain_modes eq gain_index) $
-                          and (*self.flat_onbands eq onband_index) $
-                          and (obsday_hours gt *self.flat_times), $
+                          and (*self.flat_onbands eq onband_index), $
+                          ; TOOD: removing below allows flats in the future to be found
+                          ;and (obsday_hours gt *self.flat_times), $
                         n_valid_flats)
   if (n_valid_flats eq 0L) then return, !null
 

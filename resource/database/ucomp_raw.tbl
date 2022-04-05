@@ -12,8 +12,8 @@ create table ucomp_raw (
   quality_id       tinyint (2) not null,
   level_id         tinyint (2) not null,
 
-  obs_id           char (40),      -- name of current measurement
   obs_plan         char (60),      -- name of current program
+  obs_id           char (60),      -- name of current measurement
 
   t_rack           float(8, 3),
   t_lcvr1          float(8, 3),
