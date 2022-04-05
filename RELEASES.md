@@ -142,8 +142,8 @@
 0.2.34 [Mar 21, 2022]
   improved performance for distortion correction
   make sure files to include in movies were fully processed
-0.2.35
+0.2.35 [Apr 5, 2022]
   fix for post angle reporting
   fix SGS plot colors/formatting
   using custom FITS writer to control keyword comments better
-
+  allow flats in the future to be used
