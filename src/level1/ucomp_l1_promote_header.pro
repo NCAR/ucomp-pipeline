@@ -73,6 +73,12 @@ pro ucomp_l1_promote_header, file, primary_header, data, headers, $
   for e = 0L, n_elements(headers) - 1L do begin
     h = headers[e]
     for k = 0L, n_elements(remove_keywords) - 1L do sxdelpar, h, remove_keywords[k]
+    ucomp_addpar, h, 'NAXIS1', ucomp_getpar(h, 'NAXIS1'), $
+                  comment='[px] width'
+    ucomp_addpar, h, 'NAXIS2', ucomp_getpar(h, 'NAXIS2'), $
+                  comment='[px] height'
+    ucomp_addpar, h, 'NAXIS3', ucomp_getpar(h, 'NAXIS3'), $
+                  comment='polarization states: I, Q, U, V'
     headers[e] = h
   endfor
 end

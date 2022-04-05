@@ -23,8 +23,8 @@ create table ucomp_cal (
   caloptic                tinyint (1),
 
   -- smoothness for center wavelength of flats
-  rcam_roughness          float (12, 7)
-  tcam_roughness          float (12, 7)
+  rcam_roughness          float (12, 7),
+  tcam_roughness          float (12, 7),
 
   -- TODO: mean? per camera, pol state?
   median_int_continuum    float (14, 7),   -- dark corrected annulus

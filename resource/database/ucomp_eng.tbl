@@ -10,8 +10,8 @@ create table ucomp_eng (
   focus            float (6, 2),   -- focus stage position
   o1focus          float (8, 3),   -- O1 position in mm
 
-  obs_id           char (40),      -- name of current measurement
   obs_plan         char (60),      -- name of current program
+  obs_id           char (60),      -- name of current measurement
 
   -- TODO: how about gain?
 

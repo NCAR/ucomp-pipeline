@@ -27,7 +27,7 @@ pro ucomp_read_l1_data, filename, $
                         ext_headers=ext_headers, $
                         n_extensions=n_extensions
   compile_opt strictarr
-  ;on_error, 2
+  on_error, 2
 
   fits_open, filename, fcb, /no_abort, message=msg
   if (msg ne '') then message, msg
