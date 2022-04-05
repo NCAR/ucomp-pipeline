@@ -21,7 +21,7 @@ pro ucomp_write_fits_file, filename, primary_header, ext_data, ext_headers
   n_extensions = n_elements(ext_headers)
 
   fits_open, filename, fcb, /write
-  fits_write, fcb, 0.0, primary_header, /no_abort, message=error_msg
+  ucomp_fits_write, fcb, 0.0, primary_header, /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
 
   for e = 1L, n_extensions do begin

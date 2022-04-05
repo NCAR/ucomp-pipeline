@@ -262,22 +262,22 @@ pro ucomp_fits_write, file_or_fcb,data, $
   h[0] = 'END     '
 
   if (fcb.nextend eq -1) then begin
-    sxaddpar, h, 'SIMPLE', 'T', 'image conforms to FITS standard' 
+    sxaddpar, h, 'SIMPLE', 'T', ' image conforms to FITS standard' 
   endif else begin
     if (Axtension eq '') then Axtension = 'IMAGE   '
-    sxaddpar, h, 'XTENSION', Axtension, 'extension type'
+    sxaddpar, h, 'XTENSION', Axtension, ' extension type'
   endelse
 
-  sxaddpar, h, 'BITPIX', bitpix, 'bits per data value'
-  sxaddpar, h, 'NAXIS', naxis, 'number of axes'
+  sxaddpar, h, 'BITPIX', bitpix, ' bits per data value'
+  sxaddpar, h, 'NAXIS', naxis, ' number of axes'
   if (naxis gt 0) then begin
     for i = 1, naxis do begin
-      sxaddpar,h,'NAXIS'+strtrim(i,2),axis[i-1]
+      sxaddpar, h, 'NAXIS' + strtrim(i, 2), axis[i - 1]
     endfor
   endif
 
   if (fcb.nextend eq -1) then begin
-    sxaddpar,h,'EXTEND','T','file may contain extensions'
+    sxaddpar, h, 'EXTEND', 'T', ' file may contain extensions'
   endif else begin    ; PCOUNT, GCOUNT are mandatory for extensions
     sxaddpar, h, 'PCOUNT', 0
     sxaddpar, h, 'GCOUNT', 1
@@ -287,8 +287,8 @@ pro ucomp_fits_write, file_or_fcb,data, $
       sxaddpar, h, 'TFIELDS', tfields
     endif 
     if (Aextname ne '') then sxaddpar,h,'EXTNAME',Aextname
-    if (Aextver gt 0) then sxaddpar,h,'EXTVER',Aextver
-    if (Aextlevel gt 0) then sxaddpar,h,'EXTLEVEL',Aextlevel
+    if (Aextver gt 0) then sxaddpar, h, 'EXTVER', Aextver
+    if (Aextlevel gt 0) then sxaddpar, h, 'EXTLEVEL', Aextlevel
   endelse
 
   if (idltype eq 12) then $
@@ -302,24 +302,38 @@ pro ucomp_fits_write, file_or_fcb,data, $
   ; delete special keywords from user supplied header
   pcount = sxpar(header, 'pcount')
   groups = sxpar(header, 'groups')
+
+  ; move comments on original NAXIS keywords to new NAXIS keywords
+  for c = 1L, naxis do begin
+    naxis_keyword = string(c, format='(%"NAXIS%d")')
+    naxis_value = sxpar(header, naxis_keyword, $
+                        count=naxis_count, comment=naxis_comment)
+    if (naxis_count gt 0L) then begin
+      sxaddpar, h, naxis_keyword, naxis_value, naxis_comment
+    endif
+  endfor
+
   sxdelpar, header, ['SIMPLE', 'BITPIX', 'NAXIS', 'NAXIS1', 'NAXIS2', $
                      'NAXIS3', 'NAXIS4', 'NAXIS5', 'NAXIS6', 'NAXIS7', $
                      'NAXIS8', 'EXTEND', 'PCOUNT', 'GCOUNT', 'GROUPS', $
                      'TFIELDS']
-  if (groups) then if (pcount gt 0) then for i = 1, pcount do $
-    sxdelpar, header, ['ptype', 'pscal', 'pzero'] + strtrim(i, 2)
+  if (groups) then if (pcount gt 0) then begin
+    for i = 1, pcount do begin
+      sxdelpar, header, ['ptype', 'pscal', 'pzero'] + strtrim(i, 2)
+    endfor
+  endif
 
   ; combine the two headers
   last = where(strmid(h, 0, 8) eq 'END     ')
-  header = [h[0:last[0]-1], header]
+  header = [h[0:last[0] - 1], header]
 
   ; convert header to bytes and write
   write_header:
   last = where(strmid(header, 0, 8) eq 'END     ')
   n = last[0] + 1
-  byte_header = replicate(32b, 80, n)
+  byte_header = replicate(32B, 80, n)
   for i = 0, n - 1 do byte_header[0, i] = byte(header[i])
-  writeu,fcb.unit,byte_header
+  writeu, fcb.unit, byte_header
 
   ; pad header to 2880 byte records
   npad = 2880 - (80L * n mod 2880)	
