@@ -16,7 +16,7 @@
 pro ucomp_write_intensity_image, file, data, run=run
   compile_opt strictarr
 
-  occulter_annotation=run->config('centering/annotated_gifs')
+  occulter_annotation = run->config('centering/annotated_gifs')
   center_wavelength_only = run->config('intensity/center_wavelength_gifs_only')
 
   l1_dirname = filepath('', $
@@ -102,8 +102,14 @@ pro ucomp_write_intensity_image, file, data, run=run
             charsize=charsize, color=text_color
 
     if (keyword_set(occulter_annotation)) then begin
-      ; TODO: draw occulter on GIF image, use center of image and the mean
-      ; of the two geometry radii
+        file.rcam_geometry->display, 0, $
+                                     occulter_color=occulter_color, $
+                                     guess_color=guess_color, $
+                                     inflection_color=inflection_color
+        file.tcam_geometry->display, 1, $
+                                     occulter_color=occulter_color, $
+                                     guess_color=guess_color, $
+                                     inflection_color=inflection_color
     endif
 
     if (center_wavelength_only) then begin

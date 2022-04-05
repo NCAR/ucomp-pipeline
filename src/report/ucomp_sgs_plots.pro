@@ -75,12 +75,14 @@ pro ucomp_sgs_plots, engineering_dir, run=run
   set_plot, 'Z'
   device, get_decomposed=original_decomposed
   tvlct, original_rgb, /get
+  loadct, 0, /silent
   device, set_resolution=[772, 1000], $
           decomposed=0, $
           set_colors=256, $
           z_buffering=0
 
   charsize = 0.5
+  square = 6
 
   n_plots = 3
   !p.multi = [0, 1, n_plots]
@@ -91,7 +93,7 @@ pro ucomp_sgs_plots, engineering_dir, run=run
                  xrange=time_range, $
                  /ynozero, ystyle=1, yrange=run->epoch('sgsdimv_range'), $
                  background=255, color=0, charsize=n_plots * charsize, $
-                 clip_thick=2.0, psym=1
+                 clip_thick=2.0, psym=square, symsize=0.5
 
   mg_range_plot, hours, sgs_dims, $
                  title=pdate + ' UCoMP Spar Guider System (SGS) DIMS Relative Sky Transmission Std Deviation', $
@@ -99,7 +101,7 @@ pro ucomp_sgs_plots, engineering_dir, run=run
                  xrange=time_range, $
                  /ynozero, ystyle=1, yrange=run->epoch('sgsdims_range'), $
                  background=255, color=0, charsize=n_plots * charsize, $
-                 clip_thick=2.0, psym=1
+                 clip_thick=2.0, psym=square, symsize=0.5
 
   mg_range_plot, hours, sgs_scint, $
                  title=pdate + ' UCoMP Spar Guider System (SGS) Scintillation (Atmospheric Seeing) Estimate', $
@@ -107,7 +109,7 @@ pro ucomp_sgs_plots, engineering_dir, run=run
                  xrange=time_range, $
                  ystyle=1, yrange=run->epoch('sgsscint_range'), $
                  background=255, color=0, charsize=n_plots * charsize, $
-                 clip_thick=2.0
+                 clip_thick=2.0, psym=square, symsize=0.5
 
   sgs_seeing_gif_filename = filepath(run.date + '.ucomp.sgs.sky_transmission_and_seeing.gif', $
                                      root=engineering_dir)
@@ -125,7 +127,7 @@ pro ucomp_sgs_plots, engineering_dir, run=run
                  xrange=time_range, $
                  /ynozero, ystyle=1, yrange=run->epoch('sgssumv_range'), $
                  background=255, color=0, charsize=n_plots * charsize, $
-                 clip_thick=2.0, psym=1
+                 clip_thick=2.0, psym=square, symsize=0.5
 
   mg_range_plot, hours, sgs_sums, $
                  title=pdate + ' UCoMP Spar Guider System (SGS) SUMS Sum Signal Std. Deviation (Low Pass Filter of DIMS)', $
@@ -133,7 +135,7 @@ pro ucomp_sgs_plots, engineering_dir, run=run
                  xrange=time_range, $
                  /ynozero, ystyle=1, yrange=run->epoch('sgssums_range'), $
                  background=255, color=0, charsize=n_plots * charsize, $
-                 clip_thick=2.0, psym=1
+                 clip_thick=2.0, psym=square, symsize=0.5
 
   mg_range_plot, hours, sgs_loop, $
                  title=pdate + ' UCoMP Spar Guider System (SGS) LOOP: Closed Loop Fraction 1=solar tracking, 0=drift', $
@@ -141,7 +143,7 @@ pro ucomp_sgs_plots, engineering_dir, run=run
                  xrange=time_range, $
                  /ynozero, ystyle=1, yrange=run->epoch('sgsloop_range'), $
                  background=255, color=0, charsize=n_plots * charsize, $
-                 clip_thick=2.0, psym=1
+                 clip_thick=2.0, psym=square, symsize=0.5
 
   sgs_signal_gif_filename  = filepath(run.date + '.ucomp.sgs.signal.gif', $
                                       root=engineering_dir)
@@ -163,7 +165,7 @@ pro ucomp_sgs_plots, engineering_dir, run=run
                  xrange=time_range, $
                  /ynozero, ystyle=1, yrange=run->epoch('sgsrav_range'), $
                  background=255, color=0, charsize=n_plots * charsize, $
-                 clip_thick=2.0, psym=1
+                 clip_thick=2.0, psym=square, symsize=0.5
 
   mg_range_plot, hours, sgs_ras, $
                  title=pdate + ' UCoMP Spar Guider System (SGS) RAS Right Ascension Std Deviation', $
@@ -171,7 +173,7 @@ pro ucomp_sgs_plots, engineering_dir, run=run
                  xrange=time_range, $
                  /ynozero, ystyle=1, yrange=run->epoch('sgsras_range'), $
                  background=255, color=0, charsize=n_plots * charsize, $
-                 clip_thick=2.0, psym=1
+                 clip_thick=2.0, psym=square, symsize=0.5
   
   mg_range_plot, hours, sgs_razr, $
                  title=pdate + ' UCoMP Spar Guider System (SGS) RAZR Right Ascension Zero Point Offset', $
@@ -179,7 +181,7 @@ pro ucomp_sgs_plots, engineering_dir, run=run
                  xrange=time_range, $
                  ystyle=1, yrange=sgsrazr_range, $
                  background=255, color=0, charsize=n_plots * charsize, $
-                 clip_thick=2.0
+                 clip_thick=2.0, psym=square, symsize=0.5
 
   sgs_ra_gif_filename  = filepath(run.date + '.ucomp.sgs.ra.gif', $
                                   root=engineering_dir)
@@ -201,7 +203,7 @@ pro ucomp_sgs_plots, engineering_dir, run=run
                  xrange=time_range, $
                  /ynozero, ystyle=1, yrange=run->epoch('sgsdecv_range'), $
                  background=255, color=0, charsize=n_plots * charsize, $
-                 clip_thick=2.0, psym=1
+                 clip_thick=2.0, psym=square, symsize=0.5
 
   mg_range_plot, hours, sgs_decs, $
                  title=pdate + ' UCoMP DECS: Spar Guider System (SGS) Declination Std Deviation', $
@@ -209,7 +211,7 @@ pro ucomp_sgs_plots, engineering_dir, run=run
                  xrange=time_range, $
                  /ynozero, ystyle=1, yrange=run->epoch('sgsdecs_range'), $
                  background=255, color=0, charsize=n_plots * charsize, $
-                 clip_thick=2.0, psym=1
+                 clip_thick=2.0, psym=square, symsize=0.5
   
   mg_range_plot, hours, sgs_deczr, $
                  title=pdate + ' UCoMP DECZR: Spar Guider System (SGS) Declination Zero Point Offset', $
@@ -217,7 +219,7 @@ pro ucomp_sgs_plots, engineering_dir, run=run
                  xrange=time_range, $
                  ystyle=1, yrange=sgsdeczr_range, $
                  background=255, color=0, charsize=n_plots * charsize, $
-                 clip_thick=2.0
+                 clip_thick=2.0, psym=square, symsize=0.5
 
   sgs_dec_gif_filename  = filepath(run.date + '.ucomp.sgs.dec.gif', $
                                    root=engineering_dir)

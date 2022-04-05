@@ -33,6 +33,84 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
   if (status ne 0L) then goto, done
   level_index = level_results.level_id	
 
+  fields = [{name: 'file_name', type: '''%s'''}, $
+            {name: 'date_obs', type: '''%s'''}, $
+            {name: 'obsday_id', type: '%d'}, $
+            {name: 'level_id', type: '%d'}, $
+
+            {name: 'focus', type: '%f'}, $
+            {name: 'o1focus', type: '%s'}, $
+
+            {name: 'obs_id', type: '''%s'''}, $
+            {name: 'obs_plan', type: '''%s'''}, $
+
+            {name: 'cover', type: '%d'}, $
+            {name: 'darkshutter', type: '%d'}, $
+            {name: 'opal', type: '%d'}, $
+            {name: 'polangle', type: '%f'}, $
+            {name: 'retangle', type: '%f'}, $
+            {name: 'caloptic', type: '%d'}, $
+
+            {name: 'rcam_xcenter', type: '%s'}, $
+            {name: 'rcam_ycenter', type: '%s'}, $
+            {name: 'rcam_radius', type: '%s'}, $
+            {name: 'tcam_xcenter', type: '%s'}, $
+            {name: 'tcam_ycenter', type: '%s'}, $
+            {name: 'tcam_radius', type: '%s'}, $
+
+            {name: 'rcam_post_angle', type: '%s'}, $
+            {name: 'tcam_post_angle', type: '%s'}, $
+
+            {name: 'wave_region', type: '''%s'''}, $
+            {name: 'ntunes', type: '%d'}, $
+            {name: 'pol_list', type: '''%s'''}, $
+
+            {name: 'nextensions', type: '%d'}, $
+
+            {name: 'exposure', type: '%f'}, $
+            {name: 'nd', type: '%d'}, $
+            {name: 'background', type: '%s'}, $
+
+            {name: 't_base', type: '%s'}, $
+            {name: 't_lcvr1', type: '%s'}, $
+            {name: 't_lcvr2', type: '%s'}, $
+            {name: 't_lcvr3', type: '%s'}, $
+            {name: 't_lnb1', type: '%s'}, $
+            {name: 't_mod', type: '%s'}, $
+            {name: 't_lnb2', type: '%s'}, $
+            {name: 't_lcvr4', type: '%s'}, $
+            {name: 't_lcvr5', type: '%s'}, $
+            {name: 't_rack', type: '%s'}, $
+            {name: 'tu_base', type: '%s'}, $
+            {name: 'tu_lcvr1', type: '%s'}, $
+            {name: 'tu_lcvr2', type: '%s'}, $
+            {name: 'tu_lcvr3', type: '%s'}, $
+            {name: 'tu_lnb1', type: '%s'}, $
+            {name: 'tu_mod', type: '%s'}, $
+            {name: 'tu_lnb2', type: '%s'}, $
+            {name: 'tu_lcvr4', type: '%s'}, $
+            {name: 'tu_lcvr5', type: '%s'}, $
+            {name: 'tu_rack', type: '%s'}, $
+            {name: 't_c0arr', type: '%s'}, $
+            {name: 't_c0pcb', type: '%s'}, $
+            {name: 't_c1arr', type: '%s'}, $
+            {name: 't_c1pcb', type: '%s'}, $
+
+            {name: 'occltrid', type: '''%s'''}, $
+
+            {name: 'dmodswid', type: '''%s'''}, $
+            {name: 'distort', type: '''%s'''}, $
+
+            {name: 'obsswid', type: '''%s'''}, $
+
+            {name: 'sky_pol_factor', type: '%s'}, $
+            {name: 'sky_bias', type: '%s'}, $
+
+            {name: 'ucomp_sw_id', type: '%d'}]
+  sql_cmd = string(strjoin(fields.name, ', '), $
+                   strjoin(fields.type, ', '), $
+                   format='(%"insert into ucomp_eng (%s) values (%s)")')
+
   for f = 0L, n_files - 1L do begin
     file = l0_files[f]
 
@@ -59,83 +137,6 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
       tcam_post_angle = !values.f_nan
     endelse
 
-    fields = [{name: 'file_name', type: '''%s'''}, $
-              {name: 'date_obs', type: '''%s'''}, $
-              {name: 'obsday_id', type: '%d'}, $
-              {name: 'level_id', type: '%d'}, $
-
-              {name: 'focus', type: '%f'}, $
-              {name: 'o1focus', type: '%s'}, $
-
-              {name: 'obs_id', type: '''%s'''}, $
-              {name: 'obs_plan', type: '''%s'''}, $
-
-              {name: 'cover', type: '%d'}, $
-              {name: 'darkshutter', type: '%d'}, $
-              {name: 'opal', type: '%d'}, $
-              {name: 'polangle', type: '%f'}, $
-              {name: 'retangle', type: '%f'}, $
-              {name: 'caloptic', type: '%d'}, $
-
-              {name: 'rcam_xcenter', type: '%s'}, $
-              {name: 'rcam_ycenter', type: '%s'}, $
-              {name: 'rcam_radius', type: '%s'}, $
-              {name: 'tcam_xcenter', type: '%s'}, $
-              {name: 'tcam_ycenter', type: '%s'}, $
-              {name: 'tcam_radius', type: '%s'}, $
-
-              {name: 'rcam_post_angle', type: '%s'}, $
-              {name: 'tcam_post_angle', type: '%s'}, $
-
-              {name: 'wave_region', type: '''%s'''}, $
-              {name: 'ntunes', type: '%d'}, $
-              {name: 'pol_list', type: '''%s'''}, $
-
-              {name: 'nextensions', type: '%d'}, $
-
-              {name: 'exposure', type: '%f'}, $
-              {name: 'nd', type: '%d'}, $
-              {name: 'background', type: '%s'}, $
-
-              {name: 't_base', type: '%s'}, $
-              {name: 't_lcvr1', type: '%s'}, $
-              {name: 't_lcvr2', type: '%s'}, $
-              {name: 't_lcvr3', type: '%s'}, $
-              {name: 't_lnb1', type: '%s'}, $
-              {name: 't_mod', type: '%s'}, $
-              {name: 't_lnb2', type: '%s'}, $
-              {name: 't_lcvr4', type: '%s'}, $
-              {name: 't_lcvr5', type: '%s'}, $
-              {name: 't_rack', type: '%s'}, $
-              {name: 'tu_base', type: '%s'}, $
-              {name: 'tu_lcvr1', type: '%s'}, $
-              {name: 'tu_lcvr2', type: '%s'}, $
-              {name: 'tu_lcvr3', type: '%s'}, $
-              {name: 'tu_lnb1', type: '%s'}, $
-              {name: 'tu_mod', type: '%s'}, $
-              {name: 'tu_lnb2', type: '%s'}, $
-              {name: 'tu_lcvr4', type: '%s'}, $
-              {name: 'tu_lcvr5', type: '%s'}, $
-              {name: 'tu_rack', type: '%s'}, $
-              {name: 't_c0arr', type: '%s'}, $
-              {name: 't_c0pcb', type: '%s'}, $
-              {name: 't_c1arr', type: '%s'}, $
-              {name: 't_c1pcb', type: '%s'}, $
-
-              {name: 'occltrid', type: '''%s'''}, $
-
-              {name: 'dmodswid', type: '''%s'''}, $
-              {name: 'distort', type: '''%s'''}, $
-
-              {name: 'obsswid', type: '''%s'''}, $
-
-              {name: 'sky_pol_factor', type: '%s'}, $
-              {name: 'sky_bias', type: '%s'}, $
-
-              {name: 'ucomp_sw_id', type: '%d'}]
-    sql_cmd = string(strjoin(fields.name, ', '), $
-                     strjoin(fields.type, ', '), $
-                     format='(%"insert into ucomp_eng (%s) values (%s)")')
     db->execute, sql_cmd, $
                  file_basename(file.raw_filename), $
                  file.date_obs, $
