@@ -201,7 +201,7 @@ pro ucomp_fits_write, file_or_fcb,data, $
       message = 'A Byte array must be supplied with a BINTABLE or TABLE extension'
       goto, error_exit
     endif
-  endelse
+  endif
 
   if (n_elements(extname) gt 0) then begin
     Aextname = extname
