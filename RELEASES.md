@@ -148,3 +148,4 @@
   using custom FITS writer to control keyword comments better
   allow flats in the future to be used
 0.2.36
+  slightly more general method for doppler calculation
