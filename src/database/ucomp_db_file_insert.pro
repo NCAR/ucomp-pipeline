@@ -54,7 +54,7 @@ pro ucomp_db_file_insert, l1_files, obsday_index, sw_index, db, $
             {name: 'obs_id', type: '''%s'''}, $
   
             {name: 'quality', type: '%d'}, $
-            {name: 'vcrosstalk_metric', type: '%0.4f'}
+            {name: 'vcrosstalk_metric', type: '%0.4f'}, $
   
             {name: 'wave_region', type: '%d'}, $
             {name: 'ntunes', type: '%d'}, $
