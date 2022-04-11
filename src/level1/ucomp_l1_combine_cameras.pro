@@ -29,7 +29,16 @@ pro ucomp_l1_combine_cameras, file, primary_header, ext_data, ext_headers, $
 
   status = 0L
 
-  ext_data = mean(ext_data, dimension=4, /nan)
+  cameras = strlowcase(run->config('combinecameras/use'))
+  case cameras of
+    'rcam': ext_data = reform(ext_data[*, *, *, 0, *])
+    'tcam': ext_data = reform(ext_data[*, *, *, 1, *])
+    'both': ext_data = mean(ext_data, dimension=4, /nan)
+    else: message, string(cameras, format='(%"invalid combinecameras/use value: ''%s''")')
+  endcase
 
+  ucomp_addpar, primary_header, 'CAMERAS', cameras, $
+                comment=string(cameras eq 'both' ? 's' : '', $
+                               format='(%"camera%s used in processing")')
   done:
 end
