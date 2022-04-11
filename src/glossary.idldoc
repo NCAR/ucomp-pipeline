@@ -1,0 +1,9 @@
+`reprocess` — process a date again, but first clear the results from previous processing
+
+`run` — a run of the pipeline on a single day
+
+`validation` — the process of determining if a file is valid, i.e., it has the correct format, metadata, etc.
+
+`verification` — the process of determining if the processing has been completed correctly for a day
+
+
