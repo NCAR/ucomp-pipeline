@@ -149,3 +149,4 @@
   allow flats in the future to be used
 0.2.36 [Apr 11, 2022]
   slightly more general method for doppler calculation
+0.2.37
