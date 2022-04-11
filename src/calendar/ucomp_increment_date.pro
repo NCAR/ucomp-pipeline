@@ -1,5 +1,15 @@
 ; docformat = 'rst'
 
+;+
+; Increment a date in form "YYYYMMDD" by one day.
+;
+; :Returns:
+;   string of the form "YYYYMMDD"
+;
+; :Params:
+;   date : in, required, type=string
+;     date in the form "YYYYMMDD"
+;-
 function ucomp_increment_date, date
   compile_opt strictarr
 
