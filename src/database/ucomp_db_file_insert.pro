@@ -54,6 +54,7 @@ pro ucomp_db_file_insert, l1_files, obsday_index, sw_index, db, $
             {name: 'obs_id', type: '''%s'''}, $
   
             {name: 'quality', type: '%d'}, $
+            {name: 'vcrosstalk_metric', type: '%0.4f'}, $
   
             {name: 'wave_region', type: '%d'}, $
             {name: 'ntunes', type: '%d'}, $
@@ -78,6 +79,7 @@ pro ucomp_db_file_insert, l1_files, obsday_index, sw_index, db, $
                  file.obs_plan, $
                  file.obs_id, $
                  file.quality_bitmask, $
+                 file.vcrosstalk_metric, $
                  long(file.wave_region), $
                  file.n_unique_wavelengths, $
                  sw_index, $
