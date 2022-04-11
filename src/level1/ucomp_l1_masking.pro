@@ -10,7 +10,7 @@
 ;     primary header
 ;   data : in, required, type="fltarr(nx, ny, n_pol_states, nexts)"
 ;     extension data
-;   headers : in, requiredd, type=list
+;   headers : in, required, type=list
 ;     extension headers as list of `strarr`
 ;
 ; :Keywords:

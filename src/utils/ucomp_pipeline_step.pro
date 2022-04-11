@@ -14,7 +14,7 @@
 ;     set to skip routine
 ;   run : in, required, type=object
 ;     UCoMP run object
-;   _extra : in, optional, type=keywords
+;   _ref_extra : in, optional, type=keywords
 ;     keywords to pass along to `ROUTINE`
 ;-
 pro ucomp_pipeline_step, routine_name, wave_region, skip=skip, run=run, _ref_extra=e

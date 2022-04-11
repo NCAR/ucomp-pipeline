@@ -26,9 +26,6 @@
 ;   wavelength : out, optional, type=fltarr(n_extensions)
 ;     set to a named variable to retrieve the "WAVELNG" value for the averaged
 ;     extensions
-;   extensions : out, optional, type=strarr(n_extensions)
-;     set to a named variable to retrieve the original extensions the averaged
-;     extensions were computed from
 ;-
 pro ucomp_average_flatfile, primary_header, ext_data, ext_headers, $
                             n_extensions=n_extensions, $
