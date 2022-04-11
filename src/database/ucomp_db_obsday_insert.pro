@@ -14,7 +14,7 @@
 ; :Params:
 ;   date : in, required, type=string
 ;     date to insert, if needed
-;   database : in, required, type=object
+;   db : in, required, type=object
 ;     `UCOMPdbMySQL` database object
 ;
 ; :Keywords:
