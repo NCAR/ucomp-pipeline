@@ -35,7 +35,8 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
 
   occulter_id = ucomp_getpar(primary_header, 'OCCLTRID')
   radius_guess = ucomp_radius_guess(occulter_id, file.wave_region, run=run)
-  dradius = 25.0
+  mg_log, 'radius guess: %0.1f', radius_guess, name=run.logger_name, /debug
+  dradius = 40.0
 
   post_angle_guess = run->epoch('post_angle_guess')
   post_angle_tolerance = run->epoch('post_angle_tolerance')
