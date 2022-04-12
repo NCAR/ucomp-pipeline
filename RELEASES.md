@@ -151,4 +151,5 @@
   slightly more general method for doppler calculation
 0.2.37 [Apr 11, 2022]
   fix for database adding when no V crosstalk or doppler velocity
-0.2.38
+0.2.38 [Apr 11, 2022]
+  add ability to inherit options in another config file
