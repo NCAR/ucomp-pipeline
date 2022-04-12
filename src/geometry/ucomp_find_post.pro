@@ -10,7 +10,7 @@
 ;   position angle in degrees as float
 ;
 ; :Params:
-;   image : in, required, type=`fltarr(nx, ny)`
+;   im : in, required, type=`fltarr(nx, ny)`
 ;     the image in which to find the post angle
 ;   occulter_center : in, required, type=fltarr(2)
 ;     occulter center in pixel coordinates

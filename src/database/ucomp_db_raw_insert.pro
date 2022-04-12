@@ -8,7 +8,7 @@
 ;     array of `UCOMP_FILE` objects
 ;   obsday_index : in, required, type=integer
 ;     index into mlso_numfiles database table
-;   database : in, optional, type=object
+;   db : in, optional, type=object
 ;     `UCOMPdbMySQL` database connection to use
 ;
 ; :Keywords:

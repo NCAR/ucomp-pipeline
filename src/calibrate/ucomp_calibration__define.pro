@@ -193,7 +193,7 @@ end
 ;     times of the darks [hours into observing day]
 ;   exptimes : in, optional, type=fltarr(n)
 ;     exposure times of the darks [ms]
-;   wavelengthss : in, optional, type=fltarr(n)
+;   wavelengths : in, optional, type=fltarr(n)
 ;     wavelengths of the darks [nm]
 ;   gain_modes : in, optional, type=bytarr(n)
 ;     gain modes of the darks [ms]
