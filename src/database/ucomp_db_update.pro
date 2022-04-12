@@ -3,10 +3,6 @@
 ;+
 ; Insert all the database entries for a given wave type for a run.
 ;
-; :Params:
-;   wave_region : in, required, type=string
-;     wave type
-;
 ; :Keywords:
 ;   run : in, required, type=object
 ;     UCoMP run object

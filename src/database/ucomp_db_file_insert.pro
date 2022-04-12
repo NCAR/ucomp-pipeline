@@ -10,7 +10,7 @@
 ;     index into mlso_numfiles database table
 ;   sw_index : in, required, type=integer
 ;     index into ucomp_sw database table
-;   database : in, required, type=object
+;   db : in, required, type=object
 ;     `UCOMPdbMySQL` database connection to use
 ;
 ; :Keywords:
@@ -41,33 +41,34 @@ pro ucomp_db_file_insert, l1_files, obsday_index, sw_index, db, $
 
   n_files = n_elements(l1_files)
 
-  fields = [{name: 'file_name', type: '''%s'''}, $
-            {name: 'date_obs', type: '''%s'''}, $
-            {name: 'obsday_id', type: '%d'}, $
-            {name: 'carrington_rotation', type: '%d'}, $
-  
-            {name: 'level_id', type: '%d'}, $
-            {name: 'producttype_id', type: '%d'}, $
-            {name: 'filetype_id', type: '%d'}, $
-  
-            {name: 'obs_plan', type: '''%s'''}, $
-            {name: 'obs_id', type: '''%s'''}, $
-  
-            {name: 'quality', type: '%d'}, $
-            {name: 'vcrosstalk_metric', type: '%0.4f'}, $
-  
-            {name: 'wave_region', type: '%d'}, $
-            {name: 'ntunes', type: '%d'}, $
-  
-            {name: 'ucomp_sw_id', type: '%d'}]
-  sql_cmd = string(strjoin(fields.name, ', '), $
-                   strjoin(fields.type, ', '), $
-                   format='(%"insert into ucomp_file (%s) values (%s)")')
-
   for f = 0L, n_files - 1L do begin
     file = l1_files[f]
 
     mg_log, 'ingesting %s', file.l1_basename, name=logger_name, /info
+    vcrosstalk_metric = finite(file.vcrosstalk_metric) ? file.vcrosstalk_metric : 'NULL'
+    vcrosstalk_metric_type = size(vcrosstalk_metric_type, /type) eq 7 ? '%s' : '%0.4f' 
+    fields = [{name: 'file_name', type: '''%s'''}, $
+              {name: 'date_obs', type: '''%s'''}, $
+              {name: 'obsday_id', type: '%d'}, $
+              {name: 'carrington_rotation', type: '%d'}, $
+
+              {name: 'level_id', type: '%d'}, $
+              {name: 'producttype_id', type: '%d'}, $
+              {name: 'filetype_id', type: '%d'}, $
+
+              {name: 'obs_plan', type: '''%s'''}, $
+              {name: 'obs_id', type: '''%s'''}, $
+
+              {name: 'quality', type: '%d'}, $
+              {name: 'vcrosstalk_metric', type: vcrosstalk_metric_type}, $
+
+              {name: 'wave_region', type: '%d'}, $
+              {name: 'ntunes', type: '%d'}, $
+
+              {name: 'ucomp_sw_id', type: '%d'}]
+    sql_cmd = string(strjoin(fields.name, ', '), $
+                     strjoin(fields.type, ', '), $
+                     format='(%"insert into ucomp_file (%s) values (%s)")')
     db->execute, sql_cmd, $
                  file.l1_basename, $
                  file.date_obs,$
@@ -79,7 +80,7 @@ pro ucomp_db_file_insert, l1_files, obsday_index, sw_index, db, $
                  file.obs_plan, $
                  file.obs_id, $
                  file.quality_bitmask, $
-                 file.vcrosstalk_metric, $
+                 finite(file.vcrosstalk_metric) ? file.vcrosstalk_metric : 'NULL', $
                  long(file.wave_region), $
                  file.n_unique_wavelengths, $
                  sw_index, $
