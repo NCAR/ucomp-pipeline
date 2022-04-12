@@ -16,8 +16,6 @@
 ;   status : out, optional, type=long
 ;     set to a named variable to retrieve the status of the database creation;
 ;     0 if no error
-;   error_message : out, optional, type=string
-;     error message if status not 0
 ;-
 function ucomp_db_connect, filename, section, $
                            logger_name=logger_name, $
