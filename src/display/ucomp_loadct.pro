@@ -30,9 +30,6 @@ end
 ; :Keywords:
 ;   n_colors : in, optional, type=integer
 ;     number of colors needed, defaults to 256
-;   rgb : out, optional, type="bytarr(256, 3)"
-;     set to a named variable to retrieve the color table values, instead of
-;     loading them into the current color table
 ;-
 pro ucomp_loadct, name, n_colors=n_colors
   compile_opt strictarr

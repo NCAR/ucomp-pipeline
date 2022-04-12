@@ -1,0 +1,11 @@
+Routines for handling dates/times, in particular, converting between different
+representations of a date/time.
+
+The representations of date/times are: `DATE-OBS` format "YYYY-MM-DDTHH:MM:SS";
+observing day hours, i.e., 7.5 represents 7:30 am in the observing day; Julian
+day; and a short form "YYYYMMDD.HHMMSS". Each of these formats are used in
+different situations and routines to convert between them are needed.
+
+It is also necessary to convert between UT and HST time zones. Observations are
+recorded in UT, but HST is more convenient when a continuous hour is needed
+because UT time crosses midnight in our observing day.
