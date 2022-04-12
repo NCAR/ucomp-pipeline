@@ -118,15 +118,16 @@ pro ucomp_db_sci_insert, l0_files, obsday_index, sw_index, db, $
     linearpol108 = ucomp_annulus_gridmeans(linearpol, 1.08, sun_pixels)
     linearpol13  = ucomp_annulus_gridmeans(linearpol, 1.3, sun_pixels)
 
-    azimuth = ucomp_azimuth(q, u, $
-                            radial_azimuth=radial_azimuth)
+    azimuth = ucomp_azimuth(q, u, radial_azimuth=radial_azimuth)
     radial_azimuth108 = ucomp_annulus_gridmeans(radial_azimuth, 1.08, sun_pixels)
     radial_azimuth13  = ucomp_annulus_gridmeans(radial_azimuth, 1.3, sun_pixels)
 
     !null = ucomp_doppler(file, ext_data, velocity=velocity, run=run)
     velocity_type = n_elements(velocity) eq 0L ? '%s' : '''%s'''
-    velocity108 = ucomp_annulus_gridmeans(velocity, 1.08, sun_pixels)
-    velocity13  = ucomp_annulus_gridmeans(velocity, 1.3, sun_pixels)
+    if (n_elements(velocity) ne 0L) then begin
+      velocity108 = ucomp_annulus_gridmeans(velocity, 1.08, sun_pixels)
+      velocity13  = ucomp_annulus_gridmeans(velocity, 1.3, sun_pixels)
+    endif
 
     fields = [{name: 'file_name', type: '''%s'''}, $
               {name: 'date_obs', type: '''%s'''}, $

@@ -2,7 +2,7 @@ project(ucomp-pipeline)
 
 set(VERSION_MAJOR "0")
 set(VERSION_MINOR "2")
-set(VERSION_PATCH "36")
+set(VERSION_PATCH "37")
 set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
 # required version of CMake
@@ -106,7 +106,7 @@ endif ()
 
 if (IDLdoc_FOUND)
   add_custom_target(doc
-    COMMAND ${IDL_EXECUTABLE} -IDL_STARTUP "\"\"" -IDL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/lib${SEP_CHAR}${CMAKE_CURRENT_SOURCE_DIR}${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/src${SEP_CHAR}+${IDLdoc_DIR}${SEP_CHAR}\"<IDL_DEFAULT>\"" -e ucomp_make_docs -args ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMAND ${IDL_EXECUTABLE} -IDL_STARTUP "\"\"" -IDL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/scripts${SEP_CHAR}${CMAKE_CURRENT_SOURCE_DIR}/lib${SEP_CHAR}${CMAKE_CURRENT_SOURCE_DIR}${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/src${SEP_CHAR}+${IDLdoc_DIR}/..${SEP_CHAR}\"<IDL_DEFAULT>\"" -e ucomp_make_docs -args ${CMAKE_CURRENT_SOURCE_DIR}
     COMMENT build developer API documentation
   )
 endif ()
