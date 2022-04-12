@@ -10,7 +10,7 @@
 ;     index into mlso_numfiles database table
 ;   sw_index : in, required, type=integer
 ;     index into ucomp_sw database table
-;   database : in, required, type=object
+;   db : in, required, type=object
 ;     `UCOMPdbMySQL` database connection to use
 ;
 ; :Keywords:

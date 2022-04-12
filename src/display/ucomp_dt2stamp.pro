@@ -9,7 +9,7 @@
 ;
 ; :Params:
 ;   datetime : in, required, type=string
-;   date/time string in the form "YYYYMMDD.HHMMSS"
+;     date/time string in the form "YYYYMMDD.HHMMSS"
 ;-
 function ucomp_dt2stamp, datetime
   compile_opt strictarr
