@@ -945,7 +945,7 @@ function ucomp_run::init, date, mode, config_filename, $
                                   root=mg_src_root())
 
   self.config_filename = config_filename
-  self.options = mg_read_config(self.config_filename, spec=config_spec_filename)
+  self.options = ucomp_read_config(self.config_filename, spec=config_spec_filename)
   config_valid = self.options->is_valid(error_msg=error_msg)
   if (~config_valid) then begin
     mg_log, 'invalid configuration file', name=logger_name, /critical
