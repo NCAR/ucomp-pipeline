@@ -489,6 +489,9 @@ pro ucomp_file::_inventory
   self.t_c1arr  = ucomp_getpar(primary_header, 'T_C1ARR', /float, found=found)
   self.t_c1pcb  = ucomp_getpar(primary_header, 'T_C1PCB', /float, found=found)
 
+  self.wind_speed     = ucomp_getpar(primary_header, 'WNDSPD', /float)
+  self.wind_direction = ucomp_getpar(primary_header, 'WNDSPD', /float)
+
   ; allocate inventory variables
   *self.wavelengths = fltarr(self.n_extensions)
   *self.onband_indices = lonarr(self.n_extensions)
@@ -706,7 +709,9 @@ pro ucomp_file__define
            quality_bitmask     : 0UL, $
            gbu                 : 0UL, $
            processed           : 0B, $
-           vcrosstalk_metric  : 0.0 $
+           vcrosstalk_metric   : 0.0, $
+           wind_speed          : 0.0, $
+           wind_direction      : 0.0 $
           }
 end
 

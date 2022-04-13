@@ -154,3 +154,4 @@
 0.2.38 [Apr 11, 2022]
   add ability to inherit options in another config file
 0.2.39
+  add wind speed/direction to ucomp_file database table
