@@ -69,7 +69,9 @@ pro ucomp_l1_promote_header, file, primary_header, data, headers, $
   ; update extension headers
 
   remove_keywords = ['COMMENT', 'ONBAND', 'CONTIN', 'V_LCVR1', 'V_LCVR2', $
-                     'V_LCVR3', 'V_LCVR4', 'V_LCVR5', 'NUMSUM']
+                     'V_LCVR3', 'V_LCVR4', 'V_LCVR5', 'NUMSUM', $
+                     'OCCLTR', 'CALOPTIC', 'COVER', 'DIFFUSR', 'DARKSHUT', $
+                     'POLANGLE', 'RETANGLE']
   for e = 0L, n_elements(headers) - 1L do begin
     h = headers[e]
     for k = 0L, n_elements(remove_keywords) - 1L do sxdelpar, h, remove_keywords[k]
