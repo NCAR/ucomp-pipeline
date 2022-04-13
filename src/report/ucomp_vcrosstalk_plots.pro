@@ -94,21 +94,21 @@ pro ucomp_vcrosstalk_plots, output_dir, run=run
   endfor
 
   ; all science files
-  files = run->get_files(data_type='sci', count=n_files)
-  if (n_files eq 0L) then goto, done
+  ; files = run->get_files(data_type='sci', count=n_files)
+  ; if (n_files eq 0L) then goto, done
 
-  times = fltarr(n_files)
-  vcrosstalk = fltarr(n_files)
-  for f = 0L, n_files - 1L do begin
-    times[f] = files[f].obsday_hours
-    vcrosstalk[f] = files[f].vcrosstalk_metric
-  endfor
+  ; times = fltarr(n_files)
+  ; vcrosstalk = fltarr(n_files)
+  ; for f = 0L, n_files - 1L do begin
+  ;   times[f] = files[f].obsday_hours
+  ;   vcrosstalk[f] = files[f].vcrosstalk_metric
+  ; endfor
 
-  ucomp_vcrosstalk_plots_wave_region, run.date, $
-                                      !null, $
-                                      output_dir, $
-                                      times, $
-                                      vcrosstalk
+  ; ucomp_vcrosstalk_plots_wave_region, run.date, $
+  ;                                     !null, $
+  ;                                     output_dir, $
+  ;                                     times, $
+  ;                                     vcrosstalk
 
   done:
 end
