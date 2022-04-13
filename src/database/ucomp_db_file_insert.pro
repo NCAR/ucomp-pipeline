@@ -61,6 +61,8 @@ pro ucomp_db_file_insert, l1_files, obsday_index, sw_index, db, $
 
               {name: 'quality', type: '%d'}, $
               {name: 'vcrosstalk_metric', type: vcrosstalk_metric_type}, $
+              {name: 'wind_speed', type: '%0.3f'},
+              {name: 'wind_direction', type: '%0.3f'},
 
               {name: 'wave_region', type: '%d'}, $
               {name: 'ntunes', type: '%d'}, $
@@ -81,6 +83,8 @@ pro ucomp_db_file_insert, l1_files, obsday_index, sw_index, db, $
                  file.obs_id, $
                  file.quality_bitmask, $
                  finite(file.vcrosstalk_metric) ? file.vcrosstalk_metric : 'NULL', $
+                 file.wind_speed, $
+                 file.wind_direction, $
                  long(file.wave_region), $
                  file.n_unique_wavelengths, $
                  sw_index, $

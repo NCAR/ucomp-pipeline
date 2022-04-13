@@ -18,6 +18,8 @@ create table ucomp_file (
 
   quality               tinyint (2),
   vcrosstalk_metric     float(8, 4),
+  wind_speed            float(7, 3),
+  wind_direction        float(7, 3),
 
   wave_region           char (4),
   ntunes                tinyint (2),
