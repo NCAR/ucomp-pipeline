@@ -61,8 +61,8 @@ pro ucomp_db_file_insert, l1_files, obsday_index, sw_index, db, $
 
               {name: 'quality', type: '%d'}, $
               {name: 'vcrosstalk_metric', type: vcrosstalk_metric_type}, $
-              {name: 'wind_speed', type: '%0.3f'},
-              {name: 'wind_direction', type: '%0.3f'},
+              {name: 'wind_speed', type: '%0.3f'}, $
+              {name: 'wind_direction', type: '%0.3f'}, $
 
               {name: 'wave_region', type: '%d'}, $
               {name: 'ntunes', type: '%d'}, $
