@@ -131,22 +131,22 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
   ucomp_addpar, primary_header, 'MED_BACK', median_background, $
                 comment='[ppm] median of background'
 
-  file->getProperty, p_angle=p_angle, b0=b0, semidiameter=semidiameter, $
-                     distance_au=distance_au
-  ucomp_addpar, primary_header, 'SOLAR_P0', p_angle, $
+  ucomp_addpar, primary_header, 'SOLAR_P0', file.p_angle, $
                 comment='[deg] solar P angle applied (image has N up)', $
                 format='(f9.3)'
-  ucomp_addpar, primary_header, 'SOLAR_B', b0, $
+  ucomp_addpar, primary_header, 'SOLAR_B', file.b0, $
                 comment='[deg] solar B-Angle'
 
-  ; TODO: how do I find this? I don't see a SECZ routine in SSW or Steve's code
-  ; ucomp_addpar, primary_header, 'SECANT_Z', float(sec_z), $
+  ; TODO: find sol_dec and ha
+  ; sec_z = mlso_secant_z(sol_dec, ha)
+  ; ucomp_addpar, primary_header, 'SECANT_Z', sec_z, $
   ;               comment='secant of the Zenith Distance'
 
+  semidiameter = file.semidiameter
   ucomp_addpar, primary_header, 'SEMIDIAM', semidiameter, $
                 comment='[arcsec] solar semi-diameter'
   ucomp_addpar, primary_header, 'RSUN_OBS', semidiameter, $
-                comment=string(distance_au * semidiameter, $
+                comment=string(file.distance_au * semidiameter, $
                                format='(%"[arcsec] solar radius using ref radius %0.2f\"")'), $
                 format='(f8.2)'
   ucomp_addpar, primary_header, 'RSUN', $
