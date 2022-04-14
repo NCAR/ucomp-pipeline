@@ -77,7 +77,7 @@ pro ucomp_l1_average_data, file, primary_header, ext_data, ext_headers, $
     extensions[g] = strjoin(strtrim(gi + 1L, 2), ',')
 
     ; grab first header of a group to use as header for the entire group
-    averaged_header = ext_headers_array[*, gi[0]]
+    averaged_header = ucomp_combine_headers(ext_headers_array[*, gi])
     ucomp_addpar, averaged_header, 'RAWFILE', $
                   file_basename(file.raw_filename), $
                   comment='raw file'
@@ -91,8 +91,7 @@ pro ucomp_l1_average_data, file, primary_header, ext_data, ext_headers, $
             name=run.logger_name, /debug
   endif
 
-  n_extensions = n_groups
-  file.n_extensions   = n_extensions
+  file.n_extensions   = n_groups
   file.wavelengths    = averaged_wavelengths
   file.onband_indices = averaged_onband
 
