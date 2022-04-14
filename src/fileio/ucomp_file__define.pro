@@ -164,6 +164,8 @@ pro ucomp_file::getProperty, run=run, $
                              ok=ok, $
                              processed=processed, $
                              vcrosstalk_metric=vcrosstalk_metric, $
+                             wind_speed=wind_speed, $
+                             wind_direction=wind_direction, $
                              occulter_in=occulter_in, $
                              occultrid=occultrid, $
                              occulter_x=occulter_x, $
@@ -293,6 +295,8 @@ pro ucomp_file::getProperty, run=run, $
   if (arg_present(ok)) then ok = self.quality_bitmask eq 0
   if (arg_present(processed)) then processed = self.processed
   if (arg_present(vcrosstalk_metric)) then vcrosstalk_metric = self.vcrosstalk_metric
+  if (arg_present(wind_speed)) then wind_speed = self.wind_speed
+  if (arg_present(wind_direction)) then wind_direction = self.wind_direction
 
   if (arg_present(focus)) then focus = self.focus
   if (arg_present(o1focus)) then o1focus = self.o1focus
