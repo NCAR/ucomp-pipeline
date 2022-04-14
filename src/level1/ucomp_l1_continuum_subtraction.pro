@@ -114,7 +114,7 @@ pro ucomp_l1_continuum_subtraction, file, primary_header, ext_data, ext_headers,
 
     i += 1L
 
-    header = reform(ext_headers_array[*, m])
+    header = reform(ucomp_combine_headers(ext_headers_array[*, [m, match_indices[m]]]))
     sxdelpar, header, 'ONBAND'
     ucomp_addpar, header, 'RAWEXTS', raw_exts[m] + ',' + raw_exts[match_indices[m]]
     ext_headers->add, header
