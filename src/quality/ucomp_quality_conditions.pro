@@ -22,7 +22,7 @@ function ucomp_quality_conditions, wave_region, run=run
                         {mask: 0UL, $
                          checker: 'ucomp_quality_check_time_interval', $
                          description: string(run->epoch('max_ext_time'), $
-                                             format='(%"sequential extensions acquired more than %0.2f secs apart")')}, $
+                                             format='(%"sequential extensions acquired more than %0.1f secs apart")')}, $
                         {mask: 0UL, $
                          checker: 'ucomp_quality_datatype', $
                          description: 'multiple datatypes in a file'}]
