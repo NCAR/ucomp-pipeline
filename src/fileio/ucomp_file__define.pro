@@ -493,8 +493,8 @@ pro ucomp_file::_inventory
   self.t_c1arr  = ucomp_getpar(primary_header, 'T_C1ARR', /float, found=found)
   self.t_c1pcb  = ucomp_getpar(primary_header, 'T_C1PCB', /float, found=found)
 
-  self.wind_speed     = ucomp_getpar(primary_header, 'WNDSPD', /float)
-  self.wind_direction = ucomp_getpar(primary_header, 'WNDSPD', /float)
+  self.wind_speed     = ucomp_getpar(primary_header, 'WNDSPD', /float, found=found)
+  self.wind_direction = ucomp_getpar(primary_header, 'WNDDIR', /float, found=found)
 
   ; allocate inventory variables
   *self.wavelengths = fltarr(self.n_extensions)
