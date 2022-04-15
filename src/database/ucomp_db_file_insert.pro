@@ -80,7 +80,7 @@ pro ucomp_db_file_insert, l1_files, obsday_index, sw_index, db, $
                  file.obs_plan, $
                  file.obs_id, $
                  file.quality_bitmask, $
-                 ucomp_db_float(file.vcrosstalk_metric, format='%0.4f')$
+                 ucomp_db_float(file.vcrosstalk_metric, format='%0.4f'), $
                  ucomp_db_float(file.wind_speed, format='%0.3f'), $
                  ucomp_db_float(file.wind_direction, format='%0.3f'), $
                  long(file.wave_region), $
