@@ -59,7 +59,7 @@ pro ucomp_write_intensity_image, file, data, run=run
   guess_color = 254
   tvlct, 255, 255, 0, guess_color
   inflection_color = 255
-  tvlct, 255, 0, 0, inflection_color
+  tvlct, 255, 128, 128, inflection_color
 
   tvlct, r, g, b, /get
 
