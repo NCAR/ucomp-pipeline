@@ -46,7 +46,8 @@ pro ucomp_assert, condition, msg, arg1, arg2, arg3, arg4, arg5, from=from
       9: _msg = string(arg1, arg2, arg3, arg4, arg5, arg6, arg7, format='(%"' + msg + '")')
       10: _msg = string(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, format='(%"' + msg + '")')
     endcase
-  endif
+  endif else return
+
   if (n_elements(from) eq 0L) then begin
     message, _msg
   endif else begin

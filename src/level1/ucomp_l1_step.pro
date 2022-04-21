@@ -39,7 +39,7 @@ pro ucomp_l1_step, routine_name, file, primary_header, data, headers, $
     time = run->stop(clock_id)
     run->log_memory, routine_name
 
-    ucomp_assert, n_elements(headers) eq file.n_extensions + 1, $
+    ucomp_assert, n_elements(headers) eq file.n_extensions, $
                   'number of extensions inconsistent: %d != %d', $
                   n_elements(headers), file.n_extensions, $
                   from=routine_name
