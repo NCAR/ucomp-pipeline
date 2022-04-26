@@ -155,3 +155,5 @@
   add ability to inherit options in another config file
 0.2.39
   add wind speed/direction to ucomp_file database table
+  check for extra files, allow up to verification/max_missing missing files in
+    verification, if they are not on the collection server
