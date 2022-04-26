@@ -99,6 +99,79 @@ pro ucomp_verify_check_permissions, run=run, status=status
 end
 
 
+function ucomp_verify_missing, raw_files, machine_log_filename, $
+                               extra_files=extra_files
+  compile_opt strictarr
+
+  extra_files = !null
+
+  n_raw_files = n_elements(raw_files) eq 1 && raw_files[0] eq '' $
+                  ? 0L $
+                  : n_elements(raw_files)
+  n_ml_lines = file_lines(machine_log_filename)
+
+  ; this should not be able to happen
+  if (n_ml_lines eq 0L) then return, !null
+
+  ml_files = strarr(n_ml_lines)
+  openr, lun, machine_log_filename, /get_lun
+  readf, lun, ml_files
+  free_lun, lun
+
+  for i = 0L, n_ml_lines - 1L do ml_files[i] = (strsplit(ml_files[i], /extract))[0]
+
+  if (n_raw_files eq 0L) then return, ml_files
+
+  n_matches = mg_match(file_basename(raw_files), ml_files, $
+                       a_matches=extra_file_indices, $
+                       b_matches=missing_file_indices)
+  missing_files = ml_files[mg_complement(missing_file_indices, n_ml_lines)]
+  extra_files = raw_files[mg_complement(extra_file_indices, n_raw_files)]
+
+  return, missing_files
+end
+
+
+function ucomp_verify_check_missing, date, $
+                                     missing_files, $
+                                     collection_server, $
+                                     collection_basedir, $
+                                     collection_ssh_key, $
+                                     logger_name=logger_name, $
+                                     error=error
+  compile_opt strictarr
+
+  error = 0L
+
+  ssh_options = ''
+  if (n_elements(ssh_key) gt 0L) then ssh_options += string(ssh_key, format='(%"-i %s")')
+
+  ssh_cmd = string(ssh_options, $
+                   collection_server, $
+                   collection_basedir, $
+                   date, $
+                   format='(%"ssh %s %s ls %s/%s")')
+
+  n_on_server = 0L
+  for f = 0L, n_elements(missing_files) - 1L do begin
+    file_check_cmd = string(ssh_cmd, missing_files[f], format='(%"%s/%s")')
+    spawn, file_check_cmd, $
+           ssh_output, ssh_error, exit_status=ssh_status
+    case ssh_status of
+      0: n_on_server += 1L
+      2:  ; not found on server, 2 is exit code of ls when it can't find file
+      else: begin
+          mg_log, 'error checking collection server', name=logger_name, /error
+          mg_log, 'ssh cmd: %s', file_check_cmd, name=logger_name, /error
+          error = 1L
+        end
+    endcase
+  endfor
+
+  return, n_on_server
+end
+
+
 ;+
 ; Check the machine log against the data:
 ;   - filenames in the machine log match those present in the incoming
@@ -146,8 +219,60 @@ pro ucomp_verify_check_logs, run=run, status=status, n_raw_files=n_raw_files
     mg_log, '%d raw files and %d files in machine log', $
             n_raw_files, n_ml_lines, $
             name=run.logger_name, /warn
-    status = 1L
-    return
+
+    max_missing = run->config('verification/max_missing')
+    if (n_raw_files lt (n_ml_lines - max_missing)) then begin
+      status = 1L
+      return
+    endif
+
+    collection_server = run->config('verification/collection_server')
+    collection_basedir = run->config('verification/collection_basedir')
+    if (n_elements(collection_server) eq 0L || n_elements(collection_basedir) eq 0L) then begin
+      mg_log, 'cannot check collection server', name=run.logger_name, /warn
+      status = 1L
+      return
+    endif
+
+    missing_files = ucomp_verify_missing(raw_files, $
+                                         machine_log_filename, $
+                                         extra_files=extra_files)
+    if (n_elements(extra_files) gt 0L) then begin
+      mg_log, '%s in raw files, but not machine log', $
+              mg_plural(n_elements(extra_files), 'extra file', 'extra files'), $
+              name=run.logger_name, /warn
+      for f = 0L, n_elements(extra_files) - 1L do begin
+        mg_log, 'extra %s in raw', file_basename(extra_files[f]), $
+                name=run.logger_name, /warn
+        status = 1L
+      endfor
+    endif
+
+    n_on_server = ucomp_verify_check_missing(run.date, $
+                                             missing_files, $
+                                             collection_server, $
+                                             collection_basedir, $
+                                             run->config('verification/ssh_key'), $
+                                             logger_name=run.logger_name, $
+                                             error=error)
+    if (error ne 0L) then begin
+      status = 1L
+      return
+    endif
+
+    n_missing_files = n_elements(missing_files)
+    if (n_on_server eq 0L) then begin
+      mg_log, '%s not on collection server', $
+              mg_plural(n_missing_files, 'missing file', 'missing files'), $
+              name=run.logger_name, /warn
+    endif else begin
+      mg_log, '%d of %s on collection server', $
+              n_on_server, $
+              mg_plural(n_missing_files, 'missing file', 'missing files'), $
+              name=run.logger_name, /warn
+      status = 1L
+      return
+    endelse
   endif
 
   n_bad = 0L
@@ -167,15 +292,11 @@ pro ucomp_verify_check_logs, run=run, status=status, n_raw_files=n_raw_files
 
   for f = 0L, n_ml_lines - 1L do begin
     matching_index = where(ml_files[f] eq raw_basenames, n_matches)
-    if (n_matches ne 1L) then begin
-      n_bad += 1L
-      status = 1L
-    endif
     case 1 of
       n_matches eq 0: begin
           mg_log, 'missing %s', ml_files[f], name=run.logger_name, /warn
           n_bad += 1L
-          status = 1L
+          ;status = 1L
         end
       n_matches eq 1: begin
           info = file_info(raw_files[matching_index[0]])
@@ -215,7 +336,7 @@ pro ucomp_verify_check_collection_server, run=run, status=status
   collection_server = run->config('verification/collection_server')
   if (n_elements(collection_server) eq 0L) then begin
     mg_log, 'no collection server specified', name=run.logger_name, /warn
-    status = 11ULL
+    status = 1UL
     goto, done
   endif
 
@@ -261,10 +382,12 @@ pro ucomp_verify_check_collection_server, run=run, status=status
 
   n_log_lines = file_lines(machine_log_filename)
   if (n_log_lines ne n_raw_files) then begin
+    max_missing = run->config('verification/max_missing')
     mg_log, '# raw files on collection server (%d) does not match # lines in machine log (%d)', $
             n_raw_files, n_log_lines, $
             name=run.logger_name, /warn
-    status or= 1UL
+    if (n_raw_files lt (n_log_lines - max_missing) $
+          || (n_raw_files gt n_log_lines)) then status or= 1UL
     goto, done
   endif
 
@@ -346,11 +469,13 @@ end
 ;-
 pro ucomp_verify, date, config_filename, $
                   status=status, $
-                  log_filename=log_filename
+                  log_filename=log_filename, $
+                  mode=mode
   compile_opt strictarr
 
   status = 0L
-  logger_name = 'ucomp/verify'
+  _mode = mg_default(mode, 'verify')
+  logger_name = 'ucomp/' + _mode
 
   if (n_elements(config_filename) eq 0L) then begin
     mg_log, 'date argument is missing', name=logger_name, /error
@@ -372,7 +497,7 @@ pro ucomp_verify, date, config_filename, $
     goto, done
   endif
 
-  run = ucomp_run(date, 'verify', config_fullpath, /reprocess)
+  run = ucomp_run(date, _mode, config_fullpath, /reprocess)
   if (not obj_valid(run)) then goto, done
 
   mg_log, name=logger_name, logger=logger
@@ -406,7 +531,7 @@ pro ucomp_verify, date, config_filename, $
   if (status eq 0L) then begin
     mg_log, 'verification succeeded', name=logger_name, /info
   endif else begin
-    mg_log, 'verification failed', name=logger_name, /error
+    mg_log, 'verification failed (%d)', status, name=logger_name, /error
   endelse
 
   if (obj_valid(run)) then obj_destroy, run
@@ -415,13 +540,15 @@ end
 
 ; main-level example program
 
-logger_name = 'ucomp/verify'
+mode = 'test'
+logger_name = 'ucomp/' + mode
 cfile = 'ucomp.production.cfg'
-config_filename = filepath(cfile, subdir=['..', 'config'], root=mg_src_root())
+config_filename = filepath(cfile, subdir=['..', '..', 'config'], root=mg_src_root())
 
-dates = ['20180708']
+dates = ['20220417', '20220418', '20220423']
+;dates = ['20220423']
 for d = 0L, n_elements(dates) - 1L do begin
-  ucomp_verify, dates[d], config_filename
+  ucomp_verify, dates[d], config_filename, mode=mode
 
   if (d lt n_elements(dates) - 1L) then begin
     mg_log, name=logger_name, logger=logger
