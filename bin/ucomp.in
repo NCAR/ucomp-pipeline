@@ -45,6 +45,12 @@ try:
 except ModuleNotFoundError as e:
     versions_requirements = False
 
+try:
+    import watchfiles
+    watch_requirements = True
+except ModuleNotFoundError as e:
+    watch_requirements = False
+
 
 POLL_SECS = 0.1
 
@@ -55,6 +61,62 @@ DATE_FORMAT = "%Y%m%d"
 
 DEVNULL = open(os.devnull, "w")
 PIPELINE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+
+
+# config file helpers
+# TODO: need to handle config file inheritance
+
+def get_config_filename(flags):
+    config_basename = f"ucomp.{flags}.cfg"
+
+    # construct config file filename
+    config_filename = os.path.join(PIPELINE_DIR, "config", config_basename)
+
+    return(config_filename)
+
+
+def get_config(flags, error):
+    config_filename = get_config_filename(flags)
+    if not os.path.isfile(config_filename):
+        config_basename = os.bath.basename(config_filename)
+        error(f"configuration file does not exist: {config_basename}")
+
+    # read config file to get arguments to launch data/processing simulators
+    config = configparser.ConfigParser()
+    config.read(config_filename)
+
+    return(config)
+
+
+def get_remote_location(flags, error):
+    ucomp_config = get_config(flags, error)
+
+    try:
+        raw_remote_server = ucomp_config.get("verification", "collection_server")
+        raw_remote_dir = ucomp_config.get("verification", "collection_basedir")
+    except configparser.NoSectionError:
+        error("no verification section in config file")
+    except configparser.NoOptionError:
+        error("missing raw remote server options in config file")
+    return(raw_remote_server, raw_remote_dir)
+
+
+def get_raw_basedir(date, flags, error):
+    ucomp_config = get_config(flags, error)
+
+    try:
+        raw_basedir = ucomp_config.get("raw", "basedir")
+    except configparser.NoSectionError:
+        error("no raw section in config file")
+    except configparser.NoOptionError:
+        routing_filename = ucomp_config.get("raw", "routing_file")
+        routing_config = configparser.ConfigParser()
+        routing_config.read(routing_filename)
+        date_locations = routing_config.options("ucomp-raw")
+        for date_expr in date_locations:
+            if fnmatch.fnmatch(date, date_expr):
+                return(routing_config.get("ucomp-raw", date_expr))
+    return(raw_basedir)
 
 
 # date handling helpers
@@ -89,14 +151,8 @@ def convert_boolean(value):
 
 
 def notify_completed(args, task):
-    config_basename = f"ucomp.{args.flags}.cfg"
-
-    # construct config file filename
-    config_filename = os.path.join(PIPELINE_DIR, "config", config_basename)
-
-    # read config file to get arguments to launch data/processing simulators
-    config = configparser.ConfigParser()
-    config.read(config_filename)
+    config_filename = get_config_filename(args.flags)
+    config = get_config(args.flags, args.parser.error)
 
     try:
         send_notification = convert_boolean(config.get("notifications", "send"))
@@ -500,9 +556,9 @@ def missing(args):
     if args.script:
         raw_remote_server, raw_remote_dir = get_remote_location(args.flags, args.parser.error)
     for d in dates:
-        raw_dir = get_raw_dir(d, args.flags, args.parser.error)
-        raw_datedir = os.path.join(raw_dir, d)
-        present_files = glob.glob(os.path.join(raw_datedir, "*.fts"))
+        raw_basedir = get_raw_basedir(d, args.flags, args.parser.error)
+        raw_dir = os.path.join(raw_basedir, d)
+        present_files = glob.glob(os.path.join(raw_dir, "*.fts"))
         machine_log = os.path.join(raw_dir, d, f"{d}.ucomp.machine.log")
         if os.path.exists(machine_log):
             with open(machine_log, "r") as f:
@@ -518,7 +574,7 @@ def missing(args):
             raw_remote_datedir = os.path.join(raw_remote_dir, d)
             print("#!/bin/sh")
             print(f"REMOTE_LOCATION={raw_remote_server}:{raw_remote_datedir}")
-            print(f"LOCAL_LOCATION={raw_datedir}")
+            print(f"LOCAL_LOCATION={raw_dir}")
             print()
 
         for cf in created_files:
@@ -527,52 +583,6 @@ def missing(args):
                     print(f"scp $REMOTE_LOCATION/{cf} $LOCAL_LOCATION")
                 else:
                     print(cf)
-
-
-def get_remote_location(flags, error):
-    config_basename = f"ucomp.{flags}.cfg"
-    # construct config file filename
-    config_filename = os.path.join(PIPELINE_DIR, "config", config_basename)
-    if not os.path.isfile(config_filename):
-        basename = os.path.basename(config_filename)
-        error(f"configuration file does not exist: {basename}")
-
-    ucomp_config = configparser.ConfigParser()
-    ucomp_config.read(config_filename)
-    try:
-        raw_remote_server = ucomp_config.get("verification", "collection_server")
-        raw_remote_dir = ucomp_config.get("verification", "collection_basedir")
-    except configparser.NoSectionError:
-        error("no verification section in config file")
-    except configparser.NoOptionError:
-        error("missing raw remote server options in config file")
-    return(raw_remote_server, raw_remote_dir)
-
-
-def get_raw_dir(date, flags, error):
-    config_basename = f"ucomp.{flags}.cfg"
-
-    # construct config file filename
-    config_filename = os.path.join(PIPELINE_DIR, "config", config_basename)
-    if not os.path.isfile(config_filename):
-        basename = os.path.basename(config_filename)
-        error(f"configuration file does not exist: {basename}")
-
-    ucomp_config = configparser.ConfigParser()
-    ucomp_config.read(config_filename)
-    try:
-        raw_dir = ucomp_config.get("raw", "basedir")
-    except configparser.NoSectionError:
-        error("no raw section in config file")
-    except configparser.NoOptionError:
-        routing_filename = ucomp_config.get("raw", "routing_file")
-        routing_config = configparser.ConfigParser()
-        routing_config.read(routing_filename)
-        date_locations = routing_config.options("ucomp-raw")
-        for date_expr in date_locations:
-            if fnmatch.fnmatch(date, date_expr):
-                return(routing_config.get("ucomp-raw", date_expr))
-    return(raw_dir)
 
 
 # versions sub-command
@@ -795,6 +805,24 @@ def filter_db_row(keep_columns, columns, row):
     return([row[i] for i, c in enumerate(columns) if c in keep_columns])
 
 
+# watch sub-command
+def watch(args):
+    if not database_requirements:
+        args.parser.error("missing Python packages required for watch")
+
+    raw_basedir = get_raw_basedir(args.date, args.flags, args.parser.error)
+    raw_dir = os.path.join(raw_basedir, args.date)
+    print(f"watching {raw_dir}...")
+
+    try:
+        for changes in watchfiles.watch(raw_dir):
+            for c in changes:
+                print(f"{c[0].name} {c[1]}")
+    except KeyboardInterrupt:
+        print()
+        return
+
+
 # realtime, eod, and calibrate sub-commands
 def parse_date_expr(date_expr):
     dates = []
@@ -979,7 +1007,7 @@ if __name__ == "__main__":
 
     # TODO: it would be nice to arrange sub-commands into groups, but that is
     # not possible with argparse right now
-    # helpers: list, ls, cat, validate, log, versions, database
+    # helpers: list, ls, cat, validate, log, versions, database, watch
     # processing: rt, eod, cal, reprocess
     # clearday, archive
     # testing: regress, simulate, verify
@@ -1111,6 +1139,14 @@ if __name__ == "__main__":
     database_parser.add_argument("-c", "--columns", type=str, default=None,
         help="columns to display")
     database_parser.set_defaults(func=database, parser=database_parser)
+
+    # watch sub-command
+    watch_parser = subparsers.add_parser("watch", help="watch incoming data")
+    watch_parser.add_argument("-f", "--flags", type=str, help=flags_help,
+        default="latest")
+    watch_parser.add_argument("date", type=str,
+        help="date to run on in the form YYYYMMDD")
+    watch_parser.set_defaults(func=watch, parser=watch_parser)
 
     # eod, rt, cal sub-commands
     eod_parser = subparsers.add_parser("end-of-day", aliases=["eod"],
