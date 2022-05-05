@@ -121,7 +121,7 @@ function ucomp_calibration::get_dark, obsday_hours, exptime, gain_mode, $
   ; find the darks with an exposure time that is close enough to the given
   ; exptime
   exptime_threshold = 0.01   ; [ms]
-  gain_index = gain_mode eq 'high'
+  gain_index        = gain_mode eq 'high'
   valid_indices = where(abs(exptime - *self.dark_exptimes) lt exptime_threshold $
                           and (*self.dark_gain_modes eq gain_index), $
                         n_valid_darks)
@@ -322,10 +322,10 @@ end
 
 
 ;+
-; Retrieve a flat image for a given science image. The exposure time of the
-; found flat will be normalized to the required exposure time given by
-; `exptime`. Other attributes such as `gain_mode`, `onband`, and `wavelength`
-; will be matched exactly.
+; Retrieve a dark corrected flat image for a given science image. The exposure
+; time of the found flat will be normalized to the required exposure time given
+; by `exptime`. Other attributes such as `gain_mode`, `onband`, and 
+; `wavelength` will be matched exactly.
 ;
 ; :Returns:
 ;   flat image, `fltarr(nx, ny, np, nc)`
@@ -350,11 +350,14 @@ end
 function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
                                       onband, wavelength, $
                                       found=found, $
-                                      time_found=time_found, $
-                                      master_extension=master_extension, $
-                                      raw_extension=raw_extension, $
-                                      raw_file=raw_file
+                                      times_found=times_found, $
+                                      master_extensions=master_extensions, $
+                                      raw_extensions=raw_extensions, $
+                                      raw_filenames=raw_filenames, $
+                                      coefficients=coefficients
   compile_opt strictarr
+
+  interpolate = self.run->config('calibration/interpolate_flats')
 
   ; Science data and flats should match number of tunings, i.e., a science
   ; image from a file with 5 wavelength tunings should be corrected with a flat
@@ -368,11 +371,10 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
 
   ; find the darks with an exposure time and wavelength that is close enough to
   ; the given exposure time and wavelength
-  exptime_threshold = 0.01      ; [ms]
-  wavelength_threshold = 0.001  ; [nm]
-
-  gain_index = gain_mode eq 'high'
-  onband_index = onband eq 'tcam'
+  exptime_threshold    = 0.01      ; [ms]
+  wavelength_threshold = 0.001     ; [nm]
+  gain_index           = gain_mode eq 'high'
+  onband_index         = onband eq 'tcam'
   valid_indices = where((abs(wavelength - *self.flat_wavelengths) lt wavelength_threshold) $
                           and (*self.flat_gain_modes eq gain_index) $
                           and (*self.flat_onbands eq onband_index), $
@@ -383,21 +385,100 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
 
   found = 1B
 
-  ; find index of valid flat taken nearest specified time
-  !null = min(abs(obsday_hours - (*self.flat_times)[valid_indices]), nearest_time_index)
+  ; find the closest flat, or two closest flats before and after, if
+  ; interpolate is set and there are flats before and after
+  valid_flats = (*self.flats)[*, *, *, valid_indices]
+  valid_times = (*self.flat_times)[valid_indices]
+  if (obsday_hours lt valid_times[0]) then begin
+    interpolated_flat = float(valid_flats[*, *, *, 0])
 
-  ; convert nearest time index from index into valid flats to index into all flats
-  nearest_time_index = valid_indices[nearest_time_index]
+    exptime_found = (*self.flat_exptimes)[valid_indices[0]]
+    interpolated_flat *= exptime / exptime_found
 
-  time_found = (*self.flat_times)[nearest_time_index]
-  exptime_found = (*self.flat_exptimes)[nearest_time_index]
-  master_extension = nearest_time_index + 1L   ; convert index to FITS ext
-  raw_extension = (*self.flat_extensions)[nearest_time_index]
-  raw_file = (*self.flat_raw_files)[nearest_time_index]
+    times_found = (*self.flat_times)[valid_indices[0]]
+    flat_dark = self->get_dark(times_found, exptime, gain_mode, $
+                               found=flat_dark_found)
+    if (~flat_dark_found) then begin
+      found = 0B
+      return, !null
+    endif
+    interpolated_flat -= flat_dark
 
-  flat = float(reform((*self.flats)[*, *, *, nearest_time_index]))
-  flat *= exptime / exptime_found
-  return, flat
+    master_extensions = valid_indices[0] + 1L
+    raw_extensions = (*self.flat_extensions)[valid_indices[0]]
+    raw_filenames = strtrim((*self.flat_raw_files)[valid_indices[0]], 2)
+    coefficients = 1.0
+  endif else if (obsday_hours gt valid_times[n_valid_flats - 1]) then begin
+    interpolated_flat = float(valid_flats[*, *, *, n_valid_flats - 1])
+
+    exptime_found = (*self.flat_exptimes)[valid_indices[n_valid_flats - 1]]
+    interpolated_flat *= exptime / exptime_found
+
+    times_found = (*self.flat_times)[valid_indices[n_valid_flats - 1L]]
+    flat_dark = self->get_dark(times_found, exptime, gain_mode, $
+                               found=flat_dark_found)
+    if (~flat_dark_found) then begin
+      found = 0B
+      return, !null
+    endif
+    interpolated_flat -= flat_dark
+
+    master_extensions = valid_indices[n_valid_flats - 1] + 1L
+    raw_extensions = (*self.flat_extensions)[valid_indices[n_valid_flats - 1]]
+    raw_filenames = strtrim((*self.flat_raw_files)[valid_indices[n_valid_flats - 1]], 2)
+    coefficients = 1.0
+  endif else begin
+    if (keyword_set(interpolate)) then begin
+      index1 = value_locate(valid_times, obsday_hours)
+      index2 = index1 + 1L
+
+      flat1 = valid_flats[*, *, *, index1]
+      exptime_found = (*self.flat_exptimes)[valid_indices[index1]]
+      flat1 *= exptime / exptime_found
+  
+      flat2 = valid_flats[*, *, *, index2]
+      exptime_found = (*self.flat_exptimes)[valid_indices[index2]]
+      flat2 *= exptime / exptime_found
+
+      times_found = (*self.flat_times)[valid_indices[[index1, index2]]]
+
+      flat_dark1 = self->get_dark(times_found[0], exptime, gain_mode, $
+                                  found=flat_dark_found)
+      if (~flat_dark_found) then begin
+        found = 0B
+        return, !null
+      endif
+      flat1 -= flat_dark1
+
+      flat_dark2 = self->get_dark(times_found[1], exptime, gain_mode, $
+                                  found=flat_dark_found)
+      if (~flat_dark_found) then begin
+        found = 0B
+        return, !null
+      endif
+      flat2 -= flat_dark2
+
+      a1 = (valid_times[index2] - obsday_hours) / (valid_times[index2] - valid_times[index1])
+      a2 = (obsday_hours - valid_times[index1]) / (valid_times[index2] - valid_times[index1])
+      interpolated_flat = a1 * flat1 + a2 * flat2
+
+      master_extensions = [index1, index2] + 1L
+      raw_extensions = (*self.flat_extensions)[valid_indices[[index1, index2]]]
+      raw_filenames = strtrim((*self.flat_raw_files)[valid_indices[[index1, index2]]], 2)
+
+      coefficients = [a1, a2]
+    endif else begin
+      index = value_locate(valid_times, obsday_hours)
+      interpolated_flat = valid_flats[*, *, *, index]
+
+      master_extensions = index + 1L
+      raw_extensions = (*self.flat_extensions)[valid_indices[index]]
+      raw_filenames = strtrim((*self.flat_raw_files)[index], 2)
+      coefficients = 1.0
+    endelse
+  endelse
+
+  return, float(reform(interpolated_flat))
 end
 
 
