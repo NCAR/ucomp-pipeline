@@ -63,7 +63,7 @@ pro ucomp_l1_apply_alignment, file, primary_header, data, headers, run=run, stat
   rcam_geometry.post_angle = 180.0 - rcam_geometry.post_angle - file.p_angle
   tcam_geometry.post_angle = 180.0 - tcam_geometry.post_angle - file.p_angle
 
-  ucomp_addpar, primary_header, 'CRPIX1', (dims[0] - 1.0) / 2.0, $
+  ucomp_addpar, primary_header, 'CRPIX1', (dims[0] - 1.0) / 2.0 + 1.0, $
                 comment='[pixel] solar X center (index origin=1)', $
                 format='(F0.2)'
   ucomp_addpar, primary_header, 'CRVAL1', 0.0, $
@@ -72,7 +72,7 @@ pro ucomp_l1_apply_alignment, file, primary_header, data, headers, run=run, stat
   ucomp_addpar, primary_header, 'CRUNIT1', 'arcsec', $
                 comment='unit of CRVAL1'
 
-  ucomp_addpar, primary_header, 'CRPIX2', (dims[1] - 1.0) / 2.0, $
+  ucomp_addpar, primary_header, 'CRPIX2', (dims[1] - 1.0) / 2.0 + 1.0, $
                 comment='[pixel] solar Y center (index origin=1)', $
                 format='(F0.2)'
   ucomp_addpar, primary_header, 'CRVAL2', 0.0, $
