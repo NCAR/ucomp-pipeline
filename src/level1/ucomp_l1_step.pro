@@ -40,8 +40,12 @@ pro ucomp_l1_step, routine_name, file, primary_header, data, headers, $
     run->log_memory, routine_name
 
     ucomp_assert, n_elements(headers) eq file.n_extensions, $
-                  'number of extensions inconsistent: %d != %d', $
+                  'number of extensions inconsistent with headers: %d != %d', $
                   n_elements(headers), file.n_extensions, $
+                  from=routine_name
+    ucomp_assert, n_elements(file.wavelengths) eq file.n_extensions, $
+                  'number of extensions inconsistent with wavelengths: %d != %d', $
+                  n_elements(file.wavelengths), file.n_extensions, $
                   from=routine_name
 
     mg_log, /check_math, from=routine_name, name=run.logger_name, /warn

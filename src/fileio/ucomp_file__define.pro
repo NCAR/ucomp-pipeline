@@ -142,6 +142,7 @@ pro ucomp_file::getProperty, run=run, $
                              b0=b0, $
                              semidiameter=semidiameter, $
                              distance_au=distance_au, $
+                             true_dec=true_dec, $
                              wave_region=wave_region, $
                              center_wavelength=center_wavelength, $
                              data_type=data_type, $
@@ -261,12 +262,13 @@ pro ucomp_file::getProperty, run=run, $
         || arg_present(p_angle) $
         || arg_present(b0) $
         || arg_present(semidiameter) $
-        || arg_present(dist_au)) then begin
+        || arg_present(dist_au) $
+        || arg_present(true_dec)) then begin
     date_parts = ucomp_decompose_date(self.ut_date)
     hours = ucomp_decompose_time(self.ut_time, /float)
     sun, date_parts[0], date_parts[1], date_parts[2], hours, $
          carrington=carrington_rotation, pa=p_angle, lat0=b0, sd=semidiameter, $
-         dist=distance_au
+         dist=distance_au, true_dec=true_dec
   endif
 
   if (arg_present(obs_id)) then obs_id = self.obs_id
