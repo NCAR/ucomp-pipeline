@@ -10,7 +10,7 @@
 ;   enhanced intensity image, `bytarr(1280, 1024)`
 ;
 ; :Params:
-;   data : in, required, type="fltarr(1280, 1024)"
+;   intensity : in, required, type="fltarr(1280, 1024)"
 ;     image
 ;   header : in, required, type=strarr
 ;     FITS header with geometry information
@@ -26,38 +26,31 @@
 ; :Author:
 ;   MLSO Software Team
 ;-
-function ucomp_enhanced_intensity, data, header, r_outer, $
-                                   status=status, $
-                                   error_msg=error_msg
+function ucomp_enhanced_intensity, intensity, header, r_outer
   compile_opt strictarr
 
-  r_inner = ucomp_getpar(header, 'RADIUS')
-  xycenter = [sxpar(hdr, 'CRPIX1'), sxpar(hdr, 'CRPIX2')] - 1.0
+  radius     = ucomp_getpar(header, 'RADIUS')
+  post_angle = ucomp_getpar(header, 'POST_ANG')
 
-  dims = size(data, /dimensions)
-  v_x = dindgen(dims[0])
-  v_y = dindgen(dims[1])
-  x   = rebin(v_x, dims[0], dims[1]) - xycenter[0]
-  y   = rebin(transpose(v_y), dims[0], dims[1]) - xycenter[1]
-  r   = sqrt(x^2 + y^2)
+  dims = size(intensity, /dimensions)
 
-  sort_indices = sort(r)
-  sorted_r  = r[sort_indices]
-  sorted_im = data[sort_indices]
+  field_mask    = ucomp_field_mask(dims[0], dims[1], r_outer)
+  occulter_mask = ucomp_occulter_mask(dims[0], dims[1], 1.01 * radius)
+  post_mask     = ucomp_post_mask(dims[0], dims[1], post_angle)
+  mask          = field_mask and occulter_mask and post_mask
 
-  minp = min(where(sorted_r ge r_inner))
-  maxp = max(where(sorted_r le r_outer))
-  lx1 = sorted_r[minp:maxp]
-  ly1 = sorted_im[minp:maxp]
-  err = 1.0D
-  start = [1.0D6, 50.0D]
+  masked_intensity = intensity * mask
 
-  lfit = mpfitfun('ucomp_expfit', lx1, ly1, err, start, /nan, /quiet, $
-                  errmsg=error_msg, status=status)
-  limb = bytscl(data / ucomp_expfit(r, lfit), min=0, max=4)
-  mlimb = unsharp_mask(limb, amount=5)
+  good_indices = where(intensity gt 1.0 $
+                       and intensity lt 100.0, $
+                       ;and width lt 60.0 $
+                       ;and width gt 15.0 $
+                       ;and abs(doppler) lt 30.0 $
+                       ;and doppler ne 0.0, $
+                       complement=bad_indices)
+  masked_intensity[bad_indices] = 0.0
 
-  fitim = mlimb * (r ge r_inner - 1.0)
+  unsharp_intensity = unsharp_mask(masked_intensity, radius=3.0, amount=2.0)
 
-  return, fitim
+  return, unsharp_intensity
 end

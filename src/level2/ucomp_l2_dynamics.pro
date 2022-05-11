@@ -61,15 +61,7 @@ pro ucomp_l2_dynamics, file, run=run
   ; calculate enhanced intensity
   enhanced_intensity = ucomp_enhanced_intensity(intensity, $
                                                 primary_header, $
-                                                run->epoch('field_radius'), $
-                                                status=status, $
-                                                error_msg=error_msg)
-  if (error_msg ne '') then begin
-    mg_log, 'error computing enhanced intensity', name=run.logger_name, /warn
-    mg_log, 'status: %d', status, name=run.logger_name, /warn
-    mg_log, error_msg, name=run.logger_name, /warn
-    goto, done
-  endif
+                                                run->epoch('field_radius'))
 
   ; TODO: calculate LOS velocity
   ; TODO: calculate line width
