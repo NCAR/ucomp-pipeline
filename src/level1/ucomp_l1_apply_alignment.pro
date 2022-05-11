@@ -65,7 +65,7 @@ pro ucomp_l1_apply_alignment, file, primary_header, data, headers, run=run, stat
 
   ucomp_addpar, primary_header, 'CRPIX1', (dims[0] - 1.0) / 2.0 + 1.0, $
                 comment='[pixel] solar X center (index origin=1)', $
-                format='(F0.2)'
+                format='(F0.1)'
   ucomp_addpar, primary_header, 'CRVAL1', 0.0, $
                 comment='[arcsec] solar X sun center', $
                 format='(F0.2)'
@@ -74,7 +74,7 @@ pro ucomp_l1_apply_alignment, file, primary_header, data, headers, run=run, stat
 
   ucomp_addpar, primary_header, 'CRPIX2', (dims[1] - 1.0) / 2.0 + 1.0, $
                 comment='[pixel] solar Y center (index origin=1)', $
-                format='(F0.2)'
+                format='(F0.1)'
   ucomp_addpar, primary_header, 'CRVAL2', 0.0, $
                 comment='[arcsec] solar Y sun center', $
                 format='(F0.2)'
