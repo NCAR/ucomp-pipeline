@@ -34,8 +34,8 @@ function ucomp_enhanced_intensity, intensity, header, r_outer
 
   dims = size(intensity, /dimensions)
 
-  field_mask    = ucomp_field_mask(dims[0], dims[1], r_outer)
   occulter_mask = ucomp_occulter_mask(dims[0], dims[1], 1.01 * radius)
+  field_mask    = ucomp_field_mask(dims[0], dims[1], r_outer)
   post_mask     = ucomp_post_mask(dims[0], dims[1], post_angle)
   mask          = field_mask and occulter_mask and post_mask
 
