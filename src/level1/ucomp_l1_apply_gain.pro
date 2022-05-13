@@ -62,6 +62,10 @@ pro ucomp_l1_apply_gain, file, primary_header, data, headers, run=run, status=st
       continue
     endif
 
+    ; mg_log, 'dark corrected flat mean by camera: %0.3f, %0.3f', $
+    ;         mean(mean(dark_corrected_flat, dimension=1), dimension=1), $
+    ;         name=run.logger_name, /debug
+
     im = data[*, *, *, *, e]
 
     zero_indices = where(dark_corrected_flat eq 0.0, n_zeros)
