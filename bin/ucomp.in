@@ -559,7 +559,7 @@ def missing(args):
         raw_basedir = get_raw_basedir(d, args.flags, args.parser.error)
         raw_dir = os.path.join(raw_basedir, d)
         present_files = glob.glob(os.path.join(raw_dir, "*.fts"))
-        machine_log = os.path.join(raw_dir, d, f"{d}.ucomp.machine.log")
+        machine_log = os.path.join(raw_dir, f"{d}.ucomp.machine.log")
         if os.path.exists(machine_log):
             with open(machine_log, "r") as f:
                 created_files = [line.split()[0] for line in f]
