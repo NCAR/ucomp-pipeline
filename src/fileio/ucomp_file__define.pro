@@ -142,6 +142,7 @@ pro ucomp_file::getProperty, run=run, $
                              b0=b0, $
                              semidiameter=semidiameter, $
                              distance_au=distance_au, $
+                             true_dec=true_dec, $
                              wave_region=wave_region, $
                              center_wavelength=center_wavelength, $
                              data_type=data_type, $
@@ -164,6 +165,8 @@ pro ucomp_file::getProperty, run=run, $
                              ok=ok, $
                              processed=processed, $
                              vcrosstalk_metric=vcrosstalk_metric, $
+                             wind_speed=wind_speed, $
+                             wind_direction=wind_direction, $
                              occulter_in=occulter_in, $
                              occultrid=occultrid, $
                              occulter_x=occulter_x, $
@@ -259,12 +262,13 @@ pro ucomp_file::getProperty, run=run, $
         || arg_present(p_angle) $
         || arg_present(b0) $
         || arg_present(semidiameter) $
-        || arg_present(dist_au)) then begin
+        || arg_present(dist_au) $
+        || arg_present(true_dec)) then begin
     date_parts = ucomp_decompose_date(self.ut_date)
     hours = ucomp_decompose_time(self.ut_time, /float)
     sun, date_parts[0], date_parts[1], date_parts[2], hours, $
          carrington=carrington_rotation, pa=p_angle, lat0=b0, sd=semidiameter, $
-         dist=distance_au
+         dist=distance_au, true_dec=true_dec
   endif
 
   if (arg_present(obs_id)) then obs_id = self.obs_id
@@ -293,6 +297,8 @@ pro ucomp_file::getProperty, run=run, $
   if (arg_present(ok)) then ok = self.quality_bitmask eq 0
   if (arg_present(processed)) then processed = self.processed
   if (arg_present(vcrosstalk_metric)) then vcrosstalk_metric = self.vcrosstalk_metric
+  if (arg_present(wind_speed)) then wind_speed = self.wind_speed
+  if (arg_present(wind_direction)) then wind_direction = self.wind_direction
 
   if (arg_present(focus)) then focus = self.focus
   if (arg_present(o1focus)) then o1focus = self.o1focus
@@ -488,6 +494,9 @@ pro ucomp_file::_inventory
   self.t_c0pcb  = ucomp_getpar(primary_header, 'T_C0PCB', /float, found=found)
   self.t_c1arr  = ucomp_getpar(primary_header, 'T_C1ARR', /float, found=found)
   self.t_c1pcb  = ucomp_getpar(primary_header, 'T_C1PCB', /float, found=found)
+
+  self.wind_speed     = ucomp_getpar(primary_header, 'WNDSPD', /float, found=found)
+  self.wind_direction = ucomp_getpar(primary_header, 'WNDDIR', /float, found=found)
 
   ; allocate inventory variables
   *self.wavelengths = fltarr(self.n_extensions)
@@ -706,7 +715,9 @@ pro ucomp_file__define
            quality_bitmask     : 0UL, $
            gbu                 : 0UL, $
            processed           : 0B, $
-           vcrosstalk_metric  : 0.0 $
+           vcrosstalk_metric   : 0.0, $
+           wind_speed          : 0.0, $
+           wind_direction      : 0.0 $
           }
 end
 

@@ -68,11 +68,21 @@ pro ucomp_l1_promote_header, file, primary_header, data, headers, $
 
   ; update extension headers
 
-  remove_keywords = ['COMMENT', 'ONBAND', 'CONTIN', 'V_LCVR1', 'V_LCVR2', $
-                     'V_LCVR3', 'V_LCVR4', 'V_LCVR5', 'NUMSUM']
+  remove_keywords = ['COMMENT', 'ONBAND', 'V_LCVR1', 'V_LCVR2', $
+                     'V_LCVR3', 'V_LCVR4', 'V_LCVR5', 'NUMSUM', 'SEQNUM', $
+                     'OCCLTR', 'CALOPTIC', 'COVER', 'DIFFUSR', 'DARKSHUT', $
+                     'POLANGLE', 'RETANGLE']
+  promote_keywords = [{name: 'CONTIN', format: '(A)'}, $
+                      {name: 'FRAMERT', format: '(F0.3)'}, $
+                      {name: 'EXPTIME', format: '(F0.3)'}]
+
   for e = 0L, n_elements(headers) - 1L do begin
     h = headers[e]
+
+    ; remove keywords
     for k = 0L, n_elements(remove_keywords) - 1L do sxdelpar, h, remove_keywords[k]
+
+    ; fix up comments to NAXIS keywords
     ucomp_addpar, h, 'NAXIS1', ucomp_getpar(h, 'NAXIS1'), $
                   comment='[px] width'
     ucomp_addpar, h, 'NAXIS2', ucomp_getpar(h, 'NAXIS2'), $
@@ -80,5 +90,29 @@ pro ucomp_l1_promote_header, file, primary_header, data, headers, $
     ucomp_addpar, h, 'NAXIS3', ucomp_getpar(h, 'NAXIS3'), $
                   comment='polarization states: I, Q, U, V'
     headers[e] = h
+  endfor
+
+  ; promote keywords to primary header
+  for k = 0L, n_elements(promote_keywords) - 1L do begin
+    for e = 0L, n_elements(headers) - 1L do begin
+      h = headers[e]
+      new_value = ucomp_getpar(h, promote_keywords[k].name, comment=comment)
+      sxdelpar, h, promote_keywords[k].name
+      headers[e] = h
+
+      ; make sure value is consistent before promoting
+      if (e eq 0L) then begin
+        value = new_value
+      endif else begin
+        if (~ucomp_same(value, new_value)) then begin
+          mg_log, 'keyword %s not consistent across extensions', $
+                  promote_keywords[k].name, $
+                  name=run.logger_name, /warn
+        endif
+      endelse
+    endfor
+    ucomp_addpar, primary_header, promote_keywords[k].name, value, $
+                  format=promote_keywords[k].format, $
+                  comment=comment
   endfor
 end

@@ -73,6 +73,7 @@ pro ucomp_l1_continuum_subtraction, file, primary_header, ext_data, ext_headers,
   ext_headers->remove, /all
 
   matched = bytarr(n_matches)
+  keep_wavelengths = fltarr(dims[4] / 2L)
   i = 0L
   for m = 0L, n_matches - 1L do begin
     if (matched[m]) then continue
@@ -111,10 +112,11 @@ pro ucomp_l1_continuum_subtraction, file, primary_header, ext_data, ext_headers,
     cam1 = c1[0] * ext_data[*, *, *, 1, m] + c1[1] * ext_data[*, *, *, 1, match_indices[m]]
     combined_ext_data[*, *, *, 0, i] = cam0
     combined_ext_data[*, *, *, 1, i] = cam1
+    keep_wavelengths[i] = wavelength[match_indices[m]]
 
     i += 1L
 
-    header = reform(ext_headers_array[*, m])
+    header = reform(ucomp_combine_headers(ext_headers_array[*, [m, match_indices[m]]]))
     sxdelpar, header, 'ONBAND'
     ucomp_addpar, header, 'RAWEXTS', raw_exts[m] + ',' + raw_exts[match_indices[m]]
     ext_headers->add, header
@@ -126,7 +128,7 @@ pro ucomp_l1_continuum_subtraction, file, primary_header, ext_data, ext_headers,
   ext_data = combined_ext_data
 
   file.n_extensions = n_elements(ext_headers)
-  file.wavelength = wavelength[match_indices]
+  file.wavelengths = keep_wavelengths
   file.onband_indices = !null
 
   done:
