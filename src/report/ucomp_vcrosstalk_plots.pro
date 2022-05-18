@@ -39,12 +39,14 @@ pro ucomp_vcrosstalk_plots_wave_region, date, $
           decomposed=0, $
           set_colors=256, $
           z_buffering=0
-  loadct, 0, /silent
+  loadct, 0, /silent, ncolors=254
+  tvlct, 255, 0, 0, 255
   tvlct, r, g, b, /get
 
   mg_range_plot, times, vcrosstalk, $
                  title=title, $
-                 psym=6, symsize=0.25, color=0, background=255, $
+                 psym=6, symsize=0.25, color=0, background=254, $
+                 clip_psym=6, clip_color=255, $
                  xstyle=1, xrange=[6.0, 18.0], xtitle='Hours into HST observing day', $
                  ystyle=1, yrange=[0.0, 4.0], ytitle='V crosstalk'
 
@@ -94,21 +96,21 @@ pro ucomp_vcrosstalk_plots, output_dir, run=run
   endfor
 
   ; all science files
-  files = run->get_files(data_type='sci', count=n_files)
-  if (n_files eq 0L) then goto, done
+  ; files = run->get_files(data_type='sci', count=n_files)
+  ; if (n_files eq 0L) then goto, done
 
-  times = fltarr(n_files)
-  vcrosstalk = fltarr(n_files)
-  for f = 0L, n_files - 1L do begin
-    times[f] = files[f].obsday_hours
-    vcrosstalk[f] = files[f].vcrosstalk_metric
-  endfor
+  ; times = fltarr(n_files)
+  ; vcrosstalk = fltarr(n_files)
+  ; for f = 0L, n_files - 1L do begin
+  ;   times[f] = files[f].obsday_hours
+  ;   vcrosstalk[f] = files[f].vcrosstalk_metric
+  ; endfor
 
-  ucomp_vcrosstalk_plots_wave_region, run.date, $
-                                      !null, $
-                                      output_dir, $
-                                      times, $
-                                      vcrosstalk
+  ; ucomp_vcrosstalk_plots_wave_region, run.date, $
+  ;                                     !null, $
+  ;                                     output_dir, $
+  ;                                     times, $
+  ;                                     vcrosstalk
 
   done:
 end

@@ -23,19 +23,22 @@ pro ucomp_create_mp4, image_filenames, mp4_filename, run=run, status=status
 
   n_image_files = n_elements(image_filenames)
 
-  tmp_image_fmt = '(%"tmp-%04d.%s")'
+  ; TODO: should really create these temp files in /tmp
+
+  tmp_image_fmt = '(%"tmp-%s-%04d.%s")'
+  pid = mg_pid()
 
   basename = file_basename(image_filenames[0])
   ext = strmid(basename, strpos(basename, '.', /reverse_search) + 1L)
 
   ; delete temp links in case any are still there from a previous run
   for f = 0L, n_image_files - 1L do begin
-    file_delete, string(f, ext, format=tmp_image_fmt), /allow_nonexistent
+    file_delete, string(pid, f, ext, format=tmp_image_fmt), /allow_nonexistent
   endfor
 
   ; create links so filenames are in correct order
   for f = 0L, n_image_files - 1L do begin
-    file_link, image_filenames[f], string(f, ext, format=tmp_image_fmt)
+    file_link, image_filenames[f], string(pid, f, ext, format=tmp_image_fmt)
   endfor
 
   ; use ffmpeg to create mp4 from image files
@@ -52,7 +55,7 @@ pro ucomp_create_mp4, image_filenames, mp4_filename, run=run, status=status
 
   ; clean up temporary files
   for f = 0L, n_image_files - 1L do begin
-    file_delete, string(f, ext, format=tmp_image_fmt)
+    file_delete, string(pid, f, ext, format=tmp_image_fmt)
   endfor
 
   tmp_files = file_search('ucomp_tmp*', count=n_tmp_files)

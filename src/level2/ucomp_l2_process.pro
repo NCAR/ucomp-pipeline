@@ -22,6 +22,11 @@ pro ucomp_l2_process, wave_region, run=run
     return
   endif
 
+  ; level 2 individual file processing
+  for f = 0L, n_files - 1L do begin
+    ucomp_l2_dynamics, files[f], run=run
+    ucomp_l2_polarization, files[f], run=run
+  endfor
+
   ; TODO: level 2 averaging
-  ; TODO: level 2 individual file processing
 end
