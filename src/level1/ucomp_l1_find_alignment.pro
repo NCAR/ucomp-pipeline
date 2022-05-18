@@ -131,16 +131,20 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
   ucomp_addpar, primary_header, 'MED_BACK', median_background, $
                 comment='[ppm] median of background'
 
-  file->getProperty, p_angle=p_angle, b0=b0, semidiameter=semidiameter, $
-                     distance_au=distance_au
+  file->getProperty, semidiameter=semidiameter, $
+                     distance_au=distance_au, $
+                     p_angle=p_angle, $
+                     b0=b0
+
   ucomp_addpar, primary_header, 'SOLAR_P0', p_angle, $
                 comment='[deg] solar P angle applied (image has N up)', $
                 format='(f9.3)'
   ucomp_addpar, primary_header, 'SOLAR_B', b0, $
                 comment='[deg] solar B-Angle'
 
-  ; TODO: how do I find this? I don't see a SECZ routine in SSW or Steve's code
-  ; ucomp_addpar, primary_header, 'SECANT_Z', float(sec_z), $
+  ; TODO: fix this calculation
+  ; sec_z = mlso_secant_z(file.true_dec, file.julian_date, file.obsday_hours)
+  ; ucomp_addpar, primary_header, 'SECANT_Z', sec_z, $
   ;               comment='secant of the Zenith Distance'
 
   ucomp_addpar, primary_header, 'SEMIDIAM', semidiameter, $

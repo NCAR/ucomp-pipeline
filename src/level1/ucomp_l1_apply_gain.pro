@@ -41,12 +41,19 @@ pro ucomp_l1_apply_gain, file, primary_header, data, headers, run=run, status=st
   for e = 0L, n_exts - 1L do begin
     onband = ucomp_getpar(headers[e], 'ONBAND')
 
-    flat = cal->get_flat(obsday_hours, exptime, gain_mode, onband, wavelengths[e], $
-                         found=flat_found, time_found=flat_time, $
-                         master_extension=master_flat_extension, $
-                         raw_extension=raw_flat_extension, raw_file=flat_raw_file)
+    dark_corrected_flat = cal->get_flat(obsday_hours, $
+                                        exptime, $
+                                        gain_mode, $
+                                        onband, $
+                                        wavelengths[e], $
+                                        found=flat_found, $
+                                        times_found=flat_times, $
+                                        master_extensions=master_flat_extensions, $
+                                        raw_extensions=raw_flat_extensions, $
+                                        raw_filenames=flat_raw_files, $
+                                        coefficient=flat_coefficients)
     if (~flat_found) then begin
-      mg_log, 'flat not found for ext %d, skipping', e + 1, $
+      mg_log, 'flat, or dark for flat, not found for ext %d, skipping', e + 1, $
               name=run.logger_name, /error
       mg_log, 'request %0.2f HST, %0.2f ms, %s gain, %s, %0.2f nm', $
               obsday_hours, exptime, gain_mode, onband, wavelengths[e], $
@@ -55,17 +62,12 @@ pro ucomp_l1_apply_gain, file, primary_header, data, headers, run=run, status=st
       continue
     endif
 
-    flat_dark = cal->get_dark(flat_time, exptime, gain_mode, found=flat_dark_found)
-    if (~flat_dark_found) then begin
-      mg_log, 'dark not found for flat for ext %d, skipping', e + 1, $
-              name=run.logger_name, /error
-      status = 2L
-      continue
-    endif
+    ; mg_log, 'dark corrected flat mean by camera: %0.3f, %0.3f', $
+    ;         mean(mean(dark_corrected_flat, dimension=1), dimension=1), $
+    ;         name=run.logger_name, /debug
 
     im = data[*, *, *, *, e]
 
-    dark_corrected_flat = flat - flat_dark
     zero_indices = where(dark_corrected_flat eq 0.0, n_zeros)
     if (n_zeros gt 0L) then dark_corrected_flat[zero_indices] = 1.0
 
@@ -91,16 +93,16 @@ pro ucomp_l1_apply_gain, file, primary_header, data, headers, run=run, status=st
     data[*, *, *, *, e] = im
 
     h = headers[e]
-    ucomp_addpar, h, 'FLATFILE', flat_raw_file, $
-                  comment='name of raw flat file used'
-    ucomp_addpar, h, 'FLATEXTS', raw_flat_extension, $
-                  comment=string(flat_raw_file, $
-                                 format='(%"ext(s) in %s used for flat correction")'), $
-                  after='FLATFILE'
-    ucomp_addpar, h, 'MFLATEXT', master_flat_extension, $
-                  comment=string(run.date, file.wave_region, $
-                                 format='(%"ext in %s.ucomp.flat.%s.fts used")'), $
-                  after='FLATEXT'
+    for fe = 0L, n_elements(master_flat_extensions) - 1L do begin
+      ucomp_addpar, h, string(fe + 1L, format='FLTFILE%d'), flat_raw_files[fe], $
+                    comment='name of raw flat file used'
+      ucomp_addpar, h, string(fe + 1L, format='FLTEXTS%d'), raw_flat_extensions[fe], $
+                    comment=string(flat_raw_files[fe], $
+                                   format='(%"ext in %s used")')
+      ucomp_addpar, h, string(fe + 1L, format='MFLTEXT%d'), master_flat_extensions[fe], $
+                    comment=string(run.date, file.wave_region, flat_coefficients[fe], $
+                                   format='(%"ext in %s.ucomp.flat.%s.fts, wt %0.2f")')
+    endfor
 
     ucomp_addpar, h, 'BOPAL', opal_radiance, $
                   comment='[B/Bsun] opal radiance', format='(F0.2)'

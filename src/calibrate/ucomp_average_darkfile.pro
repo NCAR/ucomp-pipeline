@@ -63,7 +63,7 @@ pro ucomp_average_darkfile, primary_header, ext_data, ext_headers, $
     extensions[g] = strjoin(strtrim(gi + 1L, 2), ',')
 
     ; grab first header of a group to use as header for the entire group
-    averaged_header = ext_headers_array[*, gi[0]]
+    averaged_header = ucomp_combine_headers(ext_headers_array[*, gi])
     ucomp_addpar, averaged_header, 'RAWFILE', '', comment='raw dark file'
     ucomp_addpar, averaged_header, 'RAWEXTS', extensions[g], after='RAWFILE', $
                   comment='extension(s) used from RAWFILE'

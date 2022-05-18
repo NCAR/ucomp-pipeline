@@ -45,8 +45,6 @@ pro ucomp_db_file_insert, l1_files, obsday_index, sw_index, db, $
     file = l1_files[f]
 
     mg_log, 'ingesting %s', file.l1_basename, name=logger_name, /info
-    vcrosstalk_metric = finite(file.vcrosstalk_metric) ? file.vcrosstalk_metric : 'NULL'
-    vcrosstalk_metric_type = size(vcrosstalk_metric_type, /type) eq 7 ? '%s' : '%0.4f' 
     fields = [{name: 'file_name', type: '''%s'''}, $
               {name: 'date_obs', type: '''%s'''}, $
               {name: 'obsday_id', type: '%d'}, $
@@ -60,7 +58,9 @@ pro ucomp_db_file_insert, l1_files, obsday_index, sw_index, db, $
               {name: 'obs_id', type: '''%s'''}, $
 
               {name: 'quality', type: '%d'}, $
-              {name: 'vcrosstalk_metric', type: vcrosstalk_metric_type}, $
+              {name: 'vcrosstalk_metric', type: '%s'}, $
+              {name: 'wind_speed', type: '%s'}, $
+              {name: 'wind_direction', type: '%s'}, $
 
               {name: 'wave_region', type: '%d'}, $
               {name: 'ntunes', type: '%d'}, $
@@ -80,7 +80,9 @@ pro ucomp_db_file_insert, l1_files, obsday_index, sw_index, db, $
                  file.obs_plan, $
                  file.obs_id, $
                  file.quality_bitmask, $
-                 finite(file.vcrosstalk_metric) ? file.vcrosstalk_metric : 'NULL', $
+                 ucomp_db_float(file.vcrosstalk_metric, format='%0.4f'), $
+                 ucomp_db_float(file.wind_speed, format='%0.3f'), $
+                 ucomp_db_float(file.wind_direction, format='%0.3f'), $
                  long(file.wave_region), $
                  file.n_unique_wavelengths, $
                  sw_index, $
