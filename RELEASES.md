@@ -153,10 +153,10 @@
   fix for database adding when no V crosstalk or doppler velocity
 0.2.38 [Apr 11, 2022]
   add ability to inherit options in another config file
-0.2.39
+0.2.39 [May 18, 2022]
   add wind speed/direction to ucomp_file database table
   check for extra files, allow up to verification/max_missing missing files in
     verification, if they are not on the collection server
   flat interpolation option (default ON)
   creating partial level 2 dynamics files
-  level 1 header updates
+  level 1 header updates: promoting common keywords to primary header
