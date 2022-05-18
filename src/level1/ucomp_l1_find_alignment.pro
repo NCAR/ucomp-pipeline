@@ -142,8 +142,8 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
   ucomp_addpar, primary_header, 'SOLAR_B', b0, $
                 comment='[deg] solar B-Angle'
 
-  ; TODO: find sol_dec and ha
-  ; sec_z = mlso_secant_z(sol_dec, ha)
+  ; TODO: fix this calculation
+  ; sec_z = mlso_secant_z(file.true_dec, file.julian_date, file.obsday_hours)
   ; ucomp_addpar, primary_header, 'SECANT_Z', sec_z, $
   ;               comment='secant of the Zenith Distance'
 
