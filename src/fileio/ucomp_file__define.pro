@@ -128,6 +128,7 @@ end
 pro ucomp_file::getProperty, run=run, $
                              raw_filename=raw_filename, $
                              l1_basename=l1_basename, $
+                             l1_intensity_basename=l1_intensity_basename, $
                              intermediate_name=intermediate_name, $
                              demodulated=demodulated, $
                              hst_date=hst_date, $
@@ -227,7 +228,7 @@ pro ucomp_file::getProperty, run=run, $
 
   ; for the file
   if (arg_present(raw_filename)) then raw_filename = self.raw_filename
-  if (arg_present(l1_basename)) then begin
+  if (arg_present(l1_basename) || arg_present(l1_intensity_basename)) then begin
     name = n_elements(intermediate_name) eq 0L ? 'l1' : intermediate_name
     ; YYYYMMDD.HHMMSS.ucomp.WAVE.NAME.N.fts
     self->getProperty, n_unique_wavelengths=n_unique_wavelengths
@@ -237,7 +238,12 @@ pro ucomp_file::getProperty, run=run, $
                          name, $
                          n_unique_wavelengths, $
                          format='(%"%s.%s.ucomp.%s.%s.%d.fts")')
-
+    l1_intensity_basename = string(self.ut_date, $
+                                   self.ut_time, $
+                                   self.wave_region, $
+                                   name, $
+                                   n_unique_wavelengths, $
+                                   format='(%"%s.%s.ucomp.%s.%s.%d.int.fts")')
   endif
 
   if (arg_present(demodulated)) then demodulated = self.demodulated
