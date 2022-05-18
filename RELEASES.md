@@ -161,3 +161,4 @@
   creating partial level 2 dynamics files
   level 1 header updates: promoting common keywords to primary header
 0.2.40
+  writing intensity only FITS files
