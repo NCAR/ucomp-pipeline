@@ -91,7 +91,7 @@ pro ucomp_write_intensity_image, file, data, run=run
     xyouts, 15, dims[1] - 2.0 * 15.0, /device, $
             string(run->line(file.wave_region, 'ionization'), $
                    file.wave_region, $
-                   format='(%"%s %s nm")'), $
+                   format='(%"MLSO UCoMP %s %s nm")'), $
             charsize=charsize, color=text_color
     xyouts, 15, 15, /device, alignment=0.0, $
             string(date_stamp, e, format='(%"%s ext: %d")'), $
