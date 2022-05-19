@@ -37,8 +37,8 @@ pro ucomp_write_fits_file, filename, primary_header, ext_data, ext_headers, $
 
     case n_dims of
       3: data = keyword_set(intensity) ? ext_data[*, *, 0] : ext_data
-      4: data = keyword_set(intensity) ? ext_data[*, *, 0] : ext_data[*, *, 0, e - 1]
-      5: data = keyword_set(intensity) ? ext_data[*, *, 0] : ext_data[*, *, 0, *, e - 1]
+      4: data = keyword_set(intensity) ? ext_data[*, *, 0, e - 1] : ext_data[*, *, *, e - 1]
+      5: data = keyword_set(intensity) ? ext_data[*, *, 0, *, e - 1] : ext_data[*, *, *, *, e - 1]
       else: begin
          dims = strjoin(strtrim(size(ext_data, /dimensions), 2), ', ')
          message, string(dims, format='(%"invalid number of dimensions to write: [%s]")')
