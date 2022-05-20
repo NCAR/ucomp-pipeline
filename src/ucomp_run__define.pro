@@ -111,16 +111,41 @@ end
 ;   data_type : in, optional, type=string
 ;     set to data type of files to return: 'sci', 'cal', etc.; by default,
 ;     returns files of all data_types
+;   program : in, optional, type=string
+;     set to program name of files to return
 ;   count : out, optional, type=long
 ;     set to a named variable to retrieve the number of files returned
 ;-
-function ucomp_run::get_files, wave_region=wave_region, data_type=data_type, $
+function ucomp_run::get_files, wave_region=wave_region, $
+                               data_type=data_type, $
+                               program_name=program_name, $
                                count=count
   compile_opt strictarr
+  on_error, 2
 
   count = 0L   ; set for all the special cases that return early
 
   case 1 of
+    n_elements(program_name) gt 0L: begin
+      if (n_elements(wave_region) eq 0L) then message, 'WAVE_REGION not provided'
+      if (~(self.files)->hasKey('sci')) then return, !null
+    
+      files_list = ((self.files)['sci'])[wave_region]
+      files = files_list->toArray()
+      n_files = n_elements(files)
+
+      program_names = strarr(n_files)
+      ok = bytarr(n_files)
+      for f = 0L, n_files - 1L do begin
+        program_names[f] = files[f].program_name
+        ok[f] = files[f].ok
+      endfor
+      matching_indices = where(program_names eq program_name and ok, $
+                               n_matching, /null)
+    
+      count = n_matching
+      return, files[matching_indices]
+    end
     n_elements(wave_region) eq 0L && n_elements(data_type) eq 0L: begin
         files_list = list()
         foreach dtype_hash, self.files, dtype do begin
@@ -164,6 +189,26 @@ function ucomp_run::get_files, wave_region=wave_region, data_type=data_type, $
   endcase
 
   return, files
+end
+
+
+function ucomp_run::get_programs, wave_region, count=count
+  compile_opt strictarr
+
+  count = 0L
+  if (~self->line(wave_region, 'create_average')) then return, !null
+
+  files = self->get_files(wave_region=wave_region, data_type='sci', $
+                          count=n_files)
+  if (n_files eq 0L) then return, !null
+
+  program_names = strarr(n_files)
+  for f = 0L, n_files - 1L do program_names[f] = files[f].program_name
+
+  unique_program_indices = uniq(program_names, sort(program_names))
+  count = n_elements(unique_program_indices)
+
+  return, program_names[unique_program_indices]
 end
 
 
