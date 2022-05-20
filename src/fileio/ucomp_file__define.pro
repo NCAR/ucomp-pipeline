@@ -149,6 +149,7 @@ pro ucomp_file::getProperty, run=run, $
                              data_type=data_type, $
                              obs_id=obs_id, $
                              obs_plan=obs_plan, $
+                             program_name=program_name, $
                              exptime=exptime, $
                              gain_mode=gain_mode, $
                              pol_list=pol_list, $
@@ -279,6 +280,7 @@ pro ucomp_file::getProperty, run=run, $
 
   if (arg_present(obs_id)) then obs_id = self.obs_id
   if (arg_present(obs_plan)) then obs_plan = self.obs_plan
+  if (arg_present(program_name)) then program_name = file_basename(self.obs_plan, '.cbk')
 
   if (arg_present(exptime)) then exptime = self.exptime
   if (arg_present(gain_mode)) then gain_mode = self.gain_mode
