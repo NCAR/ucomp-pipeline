@@ -10,26 +10,27 @@
 ; :Params:
 ;   jd : in, required, type=float/fltarr
 ;     Julian day
+;
+; :Keywords:
+;   sidereal_time : out, optional, type=float
+;     set to a named variable to retrieve sidereal time in GMST day fraction
 ;-
-function mlso_secant_z, jd
+function mlso_secant_z, jd, sidereal_time=gmst_sidereal_time
   compile_opt strictarr
 
-  mlso_lat =    19.535506D * !dtor ; 2.0D * !dpi
-  mlso_lon = - 155.576587D * !dtor ; 2.0D * !dpi
+  mlso_lat =    19.535506D * !dtor
+  mlso_lon = - 155.576587D * !dtor
 
   ; need sidereal time
-  ephem2, jd, sol_ra, sol_dec, b0, p, semi_diam, sid_time, dist, xsun, ysun, zsun
+  ephem2, jd, sol_ra, sol_dec, b0, p, semi_diam, gmst_sidereal_time, dist, xsun, ysun, zsun
 
-  ; convert variables to radians
+  sidereal_time = gmst_sidereal_time * 2.0D * !dpi + mlso_lon
+
+  ; convert variables degrees to radians
   sol_dec  = sol_dec * !dtor
   sol_ra   = sol_ra * !dtor
 
-  ; lat      = lat * 2.0 * !pi
-  ; longi    = longi * 2.0 * !pi
-
-  sid_time = sid_time * !dtor ;2.0D * !dpi
-  sid_time = sid_time - mlso_lon ; convert gmst to local st
-  hour_angle = sid_time - sol_ra
+  hour_angle = sidereal_time - sol_ra
 
   ; the solar hour angle is an expression of time, expressed in angular
   ; measurement, from solar noon; at solar noon the hour angle is zero degrees,
