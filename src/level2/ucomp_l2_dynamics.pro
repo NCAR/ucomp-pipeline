@@ -3,9 +3,9 @@
 ;+
 ; Produce a dynamics image, containing the following extensions:
 ;
-; - intensity
+; - peak intensity
 ; - enhanced intensity
-; - LOS velocity
+; - doppler velocity
 ; - line width
 ;
 ; :Params:
@@ -54,17 +54,34 @@ pro ucomp_l2_dynamics, file, run=run
     goto, done
   endif
   center_index = center_indices[0]
+  wavelengths = file.wavelengths
 
   ; calculate intensity
-  intensity = reform(ext_data[*, *, 0, center_index])
+  intensity_blue = reform(ext_data[*, *, 0, center_index - 1])
+  intensity_center = reform(ext_data[*, *, 0, center_index])
+  intensity_red = reform(ext_data[*, *, 0, center_index + 1])
+  d_lambda = wavelengths[center_index] - wavelengths[center_index - 1]
+
+  ucomp_analytic_gauss_fit, intensity_blue, $
+                            intensity_center, $
+                            intensity_red, $
+                            d_lambda, $
+                            doppler_shift=doppler_shift, $
+                            line_width=line_width, $
+                            peak_intensity=peak_intensity
 
   ; calculate enhanced intensity
-  enhanced_intensity = ucomp_enhanced_intensity(intensity, $
+  enhanced_intensity = ucomp_enhanced_intensity(peak_intensity, $
                                                 primary_header, $
                                                 run->epoch('field_radius'))
 
-  ; TODO: calculate LOS velocity
-  ; TODO: calculate line width
+  ; convert Doppler shift to velocity [km/s]
+  doppler_shift *= 3.0E5 / mean(wavelengths)
+  
+  ; convert line width to velocity (km/s)
+  line_width *= 3.0E5 / mean(wavelengths)
+
+  ; TODO: fix up primary header and extension headers
 
   ; write dynamics file: YYYYMMDD.HHMMSS.ucomp.WWWW.dynamics.fts
   dynamics_basename = string(strmid(file.l1_basename, 0, 15), $
@@ -85,17 +102,24 @@ pro ucomp_l2_dynamics, file, run=run
   if (error_msg ne '') then message, error_msg
 
   ; write intensity
-  ucomp_fits_write, fcb, intensity, ext_headers[center_index], $
-                    extname='Intensity', /no_abort, message=error_msg
+  ucomp_fits_write, fcb, peak_intensity, ext_headers[center_index], $
+                    extname='Peak intensity', /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
 
   ; write enhanced intensity
   ucomp_fits_write, fcb, enhanced_intensity, ext_headers[center_index], $
-                    extname='Enhanced intensity', /no_abort, message=error_msg
+                    extname='Enhanced peak intensity', /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
 
-  ; TODO: write LOS velocity
-  ; TODO: write line width
+  ; write LOS velocity
+  ucomp_fits_write, fcb, doppler_shift, ext_headers[center_index], $
+                    extname='Doppler velocity', /no_abort, message=error_msg
+  if (error_msg ne '') then message, error_msg
+
+  ; write line width
+  ucomp_fits_write, fcb, line_width, ext_headers[center_index], $
+                    extname='Line width', /no_abort, message=error_msg
+  if (error_msg ne '') then message, error_msg
 
   fits_close, fcb
 
