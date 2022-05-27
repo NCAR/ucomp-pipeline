@@ -160,3 +160,6 @@
   flat interpolation option (default ON)
   creating partial level 2 dynamics files
   level 1 header updates: promoting common keywords to primary header
+0.2.40 [May 27, 2022]
+  write intensity only FITS files
+  create dynamics and polarizations FITS and PNG files

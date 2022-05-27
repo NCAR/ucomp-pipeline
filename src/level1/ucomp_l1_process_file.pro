@@ -109,8 +109,11 @@ pro ucomp_l1_process_file, file, run=run
                  file, primary_header, data, headers, run=run
 
   l1_filename = filepath(file.l1_basename, root=l1_dirname)
-
   ucomp_write_fits_file, l1_filename, primary_header, data, headers
+
+  l1_intensity_filename = filepath(file.l1_intensity_basename, root=l1_dirname)
+  ucomp_write_fits_file, l1_intensity_filename, primary_header, data, headers, $
+                         /intensity
   file.processed = 1B
 
   ucomp_write_intensity_image, file, data, run=run

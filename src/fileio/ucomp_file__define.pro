@@ -128,6 +128,7 @@ end
 pro ucomp_file::getProperty, run=run, $
                              raw_filename=raw_filename, $
                              l1_basename=l1_basename, $
+                             l1_intensity_basename=l1_intensity_basename, $
                              intermediate_name=intermediate_name, $
                              demodulated=demodulated, $
                              hst_date=hst_date, $
@@ -148,6 +149,7 @@ pro ucomp_file::getProperty, run=run, $
                              data_type=data_type, $
                              obs_id=obs_id, $
                              obs_plan=obs_plan, $
+                             program_name=program_name, $
                              exptime=exptime, $
                              gain_mode=gain_mode, $
                              pol_list=pol_list, $
@@ -227,7 +229,7 @@ pro ucomp_file::getProperty, run=run, $
 
   ; for the file
   if (arg_present(raw_filename)) then raw_filename = self.raw_filename
-  if (arg_present(l1_basename)) then begin
+  if (arg_present(l1_basename) || arg_present(l1_intensity_basename)) then begin
     name = n_elements(intermediate_name) eq 0L ? 'l1' : intermediate_name
     ; YYYYMMDD.HHMMSS.ucomp.WAVE.NAME.N.fts
     self->getProperty, n_unique_wavelengths=n_unique_wavelengths
@@ -237,7 +239,12 @@ pro ucomp_file::getProperty, run=run, $
                          name, $
                          n_unique_wavelengths, $
                          format='(%"%s.%s.ucomp.%s.%s.%d.fts")')
-
+    l1_intensity_basename = string(self.ut_date, $
+                                   self.ut_time, $
+                                   self.wave_region, $
+                                   name, $
+                                   n_unique_wavelengths, $
+                                   format='(%"%s.%s.ucomp.%s.%s.%d.int.fts")')
   endif
 
   if (arg_present(demodulated)) then demodulated = self.demodulated
@@ -273,6 +280,7 @@ pro ucomp_file::getProperty, run=run, $
 
   if (arg_present(obs_id)) then obs_id = self.obs_id
   if (arg_present(obs_plan)) then obs_plan = self.obs_plan
+  if (arg_present(program_name)) then program_name = file_basename(self.obs_plan, '.cbk')
 
   if (arg_present(exptime)) then exptime = self.exptime
   if (arg_present(gain_mode)) then gain_mode = self.gain_mode
@@ -403,6 +411,49 @@ pro ucomp_file::_extract_datetime
   self.hst_time = hst_time
   hrs = [1.0, 1.0 / 60.0, 1.0 / 60.0 / 60.0]
   self.obsday_hours = total(float(ucomp_decompose_time(hst_time)) * hrs)
+end
+
+
+pro ucomp_file::_update_to_level1
+  compile_opt strictarr
+
+  self->getProperty, l1_basename=l1_basename
+  l1_filename = filepath(l1_basename, $
+                         subdir=[self.run.date, 'level1'], $
+                         root=self.run->config('processing/basedir'))
+
+  ucomp_read_l1_data, l1_filename, $
+                      primary_header=primary_header, $
+                      ext_headers=ext_headers, $
+                      n_extensions=n_extensions
+
+  ; find alignment
+  center = [ucomp_getpar(primary_header, 'CRPIX1'), ucomp_getpar(primary_header, 'CRPIX2')] - 1.0
+  geometry = ucomp_geometry(occulter_center=center, $
+                            occulter_radius=ucomp_getpar(primary_header, 'RADIUS'), $
+                            post_angle=ucomp_getpar(primary_header, 'POST_ANG'))
+  self.rcam_geometry = geometry
+  self.tcam_geometry = geometry
+
+  ; continuum subtraction
+  self.n_extensions = n_extensions
+  wavelengths = fltarr(n_extensions)
+  for e = 0L, n_extensions - 1L do begin
+    wavelengths[e] = ucomp_getpar(ext_headers[e], 'WAVELNG')
+  endfor
+  *self.wavelengths = wavelengths
+  *self.onband_indices = !null
+end
+
+
+pro ucomp_file::update, type
+  compile_opt strictarr
+
+  case strlowcase(type) of
+    'level1': self->_update_to_level1
+    'dynamics':
+    'polarization':
+  endcase
 end
 
 

@@ -12,8 +12,13 @@
 ;     extension data
 ;   ext_headers : in, required, type=list
 ;     list of `strarr`, each a FITS header for the corresponding extension
+;
+; :Keywords:
+;   intensity : in, optional, type=boolean
+;     set to extract intensity from `ext_data`
 ;-
-pro ucomp_write_fits_file, filename, primary_header, ext_data, ext_headers
+pro ucomp_write_fits_file, filename, primary_header, ext_data, ext_headers, $
+                           intensity=intensity
   compile_opt strictarr
   on_error, 2
 
@@ -31,9 +36,9 @@ pro ucomp_write_fits_file, filename, primary_header, ext_data, ext_headers
     extname = string(datatype, wavelength, format='(%"%s [%0.2f nm]")')
 
     case n_dims of
-      3: data = ext_data
-      4: data = ext_data[*, *, *, e - 1]
-      5: data = ext_data[*, *, *, *, e - 1]
+      3: data = keyword_set(intensity) ? ext_data[*, *, 0] : ext_data
+      4: data = keyword_set(intensity) ? ext_data[*, *, 0, e - 1] : ext_data[*, *, *, e - 1]
+      5: data = keyword_set(intensity) ? ext_data[*, *, 0, *, e - 1] : ext_data[*, *, *, *, e - 1]
       else: begin
          dims = strjoin(strtrim(size(ext_data, /dimensions), 2), ', ')
          message, string(dims, format='(%"invalid number of dimensions to write: [%s]")')
@@ -41,7 +46,7 @@ pro ucomp_write_fits_file, filename, primary_header, ext_data, ext_headers
     endcase
 
     ucomp_fits_write, fcb, $
-                      data, $
+                      reform(data), $
                       ext_headers[e - 1], $
                       extname=extname, /no_abort, message=error_msg
     if (error_msg ne '') then message, error_msg
