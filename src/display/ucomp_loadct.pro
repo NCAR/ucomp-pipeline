@@ -44,6 +44,10 @@ pro ucomp_loadct, name, n_colors=n_colors
   case strlowcase(name) of
     'intensity': loadct, 0, /silent, ncolors=n_colors
     'quv': ucomp_loadct_rgb, mg_makect(cyan, black, pink, ncolors=n_colors)
+    'linpol': loadct, 0, /silent, ncolors=n_colors
+    'azimuth': ucomp_loadct_rgb, mg_makect(cyan, black, pink, ncolors=n_colors)
+    'doppler': ucomp_loadct_rgb, mg_makect(cyan, black, pink, ncolors=n_colors)
+    'line_width': loadct, 0, /silent, ncolors=n_colors
     else: message, string(name, format='(%"unknown colortable name: %s")')
   endcase
 end
