@@ -120,37 +120,37 @@ pro ucomp_l2_polarization, file, run=run
   if (error_msg ne '') then message, error_msg
 
   ; write intensity
-  ucomp_fits_write, fcb, average_intensity, ext_headers[0], $
+  ucomp_fits_write, fcb, float(average_intensity), ext_headers[0], $
                     extname='Average intensity', /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
 
   ; write enhanced intensity
-  ucomp_fits_write, fcb, enhanced_intensity, ext_headers[0], $
+  ucomp_fits_write, fcb, float(enhanced_intensity), ext_headers[0], $
                     extname='Enhanced average intensity', /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
 
   ; write Q
-  ucomp_fits_write, fcb, average_q, ext_headers[0], $
+  ucomp_fits_write, fcb, float(average_q), ext_headers[0], $
                     extname='Average Q', /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
 
   ; write U
-  ucomp_fits_write, fcb, average_u, ext_headers[0], $
+  ucomp_fits_write, fcb, float(average_u), ext_headers[0], $
                     extname='Average U', /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
 
   ; write linear polarization
-  ucomp_fits_write, fcb, average_linpol, ext_headers[0], $
+  ucomp_fits_write, fcb, float(average_linpol), ext_headers[0], $
                     extname='Average log(L)', /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
 
   ; write azimuth
-  ucomp_fits_write, fcb, azimuth, ext_headers[0], $
+  ucomp_fits_write, fcb, float(azimuth), ext_headers[0], $
                     extname='Azimuth', /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
 
   ; write radial azimuth
-  ucomp_fits_write, fcb, radial_azimuth, ext_headers[0], $
+  ucomp_fits_write, fcb, float(radial_azimuth), ext_headers[0], $
                     extname='Radial azimuth', /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
 
