@@ -11,7 +11,7 @@
 ;     width of image
 ;   ny : in, required, type=long
 ;     height of image
-;   post_angle : in, required, type=float
+;   post_angle : in, optional, type=float
 ;     position angle of post
 ;
 ; :Keywords:
@@ -24,6 +24,8 @@ function ucomp_post_mask, nx, ny, post_angle, post_width=post_width
   _post_width = mg_default(post_width, 60.0)
 
   post_mask = fltarr(nx,ny) + 1.0
+
+  if (n_elements(post_angle) eq 0L) then return, byte(post_mask)
 
   x = rebin(indgen(nx) - nx / 2.0, nx, ny)
   y = transpose(rebin(indgen(ny) - ny / 2.0, ny, nx))
