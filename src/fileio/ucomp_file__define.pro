@@ -414,6 +414,49 @@ pro ucomp_file::_extract_datetime
 end
 
 
+pro ucomp_file::_update_to_level1
+  compile_opt strictarr
+
+  self->getProperty, l1_basename=l1_basename
+  l1_filename = filepath(l1_basename, $
+                         subdir=[self.run.date, 'level1'], $
+                         root=self.run->config('processing/basedir'))
+
+  ucomp_read_l1_data, l1_filename, $
+                      primary_header=primary_header, $
+                      ext_headers=ext_headers, $
+                      n_extensions=n_extensions
+
+  ; find alignment
+  center = [ucomp_getpar(primary_header, 'CRPIX1'), ucomp_getpar(primary_header, 'CRPIX2')] - 1.0
+  geometry = ucomp_geometry(occulter_center=center, $
+                            occulter_radius=ucomp_getpar(primary_header, 'RADIUS'), $
+                            post_angle=ucomp_getpar(primary_header, 'POST_ANG'))
+  self.rcam_geometry = geometry
+  self.tcam_geometry = geometry
+
+  ; continuum subtraction
+  self.n_extensions = n_extensions
+  wavelengths = fltarr(n_extensions)
+  for e = 0L, n_extensions - 1L do begin
+    wavelengths[e] = ucomp_getpar(ext_headers[e], 'WAVELNG')
+  endfor
+  *self.wavelengths = wavelengths
+  *self.onband_indices = !null
+end
+
+
+pro ucomp_file::update, type
+  compile_opt strictarr
+
+  case strlowcase(type) of
+    'level1': self->_update_to_level1
+    'dynamics':
+    'polarization':
+  endcase
+end
+
+
 ;+
 ; Inventory raw UCoMP file.
 ;-
