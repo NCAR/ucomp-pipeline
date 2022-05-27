@@ -75,11 +75,13 @@ pro ucomp_l2_dynamics, file, run=run
                                                 primary_header, $
                                                 run->epoch('field_radius'))
 
+  c = 299792.458D
+
   ; convert Doppler shift to velocity [km/s]
-  doppler_shift *= 3.0E5 / mean(wavelengths)
+  doppler_shift *= c / mean(wavelengths)
   
   ; convert line width to velocity (km/s)
-  line_width *= 3.0E5 / mean(wavelengths)
+  line_width *= c / mean(wavelengths)
 
   ; mask outputs
   dims = size(peak_intensity, /dimensions)
