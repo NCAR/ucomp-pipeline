@@ -41,6 +41,12 @@ pro ucomp_l2_polarization, file, run=run
     goto, done
   endif
 
+  if (~file_test(l1_filename, /regular)) then begin
+    mg_log, 'skipping missing level 1 file %s', file.l1_basename, $
+            name=run.logger_name, /warn
+    goto, done
+  endif
+
   ucomp_read_l1_data, l1_filename, $
                       primary_header=primary_header, $
                       ext_data=ext_data, $
