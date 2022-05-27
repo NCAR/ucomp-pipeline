@@ -141,7 +141,7 @@ pro ucomp_l2_polarization, file, run=run
 
   ; write linear polarization
   ucomp_fits_write, fcb, average_linpol, ext_headers[0], $
-                    extname='Average L', /no_abort, message=error_msg
+                    extname='Average log(L)', /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
 
   ; write azimuth
