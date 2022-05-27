@@ -42,7 +42,7 @@ pro ucomp_write_polarization_image, filename, $
                                                 run=run)
   display_image[0, nx, 0] = ucomp_display_image(file, average_linpol, $
                                                      type='linpol', $
-                                                     name='Average L', $
+                                                     name='Average log(L)', $
                                                      reduce_factor=reduce_factor, $
                                                      run=run)
   display_image[0, 2 * nx, 2 * ny] = ucomp_display_image(file, azimuth, $
@@ -51,7 +51,7 @@ pro ucomp_write_polarization_image, filename, $
                                                      reduce_factor=reduce_factor, $
                                                      run=run)
   display_image[0, 2 * nx, ny] = ucomp_display_image(file, radial_azimuth, $
-                                                    type='azimuth', $
+                                                    type='radial_azimuth', $
                                                     name='Radial azimuth', $
                                                     reduce_factor=reduce_factor, $
                                                     run=run)

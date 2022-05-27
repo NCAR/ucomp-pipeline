@@ -30,7 +30,9 @@ function ucomp_display_image, file, im, $
         display_power = run->line(file.wave_region, 'quv_display_power')
     end
     type eq 'linpol': begin
+        ; TODO: use a log scale like Steve?
         colortable_name = 'linpol'
+        _im = alog10(_im)
         display_min   = run->line(file.wave_region, 'linpol_display_min')
         display_max   = run->line(file.wave_region, 'linpol_display_max')
         display_gamma = run->line(file.wave_region, 'linpol_display_gamma')
@@ -42,6 +44,13 @@ function ucomp_display_image, file, im, $
         display_max   = run->line(file.wave_region, 'azimuth_display_max')
         display_gamma = run->line(file.wave_region, 'azimuth_display_gamma')
         display_power = run->line(file.wave_region, 'azimuth_display_power')
+    end
+    type eq 'radial_azimuth': begin
+        colortable_name = 'radial_azimuth'
+        display_min   = run->line(file.wave_region, 'radial_azimuth_display_min')
+        display_max   = run->line(file.wave_region, 'radial_azimuth_display_max')
+        display_gamma = run->line(file.wave_region, 'radial_azimuth_display_gamma')
+        display_power = run->line(file.wave_region, 'radial_azimuth_display_power')
     end
     type eq 'doppler': begin
         colortable_name = 'doppler'
