@@ -123,22 +123,22 @@ pro ucomp_l2_dynamics, file, run=run
   if (error_msg ne '') then message, error_msg
 
   ; write intensity
-  ucomp_fits_write, fcb, peak_intensity, ext_headers[center_index], $
+  ucomp_fits_write, fcb, float(peak_intensity), ext_headers[center_index], $
                     extname='Peak intensity', /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
 
   ; write enhanced intensity
-  ucomp_fits_write, fcb, enhanced_intensity, ext_headers[center_index], $
+  ucomp_fits_write, fcb, float(enhanced_intensity), ext_headers[center_index], $
                     extname='Enhanced peak intensity', /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
 
   ; write LOS velocity
-  ucomp_fits_write, fcb, doppler_shift, ext_headers[center_index], $
+  ucomp_fits_write, fcb, float(doppler_shift), ext_headers[center_index], $
                     extname='Doppler velocity', /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
 
   ; write line width
-  ucomp_fits_write, fcb, line_width, ext_headers[center_index], $
+  ucomp_fits_write, fcb, float(line_width), ext_headers[center_index], $
                     extname='Line width', /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
 
