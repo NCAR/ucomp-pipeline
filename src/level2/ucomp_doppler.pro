@@ -32,7 +32,7 @@ function ucomp_doppler, file, ext_data, velocity=velocity, run=run
   i3 = ext_data[*, *, 0, center_index + 1]
   d_lambda = wavelengths[1] - wavelengths[0]
 
-  doppler = ucomp_analytic_gauss_fit2(i1, i2, i3, d_lambda)
+  ucomp_analytic_gauss_fit, i1, i2, i3, d_lambda, doppler_shift=doppler
 
   rest_wavelength = run->line(file.wave_region, 'center_wavelength')
   doppler += rest_wavelength
