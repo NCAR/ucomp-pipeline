@@ -36,7 +36,14 @@ pro ucomp_l2_polarization, file, run=run
                          subdir=[run.date, 'level1'], $
                          root=run->config('processing/basedir'))
   if (~file_test(l1_filename, /regular)) then begin
-    mg_log, '%d does not exist, skipping', file.l1_basename, $
+    mg_log, '%s does not exist, skipping', file.l1_basename, $
+            name=run.logger_name, /warn
+    goto, done
+  endif
+
+  if (file.n_unique_wavelengths lt 3L) then begin
+    mg_log, '%s does not have 3 unique wavelengths, skipping', $
+            file.l1_basename, $
             name=run.logger_name, /warn
     goto, done
   endif
