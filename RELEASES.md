@@ -164,3 +164,5 @@
   write intensity only FITS files
   create dynamics and polarizations FITS and PNG files
 0.2.41
+  fix for creating dynamics/polarization files from less than 3 wavelengths
+  handle masking files when post angle was not found
