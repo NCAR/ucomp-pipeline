@@ -26,7 +26,7 @@
 ; :Author:
 ;   MLSO Software Team
 ;-
-function ucomp_enhanced_intensity, intensity, header, r_outer
+function ucomp_enhanced_intensity, intensity, line_width, doppler, header, r_outer
   compile_opt strictarr
 
   radius     = ucomp_getpar(header, 'RADIUS')
@@ -43,10 +43,10 @@ function ucomp_enhanced_intensity, intensity, header, r_outer
 
   good_indices = where(intensity gt 1.0 $
                        and intensity lt 100.0, $
-                       ;and width lt 60.0 $
-                       ;and width gt 15.0 $
-                       ;and abs(doppler) lt 30.0 $
-                       ;and doppler ne 0.0, $
+                       and line_width lt 60.0 $
+                       and line_width gt 15.0 $
+                       and abs(doppler) lt 30.0 $
+                       and doppler ne 0.0, $
                        complement=bad_indices)
   masked_intensity[bad_indices] = 0.0
 

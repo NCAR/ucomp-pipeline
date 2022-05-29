@@ -79,6 +79,8 @@ pro ucomp_l2_dynamics, file, run=run
 
   ; calculate enhanced intensity
   enhanced_intensity = ucomp_enhanced_intensity(peak_intensity, $
+                                                line_width, $
+                                                doppler_shift, $
                                                 primary_header, $
                                                 run->epoch('field_radius'))
 
