@@ -166,3 +166,4 @@
 0.2.41 [May 29, 2022]
   fix for creating dynamics/polarization files from less than 3 wavelengths
   handle masking files when post angle was not found
+0.2.42
