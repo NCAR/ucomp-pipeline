@@ -25,7 +25,8 @@ function ucomp_find_geometry, data, $
                                occulter[2], $
                                angle_guess=post_angle_guess, $
                                angle_tolerance=post_angle_tolerance, $
-                               error=error)
+                               error=post_error)
+  if (post_angle ne 0L) then post_angle = !values.f_nan
 
   geometry = ucomp_geometry(xsize=xsize, $
                             ysize=ysize, $
