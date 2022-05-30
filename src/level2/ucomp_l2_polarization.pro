@@ -78,7 +78,18 @@ pro ucomp_l2_polarization, file, run=run
 
   average_linpol = sqrt(average_q^2 + average_u^2)
 
+  d_lambda = wavelengths[center_index] - wavelengths[center_index - 1]
+  ucomp_analytic_gauss_fit, center_intensity[*, *, 0], $
+                            center_intensity[*, *, 1], $
+                            center_intensity[*, *, 2], $
+                            d_lambda, $
+                            doppler_shift=doppler_shift, $
+                            line_width=line_width, $
+                            peak_intensity=peak_intensity
+
   enhanced_intensity = ucomp_enhanced_intensity(average_intensity, $
+                                                line_width, $
+                                                doppler_shift, $
                                                 primary_header, $
                                                 run->epoch('field_radius'))
 
@@ -93,6 +104,8 @@ pro ucomp_l2_polarization, file, run=run
   rcam = file.rcam_geometry
   tcam = file.tcam_geometry
   post_angle = (rcam.post_angle + tcam.post_angle) / 2.0
+  mg_log, 'masking with post angle: %0.2f', post_angle, $
+          name=run.logger_name, /debug
   post_mask = ucomp_post_mask(dims[0], dims[1], post_angle)
   mask = field_mask and occulter_mask and post_mask
 
