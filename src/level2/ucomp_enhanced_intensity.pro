@@ -42,7 +42,7 @@ function ucomp_enhanced_intensity, intensity, line_width, doppler, header, r_out
   masked_intensity = intensity * mask
 
   good_indices = where(intensity gt 1.0 $
-                       and intensity lt 100.0, $
+                       and intensity lt 100.0 $
                        and line_width lt 60.0 $
                        and line_width gt 15.0 $
                        and abs(doppler) lt 30.0 $

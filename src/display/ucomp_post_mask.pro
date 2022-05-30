@@ -25,7 +25,9 @@ function ucomp_post_mask, nx, ny, post_angle, post_width=post_width
 
   post_mask = fltarr(nx,ny) + 1.0
 
-  if (n_elements(post_angle) eq 0L) then return, byte(post_mask)
+  if (n_elements(post_angle) eq 0L || ~finite(post_angle)) then begin
+    return, byte(post_mask)
+  endif
 
   x = rebin(indgen(nx) - nx / 2.0, nx, ny)
   y = transpose(rebin(indgen(ny) - ny / 2.0, ny, nx))

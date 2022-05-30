@@ -91,5 +91,9 @@ function ucomp_find_post, im, occulter_center, occulter_radius, $
   ; namely from the top of the image (north) instead of the mathematical polar
   ; coordinate system, where theta=0 is on the right. This angle is measured
   ; CCW from North.
-  return, coeff[1] - 90.0
+  post_angle = coeff[1] - 90.0
+
+  if (post_angle lt -180.0 || post_angle gt 180.0) then post_angle = !values.f_nan
+
+  return, post_angle
 end
