@@ -79,6 +79,8 @@ pro ucomp_l2_dynamics, file, run=run
 
   ; calculate enhanced intensity
   enhanced_intensity = ucomp_enhanced_intensity(peak_intensity, $
+                                                line_width, $
+                                                doppler_shift, $
                                                 primary_header, $
                                                 run->epoch('field_radius'))
 
@@ -99,6 +101,8 @@ pro ucomp_l2_dynamics, file, run=run
   rcam = file.rcam_geometry
   tcam = file.tcam_geometry
   post_angle = (rcam.post_angle + tcam.post_angle) / 2.0
+  mg_log, 'masking with post angle: %0.2f', post_angle, $
+          name=run.logger_name, /debug
   post_mask = ucomp_post_mask(dims[0], dims[1], post_angle)
   mask = field_mask and occulter_mask and post_mask
 

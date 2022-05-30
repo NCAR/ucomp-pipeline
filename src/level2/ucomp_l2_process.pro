@@ -24,6 +24,8 @@ pro ucomp_l2_process, wave_region, run=run
 
   ; level 2 individual file processing
   for f = 0L, n_files - 1L do begin
+    mg_log, 'level 2 processing for %s...', files[f].l1_basename, $
+            name=run.logger_name, /info
     ucomp_l2_dynamics, files[f], run=run
     ucomp_l2_polarization, files[f], run=run
   endfor
