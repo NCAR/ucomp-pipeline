@@ -169,3 +169,4 @@
 0.2.42 [May 30, 2022]
   fix for images where the post angle is not found
 0.2.43
+  better display of level 2 products
