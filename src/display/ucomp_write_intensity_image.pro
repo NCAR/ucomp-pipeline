@@ -81,8 +81,8 @@ pro ucomp_write_intensity_image, file, data, run=run
                                   run->epoch('field_radius'))
 
     scaled_im = bytscl((im * field_mask)^display_power, $
-                       min=display_min, $
-                       max=display_max, $
+                       min=display_min^display_power, $
+                       max=display_max^display_power, $
                        top=n_colors - 1L, $
                        /nan)
 
