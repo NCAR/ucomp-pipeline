@@ -584,6 +584,14 @@ def missing(args):
                 else:
                     print(cf)
 
+def has_raw_data(date, flags, error):
+    # TODO: could also check machine log
+    raw_basedir = get_raw_basedir(date, flags, error)
+    raw_dir = os.path.join(raw_basedir, date)
+    fits_glob = os.path.join(raw_dir, '*.fts*')
+    fits_files = glob.glob(fits_glob)
+    return(len(fits_files) > 0)
+
 
 # versions sub-command
 def versions(args):
@@ -636,19 +644,25 @@ def versions(args):
                 print(f"{current_version}: {n_dates} day{plural}")
     else:
         for d, v, r in versions_list:
-            if v is not None and filter(v):
-                print(f"{d}: {v:12s} {r:8s}")
+            raw_data = "+" if has_raw_data(d, args.flags, args.parser.error) else "-"
+            #if v is not None and filter(v):
+            if filter(v):
+                v = v if v is not None else 12 * "-"
+                r = r if r is not None else 12 * "-"
+                print(f"{d}: {raw_data} {v:12s} {r:8s}")
 
 
 def make_version_filter(filter_expression):
     def null_filter(version):
         return True
 
-    def filter_function(version):
-        return packaging.version.parse(version) in spec
-
     if filter_expression is None:
         return(null_filter)
+
+    def filter_function(version):
+        if version is None:
+            return(False)
+        return(packaging.version.parse(version) in spec)
 
     spec = packaging.specifiers.SpecifierSet(filter_expression, prereleases=True)
     return(filter_function)

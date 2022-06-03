@@ -22,6 +22,13 @@ function ucomp_display_image, file, im, $
         display_gamma = run->line(file.wave_region, 'intensity_display_gamma')
         display_power = run->line(file.wave_region, 'intensity_display_power')
     end
+    type eq 'enhanced_intensity': begin
+        colortable_name = 'enhanced_intensity'
+        display_min   = run->line(file.wave_region, 'enhanced_intensity_display_min')
+        display_max   = run->line(file.wave_region, 'enhanced_intensity_display_max')
+        display_gamma = run->line(file.wave_region, 'enhanced_intensity_display_gamma')
+        display_power = run->line(file.wave_region, 'enhanced_intensity_display_power')
+    end
     type eq 'quv': begin
         colortable_name = 'quv'
         display_min   = run->line(file.wave_region, 'quv_display_min')
@@ -79,10 +86,12 @@ function ucomp_display_image, file, im, $
           set_pixel_depth=24, $
           set_resolution=dims
 
-  n_colors = 252
+  n_colors = 251
   ucomp_loadct, colortable_name, n_colors=n_colors
   gamma_ct, display_gamma, /current
-  
+
+  background_color = 251
+  tvlct, 0, 0, 0, background_color
   text_color = 252
   tvlct, 255, 255, 255, text_color
   occulter_color = 253
@@ -94,23 +103,31 @@ function ucomp_display_image, file, im, $
 
   tvlct, r, g, b, /get
 
+  nan_indices = where(finite(_im) eq 0, n_nan)
+
   if (n_elements(reduce_factor) gt 0L && reduce_factor ge 4L) then begin
     charsize = 0.9
+    title_charsize = 1.25
     detail_charsize = 0.9
+    n_divisions = 2L
     small = 1B
     line_height = 11
   endif else begin
     charsize = 1.2
+    title_charsize = 1.5
     detail_charsize = 1.0
+    n_divisions = 4L
     small = 0B
     line_height = 15
   endelse
 
   scaled_im = bytscl(_im^display_power, $
-                     min=display_min, $
-                     max=display_max, $
+                     min=display_min^display_power, $
+                     max=display_max^display_power, $
                      top=n_colors - 1L, $
                      /nan)
+
+  if (n_nan gt 0L) then scaled_im[nan_indices] = background_color
 
   tv, scaled_im
 
@@ -123,10 +140,17 @@ function ucomp_display_image, file, im, $
           string(date_stamp, format='(%"%s")'), $
           charsize=detail_charsize, color=text_color
   if (n_elements(name) gt 0L) then begin
-    xyouts, dims[0] - 15, dims[1] - 2.0 * line_height, /device, alignment=1.0, $
+    xyouts, 0.5, 0.55, /normal, alignment=0.5, $
             name, $
-            charsize=charsize, color=text_color
+            charsize=title_charsize, color=text_color
   endif
+  colorbar2, position=[0.35, 0.5, 0.65, 0.52], $
+             charsize=detail_charsize, $
+             color=text_color, $
+             ncolors=n_colors, $
+             range=[display_min, display_max]^display_power, $
+             divisions=n_divisions, $
+             format='(F0.1)'
   if (~keyword_set(small)) then begin
     xyouts, dims[0] - 15, line_height, /device, alignment=1.0, $
             string(display_min, display_max, display_gamma, display_power, $

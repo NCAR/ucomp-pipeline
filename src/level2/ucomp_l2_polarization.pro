@@ -91,7 +91,9 @@ pro ucomp_l2_polarization, file, run=run
                                                 line_width, $
                                                 doppler_shift, $
                                                 primary_header, $
-                                                run->epoch('field_radius'))
+                                                run->epoch('field_radius'), $
+                                                radius=run->line(file.wave_region, 'enhanced_intensity_radius'), $
+                                                amount=run->line(file.wave_region, 'enhanced_intensity_amount'))
 
   azimuth = ucomp_azimuth(average_q, average_u, radial_azimuth=radial_azimuth)
 
@@ -104,18 +106,22 @@ pro ucomp_l2_polarization, file, run=run
   rcam = file.rcam_geometry
   tcam = file.tcam_geometry
   post_angle = (rcam.post_angle + tcam.post_angle) / 2.0
-  mg_log, 'masking with post angle: %0.2f', post_angle, $
-          name=run.logger_name, /debug
   post_mask = ucomp_post_mask(dims[0], dims[1], post_angle)
-  mask = field_mask and occulter_mask and post_mask
+  offsensor_mask = ucomp_offsensor_mask(dims[0], dims[1], file.p_angle)
+  ; TODO: should we do this intensity mask? what should the threshold be?
+  intensity_threshold_mask = peak_intensity gt 0.1
+  mask = field_mask and occulter_mask and post_mask and offsensor_mask and intensity_threshold_mask
+  outside_mask_indices = where(mask eq 0, n_outside_mask)
 
-  average_intensity  *= mask
-  average_q          *= mask
-  average_u          *= mask
-  average_linpol     *= mask
-  enhanced_intensity *= mask
-  azimuth            *= mask
-  radial_azimuth     *= mask
+  if (n_outside_mask gt 0L) then begin
+    average_intensity[outside_mask_indices]  = !values.f_nan
+    average_q[outside_mask_indices]          = !values.f_nan
+    average_u[outside_mask_indices]          = !values.f_nan
+    average_linpol[outside_mask_indices]     = !values.f_nan
+    enhanced_intensity[outside_mask_indices] = !values.f_nan
+    azimuth[outside_mask_indices]            = !values.f_nan
+    radial_azimuth[outside_mask_indices]     = !values.f_nan
+  endif
 
   l2_dir = filepath('', $
                     subdir=[run.date, 'level2'], $
@@ -200,13 +206,13 @@ end
 
 ; main-level example program
 
-date = '20220325'
+date = '20220302'
 
 config_basename = 'ucomp.latest.cfg'
 config_filename = filepath(config_basename, subdir=['..', '..', 'config'], root=mg_src_root())
 run = ucomp_run(date, 'test', config_filename)
 
-l0_basename = '20220325.215017.43.ucomp.1074.l0.fts'
+l0_basename = '20220302.195202.80.ucomp.1074.l0.fts'
 l0_filename = filepath(l0_basename, subdir=[date], root=run->config('raw/basedir'))
 
 file = ucomp_file(l0_filename, run=run)
