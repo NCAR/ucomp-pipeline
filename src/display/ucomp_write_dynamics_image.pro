@@ -23,7 +23,7 @@ pro ucomp_write_dynamics_image, filename, $
                                                 reduce_factor=reduce_factor, $
                                                 run=run)
   display_image[0, 0, 0] = ucomp_display_image(file, enhanced_intensity, $
-                                               type='intensity', $
+                                               type='enhanced_intensity', $
                                                name='Enhanced peak intensity', $
                                                reduce_factor=reduce_factor, $
                                                run=run)

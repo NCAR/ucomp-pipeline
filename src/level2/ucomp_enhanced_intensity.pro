@@ -26,31 +26,41 @@
 ; :Author:
 ;   MLSO Software Team
 ;-
-function ucomp_enhanced_intensity, intensity, line_width, doppler, header, r_outer
+function ucomp_enhanced_intensity, intensity, $
+                                   line_width, $
+                                   doppler, $
+                                   header, $
+                                   r_outer, $
+                                   radius=radius, $
+                                   amount=amount
   compile_opt strictarr
 
-  radius     = ucomp_getpar(header, 'RADIUS')
-  post_angle = ucomp_getpar(header, 'POST_ANG')
+  _radius = mg_default(radius, 3.0)
+  _amount = mg_default(amount, 2.0)
+
+  occulter_radius = ucomp_getpar(header, 'RADIUS')
+  post_angle      = ucomp_getpar(header, 'POST_ANG')
 
   dims = size(intensity, /dimensions)
 
-  occulter_mask = ucomp_occulter_mask(dims[0], dims[1], 1.01 * radius)
+  occulter_mask = ucomp_occulter_mask(dims[0], dims[1], 1.01 * occulter_radius)
   field_mask    = ucomp_field_mask(dims[0], dims[1], r_outer)
   post_mask     = ucomp_post_mask(dims[0], dims[1], post_angle)
   mask          = field_mask and occulter_mask and post_mask
 
   masked_intensity = intensity * mask
 
-  good_indices = where(intensity gt 1.0 $
-                       and intensity lt 100.0 $
-                       and line_width lt 60.0 $
-                       and line_width gt 15.0 $
-                       and abs(doppler) lt 30.0 $
-                       and doppler ne 0.0, $
-                       complement=bad_indices)
-  masked_intensity[bad_indices] = 0.0
+  good_indices = where(intensity gt 0.5 $
+                       and intensity lt 100.0, $
+                       ; and line_width lt 60.0 $
+                       ; and line_width gt 15.0 $
+                       ; and abs(doppler) lt 30.0 $
+                       ; and doppler ne 0.0, $
+                       complement=bad_indices, /null)
+  masked_intensity[bad_indices] = !values.f_nan
 
-  unsharp_intensity = unsharp_mask(masked_intensity, radius=3.0, amount=2.0)
+  unsharp_intensity = unsharp_mask(masked_intensity, $
+                                   radius=_radius, amount=_amount)
 
   return, unsharp_intensity
 end

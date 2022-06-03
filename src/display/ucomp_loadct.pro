@@ -44,6 +44,7 @@ pro ucomp_loadct, name, n_colors=n_colors
 
   case strlowcase(name) of
     'intensity': loadct, 0, /silent, ncolors=n_colors
+    'enhanced_intensity': loadct, 3, /silent, ncolors=n_colors
     'quv': ucomp_loadct_rgb, mg_makect(cyan, black, pink, ncolors=n_colors)
     'linpol': loadct, 0, /silent, ncolors=n_colors
     'azimuth': loadct, 4, /silent, ncolors=n_colors
