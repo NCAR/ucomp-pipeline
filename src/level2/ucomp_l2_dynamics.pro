@@ -53,13 +53,22 @@ pro ucomp_l2_dynamics, file, run=run
 
   ; find center wavelength
   center_indices = file->get_center_wavelength_indices()
-  if (n_elements(center_indices) gt 1L) then begin
-    mg_log, 'multiple center wavelengths in level 1 file: %s', $
-            strjoin(strtrim(center_indices, 2), ', '), $
-            name=run.logger_name, $
-            /error
-    goto, done
-  endif
+  case 1 of
+    n_elements(center_indices) eq 0L: begin
+        mg_log, 'no center wavelengths in level 1 file', $
+                name=run.logger_name, $
+                /error
+        goto, done
+      end
+    n_elements(center_indices) gt 1L: begin
+        mg_log, 'multiple center wavelengths in level 1 file: %s', $
+                strjoin(strtrim(center_indices, 2), ', '), $
+                name=run.logger_name, $
+                /error
+        goto, done
+      end
+    else:
+  endcase
   center_index = center_indices[0]
   wavelengths = file.wavelengths
 
