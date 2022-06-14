@@ -168,8 +168,8 @@
   handle masking files when post angle was not found
 0.2.42 [May 30, 2022]
   fix for images where the post angle is not found
-0.2.43 [June 3, 2022]
+0.2.43 [Jun 3, 2022]
   better display of level 2 products
-0.2.44
+0.2.44 [Jun 14, 2022]
   handle no center wavelengths in a level 1 file
   put NULL for out-of-range V crosstalk metric values in the database
