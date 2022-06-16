@@ -367,12 +367,20 @@ pro ucomp_file::getProperty, run=run, $
 
   if (arg_present(n_unique_wavelengths)) then begin
     w = *self.wavelengths
-    n_unique_wavelengths = n_elements(uniq(w, sort(w)))
+    if (n_elements(w) eq 0L) then begin
+      n_unique_wavelengths = 0L
+    endif else begin
+      n_unique_wavelengths = n_elements(uniq(w, sort(w)))
+    endelse
   endif
 
   if (arg_present(unique_wavelengths)) then begin
     w = *self.wavelengths
-    unique_wavelengths = w[uniq(w, sort(w))]
+    if (n_elements(w) eq 0L) then begin
+      unique_wavelengths = !null
+    endif else begin
+      unique_wavelengths = w[uniq(w, sort(w))]
+    endelse
   endif
 
   if (arg_present(onband_indices)) then onband_indices = *self.onband_indices
@@ -474,10 +482,12 @@ pro ucomp_file::_inventory
   fits_read, fcb, primary_data, primary_header, exten_no=0, /no_abort, message=msg
   if (msg ne '') then message, msg
 
-  ; read a representative, test extension header
-  fits_read, fcb, extension_data, extension_header, exten_no=1, $
-             /header_only, /no_abort, message=msg
-  if (msg ne '') then message, msg
+  if (self.n_extensions gt 0L) then begin
+    ; read a representative, test extension header
+    fits_read, fcb, extension_data, extension_header, exten_no=1, $
+               /header_only, /no_abort, message=msg
+    if (msg ne '') then message, msg
+  endif
 
   filter = ucomp_getpar(primary_header, 'FILTER', found=found)
   if (n_elements(filter) gt 0L && filter ne '') then begin
@@ -486,7 +496,10 @@ pro ucomp_file::_inventory
     self.wave_region = ''
   endelse
 
-  self.data_type = ucomp_getpar(extension_header, 'DATATYPE', found=found)
+  if (n_elements(extension_header) gt 0L) then begin
+    self.data_type = ucomp_getpar(extension_header, 'DATATYPE', found=found)
+  endif
+
   ; darks don't have a wave_region
   if (self.data_type eq 'dark') then self.wave_region = ''
 
@@ -495,10 +508,12 @@ pro ucomp_file::_inventory
   self.obs_id = ucomp_getpar(primary_header, 'OBS_ID', found=found)
   self.obs_plan = ucomp_getpar(primary_header, 'OBS_PLAN', found=found)
 
-  self.cover_in = ucomp_getpar(extension_header, 'COVER', found=found) eq 'in'
-  self.darkshutter_in = ucomp_getpar(extension_header, 'DARKSHUT', found=found) eq 'in'
-  self.occulter_in = ucomp_getpar(extension_header, 'OCCLTR', found=found) eq 'in'
-  self.occultrid = ucomp_getpar(primary_header, 'OCCLTRID', found=found)
+  if (n_elements(extension_header) gt 0L) then begin
+    self.cover_in = ucomp_getpar(extension_header, 'COVER', found=found) eq 'in'
+    self.darkshutter_in = ucomp_getpar(extension_header, 'DARKSHUT', found=found) eq 'in'
+    self.occulter_in = ucomp_getpar(extension_header, 'OCCLTR', found=found) eq 'in'
+    self.occultrid = ucomp_getpar(primary_header, 'OCCLTRID', found=found)
+  endif
 
   if (self.run->epoch('use_occltr_position')) then begin
     self.occulter_x = ucomp_getpar(primary_header, 'OCCLTR-X', /float)
@@ -508,10 +523,12 @@ pro ucomp_file::_inventory
     self.occulter_y = self.run->epoch('occltr_y')
   endelse
 
-  self.opal_in = strlowcase(ucomp_getpar(extension_header, 'DIFFUSR', found=found)) eq 'in'
-  self.caloptic_in = strlowcase(ucomp_getpar(extension_header, 'CALOPTIC', found=found)) eq 'in'
-  self.polangle = ucomp_getpar(extension_header, 'POLANGLE', /float, found=found)
-  self.retangle = ucomp_getpar(extension_header, 'RETANGLE', /float, found=found)
+  if (n_elements(extension_header) gt 0L) then begin
+    self.opal_in = strlowcase(ucomp_getpar(extension_header, 'DIFFUSR', found=found)) eq 'in'
+    self.caloptic_in = strlowcase(ucomp_getpar(extension_header, 'CALOPTIC', found=found)) eq 'in'
+    self.polangle = ucomp_getpar(extension_header, 'POLANGLE', /float, found=found)
+    self.retangle = ucomp_getpar(extension_header, 'RETANGLE', /float, found=found)
+  endif
 
   self.obsswid = ucomp_getpar(primary_header, 'OBSSWID', found=found)
 
@@ -550,30 +567,34 @@ pro ucomp_file::_inventory
   self.wind_direction = ucomp_getpar(primary_header, 'WNDDIR', /float, found=found)
 
   ; allocate inventory variables
-  *self.wavelengths = fltarr(self.n_extensions)
-  *self.onband_indices = lonarr(self.n_extensions)
+  if (self.n_extensions gt 0L) then begin
+    *self.wavelengths = fltarr(self.n_extensions)
+    *self.onband_indices = lonarr(self.n_extensions)
+  endif
 
-  self.numsum = ucomp_getpar(extension_header, 'NUMSUM', found=found)
-
-  self.exptime = ucomp_getpar(extension_header, 'EXPTIME', /float, found=found)
-
-  self.o1focus = ucomp_getpar(extension_header, 'O1FOCUS', /float, found=found)
+  if (n_elements(extension_header) gt 0L) then begin
+    self.numsum = ucomp_getpar(extension_header, 'NUMSUM', found=found)
+    self.exptime = ucomp_getpar(extension_header, 'EXPTIME', /float, found=found)
+    self.o1focus = ucomp_getpar(extension_header, 'O1FOCUS', /float, found=found)
+  endif
 
   ; inventory extensions for things that vary by extension
   moving_parts = 0B
 
-  *self.sgs_dimv  = fltarr(self.n_extensions)
-  *self.sgs_dims  = fltarr(self.n_extensions)
-  *self.sgs_scint = fltarr(self.n_extensions)
-  *self.sgs_sumv  = fltarr(self.n_extensions)
-  *self.sgs_sums  = fltarr(self.n_extensions)
-  *self.sgs_loop  = fltarr(self.n_extensions)
-  *self.sgs_rav   = fltarr(self.n_extensions)
-  *self.sgs_ras   = fltarr(self.n_extensions)
-  *self.sgs_razr  = fltarr(self.n_extensions)
-  *self.sgs_decv  = fltarr(self.n_extensions)
-  *self.sgs_decs  = fltarr(self.n_extensions)
-  *self.sgs_deczr = fltarr(self.n_extensions)
+  if (self.n_extensions gt 0L) then begin
+    *self.sgs_dimv  = fltarr(self.n_extensions)
+    *self.sgs_dims  = fltarr(self.n_extensions)
+    *self.sgs_scint = fltarr(self.n_extensions)
+    *self.sgs_sumv  = fltarr(self.n_extensions)
+    *self.sgs_sums  = fltarr(self.n_extensions)
+    *self.sgs_loop  = fltarr(self.n_extensions)
+    *self.sgs_rav   = fltarr(self.n_extensions)
+    *self.sgs_ras   = fltarr(self.n_extensions)
+    *self.sgs_razr  = fltarr(self.n_extensions)
+    *self.sgs_decv  = fltarr(self.n_extensions)
+    *self.sgs_decs  = fltarr(self.n_extensions)
+    *self.sgs_deczr = fltarr(self.n_extensions)
+  endif
 
   for e = 1L, self.n_extensions do begin
     fits_read, fcb, data, extension_header, exten_no=e, /header_only, $
@@ -597,8 +618,10 @@ pro ucomp_file::_inventory
     (*self.sgs_deczr)[e - 1] = ucomp_getpar(extension_header, 'SGSDECZR', /float)
   endfor
 
-  self->getProperty, n_unique_wavelengths=n_unique_wavelengths
-  self.n_repeats = self.n_extensions / n_unique_wavelengths
+  if (self.n_extensions gt 0L) then begin
+    self->getProperty, n_unique_wavelengths=n_unique_wavelengths
+    self.n_repeats = self.n_extensions / n_unique_wavelengths
+  endif
 
   fits_close, fcb
 end
@@ -775,6 +798,18 @@ end
 
 ; main-level example program
 
-file = ucomp_file('/hao/mahidata1/Data/CoMP/raw/20180101/20180101.164431.FTS')
+;date = '20180101'
+date = '20220415'
+
+;f = '/hao/mahidata1/Data/CoMP/raw/20180101/20180101.164431.FTS'
+f = '/hao/dawn/Data/UCoMP/incoming/20220415/20220416.054151.99.ucomp.l0.fts'
+
+config_basename = 'ucomp.latest.cfg'
+config_filename = filepath(config_basename, subdir=['..', '..', 'config'], root=mg_src_root())
+run = ucomp_run(date, 'test', config_filename)
+
+file = ucomp_file(f, run=run)
+
+obj_destroy, run
 
 end

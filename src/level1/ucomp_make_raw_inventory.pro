@@ -67,7 +67,7 @@ pro ucomp_make_raw_inventory, run=run
   endfor
 
   data_types = ['cal', 'flat', 'dark', 'eng', 'unk']
-  show_wavelengths = [1B, 1B, 0B, 1B, 1B]
+  show_wavelengths = [1B, 1B, 0B, 1B, 0B]
   for t = 0L, n_elements(data_types) - 1L do begin
     files = run->get_files(data_type=data_types[t], count=n_files)
 
