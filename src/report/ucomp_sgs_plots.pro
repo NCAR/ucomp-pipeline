@@ -36,18 +36,18 @@ pro ucomp_sgs_plots, engineering_dir, run=run
   for f = 0L, n_files - 1L do begin
     hours[f]     = files[f].obsday_hours + 10.0
 
-    sgs_dimv[f]  = files[f].sgs_dimv[0]
-    sgs_dims[f]  = files[f].sgs_dims[0]
-    sgs_scint[f] = files[f].sgs_scint[0]
-    sgs_sumv[f]  = files[f].sgs_sumv[0]
-    sgs_sums[f]  = files[f].sgs_sums[0]
-    sgs_loop[f]  = files[f].sgs_loop[0]
-    sgs_rav[f]   = files[f].sgs_rav[0]
-    sgs_ras[f]   = files[f].sgs_ras[0]
-    sgs_razr[f]  = files[f].sgs_razr[0]
-    sgs_decv[f]  = files[f].sgs_decv[0]
-    sgs_decs[f]  = files[f].sgs_decs[0]
-    sgs_deczr[f] = files[f].sgs_deczr[0]
+    sgs_dimv[f]  = ucomp_sgs_mean(files[f].sgs_dimv)
+    sgs_dims[f]  = ucomp_sgs_mean(files[f].sgs_dims)
+    sgs_scint[f] = ucomp_sgs_mean(files[f].sgs_scint)
+    sgs_sumv[f]  = ucomp_sgs_mean(files[f].sgs_sumv)
+    sgs_sums[f]  = ucomp_sgs_mean(files[f].sgs_sums)
+    sgs_loop[f]  = ucomp_sgs_mean(files[f].sgs_loop)
+    sgs_rav[f]   = ucomp_sgs_mean(files[f].sgs_rav)
+    sgs_ras[f]   = ucomp_sgs_mean(files[f].sgs_ras)
+    sgs_razr[f]  = ucomp_sgs_mean(files[f].sgs_razr)
+    sgs_decv[f]  = ucomp_sgs_mean(files[f].sgs_decv)
+    sgs_decs[f]  = ucomp_sgs_mean(files[f].sgs_decs)
+    sgs_deczr[f] = ucomp_sgs_mean(files[f].sgs_deczr)
   endfor
 
   sorted_indices = sort(hours)
