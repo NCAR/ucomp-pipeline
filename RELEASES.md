@@ -174,3 +174,4 @@
   handle no center wavelengths in a level 1 file
   put NULL for out-of-range V crosstalk metric values in the database
 0.2.45
+  handle raw files with no extensions
