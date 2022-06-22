@@ -175,3 +175,5 @@
   put NULL for out-of-range V crosstalk metric values in the database
 0.2.45 [Jun 16, 2022]
   handle raw files with no extensions
+0.2.46
+  allow quality to be turned off

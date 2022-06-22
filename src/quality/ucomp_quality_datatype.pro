@@ -29,8 +29,8 @@ function ucomp_quality_datatype, file, $
 
   datatype = ucomp_getpar(ext_headers[0], 'DATATYPE')
   for e = 1L, file.n_extensions - 1L do begin
-    if (ucomp_getpar(ext_headers[e], 'DATATYPE') ne datatype) then return, 1
+    if (ucomp_getpar(ext_headers[e], 'DATATYPE') ne datatype) then return, 1UL
   endfor
 
-  return, 0
+  return, 0UL
 end
