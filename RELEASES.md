@@ -177,3 +177,4 @@
   handle raw files with no extensions
 0.2.46
   allow quality to be turned off
+  check cal quality: flats must have occulter out and diffuser in
