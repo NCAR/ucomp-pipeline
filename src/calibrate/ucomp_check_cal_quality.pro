@@ -20,8 +20,8 @@ pro ucomp_check_cal_quality, run=run
   endelse
 
   quality_bitmasks = ulonarr(n_files)
-  quality_conditions = ucomp_cal_quality_conditions(file.wave_region, run=run)
   for f = 0L, n_files - 1L do begin
+    quality_conditions = ucomp_cal_quality_conditions((files[f]).wave_region, run=run)
     ucomp_read_raw_data, (files[f]).raw_filename, $
                          primary_header=primary_header, $
                          ext_data=ext_data, $
