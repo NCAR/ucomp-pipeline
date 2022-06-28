@@ -50,6 +50,8 @@ try:
     watch_requirements = True
 except ModuleNotFoundError as e:
     watch_requirements = False
+except ImportError as e:
+    watch_requirments = False
 
 
 POLL_SECS = 0.1
