@@ -30,7 +30,8 @@ pro ucomp_l1_check_quality, file, primary_header, ext_data, ext_headers, $
 
   quality_conditions = ucomp_quality_conditions(file.wave_region, run=run)
   for q = 0L, n_elements(quality_conditions) - 1L do begin
-    if ((2UL^(q - 1) and run->config('quality/mask') ne 0) and run->epoch('quality_mask')) then begin
+    if ((2UL^(q - 1) and run->config('quality/mask') ne 0) $
+          && (2UL^(q - 1) and run->epoch('quality_mask'))) then begin
       quality = call_function(quality_conditions[q].checker, $
                               file, $
                               primary_header, $
