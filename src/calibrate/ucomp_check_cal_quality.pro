@@ -8,7 +8,7 @@
 ;     `ucomp_run` object
 ;-
 pro ucomp_check_cal_quality, run=run
-  compile_opt strictarr
+  compile_opt strictarr, logical_predicate
 
   files = run->get_files(data_type='cal', count=n_files)
 
