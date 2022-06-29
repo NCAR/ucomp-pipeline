@@ -30,6 +30,19 @@ pro ucomp_make_flats, wave_region, run=run
     goto, done
   endif
 
+  ok_flat_files = bytarr(n_flat_files)
+  for f = 0L, n_flat_files - 1L do ok_flat_files[f] = flat_files[f].ok
+  
+  good_flat_files_indices = where(ok_flat_files, n_good_flat_files)
+  if (n_good_flat_files eq 0L) then begin
+    mg_log, 'no good flats for %s nm, not making master flat file', $
+            wave_region, name=run.logger_name, /warn
+    goto, done
+  endif else begin
+    flat_files = flat_files[good_flat_files_indices]
+    n_flat_files = n_good_flat_files
+  endelse
+
   l1_dir = filepath('level1', $
                     subdir=run.date, $
                     root=run->config('processing/basedir'))
