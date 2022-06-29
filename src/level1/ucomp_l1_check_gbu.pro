@@ -24,7 +24,7 @@
 ;-
 pro ucomp_l1_check_gbu, file, primary_header, ext_data, ext_headers, $
                         run=run, status=status
-  compile_opt strictarr
+  compile_opt strictarr, logical_predicate
 
   status = 0L
 
