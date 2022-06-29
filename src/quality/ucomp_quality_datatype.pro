@@ -28,9 +28,53 @@ function ucomp_quality_datatype, file, $
   compile_opt strictarr
 
   datatype = ucomp_getpar(ext_headers[0], 'DATATYPE')
+  mg_log, '%s [ext %d]: %s', $
+          file.l1_basename, 0, datatype, $
+          name=run.logger_name, /debug
+
   for e = 1L, file.n_extensions - 1L do begin
-    if (ucomp_getpar(ext_headers[e], 'DATATYPE') ne datatype) then return, 1UL
+    ext_datatype = ucomp_getpar(ext_headers[e], 'DATATYPE')
+    mg_log, '%s [ext %d]: %s', $
+            file.l1_basename, e, ext_datatype, $
+            name=run.logger_name, /debug
+    if (ext_datatype ne datatype) then return, 1UL
   endfor
 
   return, 0UL
 end
+
+
+; main-level example
+
+date = '20210810'
+config_basename = 'ucomp.latest.cfg'
+config_filename = filepath(config_basename, $
+                           subdir=['..', '..', 'config'], $
+                           root=mg_src_root())
+run = ucomp_run(date, 'test', config_filename)
+
+raw_basename = '20210810.181351.97.ucomp.656.l0.fts'
+raw_filename = filepath(raw_basename, $
+                        subdir=[date], $
+                        root=run->config('raw/basedir'))
+file = ucomp_file(raw_filename, run=run)
+
+ucomp_read_raw_data, file.raw_filename, $
+                     primary_header=primary_header, $
+                     ext_data=ext_data, $
+                     ext_headers=ext_headers, $
+                     repair_routine=run->epoch('raw_data_repair_routine')
+
+success = ucomp_quality_datatype(file, $
+                                 primary_header, $
+                                 ext_data, $
+                                 ext_headers, $
+                                 run=run)
+help, success
+
+obj_destroy, file
+obj_destroy, run
+
+end
+
+
