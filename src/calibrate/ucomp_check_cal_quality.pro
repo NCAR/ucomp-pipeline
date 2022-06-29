@@ -3,20 +3,23 @@
 ;+
 ; Check quality (process or not) for each calibration file.
 ;
+; :Params:
+;   type : in, required, type=string
+;     type to check: dark", "flat", or "cal"
 ; :Keywords:
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-pro ucomp_check_cal_quality, run=run
-  compile_opt strictarr, logical_predicate
+pro ucomp_check_cal_quality, type, run=run
+  compile_opt strictarr
 
-  files = run->get_files(data_type='cal', count=n_files)
+  files = run->get_files(data_type=type, count=n_files)
 
   if (n_files eq 0L) then begin
-    mg_log, 'no cal files', name=run.logger_name, /info
+    mg_log, 'no %s files', type, name=run.logger_name, /info
     goto, done
   endif else begin
-    mg_log, 'checking %d cal files...', n_files, name=run.logger_name, /info
+    mg_log, 'checking %d %s files...', n_files, type, name=run.logger_name, /info
   endelse
 
   quality_bitmasks = ulonarr(n_files)
