@@ -53,12 +53,16 @@ pro ucomp_l1_process_file, file, run=run
                         root=run->config('processing/basedir'))
   ucomp_mkdir, l1_dirname, logger_name=run.logger_name
 
-  ucomp_l1_step, 'ucomp_l1_check_quality', $
-                 file, primary_header, data, headers, run=run
-  if (~file.ok) then begin
-    mg_log, 'skipping for poor quality', name=run.logger_name, /warn
-    goto, done
-  endif
+  if (run->config('quality/perform_check') && run->epoch('perform_quality_check')) then begin
+    ucomp_l1_step, 'ucomp_l1_check_quality', $
+                   file, primary_header, data, headers, run=run
+    if (~file.ok) then begin
+      mg_log, 'skipping for poor quality', name=run.logger_name, /warn
+      goto, done
+    endif
+  endif else begin
+    mg_log, 'skipping quality check', name=run.logger_name, /debug
+  endelse
 
   step_number = 1L
 
@@ -116,7 +120,8 @@ pro ucomp_l1_process_file, file, run=run
                          /intensity
   file.processed = 1B
 
-  ucomp_write_intensity_image, file, data, run=run
+  ucomp_write_intensity_image, file, data, primary_header, run=run
+  ucomp_write_intensity_image, file, data, primary_header, run=run, /enhanced
   ucomp_write_iquv_image, file, data, run=run
   ucomp_write_all_iquv_image, file, data, run=run
 
