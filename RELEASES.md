@@ -178,3 +178,4 @@
 0.2.46
   allow quality to be turned off
   check cal quality: flats must have occulter out and diffuser in
+  create enhanced intensity GIFs

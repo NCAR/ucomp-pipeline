@@ -8,16 +8,23 @@
 ;     `ucomp_file` object
 ;   data : in, required, type="fltarr(nx, ny, nstokes, nexts)"
 ;     extension data
+;   primary_header : in, required, type=strarr
+;     primary header
 ;
 ; :Keywords:
+;   enhanced : in, optional, type=boolean
+;     set to produce an enhanced intensity image
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-pro ucomp_write_intensity_image, file, data, run=run
+pro ucomp_write_intensity_image, file, data, primary_header, $
+                                 enhanced=enhanced, run=run
   compile_opt strictarr
 
   occulter_annotation = run->config('centering/annotated_gifs')
   center_wavelength_only = run->config('intensity/center_wavelength_gifs_only')
+
+  option_prefix = keyword_set(enhanced) ? 'enhanced_' : ''
 
   l1_dirname = filepath('', $
                         subdir=[run.date, 'level1'], $
@@ -25,15 +32,19 @@ pro ucomp_write_intensity_image, file, data, run=run
   ucomp_mkdir, l1_dirname, logger_name=run.logger_name
 
   intensity_basename_format = file_basename(file.l1_basename, '.fts')
-  intensity_basename_format += '.int'
+  if (keyword_set(enhanced)) then begin
+    intensity_basename_format += '.enhanced-int'
+  endif else begin
+    intensity_basename_format += '.int'
+  endelse
   if (~center_wavelength_only) then intensity_basename_format += '.ext%02d'
   intensity_basename_format += '.gif'
   intensity_filename_format = filepath(intensity_basename_format, root=l1_dirname)
 
-  display_min   = run->line(file.wave_region, 'intensity_display_min')
-  display_max   = run->line(file.wave_region, 'intensity_display_max')
-  display_gamma = run->line(file.wave_region, 'intensity_display_gamma')
-  display_power = run->line(file.wave_region, 'intensity_display_power')
+  display_min   = run->line(file.wave_region, option_prefix + 'intensity_display_min')
+  display_max   = run->line(file.wave_region, option_prefix + 'intensity_display_max')
+  display_gamma = run->line(file.wave_region, option_prefix + 'intensity_display_gamma')
+  display_power = run->line(file.wave_region, option_prefix + 'intensity_display_power')
 
   datetime = strmid(file_basename(file.raw_filename), 0, 15)
   date_stamp = ucomp_dt2stamp(datetime)
@@ -49,7 +60,7 @@ pro ucomp_write_intensity_image, file, data, run=run
           set_resolution=[nx, ny]
 
   n_colors = 252
-  ucomp_loadct, 'intensity', n_colors=n_colors
+  ucomp_loadct, option_prefix + 'intensity', n_colors=n_colors
   gamma_ct, display_gamma, /current
 
   text_color = 252
@@ -73,6 +84,16 @@ pro ucomp_write_intensity_image, file, data, run=run
     endif
 
     im = reform(data[*, *, 0, e - 1L])
+
+    if (keyword_set(enhanced)) then begin
+      im = ucomp_enhanced_intensity(im, $
+                                    !null, $
+                                    !null, $
+                                    primary_header, $
+                                    run->epoch('field_radius'), $
+                                    radius=run->line(file.wave_region, 'enhanced_intensity_radius'), $
+                                    amount=run->line(file.wave_region, 'enhanced_intensity_amount'))
+    endif
 
     dims = size(im, /dimensions)
 
