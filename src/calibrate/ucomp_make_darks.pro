@@ -24,6 +24,19 @@ pro ucomp_make_darks, run=run
     goto, done
   endif
 
+  ok_dark_files = bytarr(n_dark_files)
+  for f = 0L, n_dark_files - 1L do ok_dark_files[f] = dark_files[f].ok
+
+  good_dark_files_indices = where(ok_dark_files, n_good_dark_files)
+  if (n_good_dark_files eq 0L) then begin
+    mg_log, 'no good darks, not making master dark file', $
+            name=run.logger_name, /warn
+    goto, done
+  endif else begin
+    dark_files = dark_files[good_dark_files_indices]
+    n_dark_files = n_good_dark_files
+  endelse
+
   l1_dir = filepath('level1', $
                     subdir=run.date, $
                     root=run->config('processing/basedir'))

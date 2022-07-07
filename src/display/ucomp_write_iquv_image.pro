@@ -69,6 +69,12 @@ pro ucomp_write_iquv_image, file, data, run=run
 
   ;tvlct, r, g, b, /get
 
+  charsize = 1.25
+  title_charsize = 1.75
+  detail_charsize = 0.9
+
+  n_divisions = 4L
+
   wavelengths = file.wavelengths
   pol_states = ['I', 'Q', 'U', 'V']
   for e = 1L, file.n_extensions do begin
@@ -119,17 +125,29 @@ pro ucomp_write_iquv_image, file, data, run=run
                 string(run->line(file.wave_region, 'ionization'), $
                        run->line(file.wave_region, 'center_wavelength'), $
                        format='(%"%s %0.2f nm")'), $
-                charsize=1.25, color=text_color
+                charsize=charsize, color=text_color
         xyouts, xmargin * dims[0] / reduce_dims_factor, $
                 (1.0 + ymargin) * dims[1] / reduce_dims_factor, $
                 /device, $
                 date_stamp, $
-                charsize=1.25, color=text_color
+                charsize=charsize, color=text_color
       endif
-      xyouts, (p mod 2 + 1.0 - xmargin) * dims[0] / reduce_dims_factor, $
-              ((dims[2] - p - 1L) / 2 + 1.0 - ymargin) * dims[1] / reduce_dims_factor, $
-              /device, $
-              pol_states[p], charsize=1.25, color=text_color
+      ; xyouts, (p mod 2 + 1.0 - xmargin) * dims[0] / reduce_dims_factor, $
+      ;         ((dims[2] - p - 1L) / 2 + 1.0 - ymargin) * dims[1] / reduce_dims_factor, $
+      ;         /device, $
+      ;         pol_states[p], charsize=charsize, color=text_color
+      xyouts, 0.25 + (p mod 2) / 2.0, 0.75 - (p / 2) / 2.0 + 0.025, $
+              /normal, $
+              pol_states[p], $
+              charsize=title_charsize, alignment=0.5, color=text_color
+      colorbar2, position=[0.25 + (p mod 2) / 2.0 - 0.075, 0.75 - (p / 2) / 2.0, $
+                           0.25 + (p mod 2) / 2.0 + 0.075, 0.75 - (p / 2) / 2.0 + 0.01], $
+                 charsize=detail_charsize, $
+                 color=text_color, $
+                 ncolors=n_colors, $
+                 range=[display_min, display_max]^display_power, $
+                 divisions=n_divisions, $
+                 format='(F0.1)'
     endfor
 
     if (center_wavelength_only) then begin

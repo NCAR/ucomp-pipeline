@@ -73,7 +73,10 @@ pro ucomp_write_all_iquv_image, file, data, run=run
 
   xmargin = 0.05
   ymargin = 0.03
+
   charsize = 1.0
+  title_charsize = 1.25
+  detail_charsize = 0.9
 
   pol_states = ['I', 'Q', 'U', 'V']
   for e = 1L, file.n_extensions do begin

@@ -175,3 +175,8 @@
   put NULL for out-of-range V crosstalk metric values in the database
 0.2.45 [Jun 16, 2022]
   handle raw files with no extensions
+0.2.46 [Jul 7, 2022]
+  allow quality to be turned off
+  check cal quality: flats must have occulter out and diffuser in
+  create enhanced intensity GIFs
+  colorbars on all GIFs and PNGs except the all wavelength IQUV PNG
