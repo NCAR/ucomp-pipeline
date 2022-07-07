@@ -180,3 +180,4 @@
   check cal quality: flats must have occulter out and diffuser in
   create enhanced intensity GIFs
   colorbars on all GIFs and PNGs except the all wavelength IQUV PNG
+0.2.47
