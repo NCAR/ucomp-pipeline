@@ -30,12 +30,17 @@ pro ucomp_l1_check_quality, file, primary_header, ext_data, ext_headers, $
 
   quality_conditions = ucomp_quality_conditions(file.wave_region, run=run)
   for q = 0L, n_elements(quality_conditions) - 1L do begin
-    quality = call_function(quality_conditions[q].checker, $
-                            file, $
-                            primary_header, $
-                            ext_data, $
-                            ext_headers, $
-                            run=run)
+    if (((2UL^q and run->config('quality/mask')) ne 0) $
+          && ((2UL^q and run->epoch('quality_mask')) ne 0)) then begin
+      quality = call_function(quality_conditions[q].checker, $
+                              file, $
+                              primary_header, $
+                              ext_data, $
+                              ext_headers, $
+                              run=run)
+      mg_log, 'checking %s: %d', quality_conditions[q].checker, quality, $
+              name=run.logger_name, /debug
+    endif else quality = 0UL
     file.quality_bitmask = quality_conditions[q].mask * quality
   endfor
 
