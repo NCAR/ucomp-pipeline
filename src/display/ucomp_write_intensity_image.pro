@@ -24,7 +24,13 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
   occulter_annotation = run->config('centering/annotated_gifs')
   center_wavelength_only = run->config('intensity/center_wavelength_gifs_only')
 
-  option_prefix = keyword_set(enhanced) ? 'enhanced_' : ''
+  if (keyword_set(enhanced)) then begin
+    option_prefix = 'enhanced_'
+    title = 'Enhanced intensity'
+  endif else begin
+    option_prefix = ''
+    title = 'Intensity'
+  endelse
 
   l1_dirname = filepath('', $
                         subdir=[run.date, 'level1'], $
@@ -75,6 +81,10 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
   tvlct, r, g, b, /get
 
   charsize = 1.2
+  detail_charsize = 1.0
+  title_charsize = 1.75
+
+  n_divisions = 4L
 
   wavelengths = file.wavelengths
   for e = 1L, file.n_extensions do begin
@@ -131,7 +141,18 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
                                      occulter_color=occulter_color, $
                                      guess_color=guess_color, $
                                      inflection_color=inflection_color
-    endif
+    endif else begin
+      xyouts, 0.5, 0.55, /normal, alignment=0.5, $
+              title, $
+              charsize=title_charsize, color=text_color
+      colorbar2, position=[0.35, 0.5, 0.65, 0.52], $
+                 charsize=detail_charsize, $
+                 color=text_color, $
+                 ncolors=n_colors, $
+                 range=[display_min, display_max]^display_power, $
+                 divisions=n_divisions, $
+                 format='(F0.1)'
+    endelse
 
     if (center_wavelength_only) then begin
       intensity_filename = intensity_filename_format
