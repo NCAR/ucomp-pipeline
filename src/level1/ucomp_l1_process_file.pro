@@ -120,7 +120,8 @@ pro ucomp_l1_process_file, file, run=run
                          /intensity
   file.processed = 1B
 
-  ucomp_write_intensity_image, file, data, run=run
+  ucomp_write_intensity_image, file, data, primary_header, run=run
+  ucomp_write_intensity_image, file, data, primary_header, run=run, /enhanced
   ucomp_write_iquv_image, file, data, run=run
   ucomp_write_all_iquv_image, file, data, run=run
 

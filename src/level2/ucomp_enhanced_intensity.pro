@@ -12,6 +12,10 @@
 ; :Params:
 ;   intensity : in, required, type="fltarr(1280, 1024)"
 ;     image
+;   line_width : in, optional, type="fltarr(1280, 1024)"
+;     line width
+;   dopper : in, optional, type="fltarr(1280, 1024)"
+;     doppler
 ;   header : in, required, type=strarr
 ;     FITS header with geometry information
 ;
