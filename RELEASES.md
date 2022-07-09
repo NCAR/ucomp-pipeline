@@ -182,3 +182,4 @@
   colorbars on all GIFs and PNGs except the all wavelength IQUV PNG
 0.2.47 [Jul 9, 2022]
   handle missing SGS FITS keywords
+0.2.48
