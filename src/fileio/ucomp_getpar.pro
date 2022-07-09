@@ -22,7 +22,10 @@
 ;     set to a named variable to retrieve the comment associated with the
 ;     keyword
 ;-
-function ucomp_getpar, header, name, float=float, found=found, comment=comment, $
+function ucomp_getpar, header, name, $
+                       float=float, $
+                       found=found, $
+                       comment=comment, $
                        _extra=e
   compile_opt strictarr
   on_error, 2
