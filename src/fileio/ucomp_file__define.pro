@@ -604,18 +604,18 @@ pro ucomp_file::_inventory
     (*self.wavelengths)[e - 1] = ucomp_getpar(extension_header, 'WAVELNG', /float, found=found)
     (*self.onband_indices)[e - 1] = ucomp_getpar(extension_header, 'ONBAND', found=found) eq 'tcam'
 
-    (*self.sgs_dimv)[e - 1]  = ucomp_getpar(extension_header, 'SGSDIMV', /float)
-    (*self.sgs_dims)[e - 1]  = ucomp_getpar(extension_header, 'SGSDIMS', /float)
-    (*self.sgs_scint)[e - 1] = ucomp_getpar(extension_header, 'SGSSCINT', /float)
-    (*self.sgs_sumv)[e - 1]  = ucomp_getpar(extension_header, 'SGSSUMV', /float)
-    (*self.sgs_sums)[e - 1]  = ucomp_getpar(extension_header, 'SGSSUMS', /float)
-    (*self.sgs_loop)[e - 1]  = ucomp_getpar(extension_header, 'SGSLOOP', /float)
-    (*self.sgs_rav)[e - 1]   = ucomp_getpar(extension_header, 'SGSRAV', /float)
-    (*self.sgs_ras)[e - 1]   = ucomp_getpar(extension_header, 'SGSRAS', /float)
-    (*self.sgs_razr)[e - 1]  = ucomp_getpar(extension_header, 'SGSRAZR', /float)
-    (*self.sgs_decv)[e - 1]  = ucomp_getpar(extension_header, 'SGSDECV', /float)
-    (*self.sgs_decs)[e - 1]  = ucomp_getpar(extension_header, 'SGSDECS', /float)
-    (*self.sgs_deczr)[e - 1] = ucomp_getpar(extension_header, 'SGSDECZR', /float)
+    (*self.sgs_dimv)[e - 1]  = ucomp_getpar(extension_header, 'SGSDIMV', /float, found=found)
+    (*self.sgs_dims)[e - 1]  = ucomp_getpar(extension_header, 'SGSDIMS', /float, found=found)
+    (*self.sgs_scint)[e - 1] = ucomp_getpar(extension_header, 'SGSSCINT', /float, found=found)
+    (*self.sgs_sumv)[e - 1]  = ucomp_getpar(extension_header, 'SGSSUMV', /float, found=found)
+    (*self.sgs_sums)[e - 1]  = ucomp_getpar(extension_header, 'SGSSUMS', /float, found=found)
+    (*self.sgs_loop)[e - 1]  = ucomp_getpar(extension_header, 'SGSLOOP', /float, found=found)
+    (*self.sgs_rav)[e - 1]   = ucomp_getpar(extension_header, 'SGSRAV', /float, found=found)
+    (*self.sgs_ras)[e - 1]   = ucomp_getpar(extension_header, 'SGSRAS', /float, found=found)
+    (*self.sgs_razr)[e - 1]  = ucomp_getpar(extension_header, 'SGSRAZR', /float, found=found)
+    (*self.sgs_decv)[e - 1]  = ucomp_getpar(extension_header, 'SGSDECV', /float, found=found)
+    (*self.sgs_decs)[e - 1]  = ucomp_getpar(extension_header, 'SGSDECS', /float, found=found)
+    (*self.sgs_deczr)[e - 1] = ucomp_getpar(extension_header, 'SGSDECZR', /float, found=found)
   endfor
 
   if (self.n_extensions gt 0L) then begin

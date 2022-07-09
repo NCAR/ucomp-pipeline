@@ -32,7 +32,7 @@ function ucomp_combine_headers, headers
   for k = 0L, n_elements(sgs_keywords) - 1L do begin
     values = fltarr(n_extensions)
     for e = 0L, n_extensions - 1L do begin
-      values[e] = ucomp_getpar(headers[*, e], sgs_keywords[k])
+      values[e] = ucomp_getpar(headers[*, e], sgs_keywords[k], /float, found=found)
     endfor
     ucomp_addpar, header, sgs_keywords[k], mean(values)
   endfor
