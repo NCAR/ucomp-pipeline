@@ -183,3 +183,4 @@
 0.2.47 [Jul 9, 2022]
   handle missing SGS FITS keywords
 0.2.48
+  handle quality check for before 20210726
