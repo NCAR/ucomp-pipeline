@@ -44,7 +44,7 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
   rcam_center_guess = ucomp_occulter_guess(0, date, occulter_x, occulter_y, run=run)
   rcam_offband_indices = where(file.onband_indices eq 1, n_rcam_offband)
 
-  mg_log, /check_math, name=run.logger_name, /warn
+  mg_log, /check_math, name=run.logger_name, /debug
   rcam_im = mean(data[*, *, *, 0, rcam_offband_indices], dimension=3, /nan)
   while (size(rcam_im, /n_dimensions) gt 2L) do rcam_im = mean(rcam_im, dimension=3, /nan)
   ; if all elements of dimension 3 are NaNs then the above lines will produce
@@ -64,7 +64,7 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
   tcam_center_guess = ucomp_occulter_guess(1, date, occulter_x, occulter_y, run=run)
   tcam_offband_indices = where(file.onband_indices eq 0, n_tcam_offband)
 
-  mg_log, /check_math, name=run.logger_name, /warn
+  mg_log, /check_math, name=run.logger_name, /debug
   tcam_im = mean(data[*, *, *, 1, tcam_offband_indices], dimension=3, /nan)
   while (size(tcam_im, /n_dimensions) gt 2L) do tcam_im = mean(tcam_im, dimension=3, /nan)
   ; if all elements of dimension 3 are NaNs then the above lines will produce

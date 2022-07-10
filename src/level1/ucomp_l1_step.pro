@@ -48,7 +48,7 @@ pro ucomp_l1_step, routine_name, file, primary_header, data, headers, $
                   n_elements(file.wavelengths), file.n_extensions, $
                   from=routine_name
 
-    mg_log, /check_math, from=routine_name, name=run.logger_name, /warn
+    mg_log, /check_math, from=routine_name, name=run.logger_name, /debug
 
     if (status eq 0L) then begin
       name = strmid(routine_name, 9)
