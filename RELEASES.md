@@ -185,3 +185,4 @@
 0.2.48 [Jul 10, 2022]
   handle quality check for before 20210726
   handle missing T_ and TU_ FITS keywords
+0.2.49
