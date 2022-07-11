@@ -91,6 +91,11 @@ pro ucomp_db_sci_insert, l0_files, obsday_index, sw_index, db, $
                         n_extensions=n_extensions
 
     center_indices = file->get_center_wavelength_indices()
+    if (n_elements(center_indices) eq 0L) then begin
+      mg_log, '%s does not contain center wavelength', file.l1_basename, $
+              name=run.logger_name, /warn
+      goto, done
+    endif
     center_data = ext_data[*, *, *, center_indices[0]]
 
     intensity    = center_data[*, *, 0]
