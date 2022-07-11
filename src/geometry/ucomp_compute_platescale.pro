@@ -18,7 +18,7 @@
 function ucomp_compute_platescale, radius, occulter_id, wave_region, run=run
   compile_opt strictarr
 
-  if (occulter_id) then return, !values.f_nan
+  if (occulter_id eq 'NONE') then return, !values.f_nan
 
   ; occulter physical diameter [mm]
   occulter_diameter = run->epoch('OC-' + occulter_id + '-mm', datetime=run.date)
