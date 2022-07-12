@@ -185,6 +185,6 @@
 0.2.48 [Jul 10, 2022]
   handle quality check for before 20210726
   handle missing T_ and TU_ FITS keywords
-0.2.49
+0.2.49 [Jul 11, 2022]
   fix for handling occulter ID of NONE
   handle file for ucomp_sci database table which does not have center wavelength
