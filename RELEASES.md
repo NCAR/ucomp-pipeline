@@ -189,3 +189,4 @@
   fix for handling occulter ID of NONE
   handle file for ucomp_sci database table which does not have center wavelength
 0.2.50
+  handle NaN values for total I, Q, U in ucomp_sci database table
