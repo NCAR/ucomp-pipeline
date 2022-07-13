@@ -23,6 +23,7 @@ pro ucomp_write_movies, wave_region, run=run
 
   ; intensity images
   ucomp_write_intensity_mp4, wave_region, run=run
+  ucomp_write_intensity_mp4, wave_region, run=run, /enhanced
 
   ; IQUV images
   ucomp_write_iquv_mp4, wave_region, run=run
