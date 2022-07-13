@@ -134,13 +134,15 @@ pro ucomp_db_sci_insert, l0_files, obsday_index, sw_index, db, $
       velocity13  = ucomp_annulus_gridmeans(velocity, 1.3, sun_pixels)
     endif
 
+    float_fmt = '%0.3f'
+
     fields = [{name: 'file_name', type: '''%s'''}, $
               {name: 'date_obs', type: '''%s'''}, $
               {name: 'obsday_id', type: '%d'}, $
               {name: 'wave_region', type: '''%s'''}, $
-              {name: 'totali', type: '%f'}, $
-              {name: 'totalq', type: '%f'}, $
-              {name: 'totalu', type: '%f'}, $
+              {name: 'totali', type: '%s'}, $
+              {name: 'totalq', type: '%s'}, $
+              {name: 'totalu', type: '%s'}, $
               {name: 'intensity', type: '''%s'''}, $
               {name: 'intensity_stddev', type: '''%s'''}, $
               {name: 'q', type: '''%s'''}, $
@@ -165,9 +167,9 @@ pro ucomp_db_sci_insert, l0_files, obsday_index, sw_index, db, $
                  obsday_index, $
                  file.wave_region, $
 
-                 total_i, $
-                 total_q, $
-                 total_u, $
+                 ucomp_db_float(total_i, format=float_fmt), $
+                 ucomp_db_float(total_q, format=float_fmt), $
+                 ucomp_db_float(total_u, format=float_fmt), $
 
                  db->escape_string(i_profile), $
                  db->escape_string(i_profile_stddev), $

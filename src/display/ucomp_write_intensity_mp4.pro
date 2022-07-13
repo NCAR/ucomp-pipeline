@@ -10,12 +10,24 @@
 ; :Keywords:
 ;   run : in, required, type=object
 ;     UCoMP run object
+;   enhanced : in, optional, type=boolean
+;     set to produce an enhanced intensity image
 ;-
-pro ucomp_write_intensity_mp4, wave_region, run=run
+pro ucomp_write_intensity_mp4, wave_region, run=run, enhanced=enhanced
   compile_opt strictarr
 
-  mg_log, 'creating intensity mp4 for %s nm', wave_region, $
+  mg_log, 'creating %sintensity mp4 for %s nm', $
+          keyword_set(enhanced) ? 'enhanced ' : '', $
+          wave_region, $
           name=run.logger_name, /info
+
+  if (keyword_set(enhanced)) then begin
+    option_prefix = 'enhanced_'
+    filename_prefix = 'enhanced-int'
+  endif else begin
+    option_prefix = ''
+    filename_prefix = 'int'
+  endelse
 
   center_wavelength_only = run->config('intensity/center_wavelength_gifs_only')
   if (~center_wavelength_only) then begin
@@ -48,12 +60,12 @@ pro ucomp_write_intensity_mp4, wave_region, run=run
   image_filenames = strarr(n_use)
   for f = 0L, n_use - 1L do begin
     image_filenames[f] = file_basename(files[use_indices[f]].l1_basename, '.fts')
-    image_filenames[f] += '.int.gif'
+    image_filenames[f] += string(filename_prefix, format='(%".%s.gif")')
     image_filenames[f] = filepath(image_filenames[f], root=l1_dirname)
   endfor
 
-  mp4_filename = filepath(string(run.date, wave_region, $
-                                 format='(%"%s.ucomp.%s.l1.int.mp4")'), $
+  mp4_filename = filepath(string(run.date, wave_region, filename_prefix, $
+                                 format='(%"%s.ucomp.%s.l1.%s.mp4")'), $
                           root=l1_dirname)
 
   ucomp_create_mp4, image_filenames, mp4_filename, run=run, status=status
