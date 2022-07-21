@@ -19,7 +19,7 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
   device, get_decomposed=original_decomposed
   tvlct, original_rgb, /get
   device, decomposed=0, $
-          set_resolution=[800, 4 * 300]
+          set_resolution=[800, 5 * 300]
 
   tvlct, 0, 0, 0, 0
   tvlct, 255, 255, 255, 1
@@ -32,10 +32,12 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
   camera0_color    = 2
   camera1_color    = 3
 
-  tarr_min =  9.0 < floor(min([dark_info.t_c0arr, dark_info.t_c1arr]))
-  tarr_max = 11.0 > ceil(max([dark_info.t_c0arr, dark_info.t_c1arr]))
-  tpcb_min = 25.0 < floor(min([dark_info.t_c0pcb, dark_info.t_c1pcb]))
-  tpcb_max = 27.0 > ceil(max([dark_info.t_c0pcb, dark_info.t_c1pcb]))
+  tarr_range = run->epoch('dark_arr_temp_range', datetime=run.date)
+  ;tarr_min =  9.0 < floor(min([dark_info.t_c0arr, dark_info.t_c1arr]))
+  ;tarr_max = 11.0 > ceil(max([dark_info.t_c0arr, dark_info.t_c1arr]))
+  tpcb_range = run->epoch('dark_pcb_temp_range', datetime=run.date)
+  ;tpcb_min = 25.0 < floor(min([dark_info.t_c0pcb, dark_info.t_c1pcb]))
+  ;tpcb_max = 27.0 > ceil(max([dark_info.t_c0pcb, dark_info.t_c1pcb]))
 
   start_time = 06   ; 24-hour time in observing day
   end_time   = 19   ; 24-hour time in observing day
@@ -44,9 +46,14 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
   charsize = 2.0
   symsize = 0.75
 
+  n_plots = 5
+
   ; plot of temperatures T_C{0,1}ARR and T_C{0,1}PCB per dark
 
-  !p.multi = [0, 1, 4]
+  p = 0
+  !p.multi = [0, 1, n_plots]
+
+  ; TODO: all the OPLOT commands should be actually MG_RANGE_OPLOT commands
 
   plot, [dark_info.times], [dark_info.t_c0arr], /nodata, $
         title='Dark sensor array temperatures', charsize=charsize, $
@@ -54,38 +61,42 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
         xtitle='Time [HST]', $
         xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
         ytitle='Temperature [C]', $
-        ystyle=1, yrange=[tarr_min, tarr_max]
-  oplot, [dark_info.times], [dark_info.t_c0arr], $
-         psym=6, symsize=symsize, $
-         linestyle=0, color=camera0_color
-  oplot, [dark_info.times], [dark_info.t_c1arr], $
-         psym=6, symsize=symsize, $
-         linestyle=0, color=camera1_color
+        ystyle=1, yrange=tarr_range
+  mg_range_oplot, [dark_info.times], [dark_info.t_c0arr], $
+                  psym=6, symsize=symsize, $
+                  linestyle=0, color=camera0_color, $
+                  clip_color=camera0_color, clip_psym=7, clip_symsize=1.0
+  mg_range_oplot, [dark_info.times], [dark_info.t_c1arr], $
+                  psym=6, symsize=symsize, $
+                  linestyle=0, color=camera1_color, $
+                  clip_color=camera1_color, clip_psym=7, clip_symsize=1.0
 
-  xyouts, 0.95, 0.75 + 0.80 * 0.25, /normal, $
+  xyouts, 0.95, (n_plots - p - 0.20) / n_plots, /normal, $
           'camera 0', alignment=1.0, color=camera0_color
-  xyouts, 0.95, 0.75 + 0.75 * 0.25, /normal, $
+  xyouts, 0.95, (n_plots - p - 0.25) / n_plots, /normal, $
           'camera 1', alignment=1.0, color=camera1_color
 
+  p = 1
   plot, [dark_info.times], [dark_info.t_c0pcb], /nodata, $
         title='Dark PCB temperatures', charsize=charsize, $
         color=color, background=background_color, $
         xtitle='Time [HST]', $
         xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
         ytitle='Temperature [C]', $
-        ystyle=1, yrange=[tpcb_min, tpcb_max]
-  oplot, [dark_info.times], [dark_info.t_c0pcb], $
-         psym=6, symsize=symsize, $
-         linestyle=0, color=camera0_color
-  oplot, [dark_info.times], [dark_info.t_c1pcb], $
-         psym=6, symsize=symsize, $
-         linestyle=0, color=camera1_color
+        ystyle=1, yrange=tpcb_range
+  mg_range_oplot, [dark_info.times], [dark_info.t_c0pcb], $
+                  psym=6, symsize=symsize, $
+                  linestyle=0, color=camera0_color, $
+                  clip_color=camera0_color, clip_psym=7, clip_symsize=1.0
+  mg_range_oplot, [dark_info.times], [dark_info.t_c1pcb], $
+                  psym=6, symsize=symsize, $
+                  linestyle=0, color=camera1_color, $
+                  clip_color=camera1_color, clip_psym=7, clip_symsize=1.0
 
-  xyouts, 0.95, 0.50 + 0.80 * 0.25, /normal, $
+  xyouts, 0.95, (n_plots - p - 0.20) / n_plots, /normal, $
           'camera 0', alignment=1.0, color=camera0_color
-  xyouts, 0.95, 0.50 + 0.75 * 0.25, /normal, $
+  xyouts, 0.95, (n_plots - p - 0.25) / n_plots, /normal, $
           'camera 1', alignment=1.0, color=camera1_color
-
 
   ; plot intensity (mean or median?) vs temperature
 
@@ -93,94 +104,161 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
   dims = size(dark_images, /dimensions)
 
   if (n_darks gt 1L) then begin
-    cam0_dark_means  = mean(dark_images[*, *, 0, *], dimension=n_dims)
-    cam1_dark_means  = mean(dark_images[*, *, 1, *], dimension=n_dims)
-    cam0_dark_stddev = stddev(dark_images[*, *, 0, *], dimension=n_dims)
-    cam1_dark_stddev = stddev(dark_images[*, *, 1, *], dimension=n_dims)
+    cam0_dark_means   = fltarr(n_darks)
+    cam1_dark_means   = fltarr(n_darks)
+    cam0_dark_medians = fltarr(n_darks)
+    cam1_dark_medians = fltarr(n_darks)
+    cam0_dark_stddev  = fltarr(n_darks)
+    cam1_dark_stddev  = fltarr(n_darks)
+    for d = 0, n_darks - 1L do begin
+      cam0_dark_means[d]  = mean(dark_images[*, *, 0, d])
+      cam1_dark_means[d]  = mean(dark_images[*, *, 1, d])
+      cam0_dark_medians[d] = median(dark_images[*, *, 0, d])
+      cam1_dark_medians[d] = median(dark_images[*, *, 1, d])
+      cam0_dark_stddev[d] = stddev(dark_images[*, *, 0, d])
+      cam1_dark_stddev[d] = stddev(dark_images[*, *, 1, d])
+    endfor
   endif else begin
-    cam0_dark_means  = mean(dark_images[*, *, 0])
-    cam1_dark_means  = mean(dark_images[*, *, 1])
-    cam0_dark_stddev = stddev(dark_images[*, *, 0])
-    cam1_dark_stddev = stddev(dark_images[*, *, 1])
+    cam0_dark_means   = mean(dark_images[*, *, 0])
+    cam1_dark_means   = mean(dark_images[*, *, 1])
+    cam0_dark_medians = median(dark_images[*, *, 0])
+    cam1_dark_medians = median(dark_images[*, *, 1])
+    cam0_dark_stddev  = stddev(dark_images[*, *, 0])
+    cam1_dark_stddev  = stddev(dark_images[*, *, 1])
   endelse
 
   ; max_dark_stddev = max(abs([cam0_dark_stddev, cam0_dark_stddev]))
   ; dark_min    = min(dark_images, max=dark_max)
   ; dark_range  = [dark_min - max_dark_stddev, dark_max + max_dark_stddev]
 
-  dark_range  = [0.0, 1000.0]
+  dark_range  = run->epoch('dark_value_range', datetime=run.date)
 
-  !p.multi = [4, 2, 4]
+  p = 2
+  !p.multi = [(n_plots - p) * 2, 2, n_plots]
 
   plot, [dark_info.t_c0arr], [cam0_dark_means], /nodata, $
         charsize=charsize, title='Dark sensor temperature vs. counts', $
         psym=6, symsize=symsize, $
         color=color, background=background_color, $
         xtitle='Sensor array temperature [C]', $
-        xstyle=1, xrange=[tarr_min, tarr_max], $
+        xstyle=1, xrange=tarr_range, $
         ytitle='Counts [DN]/NUMSUM', $
         ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
-  oplot, [dark_info.t_c0arr], [cam0_dark_means], $
-         psym=6, symsize=symsize, $
-         color=camera0_color
-  oplot, [dark_info.t_c1arr], [cam1_dark_means], $
-         psym=6, symsize=symsize, $
-         color=camera1_color
+  mg_range_oplot, [dark_info.t_c0arr], [cam0_dark_means], $
+                  psym=6, symsize=symsize, $
+                  color=camera0_color, $
+                  clip_color=camera0_color, clip_psym=7, clip_symsize=1.0
+  mg_range_oplot, [dark_info.t_c1arr], [cam1_dark_means], $
+                  psym=6, symsize=symsize, $
+                  color=camera1_color, $
+                  clip_color=camera1_color, clip_psym=7, clip_symsize=1.0
 
   plot, [dark_info.t_c1pcb], [cam1_dark_means], /nodata, $
         charsize=charsize, title='Dark PCB temperature vs. counts', $
         psym=6, symsize=symsize, $
         color=color, background=background_color, $
         xtitle='PCB temperature [C]', $
-        xstyle=1, xrange=[tpcb_min, tpcb_max], $
+        xstyle=1, xrange=tpcb_range, $
         ytitle='Counts [DN]/NUMSUM', $
         ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
-  oplot, [dark_info.t_c0pcb], [cam0_dark_means], $
-         psym=6, symsize=symsize, $
-         color=camera0_color
-  oplot, [dark_info.t_c1pcb], [cam1_dark_means], $
-         psym=6, symsize=symsize, $
-         color=camera1_color
+  mg_range_oplot, [dark_info.t_c0pcb], [cam0_dark_means], $
+                  psym=6, symsize=symsize, $
+                  color=camera0_color, $
+                  clip_color=camera0_color, clip_psym=7, clip_symsize=1.0
+  mg_range_oplot, [dark_info.t_c1pcb], [cam1_dark_means], $
+                  psym=6, symsize=symsize, $
+                  color=camera1_color, $
+                  clip_color=camera1_color, clip_psym=7, clip_symsize=1.0
 
 
   ; plot of dark means, std devs, quartiles by time per camera
-  !p.multi = [1, 1, 4]
+  p = 3
+  !p.multi = [n_plots - p, 1, n_plots]
+
+  ; use a horizontal dash for quartile values
+  usersym, 2.0 * [-1.0, 1.0], fltarr(2)
 
   plot, [dark_info.times], [cam0_dark_means], /nodata, $
-        charsize=charsize, title='Dark mean counts (+/- 1 std dev) vs. time', $
+        charsize=charsize, title='Dark mean counts vs. time', $
         color=color, background=background_color, $
         xtitle='Time [HST]', $
         xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
         ytitle='Counts [DN]/NUMSUM', $
         ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
 
-  oplot, [dark_info.times], [cam0_dark_means], $
-         psym=6, symsize=symsize, $
-         linestyle=0, color=camera0_color
-  oplot, [dark_info.times], [cam0_dark_means - cam0_dark_stddev], $
-         psym=6, symsize=0.5 * symsize, $
-         linestyle=1, color=camera0_color
-  oplot, [dark_info.times], [cam0_dark_means + cam0_dark_stddev], $
-         psym=6, symsize=0.5 * symsize, $
-         linestyle=1, color=camera0_color
-  ; TODO: plot vertical line from -stddev to +stddev?
+  mg_range_oplot, [dark_info.times], [cam0_dark_means], $
+                  psym=6, symsize=symsize, $
+                  linestyle=0, color=camera0_color, $
+                  clip_color=camera0_color, clip_psym=7, clip_symsize=1.0
+  mg_range_oplot, [dark_info.times], [cam1_dark_means], $
+                  psym=6, symsize=symsize, $
+                  linestyle=0, color=camera1_color, $
+                  clip_color=camera1_color, clip_psym=7, clip_symsize=1.0
 
-  oplot, [dark_info.times], [cam1_dark_means], $
-         psym=6, symsize=symsize, $
-         linestyle=0, color=camera1_color
-  oplot, [dark_info.times], [cam1_dark_means - cam1_dark_stddev], $
-         psym=6, symsize=0.5 * symsize, $
-         linestyle=1, color=camera1_color
-  oplot, [dark_info.times], [cam1_dark_means + cam1_dark_stddev], $
-         psym=6, symsize=0.5 * symsize, $
-         linestyle=1, color=camera1_color
-  ; TODO: plot vertical line from -stddev to +stddev?
-
-  xyouts, 0.95, 0.00 + 0.80 * 0.25, /normal, $
+  xyouts, 0.95, (n_plots - p - 0.20) / n_plots, /normal, $
           'camera 0', alignment=1.0, color=camera0_color
-  xyouts, 0.95, 0.00 + 0.75 * 0.25, /normal, $
+  xyouts, 0.95, (n_plots - p - 0.25) / n_plots, /normal, $
           'camera 1', alignment=1.0, color=camera1_color
 
+  p = 4
+
+  plot, [dark_info.times], [cam0_dark_medians], /nodata, $
+        charsize=charsize, title='Dark median counts (+/- 1 std dev) vs. time', $
+        color=color, background=background_color, $
+        xtitle='Time [HST]', $
+        xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
+        ytitle='Counts [DN]/NUMSUM', $
+        ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
+
+  mg_range_oplot, [dark_info.times], $
+                  dark_range[0] > [cam0_dark_medians] < dark_range[1], $
+                  psym=6, symsize=symsize, $
+                  linestyle=0, color=camera0_color, $
+                  clip_color=camera0_color, clip_psym=7, clip_symsize=1.0
+  mg_range_oplot, [dark_info.times], $
+                  dark_range[0] > [cam0_dark_medians - cam0_dark_stddev] < dark_range[1], $
+                  psym=8, symsize=0.5 * symsize, $
+                  linestyle=1, color=camera0_color, $
+                  clip_color=camera0_color, clip_psym=7, clip_symsize=1.0
+  mg_range_oplot, [dark_info.times], $
+                  dark_range[0] > [cam0_dark_medians + cam0_dark_stddev] < dark_range[1], $
+                  psym=8, symsize=0.5 * symsize, $
+                  linestyle=1, color=camera0_color, $
+                  clip_color=camera0_color, clip_psym=7, clip_symsize=1.0
+  for d = 0L, n_elements(cam0_dark_medians) - 1L do begin
+    plots, (dark_info.times)[d] + fltarr(3), $
+           dark_range[0] > (cam0_dark_medians + [-1, 0, 1] * cam0_dark_stddev) < dark_range[1], $
+           linestyle=4, color=camera0_color
+  endfor
+
+  ; offset camera 1 times so you can see them if they overlap with camera 0
+  cam1_offset = 0.025
+
+  mg_range_oplot, [dark_info.times] + cam1_offset, $
+         dark_range[0] > [cam1_dark_medians] < dark_range[1], $
+         psym=6, symsize=symsize, $
+         linestyle=0, color=camera1_color, $
+         clip_color=camera1_color, clip_psym=7, clip_symsize=1.0
+  mg_range_oplot, [dark_info.times] + cam1_offset, $
+         dark_range[0] > [cam1_dark_medians - cam1_dark_stddev] < dark_range[1], $
+         psym=8, symsize=0.5 * symsize, $
+         linestyle=1, color=camera1_color, $
+         clip_color=camera1_color, clip_psym=7, clip_symsize=1.0
+  mg_range_oplot, [dark_info.times] + cam1_offset, $
+         dark_range[0] > [cam1_dark_medians + cam1_dark_stddev] < dark_range[1], $
+         psym=8, symsize=0.5 * symsize, $
+         linestyle=1, color=camera1_color, $
+         clip_color=camera1_color, clip_psym=7, clip_symsize=1.0
+  for d = 0L, n_elements(cam1_dark_medians) - 1L do begin
+    plots, (dark_info.times)[d] + fltarr(3) + cam1_offset, $
+           dark_range[0] > (cam1_dark_medians + [-1, 0, 1] * cam1_dark_stddev) < dark_range[1], $
+           linestyle=4, color=camera1_color
+  endfor
+
+  xyouts, 0.95, (n_plots - p - 0.20) / n_plots, /normal, $
+          'camera 0', alignment=1.0, color=camera0_color
+  xyouts, 0.95, (n_plots - p - 0.25) / n_plots, /normal, $
+          'camera 1', alignment=1.0, color=camera1_color
 
   ; save plots image file
   output_filename = filepath(string(run.date, format='(%"%s.ucomp.darks.gif")'), $
