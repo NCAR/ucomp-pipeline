@@ -161,7 +161,8 @@ function ucomp_verify_check_missing, date, $
       0: n_on_server += 1L
       2:  ; not found on server, 2 is exit code of ls when it can't find file
       else: begin
-          mg_log, 'error checking collection server', name=logger_name, /error
+          mg_log, 'error checking collection server (status %d)', ssh_status, $
+                  name=logger_name, /error
           mg_log, 'ssh cmd: %s', file_check_cmd, name=logger_name, /error
           error = 1L
         end
@@ -428,7 +429,7 @@ pro ucomp_verify_check_archive_server, run=run, status=status
   l0_dir = filepath('', $
                     subdir=[run.date, 'level0'], $
                     root=run->config('processing/basedir'))
-  status or= 2UL * ucomp_verify_check_remote_file(l0_basename, $
+  status or= 1UL * ucomp_verify_check_remote_file(l0_basename, $
                                                   l0_dir, $
                                                   archive_server, $
                                                   archive_dir, $
