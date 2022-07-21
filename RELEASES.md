@@ -193,3 +193,4 @@
 0.2.51 [Jul 21, 2022]
   fix bugs in dark count/temperature engineering plots
   verification fixes
+0.2.52
