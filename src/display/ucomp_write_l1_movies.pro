@@ -21,6 +21,9 @@ pro ucomp_write_l1_movies, wave_region, run=run
     goto, done
   endif
 
+  mg_log, 'creating level 1 mp4s for %s nm', wave_region, $
+          name=run.logger_name, /info
+
   ; intensity images
   ucomp_write_intensity_mp4, wave_region, run=run
   ucomp_write_intensity_mp4, wave_region, run=run, /enhanced
