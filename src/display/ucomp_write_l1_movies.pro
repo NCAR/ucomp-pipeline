@@ -11,7 +11,7 @@
 ;   run : in, required, type=object
 ;     UCoMP run object
 ;-
-pro ucomp_write_movies, wave_region, run=run
+pro ucomp_write_l1_movies, wave_region, run=run
   compile_opt strictarr
 
   ffmpeg = run->config('externals/ffmpeg')
