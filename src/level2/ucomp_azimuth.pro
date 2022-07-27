@@ -27,7 +27,7 @@ function ucomp_azimuth, q, u, radial_azimuth=radial_azimuth
   ny = dims[1]
 
   ; compute azimuth, correct azimuth for quadrants
-  azimuth = 0.5 * atan(u, q) * !radeg + 45.0
+  azimuth = 0.5 * atan(u, q) * !radeg
   azimuth mod= 180.0
   bad = where(azimuth lt 0.0, count)
   if (count gt 0) then azimuth[bad] += 180.0

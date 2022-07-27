@@ -1,16 +1,63 @@
 #!@Python3_EXECUTABLE@
 
+""" Principles:
+      - do a database query each time a job is to launch, do not cache, e.g.,
+        should be able to process dates manually not through ucompd and have
+        ucompd recognize they are being reprocessed from somewhere else
+      - reread the ucompd config file each time a job is to launch, do not
+        cache, e.g., should be able to add or remove servers or change number
+        of processes "on the fly"
+      - stop should stop the daemon AFTER all currently running jobs finish, it
+        should just not start any new jobs -- unless --force is used to kill
+        existing jobs
+"""
+
 import argparse
+import asyncio
+import configparser
 import os
 import time
 
 import daemon
-from lockfile.pidlockfile import PIDLockFile
+import lockfile
 
 
-def main_loop():
+# dict of processor name -> queue of dates
+RUNNING = {}
+
+# time between checks for a new job
+WAIT_TIME = 10.0   # seconds
+
+
+def check_for_available_processors(flags):
+    pass
+
+
+def check_for_available_date(flags):
+    pass
+
+
+def launch_date(date, processor, flags):
+    print(f"launching {date} on {processor} with flags {flags}")
+    RUNNING[processor]
+
+
+async def main_loop(flags):
+    print("starting main loop")
     while True:
-        time.sleep(1.0)
+        # TODO: query if any available dates, launch a process if there are,
+        # sleep if not
+        processor = check_for_available_processors(flags)
+        if processor is not None:
+            next_date = check_for_available_date(flags)
+            if next_date is not None:
+                launch_date(next_date, processor, flags)
+            else:
+                print("no available date, waiting...g")
+                time.sleep(WAIT_TIME)
+        else:
+            print("no available processor, waiting...")
+            time.sleep(WAIT_TIME)
 
 
 def list_processes(args):
@@ -18,9 +65,10 @@ def list_processes(args):
 
 
 def start(args):
+    print("starting...")
     with daemon.DaemonContext(
-            pidfile=lockfile.FileLock('/Users/mgalloy/ucompd.pid')):
-        main_loop()
+            pidfile=lockfile.FileLock("/Users/mgalloy/ucompd.pid")):
+        asyncio.run(main_loop(args.flags))
 
 
 def stop(args):
@@ -55,24 +103,25 @@ if __name__ == "__main__":
 
     subparsers = parser.add_subparsers(help="sub-command help")
 
+    flags_help = """FLAGS section of config filename, i.e., file in config/
+                    directory matching ucompd.FLAGS.cfg will be used"""
 
     # list sub-command
     list_parser = subparsers.add_parser("list",
                                         help="list UCoMP processes")
     list_parser.set_defaults(func=list_processes, parser=list_parser)
 
-
     # start sub-command
     start_parser = subparsers.add_parser("start",
                                          help="start UCoMP reprocessing daemon")
+    start_parser.add_argument("-f", "--flags", type=str, help=flags_help)
     start_parser.set_defaults(func=start, parser=start_parser)
-
 
     # stop sub-command
     stop_parser = subparsers.add_parser("stop",
                                         help="stop UCoMP reprocessing daemon")
     stop_parser.add_argument("--force", action="store_true",
-                             help="stop daemon immediately instead of waiting for current job to end")
+                             help="stop daemon immediately instead of waiting for current jobs to end")
     stop_parser.set_defaults(func=stop, parser=stop_parser)
 
     # start sub-command
