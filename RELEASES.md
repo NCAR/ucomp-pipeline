@@ -193,4 +193,7 @@
 0.2.51 [Jul 21, 2022]
   fix bugs in dark count/temperature engineering plots
   verification fixes
-0.2.52
+0.2.52 [Jul 27, 2022]
+  new hot pixel file for high gain mode
+  level 2 individual images
+  level 2 movies
