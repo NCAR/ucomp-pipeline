@@ -64,4 +64,33 @@ pro ucomp_write_polarization_image, filename, $
   display_image[0, 2 * nx, ny] = radial_azimuth_display
 
   write_png, filename, display_image
+
+  l2_dir = filepath('', $
+                    subdir=[run.date, 'level2'], $
+                    root=run->config('processing/basedir'))
+  if (~file_test(l2_dir, /directory)) then begin
+    ucomp_mkdir, l2_dir, logger_name=run.logger_name
+  endif
+
+  average_linpol_display = ucomp_display_image(file, average_linpol, $
+                                               type='linpol', $
+                                               name='Average log(L)', $
+                                               reduce_factor=1, $
+                                               run=run)
+  linpol_basename = string(strmid(file.l1_basename, 0, 15), $
+                                 file.wave_region, $
+                                 format='(%"%s.ucomp.%s.linpol.png")')
+  linpol_filename = filepath(linpol_basename, root=l2_dir)
+  write_png, linpol_filename, average_linpol_display
+
+  radial_azimuth_display = ucomp_display_image(file, radial_azimuth, $
+                                               type='radial_azimuth', $
+                                               name='Radial azimuth', $
+                                               reduce_factor=1, $
+                                               run=run)
+  radial_azimuth_basename = string(strmid(file.l1_basename, 0, 15), $
+                                 file.wave_region, $
+                                 format='(%"%s.ucomp.%s.radazi.png")')
+  radial_azimuth_filename = filepath(radial_azimuth_basename, root=l2_dir)
+  write_png, radial_azimuth_filename, radial_azimuth_display
 end
