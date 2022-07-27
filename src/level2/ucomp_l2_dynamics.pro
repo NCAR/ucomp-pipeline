@@ -136,7 +136,7 @@ pro ucomp_l2_dynamics, file, run=run
   ; write dynamics file: YYYYMMDD.HHMMSS.ucomp.WWWW.dynamics.fts
   dynamics_basename = string(strmid(file.l1_basename, 0, 15), $
                              file.wave_region, $
-                             format='(%"%s.ucomp.%s.dynamics.fts")')
+                             format='(%"%s.ucomp.%s.l2.dynamics.fts")')
   dynamics_filename = filepath(dynamics_basename, root=l2_dir)
 
   mg_log, 'writing %s', dynamics_basename, name=run.logger_name, /info
@@ -172,7 +172,7 @@ pro ucomp_l2_dynamics, file, run=run
 
   dynamics_basename = string(strmid(file.l1_basename, 0, 15), $
                                  file.wave_region, $
-                                 format='(%"%s.ucomp.%s.dynamics.png")')
+                                 format='(%"%s.ucomp.%s.l2.dynamics.png")')
   dynamics_filename = filepath(dynamics_basename, root=l2_dir)
 
   ucomp_write_dynamics_image, dynamics_filename, $
