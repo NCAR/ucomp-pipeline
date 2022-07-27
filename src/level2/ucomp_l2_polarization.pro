@@ -142,7 +142,7 @@ pro ucomp_l2_polarization, file, run=run
   ; write polarization file: YYYYMMDD.HHMMSS.ucomp.WWWW.polarization.fts
   polarization_basename = string(strmid(file.l1_basename, 0, 15), $
                                  file.wave_region, $
-                                 format='(%"%s.ucomp.%s.polarization.fts")')
+                                 format='(%"%s.ucomp.%s.l2.polarization.fts")')
   polarization_filename = filepath(polarization_basename, root=l2_dir)
 
   mg_log, 'writing %s', polarization_basename, name=run.logger_name, /info
@@ -193,7 +193,7 @@ pro ucomp_l2_polarization, file, run=run
 
   polarization_basename = string(strmid(file.l1_basename, 0, 15), $
                                  file.wave_region, $
-                                 format='(%"%s.ucomp.%s.polarization.png")')
+                                 format='(%"%s.ucomp.%s.l2.polarization.png")')
   polarization_filename = filepath(polarization_basename, root=l2_dir)
 
   ucomp_write_polarization_image, polarization_filename, $
