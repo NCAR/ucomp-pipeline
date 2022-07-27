@@ -14,10 +14,18 @@
 pro ucomp_write_l2_movies, wave_region, run=run
   compile_opt strictarr
 
+  ffmpeg = run->config('externals/ffmpeg')
+  if (n_elements(ffmpeg) eq 0L) then begin
+    mg_log, 'ffmpeg not specified, skipping movie creation', $
+            name=run.logger_name, /info
+    goto, done
+  endif
+
   mg_log, 'creating level 2 mp4s for %s nm', wave_region, $
           name=run.logger_name, /info
 
-  types = ['peakint', 'enh-peakint', 'velocity', 'linewidth', 'linpol', 'radazi']
+  types = ['peakint', 'enhanced-peakint', 'velocity', 'linewidth', $   ; dynamics
+           'linpol', 'radazi']                                         ; polarization
   for t = 0L, n_elements(types) - 1L do begin
     ucomp_write_l2_mp4, wave_region, types[t], run=run
   endfor
