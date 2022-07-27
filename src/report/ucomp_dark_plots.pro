@@ -32,19 +32,18 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
   camera0_color    = 2
   camera1_color    = 3
 
+  camera0_psym     = 6
+  camera1_psym     = 4
+  symsize          = 0.75
+
   tarr_range = run->epoch('dark_arr_temp_range', datetime=run.date)
-  ;tarr_min =  9.0 < floor(min([dark_info.t_c0arr, dark_info.t_c1arr]))
-  ;tarr_max = 11.0 > ceil(max([dark_info.t_c0arr, dark_info.t_c1arr]))
   tpcb_range = run->epoch('dark_pcb_temp_range', datetime=run.date)
-  ;tpcb_min = 25.0 < floor(min([dark_info.t_c0pcb, dark_info.t_c1pcb]))
-  ;tpcb_max = 27.0 > ceil(max([dark_info.t_c0pcb, dark_info.t_c1pcb]))
 
   start_time = 06   ; 24-hour time in observing day
   end_time   = 19   ; 24-hour time in observing day
   end_time  >= ceil(max(dark_info.times))
 
   charsize = 2.0
-  symsize = 0.75
 
   n_plots = 5
 
@@ -52,8 +51,6 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
 
   p = 0
   !p.multi = [0, 1, n_plots]
-
-  ; TODO: all the OPLOT commands should be actually MG_RANGE_OPLOT commands
 
   plot, [dark_info.times], [dark_info.t_c0arr], /nodata, $
         title='Dark sensor array temperatures', charsize=charsize, $
@@ -63,11 +60,11 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
         ytitle='Temperature [C]', $
         ystyle=1, yrange=tarr_range
   mg_range_oplot, [dark_info.times], [dark_info.t_c0arr], $
-                  psym=6, symsize=symsize, $
+                  psym=camera0_psym, symsize=symsize, $
                   linestyle=0, color=camera0_color, $
                   clip_color=camera0_color, clip_psym=7, clip_symsize=1.0
   mg_range_oplot, [dark_info.times], [dark_info.t_c1arr], $
-                  psym=6, symsize=symsize, $
+                  psym=camera1_psym, symsize=symsize, $
                   linestyle=0, color=camera1_color, $
                   clip_color=camera1_color, clip_psym=7, clip_symsize=1.0
 
@@ -85,11 +82,11 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
         ytitle='Temperature [C]', $
         ystyle=1, yrange=tpcb_range
   mg_range_oplot, [dark_info.times], [dark_info.t_c0pcb], $
-                  psym=6, symsize=symsize, $
+                  psym=camera0_psym, symsize=symsize, $
                   linestyle=0, color=camera0_color, $
                   clip_color=camera0_color, clip_psym=7, clip_symsize=1.0
   mg_range_oplot, [dark_info.times], [dark_info.t_c1pcb], $
-                  psym=6, symsize=symsize, $
+                  psym=camera1_psym, symsize=symsize, $
                   linestyle=0, color=camera1_color, $
                   clip_color=camera1_color, clip_psym=7, clip_symsize=1.0
 
@@ -138,35 +135,35 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
 
   plot, [dark_info.t_c0arr], [cam0_dark_means], /nodata, $
         charsize=charsize, title='Dark sensor temperature vs. counts', $
-        psym=6, symsize=symsize, $
+        psym=camera0_psym, symsize=symsize, $
         color=color, background=background_color, $
         xtitle='Sensor array temperature [C]', $
         xstyle=1, xrange=tarr_range, $
         ytitle='Counts [DN]/NUMSUM', $
         ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
   mg_range_oplot, [dark_info.t_c0arr], [cam0_dark_means], $
-                  psym=6, symsize=symsize, $
+                  psym=camera0_psym, symsize=symsize, $
                   color=camera0_color, $
                   clip_color=camera0_color, clip_psym=7, clip_symsize=1.0
   mg_range_oplot, [dark_info.t_c1arr], [cam1_dark_means], $
-                  psym=6, symsize=symsize, $
+                  psym=camera1_psym, symsize=symsize, $
                   color=camera1_color, $
                   clip_color=camera1_color, clip_psym=7, clip_symsize=1.0
 
   plot, [dark_info.t_c1pcb], [cam1_dark_means], /nodata, $
         charsize=charsize, title='Dark PCB temperature vs. counts', $
-        psym=6, symsize=symsize, $
+        psym=camera0_psym, symsize=symsize, $
         color=color, background=background_color, $
         xtitle='PCB temperature [C]', $
         xstyle=1, xrange=tpcb_range, $
         ytitle='Counts [DN]/NUMSUM', $
         ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
   mg_range_oplot, [dark_info.t_c0pcb], [cam0_dark_means], $
-                  psym=6, symsize=symsize, $
+                  psym=camera0_psym, symsize=symsize, $
                   color=camera0_color, $
                   clip_color=camera0_color, clip_psym=7, clip_symsize=1.0
   mg_range_oplot, [dark_info.t_c1pcb], [cam1_dark_means], $
-                  psym=6, symsize=symsize, $
+                  psym=camera1_psym, symsize=symsize, $
                   color=camera1_color, $
                   clip_color=camera1_color, clip_psym=7, clip_symsize=1.0
 
@@ -187,11 +184,11 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
         ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
 
   mg_range_oplot, [dark_info.times], [cam0_dark_means], $
-                  psym=6, symsize=symsize, $
+                  psym=camera0_psym, symsize=symsize, $
                   linestyle=0, color=camera0_color, $
                   clip_color=camera0_color, clip_psym=7, clip_symsize=1.0
   mg_range_oplot, [dark_info.times], [cam1_dark_means], $
-                  psym=6, symsize=symsize, $
+                  psym=camera1_psym, symsize=symsize, $
                   linestyle=0, color=camera1_color, $
                   clip_color=camera1_color, clip_psym=7, clip_symsize=1.0
 
@@ -212,7 +209,7 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
 
   mg_range_oplot, [dark_info.times], $
                   dark_range[0] > [cam0_dark_medians] < dark_range[1], $
-                  psym=6, symsize=symsize, $
+                  psym=camera0_psym, symsize=symsize, $
                   linestyle=0, color=camera0_color, $
                   clip_color=camera0_color, clip_psym=7, clip_symsize=1.0
   mg_range_oplot, [dark_info.times], $
@@ -236,7 +233,7 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
 
   mg_range_oplot, [dark_info.times] + cam1_offset, $
          dark_range[0] > [cam1_dark_medians] < dark_range[1], $
-         psym=6, symsize=symsize, $
+         psym=camera0_psym, symsize=symsize, $
          linestyle=0, color=camera1_color, $
          clip_color=camera1_color, clip_psym=7, clip_symsize=1.0
   mg_range_oplot, [dark_info.times] + cam1_offset, $
