@@ -22,7 +22,8 @@ pro ucomp_write_l2_mp4, wave_region, type, run=run
     ucomp_mkdir, l2_dir, logger_name=run.logger_name
   endif
 
-  glob = string(wave_region, type, format='(%"*.ucomp.%s.l2.%s.png")')
+  glob = filepath(string(wave_region, type, format='(%"*.ucomp.%s.l2.%s.png")'), $
+                  root=l2_dir)
   image_filenames = file_search(glob, count=n_images)
 
   if (n_images eq 0L) then begin
