@@ -29,4 +29,6 @@ pro ucomp_write_l2_movies, wave_region, run=run
   for t = 0L, n_elements(types) - 1L do begin
     ucomp_write_l2_mp4, wave_region, types[t], run=run
   endfor
+
+  done:
 end
