@@ -191,7 +191,6 @@ pro ucomp_l2_polarization, file, run=run
 
   fits_close, fcb
 
-
   polarization_basename = string(strmid(file.l1_basename, 0, 15), $
                                  file.wave_region, $
                                  format='(%"%s.ucomp.%s.polarization.png")')
