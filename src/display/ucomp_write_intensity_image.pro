@@ -80,9 +80,10 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
 
   tvlct, r, g, b, /get
 
-  charsize = 1.2
-  detail_charsize = 1.0
   title_charsize = 1.75
+  type_charsize = 1.75
+  charsize = 1.2
+  detail_charsize = 1.25
 
   n_divisions = 4L
 
@@ -106,31 +107,24 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
     endif
 
     dims = size(im, /dimensions)
-
     field_mask = ucomp_field_mask(dims[0], $
                                   dims[1], $
                                   run->epoch('field_radius'))
+    occulter_mask = ucomp_occulter_mask(dims[0], dims[1], file.occulter_radius)
+    rcam = file.rcam_geometry
+    tcam = file.tcam_geometry
+    post_angle = (rcam.post_angle + tcam.post_angle) / 2.0
+    post_mask = ucomp_post_mask(dims[0], dims[1], post_angle)
+    offsensor_mask = ucomp_offsensor_mask(dims[0], dims[1], file.p_angle)
+    mask = field_mask and occulter_mask and post_mask and offsensor_mask
 
-    scaled_im = bytscl((im * field_mask)^display_power, $
+    scaled_im = bytscl((im * mask)^display_power, $
                        min=display_min^display_power, $
                        max=display_max^display_power, $
                        top=n_colors - 1L, $
                        /nan)
 
     tv, scaled_im
-
-    xyouts, 15, dims[1] - 2.0 * 15.0, /device, $
-            string(run->line(file.wave_region, 'ionization'), $
-                   file.wave_region, $
-                   format='(%"MLSO UCoMP %s %s nm")'), $
-            charsize=charsize, color=text_color
-    xyouts, 15, 15, /device, alignment=0.0, $
-            string(date_stamp, e, format='(%"%s ext: %d")'), $
-            charsize=charsize, color=text_color
-    xyouts, nx - 15, 15, /device, alignment=1.0, $
-            string(display_min, display_max, display_gamma, display_power, $
-                   format='(%"min/max: %0.2f/%0.1f, gamma: %0.1f, exp: %0.2f")'), $
-            charsize=charsize, color=text_color
 
     if (keyword_set(occulter_annotation)) then begin
         file.rcam_geometry->display, 0, $
@@ -142,9 +136,18 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
                                      guess_color=guess_color, $
                                      inflection_color=inflection_color
     endif else begin
-      xyouts, 0.5, 0.55, /normal, alignment=0.5, $
-              title, $
+      xyouts, 0.5, 0.62, /normal, alignment=0.5, $
+              string(run->line(file.wave_region, 'ionization'), $
+                     file.wave_region, $
+                     format='(%"MLSO UCoMP %s %s nm")'), $
               charsize=title_charsize, color=text_color
+      xyouts, 0.5, 0.59, /normal, alignment=0.5, $
+              string(date_stamp, wavelengths[e - 1], format='(%"%s %0.2f nm")'), $
+              charsize=charsize, color=text_color
+
+      xyouts, 0.5, 0.54, /normal, alignment=0.5, $
+              string(title, display_power, format='(%"%s!E%0.2f!N")'), $
+              charsize=type_charsize, color=text_color
       colorbar2, position=[0.35, 0.5, 0.65, 0.52], $
                  charsize=detail_charsize, $
                  color=text_color, $
@@ -152,6 +155,12 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
                  range=[display_min, display_max]^display_power, $
                  divisions=n_divisions, $
                  format='(F0.1)'
+      xyouts, 0.5, 0.45, /normal, alignment=0.5, $
+              string(display_min, display_power, $
+                     display_max, display_power, $
+                     display_gamma, $
+                     format='(%"min/max: %0.2f!E%0.2f!N - %0.1f!E%0.2f!N, gamma: %0.1f")'), $
+              charsize=detail_charsize, color=text_color
     endelse
 
     if (center_wavelength_only) then begin
