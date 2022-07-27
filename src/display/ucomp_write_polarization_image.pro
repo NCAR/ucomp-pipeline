@@ -79,7 +79,7 @@ pro ucomp_write_polarization_image, filename, $
                                                run=run)
   linpol_basename = string(strmid(file.l1_basename, 0, 15), $
                                  file.wave_region, $
-                                 format='(%"%s.ucomp.%s.linpol.png")')
+                                 format='(%"%s.ucomp.%s.l2.linpol.png")')
   linpol_filename = filepath(linpol_basename, root=l2_dir)
   write_png, linpol_filename, average_linpol_display
 
@@ -90,7 +90,7 @@ pro ucomp_write_polarization_image, filename, $
                                                run=run)
   radial_azimuth_basename = string(strmid(file.l1_basename, 0, 15), $
                                  file.wave_region, $
-                                 format='(%"%s.ucomp.%s.radazi.png")')
+                                 format='(%"%s.ucomp.%s.l2.radazi.png")')
   radial_azimuth_filename = filepath(radial_azimuth_basename, root=l2_dir)
   write_png, radial_azimuth_filename, radial_azimuth_display
 end

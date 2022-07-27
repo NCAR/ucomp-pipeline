@@ -1,5 +1,17 @@
 ; docformat = 'rst'
 
+;+
+; Create a level 2 mp4 for a given wave region and type, e.g., radazi,
+; linewidth, etc.
+;
+; :Params:
+;   wave_region : in, required, type=string
+;     wave region, i.e., "1074"
+;
+; :Keywords:
+;   run : in, required, type=object
+;     UCoMP run object
+;-
 pro ucomp_write_l2_mp4, wave_region, type, run=run
   compile_opt strictarr
 
@@ -10,7 +22,7 @@ pro ucomp_write_l2_mp4, wave_region, type, run=run
     ucomp_mkdir, l2_dir, logger_name=run.logger_name
   endif
 
-  glob = string(wave_region, type, format='(%"*.ucomp.%s.%s.png")')
+  glob = string(wave_region, type, format='(%"*.ucomp.%s.l2.%s.png")')
   image_filenames = file_search(glob, count=n_images)
 
   if (n_images eq 0L) then begin
@@ -23,7 +35,7 @@ pro ucomp_write_l2_mp4, wave_region, type, run=run
           name=run.logger_name, /info
 
   mp4_basename = string(run.date, wave_region, type, $
-                        format='(%"%s.ucomp.%s.%s.mp4")')
+                        format='(%"%s.ucomp.%s.l2.%s.mp4")')
   mp4_filename = filepath(mp4_basename, root=l2_dir)
 
   ucomp_create_mp4, image_filenames, mp4_filename, run=run, status=status

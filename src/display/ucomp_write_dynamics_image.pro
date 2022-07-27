@@ -54,7 +54,7 @@ pro ucomp_write_dynamics_image, filename, $
                                              run=run)
   peak_intensity_basename = string(strmid(file.l1_basename, 0, 15), $
                                  file.wave_region, $
-                                 format='(%"%s.ucomp.%s.peakint.png")')
+                                 format='(%"%s.ucomp.%s.l2.peakint.png")')
   peak_intensity_filename = filepath(peak_intensity_basename, root=l2_dir)
   write_png, peak_intensity_filename, peak_intensity_image
 
@@ -65,7 +65,7 @@ pro ucomp_write_dynamics_image, filename, $
                                                       run=run)
   enhanced_peak_intensity_basename = string(strmid(file.l1_basename, 0, 15), $
                                  file.wave_region, $
-                                 format='(%"%s.ucomp.%s.enh-peakint.png")')
+                                 format='(%"%s.ucomp.%s.l2.enhanced-peakint.png")')
   enhanced_peak_intensity_filename = filepath(enhanced_peak_intensity_basename, root=l2_dir)
   write_png, enhanced_peak_intensity_filename, enhanced_peak_intensity_image
 
@@ -76,7 +76,7 @@ pro ucomp_write_dynamics_image, filename, $
                                       run=run)
   doppler_basename = string(strmid(file.l1_basename, 0, 15), $
                                  file.wave_region, $
-                                 format='(%"%s.ucomp.%s.velocity.png")')
+                                 format='(%"%s.ucomp.%s.l2.velocity.png")')
   doppler_filename = filepath(doppler_basename, root=l2_dir)
   write_png, doppler_filename, doppler_image
 
@@ -87,7 +87,7 @@ pro ucomp_write_dynamics_image, filename, $
                                          run=run)
   line_width_basename = string(strmid(file.l1_basename, 0, 15), $
                                  file.wave_region, $
-                                 format='(%"%s.ucomp.%s.linewidth.png")')
+                                 format='(%"%s.ucomp.%s.l2.linewidth.png")')
   line_width_filename = filepath(line_width_basename, root=l2_dir)
   write_png, line_width_filename, line_width_image
 end
