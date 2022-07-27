@@ -11,7 +11,7 @@
 ;   run : in, required, type=object
 ;     UCoMP run object
 ;-
-pro ucomp_write_movies, wave_region, run=run
+pro ucomp_write_l1_movies, wave_region, run=run
   compile_opt strictarr
 
   ffmpeg = run->config('externals/ffmpeg')
@@ -20,6 +20,9 @@ pro ucomp_write_movies, wave_region, run=run
             name=run.logger_name, /info
     goto, done
   endif
+
+  mg_log, 'creating level 1 mp4s for %s nm', wave_region, $
+          name=run.logger_name, /info
 
   ; intensity images
   ucomp_write_intensity_mp4, wave_region, run=run
