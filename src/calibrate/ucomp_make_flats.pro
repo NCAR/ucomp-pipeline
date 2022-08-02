@@ -254,6 +254,15 @@ pro ucomp_make_flats, wave_region, run=run
                     raw_files=flat_raw_files_array, $
                     extensions=flat_raw_extensions
 
+  ucomp_flat_plots, wave_region, $
+                    flat_times_array, $
+                    flat_exposures_array, $
+                    flat_wavelengths_array, $
+                    flat_gain_modes_array, $
+                    flat_onbands_array, $
+                    flat_data_array, $
+                    run=run
+
   done:
   if (obj_valid(flat_headers)) then obj_destroy, flat_headers
   if (obj_valid(flat_data)) then obj_destroy, flat_data
