@@ -1,5 +1,16 @@
 ; docformat = 'rst'
 
+;+
+; Make an engineering plot of the dark values and temperatures.
+;
+; :Params:
+;   dark_info : in, required, type=array of structures
+;   dark_images : in, required, type="fltarr(nx, ny, n_darks)"
+;
+; :Keywords:
+;   run : in, required, type=object
+;     UCoMP run object
+;-
 pro ucomp_dark_plots, dark_info, dark_images, run=run
   compile_opt strictarr
 
@@ -224,7 +235,7 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
                   clip_color=camera0_color, clip_psym=7, clip_symsize=1.0
   for d = 0L, n_elements(cam0_dark_medians) - 1L do begin
     plots, (dark_info.times)[d] + fltarr(3), $
-           dark_range[0] > (cam0_dark_medians + [-1, 0, 1] * cam0_dark_stddev) < dark_range[1], $
+           dark_range[0] > (cam0_dark_medians[d] + [-1, 0, 1] * cam0_dark_stddev[d]) < dark_range[1], $
            linestyle=4, color=camera0_color
   endfor
 
@@ -248,7 +259,7 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
          clip_color=camera1_color, clip_psym=7, clip_symsize=1.0
   for d = 0L, n_elements(cam1_dark_medians) - 1L do begin
     plots, (dark_info.times)[d] + fltarr(3) + cam1_offset, $
-           dark_range[0] > (cam1_dark_medians + [-1, 0, 1] * cam1_dark_stddev) < dark_range[1], $
+           dark_range[0] > (cam1_dark_medians[d] + [-1, 0, 1] * cam1_dark_stddev[d]) < dark_range[1], $
            linestyle=4, color=camera1_color
   endfor
 
