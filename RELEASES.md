@@ -204,3 +204,4 @@
 0.2.55 [Aug 3, 2022]
   fix bug if no flats for a given wavelength/onband combination
 0.2.56
+  add median line center and continuum values to database
