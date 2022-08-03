@@ -98,6 +98,7 @@ pro ucomp_flat_plots, wave_region, $
       indices = where((flat_wavelengths eq flat_wavelengths[unique_wavelength_indices[w]]) $
                         and (flat_onbands eq o), $
                       count)
+      if (count eq 0L) then continue
       plot, [flat_times], findgen(n_elements(flat_times)), /nodata, $
             charsize=charsize, $
             title=string(flat_wavelengths[unique_wavelength_indices[w]], $
