@@ -201,3 +201,5 @@
   flat engineering plots
 0.2.54 [Aug 2, 2022]
   adding missing file
+0.2.55 [Aug 3, 2022]
+  fix bug if no flats for a given wavelength/onband combination
