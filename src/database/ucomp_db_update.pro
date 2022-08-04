@@ -65,6 +65,8 @@ pro ucomp_db_update, run=run
   ucomp_db_cal_insert, cal_files, obsday_index, sw_index, db, $
                        logger_name=run.logger_name
 
+  ucomp_rolling_dark_plots, db, run=run
+
   wave_regions = run->config('options/wave_regions')
   for w = 0L, n_elements(wave_regions) - 1L do begin
     sci_files = run->get_files(data_type='sci', wave_region=wave_regions[w], $
@@ -77,6 +79,8 @@ pro ucomp_db_update, run=run
     ucomp_db_file_insert, sci_files, obsday_index, sw_index, db, $
                           logger_name=run.logger_name
     ucomp_db_sci_insert, sci_files, obsday_index, sw_index, db, run=run
+
+    ucomp_rolling_flat_plots, wave_regions[w], db, run=run
 
     ucomp_rolling_synoptic_map, wave_regions[w], 'intensity', 'int', 1.08, $
                                                  'r108i', db, run=run
