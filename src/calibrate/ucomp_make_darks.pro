@@ -42,7 +42,7 @@ pro ucomp_make_darks, run=run
                     root=run->config('processing/basedir'))
   ucomp_mkdir, l1_dir, logger_name=run.logger_name
 
-  datetime = strmid(file_basename((dark_files[0]).raw_filename), 0, 15)
+  nx = strmid(file_basename((dark_files[0]).raw_filename), 0, 15)
   nx = run->epoch('nx', datetime=datetime)
   ny = run->epoch('ny', datetime=datetime)
   n_pol_states = 4L
@@ -160,6 +160,15 @@ pro ucomp_make_darks, run=run
                           /preserve_type)
       n_tcam += 1L
     endfor
+
+    dims = size(dark_image, /dimensions)
+    r_outer = run->epoch('field_radius', datetime=datetime)
+    field_mask = ucomp_field_mask(dims[0], dims[1], r_outer)
+    field_mask_indices = where(field_mask, /null)
+    rcam_image = dark_image[*, *, 0]
+    tcam_image = dark_image[*, *, 1]
+    dark_file.rcam_median_linecenter = median(rcam_image[field_mask_indices])
+    dark_file.tcam_median_linecenter = median(tcam_image[field_mask_indices])
 
     t_c0arr = ucomp_getpar(primary_header, 'T_C0ARR', /float)
     t_c0pcb = ucomp_getpar(primary_header, 'T_C0PCB', /float)
