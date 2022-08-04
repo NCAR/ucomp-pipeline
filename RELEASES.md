@@ -203,6 +203,6 @@
   adding missing file
 0.2.55 [Aug 3, 2022]
   fix bug if no flats for a given wavelength/onband combination
-0.2.56
+0.2.56 [Aug 4, 2022]
   add median line center and continuum values to database
   make plots of dark and flat medians over time from the database
