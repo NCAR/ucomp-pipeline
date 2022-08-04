@@ -61,8 +61,6 @@ pro ucomp_make_flats, wave_region, run=run
   flat_extnames       = list()
 
   datetime = strmid(file_basename((flat_files[0]).raw_filename), 0, 15)
-  nx = run->epoch('nx', datetime=datetime)
-  ny = run->epoch('ny', datetime=datetime)
 
   ; the keywords that need to be moved from the primary header in the raw files
   ; to the extension headers in the master flat file
@@ -138,7 +136,8 @@ pro ucomp_make_flats, wave_region, run=run
     for e = 0L, n_averaged_extensions - 1L do begin
       flat_image = reform(ext_data[*, *, *, *, e])
 
-      ; dims = size(ext_data, /dimensions)
+      dims = size(ext_data, /dimensions)
+
       ; n_polstates = dims[2]
       ; n_cameras = dims[3]
       ; for c = 0L, n_cameras - 1L do begin
@@ -158,19 +157,32 @@ pro ucomp_make_flats, wave_region, run=run
                                  format='(%"%0.2f nm [%s]")')
 
       is_center_wavelength = abs(averaged_wavelength[e] - run->line(wave_region, 'center_wavelength')) lt 0.001
-      if (is_center_wavelength && averaged_onband[e] eq 0) then begin
-        rcam_roughness = ucomp_roughness(flat_image[*, *, 0])
-        flat_file.rcam_roughness = rcam_roughness
-        mg_log, 'RCAM roughness: %0.3f', flat_file.tcam_roughness, $
-                name=run.logger_name, /debug
-      endif
-      if (is_center_wavelength && averaged_onband[e] eq 1) then begin
-        tcam_roughness = ucomp_roughness(flat_image[*, *, 1])
-        flat_file.tcam_roughness = tcam_roughness
-        mg_log, 'TCAM roughness : %0.3f', flat_file.tcam_roughness, $
-                name=run.logger_name, /debug
-      endif
+      if (is_center_wavelength) then begin
+        rcam_image = flat_image[*, *, 0]
+        tcam_image = flat_image[*, *, 1]
+        r_outer = run->epoch('field_radius', datetime=datetime)
+        field_mask = ucomp_field_mask(dims[0], dims[1], r_outer)
+        field_mask_indices = where(field_mask, /null)
 
+        if (averaged_onband[e] eq 0) then begin
+          rcam_roughness = ucomp_roughness(rcam_image)
+          flat_file.rcam_roughness = rcam_roughness
+          mg_log, 'RCAM roughness: %0.3f', flat_file.tcam_roughness, $
+                  name=run.logger_name, /debug
+
+          flat_file.rcam_median_linecenter = median(rcam_image[field_mask_indices])
+          flat_file.tcam_median_continuum = median(tcam_image[field_mask_indices])
+        endif
+        if (averaged_onband[e] eq 1) then begin
+          tcam_roughness = ucomp_roughness(tcam_image)
+          flat_file.tcam_roughness = tcam_roughness
+          mg_log, 'TCAM roughness : %0.3f', flat_file.tcam_roughness, $
+                  name=run.logger_name, /debug
+
+          flat_file.tcam_median_linecenter = median(tcam_image[field_mask_indices])
+          flat_file.rcam_median_continuum = median(rcam_image[field_mask_indices])
+        endif
+      endif
       flat_data->add, flat_image
     endfor
   endfor

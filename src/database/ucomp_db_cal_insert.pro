@@ -39,8 +39,6 @@ pro ucomp_db_cal_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
     mg_log, 'ingesting %s', file_basename(file.raw_filename), $
             name=logger_name, /info
 
-    ; TODO: calculate median_int_continuum and median_int_linecenter
-
     fields = [{name: 'file_name', type: '''%s'''}, $
               {name: 'date_obs', type: '''%s'''}, $
               {name: 'obsday_id', type: '%d'}, $
@@ -60,8 +58,10 @@ pro ucomp_db_cal_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
 
               {name: 'rcam_roughness', type: '%s'}, $
               {name: 'tcam_roughness', type: '%s'}, $
-              {name: 'median_int_continuum', type: '%s'}, $
-              {name: 'median_int_linecenter', type: '%s'}, $
+              {name: 'rcam_median_continuum', type: '%s'}, $
+              {name: 'rcam_median_linecenter', type: '%s'}, $
+              {name: 'tcam_median_continuum', type: '%s'}, $
+              {name: 'tcam_median_linecenter', type: '%s'}, $
 
               {name: 'occltrid', type: '''%s'''}, $
               {name: 'ucomp_sw_id', type: '%d'}]
@@ -88,8 +88,10 @@ pro ucomp_db_cal_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
 
                  ucomp_db_float(file.rcam_roughness, format='%0.6f'), $
                  ucomp_db_float(file.tcam_roughness, format='%0.6f'), $
-                 ucomp_db_float(median_int_continuum), $
-                 ucomp_db_float(median_int_linecenter), $
+                 ucomp_db_float(file.rcam_median_continuum), $
+                 ucomp_db_float(file.rcam_median_linecenter), $
+                 ucomp_db_float(file.tcam_median_continuum), $
+                 ucomp_db_float(file.tcam_median_linecenter), $
 
                  file.occultrid, $
                  sw_index, $

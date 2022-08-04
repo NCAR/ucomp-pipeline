@@ -73,6 +73,10 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
                              tcam_geometry=tcam_geometry, $
                              rcam_roughness=rcam_roughness, $
                              tcam_roughness=tcam_roughness, $
+                             rcam_median_continuum=rcam_median_continuum, $
+                             rcam_median_linecenter=rcam_median_linecenter, $
+                             tcam_median_continuum=tcam_median_continuum, $
+                             tcam_median_linecenter=tcam_median_linecenter, $
                              median_background=median_background, $
                              quality_bitmask=quality_bitmask, $
                              gbu=gbu, $
@@ -90,6 +94,11 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
 
   if (n_elements(rcam_roughness)) then self.rcam_roughness = rcam_roughness
   if (n_elements(tcam_roughness)) then self.tcam_roughness = tcam_roughness
+
+  if (n_elements(rcam_median_continuum)) then self.rcam_median_continuum = rcam_median_continuum
+  if (n_elements(rcam_median_linecenter)) then self.rcam_median_linecenter = rcam_median_linecenter
+  if (n_elements(tcam_median_continuum)) then self.tcam_median_continuum = tcam_median_continuum
+  if (n_elements(tcam_median_linecenter)) then self.tcam_median_linecenter = tcam_median_linecenter
 
   if (n_elements(median_background)) then self.median_background = median_background
 
@@ -182,6 +191,10 @@ pro ucomp_file::getProperty, run=run, $
                              retangle=retangle, $
                              rcam_roughness=rcam_roughness, $
                              tcam_roughness=tcam_roughness, $
+                             rcam_median_continuum=rcam_median_continuum, $
+                             rcam_median_linecenter=rcam_median_linecenter, $
+                             tcam_median_continuum=tcam_median_continuum, $
+                             tcam_median_linecenter=tcam_median_linecenter, $
                              rcam_geometry=rcam_geometry, $
                              tcam_geometry=tcam_geometry, $
                              occulter_radius=occulter_radius, $
@@ -325,6 +338,11 @@ pro ucomp_file::getProperty, run=run, $
 
   if (arg_present(rcam_roughness)) then rcam_roughness = self.rcam_roughness
   if (arg_present(tcam_roughness)) then tcam_roughness = self.tcam_roughness
+
+  if (arg_present(rcam_median_continuum)) then rcam_median_continuum = self.rcam_median_continuum
+  if (arg_present(rcam_median_linecenter)) then rcam_median_linecenter = self.rcam_median_linecenter
+  if (arg_present(tcam_median_continuum)) then tcam_median_continuum = self.tcam_median_continuum
+  if (arg_present(tcam_median_linecenter)) then tcam_median_linecenter = self.tcam_median_linecenter
 
   if (arg_present(obsswid)) then obsswid = self.obsswid
 
@@ -665,6 +683,11 @@ function ucomp_file::init, raw_filename, run=run
   self.rcam_roughness = !values.f_nan
   self.tcam_roughness = !values.f_nan
 
+  self.rcam_median_continuum  = !values.f_nan
+  self.rcam_median_linecenter = !values.f_nan
+  self.tcam_median_continuum  = !values.f_nan
+  self.tcam_median_linecenter = !values.f_nan
+
   ; allocate inventory variables for extensions
   self.wavelengths = ptr_new(/allocate_heap)
   self.onband_indices = ptr_new(/allocate_heap)
@@ -695,103 +718,109 @@ pro ucomp_file__define
   compile_opt strictarr
 
   !null = {ucomp_file, inherits IDL_Object, $
-           raw_filename        : '', $
-           run                 : obj_new(), $
+           raw_filename           : '', $
+           run                    : obj_new(), $
 
-           demodulated         : 0B, $
+           demodulated            : 0B, $
 
-           hst_date            : '', $
-           hst_time            : '', $
-           ut_date             : '', $
-           ut_time             : '', $
-           obsday_hours        : 0.0, $
-           date_obs            : '', $
+           hst_date               : '', $
+           hst_time               : '', $
+           ut_date                : '', $
+           ut_time                : '', $
+           obsday_hours           : 0.0, $
+           date_obs               : '', $
 
-           n_extensions        : 0L, $
-           n_repeats           : 0L, $
+           n_extensions           : 0L, $
+           n_repeats              : 0L, $
 
-           wave_region         : '', $
-           data_type           : '', $
-           obs_id              : '', $
-           obs_plan            : '', $
-           exptime             : 0.0, $
-           gain_mode           : '', $
-           pol_list            : '', $
-           numsum              : 0L, $
+           wave_region            : '', $
+           data_type              : '', $
+           obs_id                 : '', $
+           obs_plan               : '', $
+           exptime                : 0.0, $
+           gain_mode              : '', $
+           pol_list               : '', $
+           numsum                 : 0L, $
 
-           focus               : 0.0, $
-           o1focus             : 0.0, $
+           focus                  : 0.0, $
+           o1focus                : 0.0, $
 
-           nd                  : 0L, $
-           occulter_in         : 0B, $
-           occultrid           : '', $
-           cover_in            : 0B, $
-           darkshutter_in      : 0B, $
-           opal_in             : 0B, $
-           caloptic_in         : 0B, $
-           polangle            : 0.0, $
-           retangle            : 0.0, $
+           nd                     : 0L, $
+           occulter_in            : 0B, $
+           occultrid              : '', $
+           cover_in               : 0B, $
+           darkshutter_in         : 0B, $
+           opal_in                : 0B, $
+           caloptic_in            : 0B, $
+           polangle               : 0.0, $
+           retangle               : 0.0, $
 
-           obsswid             : '', $
+           obsswid                : '', $
 
-           median_background   : 0.0, $
+           median_background      : 0.0, $
 
            ; for flats only
-           rcam_roughness      : 0.0, $
-           tcam_roughness      : 0.0, $
+           tcam_roughness         : 0.0, $
+           rcam_roughness         : 0.0, $
 
-           occulter_x          : 0.0, $
-           occulter_y          : 0.0, $
-           rcam_geometry       : obj_new(), $
-           tcam_geometry       : obj_new(), $
+           ; for darks, flats, cals only
+           rcam_median_continuum  : 0.0, $
+           rcam_median_linecenter : 0.0, $
+           tcam_median_continuum  : 0.0, $
+           tcam_median_linecenter : 0.0, $
 
-           t_base              : 0.0, $
-           t_lcvr1             : 0.0, $
-           t_lcvr2             : 0.0, $
-           t_lcvr3             : 0.0, $
-           t_lnb1              : 0.0, $
-           t_mod               : 0.0, $
-           t_lnb2              : 0.0, $
-           t_lcvr4             : 0.0, $
-           t_lcvr5             : 0.0, $
-           t_rack              : 0.0, $
-           tu_base             : 0.0, $
-           tu_lcvr1            : 0.0, $
-           tu_lcvr2            : 0.0, $
-           tu_lcvr3            : 0.0, $
-           tu_lnb1             : 0.0, $
-           tu_mod              : 0.0, $
-           tu_lnb2             : 0.0, $
-           tu_lcvr4            : 0.0, $
-           tu_lcvr5            : 0.0, $
-           tu_rack             : 0.0, $
-           t_c0arr             : 0.0, $
-           t_c0pcb             : 0.0, $
-           t_c1arr             : 0.0, $
-           t_c1pcb             : 0.0, $
+           occulter_x             : 0.0, $
+           occulter_y             : 0.0, $
+           rcam_geometry          : obj_new(), $
+           tcam_geometry          : obj_new(), $
 
-           wavelengths         : ptr_new(), $
-           onband_indices      : ptr_new(), $
+           t_base                 : 0.0, $
+           t_lcvr1                : 0.0, $
+           t_lcvr2                : 0.0, $
+           t_lcvr3                : 0.0, $
+           t_lnb1                 : 0.0, $
+           t_mod                  : 0.0, $
+           t_lnb2                 : 0.0, $
+           t_lcvr4                : 0.0, $
+           t_lcvr5                : 0.0, $
+           t_rack                 : 0.0, $
+           tu_base                : 0.0, $
+           tu_lcvr1               : 0.0, $
+           tu_lcvr2               : 0.0, $
+           tu_lcvr3               : 0.0, $
+           tu_lnb1                : 0.0, $
+           tu_mod                 : 0.0, $
+           tu_lnb2                : 0.0, $
+           tu_lcvr4               : 0.0, $
+           tu_lcvr5               : 0.0, $
+           tu_rack                : 0.0, $
+           t_c0arr                : 0.0, $
+           t_c0pcb                : 0.0, $
+           t_c1arr                : 0.0, $
+           t_c1pcb                : 0.0, $
 
-           sgs_dimv            : ptr_new(), $
-           sgs_dims            : ptr_new(), $
-           sgs_scint           : ptr_new(), $
-           sgs_sumv            : ptr_new(), $
-           sgs_sums            : ptr_new(), $
-           sgs_loop            : ptr_new(), $
-           sgs_rav             : ptr_new(), $
-           sgs_ras             : ptr_new(), $
-           sgs_razr            : ptr_new(), $
-           sgs_decv            : ptr_new(), $
-           sgs_decs            : ptr_new(), $
-           sgs_deczr           : ptr_new(), $
+           wavelengths            : ptr_new(), $
+           onband_indices         : ptr_new(), $
 
-           quality_bitmask     : 0UL, $
-           gbu                 : 0UL, $
-           processed           : 0B, $
-           vcrosstalk_metric   : 0.0, $
-           wind_speed          : 0.0, $
-           wind_direction      : 0.0 $
+           sgs_dimv               : ptr_new(), $
+           sgs_dims               : ptr_new(), $
+           sgs_scint              : ptr_new(), $
+           sgs_sumv               : ptr_new(), $
+           sgs_sums               : ptr_new(), $
+           sgs_loop               : ptr_new(), $
+           sgs_rav                : ptr_new(), $
+           sgs_ras                : ptr_new(), $
+           sgs_razr               : ptr_new(), $
+           sgs_decv               : ptr_new(), $
+           sgs_decs               : ptr_new(), $
+           sgs_deczr              : ptr_new(), $
+
+           quality_bitmask        : 0UL, $
+           gbu                    : 0UL, $
+           processed              : 0B, $
+           vcrosstalk_metric      : 0.0, $
+           wind_speed             : 0.0, $
+           wind_direction         : 0.0 $
           }
 end
 
