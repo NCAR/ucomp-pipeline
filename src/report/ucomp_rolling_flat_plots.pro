@@ -26,12 +26,13 @@ pro ucomp_rolling_flat_plots, wave_region, db, run=run
 
   ; save original graphics settings
   original_device = !d.name
-  
+
   ; setup graphics device
   set_plot, 'Z'
   device, get_decomposed=original_decomposed
   tvlct, original_rgb, /get
   device, decomposed=0, $
+          set_pixel_depth=8, $
           set_resolution=[800, 2 * 300]
 
   tvlct, 0, 0, 0, 0
