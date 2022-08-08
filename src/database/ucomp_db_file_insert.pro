@@ -58,6 +58,7 @@ pro ucomp_db_file_insert, l1_files, obsday_index, sw_index, db, $
               {name: 'obs_id', type: '''%s'''}, $
 
               {name: 'quality', type: '%d'}, $
+              {name: 'median_background', type: '%s'}, $
               {name: 'vcrosstalk_metric', type: '%s'}, $
               {name: 'wind_speed', type: '%s'}, $
               {name: 'wind_direction', type: '%s'}, $
@@ -80,6 +81,7 @@ pro ucomp_db_file_insert, l1_files, obsday_index, sw_index, db, $
                  file.obs_plan, $
                  file.obs_id, $
                  file.quality_bitmask, $
+                 ucomp_db_float(file.median_background, format='%0.4f'), $
                  ucomp_db_float(file.vcrosstalk_metric, $
                                 valid_range=[0.0, 999.0], $
                                 format='%0.4f'), $
