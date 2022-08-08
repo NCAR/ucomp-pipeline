@@ -206,3 +206,6 @@
 0.2.56 [Aug 4, 2022]
   add median line center and continuum values to database
   make plots of dark and flat medians over time from the database
+0.2.57 [Aug 8, 2022]
+  fix for graphics issue with dark/flat median plots over time from database
+  storing median background of each file in database

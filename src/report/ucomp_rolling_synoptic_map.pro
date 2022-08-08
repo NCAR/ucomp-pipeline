@@ -109,8 +109,8 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, height, field, db, $
   charsize = 0.9
   smooth_kernel = [11, 1]
 
-  title = string(name, wave_region, start_date, end_date, $
-                 format='(%"UCoMP synoptic map for %s at %s nm at r1.3 from %s to %s")')
+  title = string(name, wave_region, height, start_date, end_date, $
+                 format='(%"UCoMP synoptic map for %s at %s nm at r%0.2f from %s to %s")')
   erase, background
   mg_image, reverse(east_limb, 1), reverse(jd_dates), $
             xrange=[end_date_jd, start_date_jd], $

@@ -24,14 +24,15 @@ pro ucomp_rolling_dark_plots, db, run=run
 
   ; save original graphics settings
   original_device = !d.name
-  
+
   ; setup graphics device
   set_plot, 'Z'
   device, get_decomposed=original_decomposed
   tvlct, original_rgb, /get
   device, decomposed=0, $
+          set_pixel_depth=8, $
           set_resolution=[800, 300]
-  
+
   tvlct, 0, 0, 0, 0
   tvlct, 255, 255, 255, 1
   tvlct, 255, 0, 0, 2
@@ -90,8 +91,8 @@ end
 
 ; main-level example program
 
-date = '20220721'
-config_basename = 'ucomp.latest.cfg'
+date = '20220804'
+config_basename = 'ucomp.production.cfg'
 config_filename = filepath(config_basename, $
                            subdir=['..', '..', 'config'], $
                            root=mg_src_root())
