@@ -57,7 +57,7 @@ pro ucomp_rolling_flat_plots, wave_region, db, run=run
   !null = label_date(date_format='%Y-%N-%D')
 
   plot, jds, rcam_median_linecenter, /nodata, $
-        charsize=charsize, title='Flat line center median counts vs. time', $
+        charsize=charsize, title='Flat (not dark corrected) line center median counts vs. time', $
         color=color, background=background_color, $
         xtitle='Time [HST]', $
         xstyle=1, $
@@ -80,7 +80,7 @@ pro ucomp_rolling_flat_plots, wave_region, db, run=run
           'camera 1', alignment=1.0, color=camera1_color
 
   plot, jds, rcam_median_continuum, /nodata, $
-        charsize=charsize, title='Flat continuum median counts vs. time', $
+        charsize=charsize, title='Flat (not dark corrected) continuum median counts vs. time', $
         color=color, background=background_color, $
         xtitle='Time [HST]', $
         xstyle=1, $
