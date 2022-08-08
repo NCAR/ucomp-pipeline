@@ -26,12 +26,13 @@ pro ucomp_rolling_flat_plots, wave_region, db, run=run
 
   ; save original graphics settings
   original_device = !d.name
-  
+
   ; setup graphics device
   set_plot, 'Z'
   device, get_decomposed=original_decomposed
   tvlct, original_rgb, /get
   device, decomposed=0, $
+          set_pixel_depth=8, $
           set_resolution=[800, 2 * 300]
 
   tvlct, 0, 0, 0, 0
@@ -56,7 +57,7 @@ pro ucomp_rolling_flat_plots, wave_region, db, run=run
   !null = label_date(date_format='%Y-%N-%D')
 
   plot, jds, rcam_median_linecenter, /nodata, $
-        charsize=charsize, title='Flat line center median counts vs. time', $
+        charsize=charsize, title='Flat (not dark corrected) line center median counts vs. time', $
         color=color, background=background_color, $
         xtitle='Time [HST]', $
         xstyle=1, $
@@ -79,7 +80,7 @@ pro ucomp_rolling_flat_plots, wave_region, db, run=run
           'camera 1', alignment=1.0, color=camera1_color
 
   plot, jds, rcam_median_continuum, /nodata, $
-        charsize=charsize, title='Flat continuum median counts vs. time', $
+        charsize=charsize, title='Flat (not dark corrected) continuum median counts vs. time', $
         color=color, background=background_color, $
         xtitle='Time [HST]', $
         xstyle=1, $

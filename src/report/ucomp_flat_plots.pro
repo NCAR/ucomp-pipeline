@@ -63,6 +63,7 @@ pro ucomp_flat_plots, wave_region, $
   device, get_decomposed=original_decomposed
   tvlct, original_rgb, /get
   device, decomposed=0, $
+          set_pixel_depth=8, $
           set_resolution=[1600, n_unique_wavelengths * 250]
 
   tvlct, 0, 0, 0, 0
