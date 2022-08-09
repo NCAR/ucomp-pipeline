@@ -3,7 +3,7 @@
 pro ucomp_rolling_background_plot, wave_region, db, run=run
   compile_opt strictarr
 
-  query = 'select * from ucomp_file where wave_region="%s" order by date_obs'
+  query = 'select * from ucomp_file where wave_region=''%s'' order by date_obs'
   data = db->query(query, wave_region, $
                    count=n_files, error=error, fields=fields, sql_statement=sql)
   
@@ -44,7 +44,7 @@ pro ucomp_rolling_background_plot, wave_region, db, run=run
   psym             = 6
   symsize          = 0.25
 
-  mg_range_plot, jds, median_background, /nodata, $
+  mg_range_plot, jds, median_background, $
                  charsize=charsize, title='Median background vs. time', $
                  color=color, background=background_color, $
                  psym=psym, symsize=symsize, $
@@ -53,7 +53,7 @@ pro ucomp_rolling_background_plot, wave_region, db, run=run
                  xstyle=1, $
                  xtickformat='label_date', $
                  ytitle='Background [ppm]', $
-                 ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
+                 ystyle=1, yrange=background_range, ytickformat='ucomp_dn_format'
 
   ; save plots image file
   output_filename = filepath(string(run.date, wave_region, $
@@ -68,4 +68,27 @@ pro ucomp_rolling_background_plot, wave_region, db, run=run
   if (n_elements(original_device) gt 0L) then set_plot, original_device
 
   mg_log, 'done', name=run.logger_name, /info
+end
+
+
+; main-level example program
+
+date = '20220721'
+config_basename = 'ucomp.latest.cfg'
+config_filename = filepath(config_basename, $
+                           subdir=['..', '..', 'config'], $
+                           root=mg_src_root())
+                           
+run = ucomp_run(date, 'test', config_filename)
+
+db = ucomp_db_connect(run->config('database/config_filename'), $
+                      run->config('database/config_section'), $
+                      logger_name=run.logger_name, $
+                      log_statements=run->config('database/log_statements'), $
+                      status=status)
+
+ucomp_rolling_background_plot, '1074', db, run=run
+
+obj_destroy, [db, run]
+
 end
