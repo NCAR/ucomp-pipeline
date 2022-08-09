@@ -13,7 +13,8 @@
 ;   run : in, required, type=object]
 ;     KCor run object
 ;-
-pro ucomp_rolling_synoptic_map, wave_region, name, flag, height, field, db, $
+pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
+                                height, field, db, $
                                 run=run
   compile_opt strictarr
 
@@ -98,6 +99,14 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, height, field, db, $
     background = 255
   endelse
 
+  display_min   = run->line(wave_region, option_prefix + '_display_min')
+  display_max   = run->line(wave_region, option_prefix + '_display_max')
+  display_power = run->line(wave_region, option_prefix + '_display_power')
+
+  map = bytscl(map^display_power, $
+               min=display_min^display_power, $
+               max=display_max^display_power)
+
   north_up_map = shift(map, 0, -180)
   east_limb = reverse(north_up_map[*, 0:359], 2)
   west_limb = north_up_map[*, 360:*]
@@ -115,7 +124,7 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, height, field, db, $
   mg_image, reverse(east_limb, 1), reverse(jd_dates), $
             xrange=[end_date_jd, start_date_jd], $
             xtyle=1, xtitle='Date (not offset for E limb)', $
-            min_value=minv, max_value=maxv, $
+            min_value=0, max_value=255, $
             /axes, yticklen=-0.005, xticklen=-0.01, $
             color=foreground, background=background, $
             title=string(title, format='(%"%s (East limb)")'), $
@@ -138,7 +147,8 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, height, field, db, $
             charsize=charsize
 
   xyouts, 0.97, 0.485, /normal, alignment=1.0, $
-          string(minv, maxv, format='(%"min/max: %0.3g, %0.3g")'), $
+          string(display_min, display_max, display_power, $
+                 format='(%"min/max/exp: %0.1f, %0.1f, %0.2f")'), $
           charsize=charsize, color=128
 
   im = tvrd()

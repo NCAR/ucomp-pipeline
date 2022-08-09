@@ -53,7 +53,7 @@ pro ucomp_rolling_dark_plots, db, run=run
   plot, jds, rcam_median_linecenter, /nodata, $
         charsize=charsize, title='Dark median counts vs. time', $
         color=color, background=background_color, $
-        xtitle='Time [HST]', $
+        xtitle='Date', $
         xstyle=1, $
         xtickformat='label_date', $
         ytitle='Counts [DN]/NUMSUM', $
@@ -106,5 +106,7 @@ db = ucomp_db_connect(run->config('database/config_filename'), $
                       status=status)
 
 ucomp_rolling_dark_plots, db, run=run
+
+obj_destroy, [db, run]
 
 end

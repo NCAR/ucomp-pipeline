@@ -189,6 +189,9 @@ pro ucomp_file::getProperty, run=run, $
                              caloptic_in=caloptic_in, $
                              polangle=polangle, $
                              retangle=retangle, $
+                             dark_id=dark_id, $
+                             rcamnuc=rcamnuc, $
+                             tcamnuc=tcamnuc, $
                              rcam_roughness=rcam_roughness, $
                              tcam_roughness=tcam_roughness, $
                              rcam_median_continuum=rcam_median_continuum, $
@@ -335,6 +338,10 @@ pro ucomp_file::getProperty, run=run, $
   if (arg_present(caloptic_in)) then caloptic_in = self.caloptic_in
   if (arg_present(polangle)) then polangle = self.polangle
   if (arg_present(retangle)) then retangle = self.retangle
+
+  if (arg_present(dark_id)) then dark_id = self.dark_id
+  if (arg_present(rcamnuc)) then rcamnuc = self.rcamnuc
+  if (arg_present(tcamnuc)) then tcamnuc = self.tcamnuc
 
   if (arg_present(rcam_roughness)) then rcam_roughness = self.rcam_roughness
   if (arg_present(tcam_roughness)) then tcam_roughness = self.tcam_roughness
@@ -540,6 +547,10 @@ pro ucomp_file::_inventory
     self.occulter_x = self.run->epoch('occltr_x')
     self.occulter_y = self.run->epoch('occltr_y')
   endelse
+
+  self.dark_id = ucomp_getpar(primary_header, 'DARKID')
+  self.rcamnuc = ucomp_getpar(primary_header, 'RCAMNUC')
+  self.tcamnuc = ucomp_getpar(primary_header, 'TCAMNUC')
 
   if (n_elements(extension_header) gt 0L) then begin
     self.opal_in = strlowcase(ucomp_getpar(extension_header, 'DIFFUSR', found=found)) eq 'in'
@@ -754,6 +765,10 @@ pro ucomp_file__define
            caloptic_in            : 0B, $
            polangle               : 0.0, $
            retangle               : 0.0, $
+
+           dark_id                : '', $
+           rcamnuc                : '', $
+           tcamnuc                : '', $
 
            obsswid                : '', $
 
