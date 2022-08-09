@@ -107,4 +107,6 @@ db = ucomp_db_connect(run->config('database/config_filename'), $
 
 ucomp_rolling_dark_plots, db, run=run
 
+obj_destroy, [db, run]
+
 end
