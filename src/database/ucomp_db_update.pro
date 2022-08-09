@@ -82,11 +82,12 @@ pro ucomp_db_update, run=run
 
     ucomp_rolling_flat_plots, wave_regions[w], db, run=run
 
-    ucomp_rolling_synoptic_map, wave_regions[w], 'intensity', 'int', 1.08, $
+    ucomp_rolling_synoptic_map, wave_regions[w], 'intensity', 'int', 'intensity', 1.08, $
                                                  'r108i', db, run=run
-    ucomp_rolling_synoptic_map, wave_regions[w], 'intensity', 'int', 1.3, $
+    ucomp_rolling_synoptic_map, wave_regions[w], 'intensity', 'int', 'intensity', 1.3, $
                                                  'r13i', db, run=run
     ucomp_rolling_synoptic_map, wave_regions[w], 'linear polarization', $
+                                                 'linpol', $
                                                  'linpol', $
                                                  1.08, $
                                                  'r108l', $
@@ -94,29 +95,34 @@ pro ucomp_db_update, run=run
                                                  run=run
     ucomp_rolling_synoptic_map, wave_regions[w], 'linear polarization', $
                                                  'linpol', $
+                                                 'linpol', $
                                                  1.3, $
                                                  'r13l', $
                                                  db, $
                                                  run=run
     ucomp_rolling_synoptic_map, wave_regions[w], 'radial azimuth', $
                                 'radazi', $
+                                'radial_azimuth', $
                                 1.08, $
                                 'r108radazi', $
                                 db, $
                                 run=run
     ucomp_rolling_synoptic_map, wave_regions[w], 'radial azimith', $
                                 'radazi', $
+                                'radial_azimuth', $
                                 1.3, $
                                 'r13radazi', $
                                 db, $
                                 run=run
     ucomp_rolling_synoptic_map, wave_regions[w], 'doppler velocity', $
                                 'doppler', $
+                                'doppler', $
                                 1.08, $
                                 'r108doppler', $
                                 db, $
                                 run=run
     ucomp_rolling_synoptic_map, wave_regions[w], 'doppler velocity', $
+                                'doppler', $
                                 'doppler', $
                                 1.3, $
                                 'r13doppler', $
