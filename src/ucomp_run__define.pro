@@ -829,7 +829,7 @@ pro ucomp_run::setProperty, datetime=datetime, $
   if (n_elements(datetime) gt 0L) then begin
     self.epochs->setProperty, datetime=datetime
     foreach wave_region_options, self.lines do begin
-      wave_regions_options->setProperty, datetime=datetime
+      wave_region_options->setProperty, datetime=datetime
     endforeach
   endif
   if (n_elements(t0) gt 0L) then self.t0 = t0
@@ -1031,8 +1031,7 @@ function ucomp_run::init, date, mode, config_filename, $
                                           format='(%"ucomp.%s.spec.cfg")'), $
                                    subdir=['wave_regions'], $
                                    root=self.resource_root)
-  
-    wave_region_options = mg_read_config(lines_filename, spec=lines_spec_filename)
+    wave_region_options = mgffepochparser(lines_filename, lines_spec_filename)
     lines_valid = wave_region_options->is_valid(error_msg=error_msg)
     if (~lines_valid) then begin
       mg_log, 'invalid wave region options file: %s', file_basename(lines_filename), $
