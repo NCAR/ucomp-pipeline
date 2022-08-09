@@ -620,22 +620,26 @@ end
 ;   any
 ;
 ; :Params:
-;   line : in, required, type=string
-;     line name, e.g., '1074'
+;   wave_region : in, required, type=string
+;     wave region name, e.g., '1074'
 ;   option_name : in, required, type=string
 ;     name of an epoch option, e.g., 'center_wavelength'
+;
+; :Keywords:
+;   datetime : in, optional, type=string
+;     datetime in the form 'YYYYMMDD' or 'YYYYMMDD.HHMMSS'; defaults to the
+;     value of the `DATETIME` property if this keyword is not given
+;   found : out, optional, type=boolean
+;     set to a named variable to retrieve whether `option_name` was found, if
+;     `FOUND` is present, errors will not be generated
 ;-
-function ucomp_run::line, line, option_name
+function ucomp_run::line, wave_region, option_name, datetime=datetime, found=found
   compile_opt strictarr
 
-  if (n_elements(line) eq 0L) then begin
-    self.lines->getProperty, spec=spec
-    return, spec->sections(count=n_sections)
-  endif
-
-  value = self.lines->get(option_name, section=line, found=found)
-  return, value
+  options = self.lines[wave_region]
+  return, options->get(option_name, datetime=datetime, found=found)
 end
+
 
 ;+
 ; Retrieve the names of all the lines.
@@ -646,8 +650,7 @@ end
 function ucomp_run::all_lines
   compile_opt strictarr
 
-  self.lines->getProperty, spec=spec
-  return, spec->sections()
+  return, ['530', '637', '656', '691', '706', '789', '1074', '1079', '1083']
 end
 
 
@@ -803,10 +806,7 @@ pro ucomp_run::getProperty, date=date, $
                          strpos(config_basename, '.', /reverse_search) - dot_pos - 1)
   endif
 
-  if (arg_present(all_wave_regions)) then begin
-    wave_regions = self->line()
-    all_wave_regions = wave_regions[sort(long(wave_regions))]
-  endif
+  if (arg_present(all_wave_regions)) then all_wave_regions = self->all_lines()
 
   if (arg_present(resource_root)) then resource_root = self.resource_root
 
@@ -826,7 +826,12 @@ pro ucomp_run::setProperty, datetime=datetime, $
   compile_opt strictarr
   on_error, 2
 
-  if (n_elements(datetime) gt 0L) then self.epochs->setProperty, datetime=datetime
+  if (n_elements(datetime) gt 0L) then begin
+    self.epochs->setProperty, datetime=datetime
+    foreach wave_region_options, self.lines do begin
+      wave_regions_options->setProperty, datetime=datetime
+    endforeach
+  endif
   if (n_elements(t0) gt 0L) then self.t0 = t0
 end
 
@@ -928,7 +933,9 @@ end
 pro ucomp_run::cleanup
   compile_opt strictarr
 
+  foreach options, self.lines do obj_destroy, options
   obj_destroy, [self.options, self.epochs, self.lines]
+
   ptr_free, self.hot_pixels[0], $
             self.hot_pixels[1], $
             self.hot_pixels[2], $
@@ -1012,17 +1019,29 @@ function ucomp_run::init, date, mode, config_filename, $
     return, 0
   endif
 
-  ; setup information about lines
-  lines_filename = filepath('ucomp.lines.cfg', root=self.resource_root)
-  lines_spec_filename = filepath('ucomp.lines.spec.cfg', root=self.resource_root)
-
-  self.lines = mg_read_config(lines_filename, spec=lines_spec_filename)
-  lines_valid = self.lines->is_valid(error_msg=error_msg)
-  if (~lines_valid) then begin
-    mg_log, 'invalid lines file', name=logger_name, /critical
-    mg_log, '%s', error_msg, name=logger_name, /critical
-    return, 0
-  endif
+  ; setup information about each wave region
+  self.lines = hash()
+  wave_regions = self->all_lines()
+  for w = 0L, n_elements(wave_regions) - 1L do begin
+    lines_filename = filepath(string(wave_regions[w], $
+                                     format='(%"ucomp.%s.cfg")'), $
+                              subdir=['wave_regions'], $
+                              root=self.resource_root)
+    lines_spec_filename = filepath(string(wave_regions[w], $
+                                          format='(%"ucomp.%s.spec.cfg")'), $
+                                   subdir=['wave_regions'], $
+                                   root=self.resource_root)
+  
+    wave_region_options = mg_read_config(lines_filename, spec=lines_spec_filename)
+    lines_valid = wave_region_options->is_valid(error_msg=error_msg)
+    if (~lines_valid) then begin
+      mg_log, 'invalid wave region options file: %s', file_basename(lines_filename), $
+              name=logger_name, /critical
+      mg_log, '%s', error_msg, name=logger_name, /critical
+      return, 0
+    endif
+    self.lines[wave_regions[w]] = wave_region_options
+  endfor
 
   for i = 0L, 3L do begin
     self.hot_pixels[i] = ptr_new(/allocate_heap)
@@ -1063,6 +1082,7 @@ pro ucomp_run__define
            options                 : obj_new(), $
 
            epochs                  : obj_new(), $
+           lines                   : obj_new(), $
 
            hot_pixels              : ptrarr(2, 2), $   ; gain, camera
            adjacent_pixels         : ptrarr(2, 2), $   ; gain, camera
@@ -1072,7 +1092,6 @@ pro ucomp_run__define
            distortion_basename     : '', $
            distortion_coefficients : ptr_new(), $
 
-           lines                   : obj_new(), $
 
            files                   : obj_new(), $
 
