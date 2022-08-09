@@ -61,6 +61,7 @@ pro ucomp_write_intermediate_image, name, $
   device, get_decomposed=original_decomposed
   tvlct, original_rgb, /get
   device, decomposed=0, $
+          set_pixel_depth=8, $
           set_resolution=[nx, ny]
 
   n_colors = 253
