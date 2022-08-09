@@ -3,7 +3,7 @@
 pro ucomp_rolling_flat_plots, wave_region, db, run=run
   compile_opt strictarr
 
-  query = 'select * from ucomp_cal where wave_region="%s" and opal=1 and caloptic=0 order by date_obs'
+  query = 'select * from ucomp_cal where wave_region=''%s'' and opal=1 and caloptic=0 order by date_obs'
   data = db->query(query, wave_region, $
                    count=n_flats, error=error, fields=fields, sql_statement=sql)
 
@@ -137,5 +137,7 @@ db = ucomp_db_connect(run->config('database/config_filename'), $
                       status=status)
 
 ucomp_rolling_flat_plots, '1074', db, run=run
+
+obj_destroy, [db, run]
 
 end
