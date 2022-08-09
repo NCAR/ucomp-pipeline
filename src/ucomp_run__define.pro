@@ -637,7 +637,6 @@ function ucomp_run::line, wave_region, option_name, datetime=datetime, found=fou
   compile_opt strictarr
 
   self->getProperty, logger_name=logger_name
-  mg_log, '::line: %s for %s', wave_region, option_name, name=logger_name, /debug
 
   options = self.lines[wave_region]
   return, options->get(option_name, datetime=datetime, found=found)
