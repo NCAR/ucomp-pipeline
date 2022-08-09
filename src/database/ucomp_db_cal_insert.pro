@@ -48,6 +48,7 @@ pro ucomp_db_cal_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
 
               {name: 'level_id', type: '%d'}, $
               {name: 'exptime', type: '%f'}, $
+              {name: 'gain_mode', type: '''%s'''}, $
               {name: 'nd', type: '%d'}, $
               {name: 'cover', type: '%d'}, $
               {name: 'darkshutter', type: '%d'}, $
@@ -82,6 +83,7 @@ pro ucomp_db_cal_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
 
                  level_index, $
                  file.exptime, $
+                 file.gain_mode, $
                  file.nd, $
                  file.cover_in, $
                  file.darkshutter_in, $
