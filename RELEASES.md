@@ -209,3 +209,7 @@
 0.2.57 [Aug 8, 2022]
   fix for graphics issue with dark/flat median plots over time from database
   storing median background of each file in database
+0.2.58 [Aug 9, 2022]
+  fix minor issues with dark/flat plots
+  make plot of median backgrounds over mission
+  use wave region display options to display synoptic maps

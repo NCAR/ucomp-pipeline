@@ -49,7 +49,7 @@ pro ucomp_write_intermediate_image, name, $
     ucomp_mkdir, intermediate_dirname, logger_name=run.logger_name
   endif
 
-  percent_stretch = 0.01
+  percent_stretch = 0.05
   display_gamma = run->line(file.wave_region, 'intensity_display_gamma')
 
   datetime = strmid(file_basename(file.raw_filename), 0, 15)
@@ -61,6 +61,7 @@ pro ucomp_write_intermediate_image, name, $
   device, get_decomposed=original_decomposed
   tvlct, original_rgb, /get
   device, decomposed=0, $
+          set_pixel_depth=8, $
           set_resolution=[nx, ny]
 
   n_colors = 253
