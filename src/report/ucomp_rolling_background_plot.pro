@@ -74,7 +74,7 @@ end
 ; main-level example program
 
 date = '20220721'
-config_basename = 'ucomp.latest.cfg'
+config_basename = 'ucomp.production.cfg'
 config_filename = filepath(config_basename, $
                            subdir=['..', '..', 'config'], $
                            root=mg_src_root())
