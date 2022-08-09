@@ -3,8 +3,8 @@
 pro ucomp_rolling_flat_plots, wave_region, db, run=run
   compile_opt strictarr
 
-  query = 'select * from ucomp_cal where opal=1 and caloptic=0 order by date_obs'
-  data = db->query(query, $
+  query = 'select * from ucomp_cal where wave_region="%s" and opal=1 and caloptic=0 order by date_obs'
+  data = db->query(query, wave_region, $
                    count=n_flats, error=error, fields=fields, sql_statement=sql)
 
   if (n_flats eq 0L) then begin
@@ -59,7 +59,7 @@ pro ucomp_rolling_flat_plots, wave_region, db, run=run
   plot, jds, rcam_median_linecenter, /nodata, $
         charsize=charsize, title='Flat (not dark corrected) line center median counts vs. time', $
         color=color, background=background_color, $
-        xtitle='Time [HST]', $
+        xtitle='Date', $
         xstyle=1, $
         xtickformat='label_date', $
         ytitle='Counts [DN]/NUMSUM', $
