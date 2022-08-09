@@ -636,6 +636,9 @@ end
 function ucomp_run::line, wave_region, option_name, datetime=datetime, found=found
   compile_opt strictarr
 
+  self->getProperty, logger_name=logger_name
+  mg_log, '::line: %s for %s', wave_region, option_name, name=logger_name, /debug
+
   options = self.lines[wave_region]
   return, options->get(option_name, datetime=datetime, found=found)
 end
@@ -1061,6 +1064,8 @@ function ucomp_run::init, date, mode, config_filename, $
   ; performance monitoring
   self.calls = orderedhash()   ; routine name (string) -> # of calls (long)
   self.times = orderedhash()   ; routine name (string) -> times (float) in seconds
+
+  self->setProperty, datetime=self.date
 
   return, 1
 end
