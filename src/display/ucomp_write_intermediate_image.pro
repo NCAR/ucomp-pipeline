@@ -49,7 +49,7 @@ pro ucomp_write_intermediate_image, name, $
     ucomp_mkdir, intermediate_dirname, logger_name=run.logger_name
   endif
 
-  percent_stretch = 0.01
+  percent_stretch = 0.05
   display_gamma = run->line(file.wave_region, 'intensity_display_gamma')
 
   datetime = strmid(file_basename(file.raw_filename), 0, 15)
