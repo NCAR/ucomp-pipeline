@@ -7,6 +7,7 @@ add_subdirectory(demodulation)
 add_subdirectory(distortion)
 add_subdirectory(logos)
 add_subdirectory(validation)
+add_subdirectory(wave_regions)
 
 file(GLOB CFG_FILES "*.cfg")
 install(FILES ${CFG_FILES} DESTINATION ${DIRNAME})
