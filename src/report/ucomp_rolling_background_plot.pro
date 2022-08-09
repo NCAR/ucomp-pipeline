@@ -1,0 +1,71 @@
+; docformat = 'rst'
+
+pro ucomp_rolling_background_plot, wave_region, db, run=run
+  compile_opt strictarr
+
+  query = 'select * from ucomp_file where wave_region="%s" order by date_obs'
+  data = db->query(query, wave_region, $
+                   count=n_files, error=error, fields=fields, sql_statement=sql)
+  
+  if (n_files eq 0L) then begin
+    mg_log, 'no files found', name=run.logger_name, /warn
+    goto, done
+  endif else begin
+    mg_log, '%d files found', n_files, name=run.logger_name, /info
+  endelse
+
+  median_background = data.median_background
+
+  jds = ucomp_dateobs2julday(data.date_obs)
+  !null = label_date(date_format='%Y-%N-%D')
+
+  background_range = [0.0, 20.0]
+
+  ; save original graphics settings
+  original_device = !d.name
+
+  ; setup graphics device
+  set_plot, 'Z'
+  device, get_decomposed=original_decomposed
+  tvlct, original_rgb, /get
+  device, decomposed=0, $
+          set_pixel_depth=8, $
+          set_resolution=[800, 300]
+
+  tvlct, 0, 0, 0, 0
+  tvlct, 255, 255, 255, 1
+  tvlct, 255, 0, 0, 2
+  tvlct, r, g, b, /get
+
+  color            = 0
+  background_color = 1
+  clip_color       = 2
+
+  psym             = 6
+  symsize          = 0.25
+
+  mg_range_plot, jds, median_background, /nodata, $
+                 charsize=charsize, title='Median background vs. time', $
+                 color=color, background=background_color, $
+                 psym=psym, symsize=symsize, $
+                 clip_color=2, clip_psym=7, clip_symsize=1.0, $
+                 xtitle='Date', $
+                 xstyle=1, $
+                 xtickformat='label_date', $
+                 ytitle='Background [ppm]', $
+                 ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
+
+  ; save plots image file
+  output_filename = filepath(string(run.date, wave_region, $
+                                    format='(%"%s.ucomp.%s.backgrounds.gif")'), $
+                             subdir=ucomp_decompose_date(run.date), $
+                             root=run->config('engineering/basedir'))
+  write_gif, output_filename, tvrd(), r, g, b
+
+  done:
+  if (n_elements(original_rgb) gt 0L) then tvlct, original_rgb
+  if (n_elements(original_decomposed) gt 0L) then device, decomposed=original_decomposed
+  if (n_elements(original_device) gt 0L) then set_plot, original_device
+
+  mg_log, 'done', name=run.logger_name, /info
+end

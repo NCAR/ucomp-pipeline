@@ -82,6 +82,8 @@ pro ucomp_db_update, run=run
 
     ucomp_rolling_flat_plots, wave_regions[w], db, run=run
 
+    ucomp_rolling_background_plot, wave_regions[w], db, run=run
+
     ucomp_rolling_synoptic_map, wave_regions[w], 'intensity', 'int', 'intensity', 1.08, $
                                                  'r108i', db, run=run
     ucomp_rolling_synoptic_map, wave_regions[w], 'intensity', 'int', 'intensity', 1.3, $
