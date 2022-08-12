@@ -300,7 +300,7 @@ pro ucomp_file::getProperty, run=run, $
 
   if (arg_present(exptime)) then exptime = self.exptime
   if (arg_present(gain_mode)) then gain_mode = self.gain_mode
-  if (arg_present(pol_list)) then pol_list = self.pol_list
+  if (arg_present(pol_list)) then pol_list = 'iquv'
   if (arg_present(nd)) then nd = self.nd
 
   if (arg_present(wave_region)) then wave_region = self.wave_region
@@ -561,11 +561,10 @@ pro ucomp_file::_inventory
 
   self.obsswid = ucomp_getpar(primary_header, 'OBSSWID', found=found)
 
-  self.gain_mode = strlowcase(ucomp_getpar(primary_header, 'GAIN', found=found))
+  self.gain_mode = strtrim(strlowcase(ucomp_getpar(primary_header, 'GAIN', found=found)), 2)
 
   ; TODO: enter this from the headers
   self.nd = 0L
-  self.pol_list = ''
 
   self.t_base   = ucomp_getpar(primary_header, 'T_BASE', /float, found=found)
   self.t_lcvr1  = ucomp_getpar(primary_header, 'T_LCVR1', /float, found=found)
@@ -750,7 +749,6 @@ pro ucomp_file__define
            obs_plan               : '', $
            exptime                : 0.0, $
            gain_mode              : '', $
-           pol_list               : '', $
            numsum                 : 0L, $
 
            focus                  : 0.0, $

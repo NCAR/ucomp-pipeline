@@ -213,3 +213,5 @@
   fix minor issues with dark/flat plots
   make plot of median backgrounds over mission
   use wave region display options to display synoptic maps
+0.2.59 [Aug 12, 2022]
+  minor changes to title of rolling dark plot
