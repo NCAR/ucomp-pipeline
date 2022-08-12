@@ -4,6 +4,8 @@ pro ucomp_rolling_dark_plots, db, run=run
   compile_opt strictarr
 
   query = 'select * from ucomp_cal where darkshutter=1 order by date_obs'
+  ;query = 'select * from ucomp_cal where darkshutter=1 and rcamnuc=''Offset + gain corrected'' order by date_obs'
+  ;query = 'select * from ucomp_cal where darkshutter=1 and rcamnuc=''normal'' and gain=''high'' order by date_obs'
   data = db->query(query, $
                    count=n_darks, error=error, fields=fields, sql_statement=sql)
 
@@ -21,6 +23,7 @@ pro ucomp_rolling_dark_plots, db, run=run
   !null = label_date(date_format='%Y-%N-%D')
 
   dark_range  = run->epoch('dark_value_range', datetime=run.date)
+  ;dark_range = [0.0, 10000.0]
 
   ; save original graphics settings
   original_device = !d.name
@@ -48,15 +51,15 @@ pro ucomp_rolling_dark_plots, db, run=run
   camera1_psym     = 4
   symsize          = 0.25
 
-  charsize = 1.0
+  charsize = 0.9
 
   plot, jds, rcam_median_linecenter, /nodata, $
-        charsize=charsize, title='Dark median counts vs. time', $
+        charsize=charsize, title='Dark median counts (normalized to 80 ms and NUMSUM 16) vs. time', $
         color=color, background=background_color, $
         xtitle='Date', $
         xstyle=1, $
         xtickformat='label_date', $
-        ytitle='Counts [DN]/NUMSUM', $
+        ytitle='Counts [DN]', $
         ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
   mg_range_oplot, jds, $
                   dark_range[0] > [rcam_median_linecenter] < dark_range[1], $
@@ -91,7 +94,7 @@ end
 
 ; main-level example program
 
-date = '20220804'
+date = '20220721'
 config_basename = 'ucomp.production.cfg'
 config_filename = filepath(config_basename, $
                            subdir=['..', '..', 'config'], $
