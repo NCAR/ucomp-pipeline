@@ -6,7 +6,7 @@ pro ucomp_rolling_background_plot, wave_region, db, run=run
   query = 'select * from ucomp_file where wave_region=''%s'' order by date_obs'
   data = db->query(query, wave_region, $
                    count=n_files, error=error, fields=fields, sql_statement=sql)
-  
+
   if (n_files eq 0L) then begin
     mg_log, 'no files found', name=run.logger_name, /warn
     goto, done
