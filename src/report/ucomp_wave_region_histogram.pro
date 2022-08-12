@@ -67,7 +67,7 @@ pro ucomp_wave_region_histogram, output_filename, $
     endif
   endfor
 
-  lines = run->line()
+  lines = run->all_lines()
 
   colors = lonarr(n_wave_regions)
   for t = 0L, n_wave_regions - 1L do begin

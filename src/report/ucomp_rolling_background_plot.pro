@@ -6,7 +6,7 @@ pro ucomp_rolling_background_plot, wave_region, db, run=run
   query = 'select * from ucomp_file where wave_region=''%s'' order by date_obs'
   data = db->query(query, wave_region, $
                    count=n_files, error=error, fields=fields, sql_statement=sql)
-  
+
   if (n_files eq 0L) then begin
     mg_log, 'no files found', name=run.logger_name, /warn
     goto, done
@@ -74,7 +74,7 @@ end
 ; main-level example program
 
 date = '20220721'
-config_basename = 'ucomp.latest.cfg'
+config_basename = 'ucomp.production.cfg'
 config_filename = filepath(config_basename, $
                            subdir=['..', '..', 'config'], $
                            root=mg_src_root())
