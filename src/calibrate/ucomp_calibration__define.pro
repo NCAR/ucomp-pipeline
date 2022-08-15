@@ -402,10 +402,6 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
     interpolated_flat = float(valid_flats[*, *, *, 0])
 
     exptime_found = (*self.flat_exptimes)[valid_indices[0]]
-    ; mg_log, 'flat mean by camera: %0.3f, %0.3f; exptimes: %0.2f, %0.2f', $
-    ;         mean(mean(interpolated_flat, dimension=1), dimension=1), $
-    ;         exptime, exptime_found, $
-    ;         name=self.run.logger_name, /debug
     interpolated_flat *= exptime / exptime_found
 
     times_found = (*self.flat_times)[valid_indices[0]]
@@ -416,12 +412,6 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
       return, !null
     endif
     interpolated_flat -= flat_dark
-    ; mg_log, 'flat mean by camera: %0.3f, %0.3f', $
-    ;         mean(mean(interpolated_flat, dimension=1), dimension=1), $
-    ;         name=self.run.logger_name, /debug
-    ; mg_log, 'dark for flat mean by camera: %0.3f, %0.3f', $
-    ;         mean(mean(flat_dark, dimension=1), dimension=1), $
-    ;         name=self.run.logger_name, /debug
 
     master_extensions = valid_indices[0] + 1L
     raw_extensions = (*self.flat_extensions)[valid_indices[0]]
@@ -431,10 +421,7 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
     interpolated_flat = float(valid_flats[*, *, *, n_valid_flats - 1])
 
     exptime_found = (*self.flat_exptimes)[valid_indices[n_valid_flats - 1]]
-    ; mg_log, 'flat mean by camera: %0.3f, %0.3f; exptimes: %0.2f, %0.2f', $
-    ;         mean(mean(interpolated_flat, dimension=1), dimension=1), $
-    ;         exptime, exptime_found, $
-    ;         name=self.run.logger_name, /debug
+
     interpolated_flat *= exptime / exptime_found
 
     times_found = (*self.flat_times)[valid_indices[n_valid_flats - 1L]]
@@ -445,12 +432,6 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
       return, !null
     endif
     interpolated_flat -= flat_dark
-    ; mg_log, 'flat mean by camera: %0.3f, %0.3f', $
-    ;         mean(mean(interpolated_flat, dimension=1), dimension=1), $
-    ;         name=self.run.logger_name, /debug
-    ; mg_log, 'dark for flat mean by camera: %0.3f, %0.3f', $
-    ;         mean(mean(flat_dark, dimension=1), dimension=1), $
-    ;         name=self.run.logger_name, /debug
 
     master_extensions = valid_indices[n_valid_flats - 1] + 1L
     raw_extensions = (*self.flat_extensions)[valid_indices[n_valid_flats - 1]]
@@ -463,18 +444,10 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
 
       flat1 = valid_flats[*, *, *, index1]
       exptime_found = (*self.flat_exptimes)[valid_indices[index1]]
-      ; mg_log, 'flat mean by camera: %0.3f, %0.3f; exptimes: %0.2f, %0.2f', $
-      ;         mean(mean(flat1, dimension=1), dimension=1), $
-      ;         exptime, exptime_found, $
-      ;         name=self.run.logger_name, /debug
       flat1 *= exptime / exptime_found
 
       flat2 = valid_flats[*, *, *, index2]
       exptime_found = (*self.flat_exptimes)[valid_indices[index2]]
-      ; mg_log, 'flat mean by camera: %0.3f, %0.3f; exptimes: %0.2f, %0.2f', $
-      ;         mean(mean(flat2, dimension=1), dimension=1), $
-      ;         exptime, exptime_found, $
-      ;         name=self.run.logger_name, /debug
       flat2 *= exptime / exptime_found
 
       times_found = (*self.flat_times)[valid_indices[[index1, index2]]]
@@ -485,17 +458,7 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
         found = 0B
         return, !null
       endif
-      ; mg_log, 'flat mean by camera [1]: %0.3f, %0.3f', $
-      ;         mean(mean(flat1, dimension=1), dimension=1), $
-      ;         name=self.run.logger_name, /debug
-      ; mg_log, 'dark for flat mean by camera [1]: %0.3f, %0.3f', $
-      ;         mean(mean(flat_dark1, dimension=1), dimension=1), $
-      ;         name=self.run.logger_name, /debug
-
       flat1 -= flat_dark1
-      ; mg_log, 'dark corrected flat mean by camera [1]: %0.3f, %0.3f', $
-      ;         mean(mean(flat1, dimension=1), dimension=1), $
-      ;         name=self.run.logger_name, /debug
 
       flat_dark2 = self->get_dark(times_found[1], exptime, gain_mode, $
                                   found=flat_dark_found)
@@ -503,17 +466,7 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
         found = 0B
         return, !null
       endif
-      ; mg_log, 'flat mean by camera [2]: %0.3f, %0.3f', $
-      ;         mean(mean(flat2, dimension=1), dimension=1), $
-      ;         name=self.run.logger_name, /debug
-      ; mg_log, 'dark for flat mean by camera [2]: %0.3f, %0.3f', $
-      ;         mean(mean(flat_dark2, dimension=1), dimension=1), $
-      ;         name=self.run.logger_name, /debug
-
       flat2 -= flat_dark2
-      ; mg_log, 'dark corrected flat mean by camera [2]: %0.3f, %0.3f', $
-      ;         mean(mean(flat2, dimension=1), dimension=1), $
-      ;         name=self.run.logger_name, /debug
 
       a1 = (valid_times[index2] - obsday_hours) / (valid_times[index2] - valid_times[index1])
       a2 = (obsday_hours - valid_times[index1]) / (valid_times[index2] - valid_times[index1])
@@ -529,10 +482,6 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
       interpolated_flat = valid_flats[*, *, *, index]
 
       exptime_found = (*self.flat_exptimes)[valid_indices[n_valid_flats - 1]]
-      ; mg_log, 'flat mean by camera: %0.3f, %0.3f; exptimes: %0.2f, %0.2f', $
-      ;         mean(mean(interpolated_flat, dimension=1), dimension=1), $
-      ;         exptime, exptime_found, $
-      ;         name=self.run.logger_name, /debug
       interpolated_flat *= exptime / exptime_found
 
       times_found = (*self.flat_times)[valid_indices[index]]
@@ -544,23 +493,12 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
       endif
       interpolated_flat -= flat_dark
 
-      ; mg_log, 'flat mean by camera: %0.3f, %0.3f', $
-      ;         mean(mean(interpolated_flat, dimension=1), dimension=1), $
-      ;         name=self.run.logger_name, /debug
-      ; mg_log, 'dark for flat mean by camera: %0.3f, %0.3f', $
-      ;         mean(mean(flat_dark, dimension=1), dimension=1), $
-      ;         name=self.run.logger_name, /debug
-
       master_extensions = valid_indices[index] + 1L
       raw_extensions = (*self.flat_extensions)[valid_indices[index]]
       raw_filenames = strtrim((*self.flat_raw_files)[index], 2)
       coefficients = 1.0
     endelse
   endelse
-
-  ; mg_log, 'dark corrected flat mean by camera: %0.3f, %0.3f', $
-  ;         mean(mean(interpolated_flat, dimension=1), dimension=1), $
-  ;         name=self.run.logger_name, /debug
 
   return, float(reform(interpolated_flat))
 end
