@@ -57,9 +57,6 @@ pro ucomp_create_mp4, image_filenames, mp4_filename, run=run, status=status
   for f = 0L, n_image_files - 1L do begin
     file_delete, string(pid, f, ext, format=tmp_image_fmt)
   endfor
-
-  tmp_files = file_search('ucomp_tmp*', count=n_tmp_files)
-  if (n_tmp_files gt 0L) then file_delete, tmp_files
 end
 
 
