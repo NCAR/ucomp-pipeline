@@ -31,17 +31,22 @@ pro ucomp_l1_continuum_subtraction, file, primary_header, ext_data, ext_headers,
   ; find extensions with matching wavelengths and opposite ONBAND
   n_extensions = n_elements(ext_headers)
 
-  exptime    = fltarr(n_extensions)
-  onband     = bytarr(n_extensions)
-  wavelength = fltarr(n_extensions)
-  raw_exts   = strarr(n_extensions)
+  exptime          = fltarr(n_extensions)
+  onband           = bytarr(n_extensions)
+  wavelength       = fltarr(n_extensions)
+  raw_exts         = strarr(n_extensions)
+  master_flat_ext1 = strarr(n_extensions)
+  master_flat_ext2 = strarr(n_extensions)
 
   ; group by EXPTIME, ONBAND, WAVELNG
   for e = 0L, n_extensions - 1L do begin
     exptime[e]    = ucomp_getpar(ext_headers[e], 'EXPTIME')
     onband[e]     = ucomp_getpar(ext_headers[e], 'ONBAND') eq 'tcam'
     wavelength[e] = ucomp_getpar(ext_headers[e], 'WAVELNG')
-    raw_exts[e]   = ucomp_getpar(ext_headers[e], 'RAWEXTS')
+
+    master_flat_ext1[e]   = strtrim(ucomp_getpar(ext_headers[e], 'MFLTEXT1'), 2)
+    mfe2 = ucomp_getpar(ext_headers[e], 'MFLTEXT2', found=found)
+    master_flat_ext2[e]   = found ? strtrim(mfe2, 2) : ''
   endfor
 
   ; because we have already averaged the file, we can assume there are only
@@ -83,9 +88,13 @@ pro ucomp_l1_continuum_subtraction, file, primary_header, ext_data, ext_headers,
       if (onband[m]) then begin
         c0 = [-1.0, 1.0]
         c1 = [1.0, -1.0]
+        msg0 = string(m, match_indices[m], format='(%"- ext %d + ext %d")')
+        msg1 = string(m, match_indices[m], format='(%"+ ext %d - ext %d")')
       endif else begin
         c0 = [1.0, -1.0]
         c1 = [-1.0, 1.0]
+        msg0 = string(m, match_indices[m], format='(%"+ ext %d - ext %d")')
+        msg1 = string(m, match_indices[m], format='(%"- ext %d + ext %d")')
       endelse
     endif else begin
       mg_log, 'skipping continuum subtraction for %s file', file.wave_region, $
@@ -93,17 +102,21 @@ pro ucomp_l1_continuum_subtraction, file, primary_header, ext_data, ext_headers,
       if (onband[m]) then begin
         c0 = [0.0, 1.0]
         c1 = [1.0, 0.0]
+        msg0 = string(match_indices[m], format='(%"+ ext %d")')
+        msg1 = string(m, format='(%"+ ext %d")')
       endif else begin
         c0 = [1.0, 0.0]
         c1 = [0.0, 1.0]
+        msg0 = string(m, format='(%"+ ext %d")')
+        msg1 = string(match_indices[m], format='(%"+ ext %d")')
       endelse
     endelse
 
-    mg_log, 'ext %d cam 0: %d ext %d + %d ext %d', $
-            i + 1L, c0[0], m, c0[1], match_indices[m], $
+    mg_log, 'ext %d cam 0: %s', $
+            i + 1L, msg0, $
             name=run.logger_name, /debug
-    mg_log, 'ext %d cam 1: %d ext %d + %d ext %d', $
-            i + 1L, c1[0], m, c1[1], match_indices[m], $
+    mg_log, 'ext %d cam 1: %s', $
+            i + 1L, msg1, $
             name=run.logger_name, /debug
 
     ; note: in the following code, cam0 is not necessarily RCAM, cam1 is not
@@ -117,8 +130,15 @@ pro ucomp_l1_continuum_subtraction, file, primary_header, ext_data, ext_headers,
     i += 1L
 
     header = reform(ucomp_combine_headers(ext_headers_array[*, [m, match_indices[m]]]))
+
     sxdelpar, header, 'ONBAND'
+
+    ucomp_addpar, header, 'MFLTEXT1', master_flat_ext1[m] + ',' + master_flat_ext1[match_indices[m]]
+    if (master_flat_ext2[m] ne '' and master_flat_ext2[match_indices[m]] ne '') then begin
+      ucomp_addpar, header, 'MFLTEXT2', master_flat_ext2[m] + ',' + master_flat_ext2[match_indices[m]]
+    endif
     ucomp_addpar, header, 'RAWEXTS', raw_exts[m] + ',' + raw_exts[match_indices[m]]
+
     ext_headers->add, header
 
     matched[m] = 1B
