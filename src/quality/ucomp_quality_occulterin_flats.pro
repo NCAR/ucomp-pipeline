@@ -28,7 +28,7 @@ function ucomp_quality_occulterin_flats, file, $
   for e = 0L, n_elements(ext_headers) - 1L do begin
     is_flat = strtrim(ucomp_getpar(ext_headers[e], 'DATATYPE'), 2) eq 'flat'
     if (is_flat) then begin
-      occulter_out = strtrim(ucomp_getpar(ext_headers[e], 'OCCULTR'), 2) eq 'out'
+      occulter_out = strtrim(ucomp_getpar(ext_headers[e], 'OCCLTR'), 2) eq 'out'
       diffuser_in = strtrim(ucomp_getpar(ext_headers[e], 'DIFFUSR'), 2) eq 'in'
       if (~occulter_out) then begin
         mg_log, 'rejecting flat file because occulter is not out for ext %d', $
