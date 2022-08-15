@@ -57,7 +57,8 @@ pro ucomp_l1_process_file, file, run=run
     ucomp_l1_step, 'ucomp_l1_check_quality', $
                    file, primary_header, data, headers, run=run
     if (~file.ok) then begin
-      mg_log, 'skipping for poor quality', name=run.logger_name, /warn
+      mg_log, 'skipping for poor quality (%b)', file.quality_bitmask, $
+              name=run.logger_name, /warn
       goto, done
     endif
   endif else begin
