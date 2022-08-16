@@ -220,5 +220,5 @@
   fix for cal file quality check
   add check for consistent data types for cal file extensions
   combine MFLTEXT{1,2} keyword values for subtracted continuum extensions
-0.2.61
+0.2.61 [Aug 16, 2022]
   better messages for verification log
