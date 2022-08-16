@@ -121,12 +121,12 @@ function ucomp_verify_missing, raw_files, machine_log_filename, $
   for i = 0L, n_ml_lines - 1L do ml_files[i] = (strsplit(ml_files[i], /extract))[0]
 
   if (n_raw_files eq 0L) then return, ml_files
-
-  n_matches = mg_match(file_basename(raw_files), ml_files, $
+  n_matches = mg_match(file_basename(raw_files), $
+                       ml_files, $
                        a_matches=extra_file_indices, $
                        b_matches=missing_file_indices)
-  missing_files = ml_files[mg_complement(missing_file_indices, n_ml_lines)]
-  extra_files = raw_files[mg_complement(extra_file_indices, n_raw_files)]
+  missing_files = ml_files[mg_complement(missing_file_indices, n_ml_lines, /null)]
+  extra_files = raw_files[mg_complement(extra_file_indices, n_raw_files, /null)]
 
   return, missing_files
 end
@@ -245,7 +245,6 @@ pro ucomp_verify_check_logs, run=run, status=status, n_raw_files=n_raw_files
       for f = 0L, n_elements(extra_files) - 1L do begin
         mg_log, 'extra %s in raw', file_basename(extra_files[f]), $
                 name=run.logger_name, /warn
-        status = 1L
       endfor
     endif
 
@@ -262,18 +261,25 @@ pro ucomp_verify_check_logs, run=run, status=status, n_raw_files=n_raw_files
     endif
 
     n_missing_files = n_elements(missing_files)
-    if (n_on_server eq 0L) then begin
-      mg_log, '%s not on collection server', $
-              mg_plural(n_missing_files, 'missing file', 'missing files'), $
-              name=run.logger_name, /warn
-    endif else begin
-      mg_log, '%d of %s on collection server', $
-              n_on_server, $
-              mg_plural(n_missing_files, 'missing file', 'missing files'), $
-              name=run.logger_name, /warn
-      status = 1L
-      return
-    endelse
+    if (n_missing_files gt 0L) then begin
+      for f = 0L, n_elements(missing_files) - 1L do begin
+        mg_log, '%s, but present in machine log', $
+                mg_plural(missing_files[f], 'missing file', 'missing files'), $
+                name=run.logger_name, /warn
+      endfor
+      if (n_on_server eq 0L) then begin
+        mg_log, '%s not on collection server', $
+                mg_plural(n_missing_files, 'missing file', 'missing files'), $
+                name=run.logger_name, /warn
+      endif else begin
+        mg_log, '%d of %s on collection server', $
+                n_on_server, $
+                mg_plural(n_missing_files, 'missing file', 'missing files'), $
+                name=run.logger_name, /warn
+        status = 1L
+        return
+      endelse
+    endif
   endif
 
   n_bad = 0L
@@ -316,6 +322,8 @@ pro ucomp_verify_check_logs, run=run, status=status, n_raw_files=n_raw_files
         end
     endcase
   endfor
+
+  n_bad += n_elements(extra_files)
 
   done:
   if (n_bad eq 0L) then begin
@@ -382,13 +390,27 @@ pro ucomp_verify_check_collection_server, run=run, status=status
   endif
 
   n_log_lines = file_lines(machine_log_filename)
-  if (n_log_lines ne n_raw_files) then begin
+  ; TODO: this is not actually the way to check if there are missing or extra
+  ; files, there could be extra AND missing files that balance each other
+  if (n_raw_files ne n_log_lines) then begin
     max_missing = run->config('verification/max_missing')
     mg_log, '# raw files on collection server (%d) does not match # lines in machine log (%d)', $
             n_raw_files, n_log_lines, $
             name=run.logger_name, /warn
-    if (n_raw_files lt (n_log_lines - max_missing) $
-          || (n_raw_files gt n_log_lines)) then status or= 1UL
+    if (n_raw_files le (n_log_lines - max_missing)) then begin
+      mg_log, 'too many missing files (%d)', n_log_lines - n_raw_files, $
+              name=run.logger_name, /warn
+      status or= 1UL
+    endif else if (n_raw_files lt n_log_lines) then begin
+      mg_log, 'missing %s, less than the max allowable (%s)', $
+              mg_plural(n_log_lines - n_raw_files, 'file', 'files'), $
+              mg_plural(max_missing, 'file', 'files'), $
+              name=run.logger_name, /info
+    endif
+    if (n_raw_files gt n_log_lines) then begin
+      mg_log, '%d extra files not in log', n_raw_files - n_log_lines, $
+              name=run.logger_name, /warn
+    endif
     goto, done
   endif
 
