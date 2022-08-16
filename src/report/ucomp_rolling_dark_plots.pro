@@ -3,11 +3,22 @@
 pro ucomp_rolling_dark_plots, db, run=run
   compile_opt strictarr
 
-  query = 'select * from ucomp_cal where darkshutter=1 order by date_obs'
-  ;query = 'select * from ucomp_cal where darkshutter=1 and rcamnuc=''Offset + gain corrected'' order by date_obs'
-  ;query = 'select * from ucomp_cal where darkshutter=1 and rcamnuc=''normal'' and gain=''high'' order by date_obs'
-  data = db->query(query, $
-                   count=n_darks, error=error, fields=fields, sql_statement=sql)
+  ; group the darks by gain mode and NUC value
+  group_by_type = 0B
+
+  if (group_by_type) then begin
+    query = 'select * from ucomp_cal where darkshutter=1 and rcamnuc=''%s'' and gain_mode=''%s'' order by date_obs'
+    gain_mode = ['high', 'low']
+    m = 0
+    rcamnuc = ['normal', 'Offset + gain corrected']
+    n = 1
+    data = db->query(query, rcamnuc[n], gain_mode[m], $
+                     count=n_darks, error=error, fields=fields, sql_statement=sql)
+  endif else begin
+    query = 'select * from ucomp_cal where darkshutter=1 order by date_obs'
+    data = db->query(query, $
+                     count=n_darks, error=error, fields=fields, sql_statement=sql)
+  endelse
 
   if (n_darks eq 0L) then begin
     mg_log, 'no dark data found', name=run.logger_name, /warn
@@ -24,6 +35,7 @@ pro ucomp_rolling_dark_plots, db, run=run
 
   dark_range  = run->epoch('dark_value_range', datetime=run.date)
   ;dark_range = [0.0, 10000.0]
+  ;dark_range = [40.0, 60.0]
 
   ; save original graphics settings
   original_device = !d.name
@@ -53,8 +65,16 @@ pro ucomp_rolling_dark_plots, db, run=run
 
   charsize = 0.9
 
+  if (group_by_type) then begin
+    charsize = 0.8
+    title = string(gain_mode[m], rcamnuc[n], $
+                   format='(%"Dark median counts (normalized to 80 ms and NUMSUM 16, gain_mode %s, NUC %s) vs. time")')
+  endif else begin
+    title = 'Dark median counts (normalized to 80 ms and NUMSUM 16) vs. time'
+  endelse
   plot, jds, rcam_median_linecenter, /nodata, $
-        charsize=charsize, title='Dark median counts (normalized to 80 ms and NUMSUM 16) vs. time', $
+        charsize=charsize, $
+        title=title, $
         color=color, background=background_color, $
         xtitle='Date', $
         xstyle=1, $
