@@ -215,3 +215,8 @@
   use wave region display options to display synoptic maps
 0.2.59 [Aug 12, 2022]
   minor changes to title of rolling dark plot
+  change to epoch based wave region options
+0.2.60 [Aug 15, 2022]
+  fix for cal file quality check
+  add check for consistent data types for cal file extensions
+  combine MFLTEXT{1,2} keyword values for subtracted continuum extensions

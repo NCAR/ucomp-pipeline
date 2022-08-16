@@ -28,11 +28,11 @@ pro ucomp_check_cal_quality, type, run=run
     ucomp_read_raw_data, (files[f]).raw_filename, $
                          primary_header=primary_header, $
                          ext_data=ext_data, $
-                         ext_headers=headers, $
+                         ext_headers=ext_headers, $
                          repair_routine=run->epoch('raw_data_repair_routine')
     for q = 0L, n_elements(quality_conditions) - 1L do begin
       quality = call_function(quality_conditions[q].checker, $
-                              file, $
+                              files[f], $
                               primary_header, $
                               ext_data, $
                               ext_headers, $
