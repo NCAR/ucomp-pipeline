@@ -35,7 +35,7 @@ pro ucomp_rolling_dark_plots, db, run=run
 
   dark_range  = run->epoch('dark_value_range', datetime=run.date)
   ;dark_range = [0.0, 10000.0]
-  ;dark_range = [40.0, 60.0]
+  ;dark_range = [30.0, 70.0]   ; good for "modern" darks
 
   ; save original graphics settings
   original_device = !d.name
@@ -72,6 +72,9 @@ pro ucomp_rolling_dark_plots, db, run=run
   endif else begin
     title = 'Dark median counts (normalized to 80 ms and NUMSUM 16) vs. time'
   endelse
+  month_ticks = mg_tick_locator([jds[0], jds[-1]], /months)
+  month_ticks = month_ticks[0:*:3]
+
   plot, jds, rcam_median_linecenter, /nodata, $
         charsize=charsize, $
         title=title, $
@@ -79,6 +82,9 @@ pro ucomp_rolling_dark_plots, db, run=run
         xtitle='Date', $
         xstyle=1, $
         xtickformat='label_date', $
+        xtickv=month_ticks, $
+        xticks=n_elements(month_ticks) - 1L, $
+        xminor=3, $
         ytitle='Counts [DN]', $
         ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
   mg_range_oplot, jds, $
