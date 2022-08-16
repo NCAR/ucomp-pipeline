@@ -222,3 +222,4 @@
   combine MFLTEXT{1,2} keyword values for subtracted continuum extensions
 0.2.61 [Aug 16, 2022]
   better messages for verification log
+0.2.62
