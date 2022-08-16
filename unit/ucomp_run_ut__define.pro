@@ -96,8 +96,8 @@ function ucomp_run_ut::test_line
   
   run = ucomp_run(date, 'test', config_filename)
 
-  lines = run->line()
-  nickname = run->line('530', 'nickname')
+  nickname = run->line('530', 'nickname', datetime='20210311.000000')
+  lines = run->all_lines()
 
   obj_destroy, run
 
