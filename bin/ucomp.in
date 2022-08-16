@@ -226,7 +226,7 @@ def verify(args):
            dates]
 
     process = subprocess.Popen(cmd, stderr=subprocess.STDOUT)
-    print(f"verifying dates {dates}")
+    print(f"verifying processing for {dates}")
     if args.verbose: print("[%d] %s" % (process.pid, " ".join(cmd)))
     terminated = wait_for(process)
 
