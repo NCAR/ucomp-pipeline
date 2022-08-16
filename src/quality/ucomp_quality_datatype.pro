@@ -28,15 +28,8 @@ function ucomp_quality_datatype, file, $
   compile_opt strictarr
 
   datatype = ucomp_getpar(ext_headers[0], 'DATATYPE')
-  mg_log, '%s [ext %d]: %s', $
-          file.l1_basename, 0, datatype, $
-          name=run.logger_name, /debug
-
   for e = 1L, file.n_extensions - 1L do begin
     ext_datatype = ucomp_getpar(ext_headers[e], 'DATATYPE')
-    mg_log, '%s [ext %d]: %s', $
-            file.l1_basename, e, ext_datatype, $
-            name=run.logger_name, /debug
     if (ext_datatype ne datatype) then return, 1UL
   endfor
 
