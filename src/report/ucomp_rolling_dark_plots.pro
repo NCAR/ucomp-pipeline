@@ -4,9 +4,10 @@ pro ucomp_rolling_dark_plots, db, run=run
   compile_opt strictarr
 
   ; group the darks by gain mode and NUC value
-  group_by_type = 1B
+  group_by_type = 0B
 
   if (group_by_type) then begin
+    ;query = 'select * from ucomp_cal where darkshutter=1 and rcamnuc=''%s'' and gain_mode=''%s'' and date_obs > ''2022-01-01'' order by date_obs'
     query = 'select * from ucomp_cal where darkshutter=1 and rcamnuc=''%s'' and gain_mode=''%s'' order by date_obs'
     gain_mode = ['high', 'low']
     m = 0
