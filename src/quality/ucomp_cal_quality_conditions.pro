@@ -19,7 +19,10 @@ function ucomp_cal_quality_conditions, wave_region, run=run
                          description: 'make sure occulter is not in for flats'}, $
                         {mask: 0UL, $
                          checker: 'ucomp_quality_datatype', $
-                         description: 'multiple datatypes in a file'}]
+                         description: 'multiple datatypes in a file'}, $
+                        {mask: 0UL, $
+                         checker: 'ucomp_quality_dark_values', $
+                         description: 'check dark value range'}]
 
   quality_conditions.mask = 2UL ^ (ulindgen(n_elements(quality_conditions)))
 
