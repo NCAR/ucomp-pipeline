@@ -1,5 +1,8 @@
 ; docformat = 'run'
 
+;+
+; Check median dark values by camera are in a nominal range.
+;-
 function ucomp_quality_dark_values, file, $
                                     primary_header, $
                                     ext_data, $
@@ -7,6 +10,7 @@ function ucomp_quality_dark_values, file, $
                                     run=run
   compile_opt strictarr
 
+  ; only check darks
   is_dark = strtrim(ucomp_getpar(ext_headers[0], 'DATATYPE'), 2) eq 'dark'
   if (~is_dark) then return, 0UL
 
