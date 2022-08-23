@@ -7,6 +7,7 @@ pro ucomp_rolling_dark_plots, db, run=run
   group_by_type = 0B
 
   if (group_by_type) then begin
+    ;query = 'select * from ucomp_cal where darkshutter=1 and rcamnuc=''%s'' and gain_mode=''%s'' and date_obs > ''2022-01-01'' order by date_obs'
     query = 'select * from ucomp_cal where darkshutter=1 and rcamnuc=''%s'' and gain_mode=''%s'' order by date_obs'
     gain_mode = ['high', 'low']
     m = 0
@@ -34,8 +35,6 @@ pro ucomp_rolling_dark_plots, db, run=run
   !null = label_date(date_format='%Y-%N-%D')
 
   dark_range  = run->epoch('dark_value_range', datetime=run.date)
-  ;dark_range = [0.0, 10000.0]
-  ;dark_range = [30.0, 70.0]   ; good for "modern" darks
 
   ; save original graphics settings
   original_device = !d.name
@@ -68,9 +67,9 @@ pro ucomp_rolling_dark_plots, db, run=run
   if (group_by_type) then begin
     charsize = 0.8
     title = string(gain_mode[m], rcamnuc[n], $
-                   format='(%"Dark median counts (normalized to 80 ms and NUMSUM 16, gain_mode %s, NUC %s) vs. time")')
+                   format='(%"Dark median counts (gain mode %s, NUC %s) vs. time")')
   endif else begin
-    title = 'Dark median counts (normalized to 80 ms and NUMSUM 16) vs. time'
+    title = 'Dark median counts vs. time'
   endelse
   month_ticks = mg_tick_locator([jds[0], jds[-1]], /months)
   month_ticks = month_ticks[0:*:3]

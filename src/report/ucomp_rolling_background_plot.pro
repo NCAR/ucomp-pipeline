@@ -19,7 +19,7 @@ pro ucomp_rolling_background_plot, wave_region, db, run=run
   jds = ucomp_dateobs2julday(data.date_obs)
   !null = label_date(date_format='%Y-%N-%D')
 
-  background_range = [0.0, 20.0]
+  background_range = run->line(wave_region, 'background_range')
 
   ; save original graphics settings
   original_device = !d.name
