@@ -5,14 +5,14 @@
 ; the modulator temperature.
 ;
 ; To apply the calibration, matrix multiply the 4-vector of modulated
-; intensities by the returned D matrix, i.e., Stokes = Dmx ## Imeas.
+; intensities by the returned D matrix, i.e., Stokes = Dmx ## I_measured.
 ;
 ; :Returns:
 ;   `fltarr(4, 4)` demodulation matrix
 ;
 ; :Params:
 ;   dmx_coefs : in, required, type="fltarr(4, 4, 9, 2)"
-;     array of D matrix coefficients obained by restoring IDL save file
+;     array of D matrix coefficients obtained by restoring IDL save file
 ;     Dmx_Temp_Coefs.sav
 ;   mod_temp : in, required, type=float
 ;     modulator unfiltered temperature [C]
