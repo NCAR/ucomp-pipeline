@@ -84,7 +84,8 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
                              vcrosstalk_metric=vcrosstalk_metric, $
                              n_extensions=n_extensions, $
                              wavelengths=wavelengths, $
-                             onband_indices=onband_indices
+                             onband_indices=onband_indices, $
+                             all_zero=all_zero
   compile_opt strictarr
 
   if (n_elements(demodulated)) then self.demodulated = demodulated
@@ -112,6 +113,8 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
   if (n_elements(n_extensions) gt 0L) then self.n_extensions = n_extensions
   if (n_elements(wavelengths) gt 0L) then *self.wavelengths = wavelengths
   if (n_elements(onband_indices) gt 0L) then *self.onband_indices = onband_indices
+
+  if (n_elements(all_zero) gt 0L) then self.all_zero = all_zero
 end
 
 
@@ -238,7 +241,8 @@ pro ucomp_file::getProperty, run=run, $
                              sgs_razr=sgs_razr, $
                              sgs_decv=sgs_decv, $
                              sgs_decs=sgs_decs, $
-                             sgs_deczr=sgs_deczr
+                             sgs_deczr=sgs_deczr, $
+                             all_zero=all_zero
   compile_opt strictarr
 
   if (arg_present(run)) then run = self.run
@@ -425,6 +429,8 @@ pro ucomp_file::getProperty, run=run, $
   if (arg_present(sgs_decv)) then sgs_decv = *self.sgs_decv
   if (arg_present(sgs_decs)) then sgs_decs = *self.sgs_decs
   if (arg_present(sgs_deczr)) then sgs_deczr = *self.sgs_deczr
+
+  if (arg_present(all_zero)) then all_zero = self.all_zero
 end
 
 
@@ -833,7 +839,9 @@ pro ucomp_file__define
            processed              : 0B, $
            vcrosstalk_metric      : 0.0, $
            wind_speed             : 0.0, $
-           wind_direction         : 0.0 $
+           wind_direction         : 0.0, $
+
+           all_zero               : 0B $
           }
 end
 

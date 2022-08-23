@@ -11,6 +11,7 @@ create table ucomp_cal (
 
   wave_region             char (4),
   type                    char (8),
+  quality                 mediumint (5),
 
   n_points                tinyint (2),
   level_id                tinyint (2) not null,
