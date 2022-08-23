@@ -222,7 +222,7 @@
   combine MFLTEXT{1,2} keyword values for subtracted continuum extensions
 0.2.61 [Aug 16, 2022]
   better messages for verification log
-0.2.62
+0.2.62 [Aug 23, 2022]
   allow flat/cal combined datatype files
   quality check on median dark value
   add occulter and quality fields to ucomp_cal database table
@@ -231,3 +231,5 @@
   add in/out quality check for cal files
   making mp4s in /tmp directory
   fix for missing ssh key in checking for missing files in verification
+  potential fix for low background values (sum over polstate instead of mean)
+  new demodulation coefficients
