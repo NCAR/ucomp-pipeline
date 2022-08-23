@@ -24,15 +24,18 @@ pro ucomp_check_cal_quality, type, run=run
 
   quality_bitmasks = ulonarr(n_files)
   for f = 0L, n_files - 1L do begin
-    quality_conditions = ucomp_cal_quality_conditions((files[f]).wave_region, run=run)
-    ucomp_read_raw_data, (files[f]).raw_filename, $
+    file = files[f]
+    quality_conditions = ucomp_cal_quality_conditions(file.wave_region, run=run)
+    ucomp_read_raw_data, file.raw_filename, $
                          primary_header=primary_header, $
                          ext_data=ext_data, $
                          ext_headers=ext_headers, $
-                         repair_routine=run->epoch('raw_data_repair_routine')
+                         repair_routine=run->epoch('raw_data_repair_routine'), $
+                         all_zero=all_zero
+    file.all_zero = all_zero
     for q = 0L, n_elements(quality_conditions) - 1L do begin
       quality = call_function(quality_conditions[q].checker, $
-                              files[f], $
+                              file, $
                               primary_header, $
                               ext_data, $
                               ext_headers, $
@@ -41,11 +44,11 @@ pro ucomp_check_cal_quality, type, run=run
       ; check cal data, set quality_bitmask
       quality_bitmasks[f] or= quality_conditions[q].mask * quality
     endfor
-    files[f].quality_bitmask = quality_bitmasks[f]
+    file.quality_bitmask = quality_bitmasks[f]
   endfor
 
   !null = where(quality_bitmasks eq 0UL, n_ok_files)
-  mg_log, '%d cal files passed quality', n_ok_files, name=run.logger_name, /info
+  mg_log, '%d %s files passed quality', n_ok_files, type, name=run.logger_name, /info
 
   done:
 end

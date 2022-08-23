@@ -45,14 +45,14 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
   rcam_offband_indices = where(file.onband_indices eq 1, n_rcam_offband)
 
   mg_log, /check_math, name=run.logger_name, /debug
-  rcam_im = mean(data[*, *, *, 0, rcam_offband_indices], dimension=3, /nan)
-  while (size(rcam_im, /n_dimensions) gt 2L) do rcam_im = mean(rcam_im, dimension=3, /nan)
+  rcam_background = mean(data[*, *, *, 0, rcam_offband_indices], dimension=3, /nan)
+  while (size(rcam_background, /n_dimensions) gt 3L) do rcam_background = mean(rcam_background, dimension=3, /nan)
+  rcam_background = total(rcam_background, 3, /preserve_type)
   ; if all elements of dimension 3 are NaNs then the above lines will produce
   ; an floating-point operand error (128)
   !null = check_math(mask=128)
 
-  rcam_im = smooth(rcam_im, 2, /nan)
-  file.rcam_geometry = ucomp_find_geometry(rcam_im, $
+  file.rcam_geometry = ucomp_find_geometry(smooth(rcam_background, 2, /nan), $
                                            xsize=run->epoch('nx'), $
                                            ysize=run->epoch('ny'), $
                                            center_guess=rcam_center_guess, $
@@ -65,14 +65,14 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
   tcam_offband_indices = where(file.onband_indices eq 0, n_tcam_offband)
 
   mg_log, /check_math, name=run.logger_name, /debug
-  tcam_im = mean(data[*, *, *, 1, tcam_offband_indices], dimension=3, /nan)
-  while (size(tcam_im, /n_dimensions) gt 2L) do tcam_im = mean(tcam_im, dimension=3, /nan)
+  tcam_background = mean(data[*, *, *, 1, tcam_offband_indices], dimension=3, /nan)
+  while (size(tcam_background, /n_dimensions) gt 3L) do tcam_background = mean(tcam_background, dimension=3, /nan)
+  tcam_background = total(tcam_background, 3, /preserve_type)
   ; if all elements of dimension 3 are NaNs then the above lines will produce
   ; an floating-point operand error (128)
   !null = check_math(mask=128)
 
-  tcam_im = smooth(tcam_im, 2, /nan)
-  file.tcam_geometry = ucomp_find_geometry(tcam_im, $
+  file.tcam_geometry = ucomp_find_geometry(smooth(tcam_background, 2, /nan), $
                                            xsize=run->epoch('nx'), $
                                            ysize=run->epoch('ny'), $
                                            center_guess=tcam_center_guess, $
@@ -122,7 +122,9 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
   ucomp_addpar, primary_header, 'IMAGESCL', image_scale, $
                 comment='[arcsec/pixel] image scale at focal plane'
 
-  background = (rcam_im + tcam_im) / 2.0
+  rcam_background = ucomp_center_image(rcam_background, rcam)
+  tcam_background = ucomp_center_image(tcam_background, tcam)
+  background = (rcam_background + tcam_background) / 2.0
   annulus_mask = ucomp_annulus(1.1 * radius, 1.5 * radius, $
                                dimensions=size(background, /dimensions))
   annulus_indices = where(annulus_mask, n_annulus_pts)

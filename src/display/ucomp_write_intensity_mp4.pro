@@ -16,11 +16,6 @@
 pro ucomp_write_intensity_mp4, wave_region, run=run, enhanced=enhanced
   compile_opt strictarr
 
-  mg_log, 'creating %sintensity mp4 for %s nm', $
-          keyword_set(enhanced) ? 'enhanced ' : '', $
-          wave_region, $
-          name=run.logger_name, /info
-
   if (keyword_set(enhanced)) then begin
     option_prefix = 'enhanced_'
     filename_prefix = 'enhanced-int'
@@ -53,6 +48,12 @@ pro ucomp_write_intensity_mp4, wave_region, run=run, enhanced=enhanced
     goto, done
   endif
 
+  mg_log, 'creating %sintensity mp4 for %s nm from %d images', $
+          keyword_set(enhanced) ? 'enhanced ' : '', $
+          wave_region, $
+          n_use, $
+          name=run.logger_name, /info
+
   l1_dirname = filepath('', $
                         subdir=[run.date, 'level1'], $
                         root=run->config('processing/basedir'))
@@ -64,14 +65,12 @@ pro ucomp_write_intensity_mp4, wave_region, run=run, enhanced=enhanced
     image_filenames[f] = filepath(image_filenames[f], root=l1_dirname)
   endfor
 
-  mp4_filename = filepath(string(run.date, wave_region, filename_prefix, $
-                                 format='(%"%s.ucomp.%s.l1.%s.mp4")'), $
-                          root=l1_dirname)
+  mp4_basename = string(run.date, wave_region, filename_prefix, $
+                        format='(%"%s.ucomp.%s.l1.%s.mp4")')
+  mp4_filename = filepath(mp4_basename, root=l1_dirname)
 
   ucomp_create_mp4, image_filenames, mp4_filename, run=run, status=status
-  mg_log, 'wrote intensity mp4 %s', $
-          file_basename(mp4_filename), $
-          name=run.logger_name, /info
+  mg_log, 'wrote %s', mp4_basename, name=run.logger_name, /info
 
   done:
   mg_log, 'done', name=run.logger_name, /info

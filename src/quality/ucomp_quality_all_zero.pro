@@ -20,26 +20,14 @@
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-function ucomp_quality_datatype, file, $
+function ucomp_quality_all_zero, file, $
                                  primary_header, $
                                  ext_data, $
                                  ext_headers, $
                                  run=run
   compile_opt strictarr
 
-  datatype = ucomp_getpar(ext_headers[0], 'DATATYPE')
-  for e = 1L, file.n_extensions - 1L do begin
-    ext_datatype = ucomp_getpar(ext_headers[e], 'DATATYPE')
-      if (ext_datatype ne datatype) then begin
-        ; allow flat and cal to be in mixed in a file, but any other
-        ; combination is a problem
-        if (ext_datatype eq 'cal' && datatype  eq 'flat') then continue
-        if (ext_datatype eq 'flat' && datatype  eq 'cal') then continue
-        return, 1UL
-      endif
-  endfor
-
-  return, 0UL
+  return, ulong(file.all_zero)
 end
 
 
