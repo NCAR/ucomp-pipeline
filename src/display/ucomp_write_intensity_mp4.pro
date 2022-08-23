@@ -64,14 +64,14 @@ pro ucomp_write_intensity_mp4, wave_region, run=run, enhanced=enhanced
     image_filenames[f] = filepath(image_filenames[f], root=l1_dirname)
   endfor
 
-  mp4_filename = filepath(string(run.date, wave_region, filename_prefix, $
-                                 format='(%"%s.ucomp.%s.l1.%s.mp4")'), $
-                          root=l1_dirname)
+  mp4_basename = string(run.date, wave_region, filename_prefix, $
+                        format='(%"%s.ucomp.%s.l1.%s.mp4")')
+  mp4_filename = filepath(mp4_basename, root=l1_dirname)
 
-  ucomp_create_mp4, image_filenames, mp4_filename, run=run, status=status
-  mg_log, 'wrote intensity mp4 %s', $
-          file_basename(mp4_filename), $
+  mg_log, 'creating %s from %d images...', mp4_basename, n_use, $
           name=run.logger_name, /info
+  ucomp_create_mp4, image_filenames, mp4_filename, run=run, status=status
+  mg_log, 'wrote intensity mp4 %s', mp4_basename, name=run.logger_name, /info
 
   done:
   mg_log, 'done', name=run.logger_name, /info
