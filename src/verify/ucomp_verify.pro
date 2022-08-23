@@ -144,7 +144,9 @@ function ucomp_verify_check_missing, date, $
   error = 0L
 
   ssh_options = ''
-  if (n_elements(ssh_key) gt 0L) then ssh_options += string(ssh_key, format='(%"-i %s")')
+  if (n_elements(collection_ssh_key) gt 0L) then begin
+    ssh_options += string(collection_ssh_key, format='(%"-i %s")')
+  endif
 
   ssh_cmd = string(ssh_options, $
                    collection_server, $

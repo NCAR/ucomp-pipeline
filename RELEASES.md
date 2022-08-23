@@ -230,3 +230,4 @@
   all quality check for any extension being identically zero
   add in/out quality check for cal files
   making mp4s in /tmp directory
+  fix for missing ssh key in checking for missing files in verification
