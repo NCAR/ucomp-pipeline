@@ -19,11 +19,17 @@ function ucomp_quality_dark_values, file, $
   field_mask = ucomp_field_mask(dims[0], dims[1], r_outer)
   field_mask_indices = where(field_mask, /null)
 
-  rcam_mean = mean(mean(reform(ext_data[*, *, *, 0, *]), dimension=3), dimension=3)
-  tcam_mean = mean(mean(reform(ext_data[*, *, *, 0, *]), dimension=3), dimension=3)
+  rcam_test_data = ext_data[*, *, *, 0, *]
+  tcam_test_data = ext_data[*, *, *, 1, *]
+  n_dims = size(rcam_test_data, /n_dimensions)
+  while (n_dims gt 2) do begin
+    rcam_test_data = mean(rcam_test_data, dimension=3)
+    tcam_test_data = mean(tcam_test_data, dimension=3)
+    n_dims = size(rcam_test_data, /n_dimensions)
+  endwhile
 
-  rcam_median = median(rcam_mean[field_mask_indices])
-  tcam_median = median(tcam_mean[field_mask_indices])
+  rcam_median = median(rcam_test_data[field_mask_indices])
+  tcam_median = median(tcam_test_data[field_mask_indices])
 
   if (rcam_median lt quality_rcam_dark_range[0] $
         || rcam_median gt quality_rcam_dark_range[1]) then begin

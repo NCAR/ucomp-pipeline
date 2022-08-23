@@ -223,3 +223,10 @@
 0.2.61 [Aug 16, 2022]
   better messages for verification log
 0.2.62
+  allow flat/cal combined datatype files
+  quality check on median dark value
+  add occulter and quality fields to ucomp_cal database table
+  adjust ranges in dark plots
+  all quality check for any extension being identically zero
+  add in/out quality check for cal files
+  making mp4s in /tmp directory
