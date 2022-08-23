@@ -25,7 +25,10 @@ function ucomp_quality_conditions, wave_region, run=run
                                              format='(%"sequential extensions acquired more than %0.1f secs apart")')}, $
                         {mask: 0UL, $
                          checker: 'ucomp_quality_datatype', $
-                         description: 'multiple datatypes in a file'}]
+                         description: 'multiple datatypes in a file'}, $
+                        {mask: 0UL, $
+                         checker: 'ucomp_quality_all_zero', $
+                         description: 'check if any extension is identically zero'}]
 
   quality_conditions.mask = 2UL ^ (ulindgen(n_elements(quality_conditions)))
 
