@@ -145,36 +145,36 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
   p = 2
   !p.multi = [(n_plots - p) * 2, 2, n_plots]
 
-  plot, [dark_info.t_c0arr], [cam0_dark_means], /nodata, $
-        charsize=charsize, title='Dark sensor temperature vs. counts', $
+  plot, [dark_info.t_c0arr], [cam0_dark_medians], /nodata, $
+        charsize=charsize, title='Dark sensor temperature vs. median counts', $
         psym=camera0_psym, symsize=symsize, $
         color=color, background=background_color, $
         xtitle='Sensor array temperature [C]', $
         xstyle=1, xrange=tarr_range, $
         ytitle='Counts [DN]/NUMSUM', $
         ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
-  mg_range_oplot, [dark_info.t_c0arr], [cam0_dark_means], $
+  mg_range_oplot, [dark_info.t_c0arr], [cam0_dark_medians], $
                   psym=camera0_psym, symsize=symsize, $
                   color=camera0_color, $
                   clip_color=camera0_color, clip_psym=7, clip_symsize=1.0
-  mg_range_oplot, [dark_info.t_c1arr], [cam1_dark_means], $
+  mg_range_oplot, [dark_info.t_c1arr], [cam1_dark_medians], $
                   psym=camera1_psym, symsize=symsize, $
                   color=camera1_color, $
                   clip_color=camera1_color, clip_psym=7, clip_symsize=1.0
 
-  plot, [dark_info.t_c1pcb], [cam1_dark_means], /nodata, $
-        charsize=charsize, title='Dark PCB temperature vs. counts', $
+  plot, [dark_info.t_c1pcb], [cam1_dark_medians], /nodata, $
+        charsize=charsize, title='Dark PCB temperature vs. median counts', $
         psym=camera0_psym, symsize=symsize, $
         color=color, background=background_color, $
         xtitle='PCB temperature [C]', $
         xstyle=1, xrange=tpcb_range, $
         ytitle='Counts [DN]/NUMSUM', $
         ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
-  mg_range_oplot, [dark_info.t_c0pcb], [cam0_dark_means], $
+  mg_range_oplot, [dark_info.t_c0pcb], [cam0_dark_medians], $
                   psym=camera0_psym, symsize=symsize, $
                   color=camera0_color, $
                   clip_color=camera0_color, clip_psym=7, clip_symsize=1.0
-  mg_range_oplot, [dark_info.t_c1pcb], [cam1_dark_means], $
+  mg_range_oplot, [dark_info.t_c1pcb], [cam1_dark_medians], $
                   psym=camera1_psym, symsize=symsize, $
                   color=camera1_color, $
                   clip_color=camera1_color, clip_psym=7, clip_symsize=1.0

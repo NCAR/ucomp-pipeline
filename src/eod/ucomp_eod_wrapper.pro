@@ -108,10 +108,10 @@ pro ucomp_eod_wrapper, date, config_filename
   endif else begin
     mg_log, 'skipping updating database', name=logger_name, /info
   endelse
-  ucomp_pipeline_step, 'ucomp_l0_distribute', run=run
 
   ucomp_pipeline_step, 'ucomp_get_observerlog', run=run
 
+  ucomp_pipeline_step, 'ucomp_l0_distribute', run=run
   for w = 0L, n_elements(wave_regions) - 1L do begin
     ucomp_pipeline_step, 'ucomp_l1_distribute', wave_regions[w], run=run
     ucomp_pipeline_step, 'ucomp_l2_distribute', wave_regions[w], run=run

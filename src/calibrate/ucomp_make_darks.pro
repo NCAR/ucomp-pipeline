@@ -168,10 +168,8 @@ pro ucomp_make_darks, run=run
     rcam_image = dark_image[*, *, 0]
     tcam_image = dark_image[*, *, 1]
 
-    ; normalize to 80 ms exposure time and 16 NUMSUM darks (the typical values)
-    normalization = (80.0 / dark_files[d].exptime) * (16L / dark_files[d].numsum)
-    dark_file.rcam_median_linecenter = normalization * median(rcam_image[field_mask_indices])
-    dark_file.tcam_median_linecenter = normalization * median(tcam_image[field_mask_indices])
+    dark_file.rcam_median_linecenter = median(rcam_image[field_mask_indices])
+    dark_file.tcam_median_linecenter = median(tcam_image[field_mask_indices])
 
     t_c0arr = ucomp_getpar(primary_header, 'T_C0ARR', /float)
     t_c0pcb = ucomp_getpar(primary_header, 'T_C0PCB', /float)

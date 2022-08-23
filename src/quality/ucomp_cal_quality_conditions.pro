@@ -14,12 +14,25 @@ function ucomp_cal_quality_conditions, wave_region, run=run
 
   ; don't set mask initially, set after creating so that conditions can be
   ; reordered easily
-  quality_conditions = [{mask: 0UL, $
-                         checker: 'ucomp_quality_occulterin_flats', $
-                         description: 'make sure occulter is not in for flats'}, $
-                        {mask: 0UL, $
-                         checker: 'ucomp_quality_datatype', $
-                         description: 'multiple datatypes in a file'}]
+
+  quality_conditions = [ $
+    {mask: 0UL, $
+     checker: 'ucomp_quality_occulterin_flats', $
+     description: 'make sure occulter is not in for flats'}, $
+    {mask: 0UL, $
+     checker: 'ucomp_quality_datatype', $
+     description: 'check for multiple datatypes (except flat/cal) in a file'}, $
+    {mask: 0UL, $
+     checker: 'ucomp_quality_dark_values', $
+     description: string(run->epoch('quality_rcam_dark_range'), $
+                         run->epoch('quality_tcam_dark_range'), $
+                         format='(%"check median dark value in nominal range (RCAM: %0.1f-%0.1f, TCAM: %0.1f-%0.1f)")')}, $
+    {mask: 0UL, $
+     checker: 'ucomp_quality_all_zero', $
+     description: 'check if any extension is identically zero'}, $
+    {mask: 0UL, $
+     checker: 'ucomp_quality_inout', $
+     description: 'check for in/out values that are neither in or out'}]
 
   quality_conditions.mask = 2UL ^ (ulindgen(n_elements(quality_conditions)))
 
