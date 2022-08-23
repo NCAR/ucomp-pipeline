@@ -233,3 +233,4 @@
   fix for missing ssh key in checking for missing files in verification
   potential fix for low background values (sum over polstate instead of mean)
   new demodulation coefficients
+0.2.63
