@@ -44,6 +44,9 @@ pro ucomp_rolling_background_plot, wave_region, db, run=run
   psym             = 6
   symsize          = 0.25
 
+  month_ticks = mg_tick_locator([jds[0], jds[-1]], /months)
+  month_ticks = month_ticks[0:*:3]
+
   mg_range_plot, jds, median_background, $
                  charsize=charsize, title='Median background vs. time', $
                  color=color, background=background_color, $
@@ -52,6 +55,9 @@ pro ucomp_rolling_background_plot, wave_region, db, run=run
                  xtitle='Date', $
                  xstyle=1, $
                  xtickformat='label_date', $
+                 xtickv=month_ticks, $
+                 xticks=n_elements(month_ticks) - 1L, $
+                 xminor=3, $
                  ytitle='Background [ppm]', $
                  ystyle=1, yrange=background_range, ytickformat='ucomp_dn_format'
 

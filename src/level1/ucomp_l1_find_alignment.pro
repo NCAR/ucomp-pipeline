@@ -45,9 +45,9 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
   rcam_offband_indices = where(file.onband_indices eq 1, n_rcam_offband)
 
   mg_log, /check_math, name=run.logger_name, /debug
-  rcam_background = mean(data[*, *, *, 0, rcam_offband_indices], dimension=3, /nan)
-  while (size(rcam_background, /n_dimensions) gt 3L) do rcam_background = mean(rcam_background, dimension=3, /nan)
-  rcam_background = total(rcam_background, 3, /preserve_type)
+  rcam_background = mean(data[*, *, *, 0, rcam_offband_indices], dimension=4, /nan)
+  while (size(rcam_background, /n_dimensions) gt 3L) do rcam_background = mean(rcam_background, dimension=4, /nan)
+  rcam_background = total(rcam_background, 3, /preserve_type, /nan)
   ; if all elements of dimension 3 are NaNs then the above lines will produce
   ; an floating-point operand error (128)
   !null = check_math(mask=128)
@@ -65,9 +65,9 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
   tcam_offband_indices = where(file.onband_indices eq 0, n_tcam_offband)
 
   mg_log, /check_math, name=run.logger_name, /debug
-  tcam_background = mean(data[*, *, *, 1, tcam_offband_indices], dimension=3, /nan)
-  while (size(tcam_background, /n_dimensions) gt 3L) do tcam_background = mean(tcam_background, dimension=3, /nan)
-  tcam_background = total(tcam_background, 3, /preserve_type)
+  tcam_background = mean(data[*, *, *, 1, tcam_offband_indices], dimension=4, /nan)
+  while (size(tcam_background, /n_dimensions) gt 3L) do tcam_background = mean(tcam_background, dimension=4, /nan)
+  tcam_background = total(tcam_background, 3, /preserve_type, /nan)
   ; if all elements of dimension 3 are NaNs then the above lines will produce
   ; an floating-point operand error (128)
   !null = check_math(mask=128)
