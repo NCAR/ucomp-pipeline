@@ -233,4 +233,5 @@
   fix for missing ssh key in checking for missing files in verification
   potential fix for low background values (sum over polstate instead of mean)
   new demodulation coefficients
-0.2.63
+0.2.63 [Aug 24, 2022]
+  fix for bug in previous fix for low background values
