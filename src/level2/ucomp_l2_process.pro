@@ -30,6 +30,13 @@ pro ucomp_l2_process, wave_region, run=run
     ucomp_l2_polarization, files[f], run=run
   endfor
 
-  ;ucomp_l2_create_averages, wave_region, 'mean', run=run
-  ; TODO: do quick inverts on average files
+  methods = ['mean', 'median']
+  for m = 0L, n_elements(methods) - 1L do begin
+    ucomp_l2_create_averages, wave_region, methods[m], $
+                              average_filenames=average_filenames, $
+                              run=run
+    ucomp_l2_quick_invert, wave_region, $
+                           average_filenames=average_filenames, $
+                           run=run
+  endfor
 end

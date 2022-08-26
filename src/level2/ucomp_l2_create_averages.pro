@@ -11,10 +11,14 @@
 ;     method of averaging, either "mean" or "median"
 ;
 ; :Keywords:
+;   average_filenames : out, optional, type=starr
+;     filenames of the average files produced
 ;   run : in, required, type=object
 ;     UCoMP run object
 ;-
-pro ucomp_l2_create_averages, wave_region, method, run=run
+pro ucomp_l2_create_averages, wave_region, method, $
+                              average_filenames=average_filenames, $
+                              run=run
   compile_opt strictarr
 
   l1_dir = filepath('', $
@@ -35,6 +39,7 @@ pro ucomp_l2_create_averages, wave_region, method, run=run
   mg_log, 'found %d programs for %s nm science files', $
           n_programs, wave_region, $
           name=run.logger_name, /info
+  average_filenames = strarr(n_programs)
   for p = 0L, n_programs - 1L do begin
     program_files = run->get_files(wave_region=wave_region, $
                                    program=program_names[p], $
@@ -52,6 +57,7 @@ pro ucomp_l2_create_averages, wave_region, method, run=run
     average_basename = string(run.date, wave_region, program_names[p], method, $
                               format='(%"%s.ucomp.%s.%s.%s.fts")')
     average_filename = filepath(average_basename, root=l2_dir)
+    average_filenames[p] = average_filename
 
     for f = 0L, n_files - 1L do begin
       mg_log, '%03d/%d: %s', f + 1L, n_files, $
