@@ -162,7 +162,9 @@ pro ucomp_average_l1_files, files, output_filename, method=method, run=run
     ;     - if not, produce SGS averages of each wavelength?
 
     ucomp_addpar, primary_header, 'DATE-OBS', files[0].date_obs
-    ucomp_addpar, primary_header, 'DATE-END', files[-1].date_obs, after='DATE-OBS'
+    ucomp_addpar, primary_header, 'DATE-END', files[-1].date_obs, $
+                  comment='UTC Date time when obs ended', $
+                  after='DATE-OBS'
     ucomp_addpar, primary_header, 'NUM_WAVE', n_unique_wavelengths
     ucomp_addpar, primary_header, 'NUMFILES', n_files
   
