@@ -33,6 +33,34 @@ pro ucomp_average_l1_files, files, output_filename, method=method, run=run
                     subdir=[run.date, 'level1'], $
                     root=run->config('processing/basedir'))
 
+  sgs_keywords = ['SGSSCINT', $
+                  'SGSDIMV', $
+                  'SGSDIMS', $
+                  'SGSSUMV', $
+                  'SGSSUMS', $
+                  'SGSRAV', $
+                  'SGSRAS', $
+                  'SGSDECV', $
+                  'SGSDECS', $
+                  'SGSLOOP', $
+                  'SGSRAZR', $
+                  'SGSDECZR']
+  n_sgs_keywords = n_elements(sgs_keywords)
+  sgs_values = fltarr(n_sgs_keywords) + !values.f_nan
+  sgs_counts = lonarr(n_sgs_keywords)
+
+  temp_bases = ['RACK', 'LCVR1', 'LCVR2', 'LCVR3', 'LNB1', 'MOD', 'LNB2', $
+                'LCVR4', 'LCVR5', 'BASE']
+  temp_keywords = ['T_' + temp_bases, $
+                   'TU_' + temp_bases, $
+                   'T_C0ARR', $ 
+                   'T_C0PCB', $ 
+                   'T_C1ARR', $ 
+                   'T_C1PCB'] 
+  n_temp_keywords = n_elements(temp_keywords)
+  temp_values = fltarr(n_temp_keywords) + !values.f_nan
+  temp_counts = lonarr(n_temp_keywords)
+
   ; first pass of files: get list of wavelengths
   all_wavelengths = list()
   for f = 0L, n_files - 1L do begin
@@ -41,15 +69,29 @@ pro ucomp_average_l1_files, files, output_filename, method=method, run=run
             name=run.logger_name, /info
 
     ucomp_read_l1_data, filepath(files[f].l1_basename, root=l1_dir), $
+                        primary_header=primary_header, $
                         ext_headers=ext_headers
     for e = 0L, n_elements(ext_headers) - 1L do begin
       wavelength = string(ucomp_getpar(ext_headers[e], 'WAVELNG'), format='(F0.2)')
       all_wavelengths->add, wavelength
     endfor
+    for t = 0L, n_temp_keywords - 1L do begin
+      temp = ucomp_getpar(primary_header, temp_keywords[t], found=found)
+      if (found) then begin
+        temp_counts[t] += 1L
+        temp_values[t] += temp
+      endif
+    endfor
     obj_destroy, ext_headers
   endfor
+
   all_wavelengths_array = all_wavelengths->toArray()
   obj_destroy, all_wavelengths
+
+  for t = 0L, n_temp_keywords - 1L do begin
+    if (temp_counts[t] gt 0L) then temp_values[t] /= temp_counts[t]
+    ucomp_addpar, primary_header, temp_keywords[t], temp_values[t]
+  endfor
 
   all_wavelengths = all_wavelengths_array[sort(all_wavelengths_array)]
   all_wavelengths = all_wavelengths[uniq(all_wavelengths)]
@@ -112,13 +154,25 @@ pro ucomp_average_l1_files, files, output_filename, method=method, run=run
       obj_destroy, ext_headers
     endfor
 
-    ; TODO: need to average temperatures, SGS values also
-    ; TODO: add start-end-number of files for average
-    case _method of
-      'mean': averaged_data[*, *, *, w] = mean(wavelength_data, dimension=4, /nan)
-      'median': averaged_data[*, *, *, w] = median(wavelength_data, dimension=4)
-      else:
-    endcase
+    ; TODO: need to average SGS values also
+    ;   How should they be averaged?
+    ;     - SGS values are by extension in the level 0 file
+    ;     - should level 1 files average them to the primary header?
+    ;     - if so, average files could just average primary header
+    ;     - if not, produce SGS averages of each wavelength?
+
+    ucomp_addpar, primary_header, 'DATE-OBS', files[0].date_obs
+    ucomp_addpar, primary_header, 'DATE-END', files[-1].date_obs, after='DATE-OBS'
+    ucomp_addpar, primary_header, 'NUM_WAVE', n_unique_wavelengths
+    ucomp_addpar, primary_header, 'NUMFILES', n_files
+  
+    if (size(wavelength_data, /n_dimensions) gt 3L) then begin
+      case _method of
+        'mean': averaged_data[*, *, *, w] = mean(wavelength_data, dimension=4, /nan)
+        'median': averaged_data[*, *, *, w] = median(wavelength_data, dimension=4)
+        else:
+      endcase
+    endif else averaged_data[*, *, *, w] = wavelength_data
   endfor
 
   ucomp_write_fits_file, output_filename, $
