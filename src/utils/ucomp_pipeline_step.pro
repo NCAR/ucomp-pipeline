@@ -24,7 +24,12 @@ pro ucomp_pipeline_step, routine_name, wave_region, skip=skip, run=run, _ref_ext
     mg_log, 'skipping %s', routine_name, $
             from=routine_name, name=run.logger_name, /info
   endif else begin
-    mg_log, 'starting...', from=routine_name, name=run.logger_name, /info
+    if (n_elements(wave_region) gt 0L) then begin
+      mg_log, 'starting for %s nm...', wave_region, $
+              from=routine_name, name=run.logger_name, /info
+    endif else begin
+      mg_log, 'starting...', from=routine_name, name=run.logger_name, /info
+    endelse
 
     start_memory = memory(/current)
 

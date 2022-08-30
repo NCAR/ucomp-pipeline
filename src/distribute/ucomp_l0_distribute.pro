@@ -12,11 +12,6 @@ pro ucomp_l0_distribute, run=run
 
   cd, current=original_dir
 
-  if (~run->config('raw/send_to_archive')) then begin
-    mg_log, 'skipping sending raw data to archive', name=run.logger_name, /info
-    goto, done
-  endif
-
   ; send raw files to archive
   ucomp_l0_archive, run=run
 

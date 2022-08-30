@@ -14,15 +14,16 @@
 pro ucomp_l1_distribute, wave_region, run=run
   compile_opt strictarr
 
+  ucomp_l1_archive, wave_region, run=run
+
   if (~run->config(wave_region + '/distribute_l1')) then begin
     mg_log, 'skipping distributing %s nm L1 data', wave_region, $
             name=run.logger, /info
     goto, done
   endif
 
-  ucomp_l1_archive, wave_region, run=run
-
   ; TODO: copy L1 data into web archive, etc. directories
+
   web_basedir = run->config('results/web_basedir')
   if (n_elements(web_basedir) gt 0L) then begin
     web_dir = filepath('', $
