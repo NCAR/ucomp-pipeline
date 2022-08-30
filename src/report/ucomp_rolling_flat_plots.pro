@@ -11,7 +11,8 @@ pro ucomp_rolling_flat_plots, wave_region, db, run=run
     mg_log, 'no flat data found', name=run.logger_name, /warn
     goto, done
   endif else begin
-    mg_log, '%d flats found', n_flats, name=run.logger_name, /info
+    mg_log, '%d %s nm flats found', n_flats, wave_region, $
+            name=run.logger_name, /info
   endelse
 
   rcam_median_linecenter = data.rcam_median_linecenter
