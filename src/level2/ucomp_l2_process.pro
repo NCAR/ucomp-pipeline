@@ -23,8 +23,10 @@ pro ucomp_l2_process, wave_region, run=run
   endif
 
   ; level 2 individual file processing
+  n_digits = floor(alog10(n_files)) + 1L
   for f = 0L, n_files - 1L do begin
-    mg_log, '%s...', files[f].l1_basename, $
+    mg_log, mg_format('%*d/%d @ %s: %s', n_digits, /simple), $
+            f + 1L, n_files, files[f].l1_basename, $
             name=run.logger_name, /info
     ucomp_l2_dynamics, files[f], run=run
     ucomp_l2_polarization, files[f], run=run
