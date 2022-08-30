@@ -12,6 +12,12 @@ pro ucomp_l0_archive, run=run
 
   cd, current=original_dir
 
+  if (~run->config('raw/send_to_archive')) then begin
+    mg_log, 'skipping archiving L0 data', wave_region, $
+            name=run.logger, /info
+    goto, done
+  endif
+
   l0_dir = filepath(run.date, root=run->config('raw/basedir'))
   if (~file_test(l0_dir, /directory)) then begin
     mg_log, 'raw directory does not exist', name=run.logger_name, /error
@@ -85,33 +91,28 @@ pro ucomp_l0_archive, run=run
   endif
   ucomp_fix_permissions, tarlist, logger_name=run.logger_name
 
-  ; put link to L0 tarball in the archive directory
+  ; put link to L0 tarball in the archive queue directory
   archive_gateway = run->config('results/archive_gateway')
-  if (run->config('raw/send_to_archive')) then begin
-    if (n_elements(archive_gateway) gt 0L) then begin
-      ; create archive gateway directory if needed
-      ucomp_mkdir, archive_gateway, logger_name=run.logger_name
+  if (n_elements(archive_gateway) gt 0L) then begin
+    ; create archive gateway directory if needed
+    ucomp_mkdir, archive_gateway, logger_name=run.logger_name
 
-      dst_tarfile = filepath(tarfile_basename, root=archive_gateway)
+    dst_tarfile = filepath(tarfile_basename, root=archive_gateway)
 
-      ; remove old links to tarballs
-      ; NOTE: need to test for dangling symlink separately because a link to a
-      ; non-existent file will return 0 from FILE_TEST with just /SYMLINK
-      if (file_test(dst_tarfile, /symlink) $
-          || file_test(dst_tarfile, /dangling_symlink)) then begin
-        mg_log, 'removing link to tarball in archive gateway', $
-                name=run.logger_name, /warn
-        file_delete, dst_tarfile
-      endif
-
-      file_link, tarfile, $
-                 dst_tarfile
-    endif else begin
-      mg_log, 'no archive gateway set, not sending to archive', $
+    ; remove old links to tarballs
+    ; NOTE: need to test for dangling symlink separately because a link to a
+    ; non-existent file will return 0 from FILE_TEST with just /SYMLINK
+    if (file_test(dst_tarfile, /symlink) $
+        || file_test(dst_tarfile, /dangling_symlink)) then begin
+      mg_log, 'removing link to tarball in archive gateway', $
               name=run.logger_name, /warn
-    endelse
+      file_delete, dst_tarfile
+    endif
+
+    file_link, tarfile, dst_tarfile
   endif else begin
-    mg_log, 'skipping sending to archive', name=run.logger_name, /info
+    mg_log, 'no archive gateway set, not sending to archive', $
+            name=run.logger_name, /warn
   endelse
 
   done:
