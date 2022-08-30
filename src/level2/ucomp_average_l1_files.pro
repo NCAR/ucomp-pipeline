@@ -182,6 +182,13 @@ pro ucomp_average_l1_files, files, output_filename, method=method, run=run
                          averaged_data, $
                          averaged_headers
 
+  ucomp_write_iquv_image, averaged_data, $
+                          file_basename(output_filename), $
+                          files[0].wave_region, $
+                          float(all_wavelengths), $
+                          /daily, $
+                          run=run
+
   obj_destroy, averaged_headers
 
   done:

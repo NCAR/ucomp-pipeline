@@ -4,43 +4,49 @@
 ; Process a plot of the center wavelength from a UCoMP science file.
 ;
 ; :Params:
-;   file : in, required, type=object
-;     `ucomp_file` object
 ;   data : in, required, type="fltarr(nx, ny, nstokes, nexts)"
 ;     extension data
+;   l1_basename : in, required, type=string
+;   wave_region : in, required, type=string
+;   wavelengths : in, required, type=fltarr
 ;
 ; :Keywords:
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-pro ucomp_write_iquv_image, file, data, run=run
+pro ucomp_write_iquv_image, data, l1_basename, wave_region, wavelengths, $
+                            daily=daily, $
+                            run=run
   compile_opt strictarr
+
+  dims = size(data, /dimensions)
+  n_extensions = dims[3]
 
   reduce_dims_factor = 2L
   center_wavelength_only = run->config('intensity/center_wavelength_gifs_only')
 
   l1_dirname = filepath('', $
-                        subdir=[run.date, 'level1'], $
+                        subdir=[run.date, keyword_set(daily) ? 'level2' : 'level1'], $
                         root=run->config('processing/basedir'))
   ucomp_mkdir, l1_dirname, logger_name=run.logger_name
 
-  iquv_basename_format = file_basename(file.l1_basename, '.fts')
+  iquv_basename_format = file_basename(l1_basename, '.fts')
   iquv_basename_format += '.iquv'
   if (~center_wavelength_only) then iquv_basename_format += '.ext%02d'
   iquv_basename_format += '.png'
   iquv_filename_format = filepath(iquv_basename_format, root=l1_dirname)
 
-  intensity_display_min   = run->line(file.wave_region, 'intensity_display_min')
-  intensity_display_max   = run->line(file.wave_region, 'intensity_display_max')
-  intensity_display_gamma = run->line(file.wave_region, 'intensity_display_gamma')
-  intensity_display_power = run->line(file.wave_region, 'intensity_display_power')
+  intensity_display_min   = run->line(wave_region, 'intensity_display_min')
+  intensity_display_max   = run->line(wave_region, 'intensity_display_max')
+  intensity_display_gamma = run->line(wave_region, 'intensity_display_gamma')
+  intensity_display_power = run->line(wave_region, 'intensity_display_power')
 
-  quv_display_min   = run->line(file.wave_region, 'quv_display_min')
-  quv_display_max   = run->line(file.wave_region, 'quv_display_max')
-  quv_display_gamma = run->line(file.wave_region, 'quv_display_gamma')
-  quv_display_power = run->line(file.wave_region, 'quv_display_power')
+  quv_display_min   = run->line(wave_region, 'quv_display_min')
+  quv_display_max   = run->line(wave_region, 'quv_display_max')
+  quv_display_gamma = run->line(wave_region, 'quv_display_gamma')
+  quv_display_power = run->line(wave_region, 'quv_display_power')
 
-  datetime = strmid(file_basename(file.raw_filename), 0, 15)
+  datetime = strmid(l1_basename, 0, keyword_set(daily) ? 8 : 15)
   date_stamp = ucomp_dt2stamp(datetime)
   nx = run->epoch('nx', datetime=datetime)
   ny = run->epoch('ny', datetime=datetime)
@@ -67,25 +73,20 @@ pro ucomp_write_iquv_image, file, data, run=run
   inflection_color = 255
   tvlct, 255, 0, 0, inflection_color
 
-  ;tvlct, r, g, b, /get
-
   charsize = 1.25
   title_charsize = 1.75
   detail_charsize = 0.9
 
   n_divisions = 4L
 
-  wavelengths = file.wavelengths
   pol_states = ['I', 'Q', 'U', 'V']
-  for e = 1L, file.n_extensions do begin
+  for e = 1L, n_extensions do begin
     if (center_wavelength_only) then begin
-      diff = wavelengths[e - 1L] - run->line(file.wave_region, 'center_wavelength')
+      diff = wavelengths[e - 1L] - run->line(wave_region, 'center_wavelength')
       if (abs(diff) gt 0.01) then continue
     endif
 
     ext_data = reform(data[*, *, *, e - 1L])
-
-    dims = size(ext_data, /dimensions)
 
     for p = 0L, dims[2] - 1L do begin
       if (p eq 0) then begin
@@ -122,8 +123,8 @@ pro ucomp_write_iquv_image, file, data, run=run
         xyouts, xmargin * dims[0] / reduce_dims_factor, $
                 (2.0 - ymargin) * dims[1] / reduce_dims_factor, $
                 /device, $
-                string(run->line(file.wave_region, 'ionization'), $
-                       run->line(file.wave_region, 'center_wavelength'), $
+                string(run->line(wave_region, 'ionization'), $
+                       run->line(wave_region, 'center_wavelength'), $
                        format='(%"%s %0.2f nm")'), $
                 charsize=charsize, color=text_color
         xyouts, xmargin * dims[0] / reduce_dims_factor, $
@@ -170,7 +171,7 @@ end
 ; main-level example program
 
 ;date = '20220105'
-date = '20211213'
+date = '20220727'
 
 config_basename = 'ucomp.latest.cfg'
 config_filename = filepath(config_basename, $
@@ -179,14 +180,14 @@ config_filename = filepath(config_basename, $
 run = ucomp_run(date, 'test', config_filename)
 
 ;l0_basename = '20220105.204523.49.ucomp.1074.l0.fts'
-l0_basename = '20211213.190812.67.ucomp.1074.l0.fts'
+l0_basename = '20220727.225643.89.ucomp.1074.l0.fts'
 l0_filename = filepath(l0_basename, $
                        subdir=date, $
                        root=run->config('raw/basedir'))
 file = ucomp_file(l0_filename, run=run)
 
 ;l1_basename = '20220105.204523.ucomp.1074.l1.5.fts'
-l1_basename = '20211213.190812.ucomp.1074.l1.5.fts'
+l1_basename = '20220727.225643.ucomp.1074.l1.3.fts'
 l1_filename = filepath(l1_basename, $
                        subdir=[date, 'level1'], $
                        root=run->config('processing/basedir'))
@@ -194,7 +195,8 @@ l1_filename = filepath(l1_basename, $
 ucomp_read_l1_data, l1_filename, ext_data=data, n_extensions=n_extensions
 file.n_extensions = n_extensions
 
-ucomp_write_iquv_image, file, data, run=run
+ucomp_write_iquv_image, data, l1_basename, file.wave_region, file.wavelengths, $
+                        run=run
 
 obj_destroy, file
 obj_destroy, run
