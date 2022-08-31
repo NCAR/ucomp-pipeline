@@ -23,7 +23,9 @@ pro ucomp_rolling_flat_plots, wave_region, db, run=run
   jds = ucomp_dateobs2julday(data.date_obs)
   format = '(C(CYI4.4, "-", CMoI2.2, "-", CDI2.2))'
 
-  flat_range  = run->line(wave_region, 'flat_value_range')
+  flat_range       = run->line(wave_region, 'flat_value_display_range')
+  linecenter_range = run->line(wave_region, 'flat_value_linecenter_range')
+  continuum_range  = run->line(wave_region, 'flat_value_continuum_range')
 
   ; save original graphics settings
   original_device = !d.name
@@ -87,6 +89,9 @@ pro ucomp_rolling_flat_plots, wave_region, db, run=run
   xyouts, 0.95, 0.9, /normal, $
           'camera 1', alignment=1.0, color=camera1_color
 
+  plots, [jds[0], jds[-1]], fltarr(2) + linecenter_range[0], linestyle=3, color=color
+  plots, [jds[0], jds[-1]], fltarr(2) + linecenter_range[1], linestyle=3, color=color
+
   plot, jds, rcam_median_continuum, /nodata, $
         charsize=charsize, $
         title=string(wave_region, format='%s nm (not dark corrected) flat continuum median counts vs. time'), $
@@ -114,6 +119,9 @@ pro ucomp_rolling_flat_plots, wave_region, db, run=run
           'camera 0', alignment=1.0, color=camera0_color
   xyouts, 0.95, 0.4, /normal, $
           'camera 1', alignment=1.0, color=camera1_color
+
+  plots, [jds[0], jds[-1]], fltarr(2) + continuum_range[0], linestyle=3, color=color
+  plots, [jds[0], jds[-1]], fltarr(2) + continuum_range[1], linestyle=3, color=color
 
   ; save plots image file
   output_filename = filepath(string(run.date, wave_region, $
