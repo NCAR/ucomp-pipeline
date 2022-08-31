@@ -47,7 +47,7 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
   mg_log, /check_math, name=run.logger_name, /debug
   rcam_background = mean(data[*, *, *, 0, rcam_offband_indices], dimension=4, /nan)
   while (size(rcam_background, /n_dimensions) gt 3L) do rcam_background = mean(rcam_background, dimension=4, /nan)
-  rcam_background = total(rcam_background, 3, /preserve_type, /nan)
+  rcam_background = rcam_background[*, *, 0]
   ; if all elements of dimension 3 are NaNs then the above lines will produce
   ; an floating-point operand error (128)
   !null = check_math(mask=128)
@@ -67,7 +67,7 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
   mg_log, /check_math, name=run.logger_name, /debug
   tcam_background = mean(data[*, *, *, 1, tcam_offband_indices], dimension=4, /nan)
   while (size(tcam_background, /n_dimensions) gt 3L) do tcam_background = mean(tcam_background, dimension=4, /nan)
-  tcam_background = total(tcam_background, 3, /preserve_type, /nan)
+  tcam_background = tcam_background[*, *, 0]
   ; if all elements of dimension 3 are NaNs then the above lines will produce
   ; an floating-point operand error (128)
   !null = check_math(mask=128)
