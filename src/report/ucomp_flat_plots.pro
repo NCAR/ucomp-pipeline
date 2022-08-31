@@ -88,7 +88,7 @@ pro ucomp_flat_plots, wave_region, $
   end_time   = 19   ; 24-hour time in observing day
   end_time  >= ceil(max(flat_times))
 
-  flat_range = run->line(wave_region, 'flat_value_range')
+  flat_range = run->line(wave_region, 'flat_value_display_range')
 
   ; columns for ONBAND, rows for wavelengths
   !p.multi = [0, 2, n_unique_wavelengths]
