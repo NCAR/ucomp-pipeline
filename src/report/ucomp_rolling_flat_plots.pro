@@ -57,12 +57,19 @@ pro ucomp_rolling_flat_plots, wave_region, db, run=run
 
   !null = label_date(date_format='%Y-%N-%D')
 
+  month_ticks = mg_tick_locator([jds[0], jds[-1]], /months)
+  month_ticks = month_ticks[0:*:3]
+
   plot, jds, rcam_median_linecenter, /nodata, $
-        charsize=charsize, title='Flat (not dark corrected) line center median counts vs. time', $
+        charsize=charsize, $
+        title=string(wave_region, format='%s nm (not dark corrected) flat line center median counts vs. time'), $
         color=color, background=background_color, $
         xtitle='Date', $
         xstyle=1, $
         xtickformat='label_date', $
+        xtickv=month_ticks, $
+        xticks=n_elements(month_ticks) - 1L, $
+        xminor=3, $
         ytitle='Counts [DN]/NUMSUM', $
         ystyle=1, yrange=flat_range, ytickformat='ucomp_dn_format'
   mg_range_oplot, jds, $
@@ -81,11 +88,15 @@ pro ucomp_rolling_flat_plots, wave_region, db, run=run
           'camera 1', alignment=1.0, color=camera1_color
 
   plot, jds, rcam_median_continuum, /nodata, $
-        charsize=charsize, title='Flat (not dark corrected) continuum median counts vs. time', $
+        charsize=charsize, $
+        title=string(wave_region, format='%s nm (not dark corrected) flat continuum median counts vs. time'), $
         color=color, background=background_color, $
         xtitle='Time [HST]', $
         xstyle=1, $
         xtickformat='label_date', $
+        xtickv=month_ticks, $
+        xticks=n_elements(month_ticks) - 1L, $
+        xminor=3, $
         ytitle='Counts [DN]/NUMSUM', $
         ystyle=1, yrange=flat_range, ytickformat='ucomp_dn_format'
   mg_range_oplot, jds, $
@@ -123,8 +134,8 @@ end
 
 ; main-level example program
 
-date = '20220721'
-config_basename = 'ucomp.latest.cfg'
+date = '20220831'
+config_basename = 'ucomp.production.cfg'
 config_filename = filepath(config_basename, $
                            subdir=['..', '..', 'config'], $
                            root=mg_src_root())
@@ -137,7 +148,10 @@ db = ucomp_db_connect(run->config('database/config_filename'), $
                       log_statements=run->config('database/log_statements'), $
                       status=status)
 
-ucomp_rolling_flat_plots, '1074', db, run=run
+wave_regions = run->all_lines()
+for w = 0L, n_elements(wave_regions) - 1L do begin
+  ucomp_rolling_flat_plots, wave_regions[w], db, run=run
+endfor
 
 obj_destroy, [db, run]
 
