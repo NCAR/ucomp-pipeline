@@ -8,9 +8,8 @@ pro ucomp_find_flat_outliers, wave_region, db, run=run
                    count=n_flats, error=error, fields=fields, sql_statement=sql)
 
   jds = ucomp_dateobs2julday(data.date_obs)
-  ;flat_range  = run->line(wave_region, 'flat_value_range')
-  linecenter_range = [340.0, 400.0]
-  continuum_range = [300.0, 350.0]
+  linecenter_range = run->line(wave_region, 'flat_value_linecenter_range')
+  continuum_range = run->line(wave_region, 'flat_value_continuum_range')
 
   start_date = julday(2, 23, 2022, 19, 51, 17)
 
@@ -58,7 +57,6 @@ db = ucomp_db_connect(run->config('database/config_filename'), $
                       status=status)
 
 wave_regions = run->all_lines()
-wave_regions = ['1074']
 for w = 0L, n_elements(wave_regions) - 1L do begin
   print, wave_regions[w], format='### %s nm outlier flats'
   ucomp_find_flat_outliers, wave_regions[w], db, run=run
