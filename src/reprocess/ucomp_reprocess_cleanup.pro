@@ -33,5 +33,12 @@ pro ucomp_reprocess_cleanup, is_available=is_available, run=run
                     logger_name=run.logger_name
   endif
 
+  ; remove results that have been distributed for the date
+  fullres_basedir = run->config('results/fullres_basedir')
+  if (n_elements(fullres_basedir) gt 0L) then begin
+    ucomp_clearday, run.date, fullres_basedir, 'fullres web archive', $
+                    logger_name=run.logger_name
+  endif
+
   done:
 end
