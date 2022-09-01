@@ -125,10 +125,9 @@ pro ucomp_l1_process_file, file, run=run
 
   ucomp_write_intensity_image, file, data, primary_header, run=run
   ucomp_write_intensity_image, file, data, primary_header, run=run, /enhanced
-  ucomp_write_iquv_image, file, data, run=run
+  ucomp_write_iquv_image, data, file.l1_basename, file.wave_region, file.wavelengths, $
+                          run=run
   ucomp_write_all_iquv_image, file, data, run=run
-
-  ;ucomp_write_nrgf_image, file, primary_header, data, run=run
 
   done:
   if (obj_valid(headers)) then obj_destroy, headers

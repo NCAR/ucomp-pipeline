@@ -6,6 +6,17 @@
 ; :Params:
 ;   wave_region : in, required, type=string
 ;     wave region to produce a synoptic map for 
+;   name : in, required, type=string
+;     human readable name for this type of synoptic plot
+;   flag : in, required, type=string
+;     filename flag for this type of synoptic plot
+;   option_prefix : in, required, type=string
+;     prefix for display parameters, i.e., option_prefix + '_display_min' in
+;     the wave region configurations
+;   height : in, required, type=float
+;     height of annulus +/- 0.02 Rsun [Rsun]
+;   field : in, required, type=string
+;     field in ucomp_sci database table to retrieve data from
 ;   db : in, required, type=object
 ;     database connection
 ;
@@ -73,10 +84,12 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
     endelse
   endfor
 
-  ; plot data
+  ; configure device
+
+  original_device = !d.name
+
   set_plot, 'Z'
   device, set_resolution=[(30 * n_days + 50) < 1200, 800]
-  original_device = !d.name
 
   device, get_decomposed=original_decomposed
   tvlct, rgb, /get
@@ -107,6 +120,8 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
                min=display_min^display_power, $
                max=display_max^display_power)
 
+  map = float(map)
+
   north_up_map = shift(map, 0, -180)
   east_limb = reverse(north_up_map[*, 0:359], 2)
   west_limb = north_up_map[*, 360:*]
@@ -124,7 +139,7 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
   mg_image, reverse(east_limb, 1), reverse(jd_dates), $
             xrange=[end_date_jd, start_date_jd], $
             xtyle=1, xtitle='Date (not offset for E limb)', $
-            min_value=0, max_value=255, $
+            min_value=0.0, max_value=255.0, $
             /axes, yticklen=-0.005, xticklen=-0.01, $
             color=foreground, background=background, $
             title=string(title, format='(%"%s (East limb)")'), $
@@ -136,7 +151,7 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
   mg_image, reverse(west_limb, 1), reverse(jd_dates), $
             xrange=[end_date_jd, start_date_jd], $
             xstyle=1, xtitle='Date (not offset for W limb)', $
-            min_value=minv, max_value=maxv, $
+            min_value=0.0, max_value=255.0, $
             /axes, yticklen=-0.005, xticklen=-0.01, $
             color=foreground, background=background, $
             title=string(title, format='(%"%s (West limb)")'), $
@@ -206,8 +221,8 @@ end
 
 ; main-level example program
 
-date = '20220302'
-config_basename = 'ucomp.latest.cfg'
+date = '20220831'
+config_basename = 'ucomp.production.cfg'
 config_filename = filepath(config_basename, $
                            subdir=['..', '..', 'config'], $
                            root=mg_src_root())
@@ -218,11 +233,13 @@ db = ucomp_db_connect(run->config('database/config_filename'), $
                       log_statements=run->config('database/log_statements'), $
                       status=status)
 
-ucomp_rolling_synoptic_map, '1074', 'linear polarization', 'linpol', 1.3, 'r13l', $
+;ucomp_rolling_synoptic_map, '1074', 'linear polarization', 'linpol', 'linpol', 1.3, 'r13l', $
+;                            db, run=run
+ucomp_rolling_synoptic_map, '1074', 'intensity', 'int', 'intensity', 1.08, 'r108i', $
                             db, run=run
-ucomp_rolling_synoptic_map, '1074', 'intensity', 'int', 1.08, 'r108i', $
-                            db, run=run
-
+; window, xsize=(30 * n_days + 50) < 1200, ysize=800, /free
+; device, decomposed=0
+; erase, 255
 obj_destroy, db
 obj_destroy, run
 
