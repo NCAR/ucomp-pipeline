@@ -231,9 +231,16 @@
   add in/out quality check for cal files
   making mp4s in /tmp directory
   fix for missing ssh key in checking for missing files in verification
-  potential fix for low background values (sum over polstate instead of mean)
+  potential fix for low background values (sum over pol state instead of mean)
   new demodulation coefficients
 0.2.63 [Aug 24, 2022]
   fix for bug in previous fix for low background values
 0.2.64 [Aug 24, 2022]
   change valid dark value range by epoch
+0.2.65 [Aug 31, 2022]
+  create averages of level 1 files
+  adjust background plot ranges for some wave regions
+  updated ranges for rolling dark and flat plots
+  archive and distribute level 1 and 2 data
+  use background I instead of sum of pol states for backgrounds
+  fix error in display of synoptic maps
