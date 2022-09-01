@@ -13,8 +13,7 @@ pro ucomp_l0_archive, run=run
   cd, current=original_dir
 
   if (~run->config('raw/send_to_archive')) then begin
-    mg_log, 'skipping archiving L0 data', wave_region, $
-            name=run.logger, /info
+    mg_log, 'skipping archiving L0 data', name=run.logger, /info
     goto, done
   endif
 
