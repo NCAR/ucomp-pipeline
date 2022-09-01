@@ -243,3 +243,4 @@
   updated ranges for rolling dark and flat plots
   archive and distribute level 1 and 2 data
   use background I instead of sum of pol states for backgrounds
+  fix error in display of synoptic maps
