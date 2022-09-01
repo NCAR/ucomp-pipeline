@@ -80,7 +80,7 @@ def get_config_filename(flags):
 def get_config(flags, error):
     config_filename = get_config_filename(flags)
     if not os.path.isfile(config_filename):
-        config_basename = os.bath.basename(config_filename)
+        config_basename = os.path.basename(config_filename)
         error(f"configuration file does not exist: {config_basename}")
 
     # read config file to get arguments to launch data/processing simulators
