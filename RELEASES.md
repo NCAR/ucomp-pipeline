@@ -244,4 +244,5 @@
   archive and distribute level 1 and 2 data
   use background I instead of sum of pol states for backgrounds
   fix error in display of synoptic maps
-0.2.66
+0.2.66 [Sep 1, 2022]
+  fix for log message when not archiving level 0 data
