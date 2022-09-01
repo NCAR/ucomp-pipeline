@@ -246,3 +246,4 @@
   fix error in display of synoptic maps
 0.2.66 [Sep 1, 2022]
   fix for log message when not archiving level 0 data
+0.2.67
