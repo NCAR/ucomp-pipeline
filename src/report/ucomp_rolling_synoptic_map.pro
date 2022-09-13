@@ -92,33 +92,38 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
   device, set_resolution=[(30 * n_days + 50) < 1200, 800]
 
   device, get_decomposed=original_decomposed
-  tvlct, rgb, /get
   device, decomposed=0
 
-  range = mg_range(map)
-  if (range[0] lt 0.0) then begin
-    minv = 0.0
-    maxv = range[1]
+  n_colors = 253
+  ucomp_loadct, option_prefix, n_colors=n_colors
 
-    loadct, 0, /silent
-    foreground = 0
-    background = 255
-  endif else begin
-    minv = 0.0
-    maxv = range[1]
-
-    loadct, 0, /silent
-    foreground = 0
-    background = 255
-  endelse
+  display_min   = run->line(wave_region, option_prefix + '_display_amma')
+  gamma_ct, display_gamma, /current
 
   display_min   = run->line(wave_region, option_prefix + '_display_min')
   display_max   = run->line(wave_region, option_prefix + '_display_max')
   display_power = run->line(wave_region, option_prefix + '_display_power')
 
+  background_color = 253
+  tvlct, 255, 255, 255, background_color
+  text_color = 254
+  tvlct, 0, 0, 0, text_color
+  detail_text_color = 255
+  tvlct, 128, 128, 128, detail_text_color
+
+  tvlct, rgb, /get
+
+  if (name eq 'linpol') then map = alog10(map)
+
+  nan_indices = where(finite(map) eq 0, n_nan)
+
   map = bytscl(map^display_power, $
                min=display_min^display_power, $
-               max=display_max^display_power)
+               max=display_max^display_power, $
+               top=n_colors - 1L, $
+               /nan)
+
+  if (n_nan gt 0L) then map[nan_indices] = 0
 
   map = float(map)
 
@@ -135,13 +140,13 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
 
   title = string(name, wave_region, height, start_date, end_date, $
                  format='(%"UCoMP synoptic map for %s at %s nm at r%0.2f from %s to %s")')
-  erase, background
+  erase, background_color
   mg_image, reverse(east_limb, 1), reverse(jd_dates), $
             xrange=[end_date_jd, start_date_jd], $
             xtyle=1, xtitle='Date (not offset for E limb)', $
             min_value=0.0, max_value=255.0, $
             /axes, yticklen=-0.005, xticklen=-0.01, $
-            color=foreground, background=background, $
+            color=text_color, background=background_color, $
             title=string(title, format='(%"%s (East limb)")'), $
             xtickformat='label_date', $
             position=[0.05, 0.55, 0.97, 0.95], /noerase, $
@@ -153,7 +158,7 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
             xstyle=1, xtitle='Date (not offset for W limb)', $
             min_value=0.0, max_value=255.0, $
             /axes, yticklen=-0.005, xticklen=-0.01, $
-            color=foreground, background=background, $
+            color=text_color, background=background_color, $
             title=string(title, format='(%"%s (West limb)")'), $
             xtickformat='label_date', $
             position=[0.05, 0.05, 0.97, 0.45], /noerase, $
@@ -164,7 +169,7 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
   xyouts, 0.97, 0.485, /normal, alignment=1.0, $
           string(display_min, display_max, display_power, $
                  format='(%"min/max/exp: %0.1f, %0.1f, %0.2f")'), $
-          charsize=charsize, color=128
+          charsize=charsize, color=detail_text_color
 
   im = tvrd()
 
@@ -233,10 +238,24 @@ db = ucomp_db_connect(run->config('database/config_filename'), $
                       log_statements=run->config('database/log_statements'), $
                       status=status)
 
-;ucomp_rolling_synoptic_map, '1074', 'linear polarization', 'linpol', 'linpol', 1.3, 'r13l', $
-;                            db, run=run
+ucomp_rolling_synoptic_map, '1074', 'linear polarization', 'linpol', 'linpol', 1.30, 'r13l', $
+                            db, run=run
 ucomp_rolling_synoptic_map, '1074', 'intensity', 'int', 'intensity', 1.08, 'r108i', $
                             db, run=run
+ucomp_rolling_synoptic_map, '1074', 'radial azimuth', $
+                            'radazi', $
+                            'radial_azimuth', $
+                            1.08, $
+                            'r108radazi', $
+                            db, $
+                            run=run
+ucomp_rolling_synoptic_map, '1074', 'doppler velocity', $
+                            'doppler', $
+                            'doppler', $
+                            1.08, $
+                            'r108doppler', $
+                            db, $
+                            run=run
 ; window, xsize=(30 * n_days + 50) < 1200, ysize=800, /free
 ; device, decomposed=0
 ; erase, 255
