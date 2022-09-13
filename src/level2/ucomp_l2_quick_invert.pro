@@ -27,6 +27,9 @@ pro ucomp_l2_quick_invert, wave_region, $
   compile_opt strictarr
 
   for f = 0L, n_elements(average_filenames) - 1L do begin
-    run.datetime = strmid(file_basename(average_filenames[f]), 0, 8)
+    if (average_filenames[f] ne '') then begin
+      run.datetime = strmid(file_basename(average_filenames[f]), 0, 8)
+      ; TODO: create quick invert
+    endif
   endfor
 end
