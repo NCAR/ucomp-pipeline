@@ -64,7 +64,7 @@ pro ucomp_verify_check_files, run=run, status=status
     mg_log, 'dates OK for %d raw files', n_files, $
             name=run.logger_name, /info
   endif else begin
-    mg_log, '%d files with bad dates', n_bad, name=run.logger_name, /warn
+    mg_log, '%d files with bad dates', n_bad, name=run.logger_name, /error
     status = 1L
   endelse
 end
@@ -93,7 +93,7 @@ pro ucomp_verify_check_permissions, run=run, status=status
     mg_log, 'permissions OK for %d processed files', n_files, $
             name=run.logger_name, /info
   endif else begin
-    mg_log, '%d files with bad permissions', n_bad, name=run.logger_name, /warn
+    mg_log, '%d files with bad permissions', n_bad, name=run.logger_name, /error
     status = 1L
   endelse
 end
@@ -205,7 +205,7 @@ pro ucomp_verify_check_logs, run=run, status=status, n_raw_files=n_raw_files
                                   root=raw_dir)
 
   if (~file_test(machine_log_filename, /regular)) then begin
-    mg_log, 'machine log not present', name=run.logger_name, /warn
+    mg_log, 'machine log not present', name=run.logger_name, /error
     status = 1L
     return
   endif
@@ -213,7 +213,7 @@ pro ucomp_verify_check_logs, run=run, status=status, n_raw_files=n_raw_files
   n_ml_lines = file_lines(machine_log_filename)
   if (n_ml_lines eq 0L && n_raw_files ne 0L) then begin
     mg_log, 'machine log empty, but there are raw files', $
-            name=run.logger_name, /warn
+            name=run.logger_name, /error
     status = 1L
     return
   endif
@@ -232,7 +232,7 @@ pro ucomp_verify_check_logs, run=run, status=status, n_raw_files=n_raw_files
     collection_server = run->config('verification/collection_server')
     collection_basedir = run->config('verification/collection_basedir')
     if (n_elements(collection_server) eq 0L || n_elements(collection_basedir) eq 0L) then begin
-      mg_log, 'cannot check collection server', name=run.logger_name, /warn
+      mg_log, 'cannot check collection server', name=run.logger_name, /error
       status = 1L
       return
     endif
@@ -277,7 +277,7 @@ pro ucomp_verify_check_logs, run=run, status=status, n_raw_files=n_raw_files
         mg_log, '%d of %s on collection server', $
                 n_on_server, $
                 mg_plural(n_missing_files, 'missing file', 'missing files'), $
-                name=run.logger_name, /warn
+                name=run.logger_name, /error
         status = 1L
         return
       endelse
@@ -314,11 +314,11 @@ pro ucomp_verify_check_logs, run=run, status=status, n_raw_files=n_raw_files
             status = 1L
             mg_log, 'bad size for %s (%d != %d)', $
                     ml_files[f], info.size, ml_sizes[f], $
-                    name=run.logger_name, /warn
+                    name=run.logger_name, /error
           endif
         end
       n_matches gt 1: begin
-          mg_log, 'multiple %s files', ml_files[f], name=run.logger_name, /warn
+          mg_log, 'multiple %s files', ml_files[f], name=run.logger_name, /error
           n_bad += 1L
           status = 1L
         end
@@ -346,14 +346,14 @@ pro ucomp_verify_check_collection_server, run=run, status=status
 
   collection_server = run->config('verification/collection_server')
   if (n_elements(collection_server) eq 0L) then begin
-    mg_log, 'no collection server specified', name=run.logger_name, /warn
+    mg_log, 'no collection server specified', name=run.logger_name, /error
     status = 1UL
     goto, done
   endif
 
   collection_basedir = run->config('verification/collection_basedir')
   if (n_elements(collection_basedir) eq 0L) then begin
-    mg_log, 'no collection basedir specified', name=run.logger_name, /warn
+    mg_log, 'no collection basedir specified', name=run.logger_name, /error
     status = 1UL
     goto, done
   endif
@@ -387,7 +387,7 @@ pro ucomp_verify_check_collection_server, run=run, status=status
                                   root=raw_dir)
   if (~file_test(machine_log_filename, /regular)) then begin
     status or= 1UL
-    mg_log, 'no machine log to check against', name=run.logger_name, /warn
+    mg_log, 'no machine log to check against', name=run.logger_name, /error
     goto, done
   endif
 
@@ -401,7 +401,7 @@ pro ucomp_verify_check_collection_server, run=run, status=status
             name=run.logger_name, /warn
     if (n_raw_files le (n_log_lines - max_missing)) then begin
       mg_log, 'too many missing files (%d)', n_log_lines - n_raw_files, $
-              name=run.logger_name, /warn
+              name=run.logger_name, /error
       status or= 1UL
     endif else if (n_raw_files lt n_log_lines) then begin
       mg_log, 'missing %s, less than the max allowable (%s)', $
@@ -433,14 +433,14 @@ pro ucomp_verify_check_archive_server, run=run, status=status
 
   archive_server = run->config('verification/archive_server')
   if (n_elements(archive_server) eq 0L) then begin
-    mg_log, 'no archive server specified', name=run.logger_name, /warn
+    mg_log, 'no archive server specified', name=run.logger_name, /error
     status = 1L
     goto, done
   endif
 
   archive_basedir = run->config('verification/archive_basedir')
   if (n_elements(archive_basedir) eq 0L) then begin
-    mg_log, 'no archive base dir specified', name=run.logger_name, /warn
+    mg_log, 'no archive base dir specified', name=run.logger_name, /error
     status = 1L
     goto, done
   endif
