@@ -3,21 +3,23 @@
 pro ucomp_rolling_dark_plots, db, run=run
   compile_opt strictarr
 
+  start_date = '2022-02-23T19:51:17'
+
   ; group the darks by gain mode and NUC value
   group_by_type = 0B
 
   if (group_by_type) then begin
     ;query = 'select * from ucomp_cal where darkshutter=1 and rcamnuc=''%s'' and gain_mode=''%s'' and date_obs > ''2022-01-01'' order by date_obs'
-    query = 'select * from ucomp_cal where darkshutter=1 and rcamnuc=''%s'' and gain_mode=''%s'' order by date_obs'
+    query = 'select * from ucomp_cal where darkshutter=1 and rcamnuc=''%s'' and gain_mode=''%s'' and date_obs > ''%s'' order by date_obs'
     gain_mode = ['high', 'low']
     m = 0
     rcamnuc = ['normal', 'Offset + gain corrected']
     n = 1
-    data = db->query(query, rcamnuc[n], gain_mode[m], $
+    data = db->query(query, rcamnuc[n], gain_mode[m], start_date, $
                      count=n_darks, error=error, fields=fields, sql_statement=sql)
   endif else begin
-    query = 'select * from ucomp_cal where darkshutter=1 order by date_obs'
-    data = db->query(query, $
+    query = 'select * from ucomp_cal where darkshutter=1 and date_obs > ''%s'' order by date_obs'
+    data = db->query(query, start_date, $
                      count=n_darks, error=error, fields=fields, sql_statement=sql)
   endelse
 
@@ -43,9 +45,10 @@ pro ucomp_rolling_dark_plots, db, run=run
   set_plot, 'Z'
   device, get_decomposed=original_decomposed
   tvlct, original_rgb, /get
+  size = 400
   device, decomposed=0, $
           set_pixel_depth=8, $
-          set_resolution=[800, 300]
+          set_resolution=[2, 2] * size
 
   tvlct, 0, 0, 0, 0
   tvlct, 255, 255, 255, 1
@@ -66,13 +69,15 @@ pro ucomp_rolling_dark_plots, db, run=run
 
   if (group_by_type) then begin
     charsize = 0.8
-    title = string(gain_mode[m], rcamnuc[n], $
-                   format='(%"Dark median counts (gain mode %s, NUC %s) vs. time")')
+    title = string(gain_mode[m], rcamnuc[n], start_date, $
+                   format='(%"Dark median counts (gain mode %s, NUC %s) vs. time since %s")')
   endif else begin
-    title = 'Dark median counts vs. time'
+    title = string(start_date, format='(%"Dark median counts vs. time since %s")')
   endelse
   month_ticks = mg_tick_locator([jds[0], jds[-1]], /months)
   month_ticks = month_ticks[0:*:3]
+
+  !p.multi = [0, 1, 2]
 
   plot, jds, rcam_median_linecenter, /nodata, $
         charsize=charsize, $
@@ -97,10 +102,55 @@ pro ucomp_rolling_dark_plots, db, run=run
                   linestyle=0, color=camera1_color, $
                   clip_color=camera1_color, clip_psym=7, clip_symsize=1.0
 
-  xyouts, 0.95, 0.85, /normal, $
+  xyouts, 0.95, 0.59, /normal, $
           'camera 0', alignment=1.0, color=camera0_color
-  xyouts, 0.95, 0.80, /normal, $
+  xyouts, 0.95, 0.57, /normal, $
           'camera 1', alignment=1.0, color=camera1_color
+
+  !p.multi = [2, 2, 2]
+
+  tarr_range = run->epoch('dark_arr_temp_range', datetime=run.date)
+  tpcb_range = run->epoch('dark_pcb_temp_range', datetime=run.date)
+
+  query = 'select * from ucomp_cal inner join ucomp_raw on ucomp_cal.file_name = ucomp_raw.file_name where ucomp_cal.darkshutter=1 and ucomp_cal.exptime = 80.0 and ucomp_cal.rcamnuc=''Offset + gain corrected'' and ucomp_cal.gain_mode=''high'' and ucomp_cal.date_obs > ''%s'' order by ucomp_cal.date_obs'
+  data = db->query(query, start_date, $
+                   count=n_darks, error=error, fields=fields, sql_statement=sql)
+
+  plot, data.t_c0arr, data.rcam_median_linecenter, /nodata, $
+        charsize=charsize, $
+        title='Dark sensor temperature vs. median counts', $
+        psym=camera0_psym, symsize=symsize, $
+        color=color, background=background_color, $
+        xtitle='Sensor array temperature [C]', $
+        xstyle=1, xrange=tarr_range, $
+        ytitle='Counts [DN]/NUMSUM', $
+        ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
+   mg_range_oplot, data.t_c0arr, data.rcam_median_linecenter, $
+                   psym=camera0_psym, symsize=symsize, $
+                   color=camera0_color, $
+                   clip_color=camera0_color, clip_psym=7, clip_symsize=1.0
+   mg_range_oplot, data.t_c1arr, data.tcam_median_linecenter, $
+                   psym=camera1_psym, symsize=symsize, $
+                   color=camera1_color, $
+                   clip_color=camera1_color, clip_psym=7, clip_symsize=1.0
+
+   plot, data.t_c0pcb, data.rcam_median_linecenter, /nodata, $
+         charsize=charsize, $
+         title='Dark PCB temperature vs. median counts', $
+         psym=camera0_psym, symsize=symsize, $
+         color=color, background=background_color, $
+         xtitle='PCB temperature [C]', $
+         xstyle=1, xrange=tpcb_range, $
+         ytitle='Counts [DN]/NUMSUM', $
+         ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
+   mg_range_oplot, data.t_c0pcb, data.rcam_median_linecenter, $
+                   psym=camera0_psym, symsize=symsize, $
+                   color=camera0_color, $
+                   clip_color=camera0_color, clip_psym=7, clip_symsize=1.0
+   mg_range_oplot, data.t_c1pcb, data.tcam_median_linecenter, $
+                   psym=camera1_psym, symsize=symsize, $
+                   color=camera1_color, $
+                   clip_color=camera1_color, clip_psym=7, clip_symsize=1.0
 
   ; save plots image file
   output_filename = filepath(string(run.date, format='(%"%s.ucomp.rolling.darks.gif")'), $
@@ -109,6 +159,8 @@ pro ucomp_rolling_dark_plots, db, run=run
   write_gif, output_filename, tvrd(), r, g, b
 
   done:
+  !p.multi = 0
+
   if (n_elements(original_rgb) gt 0L) then tvlct, original_rgb
   if (n_elements(original_decomposed) gt 0L) then device, decomposed=original_decomposed
   if (n_elements(original_device) gt 0L) then set_plot, original_device
