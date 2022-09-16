@@ -45,10 +45,9 @@ pro ucomp_rolling_dark_plots, db, run=run
   set_plot, 'Z'
   device, get_decomposed=original_decomposed
   tvlct, original_rgb, /get
-  size = 400
   device, decomposed=0, $
           set_pixel_depth=8, $
-          set_resolution=[2, 2] * size
+          set_resolution=[600, 1000]
 
   tvlct, 0, 0, 0, 0
   tvlct, 255, 255, 255, 1
@@ -65,7 +64,7 @@ pro ucomp_rolling_dark_plots, db, run=run
   camera1_psym     = 4
   symsize          = 0.25
 
-  charsize = 0.9
+  charsize = 1.4
 
   if (group_by_type) then begin
     charsize = 0.8
@@ -77,7 +76,7 @@ pro ucomp_rolling_dark_plots, db, run=run
   month_ticks = mg_tick_locator([jds[0], jds[-1]], /months)
   month_ticks = month_ticks[0:*:3]
 
-  !p.multi = [0, 1, 2]
+  !p.multi = [0, 1, 4]
 
   plot, jds, rcam_median_linecenter, /nodata, $
         charsize=charsize, $
@@ -95,19 +94,19 @@ pro ucomp_rolling_dark_plots, db, run=run
                   dark_range[0] > [rcam_median_linecenter] < dark_range[1], $
                   psym=camera0_psym, symsize=symsize, $
                   linestyle=0, color=camera0_color, $
-                  clip_color=camera0_color, clip_psym=7, clip_symsize=1.0
+                  clip_color=camera0_color, clip_psym=7, clip_symsize=3.0 * symsize
   mg_range_oplot, jds, $
                   dark_range[0] > [tcam_median_linecenter] < dark_range[1], $
                   psym=camera1_psym, symsize=symsize, $
                   linestyle=0, color=camera1_color, $
-                  clip_color=camera1_color, clip_psym=7, clip_symsize=1.0
+                  clip_color=camera1_color, clip_psym=7, clip_symsize=3.0 * symsize
 
-  xyouts, 0.95, 0.59, /normal, $
+  xyouts, 0.95, 0.555, /normal, $
           'camera 0', alignment=1.0, color=camera0_color
-  xyouts, 0.95, 0.57, /normal, $
+  xyouts, 0.95, 0.540, /normal, $
           'camera 1', alignment=1.0, color=camera1_color
 
-  !p.multi = [2, 2, 2]
+  !p.multi = [6, 2, 4]
 
   tarr_range = run->epoch('dark_arr_temp_range', datetime=run.date)
   tpcb_range = run->epoch('dark_pcb_temp_range', datetime=run.date)
@@ -128,11 +127,11 @@ pro ucomp_rolling_dark_plots, db, run=run
    mg_range_oplot, data.t_c0arr, data.rcam_median_linecenter, $
                    psym=camera0_psym, symsize=symsize, $
                    color=camera0_color, $
-                   clip_color=camera0_color, clip_psym=7, clip_symsize=1.0
+                   clip_color=camera0_color, clip_psym=7, clip_symsize=3.0 * symsize
    mg_range_oplot, data.t_c1arr, data.tcam_median_linecenter, $
                    psym=camera1_psym, symsize=symsize, $
                    color=camera1_color, $
-                   clip_color=camera1_color, clip_psym=7, clip_symsize=1.0
+                   clip_color=camera1_color, clip_psym=7, clip_symsize=3.0 * symsize
 
    plot, data.t_c0pcb, data.rcam_median_linecenter, /nodata, $
          charsize=charsize, $
@@ -146,11 +145,60 @@ pro ucomp_rolling_dark_plots, db, run=run
    mg_range_oplot, data.t_c0pcb, data.rcam_median_linecenter, $
                    psym=camera0_psym, symsize=symsize, $
                    color=camera0_color, $
-                   clip_color=camera0_color, clip_psym=7, clip_symsize=1.0
+                   clip_color=camera0_color, clip_psym=7, clip_symsize=3.0 * symsize
    mg_range_oplot, data.t_c1pcb, data.tcam_median_linecenter, $
                    psym=camera1_psym, symsize=symsize, $
                    color=camera1_color, $
-                   clip_color=camera1_color, clip_psym=7, clip_symsize=1.0
+                   clip_color=camera1_color, clip_psym=7, clip_symsize=3.0 * symsize
+
+  !p.multi = [2, 1, 4]
+  jds = ucomp_dateobs2julday(data.date_obs)
+  month_ticks = mg_tick_locator([jds[0], jds[-1]], /months)
+  month_ticks = month_ticks[0:*:3]
+
+  plot, jds, data.rcam_median_linecenter / data.t_c0arr, /nodata, $
+        charsize=charsize, $
+        title='Dark median counts / sensor temperature', $
+        psym=camera0_psym, symsize=symsize, $
+        color=color, background=background_color, $
+        xtitle='Date', $
+        xstyle=1, $
+        xtickformat='label_date', $
+        xtickv=month_ticks, $
+        xticks=n_elements(month_ticks) - 1L, $
+        xminor=3, $
+        ytitle='Counts [DN]/sensor temperature [C]', $
+        ystyle=1, yrange=[0.0, 20.0], ytickformat='ucomp_dn_format'
+   mg_range_oplot, jds, data.rcam_median_linecenter / data.t_c0arr, $
+                   psym=camera0_psym, symsize=symsize, $
+                   color=camera0_color, $
+                   clip_color=camera0_color, clip_psym=7, clip_symsize=3.0 * symsize
+   mg_range_oplot, jds, data.tcam_median_linecenter / data.t_c1arr, $
+                   psym=camera1_psym, symsize=symsize, $
+                   color=camera1_color, $
+                   clip_color=camera1_color, clip_psym=7, clip_symsize=3.0 * symsize
+
+  plot, jds, data.rcam_median_linecenter / data.t_c0pcb, /nodata, $
+        charsize=charsize, $
+        title='Dark median counts / PCB temperature', $
+        psym=camera0_psym, symsize=symsize, $
+        color=color, background=background_color, $
+        xtitle='Date', $
+        xstyle=1, $
+        xtickformat='label_date', $
+        xtickv=month_ticks, $
+        xticks=n_elements(month_ticks) - 1L, $
+        xminor=3, $
+        ytitle='Counts [DN]/PCB temperature [C]', $
+        ystyle=1, yrange=[0.0, 40.0], ytickformat='ucomp_dn_format'
+   mg_range_oplot, jds, data.rcam_median_linecenter / data.t_c0pcb, $
+                   psym=camera0_psym, symsize=symsize, $
+                   color=camera0_color, $
+                   clip_color=camera0_color, clip_psym=7, clip_symsize=3.0 * symsize
+   mg_range_oplot, jds, data.tcam_median_linecenter / data.t_c1pcb, $
+                   psym=camera1_psym, symsize=symsize, $
+                   color=camera1_color, $
+                   clip_color=camera1_color, clip_psym=7, clip_symsize=3.0 * symsize
 
   ; save plots image file
   output_filename = filepath(string(run.date, format='(%"%s.ucomp.rolling.darks.gif")'), $
