@@ -103,20 +103,25 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
                                     primary_header, $
                                     run->epoch('field_radius'), $
                                     radius=run->line(file.wave_region, 'enhanced_intensity_radius'), $
-                                    amount=run->line(file.wave_region, 'enhanced_intensity_amount'))
+                                    amount=run->line(file.wave_region, 'enhanced_intensity_amount'), $
+                                    mask=run->config('display/mask'))
     endif
 
     dims = size(im, /dimensions)
-    field_mask = ucomp_field_mask(dims[0], $
-                                  dims[1], $
-                                  run->epoch('field_radius'))
-    occulter_mask = ucomp_occulter_mask(dims[0], dims[1], file.occulter_radius)
-    rcam = file.rcam_geometry
-    tcam = file.tcam_geometry
-    post_angle = (rcam.post_angle + tcam.post_angle) / 2.0
-    post_mask = ucomp_post_mask(dims[0], dims[1], post_angle)
-    offsensor_mask = ucomp_offsensor_mask(dims[0], dims[1], file.p_angle)
-    mask = field_mask and occulter_mask and post_mask and offsensor_mask
+    if (run->config('display/mask')) then begin
+      field_mask = ucomp_field_mask(dims[0], $
+                                    dims[1], $
+                                    run->epoch('field_radius'))
+      occulter_mask = ucomp_occulter_mask(dims[0], dims[1], file.occulter_radius)
+      rcam = file.rcam_geometry
+      tcam = file.tcam_geometry
+      post_angle = (rcam.post_angle + tcam.post_angle) / 2.0
+      post_mask = ucomp_post_mask(dims[0], dims[1], post_angle)
+      offsensor_mask = ucomp_offsensor_mask(dims[0], dims[1], file.p_angle)
+      mask = field_mask and occulter_mask and post_mask and offsensor_mask
+    endif else begin
+      mask = bytarr(dims[0], dims[1]) + 1B
+    endelse
 
     scaled_im = bytscl((im * mask)^display_power, $
                        min=display_min^display_power, $
