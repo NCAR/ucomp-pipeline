@@ -168,7 +168,8 @@ pro ucomp_rolling_dark_plots, db, run=run
         xticks=n_elements(month_ticks) - 1L, $
         xminor=3, $
         ytitle='Counts [DN]/sensor temperature [C]', $
-        ystyle=1, yrange=[0.0, 20.0], ytickformat='ucomp_dn_format'
+        ystyle=1, $
+        yrange=dark_range / reverse(tarr_range)
    mg_range_oplot, jds, data.rcam_median_linecenter / data.t_c0arr, $
                    psym=camera0_psym, symsize=symsize, $
                    color=camera0_color, $
@@ -190,7 +191,8 @@ pro ucomp_rolling_dark_plots, db, run=run
         xticks=n_elements(month_ticks) - 1L, $
         xminor=3, $
         ytitle='Counts [DN]/PCB temperature [C]', $
-        ystyle=1, yrange=[0.0, 40.0], ytickformat='ucomp_dn_format'
+        ystyle=1, $
+        yrange=dark_range / reverse(tpcb_range)
    mg_range_oplot, jds, data.rcam_median_linecenter / data.t_c0pcb, $
                    psym=camera0_psym, symsize=symsize, $
                    color=camera0_color, $
