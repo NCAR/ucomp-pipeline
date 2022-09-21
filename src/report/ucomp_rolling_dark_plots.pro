@@ -88,7 +88,7 @@ pro ucomp_rolling_dark_plots, db, run=run
         xtickv=month_ticks, $
         xticks=n_elements(month_ticks) - 1L, $
         xminor=3, $
-        ytitle='Counts [DN]', $
+        ytitle='Counts [DN]/NUMSUM', $
         ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
   mg_range_oplot, jds, $
                   dark_range[0] > [rcam_median_linecenter] < dark_range[1], $
@@ -102,9 +102,9 @@ pro ucomp_rolling_dark_plots, db, run=run
                   clip_color=camera1_color, clip_psym=7, clip_symsize=3.0 * symsize
 
   xyouts, 0.95, 0.555, /normal, $
-          'camera 0', alignment=1.0, color=camera0_color
+          'camera 0 (RCAM)', alignment=1.0, color=camera0_color
   xyouts, 0.95, 0.540, /normal, $
-          'camera 1', alignment=1.0, color=camera1_color
+          'camera 1 (TCAM)', alignment=1.0, color=camera1_color
 
   !p.multi = [6, 2, 4]
 
