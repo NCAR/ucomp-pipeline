@@ -36,7 +36,8 @@ function ucomp_enhanced_intensity, intensity, $
                                    header, $
                                    r_outer, $
                                    radius=radius, $
-                                   amount=amount
+                                   amount=amount, $
+                                   mask=mask
   compile_opt strictarr
 
   _radius = mg_default(radius, 3.0)
@@ -45,14 +46,17 @@ function ucomp_enhanced_intensity, intensity, $
   occulter_radius = ucomp_getpar(header, 'RADIUS')
   post_angle      = ucomp_getpar(header, 'POST_ANG')
 
-  dims = size(intensity, /dimensions)
+  if (keyword_set(mask)) then begin
+    dims = size(intensity, /dimensions)
 
-  occulter_mask = ucomp_occulter_mask(dims[0], dims[1], 1.01 * occulter_radius)
-  field_mask    = ucomp_field_mask(dims[0], dims[1], r_outer)
-  post_mask     = ucomp_post_mask(dims[0], dims[1], post_angle)
-  mask          = field_mask and occulter_mask and post_mask
+    occulter_mask = ucomp_occulter_mask(dims[0], dims[1], 1.01 * occulter_radius)
+    field_mask    = ucomp_field_mask(dims[0], dims[1], r_outer)
+    post_mask     = ucomp_post_mask(dims[0], dims[1], post_angle)
 
-  masked_intensity = intensity * mask
+    masked_intensity = intensity * (field_mask and occulter_mask and post_mask)
+  endif else begin
+    masked_intensity = intensity
+  endelse
 
   good_indices = where(intensity gt 0.5 $
                        and intensity lt 100.0, $

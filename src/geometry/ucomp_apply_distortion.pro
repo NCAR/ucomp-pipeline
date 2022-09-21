@@ -18,7 +18,6 @@
 function ucomp_apply_distortion, sub_image, dx_c, dy_c
   compile_opt strictarr
 
-  dist_corrected = interpolate(sub_image, dx_c, dy_c, $
-                               cubic=-0.5, missing=0.0)
+  dist_corrected = interpolate(sub_image, dx_c, dy_c, cubic=-0.5, missing=0.0)
   return, dist_corrected
 end
