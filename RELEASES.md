@@ -255,3 +255,4 @@
   check for level 1 files before using them in creating averages
   change enhanced intensity parameters
   additions to rolling dark plots
+0.2.70
