@@ -185,32 +185,32 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
 end
 
 
-;date = '20220105'
-date = '20211213'
+date = '20220901'
 
-config_basename = 'ucomp.latest.cfg'
+config_basename = 'ucomp.bilinear.cfg'
 config_filename = filepath(config_basename, $
                            subdir=['..', '..', 'config'], $
                            root=mg_src_root())
 run = ucomp_run(date, 'test', config_filename)
 
-;l0_basename = '20220105.204523.49.ucomp.1074.l0.fts'
-l0_basename = '20211213.190812.67.ucomp.1074.l0.fts'
+l0_basename = '20220901.190352.15.ucomp.1079.l0.fts'
 l0_filename = filepath(l0_basename, $
                        subdir=date, $
                        root=run->config('raw/basedir'))
 file = ucomp_file(l0_filename, run=run)
 
-;l1_basename = '20220105.204523.ucomp.1074.l1.5.fts'
-l1_basename = '20211213.190812.ucomp.1074.l1.5.fts'
+l1_basename = '20220901.190352.ucomp.1079.l1.3.fts'
 l1_filename = filepath(l1_basename, $
                        subdir=[date, 'level1'], $
                        root=run->config('processing/basedir'))
 
-ucomp_read_l1_data, l1_filename, ext_data=data, n_extensions=n_extensions
+ucomp_read_l1_data, l1_filename, $
+                    primary_header=primary_header, $
+                    ext_data=data, $
+                    n_extensions=n_extensions
 file.n_extensions = n_extensions
 
-ucomp_write_intensity_image, file, data, run=run
+ucomp_write_intensity_image, file, data, primary_header, /enhanced, run=run
 
 obj_destroy, file
 obj_destroy, run
