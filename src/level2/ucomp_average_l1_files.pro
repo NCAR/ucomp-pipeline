@@ -33,6 +33,14 @@ pro ucomp_average_l1_files, files, output_filename, method=method, run=run
                     subdir=[run.date, 'level1'], $
                     root=run->config('processing/basedir'))
 
+  ok = bytarr(n_files)
+  for f = 0L, n_files - 1L do begin
+    ok[f] = file_test(filepath(files[f].l1_basename, root=l1_dir), /regular)
+  endfor
+
+  ok_indices = where(ok gt 0L, n_ok_files, /null)
+  ok_files = files[ok_indices]
+
   sgs_keywords = ['SGSSCINT', $
                   'SGSDIMV', $
                   'SGSDIMS', $
@@ -63,12 +71,12 @@ pro ucomp_average_l1_files, files, output_filename, method=method, run=run
 
   ; first pass of files: get list of wavelengths
   all_wavelengths = list()
-  for f = 0L, n_files - 1L do begin
+  for f = 0L, n_ok_files - 1L do begin
     mg_log, 'listing %d/%d %s', $
-            f + 1L, n_files, files[f].l1_basename, $
+            f + 1L, n_ok_files, ok_files[f].l1_basename, $
             name=run.logger_name, /info
 
-    ucomp_read_l1_data, filepath(files[f].l1_basename, root=l1_dir), $
+    ucomp_read_l1_data, filepath(ok_files[f].l1_basename, root=l1_dir), $
                         primary_header=primary_header, $
                         ext_headers=ext_headers
     for e = 0L, n_elements(ext_headers) - 1L do begin
@@ -97,7 +105,7 @@ pro ucomp_average_l1_files, files, output_filename, method=method, run=run
   all_wavelengths = all_wavelengths[uniq(all_wavelengths)]
   n_unique_wavelengths = n_elements(all_wavelengths)
 
-  ucomp_read_l1_data, filepath(files[0].l1_basename, root=l1_dir), $
+  ucomp_read_l1_data, filepath(ok_files[0].l1_basename, root=l1_dir), $
                       primary_data=primary_data, $
                       primary_header=primary_header, $
                       ext_data=ext_data
@@ -118,10 +126,10 @@ pro ucomp_average_l1_files, files, output_filename, method=method, run=run
             name=run.logger_name, $
             /info
 
-    wavelength_data = make_array(dimension=[dims[0:2], n_files], $
+    wavelength_data = make_array(dimension=[dims[0:2], n_ok_files], $
                                  type=size(ext_data, /type)) + !values.f_nan
-    for f = 0L, n_files - 1L do begin
-      ucomp_read_l1_data, filepath(files[f].l1_basename, root=l1_dir), $
+    for f = 0L, n_ok_files - 1L do begin
+      ucomp_read_l1_data, filepath(ok_files[f].l1_basename, root=l1_dir), $
                           primary_header=primary_header, $
                           ext_data=ext_data, $
                           ext_headers=ext_headers, $
@@ -161,12 +169,12 @@ pro ucomp_average_l1_files, files, output_filename, method=method, run=run
     ;     - if so, average files could just average primary header
     ;     - if not, produce SGS averages of each wavelength?
 
-    ucomp_addpar, primary_header, 'DATE-OBS', files[0].date_obs
-    ucomp_addpar, primary_header, 'DATE-END', files[-1].date_obs, $
+    ucomp_addpar, primary_header, 'DATE-OBS', ok_files[0].date_obs
+    ucomp_addpar, primary_header, 'DATE-END', ok_files[-1].date_obs, $
                   comment='UTC Date time when obs ended', $
                   after='DATE-OBS'
     ucomp_addpar, primary_header, 'NUM_WAVE', n_unique_wavelengths
-    ucomp_addpar, primary_header, 'NUMFILES', n_files
+    ucomp_addpar, primary_header, 'NUMFILES', n_ok_files
   
     if (size(wavelength_data, /n_dimensions) gt 3L) then begin
       case _method of
@@ -184,7 +192,7 @@ pro ucomp_average_l1_files, files, output_filename, method=method, run=run
 
   ucomp_write_iquv_image, averaged_data, $
                           file_basename(output_filename), $
-                          files[0].wave_region, $
+                          ok_files[0].wave_region, $
                           float(all_wavelengths), $
                           /daily, $
                           run=run
