@@ -103,20 +103,25 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
                                     primary_header, $
                                     run->epoch('field_radius'), $
                                     radius=run->line(file.wave_region, 'enhanced_intensity_radius'), $
-                                    amount=run->line(file.wave_region, 'enhanced_intensity_amount'))
+                                    amount=run->line(file.wave_region, 'enhanced_intensity_amount'), $
+                                    mask=run->config('display/mask'))
     endif
 
     dims = size(im, /dimensions)
-    field_mask = ucomp_field_mask(dims[0], $
-                                  dims[1], $
-                                  run->epoch('field_radius'))
-    occulter_mask = ucomp_occulter_mask(dims[0], dims[1], file.occulter_radius)
-    rcam = file.rcam_geometry
-    tcam = file.tcam_geometry
-    post_angle = (rcam.post_angle + tcam.post_angle) / 2.0
-    post_mask = ucomp_post_mask(dims[0], dims[1], post_angle)
-    offsensor_mask = ucomp_offsensor_mask(dims[0], dims[1], file.p_angle)
-    mask = field_mask and occulter_mask and post_mask and offsensor_mask
+    if (run->config('display/mask')) then begin
+      field_mask = ucomp_field_mask(dims[0], $
+                                    dims[1], $
+                                    run->epoch('field_radius'))
+      occulter_mask = ucomp_occulter_mask(dims[0], dims[1], file.occulter_radius)
+      rcam = file.rcam_geometry
+      tcam = file.tcam_geometry
+      post_angle = (rcam.post_angle + tcam.post_angle) / 2.0
+      post_mask = ucomp_post_mask(dims[0], dims[1], post_angle)
+      offsensor_mask = ucomp_offsensor_mask(dims[0], dims[1], file.p_angle)
+      mask = field_mask and occulter_mask and post_mask and offsensor_mask
+    endif else begin
+      mask = bytarr(dims[0], dims[1]) + 1B
+    endelse
 
     scaled_im = bytscl((im * mask)^display_power, $
                        min=display_min^display_power, $
@@ -180,32 +185,32 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
 end
 
 
-;date = '20220105'
-date = '20211213'
+date = '20220901'
 
-config_basename = 'ucomp.latest.cfg'
+config_basename = 'ucomp.bilinear.cfg'
 config_filename = filepath(config_basename, $
                            subdir=['..', '..', 'config'], $
                            root=mg_src_root())
 run = ucomp_run(date, 'test', config_filename)
 
-;l0_basename = '20220105.204523.49.ucomp.1074.l0.fts'
-l0_basename = '20211213.190812.67.ucomp.1074.l0.fts'
+l0_basename = '20220901.190352.15.ucomp.1079.l0.fts'
 l0_filename = filepath(l0_basename, $
                        subdir=date, $
                        root=run->config('raw/basedir'))
 file = ucomp_file(l0_filename, run=run)
 
-;l1_basename = '20220105.204523.ucomp.1074.l1.5.fts'
-l1_basename = '20211213.190812.ucomp.1074.l1.5.fts'
+l1_basename = '20220901.190352.ucomp.1079.l1.3.fts'
 l1_filename = filepath(l1_basename, $
                        subdir=[date, 'level1'], $
                        root=run->config('processing/basedir'))
 
-ucomp_read_l1_data, l1_filename, ext_data=data, n_extensions=n_extensions
+ucomp_read_l1_data, l1_filename, $
+                    primary_header=primary_header, $
+                    ext_data=data, $
+                    n_extensions=n_extensions
 file.n_extensions = n_extensions
 
-ucomp_write_intensity_image, file, data, run=run
+ucomp_write_intensity_image, file, data, primary_header, /enhanced, run=run
 
 obj_destroy, file
 obj_destroy, run

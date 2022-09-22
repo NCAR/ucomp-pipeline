@@ -13,21 +13,27 @@ function ucomp_write_composite_image_channel, file, data, radius, run=run
   display_gamma = run->line(file.wave_region, 'intensity_display_gamma')
   display_power = run->line(file.wave_region, 'intensity_display_power')
 
-  field_mask = ucomp_field_mask(dims[0], $
-                                dims[1], $
-                                run->epoch('field_radius'))
+  if (run->config('display/mask')) then begin
+    field_mask = ucomp_field_mask(dims[0], $
+                                  dims[1], $
+                                  run->epoch('field_radius'))
+  endif else begin
+    field_mask = bytarr(dims[0], dims[1]) + 1B
+  endelse
   
   scaled_im = bytscl((im * field_mask)^display_power, $
                      min=display_min, $
                      max=display_max, $
                      /nan)
 
-  occulter_mask = ucomp_occulter_mask(dims[0], dims[1], file.occulter_radius)
-  scaled_im *= occulter_mask
+  if (run->config('display/mask')) then begin
+    occulter_mask = ucomp_occulter_mask(dims[0], dims[1], file.occulter_radius)
+    scaled_im *= occulter_mask
 
-  ; TODO: find read post angle
-  post_mask = ucomp_post_mask(dims[0], dims[1], 0.0)
-  scaled_im *= post_mask
+    ; TODO: find read post angle
+    post_mask = ucomp_post_mask(dims[0], dims[1], 0.0)
+    scaled_im *= post_mask
+  endif
 
   ; TODO: scale size? i.e., stretch to normalize radius
   scaled_im = rot(scaled_im, 0.0, radius / file.occulter_radius)
