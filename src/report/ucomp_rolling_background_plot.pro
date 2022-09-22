@@ -79,7 +79,7 @@ end
 
 ; main-level example program
 
-date = '20220721'
+date = '20220921'
 config_basename = 'ucomp.production.cfg'
 config_filename = filepath(config_basename, $
                            subdir=['..', '..', 'config'], $
