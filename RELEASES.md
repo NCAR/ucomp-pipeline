@@ -251,3 +251,4 @@
 0.2.68 [Sep 12, 2022]
   fix for creating quick invert of non-existent average file
 0.2.69
+  rolling flat plot annotation improvements
