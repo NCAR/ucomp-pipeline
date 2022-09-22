@@ -250,3 +250,8 @@
   fix for typo in module name in ucomp script
 0.2.68 [Sep 12, 2022]
   fix for creating quick invert of non-existent average file
+0.2.69 [Sep 22, 2022]
+  rolling flat plot annotation improvements
+  check for level 1 files before using them in creating averages
+  change enhanced intensity parameters
+  additions to rolling dark plots

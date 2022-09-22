@@ -3,8 +3,10 @@
 pro ucomp_rolling_flat_plots, wave_region, db, run=run
   compile_opt strictarr
 
-  query = 'select * from ucomp_cal where wave_region=''%s'' and opal=1 and caloptic=0 order by date_obs'
-  data = db->query(query, wave_region, $
+  start_date = '2022-02-23T19:51:17'
+
+  query = 'select * from ucomp_cal where wave_region=''%s'' and opal=1 and caloptic=0 and date_obs > ''%s'' order by date_obs'
+  data = db->query(query, wave_region, start_date, $
                    count=n_flats, error=error, fields=fields, sql_statement=sql)
 
   if (n_flats eq 0L) then begin
@@ -48,7 +50,7 @@ pro ucomp_rolling_flat_plots, wave_region, db, run=run
   background_color = 1
   camera0_color    = 2
   camera1_color    = 3
-  
+
   camera0_psym     = 6
   camera1_psym     = 4
   symsize          = 0.25
@@ -60,17 +62,18 @@ pro ucomp_rolling_flat_plots, wave_region, db, run=run
   !null = label_date(date_format='%Y-%N-%D')
 
   month_ticks = mg_tick_locator([jds[0], jds[-1]], /months)
-  month_ticks = month_ticks[0:*:3]
+  if (n_elements(month_ticks) gt 0L) then month_ticks = month_ticks[0:*:3]
 
   plot, jds, rcam_median_linecenter, /nodata, $
         charsize=charsize, $
-        title=string(wave_region, format='%s nm (not dark corrected) flat line center median counts vs. time'), $
+        title=string(wave_region, start_date, $
+                     format='%s nm (not dark corrected) flat line center median counts vs. time since %s'), $
         color=color, background=background_color, $
         xtitle='Date', $
         xstyle=1, $
         xtickformat='label_date', $
         xtickv=month_ticks, $
-        xticks=n_elements(month_ticks) - 1L, $
+        xticks=n_elements(month_ticks) gt 0L ? n_elements(month_ticks) - 1L : 5L, $
         xminor=3, $
         ytitle='Counts [DN]/NUMSUM', $
         ystyle=1, yrange=flat_range, ytickformat='ucomp_dn_format'
@@ -85,22 +88,23 @@ pro ucomp_rolling_flat_plots, wave_region, db, run=run
                   linestyle=0, color=camera1_color, $
                   clip_color=camera1_color, clip_psym=7, clip_symsize=1.0
   xyouts, 0.95, 0.925, /normal, $
-          'camera 0', alignment=1.0, color=camera0_color
+          'camera 0 (RCAM)', alignment=1.0, color=camera0_color
   xyouts, 0.95, 0.9, /normal, $
-          'camera 1', alignment=1.0, color=camera1_color
+          'camera 1 (TCAM)', alignment=1.0, color=camera1_color
 
   plots, [jds[0], jds[-1]], fltarr(2) + linecenter_range[0], linestyle=3, color=color
   plots, [jds[0], jds[-1]], fltarr(2) + linecenter_range[1], linestyle=3, color=color
 
   plot, jds, rcam_median_continuum, /nodata, $
         charsize=charsize, $
-        title=string(wave_region, format='%s nm (not dark corrected) flat continuum median counts vs. time'), $
+        title=string(wave_region, start_date, $
+                     format='%s nm (not dark corrected) flat continuum median counts vs. time since %s'), $
         color=color, background=background_color, $
         xtitle='Time [HST]', $
         xstyle=1, $
         xtickformat='label_date', $
         xtickv=month_ticks, $
-        xticks=n_elements(month_ticks) - 1L, $
+        xticks=n_elements(month_ticks) gt 0L ? n_elements(month_ticks) - 1L : 5L, $
         xminor=3, $
         ytitle='Counts [DN]/NUMSUM', $
         ystyle=1, yrange=flat_range, ytickformat='ucomp_dn_format'
@@ -116,9 +120,9 @@ pro ucomp_rolling_flat_plots, wave_region, db, run=run
                   clip_color=camera1_color, clip_psym=7, clip_symsize=1.0
 
   xyouts, 0.95, 0.425, /normal, $
-          'camera 0', alignment=1.0, color=camera0_color
+          'camera 0 (RCAM)', alignment=1.0, color=camera0_color
   xyouts, 0.95, 0.4, /normal, $
-          'camera 1', alignment=1.0, color=camera1_color
+          'camera 1 (TCAM)', alignment=1.0, color=camera1_color
 
   plots, [jds[0], jds[-1]], fltarr(2) + continuum_range[0], linestyle=3, color=color
   plots, [jds[0], jds[-1]], fltarr(2) + continuum_range[1], linestyle=3, color=color
