@@ -212,7 +212,7 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
   p = 4
 
   plot, [dark_info.times], [cam0_dark_medians], /nodata, $
-        charsize=charsize, title='Dark median counts (+/- 1 std dev) vs. time', $
+        charsize=charsize, title='Dark median counts vs. time', $
         color=color, background=background_color, $
         xtitle='Time [HST]', $
         xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
@@ -234,11 +234,6 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
                   psym=8, symsize=0.5 * symsize, $
                   linestyle=1, color=camera0_color, $
                   clip_color=camera0_color, clip_psym=7, clip_symsize=1.0
-  for d = 0L, n_elements(cam0_dark_medians) - 1L do begin
-    plots, (dark_info.times)[d] + fltarr(3), $
-           dark_range[0] > (cam0_dark_medians[d] + [-1, 0, 1] * cam0_dark_stddev[d]) < dark_range[1], $
-           linestyle=4, color=camera0_color
-  endfor
 
   ; offset camera 1 times so you can see them if they overlap with camera 0
   cam1_offset = 0.025
@@ -258,11 +253,6 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
          psym=8, symsize=0.5 * symsize, $
          linestyle=1, color=camera1_color, $
          clip_color=camera1_color, clip_psym=7, clip_symsize=1.0
-  for d = 0L, n_elements(cam1_dark_medians) - 1L do begin
-    plots, (dark_info.times)[d] + fltarr(3) + cam1_offset, $
-           dark_range[0] > (cam1_dark_medians[d] + [-1, 0, 1] * cam1_dark_stddev[d]) < dark_range[1], $
-           linestyle=4, color=camera1_color
-  endfor
 
   xyouts, 0.95, (n_plots - p - 0.20) / n_plots, /normal, $
           'camera 0', alignment=1.0, color=camera0_color

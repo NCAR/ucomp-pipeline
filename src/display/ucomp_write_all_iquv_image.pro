@@ -106,9 +106,15 @@ pro ucomp_write_all_iquv_image, file, data, run=run
       im = rebin(ext_data[*, *, p], $
                  dims[0] / reduce_dims_factor, $
                  dims[1] / reduce_dims_factor)
-      field_mask = ucomp_field_mask(dims[0] / reduce_dims_factor, $
-                                    dims[1] / reduce_dims_factor, $
-                                    run->epoch('field_radius') / reduce_dims_factor)
+
+      if (run->config('display/mask')) then begin
+        field_mask = ucomp_field_mask(dims[0] / reduce_dims_factor, $
+                                      dims[1] / reduce_dims_factor, $
+                                      run->epoch('field_radius') / reduce_dims_factor)
+      endif else begin
+        field_mask = bytarr(dims[0] / reduce_dims_factor, dims[1] / reduce_dims_factor) + 1B
+      endelse
+
       scaled_im = bytscl((im * field_mask)^display_power, $
                          min=display_min^display_power, $
                          max=display_max^display_power, $
