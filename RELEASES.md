@@ -256,3 +256,4 @@
   change enhanced intensity parameters
   additions to rolling dark plots
 0.2.70
+  display adjustments for intensity
