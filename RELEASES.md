@@ -257,3 +257,4 @@
   additions to rolling dark plots
 0.2.70 [Sep 26, 2022]
   display adjustments for intensity
+0.2.71
