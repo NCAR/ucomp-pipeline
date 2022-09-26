@@ -107,7 +107,7 @@ pro ucomp_write_all_iquv_image, file, data, run=run
                  dims[0] / reduce_dims_factor, $
                  dims[1] / reduce_dims_factor)
 
-      if (run->config('display/mask')) then begin
+      if (run->config('display/mask_l1')) then begin
         field_mask = ucomp_field_mask(dims[0] / reduce_dims_factor, $
                                       dims[1] / reduce_dims_factor, $
                                       run->epoch('field_radius') / reduce_dims_factor)
