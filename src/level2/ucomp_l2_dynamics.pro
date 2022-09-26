@@ -94,7 +94,7 @@ pro ucomp_l2_dynamics, file, run=run
                                                 run->epoch('field_radius'), $
                                                 radius=run->line(file.wave_region, 'enhanced_intensity_radius'), $
                                                 amount=run->line(file.wave_region, 'enhanced_intensity_amount'), $
-                                                mask=run->config('display/mask'))
+                                                mask=run->config('display/mask_l2'))
 
   c = 299792.458D
 
@@ -104,7 +104,7 @@ pro ucomp_l2_dynamics, file, run=run
   ; convert line width to velocity (km/s)
   line_width *= c / mean(wavelengths)
 
-  if (run->config('display/mask')) then begin
+  if (run->config('display/mask_l2')) then begin
     ; mask outputs
     dims = size(peak_intensity, /dimensions)
     field_mask = ucomp_field_mask(dims[0], $
