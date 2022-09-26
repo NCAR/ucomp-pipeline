@@ -103,11 +103,11 @@ pro ucomp_l2_polarization, file, run=run
                                                 run->epoch('field_radius'), $
                                                 radius=run->line(file.wave_region, 'enhanced_intensity_radius'), $
                                                 amount=run->line(file.wave_region, 'enhanced_intensity_amount'), $
-                                                mask=run->config('display/mask'))
+                                                mask=run->config('display/mask_l2'))
 
   azimuth = ucomp_azimuth(average_q, average_u, radial_azimuth=radial_azimuth)
 
-  if (run->config('display/mask')) then begin
+  if (run->config('display/mask_l2')) then begin
     ; mask outputs
     dims = size(average_intensity, /dimensions)
     field_mask = ucomp_field_mask(dims[0], $
