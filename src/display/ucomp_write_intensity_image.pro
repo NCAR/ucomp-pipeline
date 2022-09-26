@@ -104,11 +104,11 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
                                     run->epoch('field_radius'), $
                                     radius=run->line(file.wave_region, 'enhanced_intensity_radius'), $
                                     amount=run->line(file.wave_region, 'enhanced_intensity_amount'), $
-                                    mask=run->config('display/mask'))
+                                    mask=run->config('display/mask_l1'))
     endif
 
     dims = size(im, /dimensions)
-    if (run->config('display/mask')) then begin
+    if (run->config('display/mask_l1')) then begin
       field_mask = ucomp_field_mask(dims[0], $
                                     dims[1], $
                                     run->epoch('field_radius'))

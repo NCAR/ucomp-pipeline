@@ -13,7 +13,7 @@ function ucomp_write_composite_image_channel, file, data, radius, run=run
   display_gamma = run->line(file.wave_region, 'intensity_display_gamma')
   display_power = run->line(file.wave_region, 'intensity_display_power')
 
-  if (run->config('display/mask')) then begin
+  if (run->config('display/mask_l1')) then begin
     field_mask = ucomp_field_mask(dims[0], $
                                   dims[1], $
                                   run->epoch('field_radius'))
@@ -26,7 +26,7 @@ function ucomp_write_composite_image_channel, file, data, radius, run=run
                      max=display_max, $
                      /nan)
 
-  if (run->config('display/mask')) then begin
+  if (run->config('display/mask_l1')) then begin
     occulter_mask = ucomp_occulter_mask(dims[0], dims[1], file.occulter_radius)
     scaled_im *= occulter_mask
 
