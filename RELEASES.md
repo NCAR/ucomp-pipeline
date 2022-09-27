@@ -259,3 +259,4 @@
   display adjustments for intensity
 0.2.71 [Sep 27, 2022]
   fixes for averaging
+0.2.72
