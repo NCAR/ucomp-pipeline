@@ -260,3 +260,4 @@
 0.2.71 [Sep 27, 2022]
   fixes for averaging
 0.2.72
+  fix for no OK files to average
