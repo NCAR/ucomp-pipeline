@@ -28,6 +28,8 @@ pro ucomp_l2_create_averages, wave_region, method, $
                     subdir=[run.date, 'level2'], $
                     root=run->config('processing/basedir'))
 
+  if (~file_test(l2_dir, /directory)) then ucomp_mkdir, l2_dir, logger_name=run.logger_name
+
   program_names = run->get_programs(wave_region, count=n_programs)
   if (n_programs eq 0L) then begin
     mg_log, 'found no programs for %s nm science files', $
