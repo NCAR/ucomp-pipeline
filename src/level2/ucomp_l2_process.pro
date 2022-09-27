@@ -22,6 +22,11 @@ pro ucomp_l2_process, wave_region, run=run
     return
   endif
 
+  l2_dir = filepath('', $
+                    subdir=[run.date, 'level2'], $
+                    root=run->config('processing/basedir'))
+  if (~file_test(l2_dir, /directory)) then ucomp_mkdir, l2_dir, logger_name=run.logger_name
+
   ; level 2 individual file processing
   n_digits = floor(alog10(n_files)) + 1L
   for f = 0L, n_files - 1L do begin
