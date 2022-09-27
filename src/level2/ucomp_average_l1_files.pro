@@ -41,6 +41,11 @@ pro ucomp_average_l1_files, files, output_filename, method=method, run=run
   ok_indices = where(ok gt 0L, n_ok_files, /null)
   ok_files = files[ok_indices]
 
+  if (n_ok_files eq 0L) then begin
+    mg_log, 'no OK files to average', name=run.logger_name, /warn
+    goto, done
+  endif
+
   sgs_keywords = ['SGSSCINT', $
                   'SGSDIMV', $
                   'SGSDIMS', $
