@@ -85,7 +85,7 @@ pro ucomp_average_l1_files, files, output_filename, method=method, run=run
     endfor
     for t = 0L, n_temp_keywords - 1L do begin
       temp = ucomp_getpar(primary_header, temp_keywords[t], found=found)
-      if (found) then begin
+      if (found && (n_elements(temp) gt 0L)) then begin
         temp_counts[t] += 1L
         temp_values[t] += temp
       endif
@@ -101,9 +101,14 @@ pro ucomp_average_l1_files, files, output_filename, method=method, run=run
     ucomp_addpar, primary_header, temp_keywords[t], temp_values[t]
   endfor
 
-  all_wavelengths = all_wavelengths_array[sort(all_wavelengths_array)]
-  all_wavelengths = all_wavelengths[uniq(all_wavelengths)]
-  n_unique_wavelengths = n_elements(all_wavelengths)
+  if (n_elements(all_wavelengths_array) eq 0L) then begin
+    all_wavelengths = all_wavelengths_array
+    n_unique_wavelengths = 0L
+  endif else begin
+    all_wavelengths = all_wavelengths_array[sort(all_wavelengths_array)]
+    all_wavelengths = all_wavelengths[uniq(all_wavelengths)]
+    n_unique_wavelengths = n_elements(all_wavelengths)
+  endelse
 
   ucomp_read_l1_data, filepath(ok_files[0].l1_basename, root=l1_dir), $
                       primary_data=primary_data, $

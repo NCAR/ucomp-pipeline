@@ -238,7 +238,7 @@ pro ucomp_raw_plots, run=run
   eng_dir = filepath('', $
                      subdir=ucomp_decompose_date(run.date), $
                      root=run->config('engineering/basedir'))
-  if (~file_test(eng_dir, /directory)) then ucomp_mkdir, eng_dir
+  if (~file_test(eng_dir, /directory)) then ucomp_mkdir, eng_dir, logger_name=run.logger_name
   output_filename = filepath(string(run.date, format='(%"%s.ucomp.raw.gif")'), $
                              root=eng_dir)
   write_gif, output_filename, tvrd(), r, g, b
