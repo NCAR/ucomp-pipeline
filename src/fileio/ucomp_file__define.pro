@@ -77,6 +77,10 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
                              rcam_median_linecenter=rcam_median_linecenter, $
                              tcam_median_continuum=tcam_median_continuum, $
                              tcam_median_linecenter=tcam_median_linecenter, $
+                             flat_rcam_median_linecenter=flat_rcam_median_linecenter, $
+                             flat_rcam_median_continuum=flat_rcam_median_continuum, $
+                             flat_tcam_median_linecenter=flat_tcam_median_linecenter, $
+                             flat_tcam_median_continuum=flat_tcam_median_continuum, $
                              median_background=median_background, $
                              quality_bitmask=quality_bitmask, $
                              gbu=gbu, $
@@ -100,6 +104,11 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
   if (n_elements(rcam_median_linecenter)) then self.rcam_median_linecenter = rcam_median_linecenter
   if (n_elements(tcam_median_continuum)) then self.tcam_median_continuum = tcam_median_continuum
   if (n_elements(tcam_median_linecenter)) then self.tcam_median_linecenter = tcam_median_linecenter
+
+  if (n_elements(flat_rcam_median_linecenter)) then self.flat_rcam_median_linecenter = flat_rcam_median_linecenter
+  if (n_elements(flat_rcam_median_continuum)) then self.flat_rcam_median_continuum = flat_rcam_median_continuum
+  if (n_elements(flat_tcam_median_linecenter)) then self.flat_tcam_median_linecenter = flat_tcam_median_linecenter
+  if (n_elements(flat_tcam_median_continuum)) then self.flat_tcam_median_continuum = flat_tcam_median_continuum
 
   if (n_elements(median_background)) then self.median_background = median_background
 
@@ -201,6 +210,10 @@ pro ucomp_file::getProperty, run=run, $
                              rcam_median_linecenter=rcam_median_linecenter, $
                              tcam_median_continuum=tcam_median_continuum, $
                              tcam_median_linecenter=tcam_median_linecenter, $
+                             flat_rcam_median_linecenter=flat_rcam_median_linecenter, $
+                             flat_rcam_median_continuum=flat_rcam_median_continuum, $
+                             flat_tcam_median_linecenter=flat_tcam_median_linecenter, $
+                             flat_tcam_median_continuum=flat_tcam_median_continuum, $
                              rcam_geometry=rcam_geometry, $
                              tcam_geometry=tcam_geometry, $
                              occulter_radius=occulter_radius, $
@@ -354,6 +367,19 @@ pro ucomp_file::getProperty, run=run, $
   if (arg_present(rcam_median_linecenter)) then rcam_median_linecenter = self.rcam_median_linecenter
   if (arg_present(tcam_median_continuum)) then tcam_median_continuum = self.tcam_median_continuum
   if (arg_present(tcam_median_linecenter)) then tcam_median_linecenter = self.tcam_median_linecenter
+
+  if (arg_present(flat_rcam_median_linecenter)) then begin
+    flat_rcam_median_linecenter = self.flat_rcam_median_linecenter
+  endif
+  if (arg_present(flat_rcam_median_continuum)) then begin
+    flat_rcam_median_continuum = self.flat_rcam_median_continuum
+  endif
+  if (arg_present(flat_tcam_median_linecenter)) then begin
+    flat_tcam_median_linecenter = self.flat_tcam_median_linecenter
+  endif
+  if (arg_present(flat_tcam_median_continuum)) then begin
+    flat_tcam_median_continuum = self.flat_tcam_median_continuum
+  endif
 
   if (arg_present(obsswid)) then obsswid = self.obsswid
 
@@ -787,6 +813,11 @@ pro ucomp_file__define
            rcam_median_linecenter : 0.0, $
            tcam_median_continuum  : 0.0, $
            tcam_median_linecenter : 0.0, $
+
+           flat_rcam_median_linecenter : 0.0, $
+           flat_rcam_median_continuum  : 0.0, $
+           flat_tcam_median_linecenter : 0.0, $
+           flat_tcam_median_continuum  : 0.0, $
 
            occulter_x             : 0.0, $
            occulter_y             : 0.0, $
