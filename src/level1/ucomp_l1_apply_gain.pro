@@ -35,7 +35,14 @@ pro ucomp_l1_apply_gain, file, primary_header, data, headers, run=run, status=st
   n_pol_states = dims[2]
   n_cameras = dims[3]
 
+  datetime = strmid(file_basename(file.raw_filename), 0, 15)
+  r_outer = run->epoch('field_radius', datetime=datetime)
+  field_mask = ucomp_field_mask(dims[0], dims[1], r_outer)
+  field_mask_indices = where(field_mask, /null)
+
   cal = run.calibration
+
+  center_indices = file->get_center_wavelength_indices()
 
   ; for each extension in file
   for e = 0L, n_exts - 1L do begin
@@ -85,6 +92,22 @@ pro ucomp_l1_apply_gain, file, primary_header, data, headers, run=run, status=st
       if (n_zeros gt 0L) then p_im[zero_indices] = !values.f_nan
       im[*, *, p, *] = p_im
     endfor
+
+    ; record center wavelength dark corrected flat median values
+    if (total(e eq center_indices, /integer) gt 0L) then begin
+      rcam_image = dark_corrected_flat[*, *, 0]
+      tcam_image = dark_corrected_flat[*, *, 1]
+
+      if (onband eq 'rcam') then begin
+        file.flat_rcam_median_linecenter = median(rcam_image[field_mask_indices])
+        file.flat_tcam_median_continuum = median(tcam_image[field_mask_indices])
+      endif
+
+      if (onband eq 'tcam') then begin
+        file.flat_tcam_median_linecenter = median(tcam_image[field_mask_indices])
+        file.flat_rcam_median_continuum = median(rcam_image[field_mask_indices])
+      endif
+    endif
 
     ; make flat a gain
     opal_radiance = ucomp_opal_radiance(file.wave_region, run=run)

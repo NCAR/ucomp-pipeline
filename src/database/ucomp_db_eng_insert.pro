@@ -98,6 +98,11 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
 
             {name: 'occltrid', type: '''%s'''}, $
 
+            {name: 'flat_rcam_median_linecenter', type: '%s'}, $
+            {name: 'flat_rcam_median_continuum', type: '%s'}, $
+            {name: 'flat_tcam_median_linecenter', type: '%s'}, $
+            {name: 'flat_tcam_median_continuum', type: '%s'}, $
+
             {name: 'dmodswid', type: '''%s'''}, $
             {name: 'distort', type: '''%s'''}, $
 
@@ -202,6 +207,11 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
                  ucomp_db_float(file.t_c1pcb, valid_range=[-20.0, 100.0]), $
 
                  file.occultrid, $
+
+                 file.flat_rcam_median_linecenter, $
+                 file.flat_rcam_median_continuum, $
+                 file.flat_tcam_median_linecenter, $
+                 file.flat_tcam_median_continuum, $
 
                  dmodswid, $
                  distortion, $

@@ -261,3 +261,4 @@
   fixes for averaging
 0.2.72
   fix for no OK files to average
+  rolling plot of dark corrected flats
