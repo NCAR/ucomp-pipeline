@@ -262,3 +262,4 @@
 0.2.72 [Sep 30, 2022]
   fix for no OK files to average
   rolling plot of dark corrected flats
+0.2.73
