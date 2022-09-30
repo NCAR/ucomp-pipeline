@@ -73,7 +73,12 @@ create table ucomp_eng (
 
   occltrid         char (10),
 
-  -- TODO: moved from ucomp_sw, do they belong here?
+  -- dark corrected flat median for onband and continuum
+  flat_rcam_median_linecenter  float (14, 7),
+  flat_rcam_median_continuum   float (14, 7),
+  flat_tcam_median_linecenter  float (14, 7),
+  flat_tcam_median_continuum   float (14, 7),
+
   dmodswid         char(24),
   distort          char(50),
 
