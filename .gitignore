@@ -7,6 +7,7 @@
 
 # all config files
 /config/ucomp.*.cfg
+/config/ucompd.*.cfg
 
 # temporary file used to find the SolarSoft dependencies
 /ssw/ROUTINES

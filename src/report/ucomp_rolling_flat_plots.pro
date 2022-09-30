@@ -5,7 +5,7 @@ pro ucomp_rolling_flat_plots, wave_region, db, run=run
 
   start_date = '2022-02-23T19:51:17'
 
-  query = 'select * from ucomp_cal where wave_region=''%s'' and opal=1 and caloptic=0 and date_obs > ''%s'' order by date_obs'
+  query = 'select * from ucomp_eng where wave_region=''%s'' and date_obs > ''%s'' order by date_obs'
   data = db->query(query, wave_region, start_date, $
                    count=n_flats, error=error, fields=fields, sql_statement=sql)
 
@@ -17,17 +17,17 @@ pro ucomp_rolling_flat_plots, wave_region, db, run=run
             name=run.logger_name, /info
   endelse
 
-  rcam_median_linecenter = data.rcam_median_linecenter
-  rcam_median_continuum  = data.rcam_median_continuum
-  tcam_median_linecenter = data.tcam_median_linecenter
-  tcam_median_continuum  = data.tcam_median_continuum
+  rcam_median_linecenter = data.flat_rcam_median_linecenter
+  rcam_median_continuum  = data.flat_rcam_median_continuum
+  tcam_median_linecenter = data.flat_tcam_median_linecenter
+  tcam_median_continuum  = data.flat_tcam_median_continuum
 
   jds = ucomp_dateobs2julday(data.date_obs)
   format = '(C(CYI4.4, "-", CMoI2.2, "-", CDI2.2))'
 
-  flat_range       = run->line(wave_region, 'flat_value_display_range')
-  linecenter_range = run->line(wave_region, 'flat_value_linecenter_range')
-  continuum_range  = run->line(wave_region, 'flat_value_continuum_range')
+  flat_range       = run->line(wave_region, 'flat_value_display_range') - 50.0
+  linecenter_range = run->line(wave_region, 'flat_value_linecenter_range') - 50.0
+  continuum_range  = run->line(wave_region, 'flat_value_continuum_range') - 50.0
 
   ; save original graphics settings
   original_device = !d.name
@@ -55,7 +55,7 @@ pro ucomp_rolling_flat_plots, wave_region, db, run=run
   camera1_psym     = 4
   symsize          = 0.25
 
-  charsize = 1.0
+  charsize = 0.9
 
   !p.multi = [0, 1, 2]
 
@@ -67,7 +67,7 @@ pro ucomp_rolling_flat_plots, wave_region, db, run=run
   plot, jds, rcam_median_linecenter, /nodata, $
         charsize=charsize, $
         title=string(wave_region, start_date, $
-                     format='%s nm (not dark corrected) flat line center median counts vs. time since %s'), $
+                     format='%s nm dark corrected flat line center median counts vs. time since %s'), $
         color=color, background=background_color, $
         xtitle='Date', $
         xstyle=1, $
@@ -98,7 +98,7 @@ pro ucomp_rolling_flat_plots, wave_region, db, run=run
   plot, jds, rcam_median_continuum, /nodata, $
         charsize=charsize, $
         title=string(wave_region, start_date, $
-                     format='%s nm (not dark corrected) flat continuum median counts vs. time since %s'), $
+                     format='%s nm dark corrected flat continuum median counts vs. time since %s'), $
         color=color, background=background_color, $
         xtitle='Time [HST]', $
         xstyle=1, $
