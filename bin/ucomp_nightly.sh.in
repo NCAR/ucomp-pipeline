@@ -61,7 +61,7 @@ ${GIT_COMMAND} >> ${LOG_FILENAME} 2>&1
 
 echo "Copying config files..." >> ${LOG_FILENAME} 2>&1
 flags="regression unit"
-for $f in $flags; do
+for f in $flags; do
   cp_cmd="cp ${PIPE_DIR}/config/ucomp.${f}.cfg ${LOCATION}/ucomp-pipeline.nightly-source/config"
   echo ${cp_cmd} >> ${LOG_FILENAME} 2>&1
   ${cp_cmd}
