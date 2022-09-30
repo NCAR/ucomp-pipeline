@@ -259,6 +259,6 @@
   display adjustments for intensity
 0.2.71 [Sep 27, 2022]
   fixes for averaging
-0.2.72
+0.2.72 [Sep 30, 2022]
   fix for no OK files to average
   rolling plot of dark corrected flats
