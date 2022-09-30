@@ -63,14 +63,14 @@ pro ucomp_write_polarization_image, filename, $
   display_image[0, 2 * nx, 2 * ny] = azimuth_display
   display_image[0, 2 * nx, ny] = radial_azimuth_display
 
-  write_png, filename, display_image
-
   l2_dir = filepath('', $
                     subdir=[run.date, 'level2'], $
                     root=run->config('processing/basedir'))
   if (~file_test(l2_dir, /directory)) then begin
     ucomp_mkdir, l2_dir, logger_name=run.logger_name
   endif
+
+  write_png, filename, display_image
 
   average_linpol_display = ucomp_display_image(file, average_linpol, $
                                                type='linpol', $
