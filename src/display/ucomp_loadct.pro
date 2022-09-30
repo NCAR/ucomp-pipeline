@@ -25,7 +25,7 @@ end
 ;
 ; :Params:
 ;   name : in, required, type=string
-;     name of color table to load: b/w
+;     name of color table to load, e.g., "intensity", "azimuth", etc.
 ;
 ; :Keywords:
 ;   n_colors : in, optional, type=integer
