@@ -347,7 +347,7 @@ pro ucomp_file::getProperty, run=run, $
 
   if (arg_present(occulter_in)) then occulter_in = self.occulter_in
   if (arg_present(occultrid)) then occultrid = self.occultrid
-  if (arg_present(o1id)) then occultrid = self.o1id
+  if (arg_present(o1id)) then o1id = self.o1id
 
   if (arg_present(occulter_x)) then occulter_x = self.occulter_x
   if (arg_present(occulter_y)) then occulter_y = self.occulter_y
