@@ -71,7 +71,8 @@ create table ucomp_eng (
   t_c1arr          float (9, 6),  -- camera 1 Sensor array temp
   t_c1pcb          float (9, 6),  -- camera 1 PCB board temp
 
-  occltrid         char (10),
+  occltrid         char (10),     -- occulter ID
+  o1id             char (10),     -- O1 ID
 
   -- dark corrected flat median for onband and continuum
   flat_rcam_median_linecenter  float (14, 7),

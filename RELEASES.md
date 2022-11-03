@@ -262,3 +262,6 @@
 0.2.72 [Sep 30, 2022]
   fix for no OK files to average
   rolling plot of dark corrected flats
+0.2.73 [Nov 3, 2022]
+  added O1ID entry to ucomp_eng database table
+  added new lines: 670, 761, 802, 991
