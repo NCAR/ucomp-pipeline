@@ -192,6 +192,7 @@ pro ucomp_file::getProperty, run=run, $
                              wind_direction=wind_direction, $
                              occulter_in=occulter_in, $
                              occultrid=occultrid, $
+                             o1id=o1id, $
                              occulter_x=occulter_x, $
                              occulter_y=occulter_y, $
                              obsswid=obsswid, $
@@ -346,6 +347,8 @@ pro ucomp_file::getProperty, run=run, $
 
   if (arg_present(occulter_in)) then occulter_in = self.occulter_in
   if (arg_present(occultrid)) then occultrid = self.occultrid
+  if (arg_present(o1id)) then o1id = self.o1id
+
   if (arg_present(occulter_x)) then occulter_x = self.occulter_x
   if (arg_present(occulter_y)) then occulter_y = self.occulter_y
 
@@ -570,6 +573,7 @@ pro ucomp_file::_inventory
     self.darkshutter_in = ucomp_getpar(extension_header, 'DARKSHUT', found=found) eq 'in'
     self.occulter_in = ucomp_getpar(extension_header, 'OCCLTR', found=found) eq 'in'
     self.occultrid = ucomp_getpar(primary_header, 'OCCLTRID', found=found)
+    self.o1id = ucomp_getpar(primary_header, 'O1ID', found=found)
   endif
 
   if (self.run->epoch('use_occltr_position')) then begin
@@ -789,6 +793,7 @@ pro ucomp_file__define
            nd                     : 0L, $
            occulter_in            : 0B, $
            occultrid              : '', $
+           o1id                   : '', $
            cover_in               : 0B, $
            darkshutter_in         : 0B, $
            opal_in                : 0B, $
