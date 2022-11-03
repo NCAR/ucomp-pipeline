@@ -21,7 +21,7 @@
 ;     database connection
 ;
 ; :Keywords:
-;   run : in, required, type=object]
+;   run : in, required, type=object
 ;     KCor run object
 ;-
 pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
@@ -97,11 +97,11 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
   n_colors = 253
   ucomp_loadct, option_prefix, n_colors=n_colors
 
-  display_min   = run->line(wave_region, option_prefix + '_display_amma')
+  display_min   = run->line(wave_region, option_prefix + '_display_gamma')
   gamma_ct, display_gamma, /current
 
   display_min   = run->line(wave_region, option_prefix + '_display_min')
-  display_max   = run->line(wave_region, option_prefix + '_display_max')
+  display_max   = run->line(wave_region, option_prefix + '_display_max') * exp(8 * (1.08 - height))
   display_power = run->line(wave_region, option_prefix + '_display_power')
 
   background_color = 253
@@ -136,7 +136,8 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
   for d = 0L, n_dates - 1L do jd_dates[d] = ucomp_dateobs2julday(dates[d])
 
   charsize = 0.9
-  smooth_kernel = [11, 1]
+  ;smooth_kernel = [11, 1]
+  ;smooth_kernel = [3, 1]
 
   title = string(name, wave_region, height, start_date, end_date, $
                  format='(%"UCoMP synoptic map for %s at %s nm at r%0.2f from %s to %s")')
@@ -166,7 +167,7 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
             smooth_kernel=smooth_kernel, $
             charsize=charsize
 
-  xyouts, 0.97, 0.485, /normal, alignment=1.0, $
+  xyouts, 0.97, 0.49, /normal, alignment=1.0, $
           string(display_min, display_max, display_power, $
                  format='(%"min/max/exp: %0.1f, %0.1f, %0.2f")'), $
           charsize=charsize, color=detail_text_color
@@ -226,7 +227,7 @@ end
 
 ; main-level example program
 
-date = '20220831'
+date = '20220930'
 config_basename = 'ucomp.production.cfg'
 config_filename = filepath(config_basename, $
                            subdir=['..', '..', 'config'], $
@@ -238,24 +239,32 @@ db = ucomp_db_connect(run->config('database/config_filename'), $
                       log_statements=run->config('database/log_statements'), $
                       status=status)
 
-ucomp_rolling_synoptic_map, '1074', 'linear polarization', 'linpol', 'linpol', 1.30, 'r13l', $
-                            db, run=run
-ucomp_rolling_synoptic_map, '1074', 'intensity', 'int', 'intensity', 1.08, 'r108i', $
-                            db, run=run
-ucomp_rolling_synoptic_map, '1074', 'radial azimuth', $
-                            'radazi', $
-                            'radial_azimuth', $
-                            1.08, $
-                            'r108radazi', $
-                            db, $
-                            run=run
-ucomp_rolling_synoptic_map, '1074', 'doppler velocity', $
-                            'doppler', $
-                            'doppler', $
-                            1.08, $
-                            'r108doppler', $
-                            db, $
-                            run=run
+; ucomp_rolling_synoptic_map, '1074', 'linear polarization', 'linpol', 'linpol', 1.30, 'r13l', $
+;                             db, run=run
+
+wave_regions = ['530', '637', '706', '789', '1074', '1079']
+wave_regions = ['1074']
+for w = 0L, n_elements(wave_regions) - 1L do begin
+  ucomp_rolling_synoptic_map, wave_regions[w], 'intensity', 'int', 'intensity', 1.08, 'r108i', $
+                              db, run=run
+  ; ucomp_rolling_synoptic_map, wave_regions[w], 'intensity', 'int', 'intensity', 1.30, 'r13i', $
+  ;                             db, run=run
+endfor
+
+; ucomp_rolling_synoptic_map, '1074', 'radial azimuth', $
+;                             'radazi', $
+;                             'radial_azimuth', $
+;                             1.08, $
+;                             'r108radazi', $
+;                             db, $
+;                             run=run
+; ucomp_rolling_synoptic_map, '1074', 'doppler velocity', $
+;                             'doppler', $
+;                             'doppler', $
+;                             1.08, $
+;                             'r108doppler', $
+;                             db, $
+;                             run=run
 ; window, xsize=(30 * n_days + 50) < 1200, ysize=800, /free
 ; device, decomposed=0
 ; erase, 255
