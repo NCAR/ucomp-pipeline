@@ -72,6 +72,14 @@ pro ucomp_db_update, run=run
     ucomp_db_sci_insert, sci_files, wave_regions[w], $
                          obsday_index, sw_index, db, run=run
 
+    ; level 2 files
+    ucomp_db_file_insert, sci_files, 'L2', 'dynamics', $
+                          obsday_index, sw_index, db, $
+                          logger_name=run.logger_name
+    ucomp_db_file_insert, sci_files, 'L2', 'polarization', $
+                          obsday_index, sw_index, db, $
+                          logger_name=run.logger_name
+
     ucomp_rolling_flat_plots, wave_regions[w], db, run=run
 
     ucomp_rolling_background_plot, wave_regions[w], db, run=run

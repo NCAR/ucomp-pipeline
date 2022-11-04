@@ -34,19 +34,20 @@ pro ucomp_db_file_insert, files, level, product_type, $
             name=logger_name, /info
     goto, done
   endif else begin
-    mg_log, 'inserting %d %s nm %s %s files into ucomp_sci', n_files, files[0].wave_region, level, product_type, $
+    mg_log, 'inserting up to %d %s nm %s %s files into ucomp_sci', $
+            n_files, files[0].wave_region, level, product_type, $
             name=logger_name, /info
   endelse
 
   ; get index for level 1 data files
   q = 'select * from ucomp_level where level=''%s'''
-  level_results = db->query(q, level, status=status, sql_statement=sql_statement, error_message=error_message)
+  level_results = db->query(q, level, status=status)
   if (status ne 0L) then goto, done
   level_index = level_results.level_id	
 
   ; get index for intensity files
   q = 'select * from mlso_producttype where producttype=''%s'' and description like ''UCoMP%%'''
-  producttype_results = db->query(q, product_type, status=status, sql_statement=sql_statement, error_message=error_message)
+  producttype_results = db->query(q, product_type, status=status)
   if (status ne 0L) then goto, done
   producttype_index = producttype_results.producttype_id
 
@@ -58,6 +59,20 @@ pro ucomp_db_file_insert, files, level, product_type, $
 
   for f = 0L, n_files - 1L do begin
     file = files[f]
+
+    if (strlowcase(product_type) eq 'iquv') then begin
+      if (~file.wrote_l1) then continue
+      filename = file.l1_basename
+    endif else if (strlowcase(product_type) eq 'dynamics') then begin
+      if (~file.wrote_dynamics) then continue
+      filename = file.dynamics_basename
+    endif else if (strlowcase(product_type) eq 'polarization') then begin
+      if (~file.wrote_polarization) then continue
+      filename = file.polarization_basename
+    endif else begin
+      mg_log, 'unknown product_type: %s', product_type, name=logger_name, /warn
+      continue
+    endelse  
 
     mg_log, 'ingesting %s', file.l1_basename, name=logger_name, /info
     fields = [{name: 'file_name', type: '''%s'''}, $
@@ -86,7 +101,7 @@ pro ucomp_db_file_insert, files, level, product_type, $
                      strjoin(fields.type, ', '), $
                      format='(%"insert into ucomp_file (%s) values (%s)")')
     db->execute, sql_cmd, $
-                 file.l1_basename, $
+                 filename, $
                  file.date_obs,$
                  obsday_index, $
                  long(file.carrington_rotation), $
