@@ -52,7 +52,7 @@ pro ucomp_l1_distribute, wave_region, run=run
     n_total_fits_files = 0L
     n_total_image_files = 0L
     for f = 0L, n_files - 1L do begin
-      if (files[f].ok and files[f].processed and (files[f].gbu eq 0L)) then begin
+      if (files[f].ok and files[f].wrote_l1 and (files[f].gbu eq 0L)) then begin
         ; grab the date/time, e.g., "20220829.205656"
         prefix = strmid(files[f].l1_basename, 0, 15)
 
