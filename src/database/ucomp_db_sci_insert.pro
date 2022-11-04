@@ -20,7 +20,7 @@ function ucomp_db_sci_insert_select, files, count=count
   n_files = n_elements(files)
   count = 1L
   for f = 0L, n_files - 1L do begin
-    if (files[f].processed) then return, files[f]
+    if (files[f].wrote_l1) then return, files[f]
   endfor
 
   count = 0L
@@ -33,8 +33,10 @@ end
 ; enter them into the ucomp_sci database table.
 ;
 ; :Params:
-;   l0_files : in, required, type=strarr
+;   files : in, required, type=objarr
 ;     array of `UCOMP_FILE` objects
+;   wave_region : in, required, type=string
+;     wave region for science files
 ;   obsday_index : in, required, type=integer
 ;     index into mlso_numfiles database table
 ;   sw_index : in, required, type=integer
@@ -46,17 +48,18 @@ end
 ;   run : in, required, type=object
 ;     UCoMP run object
 ;-
-pro ucomp_db_sci_insert, l0_files, obsday_index, sw_index, db, $
+pro ucomp_db_sci_insert, files, wave_region, $
+                         obsday_index, sw_index, db, $
                          run=run
   compile_opt strictarr
 
-  if (n_elements(l0_files) eq 0L) then begin
+  if (n_elements(files) eq 0L) then begin
     mg_log, 'no science file to insert, skipping', name=run.logger_name, /info
     goto, done
   endif
 
   ; choose science file -- right now, just the first file
-  science_files = ucomp_db_sci_insert_select(l0_files, count=n_files)
+  science_files = ucomp_db_sci_insert_select(files, count=n_files)
   if (n_files eq 0L) then begin
     mg_log, 'no appropriate files for ucomp_sci', name=run.logger_name, /info
     goto, done
