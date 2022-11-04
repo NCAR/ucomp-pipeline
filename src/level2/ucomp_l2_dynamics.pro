@@ -137,12 +137,9 @@ pro ucomp_l2_dynamics, file, run=run
   endif
 
   ; write dynamics file: YYYYMMDD.HHMMSS.ucomp.WWWW.dynamics.fts
-  dynamics_basename = string(strmid(file.l1_basename, 0, 15), $
-                             file.wave_region, $
-                             format='(%"%s.ucomp.%s.l2.dynamics.fts")')
-  dynamics_filename = filepath(dynamics_basename, root=l2_dir)
+  dynamics_filename = filepath(file.dynamics_basename, root=l2_dir)
 
-  mg_log, 'writing %s', dynamics_basename, name=run.logger_name, /info
+  mg_log, 'writing %s', file.dynamics_basename, name=run.logger_name, /info
 
   ; promote header
   ucomp_addpar, primary_header, 'LEVEL', 'L2', comment='level 2 calibrated'
@@ -174,8 +171,8 @@ pro ucomp_l2_dynamics, file, run=run
   fits_close, fcb
 
   dynamics_basename = string(strmid(file.l1_basename, 0, 15), $
-                                 file.wave_region, $
-                                 format='(%"%s.ucomp.%s.l2.dynamics.png")')
+                             file.wave_region, $
+                             format='(%"%s.ucomp.%s.l2.dynamics.png")')
   dynamics_filename = filepath(dynamics_basename, root=l2_dir)
 
   ucomp_write_dynamics_image, dynamics_filename, $
@@ -186,6 +183,8 @@ pro ucomp_l2_dynamics, file, run=run
                               line_width, $
                               reduce_factor=2L, $
                               run=run
+
+  file.wrote_dynamics = 1B
 
   done:
 end

@@ -22,15 +22,14 @@
 function ucomp_db_sw_insert, db, status=status, logger_name=logger_name
   compile_opt strictarr
 
-  mg_log, 'checking if new row needs to be added to ucomp_sw', $
-          name=logger_name, /info
-
   sw_index = 0L
   version = ucomp_version(revision=revision)
 
+  mg_log, 'checking if %s [%s] is in ucomp_sw', version, revision, $
+          name=logger_name, /info
+
   ; check to see if passed observation day date is in mlso_numfiles table
   q = 'select count(sw_id) from ucomp_sw where sw_version=''%s'' and sw_revision=''%s'''
-  mg_log, q, version, revision, name=logger_name, /debug
   sw_id_results = db->query(q, version, revision, status=status)
   if (status ne 0L) then goto, done
   sw_id_count = sw_id_results.count_sw_id_

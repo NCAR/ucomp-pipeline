@@ -121,7 +121,7 @@ pro ucomp_l1_process_file, file, run=run
   l1_intensity_filename = filepath(file.l1_intensity_basename, root=l1_dirname)
   ucomp_write_fits_file, l1_intensity_filename, primary_header, data, headers, $
                          /intensity
-  file.processed = 1B
+  file.wrote_l1 = 1B
 
   ucomp_write_intensity_image, file, data, primary_header, run=run
   ucomp_write_intensity_image, file, data, primary_header, run=run, /enhanced
