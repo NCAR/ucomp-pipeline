@@ -26,6 +26,8 @@ LOG_FILENAME=/tmp/ucomp-$RANDOM.log
 $BIN_DIR/ucomp_verify_dates.sh production "$START_DATE-$END_DATE" &> $LOG_FILENAME
 N_FAILED_DAYS=$?
 
+echo -e "\nSent from $0 ($(whoami)@$(hostname))" >> $LOG_FILENAME
+
 if (( N_FAILED_DAYS > 0 )); then
   SUBJECT="UCoMP verification for $START_DATE-$END_DATE ($N_FAILED_DAYS failed days)"
 else
