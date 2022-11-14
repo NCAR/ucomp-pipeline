@@ -20,17 +20,8 @@ pro ucomp_db_update, run=run
   endif
 
   dark_files = run->get_files(data_type='dark', count=n_dark_files)
-  if (n_dark_files eq 0L) then begin
-    mg_log, 'no dark files to insert', name=run.logger_name, /info
-  endif
   flat_files = run->get_files(data_type='flat', count=n_flat_files)
-  if (n_flat_files eq 0L) then begin
-    mg_log, 'no flat files to insert', name=run.logger_name, /info
-  endif
   cal_files = run->get_files(data_type='cal', count=n_cal_files)
-  if (n_cal_files eq 0L) then begin
-    mg_log, 'no cal files to insert', name=run.logger_name, /info
-  endif
 
   ; connect to the database
   db = ucomp_db_connect(run->config('database/config_filename'), $
@@ -58,11 +49,14 @@ pro ucomp_db_update, run=run
   ucomp_db_eng_insert, all_files, obsday_index, sw_index, db, $
                        logger_name=run.logger_name
 
-  ucomp_db_cal_insert, dark_files, obsday_index, sw_index, db, $
+  ucomp_db_cal_insert, dark_files, 'dark', $
+                       obsday_index, sw_index, db, $
                        logger_name=run.logger_name
-  ucomp_db_cal_insert, flat_files, obsday_index, sw_index, db, $
+  ucomp_db_cal_insert, flat_files, 'flat', $
+                       obsday_index, sw_index, db, $
                        logger_name=run.logger_name
-  ucomp_db_cal_insert, cal_files, obsday_index, sw_index, db, $
+  ucomp_db_cal_insert, cal_files, 'cal', $
+                       obsday_index, sw_index, db, $
                        logger_name=run.logger_name
 
   ucomp_rolling_dark_plots, db, run=run
@@ -71,65 +65,57 @@ pro ucomp_db_update, run=run
   for w = 0L, n_elements(wave_regions) - 1L do begin
     sci_files = run->get_files(data_type='sci', wave_region=wave_regions[w], $
                                count=n_sci_files)
-    if (n_sci_files eq 0L) then begin
-      mg_log, 'no %s nm science files to insert', wave_regions[w], $
-              name=run.logger_name, /info
-    endif
 
-    ucomp_db_file_insert, sci_files, obsday_index, sw_index, db, $
+    ucomp_db_file_insert, sci_files, 'L1', 'IQUV', $
+                          obsday_index, sw_index, db, $
                           logger_name=run.logger_name
-    ucomp_db_sci_insert, sci_files, obsday_index, sw_index, db, run=run
+    ucomp_db_sci_insert, sci_files, wave_regions[w], $
+                         obsday_index, sw_index, db, run=run
+
+    ; level 2 files
+    ucomp_db_file_insert, sci_files, 'L2', 'dynamics', $
+                          obsday_index, sw_index, db, $
+                          logger_name=run.logger_name
+    ucomp_db_file_insert, sci_files, 'L2', 'polarization', $
+                          obsday_index, sw_index, db, $
+                          logger_name=run.logger_name
 
     ucomp_rolling_flat_plots, wave_regions[w], db, run=run
 
     ucomp_rolling_background_plot, wave_regions[w], db, run=run
 
-    ucomp_rolling_synoptic_map, wave_regions[w], 'intensity', 'int', 'intensity', 1.08, $
-                                                 'r108i', db, run=run
-    ucomp_rolling_synoptic_map, wave_regions[w], 'intensity', 'int', 'intensity', 1.3, $
-                                                 'r13i', db, run=run
-    ucomp_rolling_synoptic_map, wave_regions[w], 'linear polarization', $
-                                                 'linpol', $
-                                                 'linpol', $
-                                                 1.08, $
-                                                 'r108l', $
-                                                 db, $
-                                                 run=run
-    ucomp_rolling_synoptic_map, wave_regions[w], 'linear polarization', $
-                                                 'linpol', $
-                                                 'linpol', $
-                                                 1.3, $
-                                                 'r13l', $
-                                                 db, $
-                                                 run=run
-    ucomp_rolling_synoptic_map, wave_regions[w], 'radial azimuth', $
-                                'radazi', $
-                                'radial_azimuth', $
-                                1.08, $
-                                'r108radazi', $
-                                db, $
-                                run=run
-    ucomp_rolling_synoptic_map, wave_regions[w], 'radial azimith', $
-                                'radazi', $
-                                'radial_azimuth', $
-                                1.3, $
-                                'r13radazi', $
-                                db, $
-                                run=run
-    ucomp_rolling_synoptic_map, wave_regions[w], 'doppler velocity', $
-                                'doppler', $
-                                'doppler', $
-                                1.08, $
-                                'r108doppler', $
-                                db, $
-                                run=run
-    ucomp_rolling_synoptic_map, wave_regions[w], 'doppler velocity', $
-                                'doppler', $
-                                'doppler', $
-                                1.3, $
-                                'r13doppler', $
-                                db, $
-                                run=run
+    ucomp_rolling_synoptic_map, wave_regions[w], $
+                                'intensity', 'int', 'intensity', $
+                                1.08, 'r108i', $
+                                db, run=run
+    ucomp_rolling_synoptic_map, wave_regions[w], $
+                                'intensity', 'int', 'intensity', $
+                                1.3, 'r13i', $
+                                db, run=run
+    ucomp_rolling_synoptic_map, wave_regions[w], $
+                                'linear polarization', 'linpol', 'linpol', $
+                                1.08, 'r108l', $
+                                db, run=run
+    ucomp_rolling_synoptic_map, wave_regions[w], $
+                                'linear polarization', 'linpol', 'linpol', $
+                                1.3, 'r13l', $
+                                db, run=run
+    ucomp_rolling_synoptic_map, wave_regions[w], $
+                                'radial azimuth', 'radazi', 'radial_azimuth', $
+                                1.08, 'r108radazi', $
+                                db, run=run
+    ucomp_rolling_synoptic_map, wave_regions[w], $
+                                'radial azimith', 'radazi', 'radial_azimuth', $
+                                1.3, 'r13radazi', $
+                                db, run=run
+    ucomp_rolling_synoptic_map, wave_regions[w], $
+                                'doppler velocity', 'doppler', 'doppler', $
+                                1.08, 'r108doppler', $
+                                db, run=run
+    ucomp_rolling_synoptic_map, wave_regions[w], $
+                                'doppler velocity', 'doppler', 'doppler', $
+                                1.3, 'r13doppler', $
+                                db, run=run
   endfor
 
   done:

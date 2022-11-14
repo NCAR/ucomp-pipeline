@@ -4,8 +4,10 @@
 ; Insert an array of L0 FITS files into the ucomp_cal database table.
 ;
 ; :Params:
-;   l0_files : in, required, type=strarr
+;   files : in, required, type=objarr
 ;     array of `UCOMP_FILE` objects
+;   type : in, required, type=string
+;     type of cal file, i.e., 'dark', 'flat', or 'cal'
 ;   obsday_index : in, required, type=integer
 ;     index into mlso_numfiles database table
 ;   db : in, optional, type=object
@@ -15,11 +17,12 @@
 ;   logger_name : in, required, type=string
 ;     logger name to use for logging, i.e., "ucomp/rt", "ucomp/eod", etc.
 ;-
-pro ucomp_db_cal_insert, l0_files, obsday_index, sw_index, db, logger_name=logger_name
+pro ucomp_db_cal_insert, files, type, $
+                         obsday_index, sw_index, db, logger_name=logger_name
   compile_opt strictarr
 
-  n_files = n_elements(l0_files)
-  mg_log, 'inserting %d files into ucomp_cal', n_files, name=logger_name, /info
+  n_files = n_elements(files)
+  mg_log, 'inserting %d %s files into ucomp_cal', n_files, type, name=logger_name, /info
 
   ; get index for raw (level 0) data files
   q = 'select * from ucomp_level where level=''L0'''
@@ -28,7 +31,7 @@ pro ucomp_db_cal_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
   level_index = level_results.level_id	
 
   for f = 0L, n_files - 1L do begin
-    file = l0_files[f]
+    file = files[f]
 
     mg_log, 'ingesting %s', file_basename(file.raw_filename), $
             name=logger_name, /info

@@ -4,8 +4,13 @@
 ; Insert an array of L1 FITS files into the ucomp_file database table.
 ;
 ; :Params:
-;   l1_files : in, required, type=strarr
+;   files : in, required, type=objarr
 ;     array of `UCOMP_FILE` objects
+;   level : in, required, type=string
+;     level, e.g., 'L1' or 'L2'
+;   product_type : in, required, type=string
+;     product type, e.g., 'IQUV', 'dynamics', 'polarization', 'quick-invert',
+;     'mean', 'median'
 ;   obsday_index : in, required, type=integer
 ;     index into mlso_numfiles database table
 ;   sw_index : in, required, type=integer
@@ -17,19 +22,32 @@
 ;   logger_name : in, optional, type=string
 ;     logger name to use for logging, i.e., "ucomp/rt", "ucomp/eod", etc.
 ;-
-pro ucomp_db_file_insert, l1_files, obsday_index, sw_index, db, $
+pro ucomp_db_file_insert, files, level, product_type, $
+                          obsday_index, sw_index, db, $
                           logger_name=logger_name
   compile_opt strictarr
 
+  n_files = n_elements(files)
+
+  if (n_files eq 0L) then begin
+    mg_log, 'no %s %s files for ucomp_sci', level, product_type, $
+            name=logger_name, /info
+    goto, done
+  endif else begin
+    mg_log, 'inserting up to %d %s nm %s %s files into ucomp_sci', $
+            n_files, files[0].wave_region, level, product_type, $
+            name=logger_name, /info
+  endelse
+
   ; get index for level 1 data files
-  q = 'select * from ucomp_level where level=''L1'''
-  level_results = db->query(q, status=status)
+  q = 'select * from ucomp_level where level=''%s'''
+  level_results = db->query(q, level, status=status)
   if (status ne 0L) then goto, done
   level_index = level_results.level_id	
 
   ; get index for intensity files
-  q = 'select * from mlso_producttype where producttype=''intensity'' and description like ''UCoMP%'''
-  producttype_results = db->query(q, status=status)
+  q = 'select * from mlso_producttype where producttype=''%s'' and description like ''UCoMP%%'''
+  producttype_results = db->query(q, product_type, status=status)
   if (status ne 0L) then goto, done
   producttype_index = producttype_results.producttype_id
 
@@ -39,10 +57,22 @@ pro ucomp_db_file_insert, l1_files, obsday_index, sw_index, db, $
   if (status ne 0L) then goto, done
   filetype_index = filetype_results.filetype_id	
 
-  n_files = n_elements(l1_files)
-
   for f = 0L, n_files - 1L do begin
-    file = l1_files[f]
+    file = files[f]
+
+    if (strlowcase(product_type) eq 'iquv') then begin
+      if (~file.wrote_l1) then continue
+      filename = file.l1_basename
+    endif else if (strlowcase(product_type) eq 'dynamics') then begin
+      if (~file.wrote_dynamics) then continue
+      filename = file.dynamics_basename
+    endif else if (strlowcase(product_type) eq 'polarization') then begin
+      if (~file.wrote_polarization) then continue
+      filename = file.polarization_basename
+    endif else begin
+      mg_log, 'unknown product_type: %s', product_type, name=logger_name, /warn
+      continue
+    endelse  
 
     mg_log, 'ingesting %s', file.l1_basename, name=logger_name, /info
     fields = [{name: 'file_name', type: '''%s'''}, $
@@ -71,7 +101,7 @@ pro ucomp_db_file_insert, l1_files, obsday_index, sw_index, db, $
                      strjoin(fields.type, ', '), $
                      format='(%"insert into ucomp_file (%s) values (%s)")')
     db->execute, sql_cmd, $
-                 file.l1_basename, $
+                 filename, $
                  file.date_obs,$
                  obsday_index, $
                  long(file.carrington_rotation), $
