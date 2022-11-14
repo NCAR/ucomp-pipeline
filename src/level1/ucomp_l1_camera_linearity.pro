@@ -25,5 +25,28 @@ pro ucomp_l1_camera_linearity, file, primary_header, data, headers, $
 
   status = 0L
 
-  ; TODO: implement
+  if (~run->config('cameras/linearity')) then begin
+    mg_log, 'skipping camera linearity correction', name=run.logger_name, /info
+    goto, done
+  endif
+
+  dims = size(data, /dimensions)
+  n_polstates = dims[2]
+  n_cameras = dims[3]
+
+  ; TODO: get linearity coefficients for cameras present
+  rcam_coeffs = run->get_camera_linearity(camera, exptime)
+  tcam_coeffs = run->get_camera_linearity(camera, exptime)
+
+  for e = 0L, n_elements(headers) - 1L do begin
+    for p = 0L, n_polstates - 1L do begin
+      for c = 0L, n_cameras - 1L do begin
+        cam = reform(data[*, *, p, c, e])
+        cam = ucomp_apply_camera_linearity(cam, c eq 0 ? rcam_coeffs: tcam_coeffs)
+        data[*, *, p, c, e] = cam
+      endfor
+    endfor
+  endfor
+
+  done:
 end

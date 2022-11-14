@@ -36,7 +36,7 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
   occulter_id = ucomp_getpar(primary_header, 'OCCLTRID')
   radius_guess = ucomp_radius_guess(occulter_id, file.wave_region, run=run)
   mg_log, 'radius guess: %0.1f', radius_guess, name=run.logger_name, /debug
-  dradius = 40.0
+  dradius = run->epoch('dradius')
 
   post_angle_guess = run->epoch('post_angle_guess')
   post_angle_tolerance = run->epoch('post_angle_tolerance')
@@ -85,29 +85,37 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
   ucomp_addpar, primary_header, $
                 'XOFFSET0', $
                 (rcam.xsize - 1.0) / 2.0 - rcam.occulter_center[0], $
-                comment='[px] RCAM occulter x-offset'
+                comment='[px] RCAM occulter x-offset', $
+                format='(F0.3)'
   ucomp_addpar, primary_header, $
                 'YOFFSET0', $
                 (rcam.ysize - 1.0) / 2.0 - rcam.occulter_center[1], $
-                comment='[px] RCAM occulter y-offset'
+                comment='[px] RCAM occulter y-offset', $
+                format='(F0.3)'
   ucomp_addpar, primary_header, 'RADIUS0', rcam.occulter_radius, $
-                comment='[px] RCAM occulter radius'
+                comment='[px] RCAM occulter radius', $
+                format='(F0.3)'
   ucomp_addpar, primary_header, 'FITCHI0', rcam.occulter_chisq, $
-                comment='[px] chi-squared for RCAM center fit'
+                comment='[px] chi-squared for RCAM center fit', $
+                format='(F0.3)'
 
   tcam = file.tcam_geometry
   ucomp_addpar, primary_header, $
                 'XOFFSET1', $
                 (tcam.xsize - 1.0) / 2.0 - tcam.occulter_center[0], $
-                comment='[px] TCAM occulter x-offset'
+                comment='[px] TCAM occulter x-offset', $
+                format='(F0.3)'
   ucomp_addpar, primary_header, $
                 'YOFFSET1', $
                 (tcam.ysize - 1.0) / 2.0 - tcam.occulter_center[1], $
-                comment='[px] TCAM occulter y-offset'
+                comment='[px] TCAM occulter y-offset', $
+                format='(F0.3)'
   ucomp_addpar, primary_header, 'RADIUS1', file.tcam_geometry.occulter_radius, $
-                comment='[px] TCAM occulter radius'
+                comment='[px] TCAM occulter radius', $
+                format='(F0.3)'
   ucomp_addpar, primary_header, 'FITCHI1', file.tcam_geometry.occulter_chisq, $
-                comment='[px] chi-squared for TCAM center fit'
+                comment='[px] chi-squared for TCAM center fit', $
+                format='(F0.3)'
 
   ucomp_addpar, primary_header, 'POST_ANG', $
                 (rcam.post_angle + tcam.post_angle) / 2.0, $
