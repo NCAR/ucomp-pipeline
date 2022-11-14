@@ -69,6 +69,9 @@ end
 ;       2 - moving optic elements, i.e., occulter, cal optics, etc.
 ;-
 pro ucomp_file::setProperty, demodulated=demodulated, $
+                             wrote_l1=wrote_l1, $
+                             wrote_dynamics=wrote_dynamics, $
+                             wrote_polarization=wrote_polarization, $
                              rcam_geometry=rcam_geometry, $
                              tcam_geometry=tcam_geometry, $
                              rcam_roughness=rcam_roughness, $
@@ -84,7 +87,6 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
                              median_background=median_background, $
                              quality_bitmask=quality_bitmask, $
                              gbu=gbu, $
-                             processed=processed, $
                              vcrosstalk_metric=vcrosstalk_metric, $
                              n_extensions=n_extensions, $
                              wavelengths=wavelengths, $
@@ -93,7 +95,10 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
   compile_opt strictarr
 
   if (n_elements(demodulated)) then self.demodulated = demodulated
-
+  if (n_elements(wrote_l1) gt 0L) then self.wrote_l1 = wrote_l1
+  if (n_elements(wrote_dynamics)) then self.wrote_dynamics = wrote_dynamics
+  if (n_elements(wrote_polarization)) then self.wrote_polarization = wrote_polarization
+  
   if (n_elements(rcam_geometry)) then self.rcam_geometry = rcam_geometry
   if (n_elements(tcam_geometry)) then self.tcam_geometry = tcam_geometry
 
@@ -116,7 +121,6 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
     self.quality_bitmask or= quality_bitmask
   endif
   if (n_elements(gbu) gt 0L) then self.gbu or= gbu
-  if (n_elements(processed) gt 0L) then self.processed = processed
   if (n_elements(vcrosstalk_metric) gt 0L) then self.vcrosstalk_metric = vcrosstalk_metric
 
   if (n_elements(n_extensions) gt 0L) then self.n_extensions = n_extensions
@@ -151,7 +155,12 @@ pro ucomp_file::getProperty, run=run, $
                              l1_basename=l1_basename, $
                              l1_intensity_basename=l1_intensity_basename, $
                              intermediate_name=intermediate_name, $
+                             dynamics_basename=dynamics_basename, $
+                             polarization_basename=polarization_basename, $
                              demodulated=demodulated, $
+                             wrote_l1=wrote_l1, $
+                             wrote_dynamics=wrote_dynamics, $
+                             wrote_polarization=wrote_polarization, $
                              hst_date=hst_date, $
                              hst_time=hst_time, $
                              ut_date=ut_date, $
@@ -186,7 +195,6 @@ pro ucomp_file::getProperty, run=run, $
                              quality_bitmask=quality_bitmask, $
                              gbu=gbu, $
                              ok=ok, $
-                             processed=processed, $
                              vcrosstalk_metric=vcrosstalk_metric, $
                              wind_speed=wind_speed, $
                              wind_direction=wind_direction, $
@@ -280,8 +288,23 @@ pro ucomp_file::getProperty, run=run, $
                                    n_unique_wavelengths, $
                                    format='(%"%s.%s.ucomp.%s.%s.%d.int.fts")')
   endif
+  if (arg_present(dynamics_basename)) then begin
+    dynamics_basename = string(self.ut_date, $
+                               self.ut_time, $
+                               self.wave_region, $
+                               format='(%"%s.%s.ucomp.%s.l2.dynamics.fts")')
+  endif
+  if (arg_present(polarization_basename)) then begin
+    polarization_basename = string(self.ut_date, $
+                                   self.ut_time, $
+                                   self.wave_region, $
+                                   format='(%"%s.%s.ucomp.%s.l2.polarization.fts")')
+  endif
 
   if (arg_present(demodulated)) then demodulated = self.demodulated
+  if (arg_present(wrote_l1)) then wrote_l1 = self.wrote_l1
+  if (arg_present(wrote_dynamics)) then wrote_dynamics = self.wrote_dynamics
+  if (arg_present(wrote_polarization)) then wrote_polarization = self.wrote_polarization
 
   if (arg_present(n_extensions)) then n_extensions = self.n_extensions
 
@@ -337,7 +360,6 @@ pro ucomp_file::getProperty, run=run, $
   if (arg_present(quality_bitmask)) then quality_bitmask = self.quality_bitmask
   if (arg_present(gbu)) then gbu = self.gbu
   if (arg_present(ok)) then ok = self.quality_bitmask eq 0
-  if (arg_present(processed)) then processed = self.processed
   if (arg_present(vcrosstalk_metric)) then vcrosstalk_metric = self.vcrosstalk_metric
   if (arg_present(wind_speed)) then wind_speed = self.wind_speed
   if (arg_present(wind_direction)) then wind_direction = self.wind_direction
@@ -765,9 +787,13 @@ pro ucomp_file__define
 
   !null = {ucomp_file, inherits IDL_Object, $
            raw_filename           : '', $
+
            run                    : obj_new(), $
 
            demodulated            : 0B, $
+           wrote_l1               : 0B, $
+           wrote_dynamics         : 0B, $
+           wrote_polarization     : 0B, $
 
            hst_date               : '', $
            hst_time               : '', $

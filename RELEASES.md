@@ -265,3 +265,5 @@
 0.2.73 [Nov 3, 2022]
   added O1ID entry to ucomp_eng database table
   added new lines: 670, 761, 802, 991
+0.2.74 [Nov 14, 2022]
+  a fix for the new wave regions added this week

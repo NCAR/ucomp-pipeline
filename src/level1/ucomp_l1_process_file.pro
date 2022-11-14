@@ -71,10 +71,10 @@ pro ucomp_l1_process_file, file, run=run
 
   ucomp_l1_step, 'ucomp_l1_average_data', $
                  file, primary_header, data, headers, step_number=step_number, run=run
+  ucomp_l1_step, 'ucomp_l1_camera_linearity', $
+                 file, primary_header, data, headers, step_number=step_number, run=run
 
   ucomp_l1_step, 'ucomp_l1_apply_dark', $
-                 file, primary_header, data, headers, step_number=step_number, run=run
-  ucomp_l1_step, 'ucomp_l1_camera_linearity', $
                  file, primary_header, data, headers, step_number=step_number, run=run
   ucomp_l1_step, 'ucomp_l1_apply_gain', $
                  file, primary_header, data, headers, step_number=step_number, run=run
@@ -121,7 +121,7 @@ pro ucomp_l1_process_file, file, run=run
   l1_intensity_filename = filepath(file.l1_intensity_basename, root=l1_dirname)
   ucomp_write_fits_file, l1_intensity_filename, primary_header, data, headers, $
                          /intensity
-  file.processed = 1B
+  file.wrote_l1 = 1B
 
   ucomp_write_intensity_image, file, data, primary_header, run=run
   ucomp_write_intensity_image, file, data, primary_header, run=run, /enhanced

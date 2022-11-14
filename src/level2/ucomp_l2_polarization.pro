@@ -143,12 +143,9 @@ pro ucomp_l2_polarization, file, run=run
   endif
 
   ; write polarization file: YYYYMMDD.HHMMSS.ucomp.WWWW.polarization.fts
-  polarization_basename = string(strmid(file.l1_basename, 0, 15), $
-                                 file.wave_region, $
-                                 format='(%"%s.ucomp.%s.l2.polarization.fts")')
-  polarization_filename = filepath(polarization_basename, root=l2_dir)
+  polarization_filename = filepath(file.polarization_basename, root=l2_dir)
 
-  mg_log, 'writing %s', polarization_basename, name=run.logger_name, /info
+  mg_log, 'writing %s', file.polarization_basename, name=run.logger_name, /info
 
   ; promote header
   ucomp_addpar, primary_header, 'LEVEL', 'L2', comment='level 2 calibrated'
@@ -210,6 +207,7 @@ pro ucomp_l2_polarization, file, run=run
                                   radial_azimuth, $
                                   reduce_factor=4L, $
                                   run=run
+  file.wrote_polarization = 1B
 
   done:
 end

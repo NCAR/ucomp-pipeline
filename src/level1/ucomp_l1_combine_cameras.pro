@@ -29,7 +29,7 @@ pro ucomp_l1_combine_cameras, file, primary_header, ext_data, ext_headers, $
 
   status = 0L
 
-  cameras = strlowcase(run->config('combinecameras/use'))
+  cameras = strlowcase(run->config('cameras/use'))
   case cameras of
     'rcam': ext_data = reform(ext_data[*, *, *, 0, *])
     'tcam': ext_data = reform(ext_data[*, *, *, 1, *])

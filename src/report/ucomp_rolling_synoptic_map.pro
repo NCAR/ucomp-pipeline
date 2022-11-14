@@ -97,7 +97,7 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
   n_colors = 253
   ucomp_loadct, option_prefix, n_colors=n_colors
 
-  display_min   = run->line(wave_region, option_prefix + '_display_gamma')
+  display_gamma = run->line(wave_region, option_prefix + '_display_gamma')
   gamma_ct, display_gamma, /current
 
   display_min   = run->line(wave_region, option_prefix + '_display_min')
