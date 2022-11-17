@@ -73,5 +73,15 @@ pro ucomp_l1_apply_alignment, file, primary_header, data, headers, run=run, stat
   ucomp_addpar, primary_header, 'POST_ANG', $
                 (rcam_geometry.post_angle + tcam_geometry.post_angle) / 2.0
 
+  ; apply reversing of the x-coorindate to XOFFSET{0,1}
+  ucomp_addpar, primary_header, $
+                'XOFFSET0', $
+                - ucomp_getpar(primary_header, 'XOFFSET0'), $
+                format='(F0.3)'
+  ucomp_addpar, primary_header, $
+                'XOFFSET1', $
+                - ucomp_getpar(primary_header, 'XOFFSET1'), $
+                format='(F0.3)'
+
   done:
 end
