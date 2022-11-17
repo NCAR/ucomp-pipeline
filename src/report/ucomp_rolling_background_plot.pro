@@ -45,7 +45,11 @@ pro ucomp_rolling_background_plot, wave_region, db, run=run
   symsize          = 0.25
 
   month_ticks = mg_tick_locator([jds[0], jds[-1]], /months)
-  month_ticks = month_ticks[0:*:3]
+  if (n_elements(month_ticks) eq 0L) then begin
+    month_ticks = 1L
+  endif else begin
+    month_ticks = month_ticks[0:*:3]
+  endelse
 
   mg_range_plot, jds, median_background, $
                  charsize=charsize, title='Median background vs. time', $
