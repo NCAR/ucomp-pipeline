@@ -267,3 +267,7 @@
   added new lines: 670, 761, 802, 991
 0.2.74 [Nov 14, 2022]
   a fix for the new wave regions added this week
+0.2.75 [Nov 16, 2022]
+  fix reversed XOFFSET{0,1} FITS keyword
+  add DEMOD FITS keyword
+  new demodulation coefficient file with temporary 670, 761, 802, 991 values

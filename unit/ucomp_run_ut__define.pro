@@ -103,7 +103,8 @@ function ucomp_run_ut::test_line
 
   assert, nickname eq 'green line', 'wrong nickname for line'
 
-  all_lines = ['530', '637', '656', '691', '706', '789', '1074', '1079', '1083']
+  all_lines = ['530', '637', '656', '670', '691', '706', '761', '789', '802', $
+               '991', '1074', '1079', '1083']
   assert, array_equal(lines, all_lines), 'wrong lines'
 
   return, 1
@@ -177,8 +178,9 @@ function ucomp_run_ut::test_all_wave_regions
   
   run = ucomp_run(date, 'test', config_filename)
 
-  assert, array_equal(['530', '637', '656', '691', '706', '789', '1074', '1079', '1083'], $
-                      run.all_wave_regions), $
+  all_lines = ['530', '637', '656', '670', '691', '706', '761', '789', '802', $
+               '991', '1074', '1079', '1083']
+  assert, array_equal(all_lines, run.all_wave_regions), $
           'wrong wave regions'
 
   obj_destroy, run

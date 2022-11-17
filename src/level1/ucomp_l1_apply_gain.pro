@@ -54,6 +54,7 @@ pro ucomp_l1_apply_gain, file, primary_header, data, headers, run=run, status=st
                                         onband, $
                                         wavelengths[e], $
                                         found=flat_found, $
+                                        error_msg=error_msg, $
                                         times_found=flat_times, $
                                         master_extensions=master_flat_extensions, $
                                         raw_extensions=raw_flat_extensions, $
@@ -65,6 +66,7 @@ pro ucomp_l1_apply_gain, file, primary_header, data, headers, run=run, status=st
       mg_log, 'request %0.2f HST, %0.2f ms, %s gain, %s, %0.2f nm', $
               obsday_hours, exptime, gain_mode, onband, wavelengths[e], $
               name=run.logger_name, /warn
+      mg_log, 'error message: %s', error_msg, name=run.logger_name, /warn
       status = 1L
       continue
     endif
