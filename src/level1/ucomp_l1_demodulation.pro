@@ -30,7 +30,7 @@ pro ucomp_l1_demodulation, file, primary_header, data, headers, $
   wave_region_index = where(file.wave_region eq run.all_wave_regions, n_found)
   mg_log, 'wave region index: %d', wave_region_index, name=run.logger_name, /debug
   mg_log, 'TU_MOD temperature: %0.2f C', file.tu_mod, name=run.logger_name, /debug
-  dmatrix_coefficients = run->get_dmatrix_coefficients(datetime=datetime)
+  dmatrix_coefficients = run->get_dmatrix_coefficients(datetime=datetime, info=demod_info)
   dmatrix = ucomp_get_dmatrix(dmatrix_coefficients, $
                               file.tu_mod, $
                               wave_region_index[0])
@@ -51,6 +51,11 @@ pro ucomp_l1_demodulation, file, primary_header, data, headers, $
       endfor
     endfor
   endelse
+
+  demod_basename = run->epoch('demodulation_coeffs_basename', datetime=datetime)
+  ucomp_addpar, primary_header, 'DEMOD', demod_basename, $
+                comment=string(demod_info.date, format='demodulation created %s')
+                
 
   file.demodulated = 1B
 end
