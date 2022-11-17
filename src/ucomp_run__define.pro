@@ -544,7 +544,7 @@ end
 ;   datetime : in, required, type=string
 ;     date/time in the format "YYYYMMDD_HHMMSS"
 ;-
-function ucomp_run::get_dmatrix_coefficients, datetime=datetime
+function ucomp_run::get_dmatrix_coefficients, datetime=datetime, info=info
   compile_opt strictarr
 
   if (n_elements(*self.dmatrix_coefficients) eq 0L) then begin
@@ -553,10 +553,16 @@ function ucomp_run::get_dmatrix_coefficients, datetime=datetime
     demodulation_coeffs_filename = filepath(demodulation_coeffs_basename, $
                                             subdir='demodulation', $
                                             root=self.resource_root)
+
+    f = idl_savefile(demodulation_coeffs_filename)
+    info = f->contents()
+    obj_destroy, f
+
     ; defines dmx_coefs variable
     restore, filename=demodulation_coeffs_filename
     *self.dmatrix_coefficients = dmx_coefs
-  endif
+    *self.demod_info = info
+  endif else info = *self.demod_info
 
   return, *self.dmatrix_coefficients
 end
@@ -949,7 +955,7 @@ pro ucomp_run::cleanup
             self.adjacent_pixels[3]
 
   ptr_free, self.distortion_coefficients
-  ptr_free, self.dmatrix_coefficients
+  ptr_free, self.dmatrix_coefficients, self.demod_info
 
   ; performance monitoring API
   obj_destroy, [self.calls, self.times]
@@ -1051,6 +1057,7 @@ function ucomp_run::init, date, mode, config_filename, $
   endfor
 
   self.dmatrix_coefficients    = ptr_new(/allocate_heap)
+  self.demod_info              = ptr_new(/allocate_heap)
   self.distortion_coefficients = ptr_new(/allocate_heap)
 
   self.files = orderedhash()   ; wave_region (string) -> list of file objects
@@ -1092,6 +1099,7 @@ pro ucomp_run__define
            adjacent_pixels         : ptrarr(2, 2), $   ; gain, camera
 
            dmatrix_coefficients    : ptr_new(), $
+           demod_info              : ptr_new(), $
 
            distortion_basename     : '', $
            distortion_coefficients : ptr_new(), $

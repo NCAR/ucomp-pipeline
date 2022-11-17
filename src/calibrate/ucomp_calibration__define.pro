@@ -108,6 +108,7 @@ end
 ;-
 function ucomp_calibration::get_dark, obsday_hours, exptime, gain_mode, $
                                       found=found, $
+                                      error_msg=error_msg, $
                                       master_extensions=master_extensions, $
                                       raw_filenames=raw_filenames, $
                                       coefficients=coefficients
@@ -116,7 +117,11 @@ function ucomp_calibration::get_dark, obsday_hours, exptime, gain_mode, $
   interpolate = self.run->config('calibration/interpolate_darks')
 
   found = 0B
-  if (n_elements(*self.darks) eq 0L) then return, !null
+  error_msg = ''
+  if (n_elements(*self.darks) eq 0L) then begin
+    error_msg = 'no darks'
+    return, !null
+  endif
 
   ; find the darks with an exposure time that is close enough to the given
   ; exptime
@@ -125,7 +130,15 @@ function ucomp_calibration::get_dark, obsday_hours, exptime, gain_mode, $
   valid_indices = where(abs(exptime - *self.dark_exptimes) lt exptime_threshold $
                           and (*self.dark_gain_modes eq gain_index), $
                         n_valid_darks)
-  if (n_valid_darks eq 0L) then return, !null
+  if (n_valid_darks eq 0L) then begin
+    n_valid_exptime_darks = total(abs(exptime - *self.dark_exptimes) lt exptime_threshold, $
+                                  /integer)
+    n_valid_mode_darks = total(*self.dark_gain_modes eq gain_index, /integer)
+
+    error_msg = string(n_valid_exptime_darks, n_valid_mode_darks, $
+                       format='%d valid EXPTIME darks, %d valid mode darks')
+    return, !null
+  endif
 
   found = 1B
 
@@ -359,6 +372,7 @@ end
 function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
                                       onband, wavelength, $
                                       found=found, $
+                                      error_msg=error_msg, $
                                       times_found=times_found, $
                                       master_extensions=master_extensions, $
                                       raw_extensions=raw_extensions, $
@@ -376,7 +390,11 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
   ; correct flats will be nearest in time.
 
   found = 0B
-  if (n_elements(*self.flats) eq 0L) then return, !null
+  error_msg = ''
+  if (n_elements(*self.flats) eq 0L) then begin
+    error_msg = 'no flats'
+    return, !null
+  endif
 
   ; find the darks with an exposure time and wavelength that is close enough to
   ; the given exposure time and wavelength
@@ -390,7 +408,10 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
                           ; TOOD: removing below allows flats in the future to be found
                           ;and (obsday_hours gt *self.flat_times), $
                         n_valid_flats)
-  if (n_valid_flats eq 0L) then return, !null
+  if (n_valid_flats eq 0L) then begin
+    error_msg = 'no valid flats'
+    return, !null
+  endif
 
   found = 1B
 
@@ -406,9 +427,10 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
 
     times_found = (*self.flat_times)[valid_indices[0]]
     flat_dark = self->get_dark(times_found, exptime, gain_mode, $
-                               found=flat_dark_found)
+                               found=flat_dark_found, error_msg=dark_error_msg)
     if (~flat_dark_found) then begin
       found = 0B
+      error_msg = dark_error_msg
       return, !null
     endif
     interpolated_flat -= flat_dark
@@ -426,9 +448,10 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
 
     times_found = (*self.flat_times)[valid_indices[n_valid_flats - 1L]]
     flat_dark = self->get_dark(times_found, exptime, gain_mode, $
-                               found=flat_dark_found)
+                               found=flat_dark_found, error_msg=dark_error_msg)
     if (~flat_dark_found) then begin
       found = 0B
+      error_msg = dark_error_msg
       return, !null
     endif
     interpolated_flat -= flat_dark
@@ -453,17 +476,19 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
       times_found = (*self.flat_times)[valid_indices[[index1, index2]]]
 
       flat_dark1 = self->get_dark(times_found[0], exptime, gain_mode, $
-                                  found=flat_dark_found)
+                                  found=flat_dark_found, error_msg=dark_error_msg)
       if (~flat_dark_found) then begin
         found = 0B
+        error_msg = dark_error_msg
         return, !null
       endif
       flat1 -= flat_dark1
 
       flat_dark2 = self->get_dark(times_found[1], exptime, gain_mode, $
-                                  found=flat_dark_found)
+                                  found=flat_dark_found, error_msg=dark_error_msg)
       if (~flat_dark_found) then begin
         found = 0B
+        error_msg = dark_error_msg
         return, !null
       endif
       flat2 -= flat_dark2
@@ -486,9 +511,10 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
 
       times_found = (*self.flat_times)[valid_indices[index]]
       flat_dark = self->get_dark(times_found, exptime, gain_mode, $
-                                 found=flat_dark_found)
+                                 found=flat_dark_found, error_msg=dark_error_msg)
       if (~flat_dark_found) then begin
         found = 0B
+        error_msg = dark_error_msg
         return, !null
       endif
       interpolated_flat -= flat_dark
