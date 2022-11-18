@@ -271,4 +271,5 @@
   fix reversed XOFFSET{0,1} FITS keyword
   add DEMOD FITS keyword
   new demodulation coefficient file with temporary 670, 761, 802, 991 values
-0.2.76
+0.2.76 [Nov 18, 2022]
+  change DEMOD to DEMOD_C including a better date format in comment
