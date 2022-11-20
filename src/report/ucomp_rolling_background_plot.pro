@@ -51,7 +51,7 @@ pro ucomp_rolling_background_plot, wave_region, db, run=run
     month_ticks = month_ticks[0:*:3]
   endelse
 
-  mg_range_plot, jds, median_background, $
+  mg_range_plot, [jds], [median_background], $
                  charsize=charsize, title='Median background vs. time', $
                  color=color, background=background_color, $
                  psym=psym, symsize=symsize, $
