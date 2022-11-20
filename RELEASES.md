@@ -274,3 +274,4 @@
 0.2.76 [Nov 18, 2022]
   change DEMOD to DEMOD_C including a better date format in comment
 0.2.77
+  fix for handling rolling background plot with only a single value
