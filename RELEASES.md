@@ -275,3 +275,4 @@
   change DEMOD to DEMOD_C including a better date format in comment
 0.2.77
   fix for handling rolling background plot with only a single value
+  skipping trying to make movies with only a single frame
