@@ -43,8 +43,9 @@ pro ucomp_write_intensity_mp4, wave_region, run=run, enhanced=enhanced
   endfor
 
   use_indices = where(use, n_use)
-  if (n_use eq 0L) then begin
-    mg_log, 'no usable files @ %s nm', wave_region, name=run.logger_name, /warn
+  if (n_use lt 2L) then begin
+    mg_log, 'not enough usable files (%d files) @ %s nm', n_use, wave_region, $
+            name=run.logger_name, /warn
     goto, done
   endif
 

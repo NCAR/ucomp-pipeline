@@ -36,11 +36,17 @@ pro ucomp_write_iquv_mp4, wave_region, run=run
   endfor
   
   use_indices = where(use, n_use)
-  if (n_use eq 0L) then begin
-    mg_log, 'no usable files @ %s nm', wave_region, name=run.logger_name, /warn
+  if (n_use lt 2L) then begin
+    mg_log, 'not enough usable files (%d files) @ %s nm', n_use, wave_region, $
+            name=run.logger_name, /warn
     goto, done
   endif
-  
+
+  mg_log, 'creating IQUV mp4 for %s nm from %d images', $
+          wave_region, $
+          n_use, $
+          name=run.logger_name, /info
+
   l1_dirname = filepath('', $
                         subdir=[run.date, 'level1'], $
                         root=run->config('processing/basedir'))
