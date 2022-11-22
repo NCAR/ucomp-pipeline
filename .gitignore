@@ -9,5 +9,7 @@
 /config/ucomp.*.cfg
 /config/ucompd.*.cfg
 
+/docs/_build
+
 # temporary file used to find the SolarSoft dependencies
 /ssw/ROUTINES
