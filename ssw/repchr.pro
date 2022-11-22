@@ -20,7 +20,7 @@
 ;       in_string = ['lettuce, tomato, grape']
 ;       print, repchr( in_string, ',')   ;replace comma with space
 ;            'lettuce tomato grape'
-; NOTES: 
+; NOTES:
 ;       Use REPSTR() to replace words rather than a single character
 ;
 ;	    For a more sophisticated routine that allows regular expressions look
@@ -28,8 +28,8 @@
 ;
 ;       Since IDL 8.4 one can use the .REPLACE() method for string variables
 ;
-;       Note that REPCHR() is the fastest (though least versatile) of these routines, 
-;       because the length of the string never changes, allowing direct manipulation of 
+;       Note that REPCHR() is the fastest (though least versatile) of these routines,
+;       because the length of the string never changes, allowing direct manipulation of
 ;       byte values.
 ; MODIFICATION HISTORY:
 ;       Written W. Landsman   April 2016
@@ -38,14 +38,14 @@
 
 
 	function repchr, In_String, OldChar, NewChar
- 
+
 	if N_params() LT 2 then begin
 	  print,' Replace all occurrences of one character with another '+$
 	    'in a text string.'
 	  print,' new_string = repchr(In_String, OldChar, [NewChar])'
 	  return, -1
 	endif
- 
+
 	bString = byte(In_String)			   ; convert string to a byte array.
 	b_OldChar = byte(OldChar)			   ; convert OldChar to byte.
 

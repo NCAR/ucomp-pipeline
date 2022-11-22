@@ -80,7 +80,7 @@ PATH=${HOME}/software/bin:${PATH} @CMAKE_COMMAND@ \
   -DPython3_ROOT_DIR:PATH=@Python3_ROOT_DIR@ \
   -DNIGHTLY_MACHINE:STRING=@NIGHTLY_MACHINE@ \
   .. >> ${LOG_FILENAME} 2>&1
- 
+
 # build
 make install >> ${LOG_FILENAME} 2>&1
 

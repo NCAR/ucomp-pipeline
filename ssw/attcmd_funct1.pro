@@ -17,4 +17,3 @@ endif
 
 out = m(0)*sin((xx+m(1))*!pi*2) + m(2)
 end
-

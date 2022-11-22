@@ -5,18 +5,18 @@ function file2time, filearray, $
 ;   Name: file2time
 ;
 ;   Purpose: convert filenames (...[YY]YYMMDD?HHMM[SS]...) -> time
-;      
+;
 ;   Input Parameters:
 ;      filearray - string array assumed to contain ....[YY]YYMMDD?HHMM[SS]...
-;          
+;
 ;   Keyword Parameters:
 ;      OUT_STYLE - Output Style - (ECS, CCSDS, YOHKOH, etc - see 'anytim.pro')
 ;      YOHKOH, ECS, CCSDS - explicit keywords to define OUT_STYLE
-;      PARSE_TIME (switch) - if set, use dmzarro parse_time.pro 
+;      PARSE_TIME (switch) - if set, use dmzarro parse_time.pro
 ;      DELIM - optional delimiter passed -> parse_time ; default='_'
 ;      YMD - year/month/day string returned from parse_time
 ;
-;   Method: call extract_fid, anytim 
+;   Method: call extract_fid, anytim
 ;
 ;   History:
 ;       28-mar-1997 - S.L.Freeland - broke out some 'extract_fid' logic, extend to YYYY...
@@ -30,7 +30,7 @@ function file2time, filearray, $
 ;                                   (if set, use dmz parse_time.pro)
 ;       15-Jan-2003, S.L.Freeland - remove BAD keyword from parse_time call
 ;                    (since it is no longer defined)
-;       20-Jan-2003 Zarro - passed out YMD from PARSE_TIME to save 
+;       20-Jan-2003 Zarro - passed out YMD from PARSE_TIME to save
 ;                           recalculating it later
 ;      09-May-2003, William Thompson - Use ssw_strsplit instead of strsplit
 ;      04-Jun-2020, Kim Tolbert - Pass quiet to extract_fid

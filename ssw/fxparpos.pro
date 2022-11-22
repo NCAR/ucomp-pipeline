@@ -1,24 +1,24 @@
 	FUNCTION FXPARPOS, KEYWRD, IEND, BEFORE=BEFORE, AFTER=AFTER
 ;+
-; NAME: 
+; NAME:
 ;	FXPARPOS()
-; Purpose     : 
+; Purpose     :
 ;	Finds position to insert record into FITS header.
-; Explanation : 
+; Explanation :
 ;	Finds the position to insert a record into a FITS header.  Called from
 ;	FXADDPAR.
-; Use         : 
+; Use         :
 ;	Result = FXPARPOS(KEYWRD, IEND  [, BEFORE=BEFORE ]  [, AFTER=AFTER ])
-; Inputs      : 
+; Inputs      :
 ;	KEYWRD	= Array of eight-character keywords in header.
 ;	IEND	= Position of END keyword.
-; Opt. Inputs : 
+; Opt. Inputs :
 ;	None.
-; Outputs     : 
+; Outputs     :
 ;	Result of function is position to insert record.
-; Opt. Outputs: 
+; Opt. Outputs:
 ;	None.
-; Keywords    : 
+; Keywords    :
 ;	BEFORE	= Keyword string name.  The parameter will be placed before the
 ;		  location of this keyword.  For example, if BEFORE='HISTORY'
 ;		  then the parameter will be placed before the first history
@@ -31,24 +31,24 @@
 ;
 ;	If neither BEFORE or AFTER keywords are passed, then IEND is returned.
 ;
-; Calls       : 
+; Calls       :
 ;	None.
-; Common      : 
+; Common      :
 ;	None.
-; Restrictions: 
+; Restrictions:
 ;	KEYWRD and IEND must be consistent with the relevant FITS header.
-; Side effects: 
+; Side effects:
 ;	None.
-; Category    : 
+; Category    :
 ;	Data Handling, I/O, FITS, Generic.
-; Prev. Hist. : 
+; Prev. Hist. :
 ;	William Thompson, Jan 1992.
-; Written     : 
+; Written     :
 ;	William Thompson, GSFC, January 1992.
-; Modified    : 
+; Modified    :
 ;	Version 1, William Thompson, GSFC, 12 April 1993.
 ;		Incorporated into CDS library.
-; Version     : 
+; Version     :
 ;	Version 1, 12 April 1993.
 ;	Converted to IDL V5.0   W. Landsman   September 1997
 ;-

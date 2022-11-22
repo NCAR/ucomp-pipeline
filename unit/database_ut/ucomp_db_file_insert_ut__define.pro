@@ -6,7 +6,7 @@ function ucomp_db_file_insert_ut::init, _extra=e
   if (~self->UCoMPutTestCase::init(_extra=e)) then return, 0
 
   self->addTestingRoutine, ['ucomp_db_file_insert']
-  
+
 
   return, 1
 end

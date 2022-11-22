@@ -31,10 +31,10 @@
 ;	Converted to IDL V5.0   W. Landsman   September 1997
 ;-
 ;-------------------------------------------------------------
- 
- 
+
+
 	pro recpol, x, y, r, a, help=hlp, degrees=degrees
- 
+
 	if (n_params(0) lt 4) or keyword_set(hlp) then begin
 	  print,' Convert 2-d rectangular coordinates to polar coordinates.
 	  print,' recpol, x, y, r, a
@@ -44,7 +44,7 @@
 	  print,'   /DEGREES means angle is in degrees, else radians.'
 	  return
 	endif
- 
+
 	;----------------------------------------------------------------
 	;  Angle complicated because atan won't take (0,0) and
 	;  also because want to keep angle in 0 to 360 (2 pi) range.
@@ -54,10 +54,10 @@
 	if count gt 0 then a[w]=atan(y[w],x[w])	; Find angles.
 	w = where(a lt 0, count)		; find A < 0 and fix.
 	if count gt 0 then a[w]= a[w]+2*!dpi	; add 2 pi to angles < 0.
- 
+
 	r = sqrt(x^2 + y^2)			; Find radii.
- 
+
 	if keyword_set(degrees) then a = a*!radeg
- 
+
 	return
 	end

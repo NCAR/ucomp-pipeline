@@ -51,4 +51,3 @@ function ucomp_gbu_check_nominal_temps, file, $
 
   return, result
 end
-

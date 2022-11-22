@@ -4,7 +4,7 @@
 ;  Name:
 ;	Ex2Int
 ;  Purpose:
-;	Convert conventional date and time into days since 1979 
+;	Convert conventional date and time into days since 1979
 ;	and milliseconds of day.
 ;  Calling Sequence:
 ;	Ex2Int, time, msod, ds79
@@ -15,12 +15,12 @@
 ;	msod= 4-byte integer: milliseconds of the day
 ;	ds79= 2-byte integer: number of days since 1-Jan-1979
 ;  Side Effects:
-;	
+;
 ;  Restrictions:
 ;	None
 ;  History:
-;	version 1.0, was adopted from Ex2Int.FOR (SMM software), 
-;	written by GAL, 15-Feb-1991 
+;	version 1.0, was adopted from Ex2Int.FOR (SMM software),
+;	written by GAL, 15-Feb-1991
 ;	8-oct-91, Updated, JRL: Make output vectors 1-d if the input
 ;				time is 2-d, or a scalar if the input
 ;				time is 1-d.
@@ -29,7 +29,7 @@
 ;       Modified to correctly deal with years GE 2000, jmm, 7/28/94
 ;-
 ;	-------------------------------------------------------------
-	ON_ERROR, 2		;return to caller if an error occurs	
+	ON_ERROR, 2		;return to caller if an error occurs
 	if n_params() eq 0 then begin
 	  print,'ex2int, time, msod, ds79	; time =[h,m,s,ms,d,m,y]'
 	  return
@@ -37,7 +37,7 @@
 
 
 	s_info = SIZE(time)	;check input dimensions
-	CASE 1 OF 
+	CASE 1 OF
 	 (s_info(0) EQ 1): ndattimes = 1		;single time entry
 	 (s_info(0) EQ 2): ndattimes = s_info(s_info(0));2d array of times
 	 ELSE:	BEGIN
@@ -56,7 +56,7 @@
 	year = [indgen(50)+2000, indgen(50)+1950]
 
 	yy = year( time(6, *) MOD 100 ) ;Jmm, 28-jul-94 for years 2000 and beyond (i.e., time(6,*) gt 100 ) correctly...
-        
+
 	jdcnv, 	yy, fix(time(5,*)), fix(time(4,*)), 0.0, jd
 	ds79 = long(jd - 2443874.5d)+1 ;
 
@@ -70,4 +70,3 @@
 
 	RETURN
 	END
-

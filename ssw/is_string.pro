@@ -1,28 +1,28 @@
 ;+
 ; Project     : HESSI
-;                  
+;
 ; Name        : IS_STRING
-;               
+;
 ; Purpose     : return true is input is a non-blank string
-;                             
+;
 ; Category    : string utility
-;               
+;
 ; Syntax      : IDL> a=is_string(input)
-;    
+;
 ; Inputs      : INPUT_STR = input variable to check
-;                              
+;
 ; Outputs     : 0/1 if blank/nonblank
 ;
 ; Keywords    : return true (1), even if string is blank
-;               
+;
 ; Opt. Outputs: NONBLANK = noblank copies of input
 ;               (if input is array, then nonblanks are filtered out)
-;             
+;
 ; History     : 17-Nov-1999, Zarro (SM&A/GSFC)
 ;                5-Feb-2003, Zarro (EER/GSFC) - added /BLANK
 ;
 ; Contact     : dzarro@solar.stanford.edu
-;-    
+;-
 
 
 function is_string,input_str,nonblank,err=err,blank=blank,count=count

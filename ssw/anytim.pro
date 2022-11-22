@@ -5,7 +5,7 @@
 ;PURPOSE:
 ;       Given a time in the form of a (1) structure, (2) 7-element time
 ;       representation, or (3) a string representation, or (4) an array
-;       2xN where the first dimension holds (MSOD, DS79), or 
+;       2xN where the first dimension holds (MSOD, DS79), or
 ;	(5) a double or float array of seconds from 1-jan-79
 ;	convert to  any of the 5 representations including both varieties
 ;	of strings, dd-mon-yr or yy/mm/dd.
@@ -18,7 +18,7 @@
 ;		  Form can be (1) structure with a .time and .day
 ;		  field, (2) the standard 7-element external representation
 ;		  or (3) a string of the format "hh:mm dd-mmm-yy"
-;		  or (4) 2xN where the first dimension holds (MSOD, DS79), or 
+;		  or (4) 2xN where the first dimension holds (MSOD, DS79), or
 ;		  or (5) a double or float array of seconds from 1-jan-79
 ;
 ;OPTIONAL KEYWORD INPUT:
@@ -33,13 +33,13 @@
 ;		ATIME   - Variable Atime format, Yohkoh
 ;			  Yohkoh style - 'dd-mon-yy hh:mm:ss.xxx'   or
 ;			  HXRBS pub style  - 'yy/mm/dd, hh:mm:ss.xxx'
-;			  depending on atime_format set by 
+;			  depending on atime_format set by
 ;			  hxrbs_format or yohkoh_format
-;		YOHKOH  - yohkoh style string 
+;		YOHKOH  - yohkoh style string
 ;		HXRBS   - HXRBS Atime format /pub, 'yy/mm/dd, hh:mm:ss.xxx'
 ;               YY/MM/DD- same as HXRBS
 ;	or by keywords
-;		/ints   - 
+;		/ints   -
 ;	        /stc
 ;		/_2xn
 ;		/external
@@ -48,10 +48,10 @@
 ;		/atimes
 ;		/yohkoh
 ;		/hxrbs
-;		/yymmdd	
+;		/yymmdd
 ;	mdy	- If set, use the MM/DD/YY order for converting the string date
-;		
-;	date 	- return only the calendar date portion, 
+;
+;	date 	- return only the calendar date portion,
 ;			e.g. anytime('93/6/1, 20:00:00',/date,/hxrbs) ==> '93/06/01'
 ;	time    - return only the time of day portion
 ;			e.g. anytime('93/6/1, 20:00:00',/date,/hxrbs) ==> '20:00:00.000'
@@ -90,20 +90,20 @@ case 1 of
  (typ eq 'STC'): int2ex, gt_time(item), gt_day(item), ex
 
  (typ eq 'DOU' or typ eq 'FLO') or $
- ( (typ eq 'INT' or typ eq 'LON') and ( (n_elements(item) eq 1) or $ 
+ ( (typ eq 'INT' or typ eq 'LON') and ( (n_elements(item) eq 1) or $
  (siz(0) eq 1 and (siz(1) ne 2 and siz(1) ne 7)))):  begin
-;	ustr = utime2str( item, utbase=0.0) 
+;	ustr = utime2str( item, utbase=0.0)
 	ustr = utime2str( item(*), utbase=0.0)  ;ras, 4-jan-94
 	int2ex, ustr.time, ustr.day, ex
  end
 
  (typ eq 'INT' or typ eq 'LON' and n_elements(item) ge 2): begin
 	case siz(1) of
-		7: ex = item 
+		7: ex = item
 		2: int2ex, item(0,*), item(1,*), ex
 	        else: begin
 			Print, 'Not a valid input to Anytim! Error!'
-			goto, error_out 
+			goto, error_out
 		      end
 	endcase
  end
@@ -114,7 +114,7 @@ case 1 of
 		wno_count = 0
 		wyohkoh= indgen(wyo_count)
 	endif else begin
-		test = strpos(item,'-') ne -1  
+		test = strpos(item,'-') ne -1
 		wyohkoh = where( test, wyo_count)
 		wnot    = where( test ne 1, wno_count)
 	endelse
@@ -155,13 +155,13 @@ case 1 of
 		ustr= utime2str(ut, utbase = 0.0)
 		int2ex, ustr.time, ustr.day, ex2
 	endif
-	
+
 	if wyo_count eq 0 then ex = ex2 else $
 	if wno_count eq 0 then ex = ex1 else ex=[ex1,ex2]
   end
   1: begin
 	Print, 'Not a valid input to Anytim! Error!'
-	goto, error_out 
+	goto, error_out
      end
 endcase
 
@@ -169,9 +169,9 @@ wcount = n_elements(ex) / 7
 
 case 1 of
 	keyword_set(date): $
-	if wcount eq 1 then ex(0:3) = 0 else ex(0:3,*) = 0 
+	if wcount eq 1 then ex(0:3) = 0 else ex(0:3,*) = 0
 	keyword_set(time): $
-	if wcount eq 1 then ex(4:6) = [1,1,79] else ex(4:6,*) = rebin([1,1,79],3,wcount) 
+	if wcount eq 1 then ex(4:6) = [1,1,79] else ex(4:6,*) = rebin([1,1,79],3,wcount)
 	1: ;NOACTION
 endcase
 
@@ -192,7 +192,7 @@ if keyword_set(hxrbs) then out = 'HXRBS'
 if keyword_set(yymmdd) then out = 'YY/MM/DD'
 if keyword_set(yohkoh) then out = 'YOHKOH'
 
-if out eq  'UTIME' or out eq 'SEC' or out eq 'SECONDS' then begin 
+if out eq  'UTIME' or out eq 'SEC' or out eq 'SECONDS' then begin
 	result = int2sec( anytim2ints( ex ) )
 	if (typ eq 'DOU' or typ eq 'FLO' or typ eq 'STR') then $
         result = double(strmid(item,0,0)+'0') + result
@@ -202,7 +202,7 @@ if out eq 'EX' then result = ex
 
 if out eq 'INTS' or out eq 'STC' then result = anytim2ints( ex )
 
-if out eq '2XN' then begin 
+if out eq '2XN' then begin
 	result = anytim2ints(ex)
 	result = transpose( [[result.time],[result.day]] )
 endif
@@ -212,11 +212,11 @@ if out eq 'ATIME' then begin
 endif
 
 if out eq 'YOHKOH' then begin
-	result = atime(/yohkoh, ex, date=date, time=time) 
+	result = atime(/yohkoh, ex, date=date, time=time)
 	if (typ eq 'DOU' or typ eq 'FLO' or typ eq 'STR') then $ ;ras, 4-jan-94
 	result = strmid(item,0,0) + result
 endif
-                                                                              
+
 if out eq 'HXRBS' or out eq 'YY/MM/DD' then begin
 	result = int2sec( anytim2ints( ex ) )
 	result = atime( result,/hxrbs,/pub,date=date, time=time )
@@ -225,11 +225,10 @@ if out eq 'HXRBS' or out eq 'YY/MM/DD' then begin
 endif
 if scalar and n_elements(result) eq 1 then result= result(0)
 
-	
+
 
 error = 0
 return, result
 error_out: return, item
 
 end
-

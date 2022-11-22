@@ -16,19 +16,19 @@ pro sxt_struct, SXT_QS_Instr = SXT_3011_QS_Instr,  $
                      SXL_RoadMap = SXL_39F1_RoadMap,  $
                      SXG_SXTGOES = SXG_39F1_SXTGOES,  $
                      SXT_Leak = SXT_30A1_Leak
-   
-   
+
+
 ;+
 ;       NAME:
 ;               SXT_STRUCT
 ;       PURPOSE:
 ;               Define the following SXT specific database structures
-;                       * SXT_QS_Instr_Rec         
-;                       * SXT_QS_Conv_Rec          
-;                       * SXT_Index_Rec            
-;                       * SXT_Gnd_Idx_Rec          
-;                       * SXT_Proc_Idx_Rec         
-;                       * SXT_RoadMap_Rec          
+;                       * SXT_QS_Instr_Rec
+;                       * SXT_QS_Conv_Rec
+;                       * SXT_Index_Rec
+;                       * SXT_Gnd_Idx_Rec
+;                       * SXT_Proc_Idx_Rec
+;                       * SXT_RoadMap_Rec
 ;
 ;                       * SXT_SumLog_Rec
 ;                       * SXT_RAMDump_Rec
@@ -47,8 +47,8 @@ pro sxt_struct, SXT_QS_Instr = SXT_3011_QS_Instr,  $
 ;                                 temperature house keeping sensors
 ;
 ;-
-   
-   
+
+
 SXT_3011_QS_Instr = { SXT_3011_QS_Instr_Rec,              $
                                              ;       NOT IMPLEMENTED AS OF 25-Mar-92]
                                              ;
@@ -67,9 +67,9 @@ SXT_3011_QS_Instr = { SXT_3011_QS_Instr_Rec,              $
       solution_ver: FIX(0),  $               ; 27- Solution version
                                              ;
       spare: BYTARR(3) }                     ; 29-
-   
-   
-   
+
+
+
 SXT_3021_QS_Conv = { SXT_3021_QS_Conv_Rec,              $
                                              ;       NOT IMPLEMENTED AS OF 25-Mar-92]
                                              ;
@@ -86,15 +86,15 @@ SXT_3021_QS_Conv = { SXT_3021_QS_Conv_Rec,              $
       solution_ver: FIX(0),  $               ; 54- Solution version
                                              ;
       spare: BYTARR(8) }                     ; 56-
-   
-   
-   
+
+
+
 SXT_3013_Index = { SXT_3013_Index_Rec,              $
       index_version : FIX('3013'x),  $       ;
-                                             ;  0- Index structure version                                   Ground 
+                                             ;  0- Index structure version                                   Ground
                                              ;     (See GEN_INDEX for explanation)
                                              ;
-      pfi_ffi: BYTE(0),  $                   ;  2- Image information                                         
+      pfi_ffi: BYTE(0),  $                   ;  2- Image information
                                              ;       b0:2 = Image type
                                              ;            0 = PFI ("raw" PFI strips - not assembled)         Derived
                                              ;            1 = FFI
@@ -143,7 +143,7 @@ SXT_3013_Index = { SXT_3013_Index_Rec,              $
                                              ;
       shape_cmd: INTARR(2),  $               ; 15- Commanded image shape (nx by ny)                          W114 F5
                                              ;       (the col,lin# are in summed (output) pixels)
-                                             ;     For observing regions, the "ny" is the 
+                                             ;     For observing regions, the "ny" is the
                                              ;         full observing region size
                                              ;     For FFI, "nx" always = 1024, 512, or 256
                                              ;     For multiple ROI FFI "ny" is width of one ROI             W114 F3
@@ -168,18 +168,18 @@ SXT_3013_Index = { SXT_3013_Index_Rec,              $
       FOV_Center: INTARR(2),  $              ; 31- Pitch and yaw relative to the sun center                  Derived
                                              ;     of the center of the SXT FOV (in arcsec)
                                              ;     (for the PFI strip, not the OR)
-                                             ;       (1) = yaw; (2) = pitch 
+                                             ;       (1) = yaw; (2) = pitch
                                              ;     (used to relate to active region list)
                                              ;       Temporary Definition:
                                              ;               yaw   = (512 - center_fov(0))*2.45
                                              ;               pitch = (center_fov(1) - 638)*2.45
                                              ;          where center_fov is pixel location in 1x1
                                              ;          pixels (not including the BLS pixels)
-      FOV_Ver: FIX(0),  $                    ; 35- Information on how solution was derived                   Ground 
+      FOV_Ver: FIX(0),  $                    ; 35- Information on how solution was derived                   Ground
                                              ;
       ObsRegion: BYTE(0),  $                 ; 37- Observing region Number                                   W114 F5
                                              ;       b6:7 = FFI Seq Table # (0-3)
-                                             ;               From Entry Table 
+                                             ;               From Entry Table
                                              ;       b4:5 = PFI Seq Table # (0-3)
                                              ;       b0:3 = Observing region number (0-8)
                                              ;               Location # on the sun
@@ -189,7 +189,7 @@ SXT_3013_Index = { SXT_3013_Index_Rec,              $
       seq_num: BYTE(0),  $                   ; 38- Sequence Number (1-13)                                    W114 F5
                                              ;       b0:3 = Entry in sequence table (1-13)
                                              ;       b4:7 = Word or line sync error bits
-      seq_tab_serno: FIX(0),  $              ; 39- Sequence table serial used                                Ground 
+      seq_tab_serno: FIX(0),  $              ; 39- Sequence table serial used                                Ground
                                              ;
       serial_num: LONG(0),  $                ; 41- Serial number of image                                    W115 F1
       mloop: LONG(0),  $                     ; 45- Main loop counter                                         W115 F1
@@ -291,9 +291,9 @@ SXT_3013_Index = { SXT_3013_Index_Rec,              $
                                              ;         offset time in millisec from the central
                                              ;         meridian time
       spare: BYTARR(5) }                     ; 87- Spare bytes
-   
-   
-   
+
+
+
 SXT_3021_Gnd_Idx = { SXT_3021_Gnd_Idx_Rec,              $
       index_version : FIX('3021'x),  $       ;
                                              ; 00- Index structure version
@@ -321,11 +321,11 @@ SXT_3021_Gnd_Idx = { SXT_3021_Gnd_Idx_Rec,              $
       st$dcfilename: BYTARR(16),  $          ; 92- MicroVAX dark current file name
                                              ;     (for cases of dark current subtraction)
                                              ;
-      nimg_sum: FIX(0),  $                   ;108- The number of images summed together (SD files)   
+      nimg_sum: FIX(0),  $                   ;108- The number of images summed together (SD files)
       spare: BYTARR(18) }                    ;108- Spare bytes
-   
-   
-   
+
+
+
 SXT_3032_Proc_Idx = { SXT_3032_Proc_Idx_Rec,              $
       index_version : FIX('3032'x),  $       ;
                                              ;  0- Index structure version
@@ -360,24 +360,24 @@ SXT_3032_Proc_Idx = { SXT_3032_Proc_Idx_Rec,              $
                                              ;       0 = not done
                                              ;       non-zero = the LEAK_SUB procedure version number
       time_leak: LONG(0),  $                 ;   - The time of the images used in the leak subtraction
-      day_leak: FIX(0),  $                   ;   - The days of the images used 
+      day_leak: FIX(0),  $                   ;   - The days of the images used
                                              ;
                                              ;--------------------------------------------------------------------
-      q_exp_norm: FIX(0),  $                 ;   - Whether the image was normalized for exposure 
+      q_exp_norm: FIX(0),  $                 ;   - Whether the image was normalized for exposure
                                              ;       0 = not done
                                              ;       non-zero = the EXP_NORM procedure version number
-      expdur: FLOAT(0),  $                   ;   - the exposure value in seconds that the image was normalized to.  
+      expdur: FLOAT(0),  $                   ;   - the exposure value in seconds that the image was normalized to.
                                              ;     normally be 1.00 sec.
                                              ;       ## EXP_NORM will write to this
                                              ;       ** GT_EXPDUR will default to this value if this structure is pa
                                              ;
                                              ;--------------------------------------------------------------------
-      pixel_size: FLOAT(0),  $               ;   - The pixel size.  
+      pixel_size: FLOAT(0),  $               ;   - The pixel size.
                                              ;       Value Greater or Equal to 0 == It is 0, 1, or 2 for FR, HR, and
                                              ;       Value Less Than 0 ===== It is the pixels size in arc seconds (s
                                              ;                               always be FR, HR, QR)
                                              ;       ## CHANGE_RES, MK_MOSAIC, EXT_SUBIMG2 will write to this
-                                             ;       ** GT_RES will default to this value if this structure is part 
+                                             ;       ** GT_RES will default to this value if this structure is part
                                              ;
                                              ;--------------------------------------------------------------------
       q_registered: FIX(0),  $               ;   - Whether the image was registered
@@ -399,7 +399,7 @@ SXT_3032_Proc_Idx = { SXT_3032_Proc_Idx_Rec,              $
                                              ;
       arcsec_shift: FLTARR(2),  $            ;   - Relative shift.  The number of arcseconds that the image was shif
                                              ;     in order to register it.  (0) = E/W with a positive value meaning
-                                             ;     that the image was moved to the east??.  (1) = N/S with positive 
+                                             ;     that the image was moved to the east??.  (1) = N/S with positive
                                              ;     meaning that
       corner_sav: FLTARR(2),  $              ;   - the new corner saved in absolute IDL FR pixels.  If all of the im
                                              ;     the same size and have been registered, this value should be the
@@ -407,7 +407,7 @@ SXT_3032_Proc_Idx = { SXT_3032_Proc_Idx_Rec,              $
                                              ;     field of view sizes are saved in one file.
                                              ;       ## CHANGE_RES, MK_MOSAIC will write to this
                                              ;       ** GT_CORNER_SAV will default to this value if this structure i
-      sun_center: FLTARR(3),  $              ;   - the location of the center of the sun in absolute IDL FR pixels. 
+      sun_center: FLTARR(3),  $              ;   - the location of the center of the sun in absolute IDL FR pixels.
                                              ;     value is most likely the result of the routine GET_SUNCENTER.
                                              ;     From SUN_CENTER and CORNER_SAV it is possible to get the absolute
                                              ;     of the lower right corner in arcseconds relative to sun center (a
@@ -423,14 +423,14 @@ SXT_3032_Proc_Idx = { SXT_3032_Proc_Idx_Rec,              $
                                              ;       0 = not done
                                              ;       non-zero = the ??? procedure version number
       time_merged: LONG(0),  $               ;   - The time of the image used to fill in the gaps
-      day_merged: FIX(0),  $                 ;   - The days of the image used 
+      day_merged: FIX(0),  $                 ;   - The days of the image used
                                              ;
                                              ;--------------------------------------------------------------------
       q_interp: FIX(0),  $                   ;   - Whether the image was interpolated between two images
                                              ;       0 = not done
                                              ;       non-zero = the ??? procedure version number
       time_interp: LONARR(2),  $             ;   - The time of the images used in the interpolation
-      day_interp: INTARR(2),  $              ;   - The days of the images used 
+      day_interp: INTARR(2),  $              ;   - The days of the images used
                                              ;
                                              ;--------------------------------------------------------------------
       q_composite: FIX(0),  $                ;   - Whether the output image is a composite image
@@ -466,9 +466,9 @@ SXT_3032_Proc_Idx = { SXT_3032_Proc_Idx_Rec,              $
       extra2: FLTARR(2),  $                  ;
                                              ;
       spare: BYTARR(4) }                     ;   - Spare bytes
-   
-   
-   
+
+
+
 SXT_RoadMap = { SXT_RoadMap_Rec,              $
                                              ;     For a full description of the fields,
                                              ;     look at the Index_Rec definition
@@ -483,10 +483,10 @@ SXT_RoadMap = { SXT_RoadMap_Rec,              $
       DP_mode: BYTE(0),  $                   ; 10- DP Mode
       DP_rate: BYTE(0),  $                   ; 11- DP Rate
                                              ;
-      pfi_ffi: BYTE(0),  $                   ; 12- Image information 
+      pfi_ffi: BYTE(0),  $                   ; 12- Image information
       periph: BYTE(0),  $                    ; 13- Aspect/Shutter/Filter information
-      ExpLevMode: BYTE(0),  $                ; 14- Exposure mode/level       
-      imgparam: BYTE(0),  $                  ; 15- Image parameter information 
+      ExpLevMode: BYTE(0),  $                ; 14- Exposure mode/level
+      imgparam: BYTE(0),  $                  ; 15- Image parameter information
                                              ;
       ObsRegion: BYTE(0),  $                 ; 16- Observing region Number
       seq_num: BYTE(0),  $                   ; 17- Sequence Number (1-13)
@@ -501,17 +501,17 @@ SXT_RoadMap = { SXT_RoadMap_Rec,              $
       PercentD: BYTE(0),  $                  ; 29- Percentage of data present
       PercentOver: BYTE(0),  $               ; 30- Percentage of data over [N] counts
                                              ;
-      Flare_Status: BYTE(0),  $              ; 31- Flare flag status 
+      Flare_Status: BYTE(0),  $              ; 31- Flare flag status
                                              ;
       serial_num: LONG(0),  $                ; 32- Serial number of image
                                              ;     ** NOT INCLUDED IN OBSERVING LOG **
       AEC_Status: BYTE(0),  $                ; 36- AEC Status
                                              ;     ** NOT INCLUDED IN OBSERVING LOG **
-      seq_tab_serno: FIX(0),  $              ; 37- Sequence table serial used 
+      seq_tab_serno: FIX(0),  $              ; 37- Sequence table serial used
       spare2: BYTARR(9) }                    ; 39- Spare bytes
-   
-   
-   
+
+
+
 SXT_Version = { SXT_Version_Rec,              $
       roadmap : FIX('30F1'x),  $             ;
                                              ; 00- The version number of the Roadmap
@@ -533,9 +533,9 @@ SXT_Version = { SXT_Version_Rec,              $
                                              ;   - SXT Xray Log Roadmap
       SXC : FIX('30B1'x),  $                 ;   - SXT Xray Sun Center
       spare: BYTARR(10) }                    ;     (need for automatic conversion to IDL format)
-   
-   
-   
+
+
+
 SXT_3041_SumLog = { SXT_3041_SumLog_Rec,              $
       time: LONG(0),  $                      ;  0- Time (millisec of day)
       day: FIX(0),  $                        ;  4- Day (since 1-Jan-79)
@@ -654,9 +654,9 @@ SXT_3041_SumLog = { SXT_3041_SumLog_Rec,              $
                                              ;
                                              ;
       spare: BYTARR(15) }                    ;   - Spare bytes
-   
-   
-   
+
+
+
 SXT_3051_RAMDump = { SXT_3051_RAMDump_Rec,              $
       time: LONG(0),  $                      ;  0- Time (millisec of day)
       day: FIX(0),  $                        ;  4- Day (since 1-Jan-79)
@@ -666,9 +666,9 @@ SXT_3051_RAMDump = { SXT_3051_RAMDump_Rec,              $
       dump: BYTARR(61),  $                   ;  9- Dump data
                                              ;
       spare: BYTARR(10) }                    ; 70- spare
-   
-   
-   
+
+
+
 SXT_3061_DarkLog = { SXT_3061_DarkLog_Rec,              $
       hist: LONARR(256),  $                  ;   0- The IDL histogram of the image
                                              ;
@@ -677,9 +677,9 @@ SXT_3061_DarkLog = { SXT_3061_DarkLog_Rec,              $
       y: INTARR(128),  $                     ;1280- The line number of 128 brightest pixels
                                              ;      in image array coordinates (not CCD coordinates)
       int: BYTARR(128) }                     ;1536- The intensity of the 128 brightest pixels
-   
-   
-   
+
+
+
 SXT_3071_EnginLog = { SXT_3071_EnginLog_Rec,              $
       time: LONG(0),  $                      ; 02- Time (millisec of day)                                    Derived
       day: FIX(0),  $                        ; 06- Day (since 1-Jan-79)                                      Derived
@@ -692,7 +692,7 @@ SXT_3071_EnginLog = { SXT_3071_EnginLog_Rec,              $
                                              ;     (See SXT_INDEX for description of bits)
       SXT_Control: BYTE(0),  $               ; 62- SXT Control Status                                        W114 F3
                                              ;     (See SXT_INDEX for description of bits)
-      sxt_temps: BYTARR(15),  $              ; sxt temperatures 
+      sxt_temps: BYTARR(15),  $              ; sxt temperatures
                                              ;     (See SXT_INDEX for description of bits)
       heaters: BYTE(0),  $                   ;     The status of the headers (on/off)
                                              ;
@@ -719,9 +719,9 @@ SXT_3071_EnginLog = { SXT_3071_EnginLog_Rec,              $
       os1_fwahard: BYTE(0),  $               ;
       os1_aspectsoft: BYTE(0),  $            ;
       os1_shutterhard: BYTE(0) }             ;
-   
-   
-   
+
+
+
 SXT_3081_OptTel = { SXT_3081_OptTel_Rec,              $
       st$fileid: BYTARR(12),  $              ; 06
       dset: FIX(0),  $                       ; 18
@@ -748,9 +748,9 @@ SXT_3081_OptTel = { SXT_3081_OptTel_Rec,              $
                                              ;               (2) = radius in 1x1 pixels
                                              ;
       spare: BYTARR(10) }                    ; 82
-   
-   
-   
+
+
+
 SXT_30B1_XrCen = { SXT_30B1_XrCen_Rec,              $
       st$fileid: BYTARR(12),  $              ;  0
       dset: FIX(0),  $                       ; 12
@@ -769,22 +769,22 @@ SXT_30B1_XrCen = { SXT_30B1_XrCen_Rec,              $
                                              ;               (2) = delta in seconds between image and pnt record
                                              ;
       spare: BYTARR(18) }                    ; 78
-   
-   
-   
+
+
+
 SXT_3091_XrayLog = { SXT_3091_XrayLog_Rec,              $
       hist: LONARR(256) }                    ;   0- The IDL histogram of the image
-   
-   
-   
+
+
+
 SXT_3092_Xray2Log = { SXT_3092_Xray2Log_Rec,              $
                                              ;       (*,0) = histogram of whole image
                                              ;       (*,1) = histogram of image within 0.86 * radius
                                              ;       (*,2) = histogram of image outside of 1.05 * radius
       hist: LONARR(256,3) }                  ;   0- The IDL histogram of the image
-   
-   
-   
+
+
+
 SXL_39F1_RoadMap = { SXL_39F1_RoadMap_Rec,              $
                                              ;     For a full description of the fields,
                                              ;     look at the Index_Rec definition
@@ -799,29 +799,29 @@ SXL_39F1_RoadMap = { SXL_39F1_RoadMap_Rec,              $
       DP_mode: BYTE(0),  $                   ; 10- DP Mode
       DP_rate: BYTE(0),  $                   ; 11- DP Rate
                                              ;
-      pfi_ffi: BYTE(0),  $                   ; 12- Image information 
+      pfi_ffi: BYTE(0),  $                   ; 12- Image information
       periph: BYTE(0),  $                    ; 13- Aspect/Shutter/Filter information
-      ExpLevMode: BYTE(0),  $                ; 14- Exposure mode/level       
-      imgparam: BYTE(0),  $                  ; 15- Image parameter information 
+      ExpLevMode: BYTE(0),  $                ; 14- Exposure mode/level
+      imgparam: BYTE(0),  $                  ; 15- Image parameter information
                                              ;
       seq_num: BYTE(0),  $                   ; 16- Sequence Number (1-13)
-      seq_tab_serno: FIX(0),  $              ; 17- Sequence table serial used 
+      seq_tab_serno: FIX(0),  $              ; 17- Sequence table serial used
                                              ;
       Img_Avg: FLOAT(0),  $                  ; 19- Average intensity of whole image
       Img_Dev: FLOAT(0),  $                  ; 23- Average intensity around the max
                                              ;
       spare: BYTARR(5) }                     ; 27- Spare bytes
-   
-   
-   
+
+
+
 SXG_39F1_SXTGOES = { SXG_39F1_SXTGOES_Log,              $
                                              ;
                                              ; Time Tag and SXT params from SXL Record
       time: LONG(0),  $                      ; 00- Major frame time (millisec of day)
       day: FIX(0),  $                        ; 04- Major frame day (since 1-Jan-79)
       periph: BYTE(0),  $                    ; 06- Aspect/Shutter/Filter information
-      ExpLevMode: BYTE(0),  $                ; 07- Exposure mode/level       
-      imgparam: BYTE(0),  $                  ; 08- Image parameter information 
+      ExpLevMode: BYTE(0),  $                ; 07- Exposure mode/level
+      imgparam: BYTE(0),  $                  ; 08- Image parameter information
       DP_mode: BYTE(0),  $                   ; 09- DP Mode
       temp_ccd: BYTE(0),  $                  ; 10- CCD Temp.
       sxt_flux: LONG(0),  $                  ; 11- DN/s from SXL Histogram
@@ -834,11 +834,11 @@ SXG_39F1_SXTGOES = { SXG_39F1_SXTGOES_Log,              $
                                              ;      type(b:4:7); 0=> 3second
                                              ;                   1=> 1 min avg
                                              ;                   2=> 5 min avg
-                                             ;      
+                                             ;
       spare: BYTARR(6) }                     ; 26 spare
-   
-   
-   
+
+
+
 SXT_30A1_Leak = { SXT_30A1_Leak_Rec,              $
       st$fileid: BYTARR(12),  $              ; 06
       dset: FIX(0),  $                       ; 18
@@ -850,9 +850,9 @@ SXT_30A1_Leak = { SXT_30A1_Leak_Rec,              $
                                              ;               is "i*20/sum+1"
                                              ;
       spare: BYTARR(18) }                    ; 82
-   
-   
-   
-  
-  
+
+
+
+
+
 end

@@ -2,7 +2,7 @@ FUNCTION ATIME,UT,PUBLICAT=PUB ;ut to 'YY/MM/DD, HHMM:SS.XXX'
 on_error,2
 !quiet=1
 ;+
-; NAME: 
+; NAME:
 ;	ATIME
 ; PURPOSE:
 ;	Convert argument UT to string of format YY/MM/DD, HHMM:SS.XXX or
@@ -23,7 +23,7 @@ ymd2sec,days_month=days_month,iutyears=iutyears,/alt ;initialize arrays
 ;	iutyears  - # of days elapsed since 79/1/1 to start of each year
 ;		    from 79/1/1 to 99/1/1
 ;for days up to the first of the month and days up to the first of the year
-days=(ut+4.d-04)/86400.d0 
+days=(ut+4.d-04)/86400.d0
 ;!!!!!!!!!!!!!N.B. 4.d-04 sec is round up error correction for conversion
 ;!!!!!!!!!!!!!     accuracy of .001 seconds !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ;;if (days ge 0) and (days lt 7670.) then begin ;time is within range	;MDM removed 1999 year limitation
@@ -64,4 +64,3 @@ endif else begin ;INPUT UT IS OUT OF RANGE
 endelse
 return,ans
 END
-

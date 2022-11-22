@@ -139,7 +139,7 @@ pro ucomp_rolling_flat_plots, wave_region, db, run=run
   if (n_elements(original_rgb) gt 0L) then tvlct, original_rgb
   if (n_elements(original_decomposed) gt 0L) then device, decomposed=original_decomposed
   if (n_elements(original_device) gt 0L) then set_plot, original_device
-  
+
   mg_log, 'done', name=run.logger_name, /info
 end
 
@@ -151,7 +151,7 @@ config_basename = 'ucomp.production.cfg'
 config_filename = filepath(config_basename, $
                            subdir=['..', '..', 'config'], $
                            root=mg_src_root())
-                           
+
 run = ucomp_run(date, 'test', config_filename)
 
 db = ucomp_db_connect(run->config('database/config_filename'), $

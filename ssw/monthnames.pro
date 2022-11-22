@@ -24,9 +24,9 @@
 ; whatsoever.  Other limitations apply as described in the file disclaimer.txt.
 ;-
 ;-------------------------------------------------------------
- 
+
 	function monthnames, help=hlp
- 
+
 	if keyword_set(hlp) then begin
 	  print,' Returns a string array of month names.'
 	  print,' mnam = monthnames()'
@@ -34,10 +34,10 @@
 	  print,"     ['Error','January',...'December']"
 	  return, -1
 	endif
- 
+
 	mn = ['Error','January','February','March','April','May',$
 	      'June','July','August','September','October',$
 	      'November','December']
- 
+
 	return, mn
 	end

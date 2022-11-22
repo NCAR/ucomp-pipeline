@@ -118,7 +118,7 @@ pro ucomp_update_catalog_ut::teardown
   self->UCoMPutTestCase::teardown
 
   file_delete, file_dirname(self.catalog_filename), $
-               /recursive, /allow_nonexistent  
+               /recursive, /allow_nonexistent
 end
 
 

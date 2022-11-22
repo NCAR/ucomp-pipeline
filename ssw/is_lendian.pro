@@ -13,7 +13,7 @@ function is_lendian
 ; CALLING SEQUENCE:
 ;    little_endian_flag = is_endian()
 ;
-; 
+;
 ; INPUTS:
 ;    None.  is_endian checks !version.os for the platform.
 ;
@@ -25,7 +25,7 @@ function is_lendian
 ;
 ; MODIFICATION HISTORY:
 ;    18-Jun-97 - (BNH) - Written (mostly from SLF)
-;    
+;
 ;    29-nov-2006 - S.L.Freeland - do this by calculation, not list
 ;                  for maintenance simplification and auto-extension
 ;                  Plagerized from $SSW_EIS/...little_endian.pro

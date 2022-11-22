@@ -5,7 +5,7 @@
 ; AUTHOR:
 ;   Craig B. Markwardt, NASA/GSFC Code 662, Greenbelt, MD 20770
 ;   craigm@lheamail.gsfc.nasa.gov
-;   UPDATED VERSIONs can be found on my WEB PAGE: 
+;   UPDATED VERSIONs can be found on my WEB PAGE:
 ;      http://cow.physics.wisc.edu/~craigm/idl/idl.html
 ;
 ; PURPOSE:
@@ -15,14 +15,14 @@
 ;   Curve and Surface Fitting
 ;
 ; CALLING SEQUENCE:
-;   YFIT = MPCURVEFIT(X, Y, WEIGHTS, P, [SIGMA,] FUNCTION_NAME=FUNC, 
-;                     ITER=iter, ITMAX=itmax, 
-;                     CHISQ=chisq, NFREE=nfree, DOF=dof, 
+;   YFIT = MPCURVEFIT(X, Y, WEIGHTS, P, [SIGMA,] FUNCTION_NAME=FUNC,
+;                     ITER=iter, ITMAX=itmax,
+;                     CHISQ=chisq, NFREE=nfree, DOF=dof,
 ;                     NFEV=nfev, COVAR=covar, [/NOCOVAR, ] [/NODERIVATIVE, ]
 ;                     FUNCTARGS=functargs, PARINFO=parinfo,
 ;                     FTOL=ftol, XTOL=xtol, GTOL=gtol, TOL=tol,
 ;                     ITERPROC=iterproc, ITERARGS=iterargs,
-;                     NPRINT=nprint, QUIET=quiet, 
+;                     NPRINT=nprint, QUIET=quiet,
 ;                     ERRMSG=errmsg, STATUS=status)
 ;
 ; DESCRIPTION:
@@ -34,10 +34,10 @@
 ;
 ;  Given the data and their uncertainties, MPCURVEFIT finds the best
 ;  set of model parameters which match the data (in a least-squares
-;  sense) and returns them in the parameter P.  
+;  sense) and returns them in the parameter P.
 ;
 ;  MPCURVEFIT returns the best fit function.
-;  
+;
 ;  The user must supply the following items:
 ;   - An array of independent variable values ("X").
 ;   - An array of "measured" *dependent* variable values ("Y").
@@ -56,7 +56,7 @@
 ;  improve performance.
 ;
 ;  See below for an example of usage.
-;   
+;
 ; USER FUNCTION
 ;
 ;  The user must define a function which returns the model value.  For
@@ -72,7 +72,7 @@
 ;    ;
 ;    PRO MYFUNCT, x, p, ymod, dp
 ;     ymod = F(x, p)         ;; Model function
-;     
+;
 ;     if n_params() GE 4  then begin
 ;       ; Create derivative and compute derivative array
 ;       dp = make_array(n_elements(x), n_elements(p), value=x[0]*0)
@@ -92,7 +92,7 @@
 ;  User functions may also indicate a fatal error condition
 ;  using the ERROR_CODE common block variable, as described
 ;  below under the MPFIT_ERROR common block definition.
-; 
+;
 ;  If NODERIVATIVE=1, then MPCURVEFIT will never request explicit
 ;  derivatives from the user function, and instead will user numerical
 ;  estimates (i.e. by calling the user function multiple times).
@@ -112,31 +112,31 @@
 ;  Each parameter is associated with one element of the array, in
 ;  numerical order.  The structure can have the following entries
 ;  (none are required):
-;  
+;
 ;     .VALUE - the starting parameter value (but see the START_PARAMS
 ;              parameter for more information).
-;  
+;
 ;     .FIXED - a boolean value, whether the parameter is to be held
 ;              fixed or not.  Fixed parameters are not varied by
 ;              MPFIT, but are passed on to MYFUNCT for evaluation.
-;  
+;
 ;     .LIMITED - a two-element boolean array.  If the first/second
 ;                element is set, then the parameter is bounded on the
 ;                lower/upper side.  A parameter can be bounded on both
 ;                sides.  Both LIMITED and LIMITS must be given
 ;                together.
-;  
+;
 ;     .LIMITS - a two-element float or double array.  Gives the
 ;               parameter limits on the lower and upper sides,
 ;               respectively.  Zero, one or two of these values can be
 ;               set, depending on the values of LIMITED.  Both LIMITED
 ;               and LIMITS must be given together.
-;  
+;
 ;     .PARNAME - a string, giving the name of the parameter.  The
 ;                fitting code of MPFIT does not use this tag in any
 ;                way.  However, the default ITERPROC will print the
 ;                parameter name if available.
-;  
+;
 ;     .STEP - the step size to be used in calculating the numerical
 ;             derivatives.  If set to zero, then the step size is
 ;             computed automatically.  Ignored when AUTODERIVATIVE=0.
@@ -172,7 +172,7 @@
 ;                  one iteration.
 ;
 ;                  A value of 0 indicates no maximum.  Default: 0.
-;  
+;
 ;     .TIED - a string expression which "ties" the parameter to other
 ;             free or fixed parameters.  Any expression involving
 ;             constants and the parameter array P are permitted.
@@ -188,13 +188,13 @@
 ;                selectively print only a few parameter values out of
 ;                many.  Default: 1 (all parameters printed)
 ;
-;  
+;
 ;  Future modifications to the PARINFO structure, if any, will involve
 ;  adding structure tags beginning with the two letters "MP".
 ;  Therefore programmers are urged to avoid using tags starting with
 ;  the same letters; otherwise they are free to include their own
 ;  fields within the PARINFO structure, and they will be ignored.
-;  
+;
 ;  PARINFO Example:
 ;  parinfo = replicate({value:0.D, fixed:0, limited:[0,0], $
 ;                       limits:[0.D,0]}, 5)
@@ -202,7 +202,7 @@
 ;  parinfo(4).limited(0) = 1
 ;  parinfo(4).limits(0)  = 50.D
 ;  parinfo(*).value = [5.7D, 2.2, 500., 1.5, 2000.]
-;  
+;
 ;  A total of 5 parameters, with starting values of 5.7,
 ;  2.2, 500, 1.5, and 2000 are given.  The first parameter
 ;  is fixed at a value of 5.7, and the last parameter is
@@ -239,7 +239,7 @@
 ;       If both START_PARAMS and PARINFO are passed, then the starting
 ;       *value* is taken from START_PARAMS, but the *constraints* are
 ;       taken from PARINFO.
-; 
+;
 ;   SIGMA - The formal 1-sigma errors in each parameter, computed from
 ;           the covariance matrix.  If a parameter is held fixed, or
 ;           if it touches a boundary, then the error is reported as
@@ -330,11 +330,11 @@
 ;                PARINFO=parinfo, QUIET=quiet, ...
 ;                ; perform custom iteration update
 ;              END
-;         
+;
 ;              ITERPROC must either accept all three keyword
 ;              parameters (FUNCTARGS, PARINFO and QUIET), or at least
 ;              accept them via the _EXTRA keyword.
-;          
+;
 ;              FUNCT is the user-supplied function to be minimized,
 ;              P is the current set of model parameters, ITER is the
 ;              iteration number, and FUNCTARGS are the arguments to be
@@ -386,7 +386,7 @@
 ;   PARINFO - Provides a mechanism for more sophisticated constraints
 ;             to be placed on parameter values.  When PARINFO is not
 ;             passed, then it is assumed that all parameters are free
-;             and unconstrained.  Values in PARINFO are never 
+;             and unconstrained.  Values in PARINFO are never
 ;             modified during a call to MPFIT.
 ;
 ;             See description above for the structure of PARINFO.
@@ -401,27 +401,27 @@
 ;            following values:
 ;
 ;	   0  improper input parameters.
-;         
+;
 ;	   1  both actual and predicted relative reductions
 ;	      in the sum of squares are at most FTOL.
-;         
+;
 ;	   2  relative error between two consecutive iterates
 ;	      is at most XTOL
-;         
+;
 ;	   3  conditions for STATUS = 1 and STATUS = 2 both hold.
-;         
+;
 ;	   4  the cosine of the angle between fvec and any
 ;	      column of the jacobian is at most GTOL in
 ;	      absolute value.
-;         
+;
 ;	   5  the maximum number of iterations has been reached
-;         
+;
 ;	   6  FTOL is too small. no further reduction in
 ;	      the sum of squares is possible.
-;         
+;
 ;	   7  XTOL is too small. no further improvement in
 ;	      the approximate solution x is possible.
-;         
+;
 ;	   8  GTOL is too small. fvec is orthogonal to the
 ;	      columns of the jacobian to machine precision.
 ;
@@ -441,7 +441,7 @@
 ;
 ;   ; First, generate some synthetic data
 ;   npts = 200
-;   x  = dindgen(npts) * 0.1 - 10.                  ; Independent variable 
+;   x  = dindgen(npts) * 0.1 - 10.                  ; Independent variable
 ;   yi = gauss1(x, [2.2D, 1.4, 3000.])              ; "Ideal" Y variable
 ;   y  = yi + randomn(seed, npts) * sqrt(1000. + yi); Measured, w/ noise
 ;   sy = sqrt(1000.D + y)                           ; Poisson errors
@@ -477,7 +477,7 @@
 ; REFERENCES:
 ;
 ;   MINPACK-1, Jorge More', available from netlib (www.netlib.org).
-;   "Optimization Software Guide," Jorge More' and Stephen Wright, 
+;   "Optimization Software Guide," Jorge More' and Stephen Wright,
 ;     SIAM, *Frontiers in Applied Mathematics*, Number 14.
 ;
 ; MODIFICATION HISTORY:
@@ -534,18 +534,18 @@ function mpcurvefit_eval, p, dp, _EXTRA=extra
 
   ;; Compute the deviates, applying the weights
   result = (y-f)*wts
-  
-  ;; Apply weights to derivative quantities                                     
+
+  ;; Apply weights to derivative quantities
   if n_params() GT 1 then begin
       np = n_elements(p)
       nf = n_elements(f)
       for j = 0L, np-1 do dp[j*nf] = dp[j*nf:j*nf+nf-1] * wts
   endif
-      
+
   ;; Make sure the returned result is one-dimensional.
   result = reform(result, n_elements(result), /overwrite)
   return, result
-  
+
 end
 
 function mpcurvefit, x, y, wts, p, perror, function_name=fcn, $

@@ -80,7 +80,7 @@ pro ucomp_db_create_tables, config_filename
     endif
   endfor
 
-  ; remove old UCoMP product types from mlso_producttype table 
+  ; remove old UCoMP product types from mlso_producttype table
   db->execute, 'delete from mlso_producttype where description like "UCoMP%"', $
                status=status, error_message=error_message, $
                sql_statement=sql_cmd

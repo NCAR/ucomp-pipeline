@@ -15,9 +15,9 @@ function ydb_exist, times, prefix, range=range, qdebug=qdebug
 ;	range	- If set, then "times" is a two element array which
 ;		  is the start and stop time of the range needed.
 ;OUTPUT:
-;	ans	- Boolean value.  If any of the needed files exist, 
+;	ans	- Boolean value.  If any of the needed files exist,
 ;		  then returns a 1, otherwise it returns a 0
-;HISTORY: 
+;HISTORY:
 ;	Written 18-Aug-93 by M.Morrison (taking PNT_EXIST as start)
 ;	12-Oct-93 (MDM) - Added /RANGE option
 ;	13-Oct-93 (MDM) - Added capability of checking the range based on
@@ -58,4 +58,3 @@ end
 if (keyword_set(qdebug)) then print, 'YDB_EXIST looking for ', files
 return, max(exist)
 end
-

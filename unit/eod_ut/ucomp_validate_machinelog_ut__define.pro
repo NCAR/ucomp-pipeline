@@ -45,11 +45,11 @@ function ucomp_validate_machinelog_ut::test_missinglog
   config_filename = filepath(config_basename, $
                              subdir=['..', '..', 'config'], $
                              root=mg_src_root())
-  
+
   run = ucomp_run(date, 'test', config_filename)
   is_valid = ucomp_validate_machinelog(present=present, run=run)
   obj_destroy, run
-  
+
   assert, is_valid eq 0B, 'incorrect validity'
   assert, present eq 1B, 'incorrect presence'
 
@@ -65,14 +65,14 @@ function ucomp_validate_machinelog_ut::test_missing
   config_filename = filepath(config_basename, $
                              subdir=['..', '..', 'config'], $
                              root=mg_src_root())
-  
+
   run = ucomp_run(date, 'test', config_filename)
   is_valid = ucomp_validate_machinelog(present=present, run=run)
   obj_destroy, run
-  
+
   assert, is_valid eq 0B, 'incorrect validity'
   assert, present eq 0B, 'incorrect presence'
-  
+
   return, 1
 end
 
@@ -82,7 +82,7 @@ function ucomp_validate_machinelog_ut::init, _extra=e
 
   if (~self->MGutTestCase::init(_extra=e)) then return, 0
 
-  
+
   self->addTestingRoutine, ['ucomp_validate_machinelog'], $
                            /is_function
 

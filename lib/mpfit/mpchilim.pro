@@ -5,7 +5,7 @@
 ; AUTHOR:
 ;   Craig B. Markwardt, NASA/GSFC Code 662, Greenbelt, MD 20770
 ;   craigm@lheamail.gsfc.nasa.gov
-;   UPDATED VERSIONs can be found on my WEB PAGE: 
+;   UPDATED VERSIONs can be found on my WEB PAGE:
 ;      http://cow.physics.wisc.edu/~craigm/idl/idl.html
 ;
 ; PURPOSE:
@@ -73,7 +73,7 @@
 ;
 ;   Print the "5 sigma" confidence limit for a chi-squared of 2
 ;   degrees of freedom.  Here "5 sigma" indicates the gaussian
-;   probability of a 5 sigma event or greater. 
+;   probability of a 5 sigma event or greater.
 ;       P_GAUSS(5D) = 1D - 5.7330314e-07
 ;
 ; REFERENCES:
@@ -136,46 +136,46 @@ function cephes_polevl, x, coef
 end
 
 function cephes_ndtri, y0
-;   
+;
 ;   	Inverse of Normal distribution function
-;   
-;   
-;   
+;
+;
+;
 ;    SYNOPSIS:
-;   
+;
 ;    double x, y, ndtri();
-;   
+;
 ;    x = ndtri( y );
-;   
-;   
-;   
+;
+;
+;
 ;    DESCRIPTION:
-;   
+;
 ;    Returns the argument, x, for which the area under the
 ;    Gaussian probability density function (integrated from
 ;    minus infinity to x) is equal to y.
-;   
-;   
+;
+;
 ;    For small arguments 0 < y < exp(-2), the program computes
 ;    z = sqrt( -2.0 * log(y) );  then the approximation is
 ;    x = z - log(z)/z  - (1/z) P(1/z) / Q(1/z).
 ;    There are two rational functions P/Q, one for 0 < y < exp(-32)
 ;    and the other for y up to exp(-2).  For larger arguments,
 ;    w = y - 0.5, and  x/sqrt(2pi) = w + w**3 R(w**2)/S(w**2)).
-;   
-;   
+;
+;
 ;    ACCURACY:
-;   
+;
 ;                         Relative error:
 ;    arithmetic   domain        # trials      peak         rms
 ;       DEC      0.125, 1         5500       9.5e-17     2.1e-17
 ;       DEC      6e-39, 0.135     3500       5.7e-17     1.3e-17
 ;       IEEE     0.125, 1        20000       7.2e-16     1.3e-16
 ;       IEEE     3e-308, 0.135   50000       4.6e-16     9.8e-17
-;   
-;   
+;
+;
 ;    ERROR MESSAGES:
-;   
+;
 ;      message         condition    value returned
 ;    ndtri domain       x <= 0        -MAXNUM
 ;    ndtri domain       x >= 1         MAXNUM
@@ -240,7 +240,7 @@ function cephes_ndtri, y0
       x = x * s2pi
       return, x
   endif
-  
+
   x = sqrt( -2.D * alog(y))
   x0 = x - alog(x)/x
   z = 1.D/x
@@ -255,21 +255,21 @@ function cephes_ndtri, y0
 end
 
 function cephes_igam, a, x
-;   
+;
 ;   	Incomplete gamma integral
-;   
-;   
-;   
+;
+;
+;
 ;    SYNOPSIS:
-;   
+;
 ;    double a, x, y, igam();
-;   
+;
 ;    y = igam( a, x );
-;   
+;
 ;    DESCRIPTION:
-;   
+;
 ;    The function is defined by
-;   
+;
 ;                              x
 ;                               -
 ;                      1       | |  -t  a-1
@@ -277,15 +277,15 @@ function cephes_igam, a, x
 ;                     -      | |
 ;                    | (a)    -
 ;                              0
-;   
-;   
+;
+;
 ;    In this implementation both arguments must be positive.
 ;    The integral is evaluated by either a power series or
 ;    continued fraction expansion, depending on the relative
 ;    values of a and x.
-;   
+;
 ;    ACCURACY:
-;   
+;
 ;                         Relative error:
 ;    arithmetic   domain     # trials      peak         rms
 ;       IEEE      0,30       200000       3.6e-14     2.9e-15
@@ -297,7 +297,7 @@ function cephes_igam, a, x
 
   if x LE 0 OR a LE 0 then return, 0.D
   if x GT 1. AND x GT a then return, 1.D - cephes_igamc(a, x)
-  
+
   ax = a * alog(x) - x - lngamma(a)
   if ax LT -MAXLOG then begin
 ;      message, 'WARNING: underflow', /info
@@ -307,7 +307,7 @@ function cephes_igam, a, x
   r = a
   c = 1.D
   ans = 1.D
-  
+
   repeat begin
       r = r + 1
       c = c * x/r
@@ -318,24 +318,24 @@ function cephes_igam, a, x
 end
 
 function cephes_igamc, a, x
-;   
+;
 ;   	Complemented incomplete gamma integral
-;   
-;   
-;   
+;
+;
+;
 ;    SYNOPSIS:
-;   
+;
 ;    double a, x, y, igamc();
-;   
+;
 ;    y = igamc( a, x );
-;   
+;
 ;    DESCRIPTION:
-;   
+;
 ;    The function is defined by
-;   
-;   
+;
+;
 ;     igamc(a,x)   =   1 - igam(a,x)
-;   
+;
 ;                               inf.
 ;                                 -
 ;                        1       | |  -t  a-1
@@ -343,15 +343,15 @@ function cephes_igamc, a, x
 ;                       -      | |
 ;                      | (a)    -
 ;                                x
-;   
-;   
+;
+;
 ;    In this implementation both arguments must be positive.
 ;    The integral is evaluated by either a power series or
 ;    continued fraction expansion, depending on the relative
 ;    values of a and x.
-;   
+;
 ;    ACCURACY:
-;   
+;
 ;    Tested at random a, x.
 ;                   a         x                      Relative error:
 ;    arithmetic   domain   domain     # trials      peak         rms
@@ -374,7 +374,7 @@ function cephes_igamc, a, x
 ;      message, 'ERROR: underflow', /info
       return, 0.D
   endif
-  
+
   ax = exp(ax)
   y = 1.D - a
   z = x + y + 1.D
@@ -413,45 +413,45 @@ function cephes_igamc, a, x
 
   return, ans * ax
 end
-  
+
 function cephes_igami, a, y0
-;  
+;
 ;        Inverse of complemented imcomplete gamma integral
-;  
-;  
-;  
+;
+;
+;
 ;   SYNOPSIS:
-;  
+;
 ;   double a, x, p, igami();
-;  
+;
 ;   x = igami( a, p );
-;  
+;
 ;   DESCRIPTION:
-;  
+;
 ;   Given p, the function finds x such that
-;  
+;
 ;    igamc( a, x ) = p.
-;  
+;
 ;   Starting with the approximate value
-;  
+;
 ;           3
 ;    x = a t
-;  
+;
 ;    where
-;  
+;
 ;    t = 1 - d - ndtri(p) sqrt(d)
-;   
+;
 ;   and
-;  
+;
 ;    d = 1/9a,
-;  
+;
 ;   the routine performs up to 10 Newton iterations to find the
 ;   root of igamc(a,x) - p = 0.
-;  
+;
 ;   ACCURACY:
-;  
+;
 ;   Tested at random a, p in the intervals indicated.
-;  
+;
 ;                  a        p                      Relative error:
 ;   arithmetic   domain   domain     # trials      peak         rms
 ;      IEEE     0.5,100   0,0.5       100000       1.0e-14     1.7e-15
@@ -473,7 +473,7 @@ function cephes_igami, a, y0
   d = 1.D/(9.D*a)
   y = (1.D - d - cephes_ndtri(y0) * sqrt(d))
   x = a * y * y * y
- 
+
   lgm = lngamma(a)
 
   for i=0, 9 do begin
@@ -487,7 +487,7 @@ function cephes_igami, a, y0
           x1 = x
           yh = y
       endelse
-      
+
       d = (a-1.D) * alog(x) - x - lgm
       if d LT -MAXLOG then goto, ihalve
       d = -exp(d)
@@ -496,7 +496,7 @@ function cephes_igami, a, y0
       x = x - d
   endfor
 
-; Resort to interval halving if Newton iteration did not converge 
+; Resort to interval halving if Newton iteration did not converge
 IHALVE:
   d = 0.0625D
   if x0 EQ MAXNUM then begin
@@ -551,7 +551,7 @@ IHALVE:
       endelse
   endfor
   DONELOOP2:
-  
+
   if x EQ 0 then begin
 ;      message, 'WARNING: underflow', /info
   endif
@@ -580,7 +580,7 @@ function mpchilim, p, dof, sigma=sigma, clevel=clevel, slevel=slevel
   endif else if keyword_set(slevel) then begin ;; in terms of SIGNIFICANCE LEVEL
       slev = p
   endif else if keyword_set(clevel) then begin ;; in terms of CONFIDENCE LEVEL
-      slev = 1.D - double(p)        
+      slev = 1.D - double(p)
   endif else begin
       message, 'ERROR: must specify one of SIGMA, CLEVEL, SLEVEL'
   endelse

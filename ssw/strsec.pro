@@ -40,9 +40,9 @@
 ; whatsoever.  Other limitations apply as described in the file disclaimer.txt.
 ;-
 ;-------------------------------------------------------------
- 
+
 	FUNCTION STRSEC,SEC0,D, help=hlp, hours=hrs
- 
+
 	if (n_params(0) lt 1) or keyword_set(hlp) then begin
 	  print,' Convert seconds after midnight to a time string.'
 	  print,' tstr = strsec(sec, [d])'
@@ -64,12 +64,12 @@
 	  print,'   when not using fractions, add .5 to sec.'
 	  return, -1
 	endif
- 
+
 	aflag = isarray(sec0)		; Is input an array? (0=no, 1=yes).
 	seca = array_jhuapl(sec0)	; Force input to be an array.
 	nn = n_elements(seca)		; Number of elements in input array.
 	out = strarr(nn)		; Output string array.
- 
+
 	;-------------------------------------------------------------------
 	for ii = 0, nn-1 do begin	; Loop through all input elements.
 	sec = seca(ii)			; Pull out the ii'th element.
@@ -86,7 +86,7 @@
 	T = T - 60*M			; Time without minutes.
 	S = LONG(T)			; Seconds.
 	F = T - S			; Time without seconds (=fraction).
- 
+
 	SDY = ''			; Day part of string, def=null.
 	IF DY GT 0 THEN BEGIN		; Convert day to 3 digit day number.
 	  SDY = STRTRIM(STRING(DY),2)
@@ -100,9 +100,9 @@
 	IF M LT 10 THEN SM = '0'+SM	; Add leading 0 if needed.
 	SS = STRTRIM(STRING(S),2)	; Convert seconds to string.
 	IF S LT 10 THEN SS = '0'+SS	; Add leading 0 if needed.
- 
+
 	SHMS = SDY+SH+':'+SM+':'+SS	; Put parts together.
- 
+
 ;	IF N_PARAMS(0) LT 2 THEN RETURN, SHMS
 	IF N_PARAMS(0) ge 2 THEN begin		; Also want fraction of second.
 	  SD = STRTRIM(STRING(D),2)		; Convert denom. to string.
@@ -114,14 +114,14 @@ LOOP:	  IF STRLEN(SN) GE LN THEN GOTO, FINISH	; Numerator in correct form?
 	  GOTO, LOOP
 FINISH:   SHMS = SHMS+':'+SN+'/'+SD		; Tack on fraction as a string.
 	endif
- 
+
 	out(ii) = shms
- 
+
 	endfor
 	;-------------------------------------------------------------------
- 
+
 	if aflag eq 0 then out = out(0)		; Handle scalar.
- 
+
 	RETURN, out
- 
+
 	END

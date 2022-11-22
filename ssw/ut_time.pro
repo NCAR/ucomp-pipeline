@@ -9,7 +9,7 @@ function ut_time, time_in, int=int, ex=ex, to_local=to_local
 ;OPTIONAL INPUT:
 ;	time_in	- A time (or times) in the local time zone to be converted
 ;		  to UT.  Input can be any of the 3 standard input formats.
-;                 OR - uttimes to be converted to local times (/TO_LOCAL kwrd) 
+;                 OR - uttimes to be converted to local times (/TO_LOCAL kwrd)
 ;
 ;OPTIONAL KEYWORD INPUT:
 ;	int	- If set, return the time in the internal structure format
@@ -24,11 +24,11 @@ function ut_time, time_in, int=int, ex=ex, to_local=to_local
 ;HISTORY:
 ;	Written 4-Jun-93 by M.Morrison
 ;	 9-Nov-93 (MDM) - Patch to work with SGI
-;        4-apr-95 (SLF) - add TO_LOCAL keyword and function 
+;        4-apr-95 (SLF) - add TO_LOCAL keyword and function
 ;	                  use /noshell with spawn
 ;	 7-Jun-95 (MDM) - Added eastern time zones
 ;			- Added check that time zone was recognized
-;	
+;
 ;-
 ;
 if (n_elements(time_in) eq 0) then begin
@@ -69,7 +69,7 @@ case strupcase(!version.os) of
 	   end
 endcase
 ;
-if keyword_set(to_local) then off= -(off)	;invert offset 
+if keyword_set(to_local) then off= -(off)	;invert offset
 
 out = anytim2ints(time_in, off=off*60.*60.)
 ;

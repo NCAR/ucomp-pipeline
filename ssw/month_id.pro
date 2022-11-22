@@ -1,23 +1,23 @@
 
 ;+
 ;
-; NAME: 	
+; NAME:
 ;	Month_id
 ;
-; PURPOSE: 
+; PURPOSE:
 ;	Return the month number (1-12) as a function of the 3 letter
 ;	Month string.
 ;
-; CATEGORY: 
+; CATEGORY:
 ;	Time format manipulation.
 ;
-; CALLING SEQUENCE:  
+; CALLING SEQUENCE:
 ;	Numbers = Month_id( Months )
 ;
-; CALLED BY: 
+; CALLED BY:
 ;	Utime
 ;
-; INPUTS:  
+; INPUTS:
 ;	Months, a string array or scalar
 ;
 ; OUTPUTS:
@@ -25,7 +25,7 @@
 ;
 ; RESTRICTIONS:
 ;	Months must be given as strings with the first three letters spelled
-;	explicitly, i.e. ['Jan','Feb',...].  
+;	explicitly, i.e. ['Jan','Feb',...].
 ;
 ; PROCEDURE:
 ;	Converts months to uppercase and then 3 byte vectors.  Arithmetic

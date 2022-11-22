@@ -5,7 +5,7 @@ function str2arr, instring,  delim,  array=array, delimit=delimit, $
 ; PROJECT: SSW
 ;
 ; NAME:
-; 	STR2ARR	
+; 	STR2ARR
 ;
 ; PURPOSE:
 ;	Convert delimited string into string array
@@ -16,7 +16,7 @@ function str2arr, instring,  delim,  array=array, delimit=delimit, $
 ;
 ; OUTPUT:
 ;      function output is string array, n_elements=number delimiters+1
-; 
+;
 ; KEYWORD PARAMETERS:
 ;      delimit - delimiter - equiv to positional DELIM; for backward compat.
 ;      numult  - switch, if set, dont return nulls for consecutive delimiters
@@ -25,7 +25,7 @@ function str2arr, instring,  delim,  array=array, delimit=delimit, $
 ;                        (same as function output)
 ;
 ; CALLING SEQUENCE:
-;	array=STR2ARR(string [, delimiter, delimit=delimit, /nomult, /list] 
+;	array=STR2ARR(string [, delimiter, delimit=delimit, /nomult, /list]
 ;
 ; CALLING EXAMPLES:
 ;       IDL> more,str2arr('this,is,a,test')                    ; default delim
@@ -51,7 +51,7 @@ function str2arr, instring,  delim,  array=array, delimit=delimit, $
 ;       slf -  2-feb-93 - changed recursion to loop for memory problems
 ;       slf - 19-mar-93 - optimize case where delimiter is 1 character (comma)
 ;       slf - 20-mar-93 - fixed a minor bug with major implications
-;       slf - 16-Jan-97 - merge Dave Pike (RAL) changes for SSW GEN 
+;       slf - 16-Jan-97 - merge Dave Pike (RAL) changes for SSW GEN
 ;                         (LIST and NOMULT keyword and function)
 ;       slf -  8-may-97 - added to header
 ;       Zarro (SM&A/GSFC), 14-Sep-99, threw in couple of temporary's for memory
@@ -73,13 +73,13 @@ if delim_len eq 1 then begin
    btext=byte(text)
    wdelim=where(btext eq bdelim(0),dcount)
    if dcount gt 0 then begin
-      wdelim=[0,wdelim+1]      
+      wdelim=[0,wdelim+1]
       sizewd=deriv_arr(wdelim)-1
       array=strarr(dcount+1)
       for i=0,dcount-1 do begin
          array(i)=strmid(text,wdelim(i),sizewd(i))
       endfor
-      array(i)=strmid(text,wdelim(i),strlen(text)-wdelim(i) )      
+      array(i)=strmid(text,wdelim(i),strlen(text)-wdelim(i) )
    endif else array=text
 endif else begin
    occur=strpos(text,delimit)
@@ -97,10 +97,10 @@ endelse
 
 if nomult then begin
    nnulls=where(array ne '',nncnt)
-   if nncnt gt 0 then array=array(nnulls)   
+   if nncnt gt 0 then array=array(nnulls)
 endif
 if list then more,array
 
 ;
 return,array
-end 
+end

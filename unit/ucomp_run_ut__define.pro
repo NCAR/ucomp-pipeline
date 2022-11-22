@@ -8,7 +8,7 @@ function ucomp_run_ut::test_basic
   config_filename = filepath(config_basename, $
                              subdir=['..', 'config'], $
                              root=mg_src_root())
-  
+
   run = ucomp_run(date, 'test', config_filename)
 
   is_valid = obj_valid(run)
@@ -28,7 +28,7 @@ function ucomp_run_ut::test_properties
   config_filename = filepath(config_basename, $
                              subdir=['..', 'config'], $
                              root=mg_src_root())
-  
+
   run = ucomp_run(date, 'test', config_filename)
 
   run->getProperty, date=date, $
@@ -53,7 +53,7 @@ function ucomp_run_ut::test_config
   config_filename = filepath(config_basename, $
                              subdir=['..', 'config'], $
                              root=mg_src_root())
-  
+
   run = ucomp_run(date, 'test', config_filename)
 
   raw_basedir = run->config('raw/basedir')
@@ -72,7 +72,7 @@ function ucomp_run_ut::test_epoch
   config_filename = filepath(config_basename, $
                              subdir=['..', 'config'], $
                              root=mg_src_root())
-  
+
   run = ucomp_run(date, 'test', config_filename)
 
   process = run->epoch('process', datetime='20210511.080000')
@@ -93,7 +93,7 @@ function ucomp_run_ut::test_line
   config_filename = filepath(config_basename, $
                              subdir=['..', 'config'], $
                              root=mg_src_root())
-  
+
   run = ucomp_run(date, 'test', config_filename)
 
   nickname = run->line('530', 'nickname', datetime='20210311.000000')
@@ -119,7 +119,7 @@ function ucomp_run_ut::test_timing
   config_filename = filepath(config_basename, $
                              subdir=['..', 'config'], $
                              root=mg_src_root())
-  
+
   run = ucomp_run(date, 'test', config_filename)
 
   x = run->start('x')
@@ -142,7 +142,7 @@ function ucomp_run_ut::test_lock
   config_filename = filepath(config_basename, $
                              subdir=['..', 'config'], $
                              root=mg_src_root())
-  
+
   run = ucomp_run(date, 'test', config_filename)
 
   run->lock, is_available=is_available1
@@ -175,7 +175,7 @@ function ucomp_run_ut::test_all_wave_regions
   config_filename = filepath(config_basename, $
                              subdir=['..', 'config'], $
                              root=mg_src_root())
-  
+
   run = ucomp_run(date, 'test', config_filename)
 
   all_lines = ['530', '637', '656', '670', '691', '706', '761', '789', '802', $

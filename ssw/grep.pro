@@ -31,7 +31,7 @@
 ; KEYWORD PARAMETERS:
 ;       SENSITIVE - Make the search pattern case sensitive, if set
 ;       EXACT     - Requires exact match (instead of substring match)
-;       EXCLUDE   - Set this keyword to return string array that does 
+;       EXCLUDE   - Set this keyword to return string array that does
 ;                   not contain string STR
 ;       START     - match at start of string
 ;
@@ -77,10 +77,10 @@ FUNCTION GREP, str, strarray, sensitive=sensitive, exact=exact, index=index,$
     a = STRUPCASE(a)
    ENDIF
 
-   IF KEYWORD_SET(exclude) THEN BEGIN 
+   IF KEYWORD_SET(exclude) THEN BEGIN
     IF exact THEN index = WHERE(aa NE a) ELSE $
      index = WHERE(STRPOS(aa, a) EQ -1)
-   ENDIF ELSE BEGIN 
+   ENDIF ELSE BEGIN
     IF exact THEN index = WHERE(aa EQ a) ELSE BEGIN
      IF start then index=WHERE(STRPOS(aa,a) eq 0) ELSE $
       index = WHERE(STRPOS(aa, a) NE -1)

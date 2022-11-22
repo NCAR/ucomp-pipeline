@@ -12,7 +12,7 @@ function int2secarr, time_arr, time_ref
 ;		variable second (see example).  It
 ;		is assumed that they are the same length
 ;			(OR)
-;		A 7xN array which hold the 7-element external 
+;		A 7xN array which hold the 7-element external
 ;		representation of time.
 ;	time_ref - OPTIONAL, the reference time from
 ;		which to calculate the number of
@@ -27,7 +27,7 @@ function int2secarr, time_arr, time_ref
 ;               A 7xN array which hold the 7-element external
 ;               representation of time.
 ;Output:
-;	returns a single array with the number 
+;	returns a single array with the number
 ;	of seconds past the reference value.
 ;Examples:
 ;	d = int2secarr( roadmap )
@@ -66,4 +66,3 @@ out = (time1.day - time2.day)*86400.0D + (time1.time - time2.time) /1000.0D
 ;
 return, out
 end
-

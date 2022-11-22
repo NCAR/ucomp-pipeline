@@ -82,7 +82,7 @@ byte_in = transpose(byte(strmid(temporary(byte_in),0,mlen)))
 blank=where(byte_in eq 0b,count)
 if count gt 0 then byte_in[blank]=(byte(' '))[0]
 
-;-- create output byte array 
+;-- create output byte array
 
 byte_out = bytarr(n_elements(byte_in[*,0]),length) + (byte(fill))[0]
 

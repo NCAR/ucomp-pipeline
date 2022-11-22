@@ -51,7 +51,7 @@ pro rd_pnt, input1, input2, pnt_data, indir=indir, status=status, $
 ;			 1 = cannot find the file
 ;			 2 = cannot find data in the time period
 ;			-1 = found data, but had to go outside of the requested
-;			     period (only true if /NEAREST is used).  
+;			     period (only true if /NEAREST is used).
 ;	flag	- Error word (same as "status" but kept so that there
 ;		  is compatablility with the old RD_PNT program.
 ;			Value = 0 means ok
@@ -90,7 +90,7 @@ pro rd_pnt, input1, input2, pnt_data, indir=indir, status=status, $
 ;	12-Jul-93 (MDM) Corrected error which occurs when reading across a
 ;			year boundary
 ;			--------------------------------------------------
-;	13-Oct-93 (MDM) Removed the code and replaced it with a call to 
+;	13-Oct-93 (MDM) Removed the code and replaced it with a call to
 ;			RD_WEEK_FILE.  It will read the ATR file if present
 ;			and will the default back to the PNT file
 ;-

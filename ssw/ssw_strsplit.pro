@@ -1,7 +1,7 @@
 function ssw_strsplit, inarray, pattern, tail=tail, head=head, lastpos=lastpos, $
 	ss=ss
 ;
-;+ 
+;+
 ;   Name: ssw_strsplit
 ;
 ;   Purpose: split string array at first (or last) occurence of pattern
@@ -11,7 +11,7 @@ function ssw_strsplit, inarray, pattern, tail=tail, head=head, lastpos=lastpos, 
 ;      pattern - search string (default is blank)
 ;
 ;   Output:
-;      function return value is string array 
+;      function return value is string array
 ;
 ;   Calling Sequence:
 ;      strarr=ssw_strsplit(inarray, pattern , tail=tail)
@@ -20,7 +20,7 @@ function ssw_strsplit, inarray, pattern, tail=tail, head=head, lastpos=lastpos, 
 ;   Calling Examples:
 ;      head=ssw_strsplit(inarray, pattern)
 ;      tail=ssw_strsplit(inarray, pattern, /tail)
-; 
+;
 ;   History:
 ;      13-Jan-1993 (SLF)
 ;      11-Mar-1993 (SLF) 'released'
@@ -47,7 +47,7 @@ otail=ohead
 for i=0,n_elements(upos)-1 do begin
    which =where(pos eq upos(i))
    ohead(which)=strmid(inarray(which), 0, upos(i))
-   otail(which)=strmid(inarray(which), upos(i)+plen,mlen)      
+   otail(which)=strmid(inarray(which), upos(i)+plen,mlen)
 endfor
 
 if keyword_set(tail) then begin

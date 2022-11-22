@@ -29,7 +29,7 @@ function ucomp_db_obsday_insert, date, db, status=status, logger_name=logger_nam
 
   obs_day = strjoin(ucomp_decompose_date(date), '-')
   obs_day_index = 0
-	
+
   ; check to see if passed observation day date is in mlso_numfiles table
   q = 'select count(obs_day) from mlso_numfiles where obs_day=''%s'''
   obs_day_results = db->query(q, obs_day, status=status)

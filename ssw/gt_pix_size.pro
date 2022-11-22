@@ -28,7 +28,7 @@ function gt_pix_size, input, wl=wl, area=area
 ;			- Changed default value returned from 2.4602 to 2.4528
 ;			  The new value is the value recorded in the red book
 ;			  as derived from the focal length.  The old value was
-;			  derived by Metcalf looking at the radius of white 
+;			  derived by Metcalf looking at the radius of white
 ;			  light images.
 ;	 7-Apr-93 (HSH) - Added /area keyword => area of (full resolution)
 ;			  pixel in cm^2, userful for em conversion
@@ -40,7 +40,7 @@ function gt_pix_size, input, wl=wl, area=area
 ;out = 2.4528		;Red book focal length derived value
 out =  2.455		;slf using JPW most recent values
 
-if (keyword_set(wl)) then out = 2.4602 	
+if (keyword_set(wl)) then out = 2.4602
 
 if (n_elements(input) ne 0) then begin
   npix = 2.^ gt_res(input)			; Half or quarter resolution?

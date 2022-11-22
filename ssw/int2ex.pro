@@ -4,7 +4,7 @@
 ;  Name:
 ;	Int2Ex
 ;  Purpose:
-;	Convert days since 1979 and milliseconds of day into 
+;	Convert days since 1979 and milliseconds of day into
 ;	conventional date and time.
 ;  Calling Sequence:
 ;	Int2Ex, msod, ds79, time
@@ -21,15 +21,15 @@
 ;  Restrictions:
 ;	None
 ;  History:
-;	version 1.0, was adopted from Int2Ex.FOR (SMM software), 
-;	written by GAL, 15-Feb-1991 
+;	version 1.0, was adopted from Int2Ex.FOR (SMM software),
+;	written by GAL, 15-Feb-1991
 ;       16-nov-92, Modified, JRL:  Made loop variable I*4 for the case of
 ;				   a large input variable.
 ;	31-oct-93, ras, eliminated loop for yr,month,day by using jdcnv
 ;	16-nov-93, ras, added error keyword
 ;-
 ;	-------------------------------------------------------------
-	ON_ERROR, 2		;return to caller if an error occurs	
+	ON_ERROR, 2		;return to caller if an error occurs
 
 	error = 0
 	sav_msod = msod	;MDM added 26-Aug-91 (it was changing data type)
@@ -53,7 +53,7 @@
 			  msod(0,0) = a
 			  a = ds79
 			  ds79 = INTARR(1,1)
-			  ds79(0,0) = a 
+			  ds79(0,0) = a
 			  nele = 1
 			END
 	  (ndim EQ 1):  BEGIN	;input is a column vector
@@ -71,7 +71,7 @@
 			  RETURN
 			END
 	ENDCASE
-	
+
  	time = Intarr(7,nele)	;create array for time and date
         jd= ds79-1 + 2443874.5d0 ;convert days from 79/1/1 to Julian date
 
@@ -92,4 +92,4 @@
 	ds79 = sav_ds79
 
         RETURN
-	END	
+	END

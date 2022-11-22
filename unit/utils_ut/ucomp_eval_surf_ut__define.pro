@@ -14,7 +14,7 @@ function ucomp_eval_surf_ut::init, _extra=e
 
   if (~self->MGutTestCase::init(_extra=e)) then return, 0
 
-  
+
   self->addTestingRoutine, ['ucomp_eval_surf'], $
                            /is_function
 

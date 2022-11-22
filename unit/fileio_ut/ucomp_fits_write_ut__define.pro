@@ -6,7 +6,7 @@ function ucomp_fits_write_ut::init, _extra=e
   if (~self->MGutTestCase::init(_extra=e)) then return, 0
 
   self->addTestingRoutine, ['ucomp_fits_write']
-  
+
 
   return, 1
 end

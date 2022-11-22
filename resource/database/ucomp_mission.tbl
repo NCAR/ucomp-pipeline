@@ -4,8 +4,8 @@
 -- captured in this table?
 
 create table ucomp_mission (
-  mission_id      int (10) auto_increment primary key, 
-  date            datetime not null, 
+  mission_id      int (10) auto_increment primary key,
+  date            datetime not null,
 
   -- added in l1 primary header
   mlso_url        char (80),

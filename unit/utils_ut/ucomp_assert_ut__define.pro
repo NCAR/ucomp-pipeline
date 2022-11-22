@@ -6,7 +6,7 @@ function ucomp_assert_ut::init, _extra=e
   if (~self->MGutTestCase::init(_extra=e)) then return, 0
 
   self->addTestingRoutine, ['ucomp_assert']
-  
+
 
   return, 1
 end

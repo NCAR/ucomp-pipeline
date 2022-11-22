@@ -26,7 +26,7 @@ function is_member, elements, set, swap_os=swap_os, ignore_case=ignore_case, $
 ;
 ;   History:
 ;      11-Apr-1994 (SLF) [reduce duplicate code, self-documenting code]
-;      25-oct-1994 (SLF) add WC keyword and function 
+;      25-oct-1994 (SLF) add WC keyword and function
 ;-
 
 case 1 of

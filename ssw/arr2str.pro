@@ -1,40 +1,40 @@
 ;+
-; Project     : SSW     
-;                   
+; Project     : SSW
+;
 ; Name        : ARR2STR()
-;               
+;
 ; Purpose     : Convert an array to a delimited string.
-;               
-; Explanation : 
-;               
+;
+; Explanation :
+;
 ; Use         : IDL> s = arr2str(array,'-')
 ;                    s = arr2str(array,delim='-')
-;    
+;
 ; Inputs      : arr  -  input data array which is to be converted
 ;                       to a simple string.
-;               
+;
 ; Opt. Inputs : delim - an alternative positional parameter to specify the
 ;                       delimiter.
-;               
-; Outputs     : Function returns a simple string using the delimiter to 
+;
+; Outputs     : Function returns a simple string using the delimiter to
 ;               separate the elements of the original array.
-;               
-; Opt. Outputs: 
-;               
-; Keywords    : delimiter  -  specify the delimiter to be used, default 
+;
+; Opt. Outputs:
+;
+; Keywords    : delimiter  -  specify the delimiter to be used, default
 ;                             delimiter is ','
 ;		trim_str   -  If set, call STRTRIM when converting to string
 ;		compress   -  If set, call STRCOMPRESS after converting
 ;               no_duplicate  If set, inhibit having string with consecutive
-;                             delimiters such as // 
+;                             delimiters such as //
 ;
 ; Category    : Util, string
-;               
-; Prev. Hist. : Sam Freeland 11/19/91 
+;
+; Prev. Hist. : Sam Freeland 11/19/91
 ;               (Various Slf,MDM,DP mods)
 ;
-; Written     : Sam Freeland 
-;               
+; Written     : Sam Freeland
+;
 ; Modified    : Version 2, William Thompson, GSFC, 15 June 1995
 ;			Added /TRIM keyword to be compatible with Yohkoh
 ;			version.  Added /COMPRESS keyword
@@ -46,9 +46,9 @@
 ;                       to long, change to use [], added error checks,
 ;                       changed 'string' variable name to 'ostring' in case
 ;                       of reserved name conflicts
-;               Modified, 20-April-12, Zarro (ADNET) 
+;               Modified, 20-April-12, Zarro (ADNET)
 ;                       Vectorized and sped up with strjoin.
-;-            
+;-
 
 function arr2str, starray, delim, delimiter=delimiter, trim_str=trim_str,$
 	compress=compress,no_duplicate=no_duplicate,_extra=extra

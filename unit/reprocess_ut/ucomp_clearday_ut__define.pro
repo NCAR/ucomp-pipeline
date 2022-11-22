@@ -6,7 +6,7 @@ function ucomp_clearday_ut::init, _extra=e
   if (~self->UCoMPutTestCase::init(_extra=e)) then return, 0
 
   self->addTestingRoutine, ['ucomp_clearday']
-  
+
 
   return, 1
 end

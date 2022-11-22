@@ -3,7 +3,7 @@
 ;
 ; Name        : MPRINT
 ;
-; Purpose     : Print message. Similar to MESSAGE but without setting 
+; Purpose     : Print message. Similar to MESSAGE but without setting
 ;               !error_state.msg or !err_string
 ;
 ; Category    : utility help
@@ -21,7 +21,7 @@
 ;
 ; History     : 19 February 2015, Zarro (ADNET)
 ;               19 April 2016, Zarro (ADNET) - added INFORMATIONAL
-;               15 June 2016, Zarro (ADNET) - added DEBUG 
+;               15 June 2016, Zarro (ADNET) - added DEBUG
 ;               16 January 2019, Zarro (ADNET) - added ALLOW_BLANK
 ;
 ; Contact     : dzarro@solar.stanford.edu
@@ -48,5 +48,3 @@ for i=0,np-1 do begin
  if k eq 0 then print,prefix+mess[i] else print,pad+mess[i]
 endfor
 return & end
-
-

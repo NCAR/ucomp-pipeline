@@ -117,7 +117,7 @@ pro ucomp_l2_archive, wave_region, run=run
               name=run.logger_name, /warn
       file_delete, dst_tarfile
     endif
-  
+
     file_link, tarfile, dst_tarfile
   endif else begin
     mg_log, 'no archive gateway set, not sending to archive', $

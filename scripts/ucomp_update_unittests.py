@@ -15,7 +15,7 @@ def convert_to_unittest(root, relative_path):
     subdirs = [f"{d}_ut" for d in p.parts]
     subdirs = os.path.join(*subdirs) if len(subdirs) > 0 else ""
 
-    # put _ut__define in the right place    
+    # put _ut__define in the right place
     basename = os.path.basename(relative_path)
     basename_root, extension = os.path.splitext(basename)
     class_suffix = "__define"

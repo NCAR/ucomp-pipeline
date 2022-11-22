@@ -29,7 +29,7 @@ function str_copy_tags, str1, str2, vercopy=vercopy
 ;			structure just has .GEN and .SXT.
 ;		      - Previously, the input structure was being modified.
 ;			Made changes to not corrupt the input template
-;	
+;
 ;
 ;   Method: recursive for nested structures
 ;-
@@ -47,7 +47,7 @@ if (n_elements(str1) eq 1) and (n_elements(str2) ne 1) then out = replicate(out,
 names1 = tag_names(str1)	;use the destination structure as the
 				;source of tag names
 names2 = tag_names(str2)
-for i=0,n_tags(str1)-1 do begin  
+for i=0,n_tags(str1)-1 do begin
     if (n_tags(str1.(i)) eq 0) then begin
 	ss = where(names2 eq names1(i))		;look for where "str2" has the same tag name as "str1"
 	i2 = ss(0)
@@ -58,7 +58,7 @@ for i=0,n_tags(str1)-1 do begin
 										;and not told to override the default
 										;(not to copy the "skip list" items)
 	if (strmid(names1(i), 0, 5) eq 'SPARE') then qcopy = 0		;avoid all spare
-	if (qcopy) then out.(i)=str2.(i2) 
+	if (qcopy) then out.(i)=str2.(i2)
     end else begin ;     else its a structure, so recurse
 	i1 = (where(names2 eq names1(i)))(0)						;MDM added 4-Jan-94
 	if (i1 ne -1) then out.(i)=str_copy_tags(str1.(i),str2.(i1), vercopy=vercopy)	;MDM added 4-Jan-94

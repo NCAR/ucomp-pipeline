@@ -6,7 +6,7 @@ function ucomp_l1_demodulation_ut::init, _extra=e
   if (~self->MGutTestCase::init(_extra=e)) then return, 0
 
   self->addTestingRoutine, ['ucomp_l1_demodulation']
-  
+
 
   return, 1
 end

@@ -2,21 +2,21 @@
 ;+
 ; Project     : SOHO - CDS
 ;
-; Name        : 
+; Name        :
 ;	TRIM()
-; Purpose     : 
+; Purpose     :
 ;	Converts numbers to strings, without trailing zeros.
-; Explanation : 
+; Explanation :
 ;	Converts numbers into a string representation, and trims off leading
 ;	and/or trailing blanks.  Differs from STRTRIM in that trailing zeros
 ;	after the period are also trimmed off, unless NUMBER is already a
 ;	string, or an explicit format is passed.
-; Use         : 
+; Use         :
 ;	Result = TRIM( NUMBER  [, FORMAT ]  [, FLAG ] )
-; Inputs      : 
+; Inputs      :
 ;	NUMBER	= Variable or constant.  May be of any ordinary including
 ;		  string.  However, structures are not allowed.
-; Opt. Inputs : 
+; Opt. Inputs :
 ;	FORMAT	- Format specification for STRING function.  Must be a string
 ;		  variable, start with the "(" character, end with the ")"
 ;		  character, and be a valid FORTRAN format specification.  If
@@ -32,35 +32,35 @@
 ;		  The default value is 2.  If NUMBER is complex, then FORMAT
 ;		  will be applied separately to the real and imaginary parts.
 ;
-; Outputs     : 
+; Outputs     :
 ;	Function returns as a string variable representing the value NUMBER.
-; Opt. Outputs: 
+; Opt. Outputs:
 ;	None.
-; Keywords    : 
+; Keywords    :
 ;	None.
-; Calls       : 
+; Calls       :
 ;	None.
-; Common      : 
+; Common      :
 ;	None.
-; Restrictions: 
+; Restrictions:
 ;	NUMBER must not be a structure.
 ;	FORMAT must be a valid format specification, and must not be passed
 ;		if NUMBER is of type string.
 ;	FLAG must not be of string type, or an array.
-; Side effects: 
+; Side effects:
 ;	None.
-; Category    : 
+; Category    :
 ;	Utilities, Strings.
-; Prev. Hist. : 
+; Prev. Hist. :
 ;	William Thompson	Applied Research Corporation
 ;	May, 1987		8201 Corporate Drive
 ;				Landover, MD  20785
 ;
 ;	William Thompson, Feb. 1992, added support for complex numbers, and
 ;				     fixed Unix problem with lowercase "e".
-; Written     : 
+; Written     :
 ;	William Thompson, GSFC, May 1987.
-; Modified    : 
+; Modified    :
 ;	Version 1, William Thompson, GSFC, 9 April 1993.
 ;		Incorporated into CDS library.
 ;	Version 2, Zarro (SAC/GSFC), 3-Jun-98
@@ -165,7 +165,7 @@
 	TYPE_FORMAT = S(S(0) + 1)
 ;
 ;  If only two parameters were passed, then decide whether FORMAT or FLAG was
-;  passed, and return the desired result. 
+;  passed, and return the desired result.
 ;
 	IF N_PARAMS(0) EQ 2 THEN BEGIN
 		IF TYPE_FORMAT EQ 7 THEN BEGIN
@@ -193,7 +193,7 @@
 	TRM = STRTRIM( STRING(NUMBER,FORMAT), FLAG )
 	GOTO,RETURN
 ;
-;  Remove any trailing zeros.  First, check to make sure that the string 
+;  Remove any trailing zeros.  First, check to make sure that the string
 ;  contains a period.
 ;
 REMOVE:

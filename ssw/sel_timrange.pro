@@ -23,11 +23,11 @@ function sel_timrange, array, st_tim, en_tim, between=between, after=after, $
 ;	en_tarr	- The specified end time.  If it is not passed, then the
 ;		  start time is used (time range of 0 seconds)
 ;OPTIONAL KEYWORD INPUT:
-;	between	- The default is to give the last entry before the start time.  
+;	between	- The default is to give the last entry before the start time.
 ;		  This is because the input time is usually a pointer (or file name)
-;		  with the time of the start of the orbit.  So the selection 
+;		  with the time of the start of the orbit.  So the selection
 ;		  desired is needs to back up one element in the timarr.  This
-;		  is only done when the input start time does not exactly match the 
+;		  is only done when the input start time does not exactly match the
 ;		  "timarr" value.
 ;	after	- If set, get the first dataset after the input time range
 ;	boolean - If set, then return an array the same length as the input, and
@@ -97,4 +97,3 @@ if (n_elements(out) eq 1) then out = out(0)	;turn into scalar
 if (keyword_set(qdebug)) then stop
 return, out
 end
-    

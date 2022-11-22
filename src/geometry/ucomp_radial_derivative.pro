@@ -57,7 +57,7 @@ function ucomp_radial_derivative, data, radius_guess, dr, $
     x0 = double(center_guess[0])
     y0 = double(center_guess[1])
   endif else begin
-    x0 = double(dims[0] - 1.0) / 2.0D 
+    x0 = double(dims[0] - 1.0) / 2.0D
     y0 = double(dims[1] - 1.0) / 2.0D
   endelse
 
@@ -140,7 +140,7 @@ fits_close, fcb
 for c = 0, 1 do begin
   im = total(data[*, *, *, c], 3)
   radii = ucomp_radial_derivative(im, 330.0, 40.0, points=points)
-  
+
   mg_image, bytscl(im, -0.1, 310.0), /new, title=string(c, format='Camera %d')
   plots, points[0, *], points[1, *], /device, color='0000ff'x, thick=2.0, linestyle=2
 endfor

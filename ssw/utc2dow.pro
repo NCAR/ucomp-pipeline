@@ -70,12 +70,12 @@
 ;			      desired, e.g. "TUE", then simply combine this
 ;			      function with the STRUPCASE function.
 ;
-;		ERRMSG	    = If defined and passed, then any error messages 
-;			      will be returned to the user in this parameter 
-;			      rather than being handled by the IDL MESSAGE 
-;			      utility.  If no errors are encountered, then a 
-;			      null string is returned.  In order to use this 
-;			      feature, the string ERRMSG must be defined 
+;		ERRMSG	    = If defined and passed, then any error messages
+;			      will be returned to the user in this parameter
+;			      rather than being handled by the IDL MESSAGE
+;			      utility.  If no errors are encountered, then a
+;			      null string is returned.  In order to use this
+;			      feature, the string ERRMSG must be defined
 ;			      first, e.g.,
 ;
 ;				ERRMSG = ''
@@ -88,7 +88,7 @@
 ;
 ; Restrictions:	None.
 ;
-; Side effects:	If an error is encountered and the ERRMSG keyword is set, 
+; Side effects:	If an error is encountered and the ERRMSG keyword is set,
 ;		UTC2DOW returns an integer scalar equal to -1.
 ;
 ; Category    :	Utilities, Time.
@@ -104,7 +104,7 @@
 ;			Added the keyword ERRMSG.
 ;		Version 4, Donald G. Luttermoser, GSFC/ARC, 30 January 1995.
 ;			Added ERRMSG keyword to internally called procedures.
-;			Made the error handling routine more robust.  Note 
+;			Made the error handling routine more robust.  Note
 ;			that this procedure can handle both scalars and
 ;			vectors as input.
 ;               Version 5, William Thompson, GSFC, 25-Oct-2005

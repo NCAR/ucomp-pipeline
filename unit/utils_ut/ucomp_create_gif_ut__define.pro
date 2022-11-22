@@ -6,7 +6,7 @@ function ucomp_create_gif_ut::init, _extra=e
   if (~self->MGutTestCase::init(_extra=e)) then return, 0
 
   self->addTestingRoutine, ['ucomp_create_gif']
-  
+
 
   return, 1
 end

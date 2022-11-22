@@ -25,7 +25,7 @@ function file_list, dirs, str, interactive=interactive, files=file, fdir=fdir, c
 ;	interactive - If set, ask the user to type in the partial
 ;		  filename to search for
 ;	cd	- If set, then set default to the directory first
-;		  and then do the listing.  This technique is 
+;		  and then do the listing.  This technique is
 ;		  needed because of "argument overflow" errors duing
 ;		  "ls" type commands when there are too many files in
 ;		  a directory.  This happens on the SGI much sooner
@@ -55,7 +55,7 @@ function file_list, dirs, str, interactive=interactive, files=file, fdir=fdir, c
 ;			  VMS.  It causes problems in Unix (show hidden
 ;			  . (dot) files)
 ;	22-Dec-93 (MDM) - Made /CD the default when running on SGI
-;	 3-Apr-95 (MDM) - Added /BYDATE 
+;	 3-Apr-95 (MDM) - Added /BYDATE
 ;	28-Feb-96 (MDM) - Added defining output variable FILES
 ;			- Also changed the keyword from FILE to FILES
 ;	 4-Feb-97 (MDM) - Made the FOR loop a long interger
@@ -115,6 +115,5 @@ end else begin
     end
 end
 ;
-return, ff  
+return, ff
 end
-

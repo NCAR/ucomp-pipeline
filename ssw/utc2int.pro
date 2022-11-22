@@ -9,7 +9,7 @@
 ; Explanation :	This procedure converts Coordinated Universal Time (UTC)
 ;		calendar time, as either a seven element structure variable, or
 ;		in the CCSDS/ISO 8601 ASCII calendar format, into CDS internal
-;		format.  For notes on various time formats, see file 
+;		format.  For notes on various time formats, see file
 ;		aaareadme.txt.
 ;
 ; Use         :	Result = UTC2INT( UTC )
@@ -33,12 +33,12 @@
 ;
 ; Opt. Outputs:	None.
 ;
-; Keywords    :	ERRMSG       =	If defined and passed, then any error messages 
-;				will be returned to the user in this parameter 
-;				rather than being handled by the IDL MESSAGE 
-;				utility.  If no errors are encountered, then a 
-;				null string is returned.  In order to use this 
-;				feature, the string ERRMSG must be defined 
+; Keywords    :	ERRMSG       =	If defined and passed, then any error messages
+;				will be returned to the user in this parameter
+;				rather than being handled by the IDL MESSAGE
+;				utility.  If no errors are encountered, then a
+;				null string is returned.  In order to use this
+;				feature, the string ERRMSG must be defined
 ;				first, e.g.,
 ;
 ;					ERRMSG = ''
@@ -51,7 +51,7 @@
 ;
 ; Restrictions:	None.
 ;
-; Side effects:	If an error is encountered and the ERRMSG keyword is set, 
+; Side effects:	If an error is encountered and the ERRMSG keyword is set,
 ;		UTC2INT returns an integer scalar equal to -1.
 ;
 ; Category    :	None.
@@ -68,11 +68,11 @@
 ;		Version 3, Donald G. Luttermoser, GSFC/ARC, 3 January 1995
 ;			Added the keyword ERRMSG.  Check to see if the input
 ;			structure (if sent) has 2 or 7 tags.  If 2 tags (MJD &
-;			TIME), this procedure returns the input variable with 
+;			TIME), this procedure returns the input variable with
 ;			no changes (i.e., already in CDS internal format).
 ;		Version 4, Donald G. Luttermoser, GSFC/ARC, 30 January 1995
 ;			Added ERRMSG keyword to internally called procedures.
-;			Made error handling routine more robust.  Note that 
+;			Made error handling routine more robust.  Note that
 ;			this procedure allows both scalars and vectors as
 ;			input.
 ;
@@ -96,7 +96,7 @@
 		  'Structure':	BEGIN
 			CASE N_TAGS(UTC) OF
 				2:  RETURN, UTC  ; Input already in CDS format.
-				7:  UT = UTC 
+				7:  UT = UTC
 				ELSE:  MESSAGE = $
 				 	'UTC structure must have 7 tags.'
 			ENDCASE

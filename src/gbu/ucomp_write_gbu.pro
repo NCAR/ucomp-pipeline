@@ -1,7 +1,7 @@
 ; docformat = 'rst'
 
 ;+
-; Compute GBU (good/bad/ugly) for the level 1 images for a given wave region. 
+; Compute GBU (good/bad/ugly) for the level 1 images for a given wave region.
 ;
 ; ::
 ;

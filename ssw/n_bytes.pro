@@ -38,7 +38,7 @@ function N_bytes,a
         4: nb = 4                            ;Real*4
         5: nb = 8                            ;Real*8
         6: nb = 8                            ;Complex
-        7: nb = max(strlen(a))               ;String                      
+        7: nb = max(strlen(a))               ;String
         8: nb = N_tags(a,/length)            ;Structure
         9: nb = 16                           ;Double Complex
        12: nb = 2                            ;Unsigned Integer*2

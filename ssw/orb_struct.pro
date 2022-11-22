@@ -4,7 +4,7 @@ pro orb_struct, orb_record=orb_rec
 ;       NAME:
 ;               ORB_STRUCT
 ;       PURPOSE:
-;		Structure containing information about the orbital position of 
+;		Structure containing information about the orbital position of
 ;		the spacecraft, typically every 300 secs.
 ;	  	Defines orb_record
 ;       CALLING SEQUENCE:

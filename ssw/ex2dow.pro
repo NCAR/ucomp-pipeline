@@ -8,9 +8,9 @@ function ex2dow, timarr, str_dow
 ;	(HH,MM,SS,MSEC,DD,MM,YY) to a day of week number
 ;	for that date.  (0=sunday, 1=monday,6=saturday).
 ;Input:
-;	timarr	- Standard "ex" time array 
-;		  (HH,MM,SS,MSEC,DD,MM,YY) 
-;		  year is assumed to be of the form 91, 
+;	timarr	- Standard "ex" time array
+;		  (HH,MM,SS,MSEC,DD,MM,YY)
+;		  year is assumed to be of the form 91,
 ;		  not 1991.
 ;Output:
 ;	day of week

@@ -7,17 +7,17 @@ function rd_tfile, filename, ncols, skip, hskip=hskip,$
 ;
 ;   Purpose: read/return contents of text file - optionally interpret
 ;	     and convert text table data
-;		
+;
 ;   Input Paramters:
 ;      filename - string variable containing file name to read
 ;      ncols - (optional) #colunms (output will be matrix, strarr(NCOLSxN)
-;      skip  - (optional) #lines to skip (header) for readfile compatibile 
+;      skip  - (optional) #lines to skip (header) for readfile compatibile
 ;	                  (if skip=-1, first non-numeric lines are skipped)
 ;
 ;   Output Parameters:
 ;      function returns file contents (string array(list) or matrix)
 ;		if convert is set, auto-convert to numeric data type
-;      
+;
 ;   Keyword Parameters:
 ;      delim     - table column delimiter (default is blank/tab)
 ;      nocomment - if=1 (switch) , remove lines with (unix:#, vms:!)
@@ -31,7 +31,7 @@ function rd_tfile, filename, ncols, skip, hskip=hskip,$
 ;      hskip	 - header skip (sets skip to -1)
 ;      first_char_comm - if set, only apply "nocomment" flag when the
 ;		   comment character is the first character
-;   
+;
 ;   Calling Sequence:
 ;						;      RETURNS
 ;      text=rd_tfile(filename)                  ; orig. file-> string array
@@ -44,8 +44,8 @@ function rd_tfile, filename, ncols, skip, hskip=hskip,$
 ;
 ;
 ;   History:
-;      slf,  4-Jan-1992 - for yohkoh configuration files 
-;      slf,  6-Jan-1992 - remove partial comment lines 
+;      slf,  4-Jan-1992 - for yohkoh configuration files
+;      slf,  6-Jan-1992 - remove partial comment lines
 ;      slf, 11-feb-1993 - added autocol keyword and function
 ;			  added convert keyword and function
 ;      slf, 28-Oct-1993 - temp fix for VMS variable length files
@@ -57,7 +57,7 @@ function rd_tfile, filename, ncols, skip, hskip=hskip,$
 ;      mdm, 12-Oct-95 - Modification to allow tab character to be the delimiter.
 ;      slf, 27-mar-96 - Put MDM oct change online
 ;      ras, 19-jun-96 - Use rd_ascii in vms
-;      slf, 29-may-97 - force FILENAME -> scalar  
+;      slf, 29-may-97 - force FILENAME -> scalar
 ;      slf, 16-sep-97 - allow ascii files with NO carraige returns
 ;      slf,  6-oct-97 - include last line which has NO carraige return
 ;      mdm, 25-Nov-97 - Made FOR loop long integer
@@ -71,7 +71,7 @@ function rd_tfile, filename, ncols, skip, hskip=hskip,$
 ;   Method:
 ;      files are assumed to be ascii - file contents read into a variable
 ;      if ncols is greater than 1, then a table is assumed and a string
-;      matrix is returned - table is null filled for non existant table 
+;      matrix is returned - table is null filled for non existant table
 ;      entries (ncols gt 1 forces white space removal for proper alignment)
 ;
 ;-
@@ -85,12 +85,12 @@ if (keyword_set(first_char_comm)) and (not keyword_set(nocomment)) then nocommen
 ;
 qtemp=!quiet					; avoid global effects
 !quiet=keyword_set(quiet)
-; 
+;
 ; if table data (ncols gt 1) then override nocomp flag to force proper
 ; table alignment....
 convert=keyword_set(convert)		; convert text to numeric
 autocol=keyword_set(autocol)		; auto-determine number columns
-numeric= (skip eq -1) or convert		; 
+numeric= (skip eq -1) or convert		;
 compress= ( (keyword_set(compress)) or (ncols ne 1) or autocol or numeric) and (delim ne string(9b))
 ;
 ; for table, force removal of comment lines (returning table)
@@ -126,7 +126,7 @@ if strupcase(!version.os) ne 'VMS' then begin
              lastline=bytarr(remainder)
              readu,lun,lastline
 	     text=[temporary(text),string(lastline)]
-	 endif	   
+	 endif
       endelse
    end else begin
       text = ''
@@ -159,7 +159,7 @@ if skip ge n_elements(text) then begin
    text=''
 endif else begin
    if skip gt 0 then header = text(0:skip-1)
-   text=text(skip:*)   
+   text=text(skip:*)
 endelse
 ;
 
@@ -189,9 +189,9 @@ if keyword_set(nocomment) then begin		; remove comment lines
 ;  allow user-supplied delimiter or use default if nocomment use as switch
    case comtype of
       7:    comchar=nocomment			; user supplied comment char
-      else: case strupcase(!version.os) of 
+      else: case strupcase(!version.os) of
 	       'VMS': comchar='!'       	; assume VMS command file
-	       else: comchar='#'		; assume unix script 
+	       else: comchar='#'		; assume unix script
 	    endcase
    endcase
    compos=strpos(gtext,comchar)
@@ -203,8 +203,8 @@ if keyword_set(nocomment) then begin		; remove comment lines
          gtext(wherecom(j)) = $
 	    strmid(gtext(wherecom(j)),0,compos(wherecom(j)))
    endfor
-;  
-;  dont delete 
+;
+;  dont delete
    if ccount gt 0 then begin
       newnulls=where(gtext(wherecom) eq '',nncount)
       if nncount gt 0 then begin
@@ -232,7 +232,7 @@ if ncols eq 1 then data=gtext else begin
    data=strarr(ncols,n_elements(gtext))
    for i=0L,n_elements(gtext)-1 do begin
       array = str2arr(gtext(i),delim)
-      array = array(0:min([ncols-1,n_elements(array)-1]) )      
+      array = array(0:min([ncols-1,n_elements(array)-1]) )
       data(0,i) = array
    endfor
 endelse
@@ -240,10 +240,10 @@ endelse
 !quiet=qtemp
 ;
 if compress then data=strtrim(data,2)	; clean up substrings
-; 
+;
 ; ------------ optional numeric data type conversion -----------------------
 ; slf, 11-feb-1993
-; add data type conversion code for convenience - assume user knows what 
+; add data type conversion code for convenience - assume user knows what
 ; shes doing. Of course, user can do this outside of this routine:
 ; for example, data=fix(rd_tfile(file,/auto))
 
@@ -252,7 +252,7 @@ if convert then begin			; auto convert
    bdata=byte(data)			; always ok
 ;  are these floating numbers?
    decimal=where(bdata eq 46b,dcnt)
-   eexp=where(bdata eq 69b,ecnt)	
+   eexp=where(bdata eq 69b,ecnt)
    on_ioerror,cnverror
    if (dcnt or ecnt) gt 0 then data=float(data) else begin
       data=long(data)
@@ -287,5 +287,3 @@ message,/info,'Error converting text to numeric data in file: ' + filename
 !quiet=qtemp
 return,data
 end
-
-

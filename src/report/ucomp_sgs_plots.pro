@@ -174,7 +174,7 @@ pro ucomp_sgs_plots, engineering_dir, run=run
                  /ynozero, ystyle=1, yrange=run->epoch('sgsras_range'), $
                  background=255, color=0, charsize=n_plots * charsize, $
                  clip_thick=2.0, psym=square, symsize=0.5
-  
+
   mg_range_plot, hours, sgs_razr, $
                  title=pdate + ' UCoMP Spar Guider System (SGS) RAZR Right Ascension Zero Point Offset', $
                  xtitle='Hours [UT]', ytitle='SGS RAZR Zero Point Offset [arcsec]', $
@@ -212,7 +212,7 @@ pro ucomp_sgs_plots, engineering_dir, run=run
                  /ynozero, ystyle=1, yrange=run->epoch('sgsdecs_range'), $
                  background=255, color=0, charsize=n_plots * charsize, $
                  clip_thick=2.0, psym=square, symsize=0.5
-  
+
   mg_range_plot, hours, sgs_deczr, $
                  title=pdate + ' UCoMP DECZR: Spar Guider System (SGS) Declination Zero Point Offset', $
                  xtitle='Hours [UT]', ytitle='SGS DECZR Zero Point Offset [arcsec]', $
