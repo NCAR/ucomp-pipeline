@@ -50,16 +50,16 @@
 ; whatsoever.  Other limitations apply as described in the file disclaimer.txt.
 ;-
 ;-------------------------------------------------------------
- 
+
 	pro sun, yr, m, d, et, help=hlp, $
 	  dist=dist, true_long=true_long, app_long=app_long, $
 	  true_lat=true_lat, app_lat=app_lat, sd=sd, $
 	  true_ra=true_ra, app_ra=app_ra, true_dec=true_dec, $
 	  app_dec=app_dec, pa=pa, lat0=lat0, long0=long0, list=list, $
 	  carrington=carr
- 
+
 	np = n_params(0)
- 
+
 	if ((np gt 0) and (np lt 4)) or keyword_set(hlp) then begin
 	  print,' Computes geocentric physical ephemeris of the sun.'
 	  print,' sun, y, m, d, et'
@@ -91,8 +91,8 @@
 	  print,'   If no arguments given will prompt and list values.'
 	  return
 	endif
- 
- 
+
+
 	;---------------------------------------------------;
 	;        Interactive mode                           ;
 	;---------------------------------------------------;
@@ -109,22 +109,22 @@
 	  read,' Ephermeris time in hours: ',et
 	  list = 1
 	endif
- 
+
 	;---------------------------------------------------;
 	;        Radians/degrees conversion (double)        ;
 	;---------------------------------------------------;
 	radeg = 180.d0/!dpi
- 
+
 	;---------------------------------------------------;
 	;        Julian Date                                ;
 	;---------------------------------------------------;
 	jd = double(ymd2jd(yr, m, d)) - 0.5d0 + et/24d0
- 
+
 	;---------------------------------------------------;
 	;        Julian Centuries from 1900.0               ;
 	;---------------------------------------------------;
 	t = (jd - 2415020d0)/36525d0
- 
+
 	;---------------------------------------------------;
 	;	Carrington Rotation Number.                 ;
 	;---------------------------------------------------;
@@ -135,26 +135,26 @@
 	;---------------------------------------------------;
 	mnl = 279.69668d0 + 36000.76892d0*t + 0.0003025*t^2
 	mnl = mnl mod 360d0
- 
+
 	;---------------------------------------------------;
 	;        Mean anomaly (deg)                         ;
 	;---------------------------------------------------;
 	mna = 358.47583d0 + 35999.04975d0*t - $
 	      0.000150d0*t^2 - 0.0000033d0*t^3
 	mna = mna mod 360d0
- 
+
 	;---------------------------------------------------;
 	;        Eccentricity of orbit                      ;
 	;---------------------------------------------------;
 	e = 0.01675104d0 - 0.0000418d0*t - 0.000000126d0*t^2
- 
+
 	;---------------------------------------------------;
 	;        Sun's equation of center (deg)             ;
 	;---------------------------------------------------;
 	c = (1.919460d0 - 0.004789d0*t - 0.000014d0*t^2)*sin(mna/radeg) $
 	    + (0.020094d0 - 0.000100d0*t)*sin(2*mna/radeg) $
 	    + 0.000293d0*sin(3*mna/radeg)
- 
+
 	;---------------------------------------------------;
 	;        Sun's true geometric longitude (deg)       ;
 	;        refered to the mean equinox of date.       ;
@@ -163,12 +163,12 @@
 	;        (from which app_long is derived).          ;
 	;---------------------------------------------------;
 	true_long = (mnl + c) mod 360d0
- 
+
 	;---------------------------------------------------;
 	;        Sun's true anomaly (deg)                   ;
 	;---------------------------------------------------;
 	ta = (mna + c) mod 360d0
- 
+
 	;---------------------------------------------------;
 	;        Sun's radius vector (AU)                   ;
 	;        There are a set of higher accuracy         ;
@@ -177,19 +177,19 @@
 	;        in the book.                               ;
 	;---------------------------------------------------;
 	dist = 1.0000002d0*(1.d0 - e^2)/(1.d0 + e*cos(ta/radeg))
- 
+
 	;---------------------------------------------------;
 	;        Semidiameter (arc sec)                     ;
 	;---------------------------------------------------;
 	sd = 959.63/dist
- 
+
 	;---------------------------------------------------;
 	;        Apparent longitude (deg) from true         ;
 	;        longitude.                                 ;
 	;---------------------------------------------------;
 	omega = 259.18d0 - 1934.142d0*t		; Degrees
 	app_long = true_long - 0.00569d0 - 0.00479d0*sin(omega/radeg)
- 
+
 	;---------------------------------------------------;
 	;        Latitudes (deg) for completeness.          ;
 	;        Never more than 1.2 arc sec from 0,        ;
@@ -197,7 +197,7 @@
 	;---------------------------------------------------;
 	true_lat = 0.
 	app_lat = 0.
- 
+
 	;---------------------------------------------------;
 	;        RA, Dec                                    ;
 	;---------------------------------------------------;
@@ -231,7 +231,7 @@
 	if app_ra lt 0. then app_ra = app_ra + 360d0
 	app_ra = app_ra/15d0
 	app_dec = asin(sin(ob2/radeg)*sin(app_long/radeg))*radeg
- 
+
 	;---------------------------------------------------;
 	;        Heliographic coordinates                   ;
 	;---------------------------------------------------;
@@ -259,7 +259,7 @@
 	recpol, x, y, r, eta, /deg
 	long0 = (eta - theta) mod 360d0
 	if long0 lt 0 then long0 = long0 + 360d0
- 
+
 	;---------------------------------------------------;
 	;        List values                                ;
 	;---------------------------------------------------;
@@ -285,6 +285,6 @@
 	print,' The Carrington Rotation Number = '+$
 	  strtrim(carr,2)
 	print,' '
- 
+
 	return
 	end

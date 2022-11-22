@@ -48,4 +48,3 @@ end
 ; 12 [12-polarimetric_correction]: -5480.469238
 ; 13 [13-sky_transmission]: -5480.469238
 ; 14 [14-promote_header]: -5480.469238
-

@@ -52,5 +52,5 @@ create table ucomp_cal (
   foreign key (level_id) references ucomp_level(level_id),
   foreign key (ucomp_sw_id) references ucomp_sw(sw_id),
 
-  foreign key (obsday_id) references mlso_numfiles(day_id)  
+  foreign key (obsday_id) references mlso_numfiles(day_id)
 )

@@ -1,14 +1,14 @@
 ;+
-;  NAME:      
+;  NAME:
 ;     XDISPSTR
 ;
-;  PURPOSE:   
+;  PURPOSE:
 ;     Display a string array in a text widget with a simple search capability.
 ;
 ; EXPLANATION:
 ;     Similar to the IDL XDISPLAYFILE procedure but includes a search capbility.
-; CALLING SEQUENCE:    
-;                 
+; CALLING SEQUENCE:
+;
 ;     xdispstr, array, [/BLOCK, WIDTH= , HEIGHT=, TITLE=, GROUP_LEADER=, FONT=
 ;                       TOP_LINE=, POS= ]
 ;
@@ -21,7 +21,7 @@
 ;    block -  Set to 1 to make widget blocking.  Default = block=0
 ;
 ;    font  -     Display font for text.
-;          
+;
 ;    width, height  - Scalars giving number of characters per line, number
 ;                           of lines.  Default = 80x48
 ;
@@ -55,7 +55,7 @@ destroy = 0b
 if tag_names(event,/STRUCTURE_NAME) EQ 'WIDGET_BASE' then begin
     widget_control,(*info).array_text, $
           scr_ysize = event.Y,scr_xsize=event.X
-endif else begin	  
+endif else begin
 CASE event.id OF
 (*info).done_button:  destroy=1b
 (*info).search_button:  search=1b
@@ -147,7 +147,7 @@ widget_control, array_text, set_text_top_line=top_line
 widget_control, array_text, set_text_select=[0,0]
 
 widget_control, tlb, /realize
-    
+
 linelen1 = strlen(array) + 1
 cumul_len = [0, total(linelen1,/cumulative,/integer)]
 geom = widget_info(tlb,/geometry)
@@ -163,8 +163,7 @@ widget_control, tlb,tlb_get_size = basesize
 xmanager, 'xdispstr', tlb, cleanup='xdispstr_cleanup', $
           event_handler='xdispstr_event', no_block=1b-block, $
           group_leader=group_leader
-if N_elements(pos) EQ 2 then cgcentertlb,tlb,pos[0],pos[1]	  
+if N_elements(pos) EQ 2 then cgcentertlb,tlb,pos[0],pos[1]
 
 RETURN
 END
-

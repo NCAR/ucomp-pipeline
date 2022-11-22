@@ -52,4 +52,3 @@ timarr(6) = FIX( STRMID( timestr, len-2, 2))
 
 RETURN, timarr
 END
-

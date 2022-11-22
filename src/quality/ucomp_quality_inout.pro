@@ -31,7 +31,7 @@ function ucomp_quality_inout, file, primary_header, ext_data, ext_headers, $
   for e = 0L, n_elements(ext_headers) - 1L do begin
     for k = 0L, n_elements(keywords) - 1L do begin
       value = strlowcase(ucomp_getpar(ext_headers[e], keywords[k]))
-    
+
       if (value ne 'in' && value ne 'out') then begin
         n_mid[k] += 1L
         status = 1UL

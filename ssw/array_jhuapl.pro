@@ -26,9 +26,9 @@
 ; whatsoever.  Other limitations apply as described in the file disclaimer.txt.
 ;-
 ;-------------------------------------------------------------
- 
+
 	FUNCTION ARRAY_JHUAPL, X, help = h
- 
+
 	if (n_params(0) lt 1) or keyword_set(h) then begin
 	  print,' Force given argument to be an array.'
 	  print,' y = array(x)'
@@ -36,7 +36,7 @@
 	  print,'   y = out which is an array.                      out'
 	  return, -1
 	endif
- 
+
 	if n_elements(x) eq 0 then begin
 	  print,' Error in ARRAY: argument undefined.'
 	  stop, ' Stopping in ARRAY.'
@@ -46,7 +46,7 @@
 	IF S(0) GT 0 THEN RETURN, X	; already an array.
 	N = S(S(0)+2)			; number of elements.
 	TYP = DATATYPE(X)
- 
+
 	CASE TYP OF
   'STR': BEGIN
 	   Y = STRARR(1)
@@ -60,6 +60,6 @@
   'COM': Y = COMPLEXARR(N) + X
    ELSE: RETURN, X
 	ENDCASE
- 
+
 	RETURN, Y
 	END

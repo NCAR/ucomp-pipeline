@@ -5,7 +5,7 @@
 ; AUTHOR:
 ;   Craig B. Markwardt, NASA/GSFC Code 662, Greenbelt, MD 20770
 ;   craigm@lheamail.gsfc.nasa.gov
-;   UPDATED VERSIONs can be found on my WEB PAGE: 
+;   UPDATED VERSIONs can be found on my WEB PAGE:
 ;      http://cow.physics.wisc.edu/~craigm/idl/idl.html
 ;
 ; PURPOSE:
@@ -16,8 +16,8 @@
 ;
 ; CALLING SEQUENCE:
 ;   parms = MPFIT(MYFUNCT, start_parms, FUNCTARGS=fcnargs, NFEV=nfev,
-;                 MAXITER=maxiter, ERRMSG=errmsg, NPRINT=nprint, QUIET=quiet, 
-;                 FTOL=ftol, XTOL=xtol, GTOL=gtol, NITER=niter, 
+;                 MAXITER=maxiter, ERRMSG=errmsg, NPRINT=nprint, QUIET=quiet,
+;                 FTOL=ftol, XTOL=xtol, GTOL=gtol, NITER=niter,
 ;                 STATUS=status, ITERPROC=iterproc, ITERARGS=iterargs,
 ;                 COVAR=covar, PERROR=perror, BESTNORM=bestnorm,
 ;                 PARINFO=parinfo)
@@ -60,7 +60,7 @@
 ;  MPFITEXPR, which are driver functions that calculate the deviates
 ;  for you.  If ERR are the 1-sigma uncertainties in Y, then
 ;
-;    TOTAL( DEVIATES^2 ) 
+;    TOTAL( DEVIATES^2 )
 ;
 ;  will be the total chi-squared value.  MPFIT will minimize the
 ;  chi-square value.  The values of X, Y and ERR are passed through
@@ -95,7 +95,7 @@
 ;  MYFUNCT by using the FUNCTARGS keyword to MPFIT.  Use MPFITFUN and
 ;  MPFITEXPR if you need ideas on how to do that.  The function *must*
 ;  accept a parameter list, P.
-;  
+;
 ;  In general there are no restrictions on the number of dimensions in
 ;  X, Y or ERR.  However the deviates *must* be returned in a
 ;  one-dimensional array, and must have the same type (float or
@@ -135,7 +135,7 @@
 ;
 ;
 ; EXPLICIT DERIVATIVES
-; 
+;
 ;  In the search for the best-fit solution, MPFIT by default
 ;  calculates derivatives numerically via a finite difference
 ;  approximation.  The user-supplied function need not calculate the
@@ -151,7 +151,7 @@
 ;  There are two ways to enable explicit derivatives.  First, the user
 ;  can set the keyword AUTODERIVATIVE=0, which is a global switch for
 ;  all parameters.  In this case, MPFIT will request explicit
-;  derivatives for every free parameter.  
+;  derivatives for every free parameter.
 ;
 ;  Second, the user may request explicit derivatives for specifically
 ;  selected parameters using the PARINFO.MPSIDE=3 (see "CONSTRAINING
@@ -178,7 +178,7 @@
 ;    ; MYFUNCT - example user function
 ;    ;   P - input parameter values (N-element array)
 ;    ;   DP - upon input, an N-vector indicating which parameters
-;    ;          to compute derivatives for; 
+;    ;          to compute derivatives for;
 ;    ;        upon output, the user function must return
 ;    ;          an ARRAY(M,N) of derivatives in this keyword
 ;    ;   (keywords) - any other keywords specified by FUNCTARGS
@@ -187,7 +187,7 @@
 ;    FUNCTION MYFUNCT, p, dp, X=x, Y=y, ERR=err
 ;     model = F(x, p)         ;; Model function
 ;     resid = (y - model)/err ;; Residual calculation (for example)
-;     
+;
 ;     if n_params() GT 1 then begin
 ;       ; Create derivative and compute derivative array
 ;       requested = dp   ; Save original value of DP
@@ -197,7 +197,7 @@
 ;       for i = 0, n_elements(p)-1 do if requested(i) NE 0 then $
 ;         dp(*,i) = FGRAD(x, p, i) / err
 ;     endif
-;    
+;
 ;     return, resid
 ;    END
 ;
@@ -221,7 +221,7 @@
 ;  user function.  In those cases, the parameter DP is not passed.
 ;  Therefore functions can use N_PARAMS() to indicate whether they
 ;  must compute the derivatives or not.
-;  
+;
 ;  The derivatives with respect to fixed parameters are ignored; zero
 ;  is an appropriate value to insert for those derivatives.  Upon
 ;  input to the user function, DP is set to a vector with the same
@@ -262,7 +262,7 @@
 ;  derivative explicitly by requesting them from the user function.
 ;  Then, it computes the derivatives numerically via finite
 ;  differencing, and compares the two values.  If the difference
-;  exceeds a tolerance threshold, then the values are printed out to 
+;  exceeds a tolerance threshold, then the values are printed out to
 ;  alert the user.  The tolerance level threshold contains both a
 ;  relative and an absolute component, and is expressed as,
 ;
@@ -270,9 +270,9 @@
 ;
 ;  where DERIV_U and DERIV_N are the derivatives computed explicitly
 ;  and numerically, respectively.  Appropriate values
-;  for most users will be: 
+;  for most users will be:
 ;
-;      PARINFO[i].MPDERIV_RELTOL = 1d-3 ;; Suggested relative tolerance 
+;      PARINFO[i].MPDERIV_RELTOL = 1d-3 ;; Suggested relative tolerance
 ;      PARINFO[i].MPDERIV_ABSTOL = 1d-7 ;; Suggested absolute tolerance
 ;
 ;  although these thresholds may have to be adjusted for a particular
@@ -304,15 +304,15 @@
 ;  numerical sign and the same order of magnitude, since these are the
 ;  most common programming mistakes.
 ;
-;  A line of this form may also appear 
+;  A line of this form may also appear
 ;
-;   # FJAC_MASK = 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
+;   # FJAC_MASK = 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
 ;
 ;  This line indicates for which parameters explicit derivatives are
 ;  expected.  A list of all-1s indicates all explicit derivatives for
 ;  all parameters are requested from the user function.
-;    
-;  
+;
+;
 ; CONSTRAINING PARAMETER VALUES WITH THE PARINFO KEYWORD
 ;
 ;  The behavior of MPFIT can be modified with respect to each
@@ -328,31 +328,31 @@
 ;  Each parameter is associated with one element of the array, in
 ;  numerical order.  The structure can have the following entries
 ;  (none are required):
-;  
+;
 ;     .VALUE - the starting parameter value (but see the START_PARAMS
 ;              parameter for more information).
-;  
+;
 ;     .FIXED - a boolean value, whether the parameter is to be held
 ;              fixed or not.  Fixed parameters are not varied by
 ;              MPFIT, but are passed on to MYFUNCT for evaluation.
-;  
+;
 ;     .LIMITED - a two-element boolean array.  If the first/second
 ;                element is set, then the parameter is bounded on the
 ;                lower/upper side.  A parameter can be bounded on both
 ;                sides.  Both LIMITED and LIMITS must be given
 ;                together.
-;  
+;
 ;     .LIMITS - a two-element float or double array.  Gives the
 ;               parameter limits on the lower and upper sides,
 ;               respectively.  Zero, one or two of these values can be
 ;               set, depending on the values of LIMITED.  Both LIMITED
 ;               and LIMITS must be given together.
-;  
+;
 ;     .PARNAME - a string, giving the name of the parameter.  The
 ;                fitting code of MPFIT does not use this tag in any
 ;                way.  However, the default ITERPROC will print the
 ;                parameter name if available.
-;  
+;
 ;     .STEP - the step size to be used in calculating the numerical
 ;             derivatives.  If set to zero, then the step size is
 ;             computed automatically.  Ignored when AUTODERIVATIVE=0.
@@ -400,7 +400,7 @@
 ;              MPDERIV_ABSTOL and MPDERIV_RELTOL settings.
 ;              Default: 0 (no debugging)
 ;
-;     
+;
 ;     .MPDERIV_ABSTOL, .MPDERIV_RELTOL - tolerance settings for
 ;              print-out of debugging information, for each parameter
 ;              where debugging is enabled.  See "TESTING and
@@ -414,7 +414,7 @@
 ;                  one iteration.
 ;
 ;                  A value of 0 indicates no maximum.  Default: 0.
-;  
+;
 ;     .TIED - a string expression which "ties" the parameter to other
 ;             free or fixed parameters as an equality constraint.  Any
 ;             expression involving constants and the parameter array P
@@ -441,7 +441,7 @@
 ;  Therefore programmers are urged to avoid using tags starting with
 ;  "MP", but otherwise they are free to include their own fields
 ;  within the PARINFO structure, which will be ignored by MPFIT.
-;  
+;
 ;  PARINFO Example:
 ;  parinfo = replicate({value:0.D, fixed:0, limited:[0,0], $
 ;                       limits:[0.D,0]}, 5)
@@ -449,7 +449,7 @@
 ;  parinfo[4].limited[0] = 1
 ;  parinfo[4].limits[0]  = 50.D
 ;  parinfo[*].value = [5.7D, 2.2, 500., 1.5, 2000.]
-;  
+;
 ;  A total of 5 parameters, with starting values of 5.7,
 ;  2.2, 500, 1.5, and 2000 are given.  The first parameter
 ;  is fixed at a value of 5.7, and the last parameter is
@@ -478,7 +478,7 @@
 ; COMPATIBILITY
 ;
 ;  This function is designed to work with IDL 5.0 or greater.
-;  
+;
 ;  Because TIED parameters and the "(EXTERNAL)" user-model feature use
 ;  the EXECUTE() function, they cannot be used with the free version
 ;  of the IDL Virtual Machine.
@@ -595,11 +595,11 @@
 ;                  passed, then the starting *value* is taken from
 ;                  START_PARAMS, but the *constraints* are taken from
 ;                  PARINFO.
-; 
+;
 ; RETURNS:
 ;
 ;   Returns the array of best-fit parameters.
-;   Exceptions: 
+;   Exceptions:
 ;      * if /QUERY is set (see QUERY).
 ;
 ;
@@ -609,7 +609,7 @@
 ;                    be computed automatically via a finite
 ;                    differencing procedure.  If not set, then MYFUNCT
 ;                    must provide the explicit derivatives.
-;                    Default: set (=1) 
+;                    Default: set (=1)
 ;                    NOTE: to supply your own explicit derivatives,
 ;                      explicitly pass AUTODERIVATIVE=0
 ;
@@ -690,7 +690,7 @@
 ;              floating point overflows and underflows.  Thus, setting
 ;              this keyword may sacrifice some stability in the
 ;              fitting process.
-;              
+;
 ;   FTOL - a nonnegative input variable. Termination occurs when both
 ;          the actual and predicted relative reductions in the sum of
 ;          squares are at most FTOL (and STATUS is accordingly set to
@@ -737,8 +737,8 @@
 ;               unit (default should be UNIT=1, standard output).
 ;               These keywords are passed using the ITERARGS keyword
 ;               above.  The ITERPRINT procedure must accept the _EXTRA
-;               keyword.  
-;               NOTE: that much formatting can be handled with the 
+;               keyword.
+;               NOTE: that much formatting can be handled with the
 ;                     MPPRINT and MPFORMAT tags.
 ;               Default: 'MPFIT_DEFPRINT' (default internal formatter)
 ;
@@ -752,11 +752,11 @@
 ;                UNIT=unit, ...
 ;                ; perform custom iteration update
 ;              END
-;         
+;
 ;              ITERPROC must either accept all three keyword
 ;              parameters (FUNCTARGS, PARINFO and QUIET), or at least
 ;              accept them via the _EXTRA keyword.
-;          
+;
 ;              MYFUNCT is the user-supplied function to be minimized,
 ;              P is the current set of model parameters, ITER is the
 ;              iteration number, and FUNCTARGS are the arguments to be
@@ -793,7 +793,7 @@
 ;                 ITERSTOP is set and the default ITERPROC is used).
 ;                 ITERSTOPKEY may either be a one-character string
 ;                 with the desired key, or a scalar integer giving the
-;                 ASCII code of the desired key.  
+;                 ASCII code of the desired key.
 ;                 Default: 7b (control-g)
 ;
 ;                 NOTE: the default value of ASCI 7 (control-G) cannot
@@ -802,7 +802,7 @@
 ;
 ;   MAXITER - The maximum number of iterations to perform.  If the
 ;             number of calculation iterations exceeds MAXITER, then
-;             the STATUS value is set to 5 and MPFIT returns.  
+;             the STATUS value is set to 5 and MPFIT returns.
 ;
 ;             If MAXITER EQ 0, then MPFIT does not iterate to adjust
 ;             parameter values; however, the user function is evaluated
@@ -851,7 +851,7 @@
 ;             Provides a mechanism for more sophisticated constraints
 ;             to be placed on parameter values.  When PARINFO is not
 ;             passed, then it is assumed that all parameters are free
-;             and unconstrained.  Values in PARINFO are never 
+;             and unconstrained.  Values in PARINFO are never
 ;             modified during a call to MPFIT.
 ;
 ;             See description above for the structure of PARINFO.
@@ -866,7 +866,7 @@
 ;            If the fit is unweighted (i.e. no errors were given, or
 ;            the weights were uniformly set to unity), then PERROR
 ;            will probably not represent the true parameter
-;            uncertainties.  
+;            uncertainties.
 ;
 ;            *If* you can assume that the true reduced chi-squared
 ;            value is unity -- meaning that the fit is implicitly
@@ -917,7 +917,7 @@
 ;             numerical overflow in the user's model function, which
 ;             must be avoided.
 ;
-;        -15 to -1 
+;        -15 to -1
 ;             these are error codes that either MYFUNCT or ITERPROC
 ;             may return to terminate the fitting process (see
 ;             description of MPFIT_ERROR common below).  If either
@@ -927,27 +927,27 @@
 ;             clash with MPFIT.
 ;
 ;	   0  improper input parameters.
-;         
+;
 ;	   1  both actual and predicted relative reductions
 ;	      in the sum of squares are at most FTOL.
-;         
+;
 ;	   2  relative error between two consecutive iterates
 ;	      is at most XTOL
-;         
+;
 ;	   3  conditions for STATUS = 1 and STATUS = 2 both hold.
-;         
+;
 ;	   4  the cosine of the angle between fvec and any
 ;	      column of the jacobian is at most GTOL in
 ;	      absolute value.
-;         
+;
 ;	   5  the maximum number of iterations has been reached
-;         
+;
 ;	   6  FTOL is too small. no further reduction in
 ;	      the sum of squares is possible.
-;         
+;
 ;	   7  XTOL is too small. no further improvement in
 ;	      the approximate solution x is possible.
-;         
+;
 ;	   8  GTOL is too small. fvec is orthogonal to the
 ;	      columns of the jacobian to machine precision.
 ;
@@ -960,8 +960,8 @@
 ;             version number.  The version number will be a string of
 ;             the form "X.Y" where X is a major revision number and Y
 ;             is a minor revision number.
-;             NOTE: the VERSION keyword was not present before 
-;               MPFIT version number 1.70, therefore, callers must 
+;             NOTE: the VERSION keyword was not present before
+;               MPFIT version number 1.70, therefore, callers must
 ;               use exception handling when using this keyword.
 ;
 ;   XTOL - a nonnegative input variable. Termination occurs when the
@@ -1060,7 +1060,7 @@
 ;   above.  This can be substituted back into eqn (2) after computing
 ;   the derivatives:
 ;
-;       f'  = 2 Sum(hi  hi')     
+;       f'  = 2 Sum(hi  hi')
 ;       f'' = 2 Sum(hi' hj') + 2 Sum(hi hi'')                (4)
 ;
 ;   If one assumes that the parameters are already close enough to a
@@ -1095,7 +1095,7 @@
 ;   Here, R, QT and h are known so this is a matter of solving for dx.
 ;   The routine MPFIT_QRFAC provides the QR factorization of h, with
 ;   pivoting, and MPFIT_QRSOL;V provides the solution for dx.
-;   
+;
 ; REFERENCES:
 ;
 ;   Markwardt, C. B. 2008, "Non-Linear Least Squares Fitting in IDL
@@ -1113,7 +1113,7 @@
 ;   MINPACK-1 software, by Jorge More' et al, available from netlib.
 ;     http://www.netlib.org/
 ;
-;   "Optimization Software Guide," Jorge More' and Stephen Wright, 
+;   "Optimization Software Guide," Jorge More' and Stephen Wright,
 ;     SIAM, *Frontiers in Applied Mathematics*, Number 14.
 ;     (ISBN: 978-0-898713-22-0)
 ;
@@ -1261,7 +1261,7 @@
 ;     derivatives, also thanks to Huib Intema, 07 Feb 2007
 ;   Clarify documentation on user-function, derivatives, and PARINFO,
 ;     27 May 2007
-;   Change the wording of "Analytic Derivatives" to "Explicit 
+;   Change the wording of "Analytic Derivatives" to "Explicit
 ;     Derivatives" in the documentation, CM, 03 Sep 2007
 ;   Further documentation tweaks, CM, 13 Dec 2007
 ;   Add COMPATIBILITY section and add credits to copyright, CM, 13 Dec
@@ -1427,7 +1427,7 @@ function mpfit_call, fcn, x, fjac, _EXTRA=extra
 
   if keyword_set(mpconfig.qanytied) then mpfit_tie, x, mpconfig.ptied
 
-  ;; Decide whether we are calling a procedure or function, and 
+  ;; Decide whether we are calling a procedure or function, and
   ;; with/without FUNCTARGS
   proname = 'MPFIT_CALL'
   proname = proname + ((mpconfig.proc) ? '_PRO' : '_FUNC')
@@ -1442,7 +1442,7 @@ function mpfit_call, fcn, x, fjac, _EXTRA=extra
 
   if n_params() EQ 2 AND mpconfig.damp GT 0 then begin
       damp = mpconfig.damp[0]
-      
+
       ;; Apply the damping if requested.  This replaces the residuals
       ;; with their hyperbolic tangent.  Thus residuals larger than
       ;; DAMP are essentially clipped.
@@ -1527,7 +1527,7 @@ function mpfit_fdjac2, fcn, x, fvec, step, ulimited, ulimit, dside, $
       ;; Select only the free parameters
       if n_elements(ifree) LT nall then $
         fjac = reform(fjac[*,ifree], m, n, /overwrite)
-      
+
       ;; Are we done computing derivatives?  The answer is, YES, if we
       ;; computed explicit derivatives for all free parameters, EXCEPT
       ;; when we are going on to compute debugging derivatives.
@@ -1587,10 +1587,10 @@ function mpfit_fdjac2, fcn, x, fvec, step, ulimited, ulimit, dside, $
 
       xp = xall
       xp[ifree[j]] = xp[ifree[j]] + h[j]
-      
+
       mperr = 0
       fp = mpfit_call(fcn, xp, _EXTRA=fcnargs)
-      
+
       iflag = mperr
       if iflag LT 0 then return, !values.d_nan
 
@@ -1605,14 +1605,14 @@ function mpfit_fdjac2, fcn, x, fvec, step, ulimited, ulimit, dside, $
 
           mperr = 0
           fm = mpfit_call(fcn, xp, _EXTRA=fcnargs)
-          
+
           iflag = mperr
           if iflag LT 0 then return, !values.d_nan
-          
+
           ;; Note optimization fjac(0:*,j)
           fjacj = (fp-fm)/(2*h[j])
-      endelse          
-      
+      endelse
+
       ;; Debugging of explicit derivatives
       if (dsidej EQ 3) AND (ddebugj EQ 1) then begin
           ;; Relative and absolute tolerances
@@ -1620,7 +1620,7 @@ function mpfit_fdjac2, fcn, x, fvec, step, ulimited, ulimit, dside, $
 
           ;; Explicitly calculated
           fjaco = fjac[*,j]
-          
+
           ;; If tolerances are zero, then any value for deriv triggers print...
           if (da EQ 0 AND dr EQ 0) then $
             diffj = (fjaco NE 0 OR fjacj NE 0)
@@ -1637,7 +1637,7 @@ function mpfit_fdjac2, fcn, x, fvec, step, ulimited, ulimit, dside, $
 
       ;; Store final results in output array
       fjac[0,j] = fjacj
-          
+
   endfor
 
   if has_debug_deriv then print, 'FJAC DEBUG END'
@@ -1653,7 +1653,7 @@ function mpfit_enorm, vec
   ;; points, this routine is a big computing bottleneck.  The extended
   ;; computations that need to be done cannot be effectively
   ;; vectorized.  The introduction of the FASTNORM configuration
-  ;; parameter allows the user to select a faster routine, which is 
+  ;; parameter allows the user to select a faster routine, which is
   ;; based on TOTAL() alone.
   common mpfit_profile, profvals
 ;  prof_start = systime(1)
@@ -1770,7 +1770,7 @@ end
 ; ACNORM is in standard parameter order.
 ;
 ; NOTE: in IDL the factors appear slightly differently than described
-; above.  The matrix A is still m x n where m >= n.  
+; above.  The matrix A is still m x n where m >= n.
 ;
 ; The "upper" triangular matrix R is actually stored in the strict
 ; lower left triangle of A under the standard notation of IDL.
@@ -1827,7 +1827,7 @@ pro mpfit_qrfac, a, ipvt, rdiag, acnorm, pivot=pivot
 
   MACHEP0 = machvals.machep
   DWARF   = machvals.minnum
-  
+
   ;; Compute the initial column norms and initialize arrays
   acnorm = make_array(n, value=a[0]*0.)
   for j = 0L, n-1 do $
@@ -1840,13 +1840,13 @@ pro mpfit_qrfac, a, ipvt, rdiag, acnorm, pivot=pivot
   minmn = min([m,n])
   for j = 0L, minmn-1 do begin
       if NOT keyword_set(pivot) then goto, HOUSE1
-      
+
       ;; Bring the column of largest norm into the pivot position
       rmax = max(rdiag[j:*])
       kmax = where(rdiag[j:*] EQ rmax, ct) + j
       if ct LE 0 then goto, HOUSE1
       kmax = kmax[0]
-      
+
       ;; Exchange rows via the pivot only.  Avoid actually exchanging
       ;; the rows, in case there is lots of memory transfer.  The
       ;; exchange occurs later, within the body of MPFIT, after the
@@ -1856,7 +1856,7 @@ pro mpfit_qrfac, a, ipvt, rdiag, acnorm, pivot=pivot
           rdiag[kmax] = rdiag[j]
           wa[kmax]    = wa[j]
       endif
-      
+
       HOUSE1:
 
       ;; Compute the householder transformation to reduce the jth
@@ -1866,12 +1866,12 @@ pro mpfit_qrfac, a, ipvt, rdiag, acnorm, pivot=pivot
       ajnorm = mpfit_enorm(ajj)
       if ajnorm EQ 0 then goto, NEXT_ROW
       if a[j,lj] LT 0 then ajnorm = -ajnorm
-      
+
       ajj     = ajj / ajnorm
       ajj[0]  = ajj[0] + 1
       ;; *** Note optimization a(j:*,j)
       a[j,lj] = ajj
-      
+
       ;; Apply the transformation to the remaining columns
       ;; and update the norms
 
@@ -1882,7 +1882,7 @@ pro mpfit_qrfac, a, ipvt, rdiag, acnorm, pivot=pivot
           for k=j+1, n-1 do begin
               lk = ipvt[k]
               ajk = a[j:*,lk]
-              ;; *** Note optimization a(j:*,lk) 
+              ;; *** Note optimization a(j:*,lk)
               ;; (corrected 20 Jul 2000)
               if a[j,lj] NE 0 then $
                 a[j,lk] = ajk - ajj * total(ajk*ajj)/a[j,lj]
@@ -2029,7 +2029,7 @@ pro mpfit_qrsolv, r, ipvt, diag, qtb, x, sdiag
               cosine = half/sqrt(quart + quart*tang*tang)
               sine   = cosine*tang
           endelse
-          
+
           ;; Compute the modified diagonal element of r and the
           ;; modified element of ((q transpose)*b,0).
           r[k,k] = cosine*r[k,k] + sine*sdiag[k]
@@ -2063,7 +2063,7 @@ STORE_RESTORE:
   if nsing GE 1 then begin
       wa[nsing-1] = wa[nsing-1]/sdiag[nsing-1] ;; Degenerate case
       ;; *** Reverse loop ***
-      for j=nsing-2,0,-1 do begin  
+      for j=nsing-2,0,-1 do begin
           sum = total(r[j+1:nsing-1,j]*wa[j+1:nsing-1])
           wa[j] = (wa[j]-sum)/sdiag[j]
       endfor
@@ -2075,8 +2075,8 @@ STORE_RESTORE:
 ;  profvals.qrsolv = profvals.qrsolv + (systime(1) - prof_start)
   return
 end
-      
-  
+
+
 ;
 ;     subroutine lmpar
 ;
@@ -2197,7 +2197,7 @@ function mpfit_lmpar, r, ipvt, diag, qtb, delta, x, sdiag, par=par
 
   if nsing GE 1 then begin
       ;; *** Reverse loop ***
-      for j=nsing-1,0,-1 do begin  
+      for j=nsing-1,0,-1 do begin
           wa1[j] = wa1[j]/r[j,j]
           if (j-1 GE 0) then $
             wa1[0:(j-1)] = wa1[0:(j-1)] - r[0:(j-1),j]*wa1[j]
@@ -2218,13 +2218,13 @@ function mpfit_lmpar, r, ipvt, diag, qtb, delta, x, sdiag, par=par
   ;; If the jacobian is not rank deficient, the newton step provides a
   ;; lower bound, parl, for the zero of the function.  Otherwise set
   ;; this bound to zero.
-  
+
   zero = wa2[0]*0.
   parl = zero
   if nsing GE n then begin
       wa1 = diag[ipvt]*wa2[ipvt]/dxnorm
 
-      wa1[0] = wa1[0] / r[0,0] ;; Degenerate case 
+      wa1[0] = wa1[0] / r[0,0] ;; Degenerate case
       for j=1L, n-1 do begin   ;; Note "1" here, not zero
           sum = total(r[0:(j-1),j]*wa1[0:(j-1)])
           wa1[j] = (wa1[j] - sum)/r[j,j]
@@ -2253,7 +2253,7 @@ function mpfit_lmpar, r, ipvt, diag, qtb, delta, x, sdiag, par=par
   ;; Beginning of an interation
   ITERATION:
   iter = iter + 1
-  
+
   ;; Evaluate the function at the current value of par
   if par EQ 0 then par = max([DWARF, paru*0.001])
   temp = sqrt(par)
@@ -2289,7 +2289,7 @@ function mpfit_lmpar, r, ipvt, diag, qtb, delta, x, sdiag, par=par
 
   ;; End of an iteration
   goto, ITERATION
-  
+
 TERMINATE:
   ;; Termination
 ;  profvals.lmpar = profvals.lmpar + (systime(1) - prof_start)
@@ -2325,7 +2325,7 @@ pro mpfit_defprint, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, $
   else if n_params() EQ 1 then printf, unit, p1, format=format $
   else if n_params() EQ 2 then printf, unit, p1, p2, format=format $
   else if n_params() EQ 3 then printf, unit, p1, p2, p3, format=format $
-  else if n_params() EQ 4 then printf, unit, p1, p2, p4, format=format 
+  else if n_params() EQ 4 then printf, unit, p1, p2, p4, format=format
 
   return
 end
@@ -2533,7 +2533,7 @@ function mpfit_covar, rr, ipvt, tol=tol
   if n_elements(ipvt) EQ 0 then ipvt = lindgen(n)
   r = rr
   r = reform(rr, n, n, /overwrite)
-  
+
   ;; Form the inverse of r in the full upper triangle of r
   l = -1L
   if n_elements(tol) EQ 0 then tol = one*1.E-14
@@ -2602,7 +2602,7 @@ function mpfit_parse_version, version
   sz = size(version)
   if sz[sz[0]+1] NE 7 then return, 0
 
-  s = stregex(version[0], '^([0-9]+)\.([0-9]+)$', /extract,/sub) 
+  s = stregex(version[0], '^([0-9]+)\.([0-9]+)$', /extract,/sub)
   if s[0] NE version[0] then return, 0
   return, long(s[1:2])
 end
@@ -2852,7 +2852,7 @@ function mpfit, fcn, xall, FUNCTARGS=fcnargs, SCALE_FCN=scalfcn, $
       message, "USAGE: PARMS = MPFIT('MYFUNCT', START_PARAMS, ... )", /info
       return, !values.d_nan
   endif
-  
+
   ;; Use of double here not a problem since f/x/gtol are all only used
   ;; in comparisons
   if n_elements(ftol0) EQ 0 then ftol = 1.D-10 else ftol = ftol0[0]
@@ -2899,8 +2899,8 @@ function mpfit, fcn, xall, FUNCTARGS=fcnargs, SCALE_FCN=scalfcn, $
   if damp NE 0 AND NOT keyword_set(autoderiv) then begin
       errmsg = 'ERROR: keywords DAMP and AUTODERIV are mutually exclusive'
       goto, TERMINATE
-  endif      
-  
+  endif
+
   ;; Process the ITERSTOP and ITERKEYSTOP keywords, and turn this into
   ;; a set of keywords to pass to MPFIT_DEFITER.
   if strupcase(iterproc) EQ 'MPFIT_DEFITER' AND n_elements(iterargs) EQ 0 $
@@ -3030,7 +3030,7 @@ function mpfit, fcn, xall, FUNCTARGS=fcnargs, SCALE_FCN=scalfcn, $
   ;; TIED parameters?
   mpfit_parinfo, parinfo, tagnames, 'TIED', ptied, default='', n=npar
   ptied = strtrim(ptied, 2)
-  wh = where(ptied NE '', qanytied) 
+  wh = where(ptied NE '', qanytied)
   qanytied = qanytied GT 0
   mpconfig = create_struct(mpconfig, 'QANYTIED', qanytied, 'PTIED', ptied)
 
@@ -3038,7 +3038,7 @@ function mpfit, fcn, xall, FUNCTARGS=fcnargs, SCALE_FCN=scalfcn, $
   mpfit_parinfo, parinfo, tagnames, 'FIXED', pfixed, default=0, n=npar
   pfixed = pfixed EQ 1
   pfixed = pfixed OR (ptied NE '');; Tied parameters are also effectively fixed
-  
+
   ;; Finite differencing step, absolute and relative, and sidedness of deriv.
   mpfit_parinfo, parinfo, tagnames, 'STEP',     step, default=zero, n=npar
   mpfit_parinfo, parinfo, tagnames, 'RELSTEP', dstep, default=zero, n=npar
@@ -3106,7 +3106,7 @@ function mpfit, fcn, xall, FUNCTARGS=fcnargs, SCALE_FCN=scalfcn, $
           errmsg = 'ERROR: PARINFO parameter limits are not consistent'
           goto, TERMINATE
       endif
-      
+
 
       ;; Transfer structure values to local variables
       qulim = limited[1, ifree]
@@ -3193,7 +3193,7 @@ function mpfit, fcn, xall, FUNCTARGS=fcnargs, SCALE_FCN=scalfcn, $
   catch_msg = 'calling MPFIT_SETMACHAR'
   sz = size(fvec[0])
   isdouble = (sz[sz[0]+1] EQ 5)
-  
+
   mpfit_setmachar, double=isdouble
 
   common mpfit_profile, profvals
@@ -3240,7 +3240,7 @@ function mpfit, fcn, xall, FUNCTARGS=fcnargs, SCALE_FCN=scalfcn, $
   qtf = x * 0.
 
   ;; Beginning of the outer loop
-  
+
   OUTER_LOOP:
 
   ;; If requested, call fcn to enable printing of iterates
@@ -3261,7 +3261,7 @@ function mpfit, fcn, xall, FUNCTARGS=fcnargs, SCALE_FCN=scalfcn, $
           iflag = mperr
 
           ;; Check for user termination
-          if iflag LT 0 then begin  
+          if iflag LT 0 then begin
               errmsg = 'WARNING: premature termination by "'+iterproc+'"'
               goto, TERMINATE
           endif
@@ -3308,7 +3308,7 @@ function mpfit, fcn, xall, FUNCTARGS=fcnargs, SCALE_FCN=scalfcn, $
       whlpeg = where(qllim AND (x EQ llim), nlpeg)
       whupeg = where(qulim AND (x EQ ulim), nupeg)
       npegged = nlpeg + nupeg
-      
+
       ;; See if any "pegged" values should keep their derivatives
       if (nlpeg GT 0) then begin
           ;; Total derivative of sum wrt lower pegged parameters
@@ -3333,7 +3333,7 @@ function mpfit, fcn, xall, FUNCTARGS=fcnargs, SCALE_FCN=scalfcn, $
   ;; =====================
   ;; Compute the QR factorization of the jacobian
   catch_msg = 'calling MPFIT_QRFAC'
-  ;;  IN:      Jacobian        
+  ;;  IN:      Jacobian
   ;; OUT:      Hh Vects  Permutation  RDIAG  ACNORM
   mpfit_qrfac, fjac,     ipvt,        wa1,   wa2, /pivot
   ;; Jacobian - jacobian matrix computed by mpfit_fdjac2
@@ -3359,9 +3359,9 @@ function mpfit, fcn, xall, FUNCTARGS=fcnargs, SCALE_FCN=scalfcn, $
           wh = where (diag EQ 0, ct) ;; Handle zero values
           if ct GT 0 then diag[wh] = one
       endif
-      
+
       ;; On the first iteration, calculate the norm of the scaled x
-      ;; and initialize the step bound delta 
+      ;; and initialize the step bound delta
       wa3 = diag * x           ;; WA3 is temp variable
       xnorm = mpfit_enorm(wa3)
       delta = factor*xnorm
@@ -3378,7 +3378,7 @@ function mpfit, fcn, xall, FUNCTARGS=fcnargs, SCALE_FCN=scalfcn, $
           fj = fjac[j:*,lj]
           wj = wa4[j:*]
           ;; *** optimization wa4(j:*)
-          wa4[j] = wj - fj * total(fj*wj) / temp3  
+          wa4[j] = wj - fj * total(fj*wj) / temp3
       endif
       fjac[j,lj] = wa1[j]
       qtf[j] = wa4[j]
@@ -3423,7 +3423,7 @@ function mpfit, fcn, xall, FUNCTARGS=fcnargs, SCALE_FCN=scalfcn, $
 
   ;; Beginning of the inner loop
   INNER_LOOP:
-  
+
   ;; Determine the levenberg-marquardt parameter
   catch_msg = 'calculating LM parameter (MPFIT_LMPAR)'
   par = mpfit_lmpar(fjac, ipvt, diag, qtf, delta, wa1, wa2, par=par)
@@ -3437,7 +3437,7 @@ function mpfit, fcn, xall, FUNCTARGS=fcnargs, SCALE_FCN=scalfcn, $
       wa2 = x + wa1
 
   endif else begin
-      
+
       ;; Respect the limits.  If a step were to go out of bounds, then
       ;; we should take a step in the same direction but shorter distance.
       ;; The step should take us right to the limit in that case.
@@ -3467,7 +3467,7 @@ function mpfit, fcn, xall, FUNCTARGS=fcnargs, SCALE_FCN=scalfcn, $
               mrat = max(abs(nwa1[whmax])/abs(maxstep[whmax]))
               if mrat GT 1 then alpha = alpha / mrat
           endif
-      endif          
+      endif
 
       ;; Scale the resulting vector
       wa1 = wa1 * alpha
@@ -3478,7 +3478,7 @@ function mpfit, fcn, xall, FUNCTARGS=fcnargs, SCALE_FCN=scalfcn, $
       sgnu = (ulim GE 0)*2d - 1d
       sgnl = (llim GE 0)*2d - 1d
 
-      ;; Handles case of 
+      ;; Handles case of
       ;;      ... nonzero *LIM ...     ... zero *LIM ...
       ulim1 = ulim*(1-sgnu*MACHEP0) - (ulim EQ 0)*MACHEP0
       llim1 = llim*(1+sgnl*MACHEP0) + (llim EQ 0)*MACHEP0
@@ -3510,7 +3510,7 @@ function mpfit, fcn, xall, FUNCTARGS=fcnargs, SCALE_FCN=scalfcn, $
   endif
   RESUME_FIT:
   fnorm1 = mpfit_enorm(wa4)
-  
+
   ;; Compute the scaled actual reduction
   catch_msg = 'computing convergence criteria'
   actred = -one
@@ -3611,16 +3611,16 @@ TERMINATE:
   ;; Call the ITERPROC at the end of the fit, if the fit status is
   ;; okay.  Don't call it if the fit failed for some reason.
   if info GT 0 then begin
-      
+
       mperr = 0
       xnew0 = xnew
-      
+
       call_procedure, iterproc, fcn, xnew, iter, fnorm^2, $
         FUNCTARGS=fcnargs, parinfo=parinfo, quiet=quiet, $
         dof=dof, _EXTRA=iterargs
       iflag = mperr
 
-      if iflag LT 0 then begin  
+      if iflag LT 0 then begin
           errmsg = 'WARNING: premature termination by "'+iterproc+'"'
       endif else begin
           ;; If parameters were changed (grrr..) then re-tie
@@ -3667,14 +3667,14 @@ TERMINATE:
             cv = mpfit_covar(fjac[0:n-1,0:n-1], ipvt[0:n-1])
           cv = reform(cv, n, n, /overwrite)
           nn = n_elements(xall)
-          
+
           ;; Fill in actual covariance matrix, accounting for fixed
           ;; parameters.
           covar = replicate(zero, nn, nn)
           for i = 0L, n-1 do begin
               covar[ifree, ifree[i]] = cv[*,i]
           end
-          
+
           ;; Compute errors in parameters
           catch_msg = 'computing parameter errors'
           i = lindgen(nn)
@@ -3694,7 +3694,7 @@ TERMINATE:
   if n_elements(xnew) EQ 0 then return, !values.d_nan
   return, xnew
 
-  
+
   ;; ------------------------------------------------------------------
   ;; Alternate ending if the user supplies the function and gradients
   ;; externally
@@ -3735,4 +3735,3 @@ TERMINATE:
   return, xnew
 
 end
-

@@ -19,10 +19,10 @@ pro fits_close,fcb,no_abort=no_abort,message=message
 ;       /NO_ABORT: Set to return to calling program instead of a RETALL
 ;               when an I/O error is encountered.  If set, the routine will
 ;               return  a non-null string (containing the error message) in the
-;               keyword MESSAGE.   If /NO_ABORT not set, then FITS_CLOSE will 
+;               keyword MESSAGE.   If /NO_ABORT not set, then FITS_CLOSE will
 ;               print the message and issue a RETALL
 ;       MESSAGE = value: Output error message
-;       
+;
 ;*EXAMPLES:
 ;       Open a FITS file, read some data, and close it with FITS_CLOSE
 ;

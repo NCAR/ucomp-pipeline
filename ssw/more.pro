@@ -34,9 +34,9 @@
 ; whatsoever.  Other limitations apply as described in the file disclaimer.txt.
 ;-
 ;-------------------------------------------------------------
- 
+
 	pro more, txt, help=hlp, numbers=num, format=fmt
- 
+
 	if (n_params(0) lt 1) or keyword_set(hlp) then begin
 	  print,' Display a text array using the MORE method.'
 	  print,' more, txtarr'
@@ -50,13 +50,13 @@
 	  print,'  until user presses SPACE to continue.'
 	  return
 	endif
- 
+
 	if n_elements(fmt) eq 0 then fmt='a'
- 
+
 	scrn = filepath(/TERMINAL)
- 
+
 	openw,lun,scrn,/more,/get_lun
- 
+
 	if keyword_set(num) then begin
 	  for i = 0L, n_elements(txt)-1 do begin
 	    printf,lun,i,txt(i),form='(i5,2x,'+fmt+')'
@@ -65,7 +65,7 @@
 	  for i = 0L, n_elements(txt)-1 do printf,lun,txt(i),form='('+fmt+')'
 	endelse
 
-on_ioerror, error 
+on_ioerror, error
 	free_lun, lun
 error:
 	return

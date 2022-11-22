@@ -1,7 +1,7 @@
 pro fem_struct, FEM_Data = FEM_Data,  $
                      FEM_Version = FEM_Version
-   
-   
+
+
 ;+
 ;       NAME:
 ;               FEM_STRUCT
@@ -18,8 +18,8 @@ pro fem_struct, FEM_Data = FEM_Data,  $
 ;                                 within a single orbit to handle Wallops
 ;
 ;-
-   
-   
+
+
 FEM_Data = { FEM_Data_Rec,              $
       path: FIX(0),  $                       ; 00- The SIRIUS mainframe path ID (only the last
                                              ;     4 characters since the date is the first
@@ -37,7 +37,7 @@ FEM_Data = { FEM_Data_Rec,              $
                                              ;       (i) = can be six station contacts in one day
       en_station: INTARR(6),  $              ; 26- End of station contact in seconds from S/C day
                                              ;       (i) = can be six station contacts in one day
-      st$station: BYTARR(6),  $              ; 38- Station 
+      st$station: BYTARR(6),  $              ; 38- Station
                                              ;               'U' = KSC
                                              ;               'C' = Canberra
                                              ;               'M' = Madrid
@@ -63,17 +63,17 @@ FEM_Data = { FEM_Data_Rec,              $
                                              ;     broken across files.
                                              ;
       spare: BYTARR(11) }                    ; 69- Spare
-   
-   
-   
+
+
+
 FEM_Version = { FEM_Version_Rec,              $
       data : FIX('9004'x),  $                ; 02- Data section version number
                                              ;
                                              ;     This structure is not written to any files
       spare: BYTE(0) }                       ;     (need for automatic conversion to IDL format)
-   
-   
-   
-  
-  
+
+
+
+
+
 end

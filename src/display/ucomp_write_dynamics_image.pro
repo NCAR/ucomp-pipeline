@@ -91,4 +91,3 @@ pro ucomp_write_dynamics_image, filename, $
   line_width_filename = filepath(line_width_basename, root=l2_dir)
   write_png, line_width_filename, line_width_image
 end
-

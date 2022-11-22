@@ -20,7 +20,7 @@ function gt_res, item, string=string, short=short, header=header, spaces=spaces,
 ;		  filter names used.
 ;OPTIONAL INPUT:
 ;	string	- If present, return the string mnemonic (long notation)
-;	short	- If present, return the short string nemonic 
+;	short	- If present, return the short string nemonic
 ;	spaces	- If present, place that many spaces before the output
 ;                 string.
 ;       original - If set, return the original corner commanded (from index.sxt)
@@ -39,12 +39,12 @@ function gt_res, item, string=string, short=short, header=header, spaces=spaces,
 ;	10-Jun-93 (MDM) - Added option to extract from the history structure
 ;	17-Jun-93 (MDM) - Added /ORIGINAL option
 ;	07-May-2008 (Aki Takeda) - Modified to accept YLA FITS headers.
-;	06-May-2009 (Aki T) - Modification on FITS header input: return the 
+;	06-May-2009 (Aki T) - Modification on FITS header input: return the
 ;                      value of header.pixel_si, instead of header.imgparam
 ;                      when the keyword, /orig is not set.
-;	19-May-2009 (Aki T) - handle the case with header.pix_size, and 
+;	19-May-2009 (Aki T) - handle the case with header.pix_size, and
 ;                      the case without header.pixel_si nor header.pix_size.
-;	02-Jun-2009 (Aki T) - corrected a bug (XDA handling part). 
+;	02-Jun-2009 (Aki T) - corrected a bug (XDA handling part).
 ;-
 ;
 head_long = 'Res '
@@ -75,7 +75,7 @@ if (typ eq 8) then begin
 ;                     else out = fix(item.pixel_si)   ; (6-May-2009)
                      else begin                      ; (19-May-2009)
                            case 1 of
-                            tag_exist(item,'pix_size') : out = fix(item.pix_size) 
+                            tag_exist(item,'pix_size') : out = fix(item.pix_size)
                             tag_exist(item,'pixel_si') : out = fix(item.pixel_si)
                             else : out=mask(round(item.cdelt1/2.455),1,2)
                            endcase

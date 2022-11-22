@@ -4,10 +4,10 @@
 ; Raises an error if the given condition is not met. Uses `logical_predicate`
 ; to determine truth of condition: so zero or null values are false, anything
 ; else is true. Be careful of conditions like the following::
-;     
+;
 ;    ucomp_assert, not file_test(filename)
 ;
-; This uses the bitwise `not` operator and therefore this assertion is 
+; This uses the bitwise `not` operator and therefore this assertion is
 ; always false.
 ;
 ; :Examples:
@@ -15,7 +15,7 @@
 ;
 ;       mg_assert, error gt tolerance, 'incorrect result, error = %f', error
 ;
-; :Params: 
+; :Params:
 ;    condition : in, required, type=boolean
 ;       condition to assert
 ;    msg : in, optional, type=string, default="'Assertion failed'"

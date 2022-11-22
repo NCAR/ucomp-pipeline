@@ -13,4 +13,3 @@ function ucomp_apply_linearity, im, coeffs
 
   return, float(result)
 end
-

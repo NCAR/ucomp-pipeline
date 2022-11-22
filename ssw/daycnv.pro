@@ -22,9 +22,9 @@ PRO DAYCNV, XJD, YR, MN, DAY, HR
 ;               then YR,MN,DAY and HR will be vectors of the same length.
 ;
 ; EXAMPLE:
-;       IDL> DAYCNV, 2440000.D, yr, mn, day, hr    
+;       IDL> DAYCNV, 2440000.D, yr, mn, day, hr
 ;
-;       yields yr = 1968, mn =5, day = 23, hr =12.   
+;       yields yr = 1968, mn =5, day = 23, hr =12.
 ;
 ; WARNING:
 ;       Be sure that the Julian date is specified as double precision to
@@ -36,7 +36,7 @@ PRO DAYCNV, XJD, YR, MN, DAY, HR
 ;       Works for all Gregorian calendar dates with XJD > 0, i.e., dates after
 ;       -4713 November 23.
 ; REVISION HISTORY:
-;       Converted to IDL from Yeoman's Comet Ephemeris Generator, 
+;       Converted to IDL from Yeoman's Comet Ephemeris Generator,
 ;       B. Pfarr, STX, 6/16/88
 ;       Converted to IDL V5.0   W. Landsman   September 1997
 ;-

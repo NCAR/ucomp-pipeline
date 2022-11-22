@@ -2,7 +2,7 @@ function strlastchar, array
 ;
 ;+
 ;   Name: strlastchar
-;   
+;
 ;   Purpose: return last non-blank character(s) in a string or string array
 ;
 ;   Input Parameters:
@@ -14,8 +14,8 @@ function strlastchar, array
 ;   History:
 ;      29-jul-1995 (SLF)
 ;-
-;   
-; 
+;
+;
 barray=byte(array)                        ; byte version
 rbarray=reverse(barray)                   ; reverse byte version
 null=where(rbarray eq 0b,ncnt)            ; find nulls

@@ -2,21 +2,21 @@ pro break_file, file, disk_log, dir, filnam, ext, fversion, node
 ;+
 ; Project     : SOHO - CDS
 ;
-; Name        : 
+; Name        :
 ;	BREAK_FILE
-; Purpose     : 
+; Purpose     :
 ;	Break a filename into its component parts.
-; Explanation : 
+; Explanation :
 ;	Given a file name, break the filename into the parts
 ;	of disk/logical, the directory, the filename, the
 ;	extension, and the file version (for VMS)
-; Use         : 
+; Use         :
 ;	BREAK_FILE, FILE, DISK_LOG, DIR, FILNAM, EXT, FVERSION, NODE
-; Inputs      : 
+; Inputs      :
 ;	file	- The file name
-; Opt. Inputs : 
+; Opt. Inputs :
 ;	None.
-; Outputs     : 
+; Outputs     :
 ;	disk_log- The disk or logical (looks for a ":")
 ;		  This is generally only valid on VMS machines
 ;	dir	- The directory
@@ -24,25 +24,25 @@ pro break_file, file, disk_log, dir, filnam, ext, fversion, node
 ;	ext	- The filename extension (including the ".")
 ;	fversion- The file version (only VMS)
 ;	node	- The Node name (only VMS)
-; Opt. Outputs: 
+; Opt. Outputs:
 ;	None.
-; Keywords    : 
+; Keywords    :
 ;	None.
-; Calls       : 
+; Calls       :
 ;	None.
-; Common      : 
+; Common      :
 ;	None.
-; Restrictions: 
+; Restrictions:
 ;	VMS:
 ;		Assumes that : always precedes []
 ;	ULTRIX:
 ;		Right now it has trouble with the ultrix option of use
 ;		of "." or ".."
-; Side effects: 
+; Side effects:
 ;	None.
-; Category    : 
+; Category    :
 ;	Utilities, Operating_system.
-; Prev. Hist. : 
+; Prev. Hist. :
 ;	Written 1988 by M.Morrison
 ;	   Aug-91 (MDM) Changed to handle Unix filename convensions
 ;	28-Feb-92 (MDM) * Adjusted to handle arrays
@@ -52,9 +52,9 @@ pro break_file, file, disk_log, dir, filnam, ext, fversion, node
 ;			  number for both VMS and Unix (previously it
 ;			  did not do version number code for Unix)
 ;	29-Jan-93 (DMZ/MDM) - checked for node in file name
-; Written     : 
+; Written     :
 ;	M. Morrison, August 1991.
-; Modified    : 
+; Modified    :
 ;	Version 1, William Thompson, GSFC, 23 April 1993.
 ;		Incorporated into CDS library.
 ;	Version 1.1, William Thompson, GSFC, 7 May 1993.
@@ -64,7 +64,7 @@ pro break_file, file, disk_log, dir, filnam, ext, fversion, node
 ;       	to check for ".]["  and "[000000" in VMS concealed directory
 ;		names
 ;
-; Version     : 
+; Version     :
 ;	Version 2, 15 June 1995
 ;-
 ;
@@ -135,7 +135,7 @@ for ifil=0,n-1 do begin
 
     p=strpos(file0,'.')
     if (p eq -1) then begin
-	    filnam(ifil) = strmid(file0,0,len) 
+	    filnam(ifil) = strmid(file0,0,len)
 	    p=len
     end else filnam(ifil) = strmid(file0,0,p)		 ;not include .
     len=len-p
@@ -143,7 +143,7 @@ for ifil=0,n-1 do begin
     ;
     p=strpos(file0,';')
     if (p eq -1) then begin
-	    ext(ifil) = strmid(file0,0,len) 
+	    ext(ifil) = strmid(file0,0,len)
 	    p=len
     end else ext(ifil) = strmid(file0,0,p)			;includes . but not ;
     len=len-p
@@ -166,4 +166,3 @@ if (n eq 1) then begin		;turn output into scalars
 end
 ;
 end
-

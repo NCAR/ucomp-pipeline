@@ -1,15 +1,15 @@
 ;+
-; NAME: 
+; NAME:
 ;       FXADDPAR
-; Purpose     : 
+; Purpose     :
 ;       Add or modify a parameter in a FITS header array.
-; Explanation : 
-;       This version of FXADDPAR will write string values longer than 68 
-;       characters using the FITS continuation convention described at 
+; Explanation :
+;       This version of FXADDPAR will write string values longer than 68
+;       characters using the FITS continuation convention described at
 ;       http://fits.gsfc.nasa.gov/registry/continue_keyword.html
-; Use         : 
+; Use         :
 ;       FXADDPAR, HEADER, NAME, VALUE, COMMENT
-; Inputs      : 
+; Inputs      :
 ;       HEADER  = String array containing FITS header.  The maximum string
 ;                 length must be equal to 80.  If not defined, then FXADDPAR
 ;                 will create an empty FITS header array.
@@ -25,23 +25,23 @@
 ;                 correct type, e.g. integer, floating or string.
 ;                 String values of 'T' or 'F' are considered logical
 ;                 values unless the /NOLOGICAL keyword is set.  If the value is
-;                 a string and is "long" (more than 69 characters), then it 
-;                 may be continued over more than one line using the OGIP 
+;                 a string and is "long" (more than 69 characters), then it
+;                 may be continued over more than one line using the OGIP
 ;                 CONTINUE standard.
 ;
 ;                 The special BOOLEAN datatype introduced in IDL 8.4 is also
 ;                 recognized, and recorded as either 'T' or 'F' in the header.
 ;
-; Opt. Inputs : 
+; Opt. Inputs :
 ;       COMMENT = String field.  The '/' is added by this routine.  Added
 ;                 starting in position 31.  If not supplied, or set equal to ''
 ;                 (the null string), then any previous comment field in the
 ;                 header for that keyword is retained (when found).
-; Outputs     : 
+; Outputs     :
 ;       HEADER  = Updated header array.
-; Opt. Outputs: 
+; Opt. Outputs:
 ;       None.
-; Keywords    : 
+; Keywords    :
 ;       BEFORE  = Keyword string name.  The parameter will be placed before the
 ;                 location of this keyword.  For example, if BEFORE='HISTORY'
 ;                 then the parameter will be placed before the first history
@@ -59,11 +59,11 @@
 ;                 default formatting is used, except that double precision is
 ;                 given a format of G19.12.
 ;
-;       /NOCONTINUE = By default, FXADDPAR will break strings longer than 68 
+;       /NOCONTINUE = By default, FXADDPAR will break strings longer than 68
 ;                characters into multiple lines using the continuation
 ;                convention.    If this keyword is set, then the line will
 ;                instead be truncated to 68 characters.    This was the default
-;                behaviour of FXADDPAR prior to December 1999.  
+;                behaviour of FXADDPAR prior to December 1999.
 ;
 ;      /NOLOGICAL = If set, then the values 'T' and 'F' are not interpreted as
 ;                logical values, and are simply added without interpretation.
@@ -91,11 +91,11 @@
 ;			FXADDPAR, ERRMSG=ERRMSG, ...
 ;			IF ERRMSG NE '' THEN ...
 ;
-; Calls       : 
+; Calls       :
 ;       DETABIFY(), FXPAR(), FXPARPOS()
-; Common      : 
+; Common      :
 ;       None.
-; Restrictions: 
+; Restrictions:
 ;       Warning -- Parameters and names are not checked against valid FITS
 ;       parameter names, values and types.
 ;
@@ -103,7 +103,7 @@
 ;       NAXIS2, etc., must be entered in order.  The actual values of these
 ;       keywords are not checked for legality and consistency, however.
 ;
-; Side effects: 
+; Side effects:
 ;       All HISTORY records are inserted in order at the end of the header.
 ;
 ;       All COMMENT records are also inserted in order at the end of the
@@ -119,11 +119,11 @@
 ;
 ;       String values longer than 68 characters will be split into multiple
 ;       lines using the OGIP CONTINUE convention, unless the /NOCONTINUE keyword
-;       is set.    For a description of the CONTINUE convention see    
+;       is set.    For a description of the CONTINUE convention see
 ;       http://fits.gsfc.nasa.gov/registry/continue_keyword.html
-; Category    : 
+; Category    :
 ;       Data Handling, I/O, FITS, Generic.
-; Prev. Hist. : 
+; Prev. Hist. :
 ;       William Thompson, Jan 1992, from SXADDPAR by D. Lindler and J. Isensee.
 ;       Differences include:
 ;
@@ -137,9 +137,9 @@
 ;
 ;       William Thompson, May 1992, fixed bug when extending length of header,
 ;       and new record is COMMENT, HISTORY, or blank.
-; Written     : 
+; Written     :
 ;       William Thompson, GSFC, January 1992.
-; Modified    : 
+; Modified    :
 ;       Version 1, William Thompson, GSFC, 12 April 1993.
 ;               Incorporated into CDS library.
 ;       Version 2, William Thompson, GSFC, 5 September 1997
@@ -161,7 +161,7 @@
 ;       Version 8, 15-Sep-2016, W. Thompson, treat byte and boolean values
 ;       Version 8.1, 28-Sep-2016, W. Thompson, use EXECUTE() for pre 8.4
 ;       Version 8.2, 28-Sep-2016, W. Thompson, instead use COMPILE_OPT IDL2
-; Version     : 
+; Version     :
 ;       Version 8.2, 28-Sep-2016
 ;-
 ;
@@ -169,7 +169,7 @@
 ; This is a utility routine, which splits a parameter into several
 ; continuation bits.
 PRO FXADDPAR_CONTPAR, VALUE, CONTINUED
-  
+
   APOST = "'"
   BLANK = STRING(REPLICATE(32B,80)) ;BLANK line
 
@@ -429,7 +429,7 @@ PRO FXADDPAR, HEADER, NAME, VALUE, COMMENT, BEFORE=BEFORE,      $
         ENDIF
 ;
 ;  In conforming extensions, if the keyword is XTENSION, then it must be at the
-;  beginning. 
+;  beginning.
 ;
         IF NN EQ 'XTENSION' THEN BEGIN
                 I = 0
@@ -495,11 +495,11 @@ PRO FXADDPAR, HEADER, NAME, VALUE, COMMENT, BEFORE=BEFORE,      $
                     MESSAGE = 'Required NAXIS keyword not found'
                     GOTO, HANDLE_ERROR
                 ENDIF
-                FOR I = 3, N-2 DO $   
-                    IF STRMID(KEYWRD[I],0,5) NE 'NAXIS' THEN GOTO, INSERT 
-                   
+                FOR I = 3, N-2 DO $
+                    IF STRMID(KEYWRD[I],0,5) NE 'NAXIS' THEN GOTO, INSERT
+
          ENDIF
-    
+
 ;
 ;  If the first keyword is XTENSION, and has the value of either 'TABLE' or
 ;  'BINTABLE', then there are some additional required keywords.
@@ -568,7 +568,7 @@ INSERT:
 ;
 ;  Now put value into keyword at line I.
 ;
-REPLACE: 
+REPLACE:
         H=BLANK                 ;80 blanks
         STRPUT,H,NN+'= '        ;insert name and =.
         APOST = "'"             ;quote (apostrophe) character
@@ -579,7 +579,7 @@ REPLACE:
 
         IF STYPE EQ 7 THEN BEGIN              ;which type?
                 UPVAL = STRUPCASE(VALUE)        ;force upper case.
-                IF ~KEYWORD_SET(NOLOGICAL)  $ 
+                IF ~KEYWORD_SET(NOLOGICAL)  $
 		   &&  ((UPVAL EQ 'T') OR (UPVAL EQ 'F')) THEN BEGIN
                         STRPUT,H,UPVAL,29       ;insert logical value.
 ;
@@ -615,7 +615,7 @@ REPLACE:
                               GOTO, DONE_CHECK_CONT
                             K = K + 1
                         ENDWHILE
-                        
+
                         DONE_CHECK_CONT:
                         NOLDCONT = K - I - 1
                         NNEWCONT = N_ELEMENTS(CVAL) - 1
@@ -627,7 +627,7 @@ REPLACE:
                                 HEADER = [HEADER, REPLICATE(BLANK,36)]
                                 N = N_ELEMENTS(HEADER)
                             ENDWHILE
-                        ENDIF 
+                        ENDIF
 
                         ;; Shift the old lines properly
                         IF NNEWCONT NE NOLDCONT THEN $
@@ -644,14 +644,14 @@ REPLACE:
                             STRPUT,H,APOST+STRMID(CVAL[0],0,68)+APOST+ $
                               ' /'+COMMENT,10
                             HEADER[I]=H
-                                
+
 ;  There might be a continuation of this string.  CVAL would contain
 ;  more than one element if that is so.
-                            
+
                             ;; Add new continuation lines
                             IF N_ELEMENTS(CVAL) GT 1 THEN BEGIN
                               HEADER[I+1] = CVAL[1:*]
-                            
+
                             ;; Header state is now clean, so add
                             ;; warning to header
 
@@ -734,4 +734,3 @@ HANDLE_ERROR:
 		ELSE MESSAGE, MESSAGE
         RETURN
         END
-

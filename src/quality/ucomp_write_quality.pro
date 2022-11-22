@@ -1,7 +1,7 @@
 ; docformat = 'rst'
 
 ;+
-; Compute quality for the level 1 images for a given wave region. 
+; Compute quality for the level 1 images for a given wave region.
 ;
 ; :Params:
 ;   wave_region : in, required, type=string

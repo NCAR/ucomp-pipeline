@@ -5,7 +5,7 @@ function ucomp_gbu_check_identical_temps_ut::init, _extra=e
 
   if (~self->UCoMPutTestCase::init(_extra=e)) then return, 0
 
-  
+
   self->addTestingRoutine, ['ucomp_gbu_check_identical_temps'], $
                            /is_function
 

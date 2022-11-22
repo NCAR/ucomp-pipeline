@@ -5,7 +5,7 @@ function ucomp_analytic_gauss_fit2_ut::init, _extra=e
 
   if (~self->MGutTestCase::init(_extra=e)) then return, 0
 
-  
+
   self->addTestingRoutine, ['ucomp_analytic_gauss_fit2'], $
                            /is_function
 

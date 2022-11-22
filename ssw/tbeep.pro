@@ -1,6 +1,6 @@
 pro tbeep, nbeeps , ibwait , waitn=waitn
 ;
-;+ 
+;+
 ;   Name: tbeep
 ;
 ;   Purpose: beep terminal
@@ -19,7 +19,7 @@ pro tbeep, nbeeps , ibwait , waitn=waitn
 ;
 ;-
 if n_elements(ibwait) gt 0 then waitn=ibwait
-if n_elements(waitn) eq 0 then waitn=.2 
+if n_elements(waitn) eq 0 then waitn=.2
 if n_elements(nbeeps) eq 0 then nbeeps = 1
 for i=0,nbeeps-1 do begin
    wait,waitn
@@ -27,4 +27,3 @@ for i=0,nbeeps-1 do begin
 endfor
 return
 end
-   

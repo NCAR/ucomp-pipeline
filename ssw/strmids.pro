@@ -1,5 +1,5 @@
-function strmids, inarray, start_position, exlength 
-;+ 
+function strmids, inarray, start_position, exlength
+;+
 ;   Name: strmids
 ;
 ;   Purpose: strmid with vectorized parameters
@@ -10,7 +10,7 @@ function strmids, inarray, start_position, exlength
 ;      exlength - length to extract (array ok)
 ;
 ;   Output:
-;      function return value is trimmed string array 
+;      function return value is trimmed string array
 ;
 ;   Calling Sequence:
 ;      strarr=strmid(inarray, start_positions, exlength )
@@ -23,16 +23,16 @@ function strmids, inarray, start_position, exlength
 ;           4567
 ;           56789
 ;
-; 
+;
 ;   History:
-;      12-sep-1997 - S.L.Freeland 
+;      12-sep-1997 - S.L.Freeland
 ;      16-sep-1997 - S.L.Freeland - ignore action for any '-1' paramters
-;                                   (allow strpos direct pass through)  
+;                                   (allow strpos direct pass through)
 ;      17-sep-1997 - S.L.Freeland - dont bother initializing output array
 ;
 ;   Method:
-;      calls strmid - vectorized for uniq combinations of 
-;                     of start position and length  
+;      calls strmid - vectorized for uniq combinations of
+;                     of start position and length
 ;-
 ; ----------- check input -------------------
 if not data_chk(inarray,/string) then begin
@@ -61,7 +61,7 @@ upos=uniq(uarr,sort(uarr))
 
 for i=0,n_elements(upos)-1 do begin
    s0=start_position(upos(i)) & l0=exlength(upos(i))     ; THIS combination
-   which =where(start_position eq s0 and exlength eq l0) ; combo matches  
+   which =where(start_position eq s0 and exlength eq l0) ; combo matches
    outarray(which) = strmid(inarray(which),s0,l0)        ; vector operation
 endfor
 

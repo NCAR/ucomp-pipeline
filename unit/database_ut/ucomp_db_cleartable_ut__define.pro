@@ -6,7 +6,7 @@ function ucomp_db_cleartable_ut::init, _extra=e
   if (~self->UCoMPutTestCase::init(_extra=e)) then return, 0
 
   self->addTestingRoutine, ['ucomp_db_cleartable']
-  
+
 
   return, 1
 end

@@ -4,7 +4,7 @@
 ;   cgCenterTLB
 ;
 ; PURPOSE:
-;   This is a utility routine to position a widget program on the display at an arbitrary 
+;   This is a utility routine to position a widget program on the display at an arbitrary
 ;   location. By default the widget is centered on the display.
 ;
 ;******************************************************************************************;
@@ -36,12 +36,12 @@
 ;******************************************************************************************;
 ;
 ;+
-; This is a utility routine to position a widget program on the display at an arbitrary 
+; This is a utility routine to position a widget program on the display at an arbitrary
 ; location. By default the widget is centered on the display.
 ;
 ; :Categories:
 ;    Utilities
-;    
+;
 ; :Params:
 ;    tlb: in, required, type=long
 ;       The top-level base identifier of the widget program. This must
@@ -56,10 +56,10 @@
 ;       of the widget as measured from the top of the screen.
 ;       The default value is 0.5 (the center) Setting this equal to 1.0
 ;       places the widget at the bottom of the screen.
-;       
+;
 ; :Keywords:
 ;    centerontlb: in, optional, type=long
-;      If provided, the center of the widget is positioned at 
+;      If provided, the center of the widget is positioned at
 ;      the center of the widget whose ID is provided here.
 ;    device: in, optional, type=boolean, default=0
 ;       Normally, the x and y parameters are specified in normalized
@@ -70,10 +70,10 @@
 ;       location specified by the x and y parameters.  If `NoCenter` is set
 ;       to a non-zero value, then the upper left corner of the widget
 ;       is postioned at the specifed location.
-;         
+;
 ; :Author:
 ;    FANNING SOFTWARE CONSULTING::
-;       David W. Fanning 
+;       David W. Fanning
 ;       1645 Sheely Drive
 ;       Fort Collins, CO 80526 USA
 ;       Phone: 970-221-0438
@@ -100,16 +100,16 @@
 PRO cgCenterTLB, tlb, x, y, $
     CenterOnTLB=wCenterOnTLB, $
     Device=device, $
-    NoCenter=nocenter 
-   
+    NoCenter=nocenter
+
     On_Error, 2
-    
+
     IF Widget_Info(tlb, /Valid_ID) EQ 0 THEN Message, 'First parameter must be a valid widget ID.'
-    
+
     IF N_Elements(x) EQ 0 THEN xc = 0.5 ELSE xc = Float(x[0])
     IF N_Elements(y) EQ 0 THEN yc = 0.5 ELSE yc = Float(y[0])
     center = 1 - Keyword_Set(nocenter)
-    
+
     ; Get the screen size of the primary monitor.
     screenSize = GetPrimaryScreenSize(/Exclude_Taskbar)
     IF N_Elements(wCenterOnTLB) EQ 1 && $
@@ -124,12 +124,12 @@ PRO cgCenterTLB, tlb, x, y, $
        xCenter = xc
        yCenter = yc
     ENDELSE
-    
+
     ; Get the screen sizes of the TLB. Divide by 2.
     geom = Widget_Info(tlb, /Geometry)
     xHalfSize = geom.Scr_XSize / 2
     yHalfSize = geom.Scr_YSize / 2
-    
+
     ; Are you centering, or placing upper-left corner?
     IF center THEN BEGIN
        xOffset = 0 > (xCenter - xHalfSize) < (screenSize[0] - geom.Scr_Xsize)
@@ -138,8 +138,8 @@ PRO cgCenterTLB, tlb, x, y, $
        xOffset = xcenter
        yOffset = ycenter
     ENDELSE
-    
+
     ; Set the offsets.
     Widget_Control, tlb, XOffset=xOffset, YOffset=yOffset
-    
+
 END

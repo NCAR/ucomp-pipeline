@@ -1,19 +1,19 @@
 function extract_fid, filenames, times=times, fidfound=fidfound, $
 		      notime=notime, pattern=pattern, quiet=quiet
 ;+
-;   Name: extract_fid 
+;   Name: extract_fid
 ;
 ;   Purpose: extract embedded FIDS from file names, return fids and times
 ;
 ;   NOTE: ** broke out and optimized logic into EXTRACT_FIDS.PRO **
-;            
+;
 ;   Input Paramters:
 ;      filenames - string array of filenames with embedded FID
 ;                  fmt=[...xxxYYMMDD.HHMM[SS]... ...xxxYYMMDD_HHMM[SS]...]
 ;
 ;   Output Paramters:
 ;      function returns fids
-;   
+;
 ;   Keyword Parameters:
 ;      times (output) -    string formatted times (fid conversion)
 ;      fidfound (output) - boolean flag = true if valid FIDs extracted
@@ -21,8 +21,8 @@ function extract_fid, filenames, times=times, fidfound=fidfound, $
 ;      pattern (input) - passed to EXTRACT_FIDS
 ;                        date string template
 ;                        EX: 'yymmdd.hhmmss', 'yyyymmdd', 'yyyymmdd_hhmm'
-;      quiet           - if set, be quiet  
-;  
+;      quiet           - if set, be quiet
+;
 ;   History:
 ;      16-nov-1995 (S.L.Freeland)
 ;      28-mar-1997 (SLF) - extend to 4 digit years, time via 'file2time.pro'
@@ -30,7 +30,7 @@ function extract_fid, filenames, times=times, fidfound=fidfound, $
 ;      24-nov-1997 (SLF) - optimize logic in extract_fids.pro (with an 's')
 ;                          ** Just made this a front end to extract_fids.pro **
 ;                          Removes restriction on using a fixed length for
-;                          a given call  
+;                          a given call
 ;      21-apr-1998 (RAS) - vectorize selection of null extensions
 ;      04-Jun-2020 (Kim Tolbert) - Added quiet keyword
 ;-
@@ -53,4 +53,4 @@ endif else begin
 endelse
 if n_elements(fids) eq 1 then fids=fids(0)
 return,fids
-end     
+end

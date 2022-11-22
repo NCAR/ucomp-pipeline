@@ -5,7 +5,7 @@
 ; AUTHOR:
 ;   Craig B. Markwardt, NASA/GSFC Code 662, Greenbelt, MD 20770
 ;   craigm@lheamail.gsfc.nasa.gov
-;   UPDATED VERSIONs can be found on my WEB PAGE: 
+;   UPDATED VERSIONs can be found on my WEB PAGE:
 ;      http://cow.physics.wisc.edu/~craigm/idl/idl.html
 ;
 ; PURPOSE:
@@ -21,8 +21,8 @@
 ;
 ; DESCRIPTION:
 ;
-;  LINFITEX is a model function to be used with MPFIT in order to 
-;  fit a line to data with errors in both "X" and "Y" directions.  
+;  LINFITEX is a model function to be used with MPFIT in order to
+;  fit a line to data with errors in both "X" and "Y" directions.
 ;  LINFITEX follows the methodology of Numerical Recipes, in the
 ;  section entitled, "Straight-Line Data with Errors in Both
 ;  Coordinates."
@@ -61,11 +61,11 @@
 ;   Returns a vector of residuals, of the same size as X.
 ;
 ; EXAMPLE:
-;   
+;
 ;   ; X and Y values
 ;   XS = [2.9359964E-01,1.0125043E+00,2.5900450E+00,2.6647639E+00,3.7756164E+00,4.0297413E+00,4.9227958E+00,6.4959011E+00]
 ;   YS = [6.0932738E-01,1.3339731E+00,1.3525699E+00,1.4060204E+00,2.8321848E+00,2.7798350E+00,2.0494456E+00,3.3113062E+00]
-;   
+;
 ;   ; X and Y errors
 ;   XE = [1.8218818E-01,3.3440986E-01,3.7536234E-01,4.5585755E-01,7.3387712E-01,8.0054945E-01,6.2370265E-01,6.7048335E-01]
 ;   YE = [8.9751285E-01,6.4095122E-01,1.1858428E+00,1.4673588E+00,1.0045623E+00,7.8527629E-01,1.2574003E+00,1.0080348E+00]

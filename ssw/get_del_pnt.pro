@@ -16,12 +16,12 @@ function get_del_pnt, times, ref, x=x, y=y, z=z, qstop=qstop
 ;		  time in the input array.
 ;OUTPUT:
 ;	returns a vector 3xN of offsets in arcseconds relative to the
-;	reference time of the S/C commanded pointing changes.  
+;	reference time of the S/C commanded pointing changes.
 ;		(0) = East/West with East negative
 ;		(1) = North/South with South negative
 ;		(2) = Roll (
-;	It does not take into account the 1 arcminute drift in pointing 
-;	generally seen over an orbit.  Changes in the pointing bias value 
+;	It does not take into account the 1 arcminute drift in pointing
+;	generally seen over an orbit.  Changes in the pointing bias value
 ;	are taken into account.
 ;HISTORY:
 ;	Written 30-Nov-92 by M.Morrison

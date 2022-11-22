@@ -6,7 +6,7 @@ function ucomp_crash_notification_ut::init, _extra=e
   if (~self->UCoMPutTestCase::init(_extra=e)) then return, 0
 
   self->addTestingRoutine, ['ucomp_crash_notification']
-  
+
 
   return, 1
 end

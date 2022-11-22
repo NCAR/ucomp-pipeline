@@ -5,7 +5,7 @@ function anytim2ints, tim_in, offset=offset, qstop=qstop, mdy=mdy
 ;	anytim2ints
 ;PURPOSE:
 ;	Given a time in the form of a (1) structure, (2) 7-element time
-;	representation, or (3) a string representation, or (4) an array 
+;	representation, or (3) a string representation, or (4) an array
 ;	2xN where the first dimension holds (MSOD, DS79)
 ;	convert to the a simple structure with .TIME and .DAY
 ;CALLING SEQUENCE:
@@ -20,7 +20,7 @@ function anytim2ints, tim_in, offset=offset, qstop=qstop, mdy=mdy
 ;		  or (3) a string of the format "hh:mm dd-mmm-yy"
 ;OPTIONAL KEYWORD INPUT:
 ;	offset	- The input time can be offset by a scalar or vector number of
-;		  seconds.  If "offset" is an array, it should be the same 
+;		  seconds.  If "offset" is an array, it should be the same
 ;		  length at tim_in
 ;HISTORY:
 ;	Written 30-May-92 by M.Morrison

@@ -6,13 +6,13 @@
 ; Purpose     : Parse time in a filename encoded with date/time, e.g.
 ;               sxi_20020101_010302.fits. Uses fast REGEX.
 ;
-; Category    : I/O utility time 
+; Category    : I/O utility time
 ;
 ; Syntax      : IDL> times=parse_time(files)
 ;
-; Inputs      : FILES = file names 
+; Inputs      : FILES = file names
 ;
-; Outputs     : TIMES = structure with .year, .month, .day, .hour, .minute, 
+; Outputs     : TIMES = structure with .year, .month, .day, .hour, .minute,
 ;                       .millisecond fields.
 ;
 ; Keywords    : DELIM = time delimiter (def= '_')
@@ -27,9 +27,9 @@
 ;               MSECS = include optional _milliseconds
 ;
 ; History     : 10-Jan-2002, Zarro (EER/GSFC)
-;               15-Dec-2004, Zarro (L-3Com/GSFC) - fixed IDL 6.1 space bug 
+;               15-Dec-2004, Zarro (L-3Com/GSFC) - fixed IDL 6.1 space bug
 ;               20-Feb-2005, Zarro (L-3Com/GSFC) - added /UTC
-;               24-Oct-2010, Zarro (ADNET) 
+;               24-Oct-2010, Zarro (ADNET)
 ;                - added optional underscore millisec delimiter
 ;               12-Nov-2014, Zarro (ADNET)
 ;                - support filenames without prefixes
@@ -123,4 +123,3 @@ if keyword_set(vms) then return,anytim2utc(times,/vms,truncate=truncate)
 return,times
 
 end
-

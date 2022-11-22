@@ -42,4 +42,3 @@ function exist,var
 return,n_elements(var) ne 0
 
 end
-

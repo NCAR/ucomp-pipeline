@@ -1,30 +1,30 @@
         FUNCTION BREAK_PATH, PATHS, NOCURRENT=NOCURRENT
 ;+
-; NAME: 
+; NAME:
 ;    BREAK_PATH()
 ;
-; PURPOSE: 
+; PURPOSE:
 ;     Breaks up a path string into its component directories.
 ;
-; CALLING SEQUENCE: 
+; CALLING SEQUENCE:
 ;     Result = BREAK_PATH( PATHS [ /NoCurrent])
 ;
-; INPUTS: 
+; INPUTS:
 ;     PATHS   = A string containing one or more directory paths.  The
-;               individual paths are separated by commas, although in UNIX, 
-;               colons can also be used.  In other words, PATHS has the same 
-;               format as !PATH, except that commas can be used as a separator 
+;               individual paths are separated by commas, although in UNIX,
+;               colons can also be used.  In other words, PATHS has the same
+;               format as !PATH, except that commas can be used as a separator
 ;               regardless of operating system.
 ;
-;               A leading $ can be used in any path to signal that what follows 
-;               is an environmental variable, but the $ is not necessary.    
+;               A leading $ can be used in any path to signal that what follows
+;               is an environmental variable, but the $ is not necessary.
 ;               Environmental variables can themselves contain multiple paths.
 ;
-; OUTPUT: 
+; OUTPUT:
 ;      The result of the function is a string array of directories.
-;      Unless the NOCURRENT keyword is set, the first element of the array is 
-;      always the null string, representing the current directory.  All the 
-;      other directories will end in the correct separator character for the 
+;      Unless the NOCURRENT keyword is set, the first element of the array is
+;      always the null string, representing the current directory.  All the
+;      other directories will end in the correct separator character for the
 ;      current operating system.
 ;
 ; OPTIONAL INPUT KEYWORD:
@@ -61,8 +61,8 @@
 ;  are needed to extract everything.  The same is true for Microsoft Windows
 ;  and semi-colons.
 ;
-        sep = path_sep(/SEARCH_PATH) 
-        PATH = ['',STRSPLIT(PATHS,SEP + ',',/EXTRACT)] 
+        sep = path_sep(/SEARCH_PATH)
+        PATH = ['',STRSPLIT(PATHS,SEP + ',',/EXTRACT)]
 ;
 ;  For each path, see if it is really an environment variable.  If so, then
 ;  decompose the environmental variable into its constituent paths.
@@ -71,8 +71,8 @@
         WHILE I LT N_ELEMENTS(PATH) DO BEGIN
 ;
 ;  First, try the path by itself.  Remove any trailing "/", "\", or ":"
-;  characters.  
- 
+;  characters.
+
                 CHAR = STRMID(PATH[I],STRLEN(PATH[I])-1,1)
                 IF (CHAR EQ '/') OR (CHAR EQ '\') OR (CHAR EQ ':') THEN $
                         PATH[I] = STRMID(PATH[I],0,STRLEN(PATH[I])-1)
@@ -85,14 +85,14 @@
                 IF TEST EQ '' THEN IF STRMID(PATH[I],0,1) EQ '$' THEN BEGIN
                         FOLLOWING = STRMID(TEMP,1,STRLEN(TEMP)-1)
                         TEST = GETENV(FOLLOWING)
-		ENDIF	
+		ENDIF
 ;
 ;
 ;  If something was found, then decompose this into whatever paths it may
 ;  contain.
 ;
                 IF TEST NE '' THEN BEGIN
-                        PTH = STRSPLIT(TEST,SEP+',',/EXTRACT) 
+                        PTH = STRSPLIT(TEST,SEP+',',/EXTRACT)
 ;
 ;  Insert this sublist into the main path list.
 ;
@@ -106,7 +106,7 @@
                                 PATH = [PATH[0:I-1],PTH,PATH[I+1:*]]
                         ENDELSE
 ;
-;  Otherwise, check whether or not the path ends in the correct character.  
+;  Otherwise, check whether or not the path ends in the correct character.
 ;  In Unix, if the path does not end in "/" then append it.  Do the same with
 ;  the "\" character in Microsoft Windows.  This step is only taken once the
 ;  routine has completely decomposed this part of the path list.

@@ -74,7 +74,7 @@ pro ucomp_average_flatfile, primary_header, ext_data, ext_headers, $
   for g = 0L, n_groups - 1L do begin
     count = group_starts[g + 1] - group_starts[g]
     gi = group_indices[group_starts[g]:group_starts[g+1] - 1]
-    
+
     d = ext_data[*, *, *, *, gi]
     averaged_ext_data[*, *, *, *, g] =  size(d, /n_dimensions) lt 5 ? d : mean(d, dimension=5)
 

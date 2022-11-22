@@ -70,7 +70,7 @@ if (n_elements(entim) ne 0) then begin		;case where end time is also given
 end
 ;
 if (keyword_set(string_out)) then begin
-    weeks = string(years, format='(i2.2)') + "_" + string(weeks, format='(i2.2)') 
+    weeks = string(years, format='(i2.2)') + "_" + string(weeks, format='(i2.2)')
 end
 
 end

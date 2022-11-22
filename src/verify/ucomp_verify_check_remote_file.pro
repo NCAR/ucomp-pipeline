@@ -49,12 +49,12 @@ function ucomp_verify_check_remote_file, basename, $
     mg_log, 'bad remote permissions: %s', permissions, name=logger_name, /warn
     return, 8UL
   endif
-  
+
   if (group ne 'cordyn') then begin
     mg_log, 'bad remote group: %s', group, name=logger_name, /warn
     return, 16UL
   endif
-  
+
   if (remote_filesize ne local_filesize) then begin
     mg_log, 'non-matching file sizes (local: %s B, remote %s B)', $
             mg_float2str(local_filesize, places_sep=','), $

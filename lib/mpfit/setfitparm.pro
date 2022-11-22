@@ -146,7 +146,7 @@ CASE buttonUValue OF
       (*info.ptr).fparm(2).limits(0) = ll_width
       (*info.ptr).fparm(3).limits(0) = ll_offset
       (*info.ptr).fparm(4).limits(0) = ll_slope
-      
+
       (*info.ptr).fparm(0).limits(1) = ul_height
       (*info.ptr).fparm(1).limits(1) = ul_xmax
       (*info.ptr).fparm(2).limits(1) = ul_width

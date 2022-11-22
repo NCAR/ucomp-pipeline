@@ -5,12 +5,12 @@
 ;
 ; :Keywords:
 ;   run : in, required, type=object
-;     `ucomp_run` object 
+;     `ucomp_run` object
 ;-
 pro ucomp_db_clearday, run=run
   compile_opt strictarr
 
-  ; clear database for the day 
+  ; clear database for the day
   if (run->config('database/update')) then begin
     mg_log, 'clearing database for the day', name=run.logger_name, /info
   endif else begin
@@ -43,7 +43,7 @@ pro ucomp_db_clearday, run=run
     ucomp_db_cleartable, obsday_index, tables[t], db, $
                          logger_name=run.logger_name
   endfor
-  
+
   done:
   if (arg_present(db)) then obj_destroy, db
   mg_log, 'done', name=run.logger_name, /info

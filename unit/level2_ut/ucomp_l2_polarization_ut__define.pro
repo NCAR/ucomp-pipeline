@@ -6,7 +6,7 @@ function ucomp_l2_polarization_ut::init, _extra=e
   if (~self->MGutTestCase::init(_extra=e)) then return, 0
 
   self->addTestingRoutine, ['ucomp_l2_polarization']
-  
+
 
   return, 1
 end

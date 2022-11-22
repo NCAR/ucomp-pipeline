@@ -5,18 +5,18 @@ pro gen_struct, Pointer = Pointer,  $
                      GEN2_Index = GEN2_Index,  $
                      MO_Disk_Map = MO_Disk_Map,  $
                      MO_Disk_Log = MO_Disk_Log
-   
-   
+
+
 ;+
 ;       NAME:
 ;               GEN_STRUCT
 ;       PURPOSE:
 ;               Define the following general database structures
-;                       * Pointer_Rec              
-;                       * File_Header_Rec          
-;                       * QS_General1_Rec          
-;                       * GEN_Index_rec            
-;                       * GEN2_Index_rec            
+;                       * Pointer_Rec
+;                       * File_Header_Rec
+;                       * QS_General1_Rec
+;                       * GEN_Index_rec
+;                       * GEN2_Index_rec
 ;                       * MO_Disk_Map_Rec
 ;                       * MO_Disk_Log_Rec
 ;
@@ -24,17 +24,17 @@ pro gen_struct, Pointer = Pointer,  $
 ;               GEN_STRUCT
 ;       HISTORY:
 ;               written by Mons Morrison, Fall 90.
-;                9-Mar-95 (MDM) - Added documentation comments 
+;                9-Mar-95 (MDM) - Added documentation comments
 ;                               - (Compression of the data section)
 ;
 ;-
-   
-   
+
+
 Pointer = { Pointer_Rec,              $
       Pointer_Version: FIX('1011'x),  $      ;
                                              ;  0- Pointer structure version
                                              ;
-      type_integer: BYTE(0),  $              ;  2- Integer format convention 
+      type_integer: BYTE(0),  $              ;  2- Integer format convention
                                              ;       1 = DEC (Digital) byte ordering (DEFAULT)
                                              ;       2 = Sun, MIPS, ... byte ordering
       type_real: BYTE(0),  $                 ;  3- Real format convention
@@ -68,24 +68,24 @@ Pointer = { Pointer_Rec,              $
                                              ;     This value is only used for
                                              ;     ATT and WBS files.
                                              ;
-      itest: LONG(0),  $                     ; 39- Integer test pattern 
+      itest: LONG(0),  $                     ; 39- Integer test pattern
                                              ;       (value = '01020304'x = 16909060
-      rtest: FLOAT(0),  $                    ; 43- Real test pattern 
+      rtest: FLOAT(0),  $                    ; 43- Real test pattern
                                              ;       (value = 1.234e+5)
       Spare: BYTARR(1) }                     ; 47- Spare
-   
-   
-   
+
+
+
 File_Header = { File_Header_Rec,              $
       fileVerNo: LONG(0),  $                 ; 00- File Structure version number
       progVerNo: LONG(0),  $                 ; 04- Program version number (v.vvv * 1000)
       st$progName: BYTARR(16),  $            ; 08- Name of creating program
       st$fileCreDate: BYTARR(11),  $         ; 24- file Creation Date (DD-MON-YYYY)
       st$fileCreTime: BYTARR(8),  $          ; 35- file Creation Time (HH:MM:SS)
-      first_time: LONG(0),  $                ; 43- Time of first DATA SET in file 
-      first_day: FIX(0),  $                  ; 47- Day of first DATA SET in file 
-      last_time: LONG(0),  $                 ; 49- Time of last DATA SET in file 
-      last_day: FIX(0),  $                   ; 53- Day of last  DATA SET in file 
+      first_time: LONG(0),  $                ; 43- Time of first DATA SET in file
+      first_day: FIX(0),  $                  ; 47- Day of first DATA SET in file
+      last_time: LONG(0),  $                 ; 49- Time of last DATA SET in file
+      last_day: FIX(0),  $                   ; 53- Day of last  DATA SET in file
       orb_st_time: LONG(0),  $               ; 55- Start time (millisec of day) of ORBIT
       orb_st_day: FIX(0),  $                 ; 59- Start day (since 1-Jan-79)
       orb_en_time: LONG(0),  $               ; 63- End time (millisec of day) or orbit
@@ -98,7 +98,7 @@ File_Header = { File_Header_Rec,              $
                                              ;       For CBA,HDA,ATT this is a single major frame
                                              ;       For WDA this is two major frames
                                              ;       For BDA this is a single spectra
-      maxSamps: LONG(0),  $                  ; 87- The maximum number of bins, samples, or 
+      maxSamps: LONG(0),  $                  ; 87- The maximum number of bins, samples, or
                                              ;       pixels in all data sets in the file.
                                              ;
       ntot_qs: LONG(0),  $                   ; 91- Total number of quasi-static entries
@@ -111,21 +111,21 @@ File_Header = { File_Header_Rec,              $
                                              ;     optional data section.
                                              ;
       st$file_type: BYTARR(3),  $            ;103- Declaration of file type
-                                             ;       The prefix of the file type so that 
+                                             ;       The prefix of the file type so that
                                              ;       the file can be identified internally.
                                              ;       Valid Options are:
                                              ;               BDA, SPR, SFR, HDA, WDA, ADA, CBA
-      st$spacecraft: BYTARR(3),  $           ;106- Identification of the spacecraft from 
-                                             ;       which the data originated 
+      st$spacecraft: BYTARR(3),  $           ;106- Identification of the spacecraft from
+                                             ;       which the data originated
                                              ;       Valid Options are:
                                              ;               SMM, P78, HIN, YOH (Yohkoh, Solar-A),
                                              ;               Gnd (Ground testing)
-      st$instrument: BYTARR(3),  $           ;109- Identification of the instrument from 
-                                             ;       which the data originated 
+      st$instrument: BYTARR(3),  $           ;109- Identification of the instrument from
+                                             ;       which the data originated
                                              ;       Valid Options are:
                                              ;               BCS, HXT, SXT, WBS, ATT
-      st$machine: BYTARR(3),  $              ;112- The computer and/or operating system 
-                                             ;       used to create the file 
+      st$machine: BYTARR(3),  $              ;112- The computer and/or operating system
+                                             ;       used to create the file
                                              ;       Valid Options are:
                                              ;               ULX     - DEC Ultrix
                                              ;               VMS     - DEC VMS system
@@ -133,7 +133,7 @@ File_Header = { File_Header_Rec,              $
                                              ;               IBM
                                              ;               SUN
                                              ;               FAC     - Facom
-                                             ;       Byte ordering and the storage of reals 
+                                             ;       Byte ordering and the storage of reals
                                              ;       can be different on different computers.
       st$FileID: BYTARR(13),  $              ;115- File ID (to derive the file name)
                                              ;
@@ -146,9 +146,9 @@ File_Header = { File_Header_Rec,              $
       st$progName2: BYTARR(16),  $           ;294- Secondary Name of creating program
                                              ;
       spare: BYTARR(26) }                    ;310- spare
-   
-   
-   
+
+
+
 QS_General1 = { QS_General1_Rec,              $
       entry_type : FIX('1011'x),  $          ;
                                              ; 00- Structure/Entry type
@@ -184,16 +184,16 @@ QS_General1 = { QS_General1_Rec,              $
                                              ;       [NOT IMPLEMENTED AS OF 25-Mar-92]
                                              ;
       time_sol_ver: FIX(0),  $               ; 51- Current algorithm and parameter version
-                                             ;       used for converting between DP time 
+                                             ;       used for converting between DP time
                                              ;       and universal time
                                              ;       [NOT IMPLEMENTED AS OF 25-Mar-92]
       spare: BYTARR(11) }                    ; 53- Spare
-   
-   
-   
+
+
+
 GEN_Index = { GEN_Index_rec,              $
       index_version : FIX('1011'x),  $       ;
-                                             ; 00- Index structure version                                   Ground 
+                                             ; 00- Index structure version                                   Ground
                                              ;       AAAABBBB CCCCDDDD
                                              ;       AAAA = Instrument
                                              ;               1= General
@@ -228,7 +228,7 @@ GEN_Index = { GEN_Index_rec,              $
                                              ;               of the data.  In that case, the read routines
                                              ;               will make a four second offset correction for
                                              ;               the old data files.
-                                             ;     For SXT: This is major frame time when the 
+                                             ;     For SXT: This is major frame time when the
                                              ;               image was commanded.  For the actual time
                                              ;               that the shutter opened, add the "exposure
                                              ;               latency" value (usually ~100 msec) to this time
@@ -275,7 +275,7 @@ GEN_Index = { GEN_Index_rec,              $
                                              ;       b6   = SXS detects a flare
                                              ;       b5   = HXS detects a flare
                                              ;       b4   = BCS detects a flare
-                                             ;       b3   = RBM flag status (used for judging 
+                                             ;       b3   = RBM flag status (used for judging
                                              ;             false or true Gamma burst (GBD))
                                              ;             (set= should cancel GBD flag)
                                              ;       b2   = RBM flag status for false or true flares
@@ -320,35 +320,35 @@ GEN_Index = { GEN_Index_rec,              $
                                              ;
                                              ;     _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
       telemetry: BYTE(0),  $                 ; 38- Telemetry source information                              W7 in 1
-                                             ;       b0:3 = Ground Station 
+                                             ;       b0:3 = Ground Station
                                              ;               0 = KSC Real time data
                                              ;               1 = KSC playback data
                                              ;               5 = DSN - Goldstone playback data
                                              ;               7 = DSN - Canberra playback data
                                              ;               9 = DSN - Madrid playback data
-                                             ;               15 = Ground based (test data)   
+                                             ;               15 = Ground based (test data)
                                              ;       b4:7 = Bit rate
                                              ;               0 = low
                                              ;               1 = medium
                                              ;               2 = high
-      sirius: BYTARR(5),  $                  ; 39- Sirius data base information ??                           Ground 
+      sirius: BYTARR(5),  $                  ; 39- Sirius data base information ??                           Ground
                                              ;       TODO ?? - What info here? - path?
                                              ;       [NOT IMPLEMENTED AS OF 25-Mar-92]
                                              ;
                                              ;
                                              ;     _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-      data_quality: BYTE(0),  $              ; 44- Data quality                                              Ground 
+      data_quality: BYTE(0),  $              ; 44- Data quality                                              Ground
                                              ;               1 = good
                                              ;       [NOT IMPLEMENTED AS OF 25-Mar-92]
-      nmissSamps: LONG(0),  $                ; 45- Number of missing bytes (due to telemetry                 Ground 
+      nmissSamps: LONG(0),  $                ; 45- Number of missing bytes (due to telemetry                 Ground
                                              ;     drop outs - minor or major frames)
                                              ;       [NOT IMPLEMENTED AS OF 25-Mar-92]
-      StartSamp: LONG(0),  $                 ; 45- Starting sample number of good data                       Ground 
+      StartSamp: LONG(0),  $                 ; 45- Starting sample number of good data                       Ground
                                              ;       (zero if there are no dropouts)
                                              ;       [NOT IMPLEMENTED AS OF 25-Mar-92]
                                              ;
                                              ;     _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-      data_word_type: BYTE(0),  $            ; 49- Data word type (byte, integer*2, real...)                 Ground 
+      data_word_type: BYTE(0),  $            ; 49- Data word type (byte, integer*2, real...)                 Ground
                                              ;       b0:3 = Data word type
                                              ;               0 = byte
                                              ;               1 = integer*2
@@ -356,7 +356,7 @@ GEN_Index = { GEN_Index_rec,              $
                                              ;               3 = real*4
                                              ;       b4   = Set if data is compressed
                                              ;       b5-6 = SPARE
-                                             ;       b7   = data section has been Unix compressed 
+                                             ;       b7   = data section has been Unix compressed
       nIndexStruct: FIX(0),  $               ; 50- Number of "extra" index structures following
                                              ;     the general index structure
                                              ;     (for additional "ground" structures,
@@ -385,7 +385,7 @@ GEN_Index = { GEN_Index_rec,              $
       hxt_Pow_stat: BYTE(0),  $              ; 60- HXT Power status                                          W48 F32
                                              ;       b7 = HXT1 (electronics for 00 to 31)
                                              ;       b6 = HXT2 (electronics for 32 to 63)
-                                             ;       b5 = OS memory status 
+                                             ;       b5 = OS memory status
                                              ;       b4 = HXA on/off
                                              ;       b3 = HXA cal
                                              ;       b2 = HXT cal
@@ -413,12 +413,12 @@ GEN_Index = { GEN_Index_rec,              $
                                              ;       b1   = SXTE-U hard reset (1=executed)
                                              ;       b0   = SXTE-U soft reset (1=executed)
       spare1: BYTARR(15) }                   ; 63- Spare Bytes
-   
-   
-   
+
+
+
 GEN2_Index = { GEN2_Index_rec,              $
       index_version : FIX('1021'x),  $       ;
-                                             ; 00- Index structure version                                   Ground 
+                                             ; 00- Index structure version                                   Ground
                                              ;       (see definition in GEN_Index_Rec)
       spare1: BYTARR(2),  $                  ; 02 -Padding byte
                                              ;
@@ -433,7 +433,7 @@ GEN2_Index = { GEN2_Index_rec,              $
                                              ;       (see definition in GEN_Index_Rec)
                                              ;
                                              ;     _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-      data_word_type: BYTE(0),  $            ; 12- Data word type (byte, integer*2, real...)                 Ground 
+      data_word_type: BYTE(0),  $            ; 12- Data word type (byte, integer*2, real...)                 Ground
                                              ;       (see definition in GEN_Index_Rec)
       spare2: BYTARR(3),  $                  ; 13 -Padding byte
       nIndexByte: FIX(0),  $                 ; 16- Number of bytes in the index records
@@ -442,9 +442,9 @@ GEN2_Index = { GEN2_Index_rec,              $
                                              ;
                                              ;
       spare: BYTARR(8) }                     ; 24- Spare Bytes
-   
-   
-   
+
+
+
 MO_Disk_Map = { MO_Disk_Map_Rec,              $
       time: LONG(0),  $                      ; 00- Time of first data available (millisec of day)
       day: FIX(0),  $                        ; 04- Day of first data available (since 1-Jan-79)
@@ -459,9 +459,9 @@ MO_Disk_Map = { MO_Disk_Map_Rec,              $
       nfid: FIX(0),  $                       ; 49- The number of FIDS in that span
                                              ;
       spare: BYTARR(13) }                    ; 51- Spare Bytes
-   
-   
-   
+
+
+
 MO_Disk_Log = { MO_Disk_Log_Rec,              $
       time: LONG(0),  $                      ; 00- Time that the MO disk creation was finished
       day: FIX(0),  $                        ; 04- Day that the MO disk creation was finished
@@ -470,9 +470,9 @@ MO_Disk_Log = { MO_Disk_Log_Rec,              $
       st$operator: BYTARR(10),  $            ;  8- Name of person MO disk was made by
                                              ;
       spare: BYTARR(6) }                     ; 18- Spare Bytes
-   
-   
-   
-  
-  
+
+
+
+
+
 end

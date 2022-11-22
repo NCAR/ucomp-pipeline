@@ -14,8 +14,8 @@
 ;				file.
 ;	Output:
 ;		pointer a logical record containning the pointer
-;			section. 
-;		recsize	VMS record size			
+;			section.
+;		recsize	VMS record size
 ;	History:
 ;		written by Mons Morrison, Fall 90.
 ;		12-Dec-91 (MDM) Changed to allow a vector of filenames

@@ -98,7 +98,7 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
   if (n_elements(wrote_l1) gt 0L) then self.wrote_l1 = wrote_l1
   if (n_elements(wrote_dynamics)) then self.wrote_dynamics = wrote_dynamics
   if (n_elements(wrote_polarization)) then self.wrote_polarization = wrote_polarization
-  
+
   if (n_elements(rcam_geometry)) then self.rcam_geometry = rcam_geometry
   if (n_elements(tcam_geometry)) then self.tcam_geometry = tcam_geometry
 

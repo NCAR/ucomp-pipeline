@@ -62,7 +62,7 @@
 ;		MINUTE, SECOND, and MILLISECOND.
 ;
 ;		Any elements not found in the input character string will be
-;		set to zero.		
+;		set to zero.
 ;
 ; Opt. Outputs:	None.
 ;
@@ -73,11 +73,11 @@
 ;			   day-month-year.
 ;		MDY	 = If set, then the date is in the order
 ;			   month-day-year.
-;		ERRMSG	 = If defined and passed, then any error messages 
-;			   will be returned to the user in this parameter 
-;			   rather than being handled by the IDL MESSAGE 
-;			   utility.  If no errors are encountered, then a null 
-;			   string is returned.  In order to use this feature, 
+;		ERRMSG	 = If defined and passed, then any error messages
+;			   will be returned to the user in this parameter
+;			   rather than being handled by the IDL MESSAGE
+;			   utility.  If no errors are encountered, then a null
+;			   string is returned.  In order to use this feature,
 ;			   the string ERRMSG must be defined first, e.g.,
 ;
 ;				ERRMSG = ''
@@ -102,7 +102,7 @@
 ;		valid.  For example, it would not object to the date
 ;		"1993-February-31", even though there is no such date.
 ;
-; Side effects:	If an error is encountered and the ERRMSG keyword is set, 
+; Side effects:	If an error is encountered and the ERRMSG keyword is set,
 ;		STR2UTC returns an integer scalar equal to -1.
 ;
 ; Category    :	Utilities, Time.

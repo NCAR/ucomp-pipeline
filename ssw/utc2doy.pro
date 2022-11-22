@@ -49,12 +49,12 @@
 ; Keywords    :	FRACTIONAL   =	If set, then a fractional day-of-year will be
 ;				returned, instead of a whole number.
 ;
-;		ERRMSG       =	If defined and passed, then any error messages 
-;				will be returned to the user in this parameter 
-;				rather than being handled by the IDL MESSAGE 
-;				utility.  If no errors are encountered, then a 
-;				null string is returned.  In order to use this 
-;				feature, the string ERRMSG must be defined 
+;		ERRMSG       =	If defined and passed, then any error messages
+;				will be returned to the user in this parameter
+;				rather than being handled by the IDL MESSAGE
+;				utility.  If no errors are encountered, then a
+;				null string is returned.  In order to use this
+;				feature, the string ERRMSG must be defined
 ;				first, e.g.,
 ;
 ;					ERRMSG = ''
@@ -67,7 +67,7 @@
 ;
 ; Restrictions:	None.
 ;
-; Side effects:	If an error is encountered and the ERRMSG keyword is set, 
+; Side effects:	If an error is encountered and the ERRMSG keyword is set,
 ;		UTC2DOY returns an integer scalar equal to -1.
 ;
 ; Category    :	Utilities, Time.
@@ -88,7 +88,7 @@
 ;		Version 5, Donald G. Luttermoser, GSFC/ARC, 30 January 1995
 ;			Added ERRMSG keyword to internally called procedures.
 ;			Madec the error handling routine more robust.  Note
-;			that this procedure can handle both scalars and 
+;			that this procedure can handle both scalars and
 ;			vectors as input.
 ;		Version 6, William Thompson, GSFC, 28 January 1997
 ;			Allow for long input arrays.

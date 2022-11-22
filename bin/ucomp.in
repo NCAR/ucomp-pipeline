@@ -235,7 +235,7 @@ def verify(args):
 
 def file_lines(filename):
     n_lines = 0
-    
+
     with open(filename, "r") as f:
         for line in f.readlines():
             n_lines += 1
@@ -337,7 +337,7 @@ def ls(args):
     try:
         files = [f for f in args.files if os.path.isfile(f)]
         dirs = [d for d in args.files if os.path.isdir(d)]
-    
+
         if len(files) == 0 and len(dirs) == 1:
             items = [f for f in glob.glob(os.path.join(dirs[0], "*"))]
             files = [f for f in items if os.path.isfile(f)]
@@ -472,7 +472,7 @@ def filter_file(logfile, level_index, follow):
                         except IOError:
                             return
                         continue
-    
+
                     if loglevel_prog.match(line):
                         matched_last_line = True
                         try:
@@ -1175,7 +1175,7 @@ if __name__ == "__main__":
         help="reprocess date(s)")
     clearday_parser = subparsers.add_parser("clearday",
         help="clear database and processing for date(s)")
-   
+
     eod_parser.add_argument("dates", type=str, nargs="*", help=date_help,
         metavar="date-expr")
     rt_parser.add_argument("dates", type=str, nargs="*", help=date_help,

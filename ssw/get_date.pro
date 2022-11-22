@@ -5,8 +5,8 @@ pro get_date, dte, in_date, OLD = old, TIMETAG = timetag
 ; PURPOSE:
 ;       Return the (current) UTC date in CCYY-MM-DD format for FITS headers
 ; EXPLANATION:
-;       This is the format required by the DATE and DATE-OBS keywords in a 
-;       FITS header.  
+;       This is the format required by the DATE and DATE-OBS keywords in a
+;       FITS header.
 ;
 ; CALLING SEQUENCE:
 ;       GET_DATE, FITS_date, [ in_date, /OLD, /TIMETAG ]
@@ -16,14 +16,14 @@ pro get_date, dte, in_date, OLD = old, TIMETAG = timetag
 ; OUTPUTS:
 ;       FITS_date = A scalar character string giving the current date.    Actual
 ;               appearance of dte depends on which keywords are supplied.
-;       
+;
 ;       No Keywords supplied - dte is a 10 character string with the format
 ;               CCYY-MM-DD where <CCYY> represents a calendar year, <MM> the
-;               ordinal number of a calendar month within the calendar year, 
+;               ordinal number of a calendar month within the calendar year,
 ;               and <DD> the ordinal number of a day within the calendar month.
 ;       /TIMETAG set - dte is a 19 character string with the format
 ;               CCYY-MM-DDThh:mm:ss where <hh> represents the hour in the day,
-;                <mm> the minutes, <ss> the seconds, and the literal 'T' the 
+;                <mm> the minutes, <ss> the seconds, and the literal 'T' the
 ;               ISO 8601 time designator
 ;       /OLD set - dte is an 8 character string in DD/MM/YY format
 ;
@@ -31,10 +31,10 @@ pro get_date, dte, in_date, OLD = old, TIMETAG = timetag
 ;       /TIMETAG - Specify the time to the nearest second in the DATE format
 ;       /OLD - Return the DATE format formerly (pre-1997) recommended for FITS
 ;               Note that this format is now deprecated because it uses only
-;               a 2 digit representation of the year. 
+;               a 2 digit representation of the year.
 ; EXAMPLE:
 ;       Add the current date to the DATE keyword in a FITS header,h
-;     
+;
 ;       IDL> GET_DATE,dte
 ;       IDL> sxaddpar, h, 'DATE', dte, 'Date header was created'
 ;
@@ -42,7 +42,7 @@ pro get_date, dte, in_date, OLD = old, TIMETAG = timetag
 ;       (1) A discussion of the DATExxx syntax in FITS headers can be found in
 ;       http://www.cv.nrao.edu/fits/documents/standards/year2000.txt
 ;
-;       (2) Those who wish to use need further flexibility in their date 
+;       (2) Those who wish to use need further flexibility in their date
 ;       formats (e.g. to use TAI time) should look at Bill Thompson's time
 ;       routines in http://sohowww.nascom.nasa.gov/solarsoft/gen/idl/time
 ;
@@ -58,7 +58,7 @@ pro get_date, dte, in_date, OLD = old, TIMETAG = timetag
 ;-
  On_error,2
  compile_opt idl2
- 
+
  if N_params() LT 1 then begin
      print,'Syntax - Get_date, FITS_date, [ in_date, /TIMETAG, /OLD ]'
      print,'  FITS_date - output string giving date(s) in FITS format'
@@ -80,15 +80,15 @@ pro get_date, dte, in_date, OLD = old, TIMETAG = timetag
      mjd = seconds/dayseconds + 40587.0D
      jd =  2400000.5D + mjd
      DAYCNV, jd, yr, month, day, hr
- endelse 
+ endelse
 
  if keyword_set(old) then begin
 
  if yr GE 2000 then yr = yr - 100
  dte =  string(day,f='(I2.2)') + '/' + string(month,f='(i2.2)') +  $
-        '/' + string( yr-1900,f='(I2.2)')                          
+        '/' + string( yr-1900,f='(I2.2)')
 
- endif else $ 
+ endif else $
 
  dte =  string(yr,f='(I4.4)') + '-' + string(month,f='(i2.2)') + '-' + $
         string(day,f='(I2.2)')
@@ -99,11 +99,11 @@ pro get_date, dte, in_date, OLD = old, TIMETAG = timetag
    mn = (hr - ihr)*60.
    imn = fix(mn)
    sec = round((mn - imn)*60.)
- endif 
+ endif
 
  dte =  dte + 'T' + string(ihr,f='(I2.2)') + ':' + string(imn,f='(I2.2)') +  $
                ':' + string(round(sec),f='(I2.2)')
  endif
-         
+
  return
  end

@@ -14,7 +14,7 @@ pro file_compress, inname, outname, noreplace=noreplace , newname=newname, $
 ;		 (usually, = inname.Z ; null if problem w/input or compress)
 ;
 ;   Optional Keyword Parameters
-;	noreplace - (input) - switch, if set, don't replace inname with outname 
+;	noreplace - (input) - switch, if set, don't replace inname with outname
 ;	newname   - (input)   NOT IMPLEMENTED specify outname
 ;
 ;   Calling Sequence:
@@ -43,8 +43,8 @@ if keyword_set(dirs) then begin
       if gcount gt 0 then inname=inname(goodn) else begin
          message,/info,'No files found in specified directories, returning...'
          return
-      endelse 
-   endelse      
+      endelse
+   endelse
 endif
 
 verbose=''
@@ -62,7 +62,7 @@ endif else begin
       print,inname(none),format='(a)'
    endif
 endelse
-   
+
 ; assign output file names
 outname=strarr(n_elements(inname))
 outname(some)=inname(some) + '.Z'	; force normal convention

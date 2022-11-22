@@ -84,7 +84,7 @@ function ucomp_file_ut::test_basic
                        t_c1arr=t_c1arr, $
                        t_c1pcb=t_c1pcb
                   compile_opt strictarr
-  
+
     obj_destroy, file
   endfor
 

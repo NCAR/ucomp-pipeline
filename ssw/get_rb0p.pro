@@ -27,14 +27,14 @@ function get_rb0p, item, radius=radius, b0angle=b0angle, pangle=pangle, $
 ;		  when /RADIUS, /B0ANGLE, or /PANGLE are not set:
 ;       	P  = Position angle of the northern extremity of the axis
 ;                    of the sun's rotation, measured eastward from the
-;                    geographic north point of the solar disk. 
+;                    geographic north point of the solar disk.
 ;       	B0 = Heliographic latitude of the central point of the
 ;                    solar disk
 ;       	R  = Solar radius measured outside earth's atmosphere in
 ;		     arcseconds
 ;HISTORY:
 ;	Written 22-Nov-91 by G. Slater using Morrison style parameters
-;	18-Jul-93 (MDM) - Added /RADIUS, /B0ANGLE, and /PANGLE 
+;	18-Jul-93 (MDM) - Added /RADIUS, /B0ANGLE, and /PANGLE
 ;			- Deleted "header" option (was not implemented)
 ;			- Changed the time conversion code somewhat
 ;			- Added /PB0R option
@@ -71,4 +71,3 @@ function get_rb0p, item, radius=radius, b0angle=b0angle, pangle=pangle, $
   return, out
 
   end
-

@@ -6,7 +6,7 @@ function ucomp_get_observerlog_ut::init, _extra=e
   if (~self->MGutTestCase::init(_extra=e)) then return, 0
 
   self->addTestingRoutine, ['ucomp_get_observerlog']
-  
+
 
   return, 1
 end

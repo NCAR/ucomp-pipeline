@@ -40,7 +40,7 @@ function OS_FAMILY,LOWER=LOWER,NAME=NAME
 ; History     :	Version 1, 29-Aug-1995, William Thompson, GSFC
 ;			Incorporated into CDS library
 ;               Version 2, 15 May 2000, Zarro (SM&A/GSFC) - added /LOWER
-;         
+;
 ;               Version 3, 22-Dec-2002, Zarro (EER/GSFC) - saved result in
 ;                        common block for speed
 ;               Modifed, 2-June-2006, Zarro (L-3Com/GSFC) - removed

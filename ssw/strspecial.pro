@@ -6,7 +6,7 @@ function strspecial,  strarray,  digit=digit, alpha=alpha, $
 ;   Purpose: return true if input is a 'special' character (or as defined by keyword)
 ;
 ;   Input Parameters:
-;      strarray - scaler string or string array 
+;      strarray - scaler string or string array
 ;
 ;   Output
 ;      function returns truth value (VECTOR) , depending upon keyords set
@@ -15,25 +15,25 @@ function strspecial,  strarray,  digit=digit, alpha=alpha, $
 ;      lastchar (input)  switch, look at LAST character  (default is FIRST)
 ;      firstchar (input) switch, look at FIRST character (default for arrays)
 ;      digit -  (input)  switch, return TRUE where character in {0-9}
-;      alpha -  (input)  switch, return TRUE where character in {a-z, A-Z} 
+;      alpha -  (input)  switch, return TRUE where character in {a-z, A-Z}
 ;      lchar -  (output) return LAST character array (last char in strarray)
 ;      chkall - (input)  strarray must be scaler - boolean for entire string
 ;
 ;   Calling Sequence:
 ;      truth=strspecial(arr)             ; =1 where leading chars are special
 ;      truth=strspecial(arr,/digit)      ; =1 where leading chars in {0-9}
-;      truth=strspecial(arr,/alpha,/last); =1 where trailing chars in {a-z,A-Z} 
-;      
+;      truth=strspecial(arr,/alpha,/last); =1 where trailing chars in {a-z,A-Z}
+;
 ;   Sample Calls:
 ;      A: Scaler input, no positional keywords (FIRSTCHAR & LASTCHAR)
 ;      IDL> print,strspecial('*-TITLE-*')	    ; boolean for each character
-;           1 1 0 0 0 0 0 
-;      B: Scaler input w/ positional keyword	
+;           1 1 0 0 0 0 0
+;      B: Scaler input w/ positional keyword
 ;      IDL> print,strspecial('abcd1',/last,/digit)  ; only first or last
 ;           1
 ;      C: Array input (default looks at FIRSTCHAR of each element)
 ;      IDL> print,strspecial(['abc','123','!@#'],/lastchar)
-;           0       0       1 
+;           0       0       1
 ;   History:
 ;      15-jul-1995
 ;      28-jul-1995 - add DIGIT, ALPHA, LASCHAR keywords
@@ -41,7 +41,7 @@ function strspecial,  strarray,  digit=digit, alpha=alpha, $
 ;
 ;   Restrictions:
 ;      just looks at FIRST or LAST characters if input is an ARRAY
-;      trailing blanks are not "special" 
+;      trailing blanks are not "special"
 ;
 ;   Method: recursive for scaler strings
 ;-
@@ -79,7 +79,7 @@ endif else begin
    digits   =  char ge '0' and char le '9'	; where digits
    alphas   =  1 - specials			; ALPHAS are NOT specials
 
-   case 1 of 
+   case 1 of
       keyword_set(digit): retval=digits
       keyword_set(alpha): retval=alphas
       else:   retval=(specials and (1-digits))
@@ -87,6 +87,6 @@ endif else begin
    retval = retval and strlen(char) ne 0	; dont judge null strings
 ;  ----------------------------------------------------------------------
 endelse
-   
+
 return,retval
 end

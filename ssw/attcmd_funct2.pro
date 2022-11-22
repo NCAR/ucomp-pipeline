@@ -19,4 +19,3 @@ endif
 
 out = (m(0)*xx+m(1)) * sin((xx+m(2))*!pi*2) + m(3)*xx + m(4)
 end
-

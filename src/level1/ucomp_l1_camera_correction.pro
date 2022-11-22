@@ -27,7 +27,7 @@ pro ucomp_l1_camera_correction, file, primary_header, data, headers, $
   dims = size(data, /dimensions)
   n_polstates = dims[2]
   n_cameras = dims[3]
-  
+
   for e = 0, n_elements(headers) - 1L do begin
     for c = 0L, n_cameras - 1L do begin
       run->get_hot_pixels, file.gain_mode, c, hot=hot, adjacent=adjacent

@@ -6,7 +6,7 @@ function ucomp_archive_wrapper_ut::init, _extra=e
   if (~self->UCoMPutTestCase::init(_extra=e)) then return, 0
 
   self->addTestingRoutine, ['ucomp_archive_wrapper']
-  
+
 
   return, 1
 end

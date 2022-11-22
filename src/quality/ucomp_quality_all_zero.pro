@@ -63,5 +63,3 @@ obj_destroy, file
 obj_destroy, run
 
 end
-
-

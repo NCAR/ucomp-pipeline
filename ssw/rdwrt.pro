@@ -15,7 +15,7 @@ pro rdwrt, code, lun, ibyt, rsiz, data, qupdate_ibyt, qdebug, quiet=quiet,$
 ;INPUT/OUTPUT:
 ;	data		data array to read/write
 ;OPTIONAL INPUT:
-;	qupdate_ibyt	If set, the value "ibyt" is updated to the current 
+;	qupdate_ibyt	If set, the value "ibyt" is updated to the current
 ;			position within the file
 ;	qdebug		If set, a debut line is printed
 ;OPTIONAL KEYWORD INPUT:
@@ -48,7 +48,7 @@ pro rdwrt, code, lun, ibyt, rsiz, data, qupdate_ibyt, qdebug, quiet=quiet,$
 ;       25-May-98 (DMZ) Further expanded noswap list to Windows systems
 ;       15-Jan-00 (DMZ) Added ON_IOERROR check and ERR keyword
 ;	29-Dec-06 (ROM) Added DARWIN to the list of noswap OS
-;        2-Jan-07 - S.L.Freeland - 29-dec change caused problems on 
+;        2-Jan-07 - S.L.Freeland - 29-dec change caused problems on
 ;                   Macs w/ppc - modified to use 'is_lendian.pro' for
 ;                   auto extension (use calclulation, not OS list)
 ;-
@@ -61,7 +61,7 @@ err='' & error=0
 if error ne 0 then begin
 trap:
  err='error reading file'
- if strupcase(code) eq 'W' then err='error writing to file' 
+ if strupcase(code) eq 'W' then err='error writing to file'
  if not keyword_set(quiet) then message,err,/cont
  on_ioerror,null
  if n_elements(lun) ne 0 then begin
@@ -116,7 +116,7 @@ end else begin
 end
 ;
 ;---- The following code does not work since "point_lun" gives data in
-;     multiples of "rsiz" when opening a fixed record length file without the 
+;     multiples of "rsiz" when opening a fixed record length file without the
 ;     /BLOCK qualifier.
 point_lun, -1*lun, enpos
 if (rsiz ne 0) then if ((enpos mod rsiz) ne 0) then begin
@@ -132,6 +132,3 @@ if (qupdate_ibyt) then ibyt = enpos
 ;
 if (qdebug) then print, 'ibyt0, enpos, ibyt    ', code, ' -- ', ibyt0, enpos, ibyt
 end
-
-
-

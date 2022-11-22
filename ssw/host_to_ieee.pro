@@ -11,7 +11,7 @@ pro host_to_ieee, data, IDLTYPE = idltype
 ;
 ; INPUT-OUTPUT PARAMETERS:
 ;	data - any IDL variable, scalar or vector.   It will be modified by
-;		HOST_TO_IEEE to convert from host to IEEE representation.  Byte 
+;		HOST_TO_IEEE to convert from host to IEEE representation.  Byte
 ;		and string variables are returned by HOST_TO_IEEE unchanged
 ;
 ; OPTIONAL KEYWORD INPUTS:
@@ -31,7 +31,7 @@ pro host_to_ieee, data, IDLTYPE = idltype
 ;
 ; RESTRICTION:
 ;	Will run *much* faster for floating or double precision if the IDL
-;	version is since 2.2.2 when the /FTOXDR keyword  became available to 
+;	version is since 2.2.2 when the /FTOXDR keyword  became available to
 ;	BYTEORDER.
 ;	However, HOST_TO_IEEE should still work in earlier versions of IDL
 ;	Note that in V3.0.0 there is a bug in the /DTOXDR keyword for
@@ -42,12 +42,12 @@ pro host_to_ieee, data, IDLTYPE = idltype
 ;	Fixed Case statement for Float and Double      September, 1992
 ;	Workaround for /DTOXDR on DecStations          January, 1993
 ;-
- On_error,2 
+ On_error,2
 
  if N_params() EQ 0 then begin
     print,'Syntax - HOST_TO_IEEE, data, [IDLTYPE = ]
     return
- endif  
+ endif
 
  npts = N_elements( data )
  if npts EQ 0 then $
@@ -65,7 +65,7 @@ pro host_to_ieee, data, IDLTYPE = idltype
       3: byteorder, data, /HTONL            ;long
 
       4: begin                              ;float
-         if since_version('2.2.2') then byteorder, data, /FTOXDR $  
+         if since_version('2.2.2') then byteorder, data, /FTOXDR $
             else begin
             case !VERSION.OS of
             'vms': data = conv_vax_unix(data,target = 'sparc')
@@ -78,18 +78,18 @@ pro host_to_ieee, data, IDLTYPE = idltype
          end
 
       5: begin                          ;double
- 
+
             if !VERSION.ARCH NE 'mipsel' then begin
 
-                if since_version('2.2.2') then $ 
+                if since_version('2.2.2') then $
                           byteorder, data, /DTOXDR  else $
                           conv_unix_vax, data, target = 'sparc'
 
             endif else begin
-                      
+
                      if !VERSION.RELEASE NE '3.0.0' then begin
 
-                          byteorder, data, /DTOXDR  
+                          byteorder, data, /DTOXDR
 
                     endif else begin
 
@@ -100,12 +100,12 @@ pro host_to_ieee, data, IDLTYPE = idltype
                     data = rotate( data, 5)
                     if ( dtype EQ 5 ) then data = double(data, 0, npts)
                     data = reform( data, sz(1:sz(0)), /OVER )
-                     
+
                     endelse
 
              endelse
          end
-     
+
       6: BEGIN                              ;complex
            fdata = float(data)
            byteorder, fdata, /FTOXDR
@@ -124,10 +124,10 @@ pro host_to_ieee, data, IDLTYPE = idltype
           temp = data.(t)
           host_to_ieee, temp
           data.(t) = temp
-        endfor 
+        endfor
 
        END
  ENDCASE
 
  return
- end 
+ end

@@ -616,7 +616,7 @@ end
 ;-
 pro mgffoptions__define
   compile_opt strictarr
-  
+
   dummy = { MGffOptions, inherits IDL_Object, $
             fold_case: 0B, $
             use_environment: 0B, $

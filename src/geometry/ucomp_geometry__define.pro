@@ -48,13 +48,13 @@ pro ucomp_geometry::display, camera, $
     plots, inner_x, inner_y, /device, $
            color=_guess_color, $
            linestyle=3
-  
+
     outer_x = (self.radius_guess + self.dradius) * cos(t) + x0
     outer_y = (self.radius_guess + self.dradius) * sin(t) + y0
     plots, outer_x, outer_y, /device, $
            color=_guess_color, $
            linestyle=3
-  
+
     plots, x0, y0, /device, color=_guess_color, psym=1
   endif
 
@@ -186,7 +186,7 @@ end
 ;-
 pro ucomp_geometry__define
   compile_opt strictarr
- 
+
    !null = {ucomp_geometry, inherits IDL_Object, $
             xsize             : 0L, $
             ysize             : 0L, $

@@ -13,13 +13,13 @@ function get_nbytes, structure, strtot=strtot
 ; Method: Recursive to handle nested structures
 ; Restrictions: strtot must be set to give actual string lengths
 ;	        (without keyword, strings return 0)
-; Modification History: 
+; Modification History:
 ;	SLF, 20-June-1991
 ;	MDM, 30-Sep-91	- Did not work properly for structure of structures
 ;	slf,  6-apr-93  - allow string types and add strtot keyword
 ;
 ; -
-;	
+;
 qdebug = 0
 bytes_type = [0,1,2,4,4,8,8,0,0]		; byte sizes for types
 ;
@@ -37,8 +37,8 @@ case stsize(stsize(0)+1) of
       endcase
     7:if keyword_set(strtot) then  			$
 	 count = long(total(strlen(structure))) 	$
-            else count=0 ; backward compatible 	
-    else: count=stsize(stsize(0)+2) * bytes_type(stsize(stsize(0)+1) )   
+            else count=0 ; backward compatible
+    else: count=stsize(stsize(0)+2) * bytes_type(stsize(stsize(0)+1) )
 
 end
 ;

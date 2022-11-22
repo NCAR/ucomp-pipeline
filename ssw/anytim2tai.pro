@@ -1,31 +1,31 @@
 ;+
-; Project     : SOHO - CDS     
-;                   
+; Project     : SOHO - CDS
+;
 ; Name        : ANYTIM2TAI()
-;               
+;
 ; Purpose     : Converts any standard CDS time format to TAI.
-;               
+;
 ; Explanation : Tests the type of input and tries to use the appropriate
 ;               conversion routine to create the date/time in CDS TAI
 ;               time format.
-;               
+;
 ; Use         : IDL>  tai = anytim2tai(any_format)
-;    
-; Inputs      : any_format - date/time in any of the acceptable CDS 
-;                            time formats -- for acceptable formats see file 
+;
+; Inputs      : any_format - date/time in any of the acceptable CDS
+;                            time formats -- for acceptable formats see file
 ;                            aaareadme.txt.
-;               
+;
 ; Opt. Inputs : None
-;               
+;
 ; Outputs     : Function returns CDS TAI double precision time value.
-;               
+;
 ; Opt. Outputs: None
-;               
-; Keywords    : ERRMSG    = If defined and passed, then any error messages 
-;                           will be returned to the user in this parameter 
+;
+; Keywords    : ERRMSG    = If defined and passed, then any error messages
+;                           will be returned to the user in this parameter
 ;                           rather than being printed to the screen.  If no
 ;                           errors are encountered, then a null string is
-;                           returned.  In order to use this feature, the 
+;                           returned.  In order to use this feature, the
 ;                           string ERRMSG must be defined first, e.g.,
 ;
 ;                                ERRMSG = ''
@@ -35,18 +35,18 @@
 ; Calls       : DATATYPE, ANYTIM2UTC, UTC2TAI
 ;
 ; Common      : None
-;               
+;
 ; Restrictions: Conversions between TAI and UTC are not valid for dates prior
 ;               to 1 January 1972.
-;               
+;
 ; Side effects: None
-;               
+;
 ; Category    : Util, time
-;               
+;
 ; Prev. Hist. : Based on ANYTIM2UTC by C. D. Pike.
 ;
 ; Written     : William Thompson, GSFC, 20 May 1996
-;               
+;
 ; Modified    :	Version 1, William Thompson, GSFC, 20 May 1996
 ;		Version 2, 05-Oct-1999, William Thompson, GSFC
 ;			Add support for Yohkoh 7-element external time.
@@ -60,10 +60,10 @@
 ;                       Moved handling of Yohkoh formats to ANYTIM2UTC
 ;
 ; Version     :	Version 6, 07-Dec-2005
-;-            
+;-
 
 function anytim2tai, dt, errmsg=errmsg, nocorrect=nocorrect, quiet=quiet
- 
+
 ;
 ;  set default return value
 ;
@@ -80,7 +80,7 @@ if n_params() eq 0 then begin
 endif
 
 ;
-;  determine type of input 
+;  determine type of input
 ;
 type = datatype(dt,1)
 

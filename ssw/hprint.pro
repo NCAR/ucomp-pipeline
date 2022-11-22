@@ -3,12 +3,12 @@ pro hprint, h, firstline
 ; NAME:
 ;       HPRINT
 ; PURPOSE:
-;       Display a FITS header (or other string array) 
+;       Display a FITS header (or other string array)
 ; EXPLANATION:
-;       On a GUI terminal, the string array is displayed using XDISPSTR.    
-;       If printing at a non-GUI terminal, the string array is  printed 1 line 
-;       at a  time, to make sure that each element of the string array is 
-;       displayed on a separate line. 
+;       On a GUI terminal, the string array is displayed using XDISPSTR.
+;       If printing at a non-GUI terminal, the string array is  printed 1 line
+;       at a  time, to make sure that each element of the string array is
+;       displayed on a separate line.
 ;
 ; CALLING SEQUENCE:
 ;       HPRINT, h, [ firstline ]
@@ -17,20 +17,20 @@ pro hprint, h, firstline
 ;       H - FITS header (or any other string array).
 ;
 ; OPTIONAL INPUT:
-;       FIRSTLINE - scalar integer specifying the first line to begin 
-;               displaying.   The default is FIRSTLINE = 1, i.e. display 
+;       FIRSTLINE - scalar integer specifying the first line to begin
+;               displaying.   The default is FIRSTLINE = 1, i.e. display
 ;               all the lines.     If Firstline is negative, then the first
 ;               line to be printed is counted backward from the last line.
 ;
 ; NOTES:
-;       When displaying at the terminal, HPRINT has the following differences 
+;       When displaying at the terminal, HPRINT has the following differences
 ;       from the intrinsic PRINT procedure
 ;
 ;       (1) Arrays are printed one line at a time to avoid a space between 80
 ;               character lines
-;       (2) Lines are trimmed with STRTRIM before being printed to speed up 
+;       (2) Lines are trimmed with STRTRIM before being printed to speed up
 ;               display
-;       (3) The /more option is used for output. 
+;       (3) The /more option is used for output.
 ;
 ; EXAMPLE:
 ;       Read the header from a FITS file named 'test.fits' and display it at the
@@ -72,10 +72,10 @@ pro hprint, h, firstline
                                 else firstline = firstline[0] > 1 < n
 
   stdout = fstat(-1)
-  if stdout.isagui then begin 
+  if stdout.isagui then begin
            xdispstr,h,tit='HPRINT',top_line=firstline-1
            return
-  endif	   
+  endif
   if lmgr(/demo) then begin      ;in demo mode?
       for i=firstline-1, n-1 do print,h[i]
       return
@@ -84,8 +84,8 @@ pro hprint, h, firstline
 
 ; Now print the array one line at a time
   if (stdout.isatty) then begin  ;Open with /MORE if a TTY
-      
-      openw, outunit, filepath(/TERMINAL), /MORE, /GET_LUN  
+
+      openw, outunit, filepath(/TERMINAL), /MORE, /GET_LUN
       for i = firstline-1, n-1 do begin
 
      printf, outunit, strtrim( h[i] )

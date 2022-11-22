@@ -129,7 +129,7 @@ function ucomp_run::get_files, wave_region=wave_region, $
     n_elements(program_name) gt 0L: begin
       if (n_elements(wave_region) eq 0L) then message, 'WAVE_REGION not provided'
       if (~(self.files)->hasKey('sci')) then return, !null
-    
+
       files_list = ((self.files)['sci'])[wave_region]
       files = files_list->toArray()
       n_files = n_elements(files)
@@ -142,7 +142,7 @@ function ucomp_run::get_files, wave_region=wave_region, $
       endfor
       matching_indices = where(program_names eq program_name and ok, $
                                n_matching, /null)
-    
+
       count = n_matching
       return, files[matching_indices]
     end
@@ -346,7 +346,7 @@ pro ucomp_run::report_profiling
 
   basename = string(self.date, format='(%"%s.ucomp.profiler.csv")')
   filename = filepath(basename, root=eng_dir)
-    
+
   mg_profiler_report, filename=filename, /csv
 end
 
@@ -367,7 +367,7 @@ function ucomp_run::start, routine_name
   endif else begin
     (self.calls)[routine_name] = 1
   endelse
-  
+
   return, tic(routine_name)
 end
 
@@ -404,7 +404,7 @@ end
 pro ucomp_run::report
   compile_opt strictarr
 
-  ; if needed, create engineering directory 
+  ; if needed, create engineering directory
   eng_dir = filepath('', $
                      subdir=ucomp_decompose_date(self.date), $
                      root=self->config('engineering/basedir'))

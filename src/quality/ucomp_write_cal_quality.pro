@@ -1,7 +1,7 @@
 ; docformat = 'rst'
 
 ;+
-; Write quality log for cal files.  
+; Write quality log for cal files.
 ;
 ; :Keywords:
 ;   run : in, required, type=object

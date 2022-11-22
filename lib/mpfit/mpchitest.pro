@@ -5,7 +5,7 @@
 ; AUTHOR:
 ;   Craig B. Markwardt, NASA/GSFC Code 662, Greenbelt, MD 20770
 ;   craigm@lheamail.gsfc.nasa.gov
-;   UPDATED VERSIONs can be found on my WEB PAGE: 
+;   UPDATED VERSIONs can be found on my WEB PAGE:
 ;      http://cow.physics.wisc.edu/~craigm/idl/idl.html
 ;
 ; PURPOSE:
@@ -121,21 +121,21 @@ pro cephes_setmachar
 end
 
 function cephes_igam, a, x
-;   
+;
 ;   	Incomplete gamma integral
-;   
-;   
-;   
+;
+;
+;
 ;    SYNOPSIS:
-;   
+;
 ;    double a, x, y, igam();
-;   
+;
 ;    y = igam( a, x );
-;   
+;
 ;    DESCRIPTION:
-;   
+;
 ;    The function is defined by
-;   
+;
 ;                              x
 ;                               -
 ;                      1       | |  -t  a-1
@@ -143,15 +143,15 @@ function cephes_igam, a, x
 ;                     -      | |
 ;                    | (a)    -
 ;                              0
-;   
-;   
+;
+;
 ;    In this implementation both arguments must be positive.
 ;    The integral is evaluated by either a power series or
 ;    continued fraction expansion, depending on the relative
 ;    values of a and x.
-;   
+;
 ;    ACCURACY:
-;   
+;
 ;                         Relative error:
 ;    arithmetic   domain     # trials      peak         rms
 ;       IEEE      0,30       200000       3.6e-14     2.9e-15
@@ -163,7 +163,7 @@ function cephes_igam, a, x
 
   if x LE 0 OR a LE 0 then return, 0.D
   if x GT 1. AND x GT a then return, 1.D - cephes_igamc(a, x)
-  
+
   ax = a * alog(x) - x - lngamma(a)
   if ax LT -MAXLOG then begin
 ;      message, 'WARNING: underflow', /info
@@ -173,7 +173,7 @@ function cephes_igam, a, x
   r = a
   c = 1.D
   ans = 1.D
-  
+
   repeat begin
       r = r + 1
       c = c * x/r
@@ -184,24 +184,24 @@ function cephes_igam, a, x
 end
 
 function cephes_igamc, a, x
-;   
+;
 ;   	Complemented incomplete gamma integral
-;   
-;   
-;   
+;
+;
+;
 ;    SYNOPSIS:
-;   
+;
 ;    double a, x, y, igamc();
-;   
+;
 ;    y = igamc( a, x );
-;   
+;
 ;    DESCRIPTION:
-;   
+;
 ;    The function is defined by
-;   
-;   
+;
+;
 ;     igamc(a,x)   =   1 - igam(a,x)
-;   
+;
 ;                               inf.
 ;                                 -
 ;                        1       | |  -t  a-1
@@ -209,15 +209,15 @@ function cephes_igamc, a, x
 ;                       -      | |
 ;                      | (a)    -
 ;                                x
-;   
-;   
+;
+;
 ;    In this implementation both arguments must be positive.
 ;    The integral is evaluated by either a power series or
 ;    continued fraction expansion, depending on the relative
 ;    values of a and x.
-;   
+;
 ;    ACCURACY:
-;   
+;
 ;    Tested at random a, x.
 ;                   a         x                      Relative error:
 ;    arithmetic   domain   domain     # trials      peak         rms
@@ -247,7 +247,7 @@ function cephes_igamc, a, x
 ;      message, 'ERROR: underflow', /info
       return, 0.D
   endif
-  
+
   ax = exp(ax)
   y = 1.D - a
   z = x + y + 1.D
@@ -299,7 +299,7 @@ function mpchitest, x, dof, slevel=slevel, clevel=clevel, sigma=sigma
   endif
 
   cephes_setmachar   ;; Set machine constants
-  
+
   p = double(x) * 0
   for i = 0, n_elements(x)-1 do begin
       p[i] = cephes_igamc(0.5D * dof, 0.5D * double(x[i]))
@@ -309,6 +309,3 @@ function mpchitest, x, dof, slevel=slevel, clevel=clevel, sigma=sigma
 
   return, p
 end
-
-  
-  

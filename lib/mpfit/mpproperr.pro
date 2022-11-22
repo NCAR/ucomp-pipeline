@@ -5,7 +5,7 @@
 ; AUTHOR:
 ;   Craig B. Markwardt, NASA/GSFC Code 662, Greenbelt, MD 20770
 ;   craigm@lheamail.gsfc.nasa.gov
-;   UPDATED VERSIONs can be found on my WEB PAGE: 
+;   UPDATED VERSIONs can be found on my WEB PAGE:
 ;      http://cow.physics.wisc.edu/~craigm/idl/idl.html
 ;
 ; PURPOSE:
@@ -20,7 +20,7 @@
 ; DESCRIPTION:
 ;
 ;   MPPROPERR propagates the parameter uncertainties of a fitted
-;   model to provide estimates of the model uncertainty at each 
+;   model to provide estimates of the model uncertainty at each
 ;   measurement point.
 ;
 ;   When fitting a model to data with uncertainties, the parameters
@@ -42,7 +42,7 @@
 ;   correlation the sampled model function between each measurement
 ;   point and every other point.  The variance terms lie on the
 ;   diagonal, and the covariance terms are on the off-diagonal.
-;   
+;
 ;   Usually however, the user will want to set /DIAGONAL, which only
 ;   returns the "diagonal" or variance terms, which represent the
 ;   model "uncertainty" at each measurement point.  The /DIAGONAL
@@ -138,12 +138,12 @@
 ;                 covariance matrix which were allowed to vary freely.
 ;                 Default: All parameters will be considered free.
 ;
-;   
+;
 ; EXAMPLE:
 ;
 ;   ; First, generate some synthetic data
 ;   npts = 200
-;   x  = dindgen(npts) * 0.1 - 10.                  ; Independent variable 
+;   x  = dindgen(npts) * 0.1 - 10.                  ; Independent variable
 ;   yi = gauss1(x, [2.2D, 1.4, 3000.])              ; "Ideal" Y variable
 ;   y  = yi + randomn(seed, npts) * sqrt(1000. + yi); Measured, w/ noise
 ;   sy = sqrt(1000.D + y)                           ; Poisson errors
@@ -161,13 +161,13 @@
 ;   ; "diagonal" (variance) term for each measurement.
 ;   ycovar = mpproperr(best_fjac, pcovar, pfree_index=pfree_index, /diagonal)
 ;
-;   sy_prop = sqrt(ycovar)  ; Estimated sigma 
-;   
+;   sy_prop = sqrt(ycovar)  ; Estimated sigma
+;
 ;
 ; REFERENCES:
 ;
 ;   MINPACK-1, Jorge More', available from netlib (www.netlib.org).
-;   "Optimization Software Guide," Jorge More' and Stephen Wright, 
+;   "Optimization Software Guide," Jorge More' and Stephen Wright,
 ;     SIAM, *Frontiers in Applied Mathematics*, Number 14.
 ;
 ; MODIFICATION HISTORY:
@@ -217,7 +217,7 @@ function mpproperr, fjac, pcovar, pfree_index=ifree, diagonal=diag, $
       errmsg = 'ERROR: size of PCOVAR array is smaller than PFREE_INDEX'
       return, !values.d_nan
   endif
-  
+
   fjac1 = fjac
   ;; NOTE: if there are parts of the covariance matrix which are zero,
   ;; that is OK, since they will contribute nothing to the output.
@@ -230,7 +230,7 @@ function mpproperr, fjac, pcovar, pfree_index=ifree, diagonal=diag, $
       wh = where(finite(fjac1) EQ 0, ct)
       if ct GT 0 then fjac1[wh] = 0
   endif
-  
+
   if NOT keyword_set(diag) then begin
       ;; Pull out the full covariance matrix (using matrix notation)
       ycovar = (fjac # pcovar1) # transpose(fjac)
@@ -245,6 +245,6 @@ function mpproperr, fjac, pcovar, pfree_index=ifree, diagonal=diag, $
           endfor
       endfor
   endelse
-  
+
   return, ycovar
 end

@@ -26,4 +26,3 @@ function ucomp_vcrosstalk_metric, data, occulter_radius
 
   return, total((v[annulus_indices])^2, /preserve_type) * 1.0e6 / n_annulus_pts / n_annulus_pts
 end
-

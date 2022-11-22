@@ -5,7 +5,7 @@
 ; AUTHOR:
 ;   Craig B. Markwardt, NASA/GSFC Code 662, Greenbelt, MD 20770
 ;   craigm@lheamail.gsfc.nasa.gov
-;   UPDATED VERSIONs can be found on my WEB PAGE: 
+;   UPDATED VERSIONs can be found on my WEB PAGE:
 ;      http://cow.physics.wisc.edu/~craigm/idl/idl.html
 ;
 ; PURPOSE:
@@ -71,7 +71,7 @@
 ; COMPATIBILITY
 ;
 ;  This function is designed to work with IDL 5.0 or greater.
-;  
+;
 ;  Because TIED parameters rely on the EXECUTE() function, they cannot
 ;  be used with the free version of the IDL Virtual Machine.
 ;
@@ -157,7 +157,7 @@
 ;            If the fit is unweighted (i.e. no errors were given, or
 ;            the weights were uniformly set to unity), then PERROR
 ;            will probably not represent the true parameter
-;            uncertainties.  
+;            uncertainties.
 ;
 ;            *If* you can assume that the true reduced chi-squared
 ;            value is unity -- meaning that the fit is implicitly
@@ -215,7 +215,7 @@
 ; REFERENCES:
 ;
 ;   MINPACK-1, Jorge More', available from netlib (www.netlib.org).
-;   "Optimization Software Guide," Jorge More' and Stephen Wright, 
+;   "Optimization Software Guide," Jorge More' and Stephen Wright,
 ;     SIAM, *Frontiers in Applied Mathematics*, Number 14.
 ;
 ; MODIFICATION HISTORY:
@@ -259,7 +259,7 @@ forward_function mpfit, mpfitfun, mpfit2dpeak, mpfit2dpeak_gauss, $
 ; Compute the "u" value = (x/a)^2 + (y/b)^2 with optional rotation
 function mpfit2dpeak_u, x, y, p, tilt=tilt, symmetric=sym
   COMPILE_OPT strictarr
-  widx  = abs(p[2]) > 1e-20 & widy  = abs(p[3]) > 1e-20 
+  widx  = abs(p[2]) > 1e-20 & widy  = abs(p[3]) > 1e-20
   if keyword_set(sym) then widy = widx
   xp    = x-p[4]            & yp    = y-p[5]
   theta = p[6]
@@ -344,7 +344,7 @@ function mpfit2dpeak, z, a, x, y, estimates=est, tilt=tilt, $
   endif
   nx = sz[1]
   ny = sz[2]
-  
+
   ;; Fill in the X and Y values if needed -- note clever promotion to
   ;;                                         double if needed
   if n_elements(x) EQ 0 then x = findgen(nx)*(z[0]*0+1)
@@ -407,13 +407,13 @@ function mpfit2dpeak, z, a, x, y, estimates=est, tilt=tilt, $
       if keyword_set(neg) then goto, NEG_PEAK
 
       ;; Compute volume above/below average
-      if (sdx1 LT sdx2 AND sdy1 LT sdy2) then begin 
+      if (sdx1 LT sdx2 AND sdy1 LT sdy2) then begin
           ;; Positive peak
           POS_PEAK:
           centx = xx[whmax]
           centy = yy[whmax]
           peakz = maxz - av
-      endif else if (sdx1 GT sdx2 AND sdy1 GT sdy2) then begin 
+      endif else if (sdx1 GT sdx2 AND sdy1 GT sdy2) then begin
           ;; Negative peak
           NEG_PEAK:
           centx = xx[whmin]
@@ -491,4 +491,3 @@ function mpfit2dpeak, z, a, x, y, estimates=est, tilt=tilt, $
 
   return, !values.d_nan
 end
-

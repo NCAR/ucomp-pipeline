@@ -5,7 +5,7 @@
 ; AUTHOR:
 ;   Craig B. Markwardt, NASA/GSFC Code 662, Greenbelt, MD 20770
 ;   craigm@lheamail.gsfc.nasa.gov
-;   UPDATED VERSIONs can be found on my WEB PAGE: 
+;   UPDATED VERSIONs can be found on my WEB PAGE:
 ;      http://cow.physics.wisc.edu/~craigm/idl/idl.html
 ;
 ; PURPOSE:
@@ -138,7 +138,7 @@ pro cephes_set_erf_common
          9.75708501743205489753D2,   1.82390916687909736289D3,  $
          2.24633760818710981792D3,   1.65666309194161350182D3,  $
          5.57535340817727675546D2 ]
-  
+
   rr = [ 5.64189583547755073984D-1,  1.27536670759978104416D0,  $
          5.01905042251180477414D0,   6.16021097993053585195D0,  $
          7.40974269950448939160D0,   2.97886665372100240670D0   ]
@@ -161,52 +161,52 @@ pro cephes_set_erf_common
 end
 
 ;							erfc.c
-;   
+;
 ;   	Complementary error function
-;   
-;   
-;   
+;
+;
+;
 ;    SYNOPSIS:
-;   
+;
 ;    double x, y, erfc();
-;   
+;
 ;    y = erfc( x );
-;   
-;   
-;   
+;
+;
+;
 ;    DESCRIPTION:
-;   
-;   
+;
+;
 ;     1 - erf(x) =
-;   
-;                              inf. 
+;
+;                              inf.
 ;                                -
 ;                     2         | |          2
 ;      erfc(x)  =  --------     |    exp( - t  ) dt
 ;                  sqrt(pi)   | |
 ;                              -
 ;                               x
-;   
-;   
+;
+;
 ;    For small x, erfc(x) = 1 - erf(x); otherwise rational
 ;    approximations are computed.
-;   
-;   
-;   
+;
+;
+;
 ;    ACCURACY:
-;   
+;
 ;                         Relative error:
 ;    arithmetic   domain     # trials      peak         rms
 ;       DEC       0, 9.2319   12000       5.1e-16     1.2e-16
 ;       IEEE      0,26.6417   30000       5.7e-14     1.5e-14
-;   
-;   
+;
+;
 ;    ERROR MESSAGES:
-;   
+;
 ;      message         condition              value returned
 ;    erfc underflow    x > 9.231948545 (DEC)       0.0
-;   
-;   
+;
+;
 ;   /
 function cephes_erfc, a
 
@@ -219,7 +219,7 @@ function cephes_erfc, a
 
   if a LT 0 then x = -a else x = a
   if x LT 1. then return, 1.D - cephes_erf(a)
-  
+
   z = -a * a
   if z LT -MAXLOG then begin
       under:
@@ -244,47 +244,47 @@ function cephes_erfc, a
 end
 
 ;							erf.c
-;   
+;
 ;   	Error function
-;   
-;   
-;   
+;
+;
+;
 ;    SYNOPSIS:
-;   
+;
 ;    double x, y, erf();
-;   
+;
 ;    y = erf( x );
-;   
-;   
-;   
+;
+;
+;
 ;    DESCRIPTION:
-;   
+;
 ;    The integral is
-;   
-;                              x 
+;
+;                              x
 ;                               -
 ;                    2         | |          2
 ;      erf(x)  =  --------     |    exp( - t  ) dt.
 ;                 sqrt(pi)   | |
 ;                             -
 ;                              0
-;   
+;
 ;    The magnitude of x is limited to 9.231948545 for DEC
 ;    arithmetic; 1 or -1 is returned outside this range.
-;   
+;
 ;    For 0 <= |x| < 1, erf(x) = x * P4(x**2)/Q5(x**2); otherwise
 ;    erf(x) = 1 - erfc(x).
-;   
-;   
-;   
+;
+;
+;
 ;    ACCURACY:
-;   
+;
 ;                         Relative error:
 ;    arithmetic   domain     # trials      peak         rms
 ;       DEC       0,1         14000       4.7e-17     1.5e-17
 ;       IEEE      0,1         30000       3.7e-16     1.0e-16
-;   
-;   
+;
+;
 function cephes_erf, x
   COMPILE_OPT strictarr
   common cephes_erf_data

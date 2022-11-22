@@ -1,13 +1,13 @@
 PRO YMD2SEC,YMD=ymd,SEC=sec,DAYS_MONTHS=days_month,IUTYEARS=iutyears,ALT=ALT,$
-		error=error 
+		error=error
 on_error,2
 !quiet=1
 ;+
 ; NAME: YMD2SEC
 ; PURPOSE: Convert YY/MM/DD string to sec.  Or if YMD and SEC parameters
-;	aren't passed, to return arrays containing first of month and 
+;	aren't passed, to return arrays containing first of month and
 ;	first of year relative to start of year and 79/1/1 respectively
-; CALLING SEQUENCE: 
+; CALLING SEQUENCE:
 ;	YMD2ED,YMD=YMD,SEC=SEC,DAYS_MONTH=DAYS_MONTH,IUTYEARS=IUTYEARS,
 ;		ALT=ALT,ERROR=ERROR
 ; INPUT PARAMETERS:
@@ -60,5 +60,3 @@ sec=(iutyears(y-79)+days_month(m-1)+(d-1))*86400.d0
 if (y mod 4 eq 0) and (m ge 3) then sec=sec+86400. ;ALLOW LEAPYEAR
 return
 end
-
-
