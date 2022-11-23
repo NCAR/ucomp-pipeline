@@ -278,3 +278,5 @@
   skipping trying to make movies with only a single frame
 0.2.78 [Nov 23, 2022]
   new display ranges for new lines
+0.2.79 [Nov 23, 2022]
+  fix center wavelength for 991 wave region
