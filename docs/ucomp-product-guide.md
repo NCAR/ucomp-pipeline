@@ -19,20 +19,26 @@ A guide to the UCoMP products produced by the UCoMP pipeline.
 
 +++
 
-# Guide to UCoMP products
 
-
-## Level 1
+# Level 1
 
 
 
-## Level 2
+# Level 2
 
 
-### Dynamics files
+## Dynamics files
 
 
-### Polarization files
+## Polarization files
+
+Polarization files have filenames of the form:
+
+    YYYYMMDD.HHMMSS.ucomp.WWWW.l2.polarization.fts
+
+where `YYYYMMDD` and `HHMMSS` are the UT time of the observation and `WWWW` is the wave region, e.g. "780" or 1074".
+
+The extensions of a polarization file are:
 
 1. Average intensity
 2. Enhanced average intensity
@@ -42,8 +48,10 @@ A guide to the UCoMP products produced by the UCoMP pipeline.
 6. Azimuth
 7. Radial azimuth
 
+How is intensity computed?
 
-### Average files
+
+## Average files
 
 
-### Quick invert files
+## Quick invert files
