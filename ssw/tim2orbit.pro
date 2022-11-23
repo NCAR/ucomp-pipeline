@@ -34,19 +34,19 @@ pro tim2orbit, tim_in, fid=fid, wid=wid, tim2fms=tim2fms, tim2night=tim2night, o
 ;	saa	- a boolean array set true if the input time happens in the
 ;		  middle of a SAA passage.
 ;	fem	- The FEM structures for the time range covered by the input
-;		  times (It is NOT the full FEM structure for the orbit for 
+;		  times (It is NOT the full FEM structure for the orbit for
 ;		  EACH INPUT TIME as it was originally)
 ;HISTORY:
 ;	Written 25-May-92 by M.Morrison
 ;	30-May-92 (MDM) - Added "scday" and "saa"
 ;	 8-Jun-92 (MDM) - Added "print" option
 ;	 9-Jun-92 (MDM) - Added "tim2night" option
-;	17-Jul-92 (MDM) - Corrected an error in weekID generation 
+;	17-Jul-92 (MDM) - Corrected an error in weekID generation
 ;			  (string formats)
 ;	19-Aug-92 (MDM) - Fixed a problem with WeekID generation.  IDL trunactes
 ;			  at 256 (or 128) lines when using command "string(array)"
 ;	15-Sep-92 (MDM) - Fixed problem with WeekID generation.  Since the user
-;			  might only specify HH:MM, and the FEM resolution is 
+;			  might only specify HH:MM, and the FEM resolution is
 ;			  better than 1 second, the WeekID (and FileID for that
 ;			  matter) might be off.  The fix is to add 59 seconds to
 ;			  the input time when the seconds/milliseconds is zero.
@@ -64,9 +64,9 @@ pro tim2orbit, tim_in, fid=fid, wid=wid, tim2fms=tim2fms, tim2night=tim2night, o
 ;	24-May-93 (MDM) - Modified to make the for loop variable integer*4
 ;	20-Jun-93 (MDM) - Changed the definition of the FEM output.  It used to be
 ;			  a FEM structure for each input time, now it is only a
-;			  single FEM structure for each orbit for the range of 
+;			  single FEM structure for each orbit for the range of
 ;			  input times.
-;	20-Jul-93 (MDM) - Changed logic considerably (removed for loops) 
+;	20-Jul-93 (MDM) - Changed logic considerably (removed for loops)
 ;			  which sped things up
 ;			- Added /SIMPLE and /NOWID options
 ;	18-Feb-94 (MDM) - Corrected header information
@@ -147,4 +147,3 @@ if (keyword_set(print)) then begin
 end
 ;
 end
-

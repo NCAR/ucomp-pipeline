@@ -12,7 +12,7 @@
 ; Explanation :	This procedure takes the Atomic International Time (TAI)
 ;		calculated from the 6 byte (local) on-board time from the
 ;		spacecraft and converts it into UTC calendar time in one of the
-;		CDS standard formats -- for acceptable formats see file 
+;		CDS standard formats -- for acceptable formats see file
 ;               aaareadme.txt.
 ;
 ; Use         :	Result = TAI2UTC( TAI )
@@ -114,11 +114,11 @@
 ;
 ;		The following keyword is always valid.
 ;
-;		ERRMSG	 = If defined and passed, then any error messages 
-;			   will be returned to the user in this parameter 
-;			   rather than being handled by the IDL MESSAGE 
-;			   utility.  If no errors are encountered, then a null 
-;			   string is returned.  In order to use this feature, 
+;		ERRMSG	 = If defined and passed, then any error messages
+;			   will be returned to the user in this parameter
+;			   rather than being handled by the IDL MESSAGE
+;			   utility.  If no errors are encountered, then a null
+;			   string is returned.  In order to use this feature,
 ;			   the string ERRMSG must be defined first, e.g.,
 ;
 ;				ERRMSG = ''

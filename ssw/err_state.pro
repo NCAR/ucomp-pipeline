@@ -40,4 +40,3 @@ if exists then s=execute('err=!err_string')
 return,err
 
 end
-

@@ -31,9 +31,9 @@
 ;
 ; Opt. Outputs:	None.
 ;
-; Keywords    :	ERRMSG  =  If defined and passed, then any error messages 
-;                          will be returned to the user in this parameter 
-;                          rather than being handled by the IDL MESSAGE 
+; Keywords    :	ERRMSG  =  If defined and passed, then any error messages
+;                          will be returned to the user in this parameter
+;                          rather than being handled by the IDL MESSAGE
 ;                          utility.  If no errors are encountered, then a null
 ;                          string is returned.  In order to use this feature,
 ;                          the string ERRMSG must be defined first, e.g.,
@@ -61,12 +61,12 @@
 ;
 ; Modified    :	Version 1, William Thompson, GSFC, 13 September 1993.
 ;		Version 2, Donald G. Luttermoser, GSFC/ARC, 20 December 1994.
-;			Added the keyword ERRMSG.  Added test for month to 
+;			Added the keyword ERRMSG.  Added test for month to
 ;			make sure a string is not passed.  Note that there are
 ;			no internal procedures called that use the ERRMSG
 ;			keyword.
 ;		Version 3, Donald G. Luttermoser, GSFC/ARC, 30 January 1995.
-;			Made the error handling routine more robust.  Note 
+;			Made the error handling routine more robust.  Note
 ;			this routine can handle both vector and scalar input.
 ;
 ; Version     :	Version 3, 30 January 1995.
@@ -87,7 +87,7 @@
 ;  accordingly, using a modification of the algorithm by Fliegel and Van
 ;  Flandern (1968) reprinted in the Explanatory Supplement to the Astronomical
 ;  Almanac, 1992.
-;                              
+;
 	CASE N_PARAMS() OF
 		2:  BEGIN		;Year, day-of-year
 			Y = LONG(YEAR)

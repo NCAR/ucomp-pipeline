@@ -37,7 +37,7 @@ pro fits_write,file_or_fcb,data,header_in,extname=extname,extver=extver, $
 ;		place, the default is "IMAGE".  This parameter is ignored
 ;		when writing the primary data unit.     Note that binary and
 ;               and ASCII table extensions already have a properly formatted
-;               header (e.g. with TTYPE* keywords) and byte array data. 
+;               header (e.g. with TTYPE* keywords) and byte array data.
 ;	EXTNAME: EXTNAME for the extension.  If not supplied, it will be taken
 ;		from HEADER_IN.  If not supplied and not in HEADER_IN, no
 ;		EXTNAME will be written into the output extension.
@@ -50,7 +50,7 @@ pro fits_write,file_or_fcb,data,header_in,extname=extname,extver=extver, $
 ;       /NO_ABORT: Set to return to calling program instead of a RETALL
 ;               when an I/O error is encountered.  If set, the routine will
 ;               return  a non-null string (containing the error message) in the
-;               keyword MESSAGE.   If /NO_ABORT not set, then FITS_WRITE will 
+;               keyword MESSAGE.   If /NO_ABORT not set, then FITS_WRITE will
 ;               print the message and issue a RETALL
 ;	/NO_DATA: Set if you only want FITS_WRITE to write a header.  The
 ;		header supplied will be written without modification and
@@ -73,7 +73,7 @@ pro fits_write,file_or_fcb,data,header_in,extname=extname,extver=extver, $
 ;	into the primary data unit and extension portions when constructing
 ;	the output header (See FITS_READ for information on the internal
 ;	Header format which separates the extension and PDU header portions).
-;	
+;
 ; EXAMPLES:
 ;	Write an IDL variable to a FITS file with the minimal required header.
 ;		FITS_WRITE,'newfile.fits',ARRAY
@@ -89,10 +89,10 @@ pro fits_write,file_or_fcb,data,header_in,extname=extname,extver=extver, $
 ;		FITS_WRITE,fcb,data2,extname='FLUX',extver=2
 ;		FITS_WRITE,fcb,err2,extname='ERR',extver=2
 ;		FITS_CLOSE,FCB
-;		
-; WARNING: 
+;
+; WARNING:
 ;       FITS_WRITE currently does not completely update the file control block.
-;       When mixing FITS_READ and FITS_WRITE commands it is safer to use 
+;       When mixing FITS_READ and FITS_WRITE commands it is safer to use
 ;       file names, rather than passing the file control block.
 ; PROCEDURES USED:
 ;	FITS_OPEN, SXADDPAR, SXDELPAR, SXPAR()
@@ -122,7 +122,7 @@ pro fits_write,file_or_fcb,data,header_in,extname=extname,extver=extver, $
 	    print,'Calling Sequence: FITS_WRITE,file_or_fcb,data,header_in'
 	    print,'Input Keywords: extname, extver, xtension, extlevel,' + $
                                     '/no_abort, /no_data'
-	    print,'Output Keywords:  message, header ' 
+	    print,'Output Keywords:  message, header '
 	    return
 	end
 ;
@@ -231,7 +231,7 @@ pro fits_write,file_or_fcb,data,header_in,extname=extname,extver=extver, $
 	keywords = strmid(header,0,8)
 	hpos1 = where(keywords eq 'BEGIN MA') & hpos1 = hpos1[0] ;begin main
 	hpos2 = where(keywords eq 'BEGIN EX') & hpos2 = hpos2[0] ;begin ext.
-	hpos3 = where(keywords eq 'END     ') & hpos3 = hpos3[0] ;end of header	
+	hpos3 = where(keywords eq 'END     ') & hpos3 = hpos3[0] ;end of header
 
 	if (hpos1 gt 0) && (hpos2 lt hpos1) then begin
 		message,'Invalid header BEGIN EXTENSION HEADER ... out of place'
@@ -270,7 +270,7 @@ pro fits_write,file_or_fcb,data,header_in,extname=extname,extver=extver, $
 	h[0] = 'END     '
 
 	if fcb.nextend eq -1 then begin
-		sxaddpar,h,'SIMPLE','T','image conforms to FITS standard' 
+		sxaddpar,h,'SIMPLE','T','image conforms to FITS standard'
 	   end else begin
 		if Axtension eq '' then Axtension = 'IMAGE   '
 		sxaddpar,h,'XTENSION',Axtension,'extension type'
@@ -286,9 +286,9 @@ pro fits_write,file_or_fcb,data,header_in,extname=extname,extver=extver, $
  		sxaddpar,h,'GCOUNT',1
                 if (Axtension eq 'BINTABLE') || $
                    (Axtension eq 'TABLE   ') then begin
-                       tfields = sxpar(header,'TFIELDS') > 0              
+                       tfields = sxpar(header,'TFIELDS') > 0
                        sxaddpar,h,'TFIELDS',tfields
-                endif 
+                endif
 		if Aextname ne '' then sxaddpar,h,'EXTNAME',Aextname
 		if Aextver gt 0 then sxaddpar,h,'EXTVER',Aextver
 		if Aextlevel gt 0 then sxaddpar,h,'EXTLEVEL',Aextlevel
@@ -328,7 +328,7 @@ write_header:
 ;
 ; pad header to 2880 byte records
 ;
-	npad = 2880 - (80L*n mod 2880)	
+	npad = 2880 - (80L*n mod 2880)
 	if npad eq 2880 then npad = 0
 	if (npad gt 0) then writeu,fcb.unit,replicate(32b,npad)
 	nbytes_header =  npad + n*80

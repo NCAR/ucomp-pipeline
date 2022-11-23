@@ -66,10 +66,10 @@ pro ucomp_average_l1_files, files, output_filename, method=method, run=run
                 'LCVR4', 'LCVR5', 'BASE']
   temp_keywords = ['T_' + temp_bases, $
                    'TU_' + temp_bases, $
-                   'T_C0ARR', $ 
-                   'T_C0PCB', $ 
-                   'T_C1ARR', $ 
-                   'T_C1PCB'] 
+                   'T_C0ARR', $
+                   'T_C0PCB', $
+                   'T_C1ARR', $
+                   'T_C1PCB']
   n_temp_keywords = n_elements(temp_keywords)
   temp_values = fltarr(n_temp_keywords) + !values.f_nan
   temp_counts = lonarr(n_temp_keywords)
@@ -185,7 +185,7 @@ pro ucomp_average_l1_files, files, output_filename, method=method, run=run
                   after='DATE-OBS'
     ucomp_addpar, primary_header, 'NUM_WAVE', n_unique_wavelengths
     ucomp_addpar, primary_header, 'NUMFILES', n_ok_files
-  
+
     if (size(wavelength_data, /n_dimensions) gt 3L) then begin
       case _method of
         'mean': averaged_data[*, *, *, w] = mean(wavelength_data, dimension=4, /nan)

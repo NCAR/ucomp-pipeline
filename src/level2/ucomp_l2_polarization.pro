@@ -1,5 +1,5 @@
 ; docformat = 'rst'
- 
+
 ;+
 ; Produce the polarization images:
 ;

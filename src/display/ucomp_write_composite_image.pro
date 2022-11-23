@@ -20,7 +20,7 @@ function ucomp_write_composite_image_channel, file, data, radius, run=run
   endif else begin
     field_mask = bytarr(dims[0], dims[1]) + 1B
   endelse
-  
+
   scaled_im = bytscl((im * field_mask)^display_power, $
                      min=display_min, $
                      max=display_max, $

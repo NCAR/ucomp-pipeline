@@ -8,17 +8,17 @@ function SXPAR, hdr, name, abort, COUNT=matches, COMMENT = comments, $
 ;      Obtain the value of a parameter in a FITS header
 ;
 ; CALLING SEQUENCE:
-;      result = SXPAR( Hdr, Name, [ Abort, COUNT=, COMMENT =, /NoCONTINUE, 
-;                                           /SILENT  ])   
+;      result = SXPAR( Hdr, Name, [ Abort, COUNT=, COMMENT =, /NoCONTINUE,
+;                                           /SILENT  ])
 ;
 ; INPUTS:
-;      Hdr =  FITS header array, (e.g. as returned by READFITS) 
-;             string array, each element should have a length of 80 characters      
+;      Hdr =  FITS header array, (e.g. as returned by READFITS)
+;             string array, each element should have a length of 80 characters
 ;
 ;      Name = String name of the parameter to return.   If Name is of the
 ;             form 'keyword*' then an array is returned containing values of
-;             keywordN where N is a positive (non-zero) integer.  The value of 
-;             keywordN will be placed in RESULT[N-1].  The data type of RESULT 
+;             keywordN where N is a positive (non-zero) integer.  The value of
+;             keywordN will be placed in RESULT[N-1].  The data type of RESULT
 ;             will be the type of the first valid match of keywordN found.
 ;
 ; OPTIONAL INPUTS:
@@ -28,7 +28,7 @@ function SXPAR, hdr, name, abort, COUNT=matches, COMMENT = comments, $
 ;               If not supplied, SXPAR will return quietly with COUNT = 0
 ;               (and !ERR = -1) if a keyword is not found.
 ;
-; OPTIONAL INPUT KEYWORDS: 
+; OPTIONAL INPUT KEYWORDS:
 ;       /NOCONTINUE = If set, then continuation lines will not be read, even
 ;                 if present in the header
 ;       /SILENT - Set this keyword to suppress warning messages about duplicate
@@ -48,7 +48,7 @@ function SXPAR, hdr, name, abort, COUNT=matches, COMMENT = comments, $
 ;                 used if the datatype would otherwise be integer.
 ;
 ; OPTIONAL OUTPUT KEYWORDS:
-;       COUNT - Optional keyword to return a value equal to the number of 
+;       COUNT - Optional keyword to return a value equal to the number of
 ;               parameters found by SXPAR, integer scalar
 ;
 ;       COMMENT - Array of comments associated with the returned values
@@ -73,7 +73,7 @@ function SXPAR, hdr, name, abort, COUNT=matches, COMMENT = comments, $
 ;       number of keyword matches found.    The use of !ERR is deprecated, and
 ;       instead the COUNT keyword is preferred
 ;
-;       If a keyword (except HISTORY or COMMENT) occurs more than once in a 
+;       If a keyword (except HISTORY or COMMENT) occurs more than once in a
 ;       header, a warning is given, and the *last* occurrence is used.
 ;
 ; EXAMPLES:
@@ -84,12 +84,12 @@ function SXPAR, hdr, name, abort, COUNT=matches, COMMENT = comments, $
 ;       IDL> history = sxpar( h, 'HISTORY' )      ; Extract HISTORY records
 ;
 ; PROCEDURE:
-;       The first 8 chacters of each element of Hdr are searched for a 
-;       match to Name.  The value from the last 20 characters is returned.  
+;       The first 8 chacters of each element of Hdr are searched for a
+;       match to Name.  The value from the last 20 characters is returned.
 ;       An error occurs if there is no parameter with the given name.
 ;
 ;       If a numeric value has no decimal point it is returned as type
-;       LONG.   If it contains more than 8 numerals, or contains the 
+;       LONG.   If it contains more than 8 numerals, or contains the
 ;       characters 'D' or 'E', then it is returned as type DOUBLE.  Otherwise
 ;       it is returned as type FLOAT.    Very large integer values, outside
 ;       the range of valid LONG, are returned as DOUBLE.
@@ -124,17 +124,17 @@ function SXPAR, hdr, name, abort, COUNT=matches, COMMENT = comments, $
 ;       W. Thompson, Feb. 1992, added support for FITS complex values.
 ;       W. Thompson, May 1992, corrected problem with HISTORY/COMMENT/blank
 ;               keywords, and complex value error correction.
-;       W. Landsman, November 1994, fix case where NAME is an empty string 
+;       W. Landsman, November 1994, fix case where NAME is an empty string
 ;       W. Landsman, March 1995,  Added COMMENT keyword, ability to read
 ;               values longer than 20 character
 ;       W. Landsman, July 1995, Removed /NOZERO from MAKE_ARRAY call
 ;       T. Beck May 1998, Return logical as type BYTE
 ;       W. Landsman May 1998, Make sure integer values are within range of LONG
-;       W. Landsman Feb 1998, Recognize CONTINUE convention 
+;       W. Landsman Feb 1998, Recognize CONTINUE convention
 ;       W. Landsman Oct 1999, Recognize numbers such as 1E-10 as floating point
 ;       W. Landsman Jan 2000, Only accept integer N values when name = keywordN
 ;       W. Landsman Dec 2001, Optional /SILENT keyword to suppress warnings
-;       W. Landsman/D. Finkbeiner  Mar 2002  Make sure extracted vectors 
+;       W. Landsman/D. Finkbeiner  Mar 2002  Make sure extracted vectors
 ;             of mixed data type are returned with the highest type.
 ;       W.Landsman Aug 2008  Use vector form of VALID_NUM()
 ;       W. Landsman Jul 2009  Eliminate internal recursive call
@@ -144,7 +144,7 @@ function SXPAR, hdr, name, abort, COUNT=matches, COMMENT = comments, $
 ;       W. Landsman Dec 2014  Return Logical as IDL Boolean in IDL 8.4 or later
 ;       W. Landsman May 2015  Added IFound output keyword
 ;       J. Slavin Aug 2015 Allow for 72 character par values (fixed from 71)
-;       W. Landsman Sep 2015  Added Missing, /NULL and /NaN keywords 
+;       W. Landsman Sep 2015  Added Missing, /NULL and /NaN keywords
 ;-
 ;----------------------------------------------------------------------
  compile_opt idl2
@@ -154,12 +154,12 @@ function SXPAR, hdr, name, abort, COUNT=matches, COMMENT = comments, $
      print,'   Input Keywords:    /NOCONTINUE, /SILENT, MISSING=, /NAN, /NULL'
      print,'   Output Keywords:   COUNT=,  COMMENT= '
      return, -1
- endif 
- 
+ endif
+
  ;
 ;  Determine the default value for missing data.
 ;
-        CASE 1 OF 
+        CASE 1 OF
             N_ELEMENTS(MISSING) EQ 1: MISSING_VALUE = MISSING
             KEYWORD_SET(NAN): MISSING_VALUE = !VALUES.F_NAN
             KEYWORD_SET(K_NULL) AND !VERSION.RELEASE GE '8.': $
@@ -168,7 +168,7 @@ function SXPAR, hdr, name, abort, COUNT=matches, COMMENT = comments, $
         ENDCASE
         VALUE = MISSING_VALUE
 ;
- 
+
  VALUE = 0
  if N_params() LE 2 then begin
       abort_return = 0
@@ -188,27 +188,27 @@ function SXPAR, hdr, name, abort, COUNT=matches, COMMENT = comments, $
   if ( size(hdr,/N_dimen) NE 1 ) || ( size(hdr,/type) NE 7 ) then $
            message,'FITS Header (first parameter) must be a string array'
 
-  nam = strtrim( strupcase(name) )      ;Copy name, make upper case     
+  nam = strtrim( strupcase(name) )      ;Copy name, make upper case
 
 
 ;  Determine if NAME is of form 'keyword*'.  If so, then strip off the '*', and
 ;  set the VECTOR flag.  One must consider the possibility that NAM is an empty
 ;  string.
 
-   namelength1 = (strlen(nam) - 1 ) > 1         
-   if strpos( nam, '*' ) EQ namelength1 then begin    
-            nam = strmid( nam, 0, namelength1)  
-            vector = 1                  ;Flag for vector output  
-            name_length = strlen(nam)   ;Length of name 
-            num_length = 8 - name_length        ;Max length of number portion  
-            if num_length LE 0 then  $ 
+   namelength1 = (strlen(nam) - 1 ) > 1
+   if strpos( nam, '*' ) EQ namelength1 then begin
+            nam = strmid( nam, 0, namelength1)
+            vector = 1                  ;Flag for vector output
+            name_length = strlen(nam)   ;Length of name
+            num_length = 8 - name_length        ;Max length of number portion
+            if num_length LE 0 then  $
                   message, 'Keyword length must be 8 characters or less'
 
 ;  Otherwise, extend NAME with blanks to eight characters.
 
-    endif else begin  
+    endif else begin
                 while strlen(nam) LT 8 do nam += ' ' ;Make 8 chars long
-                vector = 0      
+                vector = 0
     endelse
 
 
@@ -216,22 +216,22 @@ function SXPAR, hdr, name, abort, COUNT=matches, COMMENT = comments, $
 ;  a number.  Store the positions of the located keywords in NFOUND, and the
 ;  value of the number field in NUMBER.
 
-        histnam = (nam eq 'HISTORY ') || (nam eq 'COMMENT ') || (nam eq '') 
+        histnam = (nam eq 'HISTORY ') || (nam eq 'COMMENT ') || (nam eq '')
         keyword = strmid( hdr, 0, 8)
 	number = 0
- 
+
         if vector then begin
             nfound = where(strpos(keyword,nam) GE 0, matches)
             if  matches GT 0  then begin
                 numst= strmid( hdr[nfound], name_length, num_length)
 		igood = where(VALID_NUM(numst,/INTEGER), matches)
-		if matches GT 0 then begin 
+		if matches GT 0 then begin
 		     nfound = nfound[igood]
                      number = long(numst[igood])
 		     g = where(number GT 0, matches)
  		     if matches GT 0 then number = number[g]
 
-		endif 
+		endif
            endif
 
 ;  Otherwise, find all the instances of the requested keyword.  If more than
@@ -247,7 +247,7 @@ function SXPAR, hdr, name, abort, COUNT=matches, COMMENT = comments, $
         endelse
 
 
-; Process string parameter 
+; Process string parameter
 
  if matches GT 0 then begin
   line = hdr[nfound]
@@ -258,25 +258,25 @@ function SXPAR, hdr, name, abort, COUNT=matches, COMMENT = comments, $
                   test = strmid( svalue[i],1,strlen( svalue[i] )-1)
                   next_char = 0
                   off = 0
-                  value = '' 
+                  value = ''
           NEXT_APOST:
-                  endap = strpos(test, "'", next_char)      ;Ending apostrophe  
-                  if endap LT 0 then $ 
+                  endap = strpos(test, "'", next_char)      ;Ending apostrophe
+                  if endap LT 0 then $
                             MESSAGE,'Value of '+name+' invalid in '+abort
-                  value += strmid( test, next_char, endap-next_char )  
+                  value += strmid( test, next_char, endap-next_char )
 
 ;  Test to see if the next character is also an apostrophe.  If so, then the
 ;  string isn't completed yet.  Apostrophes in the text string are signalled as
 ;  two apostrophes in a row.
 
-                 if strmid( test, endap+1, 1) EQ "'" then begin    
+                 if strmid( test, endap+1, 1) EQ "'" then begin
                     value += "'"
-                    next_char = endap+2         
+                    next_char = endap+2
                     goto, NEXT_APOST
-                 endif      
+                 endif
 
 ; Extract the comment, if any
-                
+
                 slash = strpos( test, "/", endap )
                 if slash LT 0 then comment = '' else    $
                         comment = strmid( test, slash+1, strlen(test)-slash-1 )
@@ -293,7 +293,7 @@ function SXPAR, hdr, name, abort, COUNT=matches, COMMENT = comments, $
                 if (strlen(val) gt 0) && $
                   (strmid(val, strlen(val)-1, 1) EQ '&') && $
                   (strmid(hdr[nfound[i]+off],0,8) EQ 'CONTINUE') then $
-		      if ~array_equal(keyword EQ 'LONGSTRN',0b) then begin 
+		      if ~array_equal(keyword EQ 'LONGSTRN',0b) then begin
                   value = strmid(val, 0, strlen(val)-1)
                   test = hdr[nfound[i]+off]
                   test = strmid(test, 8, strlen(test)-8)
@@ -306,7 +306,7 @@ function SXPAR, hdr, name, abort, COUNT=matches, COMMENT = comments, $
     ENDIF
 
 
-; Process non-string value  
+; Process non-string value
 
           endif else begin
                value = missing_value
@@ -329,9 +329,9 @@ function SXPAR, hdr, name, abort, COUNT=matches, COMMENT = comments, $
                 true = 1b
                 false = 0b
                 if !VERSION.RELEASE GE 8.4 then begin
-                	true =  boolean(true) 
+                	true =  boolean(true)
                 	false = boolean(false)
-               endif 
+               endif
 
                if ( value EQ 'T' ) then value = true else $
                if ( value EQ 'F' ) then value = false else begin
@@ -340,7 +340,7 @@ function SXPAR, hdr, name, abort, COUNT=matches, COMMENT = comments, $
 ;  the next word, if any, are both valid values.
 
                 if strlen(test2) EQ 0 then goto, NOT_COMPLEX
-                value2 = gettok( test2, ' ') 
+                value2 = gettok( test2, ' ')
                 if value2 EQ '' then goto, NOT_COMPLEX
                 On_ioerror, NOT_COMPLEX
                 value2 = float(value2)
@@ -362,7 +362,7 @@ NOT_COMPLEX:
                             lmin = -2.0d^31      ;Typo fixed Feb 2010
                             value = long64(value)
                             if (value GE lmin) && (value LE lmax) then $
-                                value = long(value) 
+                                value = long(value)
                        endelse
 
 GOT_VALUE:
@@ -378,7 +378,7 @@ GOT_VALUE:
                      dtype = size(value,/type)
                      result = make_array( maxnum, TYPE = dtype )
                      comments = strarr( maxnum )
-               endif 
+               endif
                if size(value,/type) GT dtype then begin   ;Do we need to recast?
                     result = result + 0*value
                     dtype = size(value,/type)
@@ -390,15 +390,15 @@ GOT_VALUE:
   endfor
 
   if vector then begin
-         !ERR = matches     
+         !ERR = matches
          return, result
   endif else !ERR = 0
 
-endif  else  begin    
+endif  else  begin
      if abort_return then message,'Keyword '+nam+' not found in '+abort
      !ERR = -1
-endelse     
+endelse
 
-return, value       
+return, value
 
-END                 
+END

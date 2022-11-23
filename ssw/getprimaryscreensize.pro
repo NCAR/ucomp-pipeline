@@ -42,18 +42,18 @@
 ;
 ; :Categories:
 ;    Graphics
-;    
+;
 ; :Params:
-;    none 
-;       
+;    none
+;
 ; :Keywords:
 ;     exclude_taskbar: in, optional, boolean, default=0
 ;         Set this keyword to exclude the taskbar from the monitor size.
 ;         This keyword is ignored on all but Windows machines.
-;          
+;
 ; :Author:
 ;       Dick Jackson, www.dick-jackson.com
-;       
+;
 ; :History:
 ;     Change History::
 ;        Written, 8 March 2011. DJ
@@ -70,6 +70,6 @@ FUNCTION GetPrimaryScreenSize, Exclude_Taskbar=exclude_Taskbar
         pmi = oMonInfo -> GetPrimaryMonitorIndex()
         Obj_Destroy, oMonInfo
         RETURN, rects[[2, 3], pmi]     ; w & h of primary monitor avbl. space
-    ENDIF ELSE RETURN, Get_Screen_Size()        
+    ENDIF ELSE RETURN, Get_Screen_Size()
 
 END

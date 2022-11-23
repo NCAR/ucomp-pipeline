@@ -5,7 +5,7 @@ function ucomp_center_image_ut::init, _extra=e
 
   if (~self->MGutTestCase::init(_extra=e)) then return, 0
 
-  
+
   self->addTestingRoutine, ['ucomp_center_image'], $
                            /is_function
 

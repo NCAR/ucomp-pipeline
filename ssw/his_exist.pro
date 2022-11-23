@@ -4,7 +4,7 @@ function his_exist, index
 ;NAME:
 ;	his_exist
 ;PURPOSE:
-;	Simple function to see if the history structure (.HIS) exists 
+;	Simple function to see if the history structure (.HIS) exists
 ;	in the index
 ;SAMPLE CALLING SEQUENCE:
 ;	q = his_exist(index)

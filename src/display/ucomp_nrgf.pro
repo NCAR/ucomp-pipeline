@@ -40,7 +40,7 @@ function ucomp_nrgf, im, occulter_radius, $
 
   _min_value = n_elements(min_value) eq 0L ? min(im) : max_value
   _max_value = n_elements(max_value) eq 0L ? max(im) : max_value
-  
+
   ; dimensions of the input image
   dims = size(im, /dimensions)
   xsize = dims[0]

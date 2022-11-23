@@ -33,8 +33,8 @@ pro ucomp_calibration::cache_darks, filename, $
   ; master dark file with extensions 1..n:
   ;   exts 1 to n - 3:   dark images
   ;   ext n - 2:         times of the dark images
-  ;   ext n - 1:         exposure times of the dark images 
-  ;   ext n:             gain modes of the dark images 
+  ;   ext n - 1:         exposure times of the dark images
+  ;   ext n:             gain modes of the dark images
 
   if (n_elements(filename) gt 0L) then begin
     fits_open, filename, fcb
@@ -236,9 +236,9 @@ pro ucomp_calibration::cache_flats, filenames, $
   ; master flat file with extensions 1..n:
   ;   exts 1 to n - 4:   flat images
   ;   ext n - 3:         times of the flat images
-  ;   ext n - 2:         exposure times of the flat images 
+  ;   ext n - 2:         exposure times of the flat images
   ;   ext n - 1:         wavelengths of the flat images
-  ;   ext n:             gain modes of the flat images 
+  ;   ext n:             gain modes of the flat images
 
   if (n_elements(filenames) gt 0L) then begin
     ; determine total number of flats in all flat files
@@ -346,7 +346,7 @@ end
 ;+
 ; Retrieve a dark corrected flat image for a given science image. The exposure
 ; time of the found flat will be normalized to the required exposure time given
-; by `exptime`. Other attributes such as `gain_mode`, `onband`, and 
+; by `exptime`. Other attributes such as `gain_mode`, `onband`, and
 ; `wavelength` will be matched exactly.
 ;
 ; :Returns:
@@ -596,8 +596,8 @@ pro ucomp_calibration__define
            dark_exptimes: ptr_new(), $
            dark_gain_modes: ptr_new(), $
            dark_raw_files: ptr_new(), $
-   
-           ; master flat cache 
+
+           ; master flat cache
            flats: ptr_new(), $             ; fltarr(nx, ny, 4, 2, n_flats)
            flat_times: ptr_new(), $        ; obsday hours
            flat_exptimes: ptr_new(), $     ; [ms] exposure time

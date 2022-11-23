@@ -20,4 +20,3 @@ function mask, ibyte, stbit, nbit
 ;;return, (long(ibyte) / (long(2)^stbit)) mod (long(2)^nbit)
 return, ishft(ibyte, -stbit) and (long(2)^(nbit)-1)
 end
-

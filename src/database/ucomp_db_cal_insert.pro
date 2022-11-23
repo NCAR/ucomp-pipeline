@@ -28,7 +28,7 @@ pro ucomp_db_cal_insert, files, type, $
   q = 'select * from ucomp_level where level=''L0'''
   level_results = db->query(q, status=status)
   if (status ne 0L) then goto, done
-  level_index = level_results.level_id	
+  level_index = level_results.level_id
 
   for f = 0L, n_files - 1L do begin
     file = files[f]

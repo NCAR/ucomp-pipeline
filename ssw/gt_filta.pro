@@ -26,7 +26,7 @@ function gt_filta, item, header=header, string=string, short=short, spaces=space
 ;		  filter names used.
 ;OPTIONAL INPUT:
 ;	string	- If present, return the string mnemonic (long notation)
-;	short	- If present, return the short string mnemonic 
+;	short	- If present, return the short string mnemonic
 ;	spaces	- If present, place that many spaces before the output
 ;		  string.
 ;OUTPUT:
@@ -39,7 +39,7 @@ function gt_filta, item, header=header, string=string, short=short, spaces=space
 ;HISTORY:
 ;	Written 7-Nov-91 by M.Morrison
 ;       13-Nov-91 MDM - Added "header" and "spaces"  option
-;       1-Feb-2007 Aki Takeda - Modification to accept YLA FITS headers as input. 
+;       1-Feb-2007 Aki Takeda - Modification to accept YLA FITS headers as input.
 ;-
 ;
 header_array = ['FiltA', 'FA']
@@ -60,7 +60,7 @@ if (typ eq 8) then begin
     tags = tag_names(item)
     if (tags(0) eq 'GEN') then out = item.sxt.periph $
 			else out = item.periph
-    if (tags(0) eq 'SIMPLE') then out = mask(out, 0, 3)  ; for FITS header 
+    if (tags(0) eq 'SIMPLE') then out = mask(out, 0, 3)  ; for FITS header
 end else begin
     out = item
 end

@@ -12,8 +12,8 @@ pro gbo_struct, GEV_Data = GEV_Data,  $
                      Nob_TimSer = Nob_TimSer,  $
                      GBO_Version = GBO_Version,  $
                      Uly_FEM = Uly_FEM
-   
-   
+
+
 ;+
 ;       NAME:
 ;               GBO_STRUCT
@@ -41,8 +41,8 @@ pro gbo_struct, GEV_Data = GEV_Data,  $
 ;               slf, 10-oct-92, changed number pad bytes, GXR_Data_Rec
 ;
 ;-
-   
-   
+
+
 GEV_Data = { GEV_Data_rec,              $
       time: LONG(0),  $                      ; 00- Time (millisec of day)
       day: FIX(0),  $                        ; 04- Day (since 1-Jan-79)
@@ -66,9 +66,9 @@ GEV_Data = { GEV_Data_rec,              $
                                              ;                       B = bright surge on limb reported
                                              ;                       E = eruptive prominence reported
       spare: BYTARR(12) }                    ; 52- Spare
-   
-   
-   
+
+
+
 GXR_Data = { GXR_Data_rec,              $
       time: LONG(0),  $                      ; 00- Time (millisec of day)
       day: FIX(0),  $                        ; 04- Day (since 1-Jan-79)
@@ -80,9 +80,9 @@ GXR_Data = { GXR_Data_rec,              $
                                              ;    1 = Tektronics, 6 hour plot derived
                                              ;        Datrng=[101,679]->[1E-9,1E-3] , log
       spare: BYTARR(1) }                     ; Spare (from 6 to 1, 10-oct-92, slf)
-   
-   
-   
+
+
+
 GXR2_Data = { GXR2_Data_rec,              $
                                              ;       This structure is not saved on disk, it is created
                                              ;       when reading the GXR_Data_Rec Structure
@@ -97,18 +97,18 @@ GXR2_Data = { GXR2_Data_rec,              $
                                              ;        Datrng=[101,679]->[1E-9,1E-3] , log
                                              ;    2 = Converted into reals
       spare: BYTARR(1) }                     ; Spare (from 6 to 1, 10-oct-92, slf)
-   
-   
-   
+
+
+
 GXD_Data = { GXD_Data_rec,              $
       time: LONG(0),  $                      ; 00- Time (millisec of day)
       day: FIX(0),  $                        ; 04- Day (since 1-Jan-79)
       lo: FLOAT(0),  $                       ; 06- Low energy count rate
       hi: FLOAT(0),  $                       ; 10- High energy count rate
       spare: BYTARR(2) }                     ; 14- Spare (from 6 to 1, 10-oct-92, slf)
-   
-   
-   
+
+
+
 NAR_Data = { NAR_Data_rec,              $
       time: LONG(0),  $                      ; 00- Time (millisec of day)
       day: FIX(0),  $                        ; 04- Day (since 1-Jan-79)
@@ -129,9 +129,9 @@ NAR_Data = { NAR_Data_rec,              $
                                              ;       BETA
                                              ;       GAMMA
       spare: BYTARR(9) }                     ; 39-
-   
-   
-   
+
+
+
 GSN_ObsHeader = { GSN_ObsHeader_rec,              $
       time: LONG(0),  $                      ; 00- Time (millisec of day) of first image
       day: FIX(0),  $                        ; 04- Day (since 1-Jan-79) of first image in file
@@ -155,9 +155,9 @@ GSN_ObsHeader = { GSN_ObsHeader_rec,              $
                                              ;       (1) = N/S (S is negative)
                                              ;
       spare: BYTARR(4) }                     ; 28- Spare
-   
-   
-   
+
+
+
 GSN_ObsImage = { GSN_ObsImage_rec,              $
       time: LONG(0),  $                      ; 00- Time (millisec of day)
       day: FIX(0),  $                        ; 04- Day (since 1-Jan-79)
@@ -171,9 +171,9 @@ GSN_ObsImage = { GSN_ObsImage_rec,              $
       resolution: BYTE(0),  $                ;  9- Image resolution (pixel size)
       seeing: BYTE(0),  $                    ; 10-
       spare: BYTARR(1) }                     ; 11-
-   
-   
-   
+
+
+
 GBO_Obs = { GBO_Obs_rec,              $
       time: LONG(0),  $                      ; 00- Time (millisec of day)
       day: FIX(0),  $                        ; 04- Day (since 1-Jan-79)
@@ -196,18 +196,18 @@ GBO_Obs = { GBO_Obs_rec,              $
       st$image_type: BYTARR(2),  $           ;  9- The type of image
                                              ;       First Letter:
                                              ;               ? = unknown
-                                             ;               H = H-alpha 
+                                             ;               H = H-alpha
                                              ;               W = Continuum white
                                              ;               M = Magnetogram
                                              ;               I = Helium 10830 A
-                                             ;               S = Spectrohelioscope 
+                                             ;               S = Spectrohelioscope
                                              ;               X = X=ray
                                              ;       Second Letter:
                                              ;               TODO
       image_shape: BYTE(0),  $               ; 11- A coded value for the shape of the image
                                              ;       0 = unknown
                                              ;       1 = full disk
-                                             ;       2 = large scale 
+                                             ;       2 = large scale
                                              ;
       processing: BYTE(0),  $                ; 12- A code about the processing done to the image
                                              ;       b0 - Set if came through SELSIS computer system
@@ -233,7 +233,7 @@ GBO_Obs = { GBO_Obs_rec,              $
                                              ;       5 = Excellent
                                              ;
       fov: INTARR(2),  $                     ; 16- The size of the FOV in arcseconds
-      npix: INTARR(2),  $                    ; 20- The number of pixels 
+      npix: INTARR(2),  $                    ; 20- The number of pixels
                                              ;
       location: INTARR(2),  $                ; 24- The location in heliocentric coordinates
                                              ;     (not relevant for full disk images)
@@ -242,9 +242,9 @@ GBO_Obs = { GBO_Obs_rec,              $
                                              ;       (1) = N/S (S i4~s negative)
       noaa: FIX(0),  $                       ; 28- NOAA active region number
       spare: BYTARR(2) }                     ; 30
-   
-   
-   
+
+
+
 BATSE_Event = { BATSE_Event_Rec,              $
       time: LONG(0),  $                      ; 00- Time (millisec of day)
       day: FIX(0),  $                        ; 04- Day (since 1-Jan-79)
@@ -263,18 +263,18 @@ BATSE_Event = { BATSE_Event_Rec,              $
                                              ;     second background was taken.
       bkg2_duration: LONG(0),  $             ; 36- The duration in seconds of the background period
       spare: BYTARR(8) }                     ; 40- Spare
-   
-   
-   
+
+
+
 BATSE_LCur = { BATSE_LCur_Rec,              $
       time: LONG(0),  $                      ; 00- Time (millisec of day)
       day: FIX(0),  $                        ; 04- Day (since 1-Jan-79)
       channel1: FLOAT(0),  $                 ; 06- counts in channel 1 ?
       channel2: FLOAT(0),  $                 ; 10- counts in channel 2 ? (background?)
       spare: BYTARR(2) }                     ; 14- Spare
-   
-   
-   
+
+
+
 Nob_Event = { Nob_Event_Rec,              $
       time: LONG(0),  $                      ; 00- Time (millisec of day)
       day: FIX(0),  $                        ; 04- Day (since 1-Jan-79)
@@ -282,16 +282,16 @@ Nob_Event = { Nob_Event_Rec,              $
                                              ;
                                              ;         character*80  comments(8)     !- too much space
       spare: BYTARR(6) }                     ; 10- Spare
-   
-   
-   
+
+
+
 Nob_TimSer = { Nob_TimSer_Rec,              $
       time: LONG(0),  $                      ; 00- Time (millisec of day)
       day: FIX(0),  $                        ; 04- Day (since 1-Jan-79)
       coeff: FLOAT(0) }                      ; 06- Correlation Coefficient
-   
-   
-   
+
+
+
 GBO_Version = { GBO_Version_Rec,              $
       GEV : FIX('A021'x),  $                 ;   - GOES event log
       NAR : FIX('A031'x),  $                 ;   - NOAA Active Region - slf, from A020 to A031
@@ -308,9 +308,9 @@ GBO_Version = { GBO_Version_Rec,              $
                                              ;
       GUF : FIX('A0B1'x),  $                 ;   - Ulysees Ephemeris File
       spare: BYTARR(14) }                    ;     (need for automatic conversion to IDL format)
-   
-   
-   
+
+
+
 Uly_FEM = { Uly_FEM_Rec,              $
       time: LONG(0),  $                      ; 00- Time (millisec of day)
       day: FIX(0),  $                        ; 04- Day (since 1-Jan-79)
@@ -319,9 +319,9 @@ Uly_FEM = { Uly_FEM_Rec,              $
       he_lon: FLOAT(0),  $                   ; extrapolated heliographic logitude
       pvelocity: FLOAT(0),  $                ; proton velocity
       spare: BYTARR(10) }                    ;
-   
-   
-   
-  
-  
+
+
+
+
+
 end

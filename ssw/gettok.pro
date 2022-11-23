@@ -1,12 +1,12 @@
 function gettok,st,char, exact=exact, notrim=notrim
 ;+
 ; NAME:
-;	GETTOK                                    
+;	GETTOK
 ; PURPOSE:
 ;	Retrieve the first part of a (vector) string up to a specified character
 ; EXPLANATION:
-;	GET TOKen - Retrieve first part of string until the character char 
-;	is encountered.   
+;	GET TOKen - Retrieve first part of string until the character char
+;	is encountered.
 ;
 ; CALLING SEQUENCE:
 ;	token = gettok( st, char, [ /EXACT, /NOTRIM ] )
@@ -21,16 +21,16 @@ function gettok,st,char, exact=exact, notrim=notrim
 ; OUTPUT:
 ;	token - extracted string value is returned, same dimensions as st
 ; OPTIONAL INPUT KEYWORD:
-;       /EXACT -  The default behaviour of GETTOK is to remove any leading 
-;              blanks and (if the token is a blank) convert tabs to blanks.    
-;              Set the /EXACT keyword to skip these steps and leave the 
-;              input string unchanged before searching for the  character 
-;              tokens. 
+;       /EXACT -  The default behaviour of GETTOK is to remove any leading
+;              blanks and (if the token is a blank) convert tabs to blanks.
+;              Set the /EXACT keyword to skip these steps and leave the
+;              input string unchanged before searching for the  character
+;              tokens.
 ;
-;      /NOTRIM - if set, then the input string is left unaltered 
+;      /NOTRIM - if set, then the input string is left unaltered
 ; EXAMPLE:
 ;	If ST is ['abc=999','x=3.4234'] then gettok(ST,'=') would return
-;	['abc','x'] and ST would be left as ['999','3.4234'] 
+;	['abc','x'] and ST would be left as ['999','3.4234']
 ;
 ; PROCEDURE CALLS:
 ;       REPCHR()
@@ -56,8 +56,8 @@ function gettok,st,char, exact=exact, notrim=notrim
 
  if ~keyword_set(exact) then begin
     st = strtrim(st,1)              ;Remove leading blanks and tabs
-    if char EQ ' ' then begin 
-       tab = string(9b)                 
+    if char EQ ' ' then begin
+       tab = string(9b)
        if max(strpos(st,tab)) GE 0 then st = repchr(st,tab,' ')
     endif
   endif
@@ -69,7 +69,7 @@ function gettok,st,char, exact=exact, notrim=notrim
   test = pos EQ -1
   bad = where(test, Nbad, Complement = good, Ncomplement=Ngood)
   if Nbad GT 0 && ~keyword_set(notrim) then st[bad] = ''
- 
+
 ; extract token
  if Ngood GT 0 then begin
     stg = st[good]

@@ -54,7 +54,7 @@
 ;
 ; :Keywords:
 ;    boolean: in, optional, type=integer
-;         If this keyword is set, the argument value will always be forced to return with a 
+;         If this keyword is set, the argument value will always be forced to return with a
 ;         value of 0 or 1.
 ;    range: in, optional
 ;         A two-element array that gives the accepted range of the variable. The output argument
@@ -62,15 +62,15 @@
 ;
 ; :Examples:
 ;    Here is how to use this program::
-;    
+;
 ;      FUNCTION Action, arg1, arg2, MULTIPLY=multiply
-;  
+;
 ;         SetDefaultValue, arg1, 1
 ;         SetDefaultValue, arg2, 2
-;         SetDefaultValue, multiply, 1, /BOOLEAN 
-;     
+;         SetDefaultValue, multiply, 1, /BOOLEAN
+;
 ;         IF multiply THEN RETURN, arg1 * arg2 ELSE RETURN, arg1 + arg2
-;     
+;
 ;      END
 ;
 ; :Author:
@@ -100,7 +100,7 @@ PRO SetDefaultValue, argument, defaultValue, RANGE=range, BOOLEAN=boolean
 
    ; We only need change if the argument is undefined.
    IF N_Elements(argument) EQ 0 THEN BEGIN
-        
+
       ; If the default value is undefined, treat as BOOLEAN.
       ; Otherwise, assign default value to the argument.
       IF N_Elements(defaultValue) EQ 0 THEN BEGIN
@@ -108,15 +108,15 @@ PRO SetDefaultValue, argument, defaultValue, RANGE=range, BOOLEAN=boolean
       ENDIF ELSE BEGIN
          argument = defaultValue
       ENDELSE
-            
+
    ENDIF
-        
+
    ; Require boolean.
-   IF Keyword_Set(boolean) THEN argument = Keyword_Set(argument)    
-        
+   IF Keyword_Set(boolean) THEN argument = Keyword_Set(argument)
+
    ; Confine to a range?
    IF N_Elements(range) NE 0 THEN BEGIN
        argument = range[0] > argument < range[1]
    ENDIF
-     
+
 END ;-----------------------------------------------------------------------------------------

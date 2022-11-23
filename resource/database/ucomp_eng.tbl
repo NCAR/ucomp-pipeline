@@ -87,7 +87,7 @@ create table ucomp_eng (
 
   sky_pol_factor   float(6, 3),
   sky_bias         float(7, 4),
-  
+
   ucomp_sw_id      int (10),
 
   unique (file_name),

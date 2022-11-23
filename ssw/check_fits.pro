@@ -4,15 +4,15 @@ pro check_FITS, im, hdr, dimen, idltype, UPDATE = update, NOTYPE = notype, $
 ; NAME:
 ;       CHECK_FITS
 ; PURPOSE:
-;       Check that keywords in a FITS header array match the associated data  
+;       Check that keywords in a FITS header array match the associated data
 ; EXPLANATION:
 ;       Given a FITS array IM, and a associated FITS header HDR, this
 ;       procedure will check that
-;               (1) HDR is a string array, and IM is defined and numeric   
-;               (2) The NAXISi values in HDR are appropriate to the dimensions 
+;               (1) HDR is a string array, and IM is defined and numeric
+;               (2) The NAXISi values in HDR are appropriate to the dimensions
 ;                   of IM
 ;               (3) The BITPIX value in HDR is appropriate to the datatype of IM
-;       If the /UPDATE keyword is present, then the FITS header will be 
+;       If the /UPDATE keyword is present, then the FITS header will be
 ;       modified, if necessary, to force agreement with the image array
 ;
 ; CALLING SEQUENCE:
@@ -30,18 +30,18 @@ pro check_FITS, im, hdr, dimen, idltype, UPDATE = update, NOTYPE = notype, $
 ;
 ; OPTIONAL KEYWORD INPUTS:
 ;       /NOTYPE - If this keyword is set, then only agreement of the array
-;               dimensions with the FITS header are checked, and not the 
+;               dimensions with the FITS header are checked, and not the
 ;               data type.
 ;       /UPDATE - If this keyword is set then the BITPIX, NAXIS and NAXISi
 ;               FITS keywords will be updated to agree with the array
-;       /FITS, /SDAS -  these are obsolete keywords that now do nothing 
-;       /SILENT - If keyword is set and nonzero, the informational messages 
+;       /FITS, /SDAS -  these are obsolete keywords that now do nothing
+;       /SILENT - If keyword is set and nonzero, the informational messages
 ;               will not be printed
 ; OPTIONAL KEYWORD OUTPUT:
 ;       ERRMSG  = If this keyword is present, then any error messages will be
 ;                 returned to the user in this parameter rather than
 ;                 depending on the MESSAGE routine in IDL.  If no errors are
-;                 encountered, then a null string is returned.  
+;                 encountered, then a null string is returned.
 ;
 ; PROCEDURE:
 ;       Program checks the NAXIS and NAXISi keywords in the header to
@@ -65,8 +65,8 @@ pro check_FITS, im, hdr, dimen, idltype, UPDATE = update, NOTYPE = notype, $
 ;       Remove SDAS support   W. Landsman       November 2006
 ;       Fix dimension errors introduced Nov 2006
 ;       Work again for null arrays W. Landsman/E. Hivon May 2007
-;       Use V6.0 notation  W.L.  Feb. 2011 
-;- 
+;       Use V6.0 notation  W.L.  Feb. 2011
+;-
  compile_opt idl2
  On_error,2
 
@@ -76,13 +76,13 @@ pro check_FITS, im, hdr, dimen, idltype, UPDATE = update, NOTYPE = notype, $
     return
  endif
 
- if arg_present(errmsg) then errmsg = ''       
+ if arg_present(errmsg) then errmsg = ''
 
  if size(hdr,/TNAME) NE 'STRING' then begin        ;Is hdr of string type?
         message= 'FITS header is not a string array'
         if  N_elements(ERRMSG) GT 0 then errmsg = message else $
              message, 'ERROR - ' + message, /CON
-             return 
+             return
  endif
 
  im_info = size(im,/struc)
@@ -90,24 +90,24 @@ pro check_FITS, im, hdr, dimen, idltype, UPDATE = update, NOTYPE = notype, $
  if ndimen GT 0 then dimen = im_info.dimensions[0:ndimen-1]
  idltype = im_info.type
 
- 
- nax = fxpar( hdr, 'NAXIS', Count = N_naxis ) 
+
+ nax = fxpar( hdr, 'NAXIS', Count = N_naxis )
  if N_naxis EQ 0 then begin
         message = 'FITS header missing NAXIS keyword'
         if  N_elements(errmsg) GT 0 then errmsg = message else $
-             message,'ERROR - ' + message,/CON 
-             return 
+             message,'ERROR - ' + message,/CON
+             return
  endif
-        
+
  if ndimen EQ 0  then $             ;Null primary array
      if nax EQ 0 then return else begin
          message = 'FITS array is not defined'
          if  N_elements(errmsg) GT 0 then errmsg = message else $
-             message,'ERROR - ' +message,/con 
-             return 
+             message,'ERROR - ' +message,/con
+             return
      endelse
 
- 
+
  naxis = fxpar( hdr, 'NAXIS*')
  naxi = N_elements( naxis )
  if nax GT naxi then begin                 ;Does NAXIS agree with # of NAXISi?
@@ -115,7 +115,7 @@ pro check_FITS, im, hdr, dimen, idltype, UPDATE = update, NOTYPE = notype, $
                 fxaddpar, hdr, 'NAXIS', naxi
                 if ~keyword_set(SILENT) then message, /INF, $
         'NAXIS changed from ' + strtrim(nax,2) + ' to ' + strtrim(naxi,2)
-        endif else begin 
+        endif else begin
                 message =  'FITS header has NAXIS = ' + strtrim(nax,2) + $
                 ', but only ' + strtrim(naxi, 2) + ' axes defined'
                 if  N_elements(ERRMSG) GT 0 then errmsg = message else $
@@ -128,16 +128,16 @@ pro check_FITS, im, hdr, dimen, idltype, UPDATE = update, NOTYPE = notype, $
  while ( (naxis[last] EQ 1) && (last GE 1) ) do last--
  if last NE nax-1 then begin
      naxis = naxis[ 0:last]
- endif 
+ endif
 
  if ( ndimen NE last + 1 ) then begin
     if ~keyword_set( UPDATE) THEN begin
         message = $
         '# of NAXISi keywords does not match # of array dimensions'
         if  N_elements(ERRMSG) GT 0 then errmsg = message else $
-                                     message,'ERROR - ' + message,/CON 
-        return 
- 
+                                     message,'ERROR - ' + message,/CON
+        return
+
      endif else goto, DIMEN_ERROR
  endif
 
@@ -146,35 +146,35 @@ pro check_FITS, im, hdr, dimen, idltype, UPDATE = update, NOTYPE = notype, $
       if ~keyword_set( UPDATE ) then begin
           message =  'Invalid NAXIS' + strtrim( i+1,2 ) + $
 	             ' keyword value in header'
-          if  N_elements(ERRMSG) GT 0 then errmsg = message else $ 
+          if  N_elements(ERRMSG) GT 0 then errmsg = message else $
                                        message,'ERROR - ' + message,/CON
-          return 
+          return
       endif else goto, DIMEN_ERROR
     endif
  endfor
 
-BITPIX:     
+BITPIX:
 
  if ~keyword_set( NOTYPE ) then begin
 
- 
+
   bitpix = fxpar( hdr, 'BITPIX')
-  
+
     case idltype of
 
      1: if bitpix NE 8 then goto, BITPIX_ERROR
-     2: if bitpix NE 16 then goto, BITPIX_ERROR  
-     4: if bitpix NE -32 then goto, BITPIX_ERROR       
-     3: if bitpix NE 32 then goto, BITPIX_ERROR 
-     5: if bitpix NE -64 then goto, BITPIX_ERROR 
+     2: if bitpix NE 16 then goto, BITPIX_ERROR
+     4: if bitpix NE -32 then goto, BITPIX_ERROR
+     3: if bitpix NE 32 then goto, BITPIX_ERROR
+     5: if bitpix NE -64 then goto, BITPIX_ERROR
      12:if bitpix NE 16 then goto, BITPIX_ERROR
      13: if bitpix NE 32 then goto, BITPIX_ERROR
-     
+
      else: begin
               message = 'Data array is not a valid FITS datatype'
              if  N_elements(ERRMSG) GT 0 then errmsg = message else $
                                           message,'ERROR - ' + message,/CON
-             return 
+             return
       end
 
    endcase
@@ -201,7 +201,7 @@ BITPIX_ERROR:
     fxaddpar, hdr, 'BITPIX', bitpix, comment
     return
 
-  endif else begin 
+  endif else begin
        message = 'BITPIX value of ' + strtrim(bitpix,2) + $
                  ' in FITS header does not match array'
       if  N_elements(ERRMSG) GT 0  then errmsg = message else  $
@@ -215,7 +215,7 @@ DIMEN_ERROR:
 	naxis = 'NAXIS' + strtrim(indgen(ndimen)+1,2)
         for i = 1, ndimen do fxaddpar, hdr, naxis[i-1], dimen[i-1], $
                 'Number of positions along axis ' + strtrim(i,2), $
-                after = 'NAXIS' + strtrim(i-1,2)          
+                after = 'NAXIS' + strtrim(i-1,2)
         if naxi GT ndimen then begin
                 for i = ndimen+1, naxi do sxdelpar, hdr, 'NAXIS'+strtrim(i,2)
         endif

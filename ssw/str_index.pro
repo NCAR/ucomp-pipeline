@@ -41,7 +41,7 @@ FUNCTION STR_INDEX, str, substr, offset
 ;       Written January 3, 1995, Liyun Wang, GSFC/ARC
 ;       Converted to IDL V5.0   W. Landsman   September 1997
 ;       Use size(/TNAME) instead of DATATYPE()   W. Landsman   October 2001
-;       
+;
 ;-
 ;
    ON_ERROR, 2

@@ -42,7 +42,7 @@
 
 function get_caller,status,prev_caller=prev_caller
 
-caller='' 
+caller=''
 help,calls=calls
 np=n_elements(calls)
 status=0
@@ -60,12 +60,12 @@ if np gt 2 then begin
   proc=strupcase(calls(3))
   angle=strpos(proc,'<')
   if angle gt -1 then prev_caller=trim(strmid(proc,0,angle)) $
-  ELSE                prev_caller=proc 
+  ELSE                prev_caller=proc
  endif
 
 ;-- routine that called routine that called GET_CALLER
 
- proc=strupcase(calls(2)) 
+ proc=strupcase(calls(2))
  angle=strpos(proc,'<')
  if angle gt -1 then caller=trim(strmid(proc,0,angle)) $
  ELSE                caller=proc
@@ -77,7 +77,7 @@ if np gt 2 then begin
  angle=strpos(last_proc,'<')
  if angle gt -1 then last_caller=trim(strmid(last_proc,0,angle)) $
  ELSE                last_caller=last_proc
- 
+
  status=last_caller eq caller
  if status then begin
   dprint,'% GET_CALLER: recursive'
@@ -91,14 +91,14 @@ if np gt 2 then begin
   caller_minus_event=strmid(caller,0,event)
   status=last_caller eq caller_minus_event
   if status then begin
-   dprint,'% GET_CALLER: recursive from event handler' 
+   dprint,'% GET_CALLER: recursive from event handler'
    return,caller
   endif
  endif
 
 ;-- called from XMANAGER
 
- status=caller eq 'XMANAGER' 
+ status=caller eq 'XMANAGER'
  if status then dprint,'% GET_CALLER: called from XMANAGER'
 
 endif

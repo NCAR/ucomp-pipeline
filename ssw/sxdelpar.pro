@@ -13,7 +13,7 @@ pro sxdelpar, h, parname
 ;	parname - string or string array of keyword name(s) to delete
 ;
 ; OUTPUTS:
-;	h - updated FITS header, If all lines are deleted from 
+;	h - updated FITS header, If all lines are deleted from
 ;		the header, then h is returned with a value of 0
 ;
 ; EXAMPLE:
@@ -26,7 +26,7 @@ pro sxdelpar, h, parname
 ;	(2)  All appearances of a keyword in the header will be deleted
 ; HISTORY:
 ;	version 1  D. Lindler Feb. 1987
-;	Test for case where all keywords are deleted    W. Landsman Aug 1995 
+;	Test for case where all keywords are deleted    W. Landsman Aug 1995
 ;       Allow for headers with more than 32767 lines W. Landsman Jan. 2003
 ;       Use ARRAY_EQUAL, cleaner syntax  W. L.  July 2009
 ;------------------------------------------------------------------
@@ -43,7 +43,7 @@ pro sxdelpar, h, parname
 
  if size(parname,/type) NE 7 then $
          message,'Keyword name(s) must be a string or string array'
- par = strtrim( strupcase(parname),2 ) 
+ par = strtrim( strupcase(parname),2 )
 
  sz = size(h,/structure)
  if (sz.N_dimensions NE 1) || (sz.type NE 7) then $
@@ -56,11 +56,11 @@ pro sxdelpar, h, parname
 
  keyword = strtrim( strmid(h,0,8), 2 )
  for i = 0L, nlines-1 do begin
-        if array_equal(keyword[i] NE par, 1b) then begin   
+        if array_equal(keyword[i] NE par, 1b) then begin
  	   h[pos] = h[i]		;keep it
 	   pos++		;increment number of lines kept
 	   if keyword[i] eq 'END' then break  	;end of header
-        endif 
+        endif
  endfor
 
  if pos GT 0 then h = h[0:pos-1] else h = 0	      ;truncate

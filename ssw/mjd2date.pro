@@ -21,11 +21,11 @@
 ;
 ; Opt. Outputs:	None.
 ;
-; Keywords    :	ERRMSG	= If defined and passed, then any error messages 
-;			  will be returned to the user in this parameter 
-;			  rather than being handled by the IDL MESSAGE 
-;			  utility.  If no errors are encountered, then a null 
-;			  string is returned.  In order to use this feature, 
+; Keywords    :	ERRMSG	= If defined and passed, then any error messages
+;			  will be returned to the user in this parameter
+;			  rather than being handled by the IDL MESSAGE
+;			  utility.  If no errors are encountered, then a null
+;			  string is returned.  In order to use this feature,
 ;			  the string ERRMSG must be defined first, e.g.,
 ;
 ;				ERRMSG = ''
@@ -50,7 +50,7 @@
 ; Modified    :	Version 1, William Thompson, GSFC, 13 September 1993.
 ;		Version 2, Donald G. Luttermoser, GSFC/ARC, 28 December 1994.
 ;			Added the keyword ERRMSG.  Note that there are no
-;			internally called procedures that use the ERRMSG 
+;			internally called procedures that use the ERRMSG
 ;			keyword.
 ;		Version 3, Donald G. Luttermoser, GSFC/ARC, 30 January 1995.
 ;			Made the error handling procedure more robust.  Note

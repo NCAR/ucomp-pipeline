@@ -18,7 +18,7 @@ pro pr_status, text , noprint=noprint, idlcomment=idlcomment, caller=caller, $
 ;      idldoc     - same as idlcomment, with doc delimters added (;+  ;-)
 ;      caller - string name of routine calling (adds a line to status info)
 ;      header - string or string array of user info to prepend to status info
-;      
+;
 ;   Calling Examples:
 ;     pr_status			   ; display to terminal
 ;     pr_status,text, /noprint     ; return via text paramter
@@ -58,7 +58,7 @@ hostarch=!version.arch
 hostos  =!version.os
 idl =["IDL Version: " + release, $
       "Host OS    : " + hostos,  $
-      "Host ARCH  : " + hostarch]              
+      "Host ARCH  : " + hostarch]
 localt= ["Local Time: " +  fmt_tim(!stime)]
 utt   = ["UT Time   : " + ut_time()]
 
@@ -72,7 +72,7 @@ text=strjustify(text,/box)			; format and box-it
 
 if idlcomment then text = "; " + text 		; to include in idl files
 
-if idldoc then text = [";+",text,";-"]		; ditto and work w/doc_library 
+if idldoc then text = [";+",text,";-"]		; ditto and work w/doc_library
 
 if not noprint then more,text			; good grammer?
 

@@ -56,7 +56,7 @@ pro ucomp_l1_demodulation, file, primary_header, data, headers, $
   ucomp_addpar, primary_header, 'DEMOD_C', demod_basename, $
                 comment=string(ucomp_idlsave2dateobs(demod_info.date), $
                                format='demod coeffs created %s')
-                
+
 
   file.demodulated = 1B
 end

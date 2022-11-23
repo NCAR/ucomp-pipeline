@@ -5,7 +5,7 @@
 ; AUTHOR:
 ;   Craig B. Markwardt, NASA/GSFC Code 662, Greenbelt, MD 20770
 ;   craigm@lheamail.gsfc.nasa.gov
-;   UPDATED VERSIONs can be found on my WEB PAGE: 
+;   UPDATED VERSIONs can be found on my WEB PAGE:
 ;      http://cow.physics.wisc.edu/~craigm/idl/idl.html
 ;
 ; PURPOSE:
@@ -84,7 +84,7 @@
 ; COMPATIBILITY
 ;
 ;  This function is designed to work with IDL 5.0 or greater.
-;  
+;
 ;  Because TIED parameters rely on the EXECUTE() function, they cannot
 ;  be used with the free version of the IDL Virtual Machine.
 ;
@@ -117,7 +117,7 @@
 ;              description of these advanced options.
 ;
 ;   AUTODERIV - Set to 1 to have MPFIT compute the derivatives numerically.
-;          Default is 0 -  derivatives are computed analytically, which is 
+;          Default is 0 -  derivatives are computed analytically, which is
 ;              generally faster.    (Prior to Jan 2011, the default was 1)
 ;
 ;   CHISQ - the value of the summed squared residuals for the
@@ -136,7 +136,7 @@
 ;                  is ignored
 ;                * if ERROR is NaN or Infinite, and the NAN keyword is
 ;                  set, then the corresponding data point is ignored
-;                * if ERROR is negative, then the absolute value of 
+;                * if ERROR is negative, then the absolute value of
 ;                  ERROR is used.
 ;
 ;   ESTIMATES - Array of starting values for each parameter of the
@@ -178,7 +178,7 @@
 ;
 ;   NTERMS - An integer describing the number of fitting terms.
 ;            NTERMS must have a minimum value, but can optionally be
-;            larger depending on the desired baseline.  
+;            larger depending on the desired baseline.
 ;
 ;            For gaussian and lorentzian models, NTERMS must be three
 ;            (zero baseline), four (constant baseline) or five (linear
@@ -195,7 +195,7 @@
 ;            If the fit is unweighted (i.e. no errors were given, or
 ;            the weights were uniformly set to unity), then PERROR
 ;            will probably not represent the true parameter
-;            uncertainties.  
+;            uncertainties.
 ;
 ;            *If* you can assume that the true reduced chi-squared
 ;            value is unity -- meaning that the fit is implicitly
@@ -234,7 +234,7 @@
 ;                  is ignored
 ;                * if WEIGHTS is NaN or Infinite, and the NAN keyword is
 ;                  set, then the corresponding data point is ignored
-;                * if WEIGHTS is negative, then the absolute value of 
+;                * if WEIGHTS is negative, then the absolute value of
 ;                  WEIGHTS is used.
 ;
 ;   YERROR - upon return, the root-mean-square variance of the
@@ -245,7 +245,7 @@
 ;
 ;   ; First, generate some synthetic data
 ;   npts = 200
-;   x  = dindgen(npts) * 0.1 - 10.                  ; Independent variable 
+;   x  = dindgen(npts) * 0.1 - 10.                  ; Independent variable
 ;   yi = gauss1(x, [2.2D, 1.4, 3000.]) + 1000       ; "Ideal" Y variable
 ;   y  = yi + randomn(seed, npts) * sqrt(1000. + yi); Measured, w/ noise
 ;   sy = sqrt(1000.D + y)                           ; Poisson errors
@@ -261,7 +261,7 @@
 ; REFERENCES:
 ;
 ;   MINPACK-1, Jorge More', available from netlib (www.netlib.org).
-;   "Optimization Software Guide," Jorge More' and Stephen Wright, 
+;   "Optimization Software Guide," Jorge More' and Stephen Wright,
 ;     SIAM, *Frontiers in Applied Mathematics*, Number 14.
 ;
 ; MODIFICATION HISTORY:
@@ -295,7 +295,7 @@
 ;     CM, 30 Mar 2009
 ;   Correct one case of old IDL 4 () array syntax (thanks to I. Urra),
 ;     CM, 25 Jan 2010
-;  Improve performance by analytic derivative computation, added AUTODERIV 
+;  Improve performance by analytic derivative computation, added AUTODERIV
 ;      keyword, W. Landsman, 2011-01-21
 ;  Move estimation code to its own function; allow the user to compute
 ;    only the estimate and return immediately without fitting,
@@ -332,7 +332,7 @@ function mpfitpeak_gauss, x, p, pder, _extra=extra
   uz = mask*exp(-0.5 * u^2 * mask)
   if N_params() GT 2 then begin    ;; Compute derivatives if asked
       pder = make_array(N_elements(x), Np,type= size(p,/type) )
-      pder[*,0] = uz      
+      pder[*,0] = uz
       if p[2] NE 0 then pder[*,1] = p[0]*uz*u/p[2]
       pder[*,2] = pder[*,1]*u
       if Np GE 4 then pder[*,3] = 1.
@@ -352,7 +352,7 @@ function mpfitpeak_lorentz, x, p, pder, _extra=extra
   if N_params() GT 2 then begin   ;; Compute derivatives if asked
       pder = make_array(N_elements(x), Np,type= size(p,/type) )
       pder[*,0] = denom
-      if p[2] NE 0 then pder[*,1] = 2*p[0]*u*denom*denom/p[2]    
+      if p[2] NE 0 then pder[*,1] = 2*p[0]*u*denom*denom/p[2]
       pder[*,2] = pder[*,1]*u
       if Np GE 4 then pder[*,3] = 1.
       if Np GE 5 then pder[*,4] = x
@@ -372,7 +372,7 @@ function mpfitpeak_moffat, x, p, pder,_extra=extra
   if N_params() GT 2 then begin      ;; Compute derivatives if asked
       pder = make_array(N_elements(x), Np,type= size(p,/type) )
       pder[*,0] = denom
-      if p[2] NE 0 then pder[*,1] = 2*p[3]*p[0]*u*denom/p[2]/denom0    
+      if p[2] NE 0 then pder[*,1] = 2*p[3]*p[0]*u*denom/p[2]/denom0
       pder[*,2] = pder[*,1]*u
       pder[*,3] = -alog(denom0)*p[0]*denom
       if Np GE 5 then pder[*,4] = 1.
@@ -427,7 +427,7 @@ function mpfitpeak_est, x, y, nan=nan, $
   endif
   sd1 = total(x[wh1]^2)/ct1 - (total(x[wh1])/ct1)^2
   sd2 = total(x[wh2]^2)/ct2 - (total(x[wh2])/ct2)^2
-      
+
   ;; Compute area above/below average
 
   if keyword_set(pos) then goto, POS_PEAK
@@ -589,4 +589,3 @@ function mpfitpeak, x, y, a, estimates=est, nterms=nterms, $
 
   return, !values.d_nan
 end
-

@@ -5,10 +5,10 @@ FUNCTION UTIME,UTSTRING0,ERROR=ERROR, DATE=DATE, TIME=TIME
 ;	UTIME
 ; PURPOSE:
 ;	Function to return time in seconds from 79/1/1,0000 corresponding to
-;       the ASCII time passed in the argument. 
+;       the ASCII time passed in the argument.
 ;	N.B. Valid only from 1950-2050
-; CATEGORY: 
-; CALLING SEQUENCE: 
+; CATEGORY:
+; CALLING SEQUENCE:
 ;	RESULT = UTIME(UTSTRING,/ERROR)
 ; INPUTS:
 ;	UTSTRING -	String containing time in form YY/MM/DD,HHMM:SS.XXX
@@ -18,7 +18,7 @@ FUNCTION UTIME,UTSTRING0,ERROR=ERROR, DATE=DATE, TIME=TIME
 ;	ERROR -		=0/1. If set to 1, there was an error in the ASCII
 ;			time string.
 ;	/date   - return only the calendar date component of the UTIME
-;	/time   - return only the time day 
+;	/time   - return only the time day
 
 ; OUTPUTS:
 ;	Double precision time in seconds since 79/1/1, 0000.
@@ -26,10 +26,10 @@ FUNCTION UTIME,UTSTRING0,ERROR=ERROR, DATE=DATE, TIME=TIME
 ;	None.
 ; SIDE EFFECTS:
 ;       If just a time is passed (no date - detected by absence of slash
-;       and comma in string), then just the time of day is converted to 
-;	seconds relative to start of day and returned.  If date and time 
-;	are passed, then day and time of day are converted to seconds and 
-;	returned.  In other words, doesn't 'remember' last date used if 
+;       and comma in string), then just the time of day is converted to
+;	seconds relative to start of day and returned.  If date and time
+;	are passed, then day and time of day are converted to seconds and
+;	returned.  In other words, doesn't 'remember' last date used if
 ;	no date is specified.  There is only rudimentary error checking,
 ;	strings like 82/02/30 will have the same value as 82/03/02.
 ; PROCEDURE:
@@ -44,7 +44,7 @@ FUNCTION UTIME,UTSTRING0,ERROR=ERROR, DATE=DATE, TIME=TIME
 ;	Modified to accept vectors of dates by RAS, 92/07/07
 ;	Modified to accept vectors of any dimensionality by RAS, 92/08/10
 ;	Modified to automatically convert Yohkoh string format, ras, 01-May-93
-;	Corrected 07-May-93 to again take whitespace in old date format, RAS	
+;	Corrected 07-May-93 to again take whitespace in old date format, RAS
 ;	added time and date keywords, ras, 5-jan-94
 ;	minor changes to error handling, ras, 7-jan-94
 ;-
@@ -102,14 +102,14 @@ yy = intarr(n) + 1979
 mm = intarr(n) + 1
 dd = intarr(n) + 1
 hh = dblarr(n)
-;PARSE THE YEAR, MONTH, AND DAY AND CONVERT THEM TO INT*2 
+;PARSE THE YEAR, MONTH, AND DAY AND CONVERT THEM TO INT*2
 buff1 = byte(buff1)
 ;Look for publication format and clobber the second colon
 wcolon = where( buff1 eq 58b, ncolon)
 if ncolon gt 1 then begin; LOOK FOR COLONS WITHIN 3
 	dcolon = wcolon(1:*) - wcolon
 	w3 = where( dcolon le 3, n3)
-	if n3 ge 1 then begin 
+	if n3 ge 1 then begin
 		buff1(wcolon(w3)) = 32b ;change it into a blank
 		buff1 = byte(strcompress( string(buff1),/rem))
 	endif
@@ -148,13 +148,13 @@ endif
 
 sbuff = string(buff2)
 sleng  = strlen(sbuff)
-colon = strpos( sbuff, ':') 
+colon = strpos( sbuff, ':')
 comma = strpos( sbuff, ',')
 slash = strpos( sbuff, '/')
 
 wcolon = where( colon gt comma, ncolon)
 wcomma = where( comma gt slash and colon eq -1, ncomma)
-wnone = where( (colon eq -1) and (comma eq -1), nnone) 
+wnone = where( (colon eq -1) and (comma eq -1), nnone)
 
 if ncolon ge 1 then begin ; COLON IS THE LAST NON-DIGIT CHARACTER
 	wend = where( sleng(wcolon)-1 eq colon(wcolon), nend )
@@ -173,7 +173,7 @@ endif
 if nnone ge 1 then buff2(8:19,wnone)=byte(',0000:00.000')#replicate(1,1,nnone)
 
 ;replace all of the zeroes with blanks (32b)
-;check for characters '/,:.'  
+;check for characters '/,:.'
 ; 47  44  58  46
 ;change all /,: characters to blanks, 32b
 
@@ -184,7 +184,7 @@ buff2( where( (buff2 eq 47b) or (buff2 eq 44b) or (buff2 eq 58b) ,nb)) = 32b
 if nb ne n*4 then goto,errorlog ; should be 4 blanks per line
 
 sbuff = string(buff2)
-		
+
 
 ymdhs = dblarr( 5,n)
 
@@ -195,7 +195,7 @@ on_ioerror, null
 ymdhs = transpose( ymdhs) ;for Yohkoh format, year and day are transposed
 if ndash ge 1 then begin
 	yy = ymdhs(*,0)
-	ymdhs(wdash,0) = ymdhs(wdash,2) ;move years to days 
+	ymdhs(wdash,0) = ymdhs(wdash,2) ;move years to days
 	ymdhs(wdash,2) = yy(wdash) ; move days to years
 endif
 
@@ -209,7 +209,7 @@ hrs = hhmm/100 + (hhmm mod 100)/60.0d0 + ymdhs(*,4)/3600.0d0
 wbad = where(  ( abs(yy-2000) gt 50) or (hrs gt 24.0) or (ymdhs(*,1) gt 12) $
 	 or (ymdhs(*,2) gt 31), nbad)
 if nbad gt 0 then goto, errorlog
-	
+
 
 jdcnv, yy, fix(ymdhs(*,1)), fix(ymdhs(*,2)), hrs, jd
 
@@ -223,7 +223,7 @@ if scalar then ut= ut(0)
 ;
 case 1 of
  keyword_set(date): ut = ut - (ut mod 86400.d0)
- keyword_set(time): ut = ut mod 86400.d0 
+ keyword_set(time): ut = ut mod 86400.d0
  1:
 endcase
 

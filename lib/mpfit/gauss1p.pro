@@ -29,7 +29,7 @@
 ; INPUTS:
 ;   X - Array of X-values.
 ;
-;   [MEAN, SIGMA, AREA] - the mean, sigma and total area of the 
+;   [MEAN, SIGMA, AREA] - the mean, sigma and total area of the
 ;                         desired Gaussian curve.
 ;
 ;   YVALS - returns the array of Y-values.
@@ -76,7 +76,7 @@ pro gauss1p, x, p, f, skew=skew, _EXTRA=extra
   mask = u LT (smax^2)  ;; Prevent floating underflow
   f = norm * mask * exp(-0.5*temporary(u) * mask) / (sqrt(2.D * !dpi)*p(1))
   mask = 0
-  
+
   if n_elements(skew) GT 0 then $
     f = (1.D + skew * (x-p(0))/p(1))*f
 

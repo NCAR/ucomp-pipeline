@@ -49,6 +49,6 @@ pro ucomp_analytic_gauss_fit, i1, i2, i3, d_lambda, $
     doppler_shift[positive_indices[good_indices]] $
       = line_width[positive_indices[good_indices]]^2 / (4.0D * d_lambda)*(a[good_indices] - b[good_indices])
     peak_intensity[positive_indices[good_indices]] $
-      = i2[positive_indices[good_indices]] * exp(doppler_shift[positive_indices[good_indices]]^2 / line_width[positive_indices[good_indices]]^2)  
+      = i2[positive_indices[good_indices]] * exp(doppler_shift[positive_indices[good_indices]]^2 / line_width[positive_indices[good_indices]]^2)
   endif
 end

@@ -78,7 +78,7 @@ The following functions are included:
 
  GAUSS1      - example 1D gaussian function
  GAUSS1P     - example 2D gaussian *procedure*
- fakedata.sav - example 1D gaussian data 
+ fakedata.sav - example 1D gaussian data
 
 
 USAGE
@@ -115,4 +115,3 @@ The main engine, MPFIT, is required in all cases, since the driver
 functions call it.
 
 IDL is a registered trademark of RSI
-

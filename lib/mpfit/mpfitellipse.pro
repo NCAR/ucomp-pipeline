@@ -5,7 +5,7 @@
 ; AUTHOR:
 ;   Craig B. Markwardt, NASA/GSFC Code 662, Greenbelt, MD 20770
 ;   craigm@lheamail.gsfc.nasa.gov
-;   UPDATED VERSIONs can be found on my WEB PAGE: 
+;   UPDATED VERSIONs can be found on my WEB PAGE:
 ;      http://cow.physics.wisc.edu/~craigm/idl/idl.html
 ;
 ; PURPOSE:
@@ -169,7 +169,7 @@
 ; REFERENCES:
 ;
 ;   MINPACK-1, Jorge More', available from netlib (www.netlib.org).
-;   "Optimization Software Guide," Jorge More' and Stephen Wright, 
+;   "Optimization Software Guide," Jorge More' and Stephen Wright,
 ;     SIAM, *Frontiers in Applied Mathematics*, Number 14.
 ;
 ; MODIFICATION HISTORY:
@@ -214,7 +214,7 @@ FORWARD_FUNCTION mpfitellipse_u, mpfitellipse_eval, mpfitellipse, mpfit
 ; Compute the "u" value = (x/a)^2 + (y/b)^2 with optional rotation
 function mpfitellipse_u, x, y, p, tilt=tilt, circle=circle
   COMPILE_OPT strictarr
-  widx  = abs(p[0]) > 1e-20 & widy  = abs(p[1]) > 1e-20 
+  widx  = abs(p[0]) > 1e-20 & widy  = abs(p[1]) > 1e-20
   if keyword_set(circle) then widy  = widx
   xp    = x-p[2]            & yp    = y-p[3]
   theta = p[4]
@@ -236,13 +236,13 @@ function mpfitellipse_eval, p, tilt=tilt, circle=circle, _EXTRA=extra
   COMPILE_OPT strictarr
   common mpfitellipse_common, xy, wc
 
-  tilt = keyword_set(tilt) 
+  tilt = keyword_set(tilt)
   circle = keyword_set(circle)
   u2 = mpfitellipse_u(xy[*,0], xy[*,1], p, tilt=tilt, circle=circle) - 1.
 
   if n_elements(wc) GT 0 then begin
       if circle then u2 = sqrt(abs(p[0]*p[0]*wc))*u2 $
-      else           u2 = sqrt(abs(p[0]*p[1]*wc))*u2 
+      else           u2 = sqrt(abs(p[0]*p[1]*wc))*u2
   endif
 
   return, u2
@@ -351,4 +351,3 @@ function mpfitellipse, x, y, p0, WEIGHTS=wts, $
 
   return, result
 end
-

@@ -2,7 +2,7 @@
 function weeks_in_year, input
 
 ;+
-;NAME: 
+;NAME:
 ;	weeks_in_year
 ;PURPOSE:
 ;	Return the weeks in the calendar year or years corresponding to

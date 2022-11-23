@@ -21,15 +21,15 @@ function sxt_cmd_pnt, times, x=x, y=y, z=z, qstop=qstop, rawcmd=rawcmd
 ;		(0) = East/West with East negative
 ;		(1) = North/South with South negative
 ;	It does not take into account the 1 arcminute drift (S/C morning
-;	"nod") generally seen over an orbit.  Changes in the pointing 
+;	"nod") generally seen over an orbit.  Changes in the pointing
 ;	commanded bias value are taken into account.
 ;HISTORY:
 ;	Written 5-Jun-93 by M.Morrison
 ;	10-Jun-93 (MDM) - Minor change to documentation header
 ;	 9-Mar-95 (MDM) - Modified to apply the correction required for
-;			  the seasonal/mission long drift between the 
+;			  the seasonal/mission long drift between the
 ;			  commanded and actual.
-;       25-mar-95 (SLF) - add RAWCMD keyword 
+;       25-mar-95 (SLF) - add RAWCMD keyword
 ;	 8-May-95 (MDM) - Added Katsev secondary correction factor.
 ;-
 ;

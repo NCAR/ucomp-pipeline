@@ -3,22 +3,22 @@ PRO JDCNV,YR,MN,DAY,HR,JULIAN
 ; NAME:
 ;       JDCNV
 ; PURPOSE:
-;       Converts Gregorian dates to Julian days   
+;       Converts Gregorian dates to Julian days
 ; CALLING SEQUENCE:
 ;       JDCNV,YR,MN,DAY,HR,JULIAN
 ; INPUTS:
-;       YR = Year (integer)  
+;       YR = Year (integer)
 ;       MN = Month (integer 1-12)
-;       DAY = Day  (integer 1-31) 
+;       DAY = Day  (integer 1-31)
 ;       HR  = Hours and fractions of hours of universal time (U.T.)
 ; OUTPUTS:
-;       JULIAN = Julian date (double precision) 
+;       JULIAN = Julian date (double precision)
 ; EXAMPLE:
 ;       To find the Julian Date at 1978 January 1, 0h (U.T.)
 ;       JDCNV,1978,1,1,0.,JULIAN
 ;       will give JULIAN = 2443509.5
 ; NOTES:
-;       (1) JDCNV will accept vector arguments 
+;       (1) JDCNV will accept vector arguments
 ;       (2) JULDATE is an alternate procedure to perform the same function
 ; REVISON HISTORY:
 ;       Converted to IDL from Don Yeomans Comet Ephemeris Generator,

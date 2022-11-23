@@ -13,7 +13,7 @@ function DERIV_arr, INARR
 ;		  output is "n-1" elements.
 ;HISTORY:
 ;	Written 1988 by M.Morrison
-;	17-Apr-92 (MDM) - Changed to be a "lindgen" 
+;	17-Apr-92 (MDM) - Changed to be a "lindgen"
 ;	 8-Sep-93 (MDM) - Return value as scalar if only one value
 ;-
 ;

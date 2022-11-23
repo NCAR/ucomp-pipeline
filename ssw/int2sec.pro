@@ -15,10 +15,10 @@ function int2sec, time_arr
 ;		variable second (see example).  It
 ;		is assumed that they are the same length
 ;			(OR)
-;		A 7xN array which hold the 7-element external 
+;		A 7xN array which hold the 7-element external
 ;		representation of time.
 ;Output:
-;	returns a single array with the number 
+;	returns a single array with the number
 ;	of seconds past the reference value 1 assumed to be for 01-jan-1979.
 ;Examples:
 ;	d = int2secarr( roadmap )
@@ -57,4 +57,3 @@ out = (day-1)*86400.d0 + (time)/1000.d0
 ;
 return, out
 end
-

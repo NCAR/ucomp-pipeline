@@ -21,7 +21,7 @@ function ucomp_find_geometry, data, $
                                  elliptical=elliptical)
 
   post_angle = ucomp_find_post(data, $
-                               occulter[0:1], $ 
+                               occulter[0:1], $
                                occulter[2], $
                                angle_guess=post_angle_guess, $
                                angle_tolerance=post_angle_tolerance, $

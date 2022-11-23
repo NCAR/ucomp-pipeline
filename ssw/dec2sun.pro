@@ -31,7 +31,7 @@ pro dec2sun, ainput
 ;	None
 ;PROCEDURE:
 ;	Determines the type of the variable and swaps the bytes depending
-;	on the type.  If the variable is a structure, the tags are 
+;	on the type.  If the variable is a structure, the tags are
 ;	recursively searched so that the bytes are swapped throughout
 ;	the structure.
 ;MODIFICATION HISTORY:
@@ -56,7 +56,7 @@ pro dec2sun, ainput
        3: byteorder,a,/lswap               ; Longword integer
        4: byteorder,a,/lswap               ; Floating Point
        5: begin                            ; Double precision floating point
-             byteorder,a,/lswap        
+             byteorder,a,/lswap
              na = n_elements(a)
              longa=long(a,0,2*na)
              longb=lonarr(2*na,/nozero)
@@ -80,7 +80,7 @@ pro dec2sun, ainput
    else begin
       na = sofa(ns-1)
 
-      ; In the case of a structure, search all the fields (recursively if 
+      ; In the case of a structure, search all the fields (recursively if
       ; necessary) to swap all bytes which need swapping in the structure.
 
       for tag = 0, n_tags(a)-1 do begin
@@ -95,7 +95,7 @@ pro dec2sun, ainput
           3: byteorder,temp,/lswap            ; Longword integer
           4: byteorder,temp,/lswap            ; Floating Point
           5: begin                            ; Double precision floating point
-                byteorder,temp,/lswap        
+                byteorder,temp,/lswap
                 ntemp = n_elements(temp)
                 longa=long(temp,0,2*ntemp)
                 longb=lonarr(2*ntemp,/nozero)
@@ -117,7 +117,7 @@ pro dec2sun, ainput
           else: print,'WARNING: dec2sun: Unknown type code'
          endcase
          a.(tag) = temp
-   
+
       endfor
 
    endelse

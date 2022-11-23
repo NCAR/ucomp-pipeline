@@ -25,4 +25,3 @@ function ucomp_same, a, b
   endelse
   return, 1B
 end
-

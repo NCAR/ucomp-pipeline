@@ -6,7 +6,7 @@ function ucomp_write_iquv_mp4_ut::init, _extra=e
   if (~self->MGutTestCase::init(_extra=e)) then return, 0
 
   self->addTestingRoutine, ['ucomp_write_iquv_mp4']
-  
+
 
   return, 1
 end

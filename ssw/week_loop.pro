@@ -2,7 +2,7 @@
 function week_loop, sttim, entim, weekstr=weekstr, year4digit=year4digit
 
 ;+
-;NAME: 
+;NAME:
 ;	week_loop
 ;PURPOSE:
 ;	Given a start and end time, return a structure listing the
@@ -11,7 +11,7 @@ function week_loop, sttim, entim, weekstr=weekstr, year4digit=year4digit
 ;	sttim - start time in any format
 ;	entim - end time in any format
 ;KEYWORD PARAMETERS:
-;	weekstr (output) - string of form YY_WW or YYYY_WW  
+;	weekstr (output) - string of form YY_WW or YYYY_WW
 ;	year4digit (switch) - if set, out.year and weekstr are 4 digit
 ;HISTORY:
 ;	Written 16-Apr-92 by M.Morrison

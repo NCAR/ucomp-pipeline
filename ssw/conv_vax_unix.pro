@@ -1,29 +1,29 @@
 function  conv_vax_unix, variable, TARGET_ARCH=target
 ;+
 ; NAME:
-;      CONV_VAX_UNIX     
+;      CONV_VAX_UNIX
 ; PURPOSE:
 ;      To convert VAX IDL data types to UNIX (Sun,MIPS,etc.) IDL data types.
 ; EXPLANTION:
 ;      Generally used on non-Vax machines to parse data created on Vaxes.
-;      The architecture is obtained from IDL sys.var. !VERSION.ARCH.   
+;      The architecture is obtained from IDL sys.var. !VERSION.ARCH.
 ;
 ; CALLING SEQUENCE:
 ;      var_unix = conv_vax_unix( var_vax, [TARGET_ARCH = ] )
 ;
 ; INPUT PARAMETER:
 ;      var_vax - The data variable to be converted.  This may be a scalar
-;            or an array.  All IDL datatypes are valid (including 
+;            or an array.  All IDL datatypes are valid (including
 ;            structures).   The result of the conversion is returned by the
 ;            function.
 ;
-; OPTIONAL INPUT KEYWORD:  
+; OPTIONAL INPUT KEYWORD:
 ;      TARGET_ARCH = name (string) of desired target architecture
-;            (e.g. 'sparc' or 'mipsel').    If not supplied, then 
+;            (e.g. 'sparc' or 'mipsel').    If not supplied, then
 ;            !VERSION.ARCH is used to determine the target architecture.
 ;            Note that CONV_VAX_UNIX will leave variables unchanged on a
 ;            VMS machine, unless the TARGET_ARCH keyword is set.
-;            
+;
 ; EXAMPLE:
 ;      Read a 100 by 100 matrix of floating point numbers from a data
 ;      file created on a VAX.  Then convert the matrix values into Sun format.
@@ -33,13 +33,13 @@ function  conv_vax_unix, variable, TARGET_ARCH=target
 ;      IDL> readu,1,data
 ;      IDL> data = conv_vax_unix( data )
 ; NOTE:
-;       Prior to IDL V5.1, the architecture "alpha" was ambiguous, since VMS 
-;       alpha IDL used VAX D-float while OSF/1 alpha IDL uses little-endian 
+;       Prior to IDL V5.1, the architecture "alpha" was ambiguous, since VMS
+;       alpha IDL used VAX D-float while OSF/1 alpha IDL uses little-endian
 ;       IEEE.    The program uses !VERSION.OS to do the right thing when
 ;       converting to a representation appropriate for the current
 ;       platform.  To convert to a representation appropriate for
 ;       an OSF/1 alpha on a VAX or (pre V5.1) VMS alpha, please specify
-;       the "mipsel" (or "i386") architecture.      
+;       the "mipsel" (or "i386") architecture.
 ;
 ; MODIFICATION HISTORY:
 ;       Written   F. Varosi               August 1990
@@ -50,7 +50,7 @@ function  conv_vax_unix, variable, TARGET_ARCH=target
 ;       Modified  P. Keegstra             February 1995
 ;           Added 386 PC based architectures
 ;       Modified  P. Keegstra             March 1995
-;           Added note, restored and fixed old specifiers 
+;           Added note, restored and fixed old specifiers
 ;           for 386 PC based architectures
 ;      Modified W. Landsman for VAX problems in V4.0        August 1995
 ;      Work for double complex variables                    August 1995
@@ -58,7 +58,7 @@ function  conv_vax_unix, variable, TARGET_ARCH=target
 ;      Since V5.1, IDL VMS uses little endian IEEE          June 1998
 ;      Convert to IDL V5.0                                  June 1998
 ;      Add x86_64 archicture (64 bit), Kim Tolbert          25-Sep-2010
-;-                                   
+;-
 ;****************************************************************************
 ;
 ;  Check to see if VARIABLE is defined.
@@ -68,18 +68,18 @@ function  conv_vax_unix, variable, TARGET_ARCH=target
       retall
  endif
 
- if N_elements( target ) EQ 1 then arch = target  else arch = !VERSION.ARCH 
+ if N_elements( target ) EQ 1 then arch = target  else arch = !VERSION.ARCH
  little_endian = 0
 
  CASE arch OF
 
- "sparc": 
+ "sparc":
 
-; Little endian machines include the Demo Version of PV-WAVE for Linux 
+; Little endian machines include the Demo Version of PV-WAVE for Linux
 ; (arch = '386'), IDL for MS-WINDOWS reports itself as arch="3.1".
 ; IDL for Linux reports itself as 'x86', Dec ultrix reports itself as 'mipsel'
 
- 'i386': little_endian = 1      
+ 'i386': little_endian = 1
  '3.1':  little_endian = 1
  '386i': little_endian = 1
  '386': little_endian = 1
@@ -257,4 +257,3 @@ function  conv_vax_unix, variable, TARGET_ARCH=target
   ENDCASE
 
 end
-

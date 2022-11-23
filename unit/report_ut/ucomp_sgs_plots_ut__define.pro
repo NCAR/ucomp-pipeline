@@ -6,7 +6,7 @@ function ucomp_sgs_plots_ut::init, _extra=e
   if (~self->MGutTestCase::init(_extra=e)) then return, 0
 
   self->addTestingRoutine, ['ucomp_sgs_plots']
-  
+
 
   return, 1
 end

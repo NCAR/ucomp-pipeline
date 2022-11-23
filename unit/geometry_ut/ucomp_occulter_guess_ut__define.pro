@@ -5,7 +5,7 @@ function ucomp_occulter_guess_ut::init, _extra=e
 
   if (~self->MGutTestCase::init(_extra=e)) then return, 0
 
-  
+
   self->addTestingRoutine, ['ucomp_occulter_guess'], $
                            /is_function
 

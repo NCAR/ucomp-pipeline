@@ -4,19 +4,19 @@ pro writefits, filename, data, header, heap, Append = Append,  $
 ; NAME:
 ;       WRITEFITS
 ; PURPOSE:
-;       Write IDL array and header variables to a disk FITS file.    
+;       Write IDL array and header variables to a disk FITS file.
 ;
 ; EXPLANATION:
 ;       A minimal FITS header is created if not supplied.
 ;       WRITEFITS works for all types of FITS files except random groups
 ;
 ; CALLING SEQUENCE:
-;       WRITEFITS, filename, data [, header, /APPEND, /COMPRESS, /CHECKSUM] 
+;       WRITEFITS, filename, data [, header, /APPEND, /COMPRESS, /CHECKSUM]
 ;
 ; INPUTS:
 ;       FILENAME = String containing the name of the file to be written.
 ;
-;       DATA = Image array to be written to FITS file.    If DATA is 
+;       DATA = Image array to be written to FITS file.    If DATA is
 ;              undefined or a scalar, then only the FITS header (which
 ;              must have NAXIS = 0) will be written to disk
 ;
@@ -30,7 +30,7 @@ pro writefits, filename, data, header, heap, Append = Append,  $
 ; OPTIONAL INPUT KEYWORD:
 ;       /APPEND - If this keyword is set then the supplied header and data
 ;                array are assumed to be an extension and are appended onto
-;                the end of an existing FITS file.    If the file does not 
+;                the end of an existing FITS file.    If the file does not
 ;                exist, then WRITEFITS will create one with a minimal primary
 ;                header (and /EXTEND keyword) and then append the supplied
 ;                extension header and array.     Note that the primary
@@ -56,7 +56,7 @@ pro writefits, filename, data, header, heap, Append = Append,  $
 ;           to 1. and 0) except with integer data
 ;       (2) WRITEFITS will remove any group parameters from the FITS header
 ;       (3) As of Feb 2008, WRITEFITS no longer requires the primary header of a
-;           FITS file with extension contain the EXTEND keyword, consistent with 
+;           FITS file with extension contain the EXTEND keyword, consistent with
 ;           the draft revised FITS standard.    A warning is still given.
 ;           http://fits.gsfc.nasa.gov/fits_draft.html
 ;
@@ -67,7 +67,7 @@ pro writefits, filename, data, header, heap, Append = Append,  $
 ;       IDL> writefits, 'test', im             ;Write to a FITS file "test"
 ;
 ; PROCEDURES USED:
-;       CHECK_FITS, FITS_ADD_CHECKSUM, MKHDR, MRD_HREAD, SXDELPAR, SXADDPAR, 
+;       CHECK_FITS, FITS_ADD_CHECKSUM, MKHDR, MRD_HREAD, SXDELPAR, SXADDPAR,
 ;       SXPAR()
 ;
 ; MODIFICATION HISTORY:
@@ -83,7 +83,7 @@ pro writefits, filename, data, header, heap, Append = Append,  $
 ;       Use FILE_SEARCH for V5.5 or later     W. Landsman    April 2002
 ;       Create the file if not already present and /APPEND is set
 ;                                             W. Landsman    September 2002
-;       Proper call to MRD_HREAD if /APPEND is set  W. Landsman December 2002 
+;       Proper call to MRD_HREAD if /APPEND is set  W. Landsman December 2002
 ;       Added /CHECKSUM keyword              W. Landsman     December 2002
 ;	Restored NANvalue keyword, William Thompson,	     October 2003
 ;       Write BZERO in beginning of header for unsigned integers WL April 2004
@@ -94,21 +94,21 @@ pro writefits, filename, data, header, heap, Append = Append,  $
 ;       Update CHECKSUM keywords if already present  WL   Oct 2007
 ;       EXTEND keyword no longer required in FITS files with extensions WL Feb 2008
 ;       Bug fix when filename ends with '.gz' and COMPRESS is used,
-;            the output file must be compressed          S. Koposov June 2008 
+;            the output file must be compressed          S. Koposov June 2008
 ;       Use /silent keyword in calling check_FITS.    Aki Takeda 9-Sep-2009
 
 ;-
   On_error, 2
-  compile_opt idl2  
+  compile_opt idl2
 
-  if N_params() LT 2 then begin 
+  if N_params() LT 2 then begin
        print,'Syntax - WRITEFITS, filename, data,[ header, /APPEND, /CHECKSUM]'
        return
   endif
 
 ; Get information about data
 
-  siz = size( data )      
+  siz = size( data )
   naxis = siz[0]                    ;Number of dimensions
   if naxis GT 0 then nax = siz[ 1:naxis ]              ;Vector of dimensions
   lim = siz[ naxis+2 ]              ;Total number of data points
@@ -116,38 +116,38 @@ pro writefits, filename, data, header, heap, Append = Append,  $
 
 ;Create a primary or image extension header if not supplied by the user
 
-        if N_elements(header) LT 2 then begin 
+        if N_elements(header) LT 2 then begin
                 if keyword_set(append) then mkhdr, header, data, /IMAGE  $
                                        else mkhdr, header, data, /EXTEND
-        endif else if naxis GT 0 then $         
+        endif else if naxis GT 0 then $
               check_FITS, data, header, /UPDATE, /FITS ,/silent   ; 7-Aug-2009 AkT
 
 ; Remove any STSDAS/random group keywords from the primary header
 
   hdr = header
-  if not keyword_set( APPEND) then begin 
+  if not keyword_set( APPEND) then begin
          simple = 'SIMPLE  =                    T / Written by IDL:  ' $
-                        + systime()  
+                        + systime()
          hdr[0] =  simple + string( replicate(32b,80-strlen(simple) ) )
          sxdelpar, hdr, [ 'GCOUNT', 'GROUPS', 'PCOUNT', 'PSIZE' ]
   endif
-  
+
 ; If necessary,convert unsigned to signed.    Do not destroy the original data
 
   if naxis NE 0 then begin
-              
+
         unsigned = (type EQ 12) or (type EQ 13)
         if  unsigned then begin
              if type EQ 12 then begin
                      sxaddpar,hdr,'BZERO',32768,'Data is Unsigned Integer', $
                               before = 'DATE'
                      newdata = fix(data - 32768)
-             endif else if type EQ 13 then begin 
+             endif else if type EQ 13 then begin
                     sxaddpar,hdr,'BZERO',2147483648,'Data is Unsigned Long', $
                               before = 'DATE'
                     newdata = long(data - 2147483648)
              endif
-         endif 
+         endif
 
 ; For floating or double precision test for NaN values to write
 
@@ -158,7 +158,7 @@ pro writefits, filename, data, header, heap, Append = Append,  $
          if type EQ 4 then data[NaNpts]  = !Values.F_NaN	$
      else if type EQ 8 then data[NaNpts] = !Values.D_NaN
      endif
-  endif 
+  endif
   endif
 
 
@@ -170,7 +170,7 @@ pro writefits, filename, data, header, heap, Append = Append,  $
             'ERROR - "XTENSION" must be first keyword in header extension',/CON
                   return
             endif
-            test = file_search(filename, COUNT = n) 
+            test = file_search(filename, COUNT = n)
              if n EQ 0 then  begin       ;Create default primary header
                  mkhdr,h0,0,/exten
                  writefits,filename,0,h0, checksum = checksum
@@ -182,7 +182,7 @@ pro writefits, filename, data, header, heap, Append = Append,  $
             if Nextend EQ 0 then $
                message,'WARNING - EXTEND keyword not found in primary FITS header',/CON
             endelse
-                   
+
             file = fstat(unit)
             nbytes  = file.size
             point_lun, unit, nbytes
@@ -192,9 +192,9 @@ pro writefits, filename, data, header, heap, Append = Append,  $
     endif else begin
 
         ext = ''
-        if keyword_set(COMPRESS) then begin 
+        if keyword_set(COMPRESS) then begin
             if strlowcase(strmid(filename,2,3,/reverse)) NE '.gz' $
-               then ext = '.gz' 
+               then ext = '.gz'
         endif else compress = 0
 
 
@@ -210,16 +210,16 @@ pro writefits, filename, data, header, heap, Append = Append,  $
 
  message,'WARNING - An END statement has been appended to the FITS header',/INF
      hdr = [ hdr, 'END' + string( replicate(32b,77) ) ]
-     endline = N_elements(hdr) - 1 
+     endline = N_elements(hdr) - 1
 
    endif
 
 ; Add any CHECKSUM keywords if desired or already present
-   
+
     do_Checksum = keyword_set(checksum)
     if not do_checksum then test = sxpar(hdr,'CHECKSUM',count=do_checksum)
-  
-     if do_checksum then begin 
+
+     if do_checksum then begin
                if N_elements(heap) GT 0 then $
 	         FITS_ADD_CHECKSUM, hdr, [data,heap] else $
                  FITS_ADD_CHECKSUM, hdr, data
@@ -242,7 +242,7 @@ pro writefits, filename, data, header, heap, Append = Append,  $
         npad = nbytes mod 2880
 
         if unsigned then writeu, unit, newdata $
-                    else writeu, unit, data 
+                    else writeu, unit, data
 
 ; Write optional heap area
         if N_elements(heap) GT 0 then begin
@@ -263,10 +263,10 @@ pro writefits, filename, data, header, heap, Append = Append,  $
              exten = sxpar( header, 'XTENSION')
              padnum =  exten EQ 'TABLE   ' ? 32b : 0b
         endif else padnum = 0b
-         
+
         if npad GT 0 then writeu, unit, replicate( padnum, 2880 - npad)
 DONE:
-        free_lun, unit  
+        free_lun, unit
 
   return
   end

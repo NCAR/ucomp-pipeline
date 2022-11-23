@@ -6,7 +6,7 @@ function ucomp_memory_plot_ut::init, _extra=e
   if (~self->MGutTestCase::init(_extra=e)) then return, 0
 
   self->addTestingRoutine, ['ucomp_memory_plot']
-  
+
 
   return, 1
 end

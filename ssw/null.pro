@@ -3,7 +3,7 @@
 ;
 ; Name        : NULL
 ;
-; Purpose     : Return !NULL 
+; Purpose     : Return !NULL
 ;
 ; Category    : Utility
 ;

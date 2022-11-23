@@ -6,7 +6,7 @@ function ucomp_l0_distribute_ut::init, _extra=e
   if (~self->UCoMPutTestCase::init(_extra=e)) then return, 0
 
   self->addTestingRoutine, ['ucomp_l0_distribute']
-  
+
 
   return, 1
 end

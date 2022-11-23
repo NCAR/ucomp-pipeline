@@ -7,7 +7,7 @@ function ucomp_wave_region_ut::test_basic
   result = ucomp_wave_region(value)
   standard = '691'
   assert, result eq standard, 'wrong type for %0.1f', value
-  
+
   return, 1
 end
 
@@ -20,7 +20,7 @@ function ucomp_wave_region_ut::test_center
   standard = 691.8
   tolerance = 0.001
   assert, abs(result - standard) lt tolerance, 'wrong center wavelength for %0.1f', value
-  
+
   return, 1
 end
 

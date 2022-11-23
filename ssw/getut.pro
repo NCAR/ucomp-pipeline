@@ -6,7 +6,7 @@ on_error,2
 ; NAME:
 ;	GETUT
 ; PURPOSE:
-;	Retrieve base, start, or end time from common UTCOMMON.  
+;	Retrieve base, start, or end time from common UTCOMMON.
 ; CATEGORY:
 ; CALLING SEQUENCE:
 ;	GETUT,UTBASE=base,UTSTART=start,UTEND=end ,/STR,/PRI
@@ -16,11 +16,11 @@ on_error,2
 ;	BASE, START, END - keyword parameters select which time(s) to retrieve,
 ;	   times returned are double precision seconds relative to 79/1/1, 0000
 ;	   or string if /STRINGIT is specified
-;	/STRINGIT - return times in strings with format YY/MM/DD,HHMM:SS.XXX 
-;	/PRINT - print times on the terminal (prints all three if none are 
+;	/STRINGIT - return times in strings with format YY/MM/DD,HHMM:SS.XXX
+;	/PRINT - print times on the terminal (prints all three if none are
 ;	   specified)
 ; COMMON BLOCKS:
-;	COMMON UTCOMMON, UTBASE, UTSTART, UTEND = base, start, and 
+;	COMMON UTCOMMON, UTBASE, UTSTART, UTEND = base, start, and
 ;	   end time for X axis in double precision variables containing
 ;	   seconds since 79/1/1, 00:00.
 ;	COMMON LASTDATECOM, LASTDATE = YY/MM/DD string for last entry

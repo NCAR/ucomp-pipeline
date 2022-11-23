@@ -10,7 +10,7 @@ function upat2pattern, upat
 
 bupat=byte(upat)
 specss=strspecial(upat) & sss=where(specss,scnt)
-bupat(*)=byte('d')                         
+bupat(*)=byte('d')
 if scnt gt 0 then bupat(sss) =byte('s')
 pattern=string(bupat)
 return, string(bupat)
@@ -21,7 +21,7 @@ function extract_fids, filenames, fidfound=fidfound, fidsfound=fidsfound, $
 ;+
 ;   Name: extract_fids
 ;
-;   Purpose: find & extract embedded FIDS in file names 
+;   Purpose: find & extract embedded FIDS in file names
 ;
 ;   Input Parameters:
 ;      filenames - string array of filenames with embedded FIDs
@@ -35,16 +35,16 @@ function extract_fids, filenames, fidfound=fidfound, fidsfound=fidsfound, $
 ;                           file PATH might contain a FID
 ;      pattern (input)   -  if set, pattern to use (dont cycle through defaults)
 ;                           Form = string like 'ddddddsdddd'
-;                           where d->digit and s-> special character  
+;                           where d->digit and s-> special character
 ;                        OR something like 'yymmdd.hhmmss'
 ;                           (maps internally to 'ddddddsdddddd')
 ;      fidfound (output) -  boolean flag = true if valid FID from ALL files
 ;      fidsfound (output) - boolean flag (individual files)
-;  
+;
 ;   History:
 ;     25-Nov-1997 - S.L.Freeland - extract/optimize code from extract_fid.pro
 ;                                  Remove restriction on fixed file length
-;                                  for a given call.  
+;                                  for a given call.
 ;      3-dec-1997 - S.L.Freeland - fix pattern typo (embedded   blank)
 ;     28-jul-2006 - S.L.Freeland - add explict pattern inc. milliseconds
 ;                                  (sxi for example: yyyymmddDhhmmssmss
@@ -64,7 +64,7 @@ endif else full_files=filenames
 ; ------- set up byte/string mask --------------------------
 maskb=byte(full_files)                      ; byte array for masks
 lowb=byte(strlowcase(full_files))           ; for alpha check
-hib =byte(strupcase(full_files))            ; for alpha check 
+hib =byte(strupcase(full_files))            ; for alpha check
 alphas=where(lowb ne hib, acnt)             ; set all alphas-> ' '
 if acnt gt 0 then maskb(alphas) = 32b
 
@@ -79,7 +79,7 @@ if digcnt gt 0 then maskb(digss)=100b       ; set digits -> 'd'
 delvarx,lowb
 ; ----------------------------------------------------------
 
-; define pattern masks, most->least "refined" 
+; define pattern masks, most->least "refined"
 ;                                                          ; most probable
 patterns=['ddddddddsddddddddd', $			   ;yyyynndd?hhmmssmss
           'ddddddddsdddddd',    $                          ;yyyymmdd?hhmmss
@@ -94,7 +94,7 @@ if data_chk(pattern,/string) then $
 npats=n_elements(patterns)                                 ; max pats to check
 patarr=string(temporary(maskb))                            ; mask -> string
 
-nf=n_elements(patarr)                                      
+nf=n_elements(patarr)
 fidsfound=bytarr(nf)                                       ; boolean found?
 fids=strarr(nf)
 
@@ -116,4 +116,4 @@ endrep until fidfound or patss gt (npats-1)
 ; --------------------------------------------------------
 
 return,fids
-end     
+end

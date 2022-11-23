@@ -33,18 +33,18 @@ pro ucomp_write_nrgf_image, file, primary_header, data, run=run
   tvlct, original_rgb, /get
   device, decomposed=0, $
           set_resolution=[nx, ny]
-  
+
   n_colors = 253
   loadct, 0, /silent, ncolors=n_colors
   gamma_ct, display_gamma, /current
-  
+
   occulter_color = 253
   tvlct, 0, 255, 255, occulter_color
   guess_color = 254
   tvlct, 255, 255, 0, guess_color
   inflection_color = 255
   tvlct, 255, 0, 0, inflection_color
-  
+
   tvlct, r, g, b, /get
 
   center_wavelength = run->line(file.wave_region, 'center_wavelength')
@@ -107,4 +107,3 @@ obj_destroy, file
 obj_destroy, run
 
 end
-

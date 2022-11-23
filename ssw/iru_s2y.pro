@@ -24,7 +24,7 @@
 ; PROCEDURE:
 ; MODIFICATION HISTORY:
 ;        27-sep-93 (JPW)
-;	 27-jan-2000 (Mckenzie, GLS) - Y2K fix 
+;	 27-jan-2000 (Mckenzie, GLS) - Y2K fix
 ;-
 
 function iru_s2y,iru_i,iru_xsz
@@ -41,5 +41,3 @@ if wwcnt gt 0 then iru_xyz(1,ww) = sqrt(3.0d)*iru_xsz(1,ww) - iru_xsz(0,ww) - ir
 
 return,iru_xyz
 end
-
-

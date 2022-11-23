@@ -43,4 +43,4 @@ day_str = gt_day(tim_in, /str, fits=fits)
 time_str = gt_time(tim_in, /str, msec=msec, nolead0=nolead0)
 ;
 return, day_str + '  ' + time_str
-end	
+end

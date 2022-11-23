@@ -7,7 +7,7 @@ function ucomp_vcrosstalk_plots_ut::init, _extra=e
 
   self->addTestingRoutine, ['ucomp_vcrosstalk_plots', $
                             'ucomp_vcrosstalk_plots_wave_region']
-  
+
 
   return, 1
 end

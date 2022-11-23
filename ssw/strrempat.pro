@@ -4,11 +4,11 @@ function strrempat, inarray, pattern, remcount, $
 ;+
 ;   Name: strrempat
 ;
-;   Purpose: identify/remove 1st occurence of pattern in inarray 
+;   Purpose: identify/remove 1st occurence of pattern in inarray
 ;
 ;   Input Paramters:
-;      inarray - string array 
-;      pattern - pattern to remove 
+;      inarray - string array
+;      pattern - pattern to remove
 ;      remcount - number of elements in inarray where pattern was found
 ;
 ;   Keyword Parameters:
@@ -19,8 +19,8 @@ function strrempat, inarray, pattern, remcount, $
 ;
 ;   Method: 1st occurence of pattern in inarray is found
 ;	    (since idl does not allow strmid with vector positions)
-;	    this routine uses vector operations for simular pattern 
-;	    positions for optimization instead of looping through each 
+;	    this routine uses vector operations for simular pattern
+;	    positions for optimization instead of looping through each
 ;	    element of inarray
 ;
 ;   History:
@@ -30,8 +30,8 @@ function strrempat, inarray, pattern, remcount, $
 ;      gen , util, string
 ;-
 
-posfunc=['strpos','str_lastpos']		
-posfunc=posfunc(keyword_set(trunc) and keyword_set(all))	
+posfunc=['strpos','str_lastpos']
+posfunc=posfunc(keyword_set(trunc) and keyword_set(all))
 ;
 if keyword_set(all) and (1-keyword_set(trunc)) then $
    outarray=str_replace(inarray,pattern,'') else begin $
@@ -39,7 +39,7 @@ if keyword_set(all) and (1-keyword_set(trunc)) then $
    outarray=[inarray]
    patlen=strlen(pattern)
    patpos=call_function(posfunc,inarray,pattern)
-   endpat=patpos + patlen 
+   endpat=patpos + patlen
    patss=where(patpos + 1,remcount)
    uniqpos=0
    if n_elements(patpos) gt 1 then uniqpos=uniq(patpos,sort(patpos))
@@ -60,5 +60,3 @@ endelse
 
 return,outarray
 end
-
-

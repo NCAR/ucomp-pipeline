@@ -5,7 +5,7 @@ function ucomp_quality_dark_values_ut::init, _extra=e
 
   if (~self->MGutTestCase::init(_extra=e)) then return, 0
 
-  
+
   self->addTestingRoutine, ['ucomp_quality_dark_values'], $
                            /is_function
 

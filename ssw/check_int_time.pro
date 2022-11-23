@@ -33,11 +33,11 @@
 ;
 ; Opt. Outputs:	None.
 ;
-; Keywords    :	ERRMSG    =  If defined and passed, then any error messages 
-;                            will be returned to the user in this parameter 
+; Keywords    :	ERRMSG    =  If defined and passed, then any error messages
+;                            will be returned to the user in this parameter
 ;                            rather than using IDL's MESSAGE utility.  If no
 ;                            errors are encountered, then a null string is
-;                            returned.  In order to use this feature, the 
+;                            returned.  In order to use this feature, the
 ;                            string ERRMSG must be defined first, e.g.,
 ;
 ;                                ERRMSG = ''
@@ -66,12 +66,12 @@
 ;
 ; Modified    :	Version 1, William Thompson, GSFC, 29 September 1993.
 ;		Version 2, Donald G. Luttermoser, GSFC/ARC, 20 December 1994
-;			Added the keyword ERRMSG.  Added a check for the 
+;			Added the keyword ERRMSG.  Added a check for the
 ;			STRUCTURE-TAG names.
 ;		Version 3, Donald G. Luttermoser, GSFC/ARC, 30 January 1995
 ;			Added ERRMSG keyword to internally called procedures.
 ;			Made the error handling routine more robust.  Note
-;			that this procedure can handle both vectors and 
+;			that this procedure can handle both vectors and
 ;			scalars.
 ;		Version 4, William Thompson, GSFC, 28 January 1997
 ;			Allow for long input arrays.

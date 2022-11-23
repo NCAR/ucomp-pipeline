@@ -10,23 +10,23 @@ pro obs_struct, Obs_NewOrb_Hd = Obs_NewOrb_Hd,  $
                      Obs_HXT_Status = Obs_HXT_Status,  $
                      Obs_WBS_Status = Obs_WBS_Status,  $
                      Obs_SXT = Obs_SXT
-   
-   
+
+
 ;+
 ;       NAME:
 ;               OBS_STRUCT
 ;       PURPOSE:
 ;               Define the following observing log database structures
-;                       * Obs_NewOrb_Hd_Rec        
-;                       * Obs_NewOrbit_Rec         
-;                       * Obs_FileID_Rec           
-;                       * Obs_OrbitSol_Rec         
-;                       * Obs_WBSHXT_Rec           
-;                       * Obs_BCS_Rec              
-;                       * Obs_BCS_Status_Rec       
-;                       * Obs_HXT_Status_Rec       
-;                       * Obs_WBS_Status_Rec       
-;                       * Obs_SXT_Rec              
+;                       * Obs_NewOrb_Hd_Rec
+;                       * Obs_NewOrbit_Rec
+;                       * Obs_FileID_Rec
+;                       * Obs_OrbitSol_Rec
+;                       * Obs_WBSHXT_Rec
+;                       * Obs_BCS_Rec
+;                       * Obs_BCS_Status_Rec
+;                       * Obs_HXT_Status_Rec
+;                       * Obs_WBS_Status_Rec
+;                       * Obs_SXT_Rec
 ;
 ;       CALLING SEQUENCE:
 ;               OBS_STRUCT
@@ -34,23 +34,23 @@ pro obs_struct, Obs_NewOrb_Hd = Obs_NewOrb_Hd,  $
 ;               written by Mons Morrison, Fall 90.
 ;
 ;-
-   
-   
+
+
 Obs_NewOrb_Hd = { Obs_NewOrb_Hd_Rec,              $
       nOrbitRec: LONG(0),  $                 ; 00- Number of orbit record entries
       spare: BYTARR(28) }                    ;  4- Spares
-   
-   
-   
+
+
+
 Obs2_NewOrb_Hd = { Obs2_NewOrb_Hd_Rec,              $
       nOrbitRec: LONG(0),  $                 ; 00- Number of orbit record entries
       NewOrbit_Ver: LONG(0),  $              ;  4- The structure version of the new orbit records
                                              ;       0 = Original {Obs_NewOrbit_Rec}
                                              ;       1 = OBS log pointer {Obs_
       spare: BYTARR(24) }                    ;  4- Spares
-   
-   
-   
+
+
+
 Obs_NewOrbit = { Obs_NewOrbit_Rec,              $
       time: LONG(0),  $                      ; 00- Start time of orbit
       day: FIX(0),  $                        ; 04- Stard day of orbit
@@ -59,9 +59,9 @@ Obs_NewOrbit = { Obs_NewOrbit_Rec,              $
                                              ;     from the beginning of the data section.
                                              ;     The counter starts at 1.
       spare: BYTARR(6) }                     ; 10- Spares
-   
-   
-   
+
+
+
 Obs2_NewOrbit = { Obs2_NewOrbit_Rec,              $
       time: LONG(0),  $                      ; 00- Start time of orbit
       day: FIX(0),  $                        ; 04- Stard day of orbit
@@ -79,14 +79,14 @@ Obs2_NewOrbit = { Obs2_NewOrbit_Rec,              $
                                              ;
       delta_min: FIX(0),  $                  ; 31- Number of minutes covered by this FileID
       spare: BYTARR(15) }                    ; 33- Spare
-   
-   
-   
+
+
+
 Obs_FileID = { Obs_FileID_Rec,              $
       entry_type: BYTE(0),  $                ; 00- Observing Log Entry Type/Version
                                              ;
       time: LONG(0),  $                      ; 01- Major frame time (millisec of day)
-      day: FIX(0),  $                        ; 05- Major frame day (since 1-Jan-79)  
+      day: FIX(0),  $                        ; 05- Major frame day (since 1-Jan-79)
                                              ;
       st$fileId: BYTARR(13),  $              ; 07- File ID for the orbit worth of data
                                              ;
@@ -97,9 +97,9 @@ Obs_FileID = { Obs_FileID_Rec,              $
                                              ;
       delta_min: FIX(0),  $                  ; 28- Number of minutes covered by this FileID
       spare: BYTARR(2) }                     ; 30- Spare
-   
-   
-   
+
+
+
 Obs_OrbitSol = { Obs_OrbitSol_Rec,              $
       entry_type: BYTE(0),  $                ; 00- Observing Log Entry Type/Version
                                              ;
@@ -122,7 +122,7 @@ Obs_OrbitSol = { Obs_OrbitSol_Rec,              $
       h: FLOAT(0),  $                        ; 45- (km)
                                              ;
       a: FLOAT(0),  $                        ; 49- (km)
-      e: FLOAT(0),  $                        ; 53- 
+      e: FLOAT(0),  $                        ; 53-
       i: FLOAT(0),  $                        ; 57- (deg)
       spare2: BYTARR(3),  $                  ; 61- Spare
                                              ;
@@ -132,12 +132,12 @@ Obs_OrbitSol = { Obs_OrbitSol_Rec,              $
       ma: FLOAT(0),  $                       ; 73- (deg)
       lam: FLOAT(0),  $                      ; 77- (deg.n)
                                              ;
-      element_no: LONG(0),  $                ; 81- 
+      element_no: LONG(0),  $                ; 81-
                                              ;
       spare3: BYTARR(11) }                   ; 85- Spare
-   
-   
-   
+
+
+
 Obs_WBSHXT = { Obs_WBSHXT_Rec,              $
       entry_type: BYTE(0),  $                ;  0- Observing Log Entry Type/Version
                                              ;
@@ -178,7 +178,7 @@ Obs_WBSHXT = { Obs_WBSHXT_Rec,              $
                                              ;     Simple square root compression of original value
       WBS_rbmsd: BYTE(0),  $                 ; 24- RBMSD counts per sec.
                                              ;     Simple square root compression of original value
-      WBS_Pow_Stat: BYTE(0),  $              ; 25- 
+      WBS_Pow_Stat: BYTE(0),  $              ; 25-
       WBS_Stat: BYTE(0),  $                  ; 26- To be defined/expanded
                                              ;     Total for WBS = 9
                                              ;
@@ -188,35 +188,35 @@ Obs_WBSHXT = { Obs_WBSHXT_Rec,              $
                                              ;       b0-3: HXT
                                              ;       b4-7: WBS
       spare: BYTARR(4) }                     ; 28- Spare
-   
-   
-   
+
+
+
 Obs_BCS_Obs = { Obs_BCS_Obs_Rec,              $
       entry_type: BYTE(0),  $                ;  0- Observing Log Entry Type/Version
                                              ;
       time: LONG(0),  $                      ;  1- Major frame time (millisec of day)
       day: FIX(0),  $                        ;  5- Major frame day (since 1-Jan-79)
                                              ;
-      blockID: BYTE(0),  $                   ; 07- BCS Block ID                              
-      SeqID: BYTE(0),  $                     ; 08- Observation Sequence ID                   
-      ModeID: BYTE(0),  $                    ; 09- Mode ID (Grouper Plan)                    
-      dgi: BYTE(0),  $                       ; 10- Data Gather Interval (125 msec units)     
-      DP_Flags: BYTE(0),  $                  ; 11- DP Flags received by BCS                  
-      BCS_Status: BYTE(0),  $                ; 12- BCS Status                        
+      blockID: BYTE(0),  $                   ; 07- BCS Block ID
+      SeqID: BYTE(0),  $                     ; 08- Observation Sequence ID
+      ModeID: BYTE(0),  $                    ; 09- Mode ID (Grouper Plan)
+      dgi: BYTE(0),  $                       ; 10- Data Gather Interval (125 msec units)
+      DP_Flags: BYTE(0),  $                  ; 11- DP Flags received by BCS
+      BCS_Status: BYTE(0),  $                ; 12- BCS Status
                                              ;
       total_cnts: INTARR(4),  $              ; 13- Total counts in each channel for the mode
                                              ;
       All_cnts: BYTARR(4),  $                ; 21- BCS Counts for all events
                                              ;     Simple square root compression of original value
-      Acc_cnts: BYTARR(4),  $                ; 25- BCS Accumulated counts 
+      Acc_cnts: BYTARR(4),  $                ; 25- BCS Accumulated counts
                                              ;     Simple square root compression of original value
       Acc_interval: BYTE(0),  $              ; 29- Accumulation interval (sec)
                                              ;
       nAveraged: BYTE(0),  $                 ; 30- Number of spectra and DP major frames that
       spare: BYTARR(1) }                     ; 31- Spare
-   
-   
-   
+
+
+
 Obs_BCS_Status = { Obs_BCS_Status_Rec,              $
       entry_type: BYTE(0),  $                ; 00- Observing Log Entry Type/Version
                                              ;
@@ -230,9 +230,9 @@ Obs_BCS_Status = { Obs_BCS_Status_Rec,              $
       status_2: BYTE(0),  $                  ; 20- Other status bits...
                                              ;
       spare: BYTARR(11) }                    ; 21- Spare
-   
-   
-   
+
+
+
 Obs_HXT_Status = { Obs_HXT_Status_Rec,              $
       entry_type: BYTE(0),  $                ; 00- Observing Log Entry Type/Version
                                              ;
@@ -243,9 +243,9 @@ Obs_HXT_Status = { Obs_HXT_Status_Rec,              $
       HXA_gain_cont: BYTE(0),  $             ; 11- gain control commanded                                    W49 F32
                                              ;
       spare: BYTARR(20) }                    ; 12-
-   
-   
-   
+
+
+
 Obs_WBS_Status = { Obs_WBS_Status_Rec,              $
       entry_type: BYTE(0),  $                ; 00- Observing Log Entry Type/Version
                                              ;
@@ -257,9 +257,9 @@ Obs_WBS_Status = { Obs_WBS_Status_Rec,              $
                                              ;
                                              ;
       spare: BYTARR(25) }                    ;  7-
-   
-   
-   
+
+
+
 Obs_SXT = { Obs_SXT_Rec,              $
       entry_type: BYTE(0),  $                ;  0- Observing Log Entry Type/Version
                                              ;
@@ -269,13 +269,13 @@ Obs_SXT = { Obs_SXT_Rec,              $
       DP_mode: BYTE(0),  $                   ; 07- DP Mode
       DP_rate: BYTE(0),  $                   ; 08- DP Rate
                                              ;
-      pfi_ffi: BYTE(0),  $                   ; 09- Image information 
+      pfi_ffi: BYTE(0),  $                   ; 09- Image information
       periph: BYTE(0),  $                    ; 10- Aspect/Shutter/Filter information
-      ExpLevMode: BYTE(0),  $                ; 11- Exposure mode/level       
+      ExpLevMode: BYTE(0),  $                ; 11- Exposure mode/level
       imgparam: BYTE(0),  $                  ; 12- Image parameter information
                                              ;
       ObsRegion: BYTE(0),  $                 ; 13- Observing region Number
-      seq_num: BYTE(0),  $                   ; 14- Entry in sequence table (1-13)    
+      seq_num: BYTE(0),  $                   ; 14- Entry in sequence table (1-13)
       seq_tab_serno: FIX(0),  $              ; 15- Sequence table serial used
                                              ;
       shape_cmd: INTARR(2),  $               ; 17- Commanded image shape (nx/4 by ny/4)
@@ -291,9 +291,9 @@ Obs_SXT = { Obs_SXT_Rec,              $
       Flare_Status: BYTE(0),  $              ; 30- Flare flag status
                                              ;
       spare: BYTARR(1) }                     ; 31- Spare bytes
-   
-   
-   
-  
-  
+
+
+
+
+
 end

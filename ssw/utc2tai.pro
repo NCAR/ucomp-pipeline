@@ -8,7 +8,7 @@
 ;
 ; Explanation :	This procedure converts Coordinated Universal Time (UTC)
 ;		calendar time, in one of the CDS formats into Atomic
-;		International Time (TAI).  For notes on various time formats, 
+;		International Time (TAI).  For notes on various time formats,
 ;		see file aaareadme.txt.
 ;
 ; Use         :	Result = UTC2TAI( UTC )
@@ -54,12 +54,12 @@
 ;                           number of non-leap seconds since 1-Jan-1958, as
 ;                           used by the STEREO spacecraft.
 ;
-;		ERRMSG    = If defined and passed, then any error messages 
-;			    will be returned to the user in this parameter 
-;			    rather than being handled by the IDL MESSAGE 
-;			    utility.  If no errors are encountered, then a 
-;			    null string is returned.  In order to use this 
-;			    feature, the string ERRMSG must be defined 
+;		ERRMSG    = If defined and passed, then any error messages
+;			    will be returned to the user in this parameter
+;			    rather than being handled by the IDL MESSAGE
+;			    utility.  If no errors are encountered, then a
+;			    null string is returned.  In order to use this
+;			    feature, the string ERRMSG must be defined
 ;			    first, e.g.,
 ;
 ;				ERRMSG = ''
@@ -78,7 +78,7 @@
 ;		directory given by the environment variable TIME_CONV.  It must
 ;		be properly updated as new leap seconds are announced.
 ;
-; Side effects:	If an error is encountered and the ERRMSG keyword is set, 
+; Side effects:	If an error is encountered and the ERRMSG keyword is set,
 ;		UTC2TAI returns an integer scalar equal to -1.
 ;
 ; Category    :	None.

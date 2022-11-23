@@ -5,7 +5,7 @@
 ; AUTHOR:
 ;   Craig B. Markwardt, NASA/GSFC Code 662, Greenbelt, MD 20770
 ;   craigm@lheamail.gsfc.nasa.gov
-;   UPDATED VERSIONs can be found on my WEB PAGE: 
+;   UPDATED VERSIONs can be found on my WEB PAGE:
 ;      http://cow.physics.wisc.edu/~craigm/idl/idl.html
 ;
 ; PURPOSE:
@@ -22,13 +22,13 @@
 ;  MPFIT2DFUN fits a user-supplied model -- in the form of an IDL
 ;  function -- to a set of user-supplied data.  MPFIT2DFUN calls
 ;  MPFIT, the MINPACK-1 least-squares minimizer, to do the main
-;  work.  MPFIT2DFUN is a specialized version for two-dimensional 
+;  work.  MPFIT2DFUN is a specialized version for two-dimensional
 ;  data.
 ;
 ;  Given the data and their uncertainties, MPFIT2DFUN finds the best set
 ;  of model parameters which match the data (in a least-squares
 ;  sense) and returns them in an array.
-;  
+;
 ;  The user must supply the following items:
 ;   - Two arrays of independent variable values ("X", "Y").
 ;   - An array of "measured" *dependent* variable values ("Z").
@@ -46,7 +46,7 @@
 ;  improve performance.
 ;
 ;  See below for an example of usage.
-;   
+;
 ; USER FUNCTION
 ;
 ;  The user must define a function which returns the model value.  For
@@ -81,32 +81,32 @@
 ;  be two-dimensional *arrays* describing the X and Y positions of
 ;  every *pixel*.  [ Thus any two dimensional sampling is permitted,
 ;  including irregular sampling. ]
-;  
+;
 ;  If the sampling is regular, then the x coordinates are the same for
 ;  each row, and the y coordinates are the same for each column.  Call
 ;  the x-row and y-column coordinates XR and YC respectively.  You can
 ;  then compute X and Y as follows:
-;  
+;
 ;      X = XR # (YC*0 + 1)             eqn. 1
 ;      Y = (XR*0 + 1) # YC             eqn. 2
-;  
+;
 ;  For example, if XR and YC have the following values:
-;  
+;
 ;    XR = [  1, 2, 3, 4, 5,]  ;; X positions of one row of pixels
 ;    YC = [ 15,16,17 ]        ;; Y positions of one column of
 ;                                pixels
-;  
+;
 ;  Then using equations 1 and 2 above will give these values to X and
 ;  Y:
-;  
+;
 ;     X :  1  2  3  4  5       ;; X positions of all pixels
 ;          1  2  3  4  5
 ;          1  2  3  4  5
-;  
+;
 ;     Y : 15 15 15 15 15       ;; Y positions of all pixels
 ;         16 16 16 16 16
 ;         17 17 17 17 17
-;  
+;
 ;  Using the above technique is suggested, but *not* required.  You
 ;  can do anything you wish with the X and Y values.  This technique
 ;  only makes it easier to compute your model function values.
@@ -126,31 +126,31 @@
 ;  Each parameter is associated with one element of the array, in
 ;  numerical order.  The structure can have the following entries
 ;  (none are required):
-;  
+;
 ;     .VALUE - the starting parameter value (but see the START_PARAMS
 ;              parameter for more information).
-;  
+;
 ;     .FIXED - a boolean value, whether the parameter is to be held
 ;              fixed or not.  Fixed parameters are not varied by
 ;              MPFIT, but are passed on to MYFUNCT for evaluation.
-;  
+;
 ;     .LIMITED - a two-element boolean array.  If the first/second
 ;                element is set, then the parameter is bounded on the
 ;                lower/upper side.  A parameter can be bounded on both
 ;                sides.  Both LIMITED and LIMITS must be given
 ;                together.
-;  
+;
 ;     .LIMITS - a two-element float or double array.  Gives the
 ;               parameter limits on the lower and upper sides,
 ;               respectively.  Zero, one or two of these values can be
 ;               set, depending on the values of LIMITED.  Both LIMITED
 ;               and LIMITS must be given together.
-;  
+;
 ;     .PARNAME - a string, giving the name of the parameter.  The
 ;                fitting code of MPFIT does not use this tag in any
 ;                way.  However, the default ITERPROC will print the
 ;                parameter name if available.
-;  
+;
 ;     .STEP - the step size to be used in calculating the numerical
 ;             derivatives.  If set to zero, then the step size is
 ;             computed automatically.  Ignored when AUTODERIVATIVE=0.
@@ -200,7 +200,7 @@
 ;                  will never be changed by more than this value.
 ;
 ;                  A value of 0 indicates no maximum.  Default: 0.
-;  
+;
 ;     .TIED - a string expression which "ties" the parameter to other
 ;             free or fixed parameters.  Any expression involving
 ;             constants and the parameter array P are permitted.
@@ -209,13 +209,13 @@
 ;             Since they are totally constrained, tied parameters are
 ;             considered to be fixed; no errors are computed for them.
 ;             [ NOTE: the PARNAME can't be used in expressions. ]
-;  
+;
 ;  Future modifications to the PARINFO structure, if any, will involve
 ;  adding structure tags beginning with the two letters "MP".
 ;  Therefore programmers are urged to avoid using tags starting with
 ;  the same letters; otherwise they are free to include their own
 ;  fields within the PARINFO structure, and they will be ignored.
-;  
+;
 ;  PARINFO Example:
 ;  parinfo = replicate({value:0.D, fixed:0, limited:[0,0], $
 ;                       limits:[0.D,0]}, 5)
@@ -223,7 +223,7 @@
 ;  parinfo[4].limited(0) = 1
 ;  parinfo[4].limits(0)  = 50.D
 ;  parinfo[*].value = [5.7D, 2.2, 500., 1.5, 2000.]
-;  
+;
 ;  A total of 5 parameters, with starting values of 5.7,
 ;  2.2, 500, 1.5, and 2000 are given.  The first parameter
 ;  is fixed at a value of 5.7, and the last parameter is
@@ -233,7 +233,7 @@
 ; COMPATIBILITY
 ;
 ;  This function is designed to work with IDL 5.0 or greater.
-;  
+;
 ;  Because TIED parameters rely on the EXECUTE() function, they cannot
 ;  be used with the free version of the IDL Virtual Machine.
 ;
@@ -271,7 +271,7 @@
 ;                  passed, then the starting *value* is taken from
 ;                  START_PARAMS, but the *constraints* are taken from
 ;                  PARINFO.
-; 
+;
 ; RETURNS:
 ;
 ;   Returns the array of best-fit parameters.
@@ -340,11 +340,11 @@
 ;                PARINFO=parinfo, QUIET=quiet, ...
 ;                ; perform custom iteration update
 ;              END
-;         
+;
 ;              ITERPROC must either accept all three keyword
 ;              parameters (FUNCTARGS, PARINFO and QUIET), or at least
 ;              accept them via the _EXTRA keyword.
-;          
+;
 ;              MYFUNCT is the user-supplied function to be minimized,
 ;              P is the current set of model parameters, ITER is the
 ;              iteration number, and FUNCTARGS are the arguments to be
@@ -388,7 +388,7 @@
 ;   PARINFO - Provides a mechanism for more sophisticated constraints
 ;             to be placed on parameter values.  When PARINFO is not
 ;             passed, then it is assumed that all parameters are free
-;             and unconstrained.  Values in PARINFO are never 
+;             and unconstrained.  Values in PARINFO are never
 ;             modified during a call to MPFIT.
 ;
 ;             See description above for the structure of PARINFO.
@@ -420,27 +420,27 @@
 ;            following values:
 ;
 ;	   0  improper input parameters.
-;         
+;
 ;	   1  both actual and predicted relative reductions
 ;	      in the sum of squares are at most FTOL.
-;         
+;
 ;	   2  relative error between two consecutive iterates
 ;	      is at most XTOL
-;         
+;
 ;	   3  conditions for STATUS = 1 and STATUS = 2 both hold.
-;         
+;
 ;	   4  the cosine of the angle between fvec and any
 ;	      column of the jacobian is at most GTOL in
 ;	      absolute value.
-;         
+;
 ;	   5  the maximum number of iterations has been reached
-;         
+;
 ;	   6  FTOL is too small. no further reduction in
 ;	      the sum of squares is possible.
-;         
+;
 ;	   7  XTOL is too small. no further improvement in
 ;	      the approximate solution x is possible.
-;         
+;
 ;	   8  GTOL is too small. fvec is orthogonal to the
 ;	      columns of the jacobian to machine precision.
 ;
@@ -476,7 +476,7 @@
 ;
 ;   p0 = [0D, 0D, 1D, 10D]
 ;   p = mpfit2dfun('GAUSS2', x, y, z, sz, p0)
-;   
+;
 ;   Generates a synthetic data set with a Gaussian peak, and Poisson
 ;   statistical uncertainty.  Then the same function (but different
 ;   starting parameters) is fitted to the data to see how close we can
@@ -508,7 +508,7 @@
 ; REFERENCES:
 ;
 ;   MINPACK-1, Jorge More', available from netlib (www.netlib.org).
-;   "Optimization Software Guide," Jorge More' and Stephen Wright, 
+;   "Optimization Software Guide," Jorge More' and Stephen Wright,
 ;     SIAM, *Frontiers in Applied Mathematics*, Number 14.
 ;
 ; MODIFICATION HISTORY:
@@ -571,11 +571,11 @@ function mpfit2dfun_eval, p, dp, _EXTRA=extra
   endif else begin
       result = (z-f)
   endelse
-      
+
   ;; Make sure the returned result is one-dimensional.
   result = reform(result, n_elements(result), /overwrite)
   return, result
-  
+
 end
 
 function mpfit2dfun, fcn, x, y, z, err, p, WEIGHTS=wts, FUNCTARGS=fa, $

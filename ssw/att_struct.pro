@@ -6,8 +6,8 @@ pro att_struct, ATT_Data = ATT_Data,  $
                      ATT_Version = ATT_Version,  $
                      ATR_Summary = ATR_Summary,  $
                      ATT_Summary = ATT_Summary
-   
-   
+
+
 ;+
 ;       NAME:
 ;               ATT_STRUCT
@@ -26,8 +26,8 @@ pro att_struct, ATT_Data = ATT_Data,  $
 ;                7-Mar-1995 (MDM) - Documentation only (STATUS1 field)
 ;
 ;-
-   
-   
+
+
 ATT_Data = { ATT_Data_Rec,              $
                                              ;----- Inertial Reference Unit (IRU) ----------------------
       iru_pow_stat: BYTARR(2),  $            ;  0- IRU Power Status                                          W48 F32
@@ -38,7 +38,7 @@ ATT_Data = { ATT_Data_Rec,              $
                                              ;       b3 = Z Motor on/off
                                              ;       b2 = S Motor on/off
                                              ;       b1 = ??
-                                             ;       b0 = 
+                                             ;       b0 =
       iru_LM: BYTARR(5,2),  $                ;  2- IRU ??                                                    W112 F3
                                              ;    (i,j)  j=two values per major frame
                                              ;       (0,*) = X voltage?? (0-3 V)
@@ -70,7 +70,7 @@ ATT_Data = { ATT_Data_Rec,              $
                                              ;     Z position                                                W83 F16
                                              ;    (i,j)  i=0 is X, i=1 is Y
                                              ;           j=four values per major frame
-                                             ;   8-bit value is the ?? position 
+                                             ;   8-bit value is the ?? position
                                              ;   between 0 and 512 pixels
                                              ;       LSB (1 DN) = .0390625 volts (10,000 nT/volt)
                                              ;
@@ -86,7 +86,7 @@ ATT_Data = { ATT_Data_Rec,              $
                                              ;           j=four values per major frame
                                              ;  W82 is high 8 bits of 12 bit value
                                              ;  W83 b4:7 = low 8 bits of 12 bit value
-                                             ;   12-bit value is the ?? position 
+                                             ;   12-bit value is the ?? position
                                              ;   between 0 and 512 pixels
                                              ;       LSB (1 DN) = 0.00054 deg
                                              ;  W83
@@ -105,7 +105,7 @@ ATT_Data = { ATT_Data_Rec,              $
                                              ;           j=four values per major frame
                                              ;  W82 is high 8 bits of 12 bit value
                                              ;  W83 b4:7 = low 8 bits of 12 bit value
-                                             ;   12-bit value is the ?? position 
+                                             ;   12-bit value is the ?? position
                                              ;   between 0 and 512 pixels
                                              ;       LSB (1 DN) = 0.5 pixels)
                                              ;       x=0, y=0 ==> 0.025 deg
@@ -119,22 +119,22 @@ ATT_Data = { ATT_Data_Rec,              $
       stt_pow_stat: BYTE(0),  $              ;???-STT power status                                           W48 F2
                                              ;       b7 = CPU1 on/off
                                              ;       b6 = CPU2 on/off
-                                             ;       b5 = 
-                                             ;       b4 = 
-                                             ;       b3 = 
-                                             ;       b2 = 
-                                             ;       b1 = 
-                                             ;       b0 = 
+                                             ;       b5 =
+                                             ;       b4 =
+                                             ;       b3 =
+                                             ;       b2 =
+                                             ;       b1 =
+                                             ;       b0 =
       stt_stat: BYTARR(3),  $                ;?? - STT Status                                                W48 F18
-                                             ;       b7 = 
-                                             ;       b6 = 
-                                             ;       b5 = 
-                                             ;       b4 = 
-                                             ;       b3 = 
-                                             ;       b2 = 
-                                             ;       b1 = 
-                                             ;       b0 = 
-      stt_v: BYTE(0),  $                     ;?? - STT Voltages                                              
+                                             ;       b7 =
+                                             ;       b6 =
+                                             ;       b5 =
+                                             ;       b4 =
+                                             ;       b3 =
+                                             ;       b2 =
+                                             ;       b1 =
+                                             ;       b0 =
+      stt_v: BYTE(0),  $                     ;?? - STT Voltages
                                              ;       For FI = 0 = STT CCD                                    W32 F17
                                              ;       For FI = 2 = STT REG                                    W32 F17
       stt_temp: BYTARR(2),  $                ;?? - STT Temperatures                                          W32 F56
@@ -170,7 +170,7 @@ ATT_Data = { ATT_Data_Rec,              $
       hxa_gain: BYTARR(2),  $                ;288- Gain for HXA                                              W49 F32
                                              ;          Two sets per major frame
       HXA_gain_cont: BYTARR(2),  $           ; 80- Gain control commanded                                    W49 F32
-                                             ;       Hopefully not changed 
+                                             ;       Hopefully not changed
                                              ;       TODO - what is this - same Frame/Word as "hxa_xnum"
                                              ;
                                              ;----- S/C Processed pointing info ----------------------
@@ -205,7 +205,7 @@ ATT_Data = { ATT_Data_Rec,              $
                                              ;       b7  =       0=forward, 1=backward
                                              ;       b6  = sun presence 0=night, 1=day
                                              ;       b5  = earth occultation 0=occul, 1=not occul
-      pntg_Trace: BYTE(0),  $                ; 30- Information on how pointing was derived                   Ground 
+      pntg_Trace: BYTE(0),  $                ; 30- Information on how pointing was derived                   Ground
                                              ;     and whether there is data present
                                              ;       0 = No data present
                                              ;       1 = Original Technique used 20-Oct-91 to ??
@@ -219,9 +219,9 @@ ATT_Data = { ATT_Data_Rec,              $
                                              ;       scaled - TODO
                                              ;
       spare: BYTARR(10) }                    ;330-
-   
-   
-   
+
+
+
 ATT_Pntg_Save = { ATT_Pntg_Save_Rec,              $
                                              ;This structure is not written to the reformatted data files.
                                              ;It is simply used to store the processed pointing information
@@ -229,12 +229,12 @@ ATT_Pntg_Save = { ATT_Pntg_Save_Rec,              $
       time: LONG(0),  $                      ;   - Major frame time (millisec of day)
       day: FIX(0),  $                        ;   - Major frame day (since 1-Jan-79)
       pntg_angle: LONARR(3),  $              ;   - X,Y,Z euler angles in sun pointing coordinates            From Ma
-      pntg_Trace: BYTE(0),  $                ;   - Information on how pointing was derived                   Ground 
+      pntg_Trace: BYTE(0),  $                ;   - Information on how pointing was derived                   Ground
                                              ;     and whether there is data present
       pntg_jitter: BYTE(0) }                 ;   - Magnitude of pointing change over ??sec                   Derived
-   
-   
-   
+
+
+
 HXA_Scan = { HXA_Scan_Rec,              $
       time: LONG(0),  $                      ; 04- Major frame time (millisec of day)
       day: FIX(0),  $                        ; 08- Major frame day (since 1-Jan-79)
@@ -244,9 +244,9 @@ HXA_Scan = { HXA_Scan_Rec,              $
       nPoScan: FIX(0),  $                    ;   - Number of points in the scan (2048 if full)
                                              ;
       spare: BYTARR(8) }                     ;
-   
-   
-   
+
+
+
 HXA_Scan_Head = { HXA_Scan_Head_Rec,              $
       index_version : FIX('6011'x),  $       ;
                                              ; 00- Index structure version
@@ -254,9 +254,9 @@ HXA_Scan_Head = { HXA_Scan_Head_Rec,              $
       nEntries: FIX(0),  $                   ;  2- Number of HXA scans to follow
                                              ;
       spare: BYTARR(12) }                    ;  4- Spares
-   
-   
-   
+
+
+
 ATT_Roadmap = { ATT_Roadmap_Rec,              $
                                              ;     For a full description of the fields,
                                              ;     look at the Index_Rec definition
@@ -271,11 +271,11 @@ ATT_Roadmap = { ATT_Roadmap_Rec,              $
       DP_mode: BYTE(0),  $                   ; 10- DP Mode
       DP_rate: BYTE(0),  $                   ; 11- DP Rate
                                              ;
-      Flare_Control: BYTE(0),  $             ; 12- Flare flag control (active triggers) 
-      Flare_Status: BYTE(0),  $              ; 13- Flare flag status                 
-      RBM_Status: BYTE(0),  $                ; 14- Radiation Belt Montitor Status    
-      Telemetry_mode: BYTE(0),  $            ; 15- Telemetry mode                    
-      cal_status: BYTE(0),  $                ; 16- CAL status                        
+      Flare_Control: BYTE(0),  $             ; 12- Flare flag control (active triggers)
+      Flare_Status: BYTE(0),  $              ; 13- Flare flag status
+      RBM_Status: BYTE(0),  $                ; 14- Radiation Belt Montitor Status
+      Telemetry_mode: BYTE(0),  $            ; 15- Telemetry mode
+      cal_status: BYTE(0),  $                ; 16- CAL status
                                              ;
       SXT_Pow_stat: BYTE(0),  $              ; 17- SXT Power Status
       bcs_pow_stat: BYTE(0),  $              ; 18- BCS Power status
@@ -283,12 +283,12 @@ ATT_Roadmap = { ATT_Roadmap_Rec,              $
       wbs_pow_stat: BYTE(0),  $              ; 20- WBS Power status
       SXT_Control: BYTE(0),  $               ; 21- SXT Control Status
                                              ;
-      telemetry: BYTE(0),  $                 ; 22- Telemetry source information 
+      telemetry: BYTE(0),  $                 ; 22- Telemetry source information
                                              ;
       spare: BYTARR(9) }                     ; 23-
-   
-   
-   
+
+
+
 ATT_Version = { ATT_Version_Rec,              $
       roadmap : FIX('60F1'x),  $             ;
                                              ; 00- The version number of the Roadmap
@@ -299,9 +299,9 @@ ATT_Version = { ATT_Version_Rec,              $
                                              ;
                                              ;     This structure is not written to any files
       spare: BYTARR(12) }                    ;     (need for automatic conversion to IDL format)
-   
-   
-   
+
+
+
 ATR_Summary = { ATR_Summary_Rec,              $
                                              ;NOTE: See ATT_STRUCT for details on definitions.
                                              ;
@@ -317,21 +317,21 @@ ATR_Summary = { ATR_Summary_Rec,              $
                                              ;       (3) = high address for y
                                              ;
       DP_mode: BYTE(0),  $                   ;  6- DP Mode
-      DP_rate: BYTE(0) }                     ;  7- DP Rate 
-   
-   
-   
+      DP_rate: BYTE(0) }                     ;  7- DP Rate
+
+
+
 ATT_Summary = { ATT_Summary_Rec,              $
       time: LONG(0),  $                      ;  0- Major frame time (millisec of day)
       day: FIX(0),  $                        ;  4- Major frame day (since 1-Jan-79)
                                              ;
       DP_mode: BYTE(0),  $                   ;  6- DP Mode
-      DP_rate: BYTE(0),  $                   ;  7- DP Rate 
+      DP_rate: BYTE(0),  $                   ;  7- DP Rate
                                              ;
       pnt: LONARR(3),  $                     ;  8- S/C processed pointing.
                                              ;     The Units are SXT (FRE) pixels and the value FRE = 0.01*pnt is th
                                              ;     location of the x-ray center of the sun.
-                                             ;       
+                                             ;
                                              ;       (0) = E/W direction (E has smaller values)
                                              ;       (1) = N/S direction (S has smaller values)
                                              ;       (2) = Roll in 0.1 arcsecond units - Negative values are S/C rot
@@ -352,17 +352,17 @@ ATT_Summary = { ATT_Summary_Rec,              $
       status2: BYTE(0),  $                   ; 21- Information on Program/Algorithms used
                                              ;     b7:4  Spare
                                              ;     b3:0  Reserved for fix_old_att enabled 21-Sep-94
-                                             ;           to correct for a systematic error in the adjustment for 
+                                             ;           to correct for a systematic error in the adjustment for
                                              ;           orbital variations.  It was on the order of 15 arcsec for 1
                                              ;        b3    Correction Applied flag.
-                                             ;        b2:0  Correction Algorithm Version#  
-                                             ;    
+                                             ;        b2:0  Correction Algorithm Version#
+                                             ;
       ads: BYTE(0),  $                       ; 22- b0 - Set if ADS results were inserted into the record
                                              ;
       spare: BYTARR(1) }                     ; 23-
-   
-   
-   
-  
-  
+
+
+
+
+
 end

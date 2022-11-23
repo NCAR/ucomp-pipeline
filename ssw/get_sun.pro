@@ -78,9 +78,9 @@ function get_sun, item, et=et, lon=lon, $
 ; whatsoever.  Other limitations apply as described in the file disclaimer.txt.
 ;-
 ;-------------------------------------------------------------
- 
+
   np = n_params(0)
- 
+
   if keyword_set(help) then begin
     print,' Computes geocentric physical ephemeris of the sun.'
     print,' Calling seqence: CARR = GET_CARR(ITEM)'
@@ -110,7 +110,7 @@ function get_sun, item, et=et, lon=lon, $
     print,'   If no arguments given will prompt and list values.'
     return, ''
   endif
- 
+
 ; Julian date:
   jd = double(tim2jd(item))
 
@@ -249,4 +249,3 @@ function get_sun, item, et=et, lon=lon, $
 
   return,data
   end
-

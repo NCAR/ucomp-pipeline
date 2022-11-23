@@ -6,7 +6,7 @@ function ssw_deltat, t0, t1, $
 ;   Name: ssw_deltat
 ;
 ;   Purpose: return deltaTime between input times in specified units
-;      
+;
 ;   Input Parameters:
 ;       t0 - start time OR a vector of times - any SSW format
 ;       t1 - optional end time if t0 is scalar  [output is d(timegrange) ]
@@ -15,18 +15,18 @@ function ssw_deltat, t0, t1, $
 ;      Function returns delta-time in specified units (default seconds)
 ;      n_elements(output) = n_elements(inputtimes)-1
 ;  -OR-                   = n_elements(inputtimes) if REFERENCE specified
-;                                            
+;
 ;   Keyword Parameters:
 ;      SECONDS,MINUTES,HOURS,DAYS  - output units (default=seconds)
 ;      reference - optional reference time for compare (any SSW format)
-;  
+;
 ;   Calling Sequence:
 ;      dt=ssw_deltat(t0,t1)			; explicit start and stop time
-;      dt=ssw_deltat(times)			; vector of times   
+;      dt=ssw_deltat(times)			; vector of times
 ;      dt=ssw_deltat(times, reference=reftime)  ; dTimes/dReference
-;  
+;
 ;   Calling Examples:
-;      dt=ssw_delta(index)                           ; dT (between elements) 
+;      dt=ssw_delta(index)                           ; dT (between elements)
 ;      dt=ssw_delta('1-feb-98', '23-mar-02', /days)  ; dT (time range)
 ;      dt=ssw_deltat(index, reference='3-apr-1998')  ; dT/dREFERENCE
 ;
@@ -42,14 +42,14 @@ function ssw_deltat, t0, t1, $
 ;        -1.0000000
 ;         1.0000000
 ;         3.0000000
-;  
+;
 ;   History:
 ;      Circa 1-jan-1997 - S.L.Freeland
-;      25-May-1998 - S.L.Freeland use <anytim> in place of <anytim2ints>  
+;      25-May-1998 - S.L.Freeland use <anytim> in place of <anytim2ints>
 ;       3-Dec-1998 - S.L.Freeland - add REFERENCE and some documentation
 ;-
 
-case n_params() of 
+case n_params() of
    0: message,"Need input timess..."
    1: times=t0
    2: times=[anytim(t0(0)),anytim(t1(0))]

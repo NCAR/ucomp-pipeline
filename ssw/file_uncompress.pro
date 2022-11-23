@@ -14,7 +14,7 @@ pro file_uncompress, inname, outname, noreplace=noreplace , newname=newname, $
 ;		 (usually, inname without .Z extension, null if problem)
 ;
 ;   Optional Keyword Parameters
-;	noreplace - (input) - switch, if set, don't replace inname with outname 
+;	noreplace - (input) - switch, if set, don't replace inname with outname
 ;	newname   - (input)   NOT IMPLEMENTED specify outname
 ;       outdir    - (input)   specify output directory (only if /noreplace)
 ;
@@ -25,7 +25,7 @@ pro file_uncompress, inname, outname, noreplace=noreplace , newname=newname, $
 ;	      7-Oct-93 (SLF) Added OUTDIR keyword parameter
 ;	     14-Mar-94 (SLF) enclose file names in quotes (embedded meta-char)
 ;
-;   Restrictions: UNIX only 
+;   Restrictions: UNIX only
 ;-
 
 if keyword_set(newname) then begin
@@ -41,7 +41,7 @@ verbose=''
 chk_files=file_exist(iname + '.Z')
 some=where(chk_files,scount)
 none=where(1 - chk_files,ncount)
-   
+
 if scount eq 0 then begin
    message,/info,'No input files exist, returning...'
    return
@@ -51,7 +51,7 @@ endif else begin
       print,iname(none),format='(a)'
    endif
 endelse
-   
+
 ; assign output file names
 outname=strarr(n_elements(iname))
 outname(some)=str_replace(iname(some),'.Z')	; force normal convention
@@ -64,7 +64,7 @@ case 1 of
          break_file,iname(some),ilog,idir,iiname,iext,ivers
          oname=iiname + iext + ivers
          outname(some) = concat_dir(outdir,oname)
-      endif                   
+      endif
 
       for i=0,n_elements(some)-1 do begin
          spawn,'uncompress -vcf ' + '"' + iname(some(i)) + '" > ' + outname(some(i)), status
