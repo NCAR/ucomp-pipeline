@@ -280,3 +280,4 @@
   new display ranges for new lines
 0.2.79 [Nov 23, 2022]
   fix center wavelength for 991 wave region
+0.2.80
