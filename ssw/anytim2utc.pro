@@ -1,27 +1,27 @@
 ;+
-; Project     : SOHO - CDS     
-;                   
+; Project     : SOHO - CDS
+;
 ; Name        : ANYTIM2UTC()
-;               
+;
 ; Purpose     : Converts (almost) any time format to CDS UTC format.
-;               
+;
 ; Explanation : Tests the type of input and tries to use the appropriate
 ;               conversion routine to create the date/time in CDS UTC
 ;               format (either internal (default), external or string)
 ;               CDS time format.
-;               
+;
 ; Use         : IDL>  utc = anytim2utc(any_format)
-;    
-; Inputs      : any_format - date/time in any of the acceptable CDS 
-;                            time formats -- for acceptable formats see file 
+;
+; Inputs      : any_format - date/time in any of the acceptable CDS
+;                            time formats -- for acceptable formats see file
 ;                            aaareadme.txt.
-;               
+;
 ; Opt. Inputs : None
-;               
+;
 ; Outputs     : Function returns CDS UTC time structure.
-;               
+;
 ; Opt. Outputs: None
-;               
+;
 ; Keywords    : EXTERNAL  = Create output in external format
 ;               CCSDS     = Create string output in CCSDS format
 ;               ECS       = Create string output in ECS format
@@ -68,11 +68,11 @@
 ;
 ;		QUIET	  = If set, then no informational messages are printed.
 ;
-;               ERRMSG    = If defined and passed, then any error messages 
-;                           will be returned to the user in this parameter 
+;               ERRMSG    = If defined and passed, then any error messages
+;                           will be returned to the user in this parameter
 ;                           rather than being printed to the screen.  If no
 ;                           errors are encountered, then a null string is
-;                           returned.  In order to use this feature, the 
+;                           returned.  In order to use this feature, the
 ;                           string ERRMSG must be defined first, e.g.,
 ;
 ;                                ERRMSG = ''
@@ -85,18 +85,18 @@
 ; Calls       : DATATYPE, INT2UTC, STR2UTC
 ;
 ; Common      : None
-;               
+;
 ; Restrictions: Conversions between TAI and UTC are not valid for dates prior
 ;               to 1 January 1972.
-;               
+;
 ; Side effects: None
-;               
+;
 ; Category    : Util, time
-;               
+;
 ; Prev. Hist. : None
 ;
 ; Written     : C D Pike, RAL, 16-May-94
-;               
+;
 ; Modified    :	Version 1, C D Pike, RAL, 16-May-94
 ;		Version 2, William Thompson, GSFC, 14 November 1994
 ;			Changed .DAY to .MJD
@@ -143,7 +143,7 @@
 ;                       Preserve dimensionality
 ;               Version 20, 12-Mar-2007, WTT, correct bug in Yohkoh support
 ;               Version 21, 27-Sep-2007, WTT, let UTC2STR handle strings
-;-            
+;-
 ;
 function anytim2utc, dt, external=external, ccsds=ccsds, ecs=ecs, VMS=VMS, $
 	STIME=STIME, errmsg=errmsg, QUIET=QUIET, _EXTRA=_EXTRA
@@ -256,7 +256,7 @@ endcase
 if message ne '' then goto, handle_error
 
 if n_elements(errmsg) ne 0 then errmsg = ''
- 
+
 if keyword_set(external) or keyword_set(ccsds) or keyword_set(ecs) or $
 		keyword_set(vms) or keyword_set(stime) then begin
     utc = int2utc(utc,ccsds=ccsds,ecs=ecs,vms=vms,stime=stime,	$

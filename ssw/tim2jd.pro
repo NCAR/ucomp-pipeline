@@ -26,10 +26,10 @@
 ; whatsoever.  Other limitations apply as described in the file disclaimer.txt.
 ;-
 ;-------------------------------------------------------------
- 
+
 function tim2jd, item, help=help
 
-time_ex = anytim2ex(item) 
+time_ex = anytim2ex(item)
 msec = double(gt_time(anytim2ints(item)))
 
 y = long(time_ex(6,*)) + 1900
@@ -38,7 +38,6 @@ d = long(time_ex(4,*))
 jd = 367*y-7*(y+(m+9)/12)/4-3*((y+(m-9)/7)/100+1)/4 $
      +275*m/9+d+1721029
 jd = jd - 0.5d0 + msec/86400000d	; Dunno why .5 days is subtracted
- 
+
 return, reform(jd)
 end
-

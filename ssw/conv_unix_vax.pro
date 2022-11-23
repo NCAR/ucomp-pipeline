@@ -3,7 +3,7 @@ pro CONV_UNIX_VAX, variable, SOURCE_ARCH=source
 ; NAME:
 ;      CONV_UNIX_VAX
 ; PURPOSE:
-;      To convert Unix IDL data types to Vax IDL data types. 
+;      To convert Unix IDL data types to Vax IDL data types.
 ; EXPLANATION:
 ;      CONV_UNIX_VAX assumes the Unix IDL data type is IEEE standard in either
 ;      big-endian or little-endian format.
@@ -14,9 +14,9 @@ pro CONV_UNIX_VAX, variable, SOURCE_ARCH=source
 ; PARAMETERS:
 ;      variable - The data variable to be converted.  This may be a scalar
 ;            or an array.  Valid datatypes are integer, longword,
-;            floating point, and double precision. The result of the 
+;            floating point, and double precision. The result of the
 ;            conversion is passed back in the original variable.
-; OPTIONAL INPUT KEYWORD:  
+; OPTIONAL INPUT KEYWORD:
 ;      SOURCE_ARCH = name (string) of source architecture
 ;            if using this function on a VAX, otherwise
 ;            !VERSION.ARCH is used to determine the conversion.
@@ -48,7 +48,7 @@ pro CONV_UNIX_VAX, variable, SOURCE_ARCH=source
 ;       If since V5.1 then VMS is always little endian    June 1998
 ;       Convert to IDL V5.0   W. Landsman                 June 1998
 ;       Add x86_64 archicture (64 bit), Kim Tolbert       25-Sep-2010
-;-                                   
+;-
 ;****************************************************************************
 ;
 ;  Check to see if VARIABLE is defined.
@@ -63,7 +63,7 @@ pro CONV_UNIX_VAX, variable, SOURCE_ARCH=source
       retall
  endif
 
-if N_elements( source ) EQ 1 then arch = source  else arch = !VERSION.ARCH 
+if N_elements( source ) EQ 1 then arch = source  else arch = !VERSION.ARCH
  little_endian = 0
 
 CASE arch OF
@@ -108,10 +108,10 @@ CASE arch OF
       swap_ints = 1
       swap_float = 1
  endelse
- 
+
 var_chars = size(variable)
 var_type = var_chars[var_chars[0]+1]
- 
+
 ;
 case var_type of
   1: return                             ; byte
@@ -135,7 +135,7 @@ case var_type of
         if (i[0] ne -1) then biased[i] = byte(biased[i] + 2)
         byte_eq[i1] = byte(byte_eq[i1] AND '80'X) OR byte(biased/2)
         byte_eq[i2] = byte(byte_eq[i2] AND '7F'X) OR byte(biased*128)
-    ; 
+    ;
     ; swap bytes
     ;
         byte_elems = byte_elems + 3L
@@ -223,7 +223,7 @@ case var_type of
        conv_unix_vax,ivalue, SOURCE_ARCH = source
        variable = complex(rvalue,ivalue)
        end
- 
+
   7: return                     ; string
 
   else: begin                   ; unknown

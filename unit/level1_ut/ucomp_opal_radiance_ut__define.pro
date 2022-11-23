@@ -5,7 +5,7 @@ function ucomp_opal_radiance_ut::init, _extra=e
 
   if (~self->MGutTestCase::init(_extra=e)) then return, 0
 
-  
+
   self->addTestingRoutine, ['ucomp_opal_radiance'], $
                            /is_function
 

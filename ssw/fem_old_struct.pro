@@ -1,7 +1,7 @@
 pro fem_old_struct, FEM_9001_Data = FEM_9001_Data,  $
                      FEM_9002_Data = FEM_9002_Data
-   
-   
+
+
 ;+
 ;       NAME:
 ;               FEM_OLD_STRUCT
@@ -15,8 +15,8 @@ pro fem_old_struct, FEM_9001_Data = FEM_9001_Data,  $
 ;               Written 22-Nov-91 by M.Morrison
 ;
 ;-
-   
-   
+
+
 FEM_9001_Data = { FEM_9001_Data_Rec,              $
       index_version : FIX('9001'x),  $       ;
                                              ;
@@ -37,7 +37,7 @@ FEM_9001_Data = { FEM_9001_Data_Rec,              $
                                              ;       (i) = can be three station contacts in one day
       en_station: INTARR(3),  $              ; 16- End of station contact in seconds from S/C day
                                              ;       (i) = can be three station contacts in one day
-      st$station: BYTARR(3),  $              ; 20- Station 
+      st$station: BYTARR(3),  $              ; 20- Station
                                              ;               'U' = KSC
                                              ;               'C' = Canberra
                                              ;               'M' = Madrid
@@ -70,9 +70,9 @@ FEM_9001_Data = { FEM_9001_Data_Rec,              $
                                              ;     broken across files.
                                              ;
       spare: BYTARR(1) }                     ; 49- Spare
-   
-   
-   
+
+
+
 FEM_9002_Data = { FEM_9002_Data_Rec,              $
       path: FIX(0),  $                       ; 00- The SIRIUS mainframe path ID (only the last
                                              ;     4 characters since the date is the first
@@ -90,7 +90,7 @@ FEM_9002_Data = { FEM_9002_Data_Rec,              $
                                              ;       (i) = can be three station contacts in one day
       en_station: INTARR(3),  $              ; 16- End of station contact in seconds from S/C day
                                              ;       (i) = can be three station contacts in one day
-      st$station: BYTARR(3),  $              ; 20- Station 
+      st$station: BYTARR(3),  $              ; 20- Station
                                              ;               'U' = KSC
                                              ;               'C' = Canberra
                                              ;               'M' = Madrid
@@ -123,9 +123,9 @@ FEM_9002_Data = { FEM_9002_Data_Rec,              $
                                              ;     broken across files.
                                              ;
       spare: BYTARR(1) }                     ; 49- Spare
-   
-   
-   
-  
-  
+
+
+
+
+
 end

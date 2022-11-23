@@ -9,7 +9,7 @@ function timstr2ex, dattim_str, qtest=qtest, mdy=mdy
 ;	tarr = timstr2ex('4-oct-91 15:22')
 ;	tarr = timstr2ex(!stime)
 ;INPUT:
-;	dattim_str -	Character string 
+;	dattim_str -	Character string
 ;				 4-OCT-91  14:20
 ;				 4-OCT-91 4:20:00
 ;				 4-OCT-91 4:20:00.10
@@ -21,7 +21,7 @@ function timstr2ex, dattim_str, qtest=qtest, mdy=mdy
 ;				 12/25/92	NEED "MDY" SWITCH
 ;			If the year is missing, it will assume the current year
 ;OPTIONAL KEYWORD INPUT:
-;	mdy	- When using the "/" notation for the date, and having the 
+;	mdy	- When using the "/" notation for the date, and having the
 ;		  order MM/DD/YY, then it is necessary to use this switch.
 ;OUTPUT:
 ;       returns	-       7 ELEMENT INTEGER*2 ARRAY CONTAINING, IN ORDER,
@@ -44,7 +44,7 @@ function timstr2ex, dattim_str, qtest=qtest, mdy=mdy
 ;
 ;HISTORY:
 ;	Written Sep-91 by M.Morrison
-;	15-Nov-91 (MDM) - Modified to break the string into two parts 
+;	15-Nov-91 (MDM) - Modified to break the string into two parts
 ;			  before tackling the decompression.  That fixed
 ;			  some problems that were found.
 ;	 7-Jun-92 (MDM) - Modified to accept an array of times
@@ -102,7 +102,7 @@ for j=0,nn-1 do begin
 	    temp = str2arr(temp_date, delim = '/')
 	    date = fix(temp(0))
 	    if (temp(0) ge 32) then begin
-		year = temp(0) 
+		year = temp(0)
 		idate = 2
 	    end else begin
 		year = temp(2)		;default
@@ -148,7 +148,7 @@ for j=0,nn-1 do begin
     end else begin
 	temp = str2arr(temp_time, delim = ':')
 	n = n_elements(temp)
-	
+
 	for i=0,n-1 do daytim(i) = fix(temp(i))
 
 	;if (n eq 3) then daytim(3) = (float(temp(2)) - fix(temp(2)) )*1000

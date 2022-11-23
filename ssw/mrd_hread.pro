@@ -1,29 +1,29 @@
 pro mrd_hread, unit, header, status, SILENT = silent, FIRSTBLOCK = firstblock, $
     ERRMSG = errmsg,SKIPDATA=skipdata,NO_BADHEADER=no_badheader
 ;+
-; NAME: 
+; NAME:
 ;     MRD_HREAD
 ;
-; PURPOSE: 
+; PURPOSE:
 ;     Reads a FITS header from an opened disk file or Unix pipe
 ; EXPLANATION:
 ;     Like FXHREAD but also works with compressed Unix files
 ;
-; CALLING SEQUENCE: 
+; CALLING SEQUENCE:
 ;     MRD_HREAD, UNIT, HEADER  [, STATUS, /SILENT, ERRMSG =, /FIRSTBLOCK ]
-; INPUTS: 
+; INPUTS:
 ;     UNIT    = Logical unit number of an open FITS file
-; OUTPUTS: 
+; OUTPUTS:
 ;     HEADER  = String array containing the FITS header.
-; OPT. OUTPUTS: 
+; OPT. OUTPUTS:
 ;     STATUS  = Condition code giving the status of the read.  Normally, this
 ;                 is zero, but is set to -1 if an error occurs, or if the
 ;                 first byte of the header is zero (ASCII null).
 ; OPTIONAL KEYWORD INPUT:
-;      /FIRSTBLOCK - If set, then only the first block (36 lines or less) of 
+;      /FIRSTBLOCK - If set, then only the first block (36 lines or less) of
 ;                the FITS header are read into the output variable.   If only
 ;                size information (e.g. BITPIX, NAXIS) is needed from the
-;                header, then the use of this keyword can save time.  The 
+;                header, then the use of this keyword can save time.  The
 ;                file pointer is still positioned at the end of the header,
 ;                even if the /FIRSTBLOCK keyword is supplied.
 ;      /SILENT - If set, then warning messages about any invalid characters in
@@ -40,10 +40,10 @@ pro mrd_hread, unit, header, status, SILENT = silent, FIRSTBLOCK = firstblock, $
 ;                 returned to the user in this parameter rather than
 ;                 depending on the MESSAGE routine in IDL.  If no errors are
 ;                 encountered, then a null string is returned.
-; RESTRICTIONS: 
+; RESTRICTIONS:
 ;      The file must already be positioned at the start of the header.  It
 ;      must be a proper FITS file.
-; SIDE EFFECTS: 
+; SIDE EFFECTS:
 ;       The file ends by being positioned at the end of the FITS header, unless
 ;       an error occurs.
 ; REVISION HISTORY:
@@ -67,12 +67,12 @@ pro mrd_hread, unit, header, status, SILENT = silent, FIRSTBLOCK = firstblock, $
   errmsg = ''
 
   block = string(replicate(32b, 80, 36))
-		
+
   Nend = 0                  ;Signal if 'END     ' statement is found
   nblock = 0
 
   while Nend EQ 0 do begin
-		
+
 ; Shouldn't get eof in middle of header.
        if eof(unit) then begin
                 errmsg = 'EOF encountered in middle of FITS header'
@@ -81,12 +81,12 @@ pro mrd_hread, unit, header, status, SILENT = silent, FIRSTBLOCK = firstblock, $
 		status = -1
 		return
 		endif
-		
+
 	on_ioerror, error_return
 	readu, unit, block
 	on_ioerror, null
 
-; Check that there aren't improper null characters in strings that are causing 
+; Check that there aren't improper null characters in strings that are causing
 ; them to be truncated.   Issue a warning but continue if problems are
 ; found (unless /NO_BADHEADER is set)
 
@@ -98,7 +98,7 @@ pro mrd_hread, unit, header, status, SILENT = silent, FIRSTBLOCK = firstblock, $
                   status=-1 & errmsg=warning & free_lun,unit & return
                 endif
 		block[w] = string(replicate(32b, 80))
-	endif	       
+	endif
 	w = where(strmid(block, 0, 8) eq 'END     ', Nend)
         if nblock EQ 0 then begin
                header = Nend GT 0 ?  block[ 0:w[0] ] : block
@@ -106,30 +106,29 @@ pro mrd_hread, unit, header, status, SILENT = silent, FIRSTBLOCK = firstblock, $
         endif else $
 	       if ~keyword_set(firstblock) then $
 	         header = Nend GT 0 ? [header,block[0:w[0]]] : [header, block]
-			
+
 	endwhile
-		
-        if keyword_set(skipdata) then begin 
+
+        if keyword_set(skipdata) then begin
                 bitpix = fxpar(header,'bitpix')
                 naxis  = fxpar(header,'naxis')
-                gcount = fxpar(header,'gcount') 
+                gcount = fxpar(header,'gcount')
                 if gcount eq 0 then gcount = 1
                 pcount = fxpar(header,'pcount')
-               
-                if naxis gt 0 then begin 
+
+                if naxis gt 0 then begin
                         dims = fxpar(header,'naxis*')           ;read dimensions
   			ndata = product(dims,/integer)
                 endif else ndata = 0
-                
+
                 nbytes = long64(abs(bitpix) / 8) * gcount * (pcount + ndata)
 	        mrd_skip, unit, nbytes
-	endif	
+	endif
 	status = 0
 	return
 error_return:
         status = -1
 	errmsg = 'END Statement not found in FITS header'
-        if printerr then message, 'ERROR ' + errmsg	
+        if printerr then message, 'ERROR ' + errmsg
 	return
 end
-			

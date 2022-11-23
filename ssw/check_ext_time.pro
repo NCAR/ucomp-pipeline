@@ -7,7 +7,7 @@
 ; Purpose     :	Checks CDS external time values for logical consistency.
 ;
 ; Explanation :	This procedure checks time values in CDS external format to
-;		ensure that the date-time values have valid values.  If a 
+;		ensure that the date-time values have valid values.  If a
 ;		value is found inaccurate, then these values are repaired
 ;		with CHECK_INT_TIME.
 ;
@@ -33,11 +33,11 @@
 ;
 ; Opt. Outputs:	None.
 ;
-; Keywords    :	ERRMSG	= If defined and passed, then any error messages 
-;			  will be returned to the user in this parameter 
+; Keywords    :	ERRMSG	= If defined and passed, then any error messages
+;			  will be returned to the user in this parameter
 ;			  rather than using IDL's MESSAGE utility.  If no
 ;			  errors are encountered, then a null string is
-;			  returned.  In order to use this feature, the 
+;			  returned.  In order to use this feature, the
 ;			  string ERRMSG must be defined first, e.g.,
 ;
 ;				ERRMSG = ''

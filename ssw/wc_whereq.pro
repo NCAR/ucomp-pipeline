@@ -4,9 +4,9 @@ function wc_whereq, strarr, pattern, count, case_ignore=case_ignore
 ; Name: wc_whereq
 ;
 ; Purpose: find strarry elements  matching pattern w/imbeded question marks
-;   
+;
 ; History:
-;   30-jun-1995 (SLF) 
+;   30-jun-1995 (SLF)
 ;-
 ;
 ; verify string length=pattern lenght

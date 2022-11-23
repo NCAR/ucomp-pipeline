@@ -77,7 +77,7 @@ function ucomp_validate_datatype_ut::init, _extra=e
 
   if (~self->MGutTestCase::init(_extra=e)) then return, 0
 
-  
+
   self->addTestingRoutine, ['ucomp_validate_datatype'], $
                            /is_function
 

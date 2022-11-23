@@ -51,7 +51,7 @@ pro rd_fem, input1, input2, fem_data, indir=indir, status=status, $
 ;			 1 = cannot find the file
 ;			 2 = cannot find data in the time period
 ;			-1 = found data, but had to go outside of the requested
-;			     period (only true if /NEAREST is used).  
+;			     period (only true if /NEAREST is used).
 ;HISTORY:
 ;	Written Jun-92 by M.Morrison
 ;	 5-Apr-93 (MDM) - Modified to use RD_WEEK_FILE

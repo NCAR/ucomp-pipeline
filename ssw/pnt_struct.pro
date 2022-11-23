@@ -1,6 +1,6 @@
 pro pnt_struct, PNT_Data = PNT_Data
-   
-   
+
+
 ;+
 ;       NAME:
 ;               PNT_STRUCT
@@ -11,11 +11,11 @@ pro pnt_struct, PNT_Data = PNT_Data
 ;       CALLING SEQUENCE:
 ;               PNT_STRUCT
 ;       HISTORY:
-;               written by Mons Morrison, Feb 92. 
+;               written by Mons Morrison, Feb 92.
 ;
 ;-
-   
-   
+
+
 PNT_Data = { PNT_Data_Rec,              $
                                              ;NOTE: See ATT_STRUCT for details on definitions.
                                              ;
@@ -44,9 +44,9 @@ PNT_Data = { PNT_Data_Rec,              $
       ads: BYTE(0),  $                       ; 45- b0 - Set if ADS results were inserted into the record
                                              ;
       spare: BYTARR(2) }                     ; 46-
-   
-   
-   
-  
-  
+
+
+
+
+
 end

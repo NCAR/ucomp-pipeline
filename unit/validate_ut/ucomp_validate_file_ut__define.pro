@@ -5,7 +5,7 @@ function ucomp_validate_file_ut::init, _extra=e
 
   if (~self->MGutTestCase::init(_extra=e)) then return, 0
 
-  
+
   self->addTestingRoutine, ['ucomp_validate_file', $
                             'ucomp_validate_file_checkdata', $
                             'ucomp_validate_file_checkheader', $

@@ -21,8 +21,8 @@ pro fits_read,file_or_fcb,data,header,group_par,noscale=noscale, $
 ;               FITS_OPEN and close the file with FITS_CLOSE before exiting.
 ;               When multiple extensions are to be read from the file, it is
 ;               more efficient for the user to call FITS_OPEN and leave the
-;               file open until all extensions are read. FPACK 
-;               ( http://heasarc.gsfc.nasa.gov/fitsio/fpack/ ) compressed FITS 
+;               file open until all extensions are read. FPACK
+;               ( http://heasarc.gsfc.nasa.gov/fitsio/fpack/ ) compressed FITS
 ;               files can be read provided that the FPACK software is installed.
 ;               Both Gzip compressed (.gz) and Unix compressed (*.Z) files can
 ;               be read, although there is a performance penalty..
@@ -37,8 +37,8 @@ pro fits_read,file_or_fcb,data,header,group_par,noscale=noscale, $
 ;               if desired.  If /DATA_ONLY is specified, no scaling is done.
 ;       HEADER - FITS Header.  The STScI inheritance convention is recognized
 ;               http://fits.gsfc.nasa.gov/registry/inherit/fits_inheritance.txt
-;               If an extension is read, and the INHERIT keyword exists with a 
-;               value of T, and the /NO_PDU keyword keyword is not supplied, 
+;               If an extension is read, and the INHERIT keyword exists with a
+;               value of T, and the /NO_PDU keyword keyword is not supplied,
 ;               then the primary data unit header and the extension header will
 ;                be combined.  The header will have the form:
 ;
@@ -51,11 +51,11 @@ pro fits_read,file_or_fcb,data,header,group_par,noscale=noscale, $
 ;                       <extension header less required keywords that were
 ;                               placed at the beginning of the header.
 ;                       END
-;               
+;
 ;               The structure of the header is such that if a keyword is
 ;               duplicated in both the PDU and extension headers, routine
 ;               SXPAR will print a warning and return the extension value of
-;               the keyword. 
+;               the keyword.
 ;
 ;       GROUP_PAR - Group parameter block for FITS random groups format files
 ;               or the heap area for variable length binary tables.
@@ -69,20 +69,20 @@ pro fits_read,file_or_fcb,data,header,group_par,noscale=noscale, $
 ;       /HEADER_ONLY: set to read the header only.
 ;       /DATA_ONLY: set to read the data only.  If set, if any scale factors
 ;               are present (BSCALE or BZERO), they will not be applied.
-;       /NO_PDU: By default, FITS_READ will add the primary data unit header 
-;               keywords to the output header, *if* the header includes 
+;       /NO_PDU: By default, FITS_READ will add the primary data unit header
+;               keywords to the output header, *if* the header includes
 ;               INHERIT = T.   Set /NO_PDU to never append the primary header.
 ;       /NO_ABORT: Set to return to calling program instead of a RETALL
 ;               when an I/O error is encountered.  If set, the routine will
 ;               return  a non-null string (containing the error message) in the
-;               keyword MESSAGE.    (For backward compatibility, the obsolete 
-;               system variable !ERR is also set to -1 in case of an error.)   
+;               keyword MESSAGE.    (For backward compatibility, the obsolete
+;               system variable !ERR is also set to -1 in case of an error.)
 ;               If /NO_ABORT not set, then FITS_READ will print the message and
 ;               issue a RETALL
 ;       /NO_UNSIGNED - By default, if  the header indicates an unsigned integer
-;              (BITPIX = 16, BZERO=2^15, BSCALE=1) then FITS_READ will output 
+;              (BITPIX = 16, BZERO=2^15, BSCALE=1) then FITS_READ will output
 ;               an IDL unsigned integer data type (UINT).   But if /NO_UNSIGNED
-;               is set, then the data is converted to type LONG.  
+;               is set, then the data is converted to type LONG.
 ;       /PDU - If set, then always add the primary data unit header keywords
 ;              to the output header, even if the INHERIT=T keyword is not found
 ;              This was the default behavior of FITS_READ prior to April 2007
@@ -97,9 +97,9 @@ pro fits_read,file_or_fcb,data,header,group_par,noscale=noscale, $
 ;       LAST - set this keyword to only read a portion of the data.  It gives
 ;               the last word number of the data to read
 ;       GROUP - group number to read for GCOUNT>1.  (Default=0, the first group)
-;       
+;
 ; OUTPUT KEYWORD PARAMETERS:
-;       ENUM - Output extension number that was read.  
+;       ENUM - Output extension number that was read.
 ;       MESSAGE = value: Output error message
 ;
 ; NOTES:
@@ -134,9 +134,9 @@ pro fits_read,file_or_fcb,data,header,group_par,noscale=noscale, $
 ;               keywords are present.  The output image will be:
 ;                       image = replicate(PIXVALUE,NPIX1,NPIX2)
 ;
-;      FPACK compressed files are always closed and reopened when exiting 
-;      FITS_READ so that the pointer is set to the beginning of the file. (Since 
-;      FPACK files are opened with a bidirectional pipe rather than OPEN, one 
+;      FPACK compressed files are always closed and reopened when exiting
+;      FITS_READ so that the pointer is set to the beginning of the file. (Since
+;      FPACK files are opened with a bidirectional pipe rather than OPEN, one
 ;      cannot use POINT_LUN to move to a specified position in the file.)
 ;
 ; EXAMPLES:
@@ -151,7 +151,7 @@ pro fits_read,file_or_fcb,data,header,group_par,noscale=noscale, $
 ;               FITS_READ, fcb,data1, header2, exten_no = 2
 ;               FITS_READ, fcb,data3, header3, extname='flux', extver=4
 ;               FITS_CLOSE, fcb
-;       
+;
 ;       Read the sixth image in a data cube for the fourth extension.
 ;
 ;               FITS_OPEN, 'myfile.fits', fcb
@@ -169,9 +169,9 @@ pro fits_read,file_or_fcb,data,header,group_par,noscale=noscale, $
 ;       SXADDPAR, SXDELPAR, SXPAR()
 ; WARNINGS:
 ;       In Sep 2006, FITS_OPEN was modified to open FITS files using the
-;       /SWAP_IF_LITTLE_ENDIAN keyword to OPEN, so that subsequent routines 
+;       /SWAP_IF_LITTLE_ENDIAN keyword to OPEN, so that subsequent routines
 ;       (FITS_READ, FITS_WRITE) did not require any byte swapping.    An error
-;       may result if an pre-Sep 2006 version of FITS_OPEN is used with a 
+;       may result if an pre-Sep 2006 version of FITS_OPEN is used with a
 ;       post Sep 2006 version of FITS_READ, FITS_WRITE or MODFITS.
 ; HISTORY:
 ;       Written by:     D. Lindler, August 1995
@@ -313,7 +313,7 @@ pro fits_read,file_or_fcb,data,header,group_par,noscale=noscale, $
         h = bytarr(80,36,/nozero)
         nbytes_in_file = fcb.nbytes
         position = fcb.start_header[enum]
-	
+
         if fcompress then mrd_skip,fcb.unit,position else $
 	                 point_lun,fcb.unit,position
         first_block = 1         ; first block in header flag
@@ -353,17 +353,17 @@ pro fits_read,file_or_fcb,data,header,group_par,noscale=noscale, $
 ;       ! Primary data unit header keywords
 ;       ! BEGIN EXTENSION HEADER -------------------------------------
 ;       ! Extension header keywords
-;       ! END           
+;       ! END
 ;
 ;
 ; add Primary Data Unit header to it portion of the header to it, unless the
 ; NO_PDU keyword is set, or the INHERIT keyword is not found or set to false
 ;
-	       
+
 	if no_pdu EQ 0 then no_pdu = 1 - (sxpar(header,'INHERIT') > 0)
         if pdu then no_pdu = 0
         if (no_pdu eq 0) && (enum gt 0) then begin
-	
+
 ;
 ; delete required keywords
 ;
@@ -372,7 +372,7 @@ pro fits_read,file_or_fcb,data,header,group_par,noscale=noscale, $
                          'NAXIS6','NAXIS7','NAXIS8','EXTEND', $
                          'PCOUNT','GCOUNT','GROUPS', $
                          'XTENSION']
-	
+
 
 ; create required keywords
 ;
@@ -397,7 +397,7 @@ pro fits_read,file_or_fcb,data,header,group_par,noscale=noscale, $
        n0 = where(strcmp(hreq,'END     ',8)) & n0=n0[0]
             hpdu = fcb.hmain
             n1 = n_elements(hpdu)
-            if n1 gt 1 then begin               
+            if n1 gt 1 then begin
                 hreq = [hreq[0:n0-1], $
                         'BEGIN MAIN HEADER ---------------------------------', $
                         hpdu[0:n1-2], $
@@ -466,7 +466,7 @@ read_data:
                         message='INVALID group number specified'
                         goto,error_exit
                 end
-		skip += long64(group) * nbytes_per_group 
+		skip += long64(group) * nbytes_per_group
                 position += skip
         end
 ;
@@ -476,10 +476,10 @@ read_data:
            (last eq 0) then begin
             if N_params() gt 3 then begin
                 group_par = make_array( dim = [pcount], type = idl_type, /nozero)
-               
+
              if fcompress then mrd_skip,fcb.unit,skip else $
 	                  point_lun,fcb.unit,position
- 
+
                 readu,fcb.unit,group_par
             endif
 	    skip  =  long64(pcount) * bytes_per_word
@@ -507,7 +507,7 @@ read_data:
                 if ndata eq 0 then begin
                         data = 0
                         goto,done
-                endif 
+                endif
                 if naxis gt 8 then begin
                         message = 'Maximum value of NAXIS allowed is 8'
                         goto,error_exit
@@ -522,15 +522,15 @@ read_data:
         readu,fcb.unit,data
 	if fcompress then swap_endian_inplace,data,/swap_if_little
         if ~keyword_set(No_Unsigned) && (~data_only) then begin
-        if unsgn_int then begin 
-                data =  uint(data) - uint(32768) 
-        endif else if unsgn_lng then begin 
+        if unsgn_int then begin
+                data =  uint(data) - uint(32768)
+        endif else if unsgn_lng then begin
                 data = ulong(data) - ulong(2147483648)
         endif
 	endif
 ;
 ; scale data if header was read and first and last not used.   Do a special
-; check of an unsigned integer (BZERO = 2^15) or unsigned long (BZERO = 2^31) 
+; check of an unsigned integer (BZERO = 2^15) or unsigned long (BZERO = 2^31)
 ;
         if (data_only eq 0) && (last eq 0) && (noscale eq 0) then begin
 
@@ -544,16 +544,16 @@ read_data:
 ;
 ; done
 ;
-done:   
-        if fcompress then begin 
-	        free_lun,fcb.unit 
+done:
+        if fcompress then begin
+	        free_lun,fcb.unit
 		ff = strmid(fcb.filename,1,strlen(fcb.filename)-2)
-;Rewind the file to the beginning, if it might be used again			
-		if fcbtype NE 7 then begin 
-		 spawn,ff,unit=unit,/sh, stderr = stderr		
+;Rewind the file to the beginning, if it might be used again
+		if fcbtype NE 7 then begin
+		 spawn,ff,unit=unit,/sh, stderr = stderr
 		 fcb.unit = unit
 		endif
-        endif else $		
+        endif else $
         if fcbtype eq 7 then fits_close,fcb else file_or_fcb.last_extension=enum
         !err = 1
         return

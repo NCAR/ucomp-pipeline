@@ -44,5 +44,3 @@ if dt ne 0 then ndim = s[0] else ndim=-1
 n_elem = n_elements(val)
 return, dt
 end
-
-

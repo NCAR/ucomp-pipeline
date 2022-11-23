@@ -6,7 +6,7 @@ function ucomp_check_sci_quality_ut::init, _extra=e
   if (~self->MGutTestCase::init(_extra=e)) then return, 0
 
   self->addTestingRoutine, ['ucomp_check_sci_quality']
-  
+
 
   return, 1
 end

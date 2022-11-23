@@ -12,7 +12,7 @@ function file_stat, files, exist=exist, size=size
 ;
 ; Syntax      :	Result = FILE_STAT( FILES )
 ;
-; Examples    :	
+; Examples    :
 ;
 ; Inputs      :	FILES	= List of files to check.
 ;
@@ -55,7 +55,7 @@ on_ioerror,err
       template(i)=fstat(lun)
       free_lun,lun
       goto,ok
-err:       
+err:
    on_ioerror,null
 ok:
    endfor
@@ -64,7 +64,7 @@ endif else begin
    return,-1
 endelse
 
-case 1 of 
+case 1 of
    keyword_set(exist): retval=template.name ne ''
    keyword_set(size):  retval=template.size
    else: retval=template.name ne ''		; default to /exist

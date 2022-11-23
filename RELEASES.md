@@ -276,3 +276,5 @@
 0.2.77 [Nov 20, 2022]
   fix for handling rolling background plot with only a single value
   skipping trying to make movies with only a single frame
+0.2.78 [Nov 23, 2022]
+  new display ranges for new lines

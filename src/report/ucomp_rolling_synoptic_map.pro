@@ -5,7 +5,7 @@
 ;
 ; :Params:
 ;   wave_region : in, required, type=string
-;     wave region to produce a synoptic map for 
+;     wave region to produce a synoptic map for
 ;   name : in, required, type=string
 ;     human readable name for this type of synoptic plot
 ;   flag : in, required, type=string

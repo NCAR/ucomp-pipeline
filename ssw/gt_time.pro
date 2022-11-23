@@ -17,7 +17,7 @@ function gt_time, item0, header=header, string=string, spaces=spaces, msec=msec,
 ;	The input can be a structure or a scalar.  The structure can
 ;	be the index, or roadmap, or observing log.
 ;INPUT:
-;	item	- A structure or scalar.  It can be an array.  
+;	item	- A structure or scalar.  It can be an array.
 ;				(or)
 ;                The "standard" 7 element external representation
 ;                of time (HH,MM,SS,MSEC,DD,MM,YY)
@@ -25,7 +25,7 @@ function gt_time, item0, header=header, string=string, spaces=spaces, msec=msec,
 ;	string	- If present, return the string mnemonic (long notation)
 ;	spaces	- If present, place that many spaces before the output
 ;		  string.
-;	msec	- If present, also print the millisec in the formatted 
+;	msec	- If present, also print the millisec in the formatted
 ;		  output.
 ;	nolead0	- If present, do not include a leading "0" on the hour string
 ;		  for hours less than 10. (ie: return 9:00:00 instead of 09:00:00)
@@ -74,7 +74,7 @@ end
 ;
 if (keyword_set(string) or keyword_set(spaces)) then begin
     if (not qstruct) then tarr = item else $		;they passed in the 7-element time array
-		int2ex, [out], intarr(n_elements(out))+1, tarr	;do not want to mess with "day" so convert to "external" 
+		int2ex, [out], intarr(n_elements(out))+1, tarr	;do not want to mess with "day" so convert to "external"
                 ;have to change out to an array because of trouble with int2ex
     ;
     siz = size(tarr)

@@ -6,7 +6,7 @@ function ucomp_write_l1_movies_ut::init, _extra=e
   if (~self->MGutTestCase::init(_extra=e)) then return, 0
 
   self->addTestingRoutine, ['ucomp_write_l1_movies']
-  
+
 
   return, 1
 end

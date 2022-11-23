@@ -7,7 +7,7 @@ pro box_message, message_array, _extra=_extra, btext=btext, quiet=quiet, $
 ;
 ;   Input Parameter:
 ;      message_array - string or string array to print
-;  
+;
 ;   Keyword Paramters:
 ;      _extra - keywords accepted by 'strjustify.pro' (/left,/right,/center)
 ;     btext (output) - generated boxed text  (see strjustify,/box)
@@ -26,7 +26,7 @@ pro box_message, message_array, _extra=_extra, btext=btext, quiet=quiet, $
 ;     | Your Message         |
 ;     | HERE                 |
 ;      ----------------------
-;   
+;
 ;   IDL> box_message
 ;   -----------------------------------------
 ;  | User Name: freeland                     |
@@ -40,16 +40,16 @@ pro box_message, message_array, _extra=_extra, btext=btext, quiet=quiet, $
 ;  | Host OS    : OSF                        |
 ;  | Host ARCH  : alpha                      |
 ;   -----------------------------------------
-;   
+;
 ;   Method: Just call "prstr,strjustify(message_array,/box)),/nomore"
 ;            (nomore switch used to allow background/cron processing)
 ;           or "pr_status" if no message supplied (system info message)
-;  
+;
 ;   History:
 ;      7-november-1997 - S.L.Freeland - finally tired of typing this
-;                        common 2-routine call combination.  
-;            
-if n_elements(nbox) eq 0 then nbox=1 
+;                        common 2-routine call combination.
+;
+if n_elements(nbox) eq 0 then nbox=1
 case 1 of
    data_chk(message_array,/string): $
       btext=strjustify(message_array,/box,_extra=_extra)

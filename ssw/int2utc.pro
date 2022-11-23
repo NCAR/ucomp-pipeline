@@ -107,9 +107,9 @@
 ;
 ;		The following keyword is always valid.
 ;
-;		ERRMSG	  = If defined and passed, then any error messages 
-;			    will be returned to the user in this parameter 
-;			    rather than being handled by the IDL MESSAGE 
+;		ERRMSG	  = If defined and passed, then any error messages
+;			    will be returned to the user in this parameter
+;			    rather than being handled by the IDL MESSAGE
 ;			    utility.  If no errors are encountered, then a null
 ;			    string is returned.  In order to use this feature,
 ;			    the string ERRMSG must be defined first, e.g.,
@@ -152,7 +152,7 @@
 ;		Version 6, Donald G. Luttermoser, GSFC/ARC, 30 January 1995
 ;			Added ERRMSG keyword to internally called procedures.
 ;			Made the error handling procedure more robust.  Note
-;			that this routine accepts both scalar and vector 
+;			that this routine accepts both scalar and vector
 ;			input.
 ;		Version 7, William Thompson, GSFC, 14 March 1995
 ;			Added keywords VMS, STIME, UPPERCASE

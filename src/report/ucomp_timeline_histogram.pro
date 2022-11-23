@@ -29,7 +29,7 @@ pro ucomp_timeline_histogram, output_filename, $
   sums = total(histograms, 2, /preserve_type)
   _ymax = mg_default(ymax, 0L)
   _ymax >= max(total(histograms, 1, /preserve_type))
-  
+
   mg_stacked_histplot, ((bin_size / 60.0) * findgen(n_bins) + _start_time), $
                        histograms, $
                        axis_color='000000'x, $
@@ -45,7 +45,7 @@ pro ucomp_timeline_histogram, output_filename, $
         xrange=[ut_start_time, ut_end_time], $
         xtitle='Time (UT)', $
         xtickname=strtrim((lindgen(n_bins / 4 + 1L) + ut_start_time) mod 24, 2)
-  
+
   square = mg_usersym(/square, /fill)
   legend_position = [0.7825, 0.90 - 0.1 * n_types, 0.9575, 0.90]
 
@@ -58,7 +58,7 @@ pro ucomp_timeline_histogram, output_filename, $
              gap=0.075, $
              line_bump=0.2125, $
              position=legend_position
-  
+
   im = tvrd(true=1)
   tvlct, original_rgb
   set_plot, original_device

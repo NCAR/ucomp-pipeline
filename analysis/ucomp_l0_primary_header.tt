@@ -31,7 +31,7 @@ COMMENT O1 stuff
 O1ID    = 'ID'                 / unique ID of objective lens
 O1FOCUS = 'ID'                 / O1 focus position
 LEVEL   = 'L0'                 / level 0 (summed raw images)
-OBSSWID = 'ID'                 / version of the observing software used  
+OBSSWID = 'ID'                 / version of the observing software used
 OBS_ID  = 'ID'                 / recipe descriptive name
 OBS_IDVER='hash'               / version of the recipe ID (MD5 hash)
 OBS_PLAN= 'ID'                 / cookbook descriptive name

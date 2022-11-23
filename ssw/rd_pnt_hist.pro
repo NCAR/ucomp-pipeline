@@ -25,7 +25,7 @@ pro rd_pnt_hist, data, infil=infil, simple_rd=simple_rd
 ;	 5-Jun-92 (MDM) - Modified to read the BIAS file and adjust
 ;			  the output accordingly.
 ;	18-Jul-93 (MDM) - Made the file header have 9 lines
-;	 5-Oct-93 (MDM) - Time sorted 
+;	 5-Oct-93 (MDM) - Time sorted
 ;	16-Mar-95 (MDM) - Changed to use RD_TFILE to speed things up
 ;-
 ;

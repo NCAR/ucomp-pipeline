@@ -16,36 +16,36 @@ pro fits_open,filename,fcb,write=write,append=append,update=update, $
 ; INPUTS:
 ;       filename : name of the FITS file to open, scalar string
 ;                  FITS_OPEN can also open gzip compressed (.gz) files or Unix
-;                  compressed files *for  reading only*, although there is a 
+;                  compressed files *for  reading only*, although there is a
 ;                  performance penalty. FPACK (
-;                  http://heasarc.gsfc.nasa.gov/fitsio/fpack/ ) 
-;                  compressed FITS files can be read provided that the FPACK 
+;                  http://heasarc.gsfc.nasa.gov/fitsio/fpack/ )
+;                  compressed FITS files can be read provided that the FPACK
 ;                  software is installed.
 ;*OUTPUTS:
 ;       fcb : (FITS Control Block) a IDL structure containing information
 ;               concerning the file.  It is an input to FITS_READ, FITS_WRITE
-;               FITS_CLOSE and MODFITS.  
+;               FITS_CLOSE and MODFITS.
 ; INPUT KEYWORD PARAMETERS:
 ;       /APPEND: Set to append to an existing file.
-;       /FPACK - Signal that the file is compressed with the FPACK software. 
-;               http://heasarc.gsfc.nasa.gov/fitsio/fpack/ ) By default, 
-;               FITS_OPEN assumes that if the file name extension ends in 
+;       /FPACK - Signal that the file is compressed with the FPACK software.
+;               http://heasarc.gsfc.nasa.gov/fitsio/fpack/ ) By default,
+;               FITS_OPEN assumes that if the file name extension ends in
 ;               .fz that it is fpack compressed.     The FPACK software must
-;               be installed on the system 
+;               be installed on the system
 ;       /HPRINT - print headers with routine HPRINT as they are read.
 ;               (useful for debugging a strange file)
-;       /NO_ABORT: Set to quietly return to calling program when an I/O error  
+;       /NO_ABORT: Set to quietly return to calling program when an I/O error
 ;               is encountered, and return  a non-null string
-;               (containing the error message) in the keyword MESSAGE.    
-;               If /NO_ABORT not set, then FITS_OPEN will display the error 
+;               (containing the error message) in the keyword MESSAGE.
+;               If /NO_ABORT not set, then FITS_OPEN will display the error
 ;               message and return to the calling program.
 ;       /UPDATE Set this keyword to open an existing file for update
-;       /WRITE: Set this keyword to open a new file for writing. 
+;       /WRITE: Set this keyword to open a new file for writing.
 ;
 ; OUTPUT KEYWORD PARAMETERS:
 ;       MESSAGE = value: Output error message.    If the FITS file was opened
 ;               successfully, then message = ''.
-;       
+;
 ; NOTES:
 ;       The output FCB should be passed to the other FITS routines (FITS_OPEN,
 ;       FITS_READ, FITS_HELP, and FITS_WRITE).  It has the following structure
@@ -82,7 +82,7 @@ pro fits_open,filename,fcb,write=write,append=append,update=update, $
 ;
 ;               .HMAIN - keyword parameters (less standard required FITS
 ;                               keywords) for the primary data unit.
-;               .OPEN_FOR_WRITE - flag (0= open for read, 1=open for write, 
+;               .OPEN_FOR_WRITE - flag (0= open for read, 1=open for write,
 ;                                                2=open for update)
 ;               .LAST_EXTENSION - last extension number read.
 ;               .RANDOM_GROUPS - 1 if the PDU is random groups format,
@@ -118,9 +118,9 @@ pro fits_open,filename,fcb,write=write,append=append,update=update, $
 ;           operation   W. Landsman  November 2000
 ;       Lindler, Dec, 2001, Modified to use 64 bit words for storing byte
 ;             positions within the file to allow support for very large
-;             files 
+;             files
 ;       Work with gzip compressed files W. Landsman    January 2003
-;       Fix gzip compress for V5.4 and earlier  W.Landsman/M.Fitzgerald Dec 2003 
+;       Fix gzip compress for V5.4 and earlier  W.Landsman/M.Fitzgerald Dec 2003
 ;       Assume since V5.3 (STRSPLIT, OPENR,/COMPRESS) W. Landsman Feb 2004
 ;       Treat FTZ extension as gzip compressed W. Landsman Sep 2004
 ;       Assume since V5.4 fstat.compress available W. Landsman Apr 2006
@@ -168,13 +168,13 @@ pro fits_open,filename,fcb,write=write,append=append,update=update, $
                 open_for_write = 0
                 open_for_update = 1
                 open_for_overwrite = 0
-        end     
+        end
         if keyword_set(update) then begin
-                open_for_read = 1 
+                open_for_read = 1
                 open_for_write = 0
-                open_for_update = 0 
-                open_for_overwrite = 1 
-        end     
+                open_for_update = 0
+                open_for_overwrite = 1
+        end
 ;
 ; on I/O errors goto statement ioerror:
 ;
@@ -184,23 +184,23 @@ pro fits_open,filename,fcb,write=write,append=append,update=update, $
 ;
 
         ext = strlowcase(strmid(filename, 2, /rev))
-        docompress = (ext EQ '.gz') || (ext EQ 'ftz') 
+        docompress = (ext EQ '.gz') || (ext EQ 'ftz')
         fcompress = keyword_set(fpack) || ( ext EQ '.fz')
-	 zcompress = (strmid(filename, 1, /rev) EQ '.Z') 
-         if docompress && open_for_overwrite then begin 
+	 zcompress = (strmid(filename, 1, /rev) EQ '.Z')
+         if docompress && open_for_overwrite then begin
             message = 'Compressed FITS files cannot be open for update'
             if ~keyword_set(no_abort) then $
                    message,' ERROR: '+message,/CON
             return
-       endif   
+       endif
  ;
 ; open file
 ;
        if ~fcompress && ~zcompress then get_lun,unit
        if fcompress then $
-                spawn,'funpack -S "' + filename+'"', unit=unit,/sh else $	
-       if zcompress then $	
-                spawn,'gzip -cd "'+filename+'"', unit=unit,/sh  else $	
+                spawn,'funpack -S "' + filename+'"', unit=unit,/sh else $
+       if zcompress then $
+                spawn,'gzip -cd "'+filename+'"', unit=unit,/sh  else $
        if docompress then $
                 openr,unit,filename, /compress,/swap_if_little else begin
        case 1 of
@@ -216,14 +216,14 @@ pro fits_open,filename,fcb,write=write,append=append,update=update, $
         docompress = file.compress
 
 ; Need to spawn to "gzip -l" to get the number of uncompressed bytes in a gzip
-; compressed file.  If gzip doesn't work for some reason then use 
+; compressed file.  If gzip doesn't work for some reason then use
 ; get_pipe_filesize.
 
-        if fcompress then begin 
+        if fcompress then begin
 	      get_pipe_filesize,unit, nbytes_in_file
 	      free_lun,unit
 	      spawn,'funpack -S "' + filename +'"', unit=unit,/sh
-        endif else if docompress then begin 
+        endif else if docompress then begin
 	     if !VERSION.OS_FAMILY Eq 'Windows' then $
 	           fname = file_search(fname,/fully_qualify)
              spawn,'gzip -l "' + fname+'"', output
@@ -239,7 +239,7 @@ pro fits_open,filename,fcb,write=write,append=append,update=update, $
 	     spawn,'zcat "' + filename+'"' + ' | wc -c', nbytes_in_file
 	     if nbytes_in_file EQ 0 then message,'Unable to zcat decompress ' + fname
 	endif else nbytes_in_file = file.size
-	
+
 ;
 ; create vectors needed to store header information for each extension
 ;
@@ -262,7 +262,7 @@ pro fits_open,filename,fcb,write=write,append=append,update=update, $
 ;
         extend_number = 0               ; current extension number being
                                         ; processed
- 
+
         if open_for_read || open_for_update then begin
             main_header = 1             ; first header in file flag
             h = bytarr(80,36,/nozero)   ; read buffer
@@ -271,7 +271,7 @@ pro fits_open,filename,fcb,write=write,append=append,update=update, $
 ;
             repeat begin
             if skip GT 0 then if (fcompress || zcompress) then mrd_skip,unit,skip else $
-	                                     point_lun,unit,position 
+	                                     point_lun,unit,position
               start = position
 ;
 ; loop on header blocks
@@ -300,7 +300,7 @@ pro fits_open,filename,fcb,write=write,append=append,update=update, $
 ; check for valid header (SIMPLE keyword must be first for PDU and
 ; XTENSION keyword for the extensions.
 ;
-                        header = hdr 
+                        header = hdr
                         keyword = strmid(header[0],0,8)
                         if (extend_number eq 0) && $
                            (keyword ne 'SIMPLE  ') then begin
@@ -319,7 +319,7 @@ pro fits_open,filename,fcb,write=write,append=append,update=update, $
 
                     end else header = [header,hdr]
                     first_block = 0
-                end until (nend gt 0)   
+                end until (nend gt 0)
 
 ;
 ; print header if hprint set
@@ -352,21 +352,21 @@ pro fits_open,filename,fcb,write=write,append=append,update=update, $
                 xtension[extend_number] = strtrim(sxpar(header,'xtension'))
                 st = sxpar(header,'extname', Count = N_extname)
                 if N_extname EQ 0 then st = ''
-                extname[extend_number] = strtrim(st,2)  
-                extver[extend_number] = sxpar(header,'extver')          
-                extlevel[extend_number] = sxpar(header,'extlevel')              
+                extname[extend_number] = strtrim(st,2)
+                extver[extend_number] = sxpar(header,'extver')
+                extlevel[extend_number] = sxpar(header,'extlevel')
                 gcount[extend_number] = sxpar(header,'gcount')
                 pcount[extend_number] = sxpar(header,'pcount')
                 bitpix[extend_number] = sxpar(header,'bitpix')
                 nax = sxpar(header,'naxis')
                 naxis[extend_number] = nax
-                if nax gt 0 then begin 
+                if nax gt 0 then begin
 		    naxisi = sxpar(header,'naxis*')
 		    axis[0,extend_number] = naxisi
 		    ndata = product(naxisi,/integer)
-                endif else ndata = 0 
-		
-               start_data[extend_number] = position    
+                endif else ndata = 0
+
+               start_data[extend_number] = position
                start_header[extend_number] = start
 ;
 ; if first header, save without FITS required keywords
@@ -392,7 +392,7 @@ pro fits_open,filename,fcb,write=write,append=append,update=update, $
 
 ;
 ; end loop on headers
-;           
+;
 
                 extend_number +=  1
             end until (position ge nbytes_in_file-2879)
@@ -436,19 +436,19 @@ done_headers:
                         random_groups:random_groups, $
                         nbytes: nbytes_in_file }
         end
-         if fcompress then begin	
-	       free_lun,unit	      
-               spawn,'funpack -S "' + filename+'"', unit=unit,/sh 
-         endif else if zcompress then begin 
+         if fcompress then begin
+	       free_lun,unit
+               spawn,'funpack -S "' + filename+'"', unit=unit,/sh
+         endif else if zcompress then begin
 	       free_lun,unit
 	       spawn,'gzip -cd "' + filename+'"', unit=unit, /sh
-	endif       
+	endif
         !err = 1            ;For obsolete users still using !err
         return
 ;
 ; error exit
 ;
-ioerror: 
+ioerror:
         message = !ERROR_STATE.msg
 error_exit:
         free_lun,unit

@@ -1,8 +1,8 @@
 function str_lastpos, source, substring
 ;
 ;+
-;   Name: str_lastpos  
-; 
+;   Name: str_lastpos
+;
 ;   Purpose: find last occurence of a substring in the source string
 ;
 ;   Input Paramters:
@@ -14,9 +14,9 @@ function str_lastpos, source, substring
 ;
 ;   History: slf, 11/1/91
 ;	     modified, 11/19/91 to allow string arrays for source
-;- 
+;-
 ;
-rev_bytes=reverse(byte(source)) 
+rev_bytes=reverse(byte(source))
 ;
 ; since byte operation will generate nulls for array padding,
 ; terminators must be purged before converting back to string

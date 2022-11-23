@@ -4,22 +4,22 @@ function month_cnv, MonthInput, Up=Up, Low=Low, Short=Short
 ; NAME:
 ;       MONTH_CNV
 ; PURPOSE:
-;       Convert between a month name and  the equivalent number 
+;       Convert between a month name and  the equivalent number
 ; EXPLANATION: (e.g.,
 ;       For example, converts from 'January' to 1  or vice-versa.
 ; CALLING SEQUENCE:
 ;       Result = MONTH_CNV( MonthInput, [/UP, /LOW, /SHORT ] )
 ; INPUTS:
 ;       MonthInput - either a string ('January', 'Jan', 'Decem', etc.) or
-;               an number from 1 to 12.  Scalar or array. 
+;               an number from 1 to 12.  Scalar or array.
 ; OPTIONAL KEYWORDS:
 ;       UP - if set and if a string is being returned, it will be in all
 ;               uppercase letters.
-;       LOW - if set and if a string is being returned, it will be in all 
+;       LOW - if set and if a string is being returned, it will be in all
 ;               lowercase letters.
 ;       SHORT - if set and if a string is being returned, only the first
 ;               three letters are returned.
-;       
+;
 ; OUTPUTS:
 ;       If the input is a string, the output is the matching month number.If
 ;               an input string isn't a valid month name, -1 is returned.
@@ -64,5 +64,3 @@ if (NumElem eq 1) then Result = Result[0]
 
 return, Result
 end   ;   function MONTH_CNV
-
-   

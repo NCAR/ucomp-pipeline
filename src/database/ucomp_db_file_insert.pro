@@ -43,7 +43,7 @@ pro ucomp_db_file_insert, files, level, product_type, $
   q = 'select * from ucomp_level where level=''%s'''
   level_results = db->query(q, level, status=status)
   if (status ne 0L) then goto, done
-  level_index = level_results.level_id	
+  level_index = level_results.level_id
 
   ; get index for intensity files
   q = 'select * from mlso_producttype where producttype=''%s'' and description like ''UCoMP%%'''
@@ -55,7 +55,7 @@ pro ucomp_db_file_insert, files, level, product_type, $
   q = 'select * from mlso_filetype where filetype=''fits'''
   filetype_results = db->query(q, status=status)
   if (status ne 0L) then goto, done
-  filetype_index = filetype_results.filetype_id	
+  filetype_index = filetype_results.filetype_id
 
   for f = 0L, n_files - 1L do begin
     file = files[f]
@@ -72,7 +72,7 @@ pro ucomp_db_file_insert, files, level, product_type, $
     endif else begin
       mg_log, 'unknown product_type: %s', product_type, name=logger_name, /warn
       continue
-    endelse  
+    endelse
 
     mg_log, 'ingesting %s', file.l1_basename, name=logger_name, /info
     fields = [{name: 'file_name', type: '''%s'''}, $

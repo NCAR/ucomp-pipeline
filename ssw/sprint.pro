@@ -1,7 +1,7 @@
 pro sprint, filename, pers=pers, font=font, site=site
 ;
 ;+
-;   Name: sysprint 
+;   Name: sysprint
 ;
 ;   Purpose: test use of ys system variables for printer control
 ;
@@ -15,7 +15,7 @@ pro sprint, filename, pers=pers, font=font, site=site
 ;
 ;   History:
 ;      slf - 4-feb-1993
-;  
+;
 ;   Restrictions:
 ;      system varialbes must be defined first (via ys_defsysv.pro)
 ;
@@ -24,7 +24,7 @@ pro sprint, filename, pers=pers, font=font, site=site
 if n_params() eq 0 then message,'no file name....'
 
 if not keyword_set(font) then font=!ys_printcmd.font
-case 1 of 
+case 1 of
    keyword_set(pers): pcommand=!ys_printcmd.pers
    keyword_set(site): pcommand=!ys_printcmd.site
    else:	      pcommand=!ys_printcmd.default
@@ -42,4 +42,3 @@ endelse
 
 return
 end
-

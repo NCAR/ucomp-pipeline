@@ -1,34 +1,34 @@
 ;+
-; Project     : SOHO - CDS     
-;                   
+; Project     : SOHO - CDS
+;
 ; Name        : FILE_EXIST()
-;               
+;
 ; Purpose     : Test whether a file exists.
-;               
+;
 ; Explanation : Returns true(1) if any files match pattern=file
 ;	        or false(0) if no files found.
-;               
+;
 ; Use         : IDL> file_ok = file_exist(filename [,/direct])
-;    
+;
 ; Inputs      : file -  file, pathname or file filter to check
 ;
 ; Opt. Inputs : None
-;               
+;
 ; Outputs     : Returns 1/0 as each file does/does not exist.
-;               
+;
 ; Opt. Outputs: None
-;               
+;
 ; Keywords    : direct - set if want full check (slower) - use if might be an
 ;		empty directory you are looking for
 ;
 ; Calls       : FILE_STAT
-;               
+;
 ; Restrictions: None
-;               
+;
 ; Side effects: None
-;               
+;
 ; Category    : Utilities, Files, OS
-;               
+;
 ; Prev. Hist. : Yohkoh procedure by Sam Freeland, LPARL, 30-Nov-1991
 ;
 ;	4-Sep-92 (MDM) - Modified to handle an array of input files
@@ -45,12 +45,12 @@
 ;                              without a file name.
 ;
 ; Written     : CDS version by C D Pike, RAL, 2-Jul-1993
-;               
+;
 ; Modified    : Version 2, William Thompson, GSFC, 21 June 1995
 ;			Remerged CDS and Yohkoh versions.
 ;
 ; Version     : Version 2, 21 June 1995
-;-            
+;-
 
 function file_exist, file, direct=direct
 
@@ -89,11 +89,11 @@ for i=0, wccnt-1 do begin
     case keyword_set(direct) of
 	0:test=findfile(file(wc(i)),count=count)
 	;
-	;  if direct keyword set, can detect empty directories 
-	;  
+	;  if direct keyword set, can detect empty directories
+	;
 	1:begin
            filedelim=str_lastpos(file(i),'/')
-           name=strmid(file(wc(i)),filedelim+1,strlen(file(wc(i)))-filedelim) 
+           name=strmid(file(wc(i)),filedelim+1,strlen(file(wc(i)))-filedelim)
            path=strmid(file(wc(i)),0,filedelim)
            files=findfile(path)
            found=where(name eq files)

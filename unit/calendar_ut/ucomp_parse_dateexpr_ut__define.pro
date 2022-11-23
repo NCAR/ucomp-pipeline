@@ -15,7 +15,7 @@ end
 function ucomp_parse_dateexpr_ut::test_list
   compile_opt strictarr
 
-  standard = ['20180101', '20180102', '20180103', '20180104', '20180201'] 
+  standard = ['20180101', '20180102', '20180103', '20180104', '20180201']
   dates = ucomp_parse_dateexpr('20180101-20180105,20180201', count=n_dates)
   assert, n_dates eq n_elements(standard), 'wrong number of dates: %d', n_dates
   assert, array_equal(dates, standard), 'wrong dates'

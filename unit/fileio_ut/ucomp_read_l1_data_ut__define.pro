@@ -6,7 +6,7 @@ function ucomp_read_l1_data_ut::init, _extra=e
   if (~self->MGutTestCase::init(_extra=e)) then return, 0
 
   self->addTestingRoutine, ['ucomp_read_l1_data']
-  
+
 
   return, 1
 end

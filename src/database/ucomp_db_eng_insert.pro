@@ -25,13 +25,13 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
   q = 'select * from ucomp_quality where quality=''OK'''
   quality_results = db->query(q, status=status)
   if (status ne 0L) then goto, done
-  quality_index = quality_results.quality_id	
+  quality_index = quality_results.quality_id
 
   ; get index for raw (level 0) data files
   q = 'select * from ucomp_level where level=''L0'''
   level_results = db->query(q, status=status)
   if (status ne 0L) then goto, done
-  level_index = level_results.level_id	
+  level_index = level_results.level_id
 
   fields = [{name: 'file_name', type: '''%s'''}, $
             {name: 'date_obs', type: '''%s'''}, $

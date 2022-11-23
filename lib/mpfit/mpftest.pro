@@ -5,7 +5,7 @@
 ; AUTHOR:
 ;   Craig B. Markwardt, NASA/GSFC Code 662, Greenbelt, MD 20770
 ;   craigm@lheamail.gsfc.nasa.gov
-;   UPDATED VERSIONs can be found on my WEB PAGE: 
+;   UPDATED VERSIONs can be found on my WEB PAGE:
 ;      http://cow.physics.wisc.edu/~craigm/idl/idl.html
 ;
 ; PURPOSE:
@@ -183,22 +183,22 @@ pro cephes_setmachar
 end
 
 ;							incbet.c
-;   
+;
 ;   	Incomplete beta integral
-;   
-;   
+;
+;
 ;    SYNOPSIS:
-;   
+;
 ;    double a, b, x, y, incbet();
-;   
+;
 ;    y = incbet( a, b, x );
-;   
-;   
+;
+;
 ;    DESCRIPTION:
-;   
+;
 ;    Returns incomplete beta integral of the arguments, evaluated
 ;    from zero to x.  The function is defined as
-;   
+;
 ;                     x
 ;        -            -
 ;       | (a+b)      | |  a-1     b-1
@@ -206,19 +206,19 @@ end
 ;      -     -     | |
 ;     | (a) | (b)   -
 ;                    0
-;   
+;
 ;    The domain of definition is 0 <= x <= 1.  In this
 ;    implementation a and b are restricted to positive values.
 ;    The integral from x to 1 may be obtained by the symmetry
 ;    relation
-;   
+;
 ;       1 - incbet( a, b, x )  =  incbet( b, a, 1-x ).
-;   
+;
 ;    The integral is evaluated by a continued fraction expansion
 ;    or, when b*x is small, by a power series.
-;   
+;
 ;    ACCURACY:
-;   
+;
 ;    Tested at uniformly distributed random points (a,b,x) with a and b
 ;    in "domain" and x between 0 and 1.
 ;                                           Relative error
@@ -230,7 +230,7 @@ end
 ;       IEEE      0,100000    10000       8.7e-10     4.8e-11
 ;    Outputs smaller than the IEEE gradual underflow threshold
 ;    were excluded from these statistics.
-;   
+;
 ;    ERROR MESSAGES:
 ;      message         condition      value returned
 ;    incbet domain      x<0, x>1          0.0
@@ -302,13 +302,13 @@ function cephes_incbet, aa, bb, xx
   y = y + alog(w/a)
   if y LT MINLOG then t = 0.D $
   else                t = exp(y)
-  
+
   DONE:
   if flag EQ 1 then begin
       if t LE MACHEP then t = 1.D - MACHEP $
       else                t = 1.D - t
   endif
-  
+
   return, t
 end
 
@@ -318,7 +318,7 @@ function cephes_incbcf, a, b, x
   COMPILE_OPT strictarr
   common cephes_machar, machvals
   MACHEP = machvals.machep
-  
+
   big = 4.503599627370496D15
   biginv = 2.22044604925031308085D-16
 
@@ -339,7 +339,7 @@ function cephes_incbcf, a, b, x
   r = 1.D
   n = 0L
   thresh = 3.D * MACHEP
-  
+
   repeat begin
       xk = - (x * k1 * k2 ) / (k3 * k4)
       pk = pkm1 + pkm2 * xk
@@ -387,7 +387,7 @@ function cephes_incbcf, a, b, x
           qkm2 = qkm2 * big
           qkm1 = qkm1 * big
       endif
-      
+
       n = n + 1
   endrep until n GE 300
 
@@ -413,7 +413,7 @@ function cephes_incbd, a, b, x
   k6 = a + b
   k7 = a + 1.
   k8 = a + 2.
-  
+
   pkm2 = 0.D
   qkm2 = 1.D
   pkm1 = 1.D
@@ -423,7 +423,7 @@ function cephes_incbd, a, b, x
   r = 1.D
   n = 0L
   thresh = 3.D * MACHEP
-  
+
   repeat begin
       xk = -(z * k1 * k2) / (k3 * k4)
       pk = pkm1 + pkm2 * xk
@@ -432,7 +432,7 @@ function cephes_incbd, a, b, x
       pkm1 = pk
       qkm2 = qkm1
       qkm1 = qk
-      
+
       xk = (z * k5 * k6) / (k7 * k8)
       pk = pkm1 + pkm2 * xk
       qk = qkm1 + qkm2 * xk
@@ -440,7 +440,7 @@ function cephes_incbd, a, b, x
       pkm1 = pk
       qkm2 = qkm1
       qkm1 = qk
-      
+
       if qk NE 0 then r = pk/qk
       if r NE 0 then begin
           t = abs( (ans-r)/r )
@@ -450,7 +450,7 @@ function cephes_incbd, a, b, x
       endelse
 
       if t LT thresh then goto, CDONE
-      
+
       k1 = k1 + 1.
       k2 = k2 - 1.
       k3 = k3 + 2.
@@ -472,7 +472,7 @@ function cephes_incbd, a, b, x
           qkm2 = qkm2 * big
           qkm1 = qkm1 * big
       endif
-      
+
       n = n + 1
   endrep until n GE 300
 
@@ -523,7 +523,7 @@ end
 
 ; MPFTEST
 ;  Returns the significance level of a particular F-statistic.
-;     P(x; nu1, nu2)  is probability for F to exceed x 
+;     P(x; nu1, nu2)  is probability for F to exceed x
 ;  x - the F-ratio
 ;    For ratio of variance test:
 ;      x = (chi1sq/nu1) / (chi2sq/nu2)
@@ -552,7 +552,7 @@ function mpftest, x, nu1, nu2, slevel=slevel, clevel=clevel, sigma=sigma
   endif
 
   w = double(nu2) / (double(nu2) + double(nu1)*double(x))
-  
+
   s = cephes_incbet(0.5D * nu2, 0.5D * nu1, w)
   ;; Return confidence level if requested
   if keyword_set(clevel) then return, 1D - s
@@ -560,7 +560,5 @@ function mpftest, x, nu1, nu2, slevel=slevel, clevel=clevel, sigma=sigma
 
   ;; Return significance level otherwise.
   return, s
-  
-end
 
-      
+end

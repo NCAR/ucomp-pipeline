@@ -8,30 +8,30 @@ Pro sxaddpar, Header, Name, Value, Comment, Location, before=before, $
 ;       Add or modify a parameter in a FITS header array.
 ;
 ; CALLING SEQUENCE:
-;       SXADDPAR, Header, Name, Value, [ Comment,  Location, /SaveComment, 
+;       SXADDPAR, Header, Name, Value, [ Comment,  Location, /SaveComment,
 ;                               BEFORE =, AFTER = , FORMAT= , /PDU
 ;                               /SAVECOMMENT, Missing=, /Null
 ; INPUTS:
 ;       Header = String array containing FITS header.    The
-;               length of each element must be 80 characters.    If not 
+;               length of each element must be 80 characters.    If not
 ;               defined, then SXADDPAR will create an empty FITS header array.
 ;
-;       Name = Name of parameter. If Name is already in the header the value 
-;               and possibly comment fields are modified.  Otherwise a new 
+;       Name = Name of parameter. If Name is already in the header the value
+;               and possibly comment fields are modified.  Otherwise a new
 ;               record is added to the header.  If name is equal to 'COMMENT'
-;               or 'HISTORY' or a blank string then the value will be added to 
-;               the record without replacement.  For these cases, the comment 
+;               or 'HISTORY' or a blank string then the value will be added to
+;               the record without replacement.  For these cases, the comment
 ;               parameter is ignored.
 ;
-;       Value = Value for parameter.  The value expression must be of the 
+;       Value = Value for parameter.  The value expression must be of the
 ;               correct type, e.g. integer, floating or string.  String values
 ;                of 'T' or 'F' are considered logical values.
 ;
 ; OPTIONAL INPUT PARAMETERS:
-;       Comment = String field.  The '/' is added by this routine.  Added 
-;               starting in position 31.    If not supplied, or set equal to 
-;               '', or /SAVECOMMENT is set, then the previous comment field is 
-;               retained (when found) 
+;       Comment = String field.  The '/' is added by this routine.  Added
+;               starting in position 31.    If not supplied, or set equal to
+;               '', or /SAVECOMMENT is set, then the previous comment field is
+;               retained (when found)
 ;
 ;       Location = Keyword string name.  The parameter will be placed before the
 ;               location of this keyword.    This parameter is identical to
@@ -72,7 +72,7 @@ Pro sxaddpar, Header, Name, Value, Comment, Location, before=before, $
 ;               header. If it already exists, it's current value is updated in
 ;               the current position and it is not moved.
 ;       /SAVECOMMENT = if set, then any existing comment is retained, i.e. the
-;               COMMENT parameter only has effect if the keyword did not 
+;               COMMENT parameter only has effect if the keyword did not
 ;               previously exist in the header.
 ; OUTPUTS:
 ;       Header = updated FITS header array.
@@ -86,8 +86,8 @@ Pro sxaddpar, Header, Name, Value, Comment, Location, before=before, $
 ;       The functions SXADDPAR() and FXADDPAR() are nearly identical, with the
 ;       major difference being that FXADDPAR forces required FITS keywords
 ;       BITPIX, NAXISi, EXTEND, PCOUNT, GCOUNT to appear in the required order
-;       in the header, and FXADDPAR supports the OGIP LongString convention.   
-;       There is no particular reason for having two nearly identical 
+;       in the header, and FXADDPAR supports the OGIP LongString convention.
+;       There is no particular reason for having two nearly identical
 ;       procedures, but both are too widely used to drop either one.
 ;
 ;       All HISTORY records are inserted in order at the end of the header.
@@ -119,19 +119,19 @@ Pro sxaddpar, Header, Name, Value, Comment, Location, before=before, $
 ;               point values.   C. Gehman, JPL  September 1998
 ;       Mar 2000, D. Lindler, Modified to use capital E instead of lower case
 ;               e for exponential formats.
-;       Apr 2000, Make user-supplied format upper-case  W. Landsman 
+;       Apr 2000, Make user-supplied format upper-case  W. Landsman
 ;       Oct 2001, Treat COMMENT or blank string like HISTORY keyword W. Landsman
 ;       Jan 2002, Allow BEFORE, AFTER to apply to COMMENT keywords W. Landsman
 ;       June 2003, Added SAVECOMMENT keyword    W. Landsman
 ;       Jan 2004, If END is missing, then add it at the end W. Landsman
 ;       May 2005 Fix SAVECOMMENT error with non-string values W. Landsman
 ;       Oct 2005 Jan 2004 change made SXADDPAR fail for empty strings W.L.
-;       May 2011 Fix problem with slashes in string values W.L. 
-;       Aug 2013 Only use keyword_set for binary keywords W. L. 
+;       May 2011 Fix problem with slashes in string values W.L.
+;       Aug 2013 Only use keyword_set for binary keywords W. L.
 ;       Sep 2015 Added NULL and MISSING keywords W.L.
 ;       Sep 2016 Allow writing of byte or Boolean variables  W.L.
 ;       Nov 2016 Allow value to be a 1 element scalar  W.L.
-;       
+;
 ;-
  compile_opt idl2
  if N_params() LT 3 then begin             ;Need at least 3 parameters
@@ -178,7 +178,7 @@ Pro sxaddpar, Header, Name, Value, Comment, Location, before=before, $
 ;
         stype = size(value,/type)
         save_as_null = 0
-        if stype EQ 0 then begin        
+        if stype EQ 0 then begin
             if (n_elements(missing) eq 1) || keyword_set(null) then $
               save_as_null = 1 else $
                 message,'Keyword value (third parameter) is not defined'
@@ -205,7 +205,7 @@ Pro sxaddpar, Header, Name, Value, Comment, Location, before=before, $
                 ii = max(ii) + 1
                 if ii eq n_elements(header) then begin
                         header = [header,endline]
-                        n++ 
+                        n++
                 endif else header[ii] = endline
                 keywrd = strmid(header,0,8)
                 iend = where(keywrd eq 'END     ',nfound)
@@ -250,7 +250,7 @@ Pro sxaddpar, Header, Name, Value, Comment, Location, before=before, $
             if nloc EQ 0 then iloc = where(keywrd EQ 'HISTORY ', nloc)
             if nloc gt 0 then begin
                i = iloc[nloc-1]
-               if keyword_set(after) or (loc EQ 'COMMENT ') then i = i+1 < iend 
+               if keyword_set(after) or (loc EQ 'COMMENT ') then i = i+1 < iend
                if i gt 0 then header=[header[0:i-1],newline,header[i:n-1]] $
                         else header=[newline,header[0:n-1]]
             endif else begin
@@ -268,7 +268,7 @@ Pro sxaddpar, Header, Name, Value, Comment, Location, before=before, $
             iloc = where(keywrd[0:iend] EQ loc, nloc)
             if nloc gt 0 then begin
                i = iloc[0]
-               if keyword_set(after) and loc ne 'HISTORY ' then i = i+1 < iend 
+               if keyword_set(after) and loc ne 'HISTORY ' then i = i+1 < iend
                if i gt 0 then header=[header[0:i-1],newline,header[i:n-1]] $
                         else header=[newline,header[0:n-1]]
             endif else begin
@@ -289,7 +289,7 @@ Pro sxaddpar, Header, Name, Value, Comment, Location, before=before, $
 
 ; Find location to insert keyword.   Save the existing comment if user did
 ; not supply a new one.   Comment starts after column 32 for numeric data,
-; after the slash (but at least after final quote) for string data. 
+; after the slash (but at least after final quote) for string data.
 
  ncomment = comment
  ipos  = where(keywrd eq nn,nfound)
@@ -299,25 +299,25 @@ Pro sxaddpar, Header, Name, Value, Comment, Location, before=before, $
          if strmid(header[i],10,1) NE "'" then $
                  ncomment=strmid(header[i],32,48) else begin
 		 quote = strpos(header[i],"'",11)
-		
+
                  if quote EQ -1 then slash = -1 else $
-		       slash = strpos(header[i],'/',quote)  		
+		       slash = strpos(header[i],'/',quote)
                  if slash NE -1 then $
                         ncomment =  strmid(header[i], slash+1, 80) else $
                         ncomment = string(replicate(32B,80))
                 endelse
-        endif 
-         goto, REPLACE    
+        endif
+         goto, REPLACE
  endif
 
  if loc ne '' then begin
           iloc =  where(keywrd eq loc,nloc)
           if nloc gt 0 then begin
              i = iloc[0]
-             if keyword_set(after) && (loc ne 'HISTORY ') then i = i+1 < iend 
+             if keyword_set(after) && (loc ne 'HISTORY ') then i = i+1 < iend
              if i gt 0 then header=[header[0:i-1],blank,header[i:n-1]] $
                         else header=[blank,header[0:n-1]]
-             goto, REPLACE  
+             goto, REPLACE
           endif
  endif
 
@@ -335,7 +335,7 @@ Pro sxaddpar, Header, Name, Value, Comment, Location, before=before, $
 
 ; Now put value into keyword at line i
 
-REPLACE:    
+REPLACE:
         h=blank                 ;80 blanks
         strput,h,nn+'= '        ;insert name and =.
         apost = "'"             ;quote a quote
@@ -367,22 +367,22 @@ REPLACE:
         ELSE v = STRING(value, FORMAT='(G19.12)')
         s = strlen(v)                                   ; right justify
         strput, h, v, (30-s)>10
-        END               
+        END
 
  else:  begin
         if ~save_as_null then begin
         if type[1] EQ 1 then begin
              if !VERSION.RELEASE GE '8.4' && ISA(value,/boolean) then begin
                 upval = ['F','T']
-                strput,h,upval[value],29 
+                strput,h,upval[value],29
                 break
-             endif else v = strtrim(fix(value),2) 
+             endif else v = strtrim(fix(value),2)
         endif else begin
         if (N_elements(format) eq 1) then $            ;use format keyword
             v = string(value, FORMAT='('+strupcase(format)+')' ) else $
-            v = strtrim(strupcase(value),2)      
+            v = strtrim(strupcase(value),2)
                                       ;convert to string, default format
-        endelse                              
+        endelse
         s = strlen(v)                 ;right justify
         strput,h,v,(30-s)>10          ;insert
         endif
@@ -392,8 +392,8 @@ REPLACE:
  if (~save_as_null) || (strlen(strtrim(comment)) GT 0) then begin
    strput,h,' /',30       ;add ' /'
    strput, h, ncomment, 32 ;add comment
- endif  
+ endif
    header[i] = h          ;save line
- 
+
  return
  end

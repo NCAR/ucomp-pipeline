@@ -5,22 +5,22 @@
 ; NAME:
 ;       DPRINT
 ;
-; PURPOSE: 
+; PURPOSE:
 ;       Diagnostic PRINT (activated only when DEBUG reaches DLEVEL)
 ;
 ; EXPLANATION:
 ;       This routine acts similarly to the PRINT command, except that
 ;       it is activated only when the environment variable DEBUG is
 ;       set to be equal to or greater than the debugging level set by
-;       DLEVEL (default to 1).  It is useful for debugging.  
+;       DLEVEL (default to 1).  It is useful for debugging.
 ;
-; CALLING SEQUENCE: 
+; CALLING SEQUENCE:
 ;       DPRINT, v1 [,v2 ...] [,format=format] [,dlevel=dlevel]
 ;
 ; INPUTS:
 ;       V1, V2, ... - List of variables to be printed out.
 ;
-; OPTIONAL INPUTS: 
+; OPTIONAL INPUTS:
 ;       None.
 ;
 ; OUTPUTS:
@@ -29,10 +29,10 @@
 ;
 ; OPTIONAL OUTPUTS:
 ;       FORMAT - Output format to be used
-;       UNIT   - Output unit through which the variables are printed. If 
+;       UNIT   - Output unit through which the variables are printed. If
 ;                missing, the standard output (i.e., your terminal) is used.
 ;
-; KEYWORD PARAMETERS: 
+; KEYWORD PARAMETERS:
 ;       DLEVEL - An integer indicating the debugging level; defaults to 1
 ;
 ; CALLS:
@@ -41,8 +41,8 @@
 ; COMMON BLOCKS:
 ;       None.
 ;
-; RESTRICTIONS: 
-;       Can be activated only when the environment variable DEBUG (indicating 
+; RESTRICTIONS:
+;       Can be activated only when the environment variable DEBUG (indicating
 ;          the debugging level) is set to an integer which is equal to
 ;          or greater than DLEVEL
 ;       Can print out a maximum of 20 variables (depending on how many

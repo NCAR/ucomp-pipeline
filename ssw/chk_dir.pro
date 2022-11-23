@@ -10,7 +10,7 @@ FUNCTION chk_dir, dir_name, output, fullname=fullname
 ; PROJECT:
 ;       SOHO - CDS
 ;
-; NAME:	
+; NAME:
 ;       CHK_DIR()
 ;
 ; PURPOSE:
@@ -18,16 +18,16 @@ FUNCTION chk_dir, dir_name, output, fullname=fullname
 ;
 ; EXPLANATION:
 ;
-; CALLING SEQUENCE: 
+; CALLING SEQUENCE:
 ;       Result = CHK_DIR(dir_name)
 ;
 ; INPUTS:
 ;       DIR_NAME -- A string specifying the directory name. For VMS system,
 ;                   a valid directory name can be a logical name, or
-;                   any string with a format of '[...]', '[...]aaa.dir', 
+;                   any string with a format of '[...]', '[...]aaa.dir',
 ;                   or 'aaa.dir'
 ;
-; OPTIONAL INPUTS: 
+; OPTIONAL INPUTS:
 ;       None.
 ;
 ; OUTPUTS:
@@ -36,7 +36,7 @@ FUNCTION chk_dir, dir_name, output, fullname=fullname
 ; OPTIONAL OUTPUTS:
 ;       OUTPUT -- A string indicating the real directory path
 ;
-; KEYWORD PARAMETERS: 
+; KEYWORD PARAMETERS:
 ;       FULLNAME -- if set and OUTPUT is present, OUTPUT will contain the full
 ;                   path specification for the directory
 ;
@@ -46,14 +46,14 @@ FUNCTION chk_dir, dir_name, output, fullname=fullname
 ; COMMON BLOCKS:
 ;       None.
 ;
-; RESTRICTIONS: 
+; RESTRICTIONS:
 ;       None.
 ;
 ; SIDE EFFECTS:
 ;       None.
 ;
 ; CATEGORY:
-;       
+;
 ; PREVIOUS HISTORY:
 ;       Written October 9, 1994, by Liyun Wang, GSFC/ARC
 ;
@@ -62,7 +62,7 @@ FUNCTION chk_dir, dir_name, output, fullname=fullname
 ;          Made work for VMS directories
 ;       Version 3, Liyun Wang, GSFC/ARC, December 29, 1994
 ;          Added keyword FULLNAME
-;          Fixed bug of false reporting if the given string represents 
+;          Fixed bug of false reporting if the given string represents
 ;             a plain file under Unix OS
 ;
 ; VERSION:
@@ -97,7 +97,7 @@ FUNCTION chk_dir, dir_name, output, fullname=fullname
       RETURN, 0
    ENDIF
    name_dir = STRUPCASE(dir_name)
-   p_dir = STRPOS(name_dir,'.DIR') 
+   p_dir = STRPOS(name_dir,'.DIR')
    IF p_dir EQ -1 THEN BEGIN
 ;----------------------------------------------------------------------
 ;     DIR_NAME must be either a logical symbol or a directory name
@@ -112,7 +112,7 @@ FUNCTION chk_dir, dir_name, output, fullname=fullname
 ;     Try to see if it is already a valid directory name
 ;----------------------------------------------------------------------
       d_len = STRLEN(name_dir)
-      rquote = STRPOS(name_dir,']') 
+      rquote = STRPOS(name_dir,']')
 ;----------------------------------------------------------------------
 ;     Since dir_name is not a logical name, it should have [..] format
 ;     to be a directory name
@@ -127,7 +127,7 @@ FUNCTION chk_dir, dir_name, output, fullname=fullname
 
       IF rquote EQ d_len-1 THEN BEGIN
 ;----------------------------------------------------------------------
-;        directory name in [...] format        
+;        directory name in [...] format
 ;----------------------------------------------------------------------
          idx = str_index(name_dir,'.')
          IF idx(0) EQ -1 THEN BEGIN
@@ -143,7 +143,7 @@ FUNCTION chk_dir, dir_name, output, fullname=fullname
          ENDELSE
       ENDIF ELSE BEGIN
 ;----------------------------------------------------------------------
-;        directory name in [...]xxx format        
+;        directory name in [...]xxx format
 ;----------------------------------------------------------------------
          temp_dir = name_dir+'.DIR'
       ENDELSE

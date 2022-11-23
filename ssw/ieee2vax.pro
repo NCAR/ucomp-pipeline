@@ -8,12 +8,12 @@ pro swap,x
 ;   SWAP,X
 ; INPUT:
 ;   X - variable to be byte swapped.  Can be BYTE, INTEGER*2 or INTEGER*4.
-;       The order of the bytes will be reversed. For a byte array, 
-;       the number of bytes should be even and every other byte will be 
+;       The order of the bytes will be reversed. For a byte array,
+;       the number of bytes should be even and every other byte will be
 ;       swapped.
 ; REVISION HISTORY:
 ;   Written  D. Lindler 1986
-;   Converted to version 2 IDL B. Pfarr, STX, 1/90 added code to 
+;   Converted to version 2 IDL B. Pfarr, STX, 1/90 added code to
 ;      swap bytes in byte array
 ;-
 s=size(x)
@@ -99,7 +99,7 @@ case var_type of
         if (i(0) ne -1) then biased(i) = byte(biased(i) + 2)
         byte_eq(i1) = byte(byte_eq(i1) AND '80'X) OR byte(biased/2)
         byte_eq(i2) = byte(byte_eq(i2) AND '7F'X) OR byte(biased*128)
-    ; 
+    ;
     ; swap bytes
     ;
         byte_elems = byte_elems + 3L

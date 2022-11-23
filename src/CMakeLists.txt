@@ -23,4 +23,3 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ucomp_version.pro DESTINATION src)
 
 file(GLOB PRO_FILES "*.pro")
 install(FILES ${PRO_FILES} DESTINATION src)
-

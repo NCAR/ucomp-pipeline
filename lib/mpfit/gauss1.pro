@@ -29,7 +29,7 @@
 ; INPUTS:
 ;   X - Array of X-values.
 ;
-;   [MEAN, SIGMA, AREA] - the mean, sigma and total area of the 
+;   [MEAN, SIGMA, AREA] - the mean, sigma and total area of the
 ;                         desired Gaussian curve.
 ;
 ; INPUT KEYWORD PARAMETERS:

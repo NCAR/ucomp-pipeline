@@ -32,7 +32,7 @@ pro ucomp_plot_centering_info, filename, wave_region, run=run
           decomposed=0, $
           set_colors=256, $
           z_buffering=0
-  
+
   charsize = 0.30
   symsize  = 0.25
 

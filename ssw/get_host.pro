@@ -22,7 +22,7 @@ function get_host, dummy, short=short
 ;	12-Mar-92 (MDM) - Changed to work for VMS as well as  Unix.
 ;	24-mar-92 (JRL) - Updated for IRIX operating system
 ;	26-mar-92 (SLF) - Got it working for SUNs (again)
-;	30-mar-92 (SLF) - Put vms in the case where it belongs 
+;	30-mar-92 (SLF) - Put vms in the case where it belongs
 ;	26-Jul-94 (MDM) - Added /SHORT keyword
 ;        4-oct-94 (SLF) - spawn 'hostname' (avoid shell), protect agains .cshrc
 ;                         minor change in 'short' generation
@@ -32,7 +32,7 @@ function get_host, dummy, short=short
 ;			  to make it much faster
 ;-
 ;
-case strlowcase ( !version.os ) of 
+case strlowcase ( !version.os ) of
    'vms'   : spawn, 'write sys$output f$getsyi("nodename")', result
    'irix'  : begin
 		;;spawn,"hostname" ,result,/noshell

@@ -4,12 +4,12 @@
 ; Name        : GET_LEAP_SEC
 ;
 ; Purpose     : Returns the Modified Julian Day number of all known
-;               leap seconds.  
+;               leap seconds.
 ;
 ; Inputs      : None
 ;
 ; Outputs     : MJD = An array containing the Modified Julian Day
-;                     numbers for all dates on which a leap second 
+;                     numbers for all dates on which a leap second
 ;                     was inserted, starting with 31 December 1971.
 ;
 ; Keywords    : ERRMSG = string error message
@@ -19,7 +19,7 @@
 ;
 ; Contact     : dzarro@solar.stanford.edu
 ;-
-	
+
 PRO GET_LEAP_SEC, MJD, ERRMSG=ERRMSG
 
 ERRMSG=''

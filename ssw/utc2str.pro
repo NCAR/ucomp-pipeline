@@ -12,7 +12,7 @@
 ;		format, and converts it to a calendar string.  The default
 ;		format is the Consultative Committee on Space Data Systems
 ;		(CCSDS) ASCII Calendar Segmented Time Code format (ISO 8601),
-;		but other formats are also supported.  For notes on various 
+;		but other formats are also supported.  For notes on various
 ;		time formats, see file aaareadme.txt.
 ;
 ; Use         :	Result = UTC2STR( UTC )
@@ -95,12 +95,12 @@
 ;			    committee to not append the "Z" in standard FITS
 ;			    keywords.  NOZ=1 is now the default.
 ;
-;		ERRMSG    = If defined and passed, then any error messages 
-;			    will be returned to the user in this parameter 
-;			    rather than being handled by the IDL MESSAGE 
-;			    utility.  If no errors are encountered, then a 
-;			    null string is returned.  In order to use this 
-;			    feature, the string ERRMSG must be defined 
+;		ERRMSG    = If defined and passed, then any error messages
+;			    will be returned to the user in this parameter
+;			    rather than being handled by the IDL MESSAGE
+;			    utility.  If no errors are encountered, then a
+;			    null string is returned.  In order to use this
+;			    feature, the string ERRMSG must be defined
 ;			    first, e.g.,
 ;
 ;				ERRMSG = ''
@@ -113,7 +113,7 @@
 ;
 ; Restrictions:	None.
 ;
-; Side effects:	If an error is encountered and the ERRMSG keyword is set, 
+; Side effects:	If an error is encountered and the ERRMSG keyword is set,
 ;		UTC2STR returns an string scalar equal to '-1'.
 ;
 ; Category    :	Utilities, Time.
@@ -135,7 +135,7 @@
 ;			Added the keyword ERRMSG.
 ;		Version 5, Donald G. Luttermoser, GSFC/ARC, 30 January 1995
 ;			Added ERRMSG to the internally called procedures.
-;			Made the error handling routine more robust.  Note 
+;			Made the error handling routine more robust.  Note
 ;			that this routine can handle both scalars and vectors
 ;			as input.
 ;		Version 6, William Thompson, GSFC, 14 March 1995

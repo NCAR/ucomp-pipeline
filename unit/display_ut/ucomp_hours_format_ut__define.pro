@@ -5,7 +5,7 @@ function ucomp_hours_format_ut::init, _extra=e
 
   if (~self->MGutTestCase::init(_extra=e)) then return, 0
 
-  
+
   self->addTestingRoutine, ['ucomp_hours_format'], $
                            /is_function
 

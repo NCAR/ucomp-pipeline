@@ -247,7 +247,7 @@ pro ucomp_make_darks, run=run
                     exptimes=dark_exposures_array, $
                     gain_modes=dark_gain_modes_array, $
                     raw_files=dark_raw_files_array
-  
+
   tcam_means /= (n_tcam gt 0L ? n_tcam : 1L)
   rcam_means /= (n_rcam gt 0L ? n_rcam : 1L)
 

@@ -68,7 +68,7 @@ if exist(nindex) then begin
  have=1b
  if keyword_set(sort_index) then nindex=get_uniq(nindex)
  tags=tags(nindex)
-endif else begin 
+endif else begin
  nindex=-1
  tags=''
 endelse

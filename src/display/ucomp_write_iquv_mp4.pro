@@ -23,18 +23,18 @@ pro ucomp_write_iquv_mp4, wave_region, run=run
             name=run.logger_name, /warn
     goto, done
   endif
-  
+
   files = run->get_files(data_type='sci', wave_region=wave_region, count=n_files)
   if (n_files eq 0L) then begin
     mg_log, 'no files @ %s nm', wave_region, name=run.logger_name, /warn
     goto, done
   endif
-  
+
   use = bytarr(n_files)
   for f = 0L, n_files - 1L do begin
     use[f] = files[f].ok and ~files[f].gbu and files[f].wrote_l1
   endfor
-  
+
   use_indices = where(use, n_use)
   if (n_use lt 2L) then begin
     mg_log, 'not enough usable files (%d files) @ %s nm', n_use, wave_region, $
@@ -50,7 +50,7 @@ pro ucomp_write_iquv_mp4, wave_region, run=run
   l1_dirname = filepath('', $
                         subdir=[run.date, 'level1'], $
                         root=run->config('processing/basedir'))
-  
+
   image_filenames = strarr(n_use)
   for f = 0L, n_use - 1L do begin
     image_filenames[f] = file_basename(files[use_indices[f]].l1_basename, '.fts')

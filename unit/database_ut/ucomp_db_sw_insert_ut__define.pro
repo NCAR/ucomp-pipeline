@@ -5,7 +5,7 @@ function ucomp_db_sw_insert_ut::init, _extra=e
 
   if (~self->UCoMPutTestCase::init(_extra=e)) then return, 0
 
-  
+
   self->addTestingRoutine, ['ucomp_db_sw_insert'], $
                            /is_function
 

@@ -3,11 +3,11 @@
                         NOCONTINUE = NOCONTINUE, DATATYPE=DATATYPE, $
                         NULL=K_NULL, NAN=NAN, MISSING=MISSING
 ;+
-; NAME: 
+; NAME:
 ;        FXPAR()
-; PURPOSE: 
+; PURPOSE:
 ;       Obtain the value of a parameter in a FITS header.
-; EXPLANATION: 
+; EXPLANATION:
 ;       The first 8 chacters of each element of HDR are searched for a match to
 ;       NAME.  If the keyword is one of those allowed to take multiple values
 ;       ("HISTORY", "COMMENT", or "        " (blank)), then the value is taken
@@ -15,11 +15,11 @@
 ;       character is "=", and the value (and optional comment) is then parsed
 ;       from the last 71 characters.  An error occurs if there is no parameter
 ;       with the given name.
-;      
+;
 ;       If the value is too long for one line, it may be continued on to the
 ;       the next input card, using the CONTINUE Long String Keyword convention.
 ;       For more info, http://fits.gsfc.nasa.gov/registry/continue_keyword.html
-;       
+;
 ;
 ;       Complex numbers are recognized as two numbers separated by one or more
 ;       space characters.
@@ -36,13 +36,13 @@
 ;       that COUNT=0 in that case, while existing keywords without a value will
 ;       be returned with COUNT=1 or more.
 ;
-; CALLING SEQUENCE: 
+; CALLING SEQUENCE:
 ;       Result = FXPAR( HDR, NAME  [, ABORT, COUNT=, COMMENT=, /NOCONTINUE ] )
 ;
 ;       Result = FXPAR(HEADER,'DATE')           ;Finds the value of DATE
 ;       Result = FXPAR(HEADER,'NAXIS*')         ;Returns array dimensions as
 ;                                               ;vector
-; REQUIRED INPUTS: 
+; REQUIRED INPUTS:
 ;       HDR     = FITS header string array (e.g. as returned by FXREAD).  Each
 ;                 element should have a length of 80 characters
 ;       NAME    = String name of the parameter to return.  If NAME is of the
@@ -51,13 +51,13 @@
 ;                 will be placed in RESULT(N-1).  The data type of RESULT will
 ;                 be the type of the first valid match of keywordN
 ;                 found, unless DATATYPE is given.
-; OPTIONAL INPUT: 
+; OPTIONAL INPUT:
 ;       ABORT   = String specifying that FXPAR should do a RETALL if a
 ;                 parameter is not found.  ABORT should contain a string to be
 ;                 printed if the keyword parameter is not found.  If not
 ;                 supplied, FXPAR will return with a negative !err if a keyword
 ;                 is not found.
-; OUTPUT: 
+; OUTPUT:
 ;       The returned value of the function is the value(s) associated with the
 ;       requested keyword in the header array.
 ;
@@ -68,7 +68,7 @@
 ;
 ;       If NAME was of form 'keyword*' then a vector of values are returned.
 ;
-; OPTIONAL INPUT KEYWORDS: 
+; OPTIONAL INPUT KEYWORDS:
 ;       DATATYPE = A scalar value, indicating the type of vector
 ;                  data.  All keywords will be cast to this type.
 ;                  Default: based on first keyword.
@@ -79,7 +79,7 @@
 ;                 the index range bounded by START-PRECHECK and
 ;                 START+POSTCHECK.  This can speed up keyword searches
 ;                 in large headers.  If the keyword is not found, then
-;                 FXPAR searches the entire header.  
+;                 FXPAR searches the entire header.
 ;
 ;                 If not specified then the entire header is searched.
 ;                 Searches of the form 'keyword*' also search the
@@ -121,9 +121,9 @@
 ;                 parameters found by FXPAR.
 ;       COMMENTS= Array of comments associated with the returned values.
 ;
-; PROCEDURE CALLS: 
+; PROCEDURE CALLS:
 ;       GETTOK(), VALID_NUM
-; SIDE EFFECTS: 
+; SIDE EFFECTS:
 ;
 ;       The system variable !err is set to -1 if parameter not found, 0 for a
 ;       scalar value returned.  If a vector is returned it is set to the number
@@ -139,7 +139,7 @@
 ;	particular reason for having two nearly identical procedures, but
 ;	both are too widely used to drop either one.
 ;
-; REVISION HISTORY: 
+; REVISION HISTORY:
 ;       Version 1, William Thompson, GSFC, 12 April 1993.
 ;               Adapted from SXPAR
 ;       Version 2, William Thompson, GSFC, 14 October 1994
@@ -156,8 +156,8 @@
 ;               (over 68 characters)
 ;       Version 5, Wayne Landsman GSFC, 29 May 1998
 ;               Fixed potential problem with overflow of LONG values
-;       Version 6, Craig Markwardt, GSFC, 28 Jan 1998, 
-;               Added CONTINUE parsing         
+;       Version 6, Craig Markwardt, GSFC, 28 Jan 1998,
+;               Added CONTINUE parsing
 ;       Version 7, Craig Markwardt, GSFC, 18 Nov 1999,
 ;               Added START, PRE/POSTCHECK keywords for better
 ;               performance
@@ -182,7 +182,7 @@
 ;
 ;  Determine the default value for missing data.
 ;
-        CASE 1 OF 
+        CASE 1 OF
             N_ELEMENTS(MISSING) EQ 1: MISSING_VALUE = MISSING
             KEYWORD_SET(NAN): MISSING_VALUE = !VALUES.F_NAN
             KEYWORD_SET(K_NULL) AND !VERSION.RELEASE GE '8.': $
@@ -214,11 +214,11 @@
 ;  string.
 ;
         NAMELENGTH1 = (STRLEN(NAM) - 1) > 1
-        IF STRPOS( NAM, '*' ) EQ NAMELENGTH1 THEN BEGIN    
-            NAM = STRMID( NAM, 0, NAMELENGTH1)  
-            VECTOR = 1                          ;Flag for vector output  
-            NAME_LENGTH = STRLEN(NAM)           ;Length of name 
-            NUM_LENGTH = 8 - NAME_LENGTH        ;Max length of number portion  
+        IF STRPOS( NAM, '*' ) EQ NAMELENGTH1 THEN BEGIN
+            NAM = STRMID( NAM, 0, NAMELENGTH1)
+            VECTOR = 1                          ;Flag for vector output
+            NAME_LENGTH = STRLEN(NAM)           ;Length of name
+            NUM_LENGTH = 8 - NAME_LENGTH        ;Max length of number portion
             IF NUM_LENGTH LE 0 THEN MESSAGE,    $
                 'Keyword length must be 8 characters or less'
 ;
@@ -260,7 +260,7 @@
                     NFOUND = NFOUND[IGOOD]
                     NUMBER = NUMBER[IGOOD]
  		    G = WHERE(NUMBER GT 0, MATCHES)
- 		    IF MATCHES GT 0 THEN NUMBER = NUMBER[G]     
+ 		    IF MATCHES GT 0 THEN NUMBER = NUMBER[G]
 		ENDIF
             ENDIF
 ;
@@ -313,9 +313,9 @@ NEXT_APOST:
 ;  string isn't completed yet.  Apostrophes in the text string are signalled as
 ;  two apostrophes in a row.
 ;
-                    IF STRMID( TEST, ENDAP+1, 1) EQ "'" THEN BEGIN    
+                    IF STRMID( TEST, ENDAP+1, 1) EQ "'" THEN BEGIN
                         VALUE = VALUE + "'"
-                        NEXT_CHAR = ENDAP+2      
+                        NEXT_CHAR = ENDAP+2
                         GOTO, NEXT_APOST
                     ENDIF
 ;
@@ -339,7 +339,7 @@ NEXT_APOST:
                     IF (STRLEN(VAL) GT 0) AND $
                       (STRMID(VAL, STRLEN(VAL)-1, 1) EQ '&') AND $
                       (STRMID(HDR[NFOUND[I]+OFF],0,8) EQ 'CONTINUE') THEN BEGIN
-                       IF (SIZE(FXPAR(HDR, 'LONGSTRN',/NOCONTINUE)))[1] EQ 7 THEN BEGIN                    
+                       IF (SIZE(FXPAR(HDR, 'LONGSTRN',/NOCONTINUE)))[1] EQ 7 THEN BEGIN
                       VALUE = STRMID(VAL, 0, STRLEN(VAL)-1)
                       TEST = HDR[NFOUND[I]+OFF]
                       TEST = STRMID(TEST, 8, STRLEN(TEST)-8)
@@ -394,8 +394,8 @@ NEXT_APOST:
 ;
 ;  Not a complex number.  Decide if it is a floating point, double precision,
 ;  or integer number.  If an error occurs, then a string value is returned.
-;  If the integer is not within the range of a valid long value, then it will 
-;  be converted to a double.  
+;  If the integer is not within the range of a valid long value, then it will
+;  be converted to a double.
 ;
 NOT_COMPLEX:
                         ON_IOERROR, GOT_VALUE
@@ -414,7 +414,7 @@ NOT_COMPLEX:
                             if (VALUE GE LMIN) and (VALUE LE LMAX) THEN $
                                 VALUE = LONG(VALUE)
                         ENDELSE
-                            
+
 ;
 GOT_VALUE:
                         ON_IOERROR, NULL
@@ -435,7 +435,7 @@ GOT_VALUE:
                         ENDELSE
                         RESULT = MAKE_ARRAY( MAXNUM, TYPE=SZ_VALUE[1])
                         COMMENTS = STRARR(MAXNUM)
-                    ENDIF 
+                    ENDIF
                     RESULT[   NUMBER[I]-1 ] =  VALUE
                     COMMENTS[ NUMBER[I]-1 ] =  COMMENT
                 ENDIF ELSE BEGIN

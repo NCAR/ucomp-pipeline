@@ -69,7 +69,7 @@ pro ucomp_average_darkfile, primary_header, ext_data, ext_headers, $
                   comment='extension(s) used from RAWFILE'
     ext_headers->add, averaged_header
   endfor
-  
+
   n_extensions = n_groups
   ext_data = reform(averaged_ext_data, averaged_dims)
 end

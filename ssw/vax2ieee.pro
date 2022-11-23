@@ -10,7 +10,7 @@ pro vax2ieee, vinput
 ;       vax2ieee, variable
 ;  INPUTS:
 ;       variable - The data variable to be converted.  This may be a scalar
-;                  or an array.  Valid datatypes are floating point, and 
+;                  or an array.  Valid datatypes are floating point, and
 ;                  double precision.
 ;  OUTPUTS:
 ;       variable - The result of the conversion is passed back in the

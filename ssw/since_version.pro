@@ -2,34 +2,34 @@ function since_version, release
 ;+
 ; Project     :	SOHO - CDS
 ;
-; Name        :	
+; Name        :
 ;	SINCE_VERSION
 ;
-; Purpose     :	
+; Purpose     :
 ;	Determine if current release is later than specified.
 ;
-; Explanation :	
-;	Determine if the current release of IDL (as given in the 
-;	!VERSION.RELEASE system variable) comes after the user specified 
-;	release.   
+; Explanation :
+;	Determine if the current release of IDL (as given in the
+;	!VERSION.RELEASE system variable) comes after the user specified
+;	release.
 ;
-; Use         :	
+; Use         :
 ;	test = SINCE_VERSION( release )
 ;
-;	Use the /FTOXDR keyword to the BYTEORDER procedure if the current 
+;	Use the /FTOXDR keyword to the BYTEORDER procedure if the current
 ;	release of IDL is 2.2.2 or later
 ;
 ;	IDL> if since_version('2.2.2') then byteorder, a, /FTOXDR
 ;
-; Inputs      :	
-;	release - scalar string, must be formatted exactly like the 
-;		!VERSION.RELEASE system variable (e.g. '3.0.0') 
+; Inputs      :
+;	release - scalar string, must be formatted exactly like the
+;		!VERSION.RELEASE system variable (e.g. '3.0.0')
 ;
-; Opt. Inputs :	
+; Opt. Inputs :
 ;	None.
 ;
-; Outputs     :	
-;	test - 1 if current release is identical or later than the specified 
+; Outputs     :
+;	test - 1 if current release is identical or later than the specified
 ;              'release' else 0
 ;
 ; Opt. Outputs:	None.
@@ -46,7 +46,7 @@ function since_version, release
 ;
 ; Category    :	Utilities, Miscellaneous
 ;
-; Prev. Hist. :	
+; Prev. Hist. :
 ;	Written   Wayne Landsman         Hughes/STX        January, 1992
 ;	Corrected algorithm     W. Landsman                April, 1992
 ;

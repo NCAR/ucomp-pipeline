@@ -12,7 +12,7 @@ function ucomp_verify_ut::init, _extra=e
                             'ucomp_verify_check_collection_server', $
                             'ucomp_verify_check_archive_server']
   self->addTestingRoutine, ['ucomp_verify_get_datetime'], /is_function
-  
+
 
   return, 1
 end

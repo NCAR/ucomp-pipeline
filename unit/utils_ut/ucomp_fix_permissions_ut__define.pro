@@ -49,7 +49,7 @@ function ucomp_fix_permissions_ut::init, _extra=e
   if (~self->UCoMPutTestCase::init(_extra=e)) then return, 0
 
   self->addTestingRoutine, ['ucomp_fix_permissions']
-  
+
 
   return, 1
 end

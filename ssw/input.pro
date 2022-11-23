@@ -22,7 +22,7 @@ pro input, str, ans, default_in, min_range, max_range
 ;	max_range - The largest accesptable answer
 ;
 ;	NOTE:
-;	   If output type is string, and there are 4 parameters, 
+;	   If output type is string, and there are 4 parameters,
 ;	   then the output is converted to uppercase
 ;HISTORY:
 ;	Written 1988 by M.Morrison
@@ -35,7 +35,7 @@ def='  [Default: '  +  strtrim(string(default),2)  +  ' ] '
 fmt='$(3a)'
 ;
 repeat begin
-    n=n_elements(str) 
+    n=n_elements(str)
     if (n gt 1) then begin
 	for i=0,n-2 do print,str(i)
 	print, str(n-1), def, format='(2a,$)'
@@ -46,7 +46,7 @@ repeat begin
     ans=' '
     read, "", ans
     ;
-    if (ans eq '') then ans=default 
+    if (ans eq '') then ans=default
     type_conv, ans, default, type
     if ((type eq 1) and (n_params(0) ge 4)) then ans=strupcase(ans)
     ;

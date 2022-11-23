@@ -18,7 +18,7 @@ function gt_day, item0, header=header, string=string, spaces=spaces, $
 ;	The input can be a structure or a scalar.  The structure can
 ;	be the index, or roadmap, or observing log.
 ;INPUT:
-;	item	- A structure or scalar.  It can be an array.  
+;	item	- A structure or scalar.  It can be an array.
 ;                               (or)
 ;                The "standard" 7 element external representation
 ;                of time (HH,MM,SS,MSEC,DD,MM,YY)

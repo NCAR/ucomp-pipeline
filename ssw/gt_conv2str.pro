@@ -15,7 +15,7 @@ function gt_conv2str, item, str_long, str_short, header_array, $
 ;	str_long
 ;	str_short
 ;	header_array - A list of the header strings available.
-;			header_array(0) - used by /string and /fmt 
+;			header_array(0) - used by /string and /fmt
 ;					  and /spaces options
 ;			header_array(1) - used by /short option
 ;OPTIONAL INPUT:

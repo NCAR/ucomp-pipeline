@@ -6,7 +6,7 @@ function ucomp_db_create_tables_ut::init, _extra=e
   if (~self->UCoMPutTestCase::init(_extra=e)) then return, 0
 
   self->addTestingRoutine, ['ucomp_db_create_tables']
-  
+
 
   return, 1
 end

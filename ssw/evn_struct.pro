@@ -2,8 +2,8 @@ pro evn_struct, Evn_Summary = Evn_Summary,  $
                      Evn_Common = Evn_Common,  $
                      Evn_PFI = Evn_PFI,  $
                      EVN_Version = EVN_Version
-   
-   
+
+
 ;+
 ;       NAME:
 ;               EVN_STRUCT
@@ -18,8 +18,8 @@ pro evn_struct, Evn_Summary = Evn_Summary,  $
 ;               written by Mons Morrison, Fall 90.
 ;
 ;-
-   
-   
+
+
 Evn_Summary = { Evn_Summary_Rec,              $
       time: LONG(0),  $                      ; 02- Time of beginning of Event (millisec of day)
       day: FIX(0),  $                        ; 06- Day of beginning of Event (since 1-Jan-79)
@@ -32,7 +32,7 @@ Evn_Summary = { Evn_Summary_Rec,              $
                                              ;
                                              ;
       nMF: FIX(0),  $                        ;   - Number of major frames as derived from
-                                             ;     the number of WBS/HXT observing log 
+                                             ;     the number of WBS/HXT observing log
                                              ;     entries * 2
       nSXT_PFI: FIX(0),  $                   ;   - The number of SXT PFI images
       nSXT_FFI: FIX(0),  $                   ;   - The number of SXT FFI images
@@ -66,7 +66,7 @@ Evn_Summary = { Evn_Summary_Rec,              $
                                              ;     Simple square root compression of original value
                                              ;
                                              ;      -------- Peak BCS values taken from OBS entry
-      total_cps: INTARR(4),  $               ; 13- Counts per second in the spectra dataset for each channel 
+      total_cps: INTARR(4),  $               ; 13- Counts per second in the spectra dataset for each channel
       All_cps: BYTARR(4),  $                 ; 21- BCS Counts for all events
                                              ;     Simple square root compression of original value
       Acc_cps: BYTARR(4),  $                 ; 25- BCS Accumulated counts
@@ -83,25 +83,25 @@ Evn_Summary = { Evn_Summary_Rec,              $
                                              ;               = 0 means no change
                                              ;               = 1 means it changed > 30 arcsec
                                              ;               = 2 means it changed > 60 arcsec
-                                             ;               = 255 means there was no entry made (no PFI datasets 
+                                             ;               = 255 means there was no entry made (no PFI datasets
                                              ;                 for that event)
                                              ;
                                              ;
       flag: BYTE(0),  $                      ;   - Flag information
                                              ;               = 1 false flare (SAA triggered)
                                              ;               = ...
-                                             ;   - TODO - put in maximum count rates for WBS SXS1, ... HXT, ... BCS 
+                                             ;   - TODO - put in maximum count rates for WBS SXS1, ... HXT, ... BCS
       spare: BYTARR(10) }                    ;
-   
-   
-   
+
+
+
 Evn_Common = { Evn_Common_Rec,              $
       entry_type: FIX(0),  $                 ; 00- Event Log Entry Type/Version
                                              ;
       time: LONG(0),  $                      ; 02- Major Frame time (millisec of day)
       day: FIX(0),  $                        ; 06- Major Frame day (since 1-Jan-79)
                                              ;
-      Instru_on_off: BYTE(0),  $             ; 08- Instrument on/off 
+      Instru_on_off: BYTE(0),  $             ; 08- Instrument on/off
                                              ;       0: HXT
                                              ;       1: SXT
                                              ;       2: BCS
@@ -110,7 +110,7 @@ Evn_Common = { Evn_Common_Rec,              $
                                              ;       5: WBS-GRS
                                              ;       6: WBS-RBM
       mode_rate: BYTE(0),  $                 ; 09- DP mode rate
-                                             ;       0: Day/Night    (set = day)     
+                                             ;       0: Day/Night    (set = day)
                                              ;       1: SAA          (set = SAA active)
                                              ;       2-3: DP Mode    (FL, QT, NT, other)
                                              ;       4-5: Telemetry Rate     (Lo, Med, Hi)
@@ -125,14 +125,14 @@ Evn_Common = { Evn_Common_Rec,              $
                                              ;       0: BDR Coverage (set = covered)
                                              ;       1: Real Time    (set = covered)
       FFI_Expos: BYTARR(4),  $               ; 15- Full width exposure paremeters
-                                             ;       (0): Compression/resolution/... 
+                                             ;       (0): Compression/resolution/...
                                              ;       (1): Start Row
                                              ;       (2): End Row
                                              ;       (3): ??
       spare: BYTARR(13) }                    ; 19-
-   
-   
-   
+
+
+
 Evn_PFI = { Evn_PFI_Rec,              $
       entry_type: FIX(0),  $                 ; 00- Event Log Entry Type/Version
                                              ;
@@ -153,9 +153,9 @@ Evn_PFI = { Evn_PFI_Rec,              $
       FOV: BYTE(0),  $                       ; 23- Field of view (largest/smallest/???)
                                              ;
       spare: BYTARR(8) }                     ; 24- Spare
-   
-   
-   
+
+
+
 EVN_Version = { EVN_Version_Rec,              $
       data : FIX('8011'x),  $                ;
                                              ; 00- The version number of the Roadmap
@@ -165,9 +165,9 @@ EVN_Version = { EVN_Version_Rec,              $
                                              ;
                                              ;     This structure is not written to any files
       spare: BYTARR(14) }                    ;     (need for automatic conversion to IDL format)
-   
-   
-   
-  
-  
+
+
+
+
+
 end

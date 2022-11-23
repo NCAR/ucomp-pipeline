@@ -464,7 +464,7 @@
 ;     limits function.  K. Tolbert, 23 Feb 2005
 ;   Some documentation clarifications, CM, 09 Nov 2007
 ;   Ensure that MY_FUNCT returns a scalar; make it more likely that
-;     error messages get back out to the user; fatal CATCH'd error 
+;     error messages get back out to the user; fatal CATCH'd error
 ;     now returns STATUS = -18, CM, 17 Sep 2008
 ;   Fix TNMIN_CALL when parameters are TIEd (thanks to Alfred de
 ;     Wijn), CM, 22 Nov 2009
@@ -2271,4 +2271,3 @@ CNVTST_DONE:
 
   return, xnew
 end
-

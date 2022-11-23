@@ -36,6 +36,3 @@ endfor
 
 return,tags
 end
-
-
-

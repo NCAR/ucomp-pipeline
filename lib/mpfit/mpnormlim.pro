@@ -5,7 +5,7 @@
 ; AUTHOR:
 ;   Craig B. Markwardt, NASA/GSFC Code 662, Greenbelt, MD 20770
 ;   craigm@lheamail.gsfc.nasa.gov
-;   UPDATED VERSIONs can be found on my WEB PAGE: 
+;   UPDATED VERSIONs can be found on my WEB PAGE:
 ;      http://cow.physics.wisc.edu/~craigm/idl/idl.html
 ;
 ; PURPOSE:
@@ -117,46 +117,46 @@ function cephes_polevl, x, coef
 end
 
 function cephes_ndtri, y0
-;   
+;
 ;   	Inverse of Normal distribution function
-;   
-;   
-;   
+;
+;
+;
 ;    SYNOPSIS:
-;   
+;
 ;    double x, y, ndtri();
-;   
+;
 ;    x = ndtri( y );
-;   
-;   
-;   
+;
+;
+;
 ;    DESCRIPTION:
-;   
+;
 ;    Returns the argument, x, for which the area under the
 ;    Gaussian probability density function (integrated from
 ;    minus infinity to x) is equal to y.
-;   
-;   
+;
+;
 ;    For small arguments 0 < y < exp(-2), the program computes
 ;    z = sqrt( -2.0 * log(y) );  then the approximation is
 ;    x = z - log(z)/z  - (1/z) P(1/z) / Q(1/z).
 ;    There are two rational functions P/Q, one for 0 < y < exp(-32)
 ;    and the other for y up to exp(-2).  For larger arguments,
 ;    w = y - 0.5, and  x/sqrt(2pi) = w + w**3 R(w**2)/S(w**2)).
-;   
-;   
+;
+;
 ;    ACCURACY:
-;   
+;
 ;                         Relative error:
 ;    arithmetic   domain        # trials      peak         rms
 ;       DEC      0.125, 1         5500       9.5e-17     2.1e-17
 ;       DEC      6e-39, 0.135     3500       5.7e-17     1.3e-17
 ;       IEEE     0.125, 1        20000       7.2e-16     1.3e-16
 ;       IEEE     3e-308, 0.135   50000       4.6e-16     9.8e-17
-;   
-;   
+;
+;
 ;    ERROR MESSAGES:
-;   
+;
 ;      message         condition    value returned
 ;    ndtri domain       x <= 0        -MAXNUM
 ;    ndtri domain       x >= 1         MAXNUM
@@ -221,7 +221,7 @@ function cephes_ndtri, y0
       x = x * s2pi
       return, x
   endif
-  
+
   x = sqrt( -2.D * alog(y))
   x0 = x - alog(x)/x
   z = 1.D/x
@@ -269,7 +269,7 @@ function mpnormlim, p, clevel=clevel, slevel=slevel
           y[i] = - cephes_ndtri(p1[i])
       endfor
   endif else if keyword_set(clevel) then begin
-      p1 = 0.5D + 0.5D * p  ;; On binary computers this computation is 
+      p1 = 0.5D + 0.5D * p  ;; On binary computers this computation is
       ;; exact (to the machine precision), so don't worry about it.
       ;; This computation shaves off the top half of the confidence
       ;; region, and then adds the "negative infinity to zero part.

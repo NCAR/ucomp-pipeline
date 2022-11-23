@@ -1,14 +1,14 @@
 ;+
-; Project     : SOHO - CDS     
-;                   
+; Project     : SOHO - CDS
+;
 ; Name        : CONCAT_DIR
-;               
+;
 ; Purpose     : To concatenate directory and file names for current os.
-;               
+;
 ; Explanation : The given file name is appended to the given directory
 ;               name with the format appropriate to the current operating
 ;               system. Can be also used to append two directory names
-;               
+;
 ; Use         : IDL> full_name = concat_dir(directory,filename)
 ;               IDL> pixfile = concat_dir('$DIR_GIS_MODEL','pixels.dat')
 ;
@@ -22,29 +22,29 @@
 ;                                   names
 ;
 ; Opt. Inputs : None
-;               
-; Outputs     : The function returns the concatenated string.  If the file 
-;               input is a string array then the output will be a string 
+;
+; Outputs     : The function returns the concatenated string.  If the file
+;               input is a string array then the output will be a string
 ;               array also.
-;               
+;
 ; Keywords    : DIR -- If set, the second argument is treated as a directory
 ;                      name instead of a file name (it has no effect if not
 ;                      under VMS system)
 ;               CHECK -- Check the validity of directory name(s) if set
 ;
 ; Calls       : CHK_DIR, BELL, BREAK_PATH
-;               
+;
 ; Restrictions: Assumes Unix type format if os is not VMS.
-;               
+;
 ; Side effects: None
-;               
+;
 ; Category    : Utilities, Strings
-;               
+;
 ; Prev. Hist. : Yohkoh routine by M. Morrison
 ;
 ; Written     : CDS version by C D Pike, RAL, 19/3/93
-;               
-; Modified    : 
+;
+; Modified    :
 ;       Version 2, Liyun Wang, GSFC/ARC, January 3, 1995
 ;          Made it capable of concatenating directory names
 ;          Added keywords CHECK and DIR for output
@@ -55,7 +55,7 @@
 ;
 ; VERSION:
 ;       Version 2, January 3, 1995
-;-            
+;-
 ;
 FUNCTION concat_dir, dirname, filnam, check=check, dir=dir
 ;
@@ -64,7 +64,7 @@ FUNCTION concat_dir, dirname, filnam, check=check, dir=dir
    IF N_PARAMS() LT 2 THEN BEGIN
       PRINT,' ' & bell
       PRINT,'Use:   out_string = concat_dir( directory, filename)'
-      PRINT,' ' 
+      PRINT,' '
       RETURN,''
    ENDIF
 ;
@@ -72,7 +72,7 @@ FUNCTION concat_dir, dirname, filnam, check=check, dir=dir
 ;
    dir0 = STRTRIM(dirname, 2)
    n_dir = N_ELEMENTS(dir0)
-   IF N_ELEMENTS(check) EQ 0 THEN check = 0 ELSE check = 1 
+   IF N_ELEMENTS(check) EQ 0 THEN check = 0 ELSE check = 1
 ;
 ;  act according to operating system
 ;
@@ -92,7 +92,7 @@ FUNCTION concat_dir, dirname, filnam, check=check, dir=dir
                   'Warning: directory '+dir0(i)+' does not exist'
          ENDIF
          last = STRMID(dir0(i), STRLEN(dir0(i))-1,1)
-         IF ((last NE ']') AND (last NE ':')) THEN BEGIN 
+         IF ((last NE ']') AND (last NE ':')) THEN BEGIN
             dir0(i) = dir0(i) + ':' ;append an ending ':'
          ENDIF
 	 i = i + 1
@@ -106,7 +106,7 @@ FUNCTION concat_dir, dirname, filnam, check=check, dir=dir
          ENDIF
          last = STRMID(dir0(i), STRLEN(dir0(i))-1, 1)
          IF (last NE '\') AND (last NE ':') THEN BEGIN
-            dir0(i) = dir0(i) + '\' ;append an ending '\' 
+            dir0(i) = dir0(i) + '\' ;append an ending '\'
          ENDIF
       ENDFOR
 
@@ -117,7 +117,7 @@ FUNCTION concat_dir, dirname, filnam, check=check, dir=dir
                   'Warning: directory '+dir0(i)+' does not exist'
          ENDIF
          IF (STRMID(dir0(i), STRLEN(dir0(i))-1, 1) NE '/') THEN BEGIN
-            dir0(i) = dir0(i) + '/' ;append an ending '/' 
+            dir0(i) = dir0(i) + '/' ;append an ending '/'
          ENDIF
       ENDFOR
    ENDELSE
@@ -129,8 +129,8 @@ FUNCTION concat_dir, dirname, filnam, check=check, dir=dir
    ENDFOR
 
 ;----------------------------------------------------------------------
-;  Under Unix and Windows, FILNAM can still be appended to dir0 even if it 
-;  is a directory name. Under VMS, however, we have to check to see if 
+;  Under Unix and Windows, FILNAM can still be appended to dir0 even if it
+;  is a directory name. Under VMS, however, we have to check to see if
 ;  FILNAM is a directory name, and if it is, we have to do more to append
 ;  it to dir0.
 ;----------------------------------------------------------------------

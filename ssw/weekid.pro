@@ -1,11 +1,11 @@
-function weekid, fileid, all=all,				$ 
+function weekid, fileid, all=all,				$
    		 xbd=xbd, xad=xad, pnt=pnt, fem=fem, obs=obs,	$
 		 ver=ver, gt_pre=gt_pre, indir=indir, 		$
 		 gt_distpre=gt_distpre, prefix=prefix, vnum=vnum
 ;+
 ;   Name: weekid
 ;
-;   Purpose: return expanded file ids for weekly files in common area 
+;   Purpose: return expanded file ids for weekly files in common area
 ;	     (provide single point maint for weekly prefix definitions)
 ;
 ;   Input Parameters:
@@ -14,7 +14,7 @@ function weekid, fileid, all=all,				$
 ;   Output:
 ;	function returns string scaler or array
 ;	default is latest version only (scaler)
-;	
+;
 ;   Optional Keyword Parameters:
 ;	all - if set, all prefixes are checked
 ;	xbd,xad,pnt,fem,obs - prefixes to check (mutally exclusive)
@@ -32,18 +32,18 @@ function weekid, fileid, all=all,				$
 ;	Written: slf, 19-feb-92
 ;		 slf,  8-mar-92 	added gt_pre for single pt maint
 ;		 mdm, 20-May-92		Added "indir" option
-;		 mdm,  9-Jun-92		Removed unix specific "/" code 
+;		 mdm,  9-Jun-92		Removed unix specific "/" code
 ;					Used wildcard "*.*" instead of "*"
-;	         slf, 22-Jun-92		Added nar,evn,gev 
+;	         slf, 22-Jun-92		Added nar,evn,gev
 ;		 slf, 20-Oct-92		Added gxt
 ;		 slf, 24-Nov-92		Added ssl, sot
 ;		 slf,  6-apr-93		Added prefix and vnum keywords
 ;                slf, 19-aug-93         replaced recursive segment
-;-	
+;-
 ;
 ; handle vnum (input version number)
 svnum=size(vnum)
-case 1 of 
+case 1 of
    svnum(svnum(0)+1) eq 0: sver='*'			; all versions
    svnum(svnum(0)+1) eq 7: sver=vnum			; string, use as is
    else: sver=string(fix(vnum),format='(i2.2)')		; number passed
@@ -52,7 +52,7 @@ endcase
 if n_elements(fileid) eq 0 then fileid='*'	;default wild card
 ; set up filenames
 distpre= $		; distributed (as tar sets)
-   ['xbd','xad','fem','nar','evn','gev','gxt','sot','ssl']	
+   ['xbd','xad','fem','nar','evn','gev','gxt','sot','ssl']
 preweek=[distpre, 'obs', 'pnt']
 
 if keyword_set(gt_pre) then return, preweek	; just prefixes
@@ -95,7 +95,7 @@ if not keyword_set(prefix) then begin
       keyword_set(gev): prefix='gev'
       keyword_set(gxt): prefix='gxt'
       keyword_set(sot): prefix='sot'
-      keyword_set(ssl): prefix='ssl'	
+      keyword_set(ssl): prefix='ssl'
       keyword_set(obs): prefix='obs'
       keyword_set(pnt): prefix='pnt'
       else: begin
@@ -105,9 +105,9 @@ if not keyword_set(prefix) then begin
    endcase
 endif
 ;
-index=where(prefix(0) eq preweek)		; which file 
+index=where(prefix(0) eq preweek)		; which file
 gen=findfile(genfiles(index(0)))		; search
-latest=gen(n_elements(gen)-1)			; take latest 
+latest=gen(n_elements(gen)-1)			; take latest
 break_file,latest,log,path,file,ext,version	;
 ver=fix(str_replace(ext,'.'))			; version as integer
 ;

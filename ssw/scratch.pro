@@ -10,7 +10,7 @@ pro scratch, u0, u1, u2, u3, u4 ,u5, u6, u7, u8, u9, 			$
 ;
 ;   Input Parameters:
 ;      u0, u1, ... u9 	 ;if defined on input, log units to close and delete
-;   
+;
 ;   Output Parameters:
 ;      u0, u1, ... u9    ;if undefined, logical units assigned during open
 ;
@@ -39,11 +39,11 @@ pro scratch, u0, u1, u2, u3, u4 ,u5, u6, u7, u8, u9, 			$
 ;      scratch			   ; close/delete all open scratch files
 ;      scratch,/cleanup	   	   ; same plus any old scratch files from
 ;      scratch,/clean,/nodel,name=name ; new and old scratch file names
-;      scratch,u1,file='fname',/open   ; opens fname 
+;      scratch,u1,file='fname',/open   ; opens fname
 ;
 ;   Restrictions:
 ;      uses execute statement, so no recursion allowed
-;      if user supplies file names (with file= keyword), then some 
+;      if user supplies file names (with file= keyword), then some
 ;      auto-mangagement functions are lost (ex: /cleanup function)
 ;
 ;   History: slf, 3-March-1993
@@ -80,7 +80,7 @@ if keyword_set(open) then begin
       sname=strcompress('SCRATCH_' + root,/remove)
    endelse
 ;  names defined, now open the files
-   for i=0, n_params()-1 do begin   
+   for i=0, n_params()-1 do begin
       name=sname(i)
       if not keyword_set(file) then name=concat_dir(home,sname(i)) ; ~
       names=[names,name]			; update output array
@@ -97,7 +97,7 @@ endif else begin					; close unit
 		 ne -1,scount)
       for i=0,scount-1 do begin
          free_lun,scrstat(openscr(i)).unit
-	 fname=scrstat(openscr(i)).name 
+	 fname=scrstat(openscr(i)).name
          if keyword_set(print) then lprint,fname
 	 names=[names,fname]
          if strlowcase(!version.os eq 'vms') then fname=fname+'1'

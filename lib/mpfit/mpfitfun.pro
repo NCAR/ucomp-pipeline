@@ -5,7 +5,7 @@
 ; AUTHOR:
 ;   Craig B. Markwardt, NASA/GSFC Code 662, Greenbelt, MD 20770
 ;   craigm@lheamail.gsfc.nasa.gov
-;   UPDATED VERSIONs can be found on my WEB PAGE: 
+;   UPDATED VERSIONs can be found on my WEB PAGE:
 ;      http://cow.physics.wisc.edu/~craigm/idl/idl.html
 ;
 ; PURPOSE:
@@ -27,7 +27,7 @@
 ;  Given the data and their uncertainties, MPFITFUN finds the best set
 ;  of model parameters which match the data (in a least-squares
 ;  sense) and returns them in an array.
-;  
+;
 ;  The user must supply the following items:
 ;   - An array of independent variable values ("X").
 ;   - An array of "measured" *dependent* variable values ("Y").
@@ -90,7 +90,7 @@
 ;    ; MYFUNCT - example user function
 ;    ;   P - input parameter values (N-element array)
 ;    ;   DP - upon input, an N-vector indicating which parameters
-;    ;          to compute derivatives for; 
+;    ;          to compute derivatives for;
 ;    ;        upon output, the user function must return
 ;    ;          an ARRAY(M,N) of derivatives in this keyword
 ;    ;   (keywords) - any other keywords specified by FUNCTARGS
@@ -98,7 +98,7 @@
 ;    ;
 ;    FUNCTION MYFUNCT, x, p, dp [, (additional keywords if desired)]
 ;     model = F(x, p)         ;; Model function
-;     
+;
 ;     if n_params() GT 2 then begin
 ;       ; Create derivative and compute derivative array
 ;       requested = dp   ; Save original value of DP
@@ -108,7 +108,7 @@
 ;       for i = 0, n_elements(p)-1 do if requested(i) NE 0 then $
 ;         dp(*,i) = FGRAD(x, p, i)
 ;     endif
-;    
+;
 ;     return, resid
 ;    END
 ;
@@ -144,31 +144,31 @@
 ;  Each parameter is associated with one element of the array, in
 ;  numerical order.  The structure can have the following entries
 ;  (none are required):
-;  
+;
 ;     .VALUE - the starting parameter value (but see the START_PARAMS
 ;              parameter for more information).
-;  
+;
 ;     .FIXED - a boolean value, whether the parameter is to be held
 ;              fixed or not.  Fixed parameters are not varied by
 ;              MPFIT, but are passed on to MYFUNCT for evaluation.
-;  
+;
 ;     .LIMITED - a two-element boolean array.  If the first/second
 ;                element is set, then the parameter is bounded on the
 ;                lower/upper side.  A parameter can be bounded on both
 ;                sides.  Both LIMITED and LIMITS must be given
 ;                together.
-;  
+;
 ;     .LIMITS - a two-element float or double array.  Gives the
 ;               parameter limits on the lower and upper sides,
 ;               respectively.  Zero, one or two of these values can be
 ;               set, depending on the values of LIMITED.  Both LIMITED
 ;               and LIMITS must be given together.
-;  
+;
 ;     .PARNAME - a string, giving the name of the parameter.  The
 ;                fitting code of MPFIT does not use this tag in any
 ;                way.  However, the default ITERPROC will print the
 ;                parameter name if available.
-;  
+;
 ;     .STEP - the step size to be used in calculating the numerical
 ;             derivatives.  If set to zero, then the step size is
 ;             computed automatically.  Ignored when AUTODERIVATIVE=0.
@@ -204,7 +204,7 @@
 ;                  one iteration.
 ;
 ;                  A value of 0 indicates no maximum.  Default: 0.
-;  
+;
 ;     .TIED - a string expression which "ties" the parameter to other
 ;             free or fixed parameters as an equality constraint.  Any
 ;             expression involving constants and the parameter array P
@@ -230,7 +230,7 @@
 ;  Therefore programmers are urged to avoid using tags starting with
 ;  "MP", but otherwise they are free to include their own fields
 ;  within the PARINFO structure, which will be ignored by MPFIT.
-;  
+;
 ;  PARINFO Example:
 ;  parinfo = replicate({value:0.D, fixed:0, limited:[0,0], $
 ;                       limits:[0.D,0]}, 5)
@@ -238,7 +238,7 @@
 ;  parinfo[4].limited[0] = 1
 ;  parinfo[4].limits[0]  = 50.D
 ;  parinfo[*].value = [5.7D, 2.2, 500., 1.5, 2000.]
-;  
+;
 ;  A total of 5 parameters, with starting values of 5.7,
 ;  2.2, 500, 1.5, and 2000 are given.  The first parameter
 ;  is fixed at a value of 5.7, and the last parameter is
@@ -247,7 +247,7 @@
 ; COMPATIBILITY
 ;
 ;  This function is designed to work with IDL 5.0 or greater.
-;  
+;
 ;  Because TIED parameters rely on the EXECUTE() function, they cannot
 ;  be used with the free version of the IDL Virtual Machine.
 ;
@@ -274,7 +274,7 @@
 ;                  is ignored
 ;                * if ERR is NaN or Infinite, and the NAN keyword is
 ;                  set, then the corresponding data point is ignored
-;                * if ERR is negative, then the absolute value of 
+;                * if ERR is negative, then the absolute value of
 ;                  ERR is used.
 ;
 ;   START_PARAMS - An array of starting values for each of the
@@ -290,7 +290,7 @@
 ;                  passed, then the starting *value* is taken from
 ;                  START_PARAMS, but the *constraints* are taken from
 ;                  PARINFO.
-; 
+;
 ;
 ; RETURNS:
 ;
@@ -344,7 +344,7 @@
 ;         NPEGGED).  It also does not account for data points which
 ;         are assigned zero weight, for example if :
 ;           * WEIGHTS[i] EQ 0, or
-;           * ERR[i] EQ infinity, or 
+;           * ERR[i] EQ infinity, or
 ;           * any of the values is "undefined" and /NAN is set.
 ;
 ;   ERRMSG - a string error or warning message is returned.
@@ -384,11 +384,11 @@
 ;                PARINFO=parinfo, QUIET=quiet, ...
 ;                ; perform custom iteration update
 ;              END
-;         
+;
 ;              ITERPROC must either accept all three keyword
 ;              parameters (FUNCTARGS, PARINFO and QUIET), or at least
 ;              accept them via the _EXTRA keyword.
-;          
+;
 ;              MYFUNCT is the user-supplied function to be minimized,
 ;              P is the current set of model parameters, ITER is the
 ;              iteration number, and FUNCTARGS are the arguments to be
@@ -412,7 +412,7 @@
 ;
 ;   MAXITER - The maximum number of iterations to perform.  If the
 ;             number of calculation iterations exceeds MAXITER, then
-;             the STATUS value is set to 5 and MPFIT returns.  
+;             the STATUS value is set to 5 and MPFIT returns.
 ;
 ;             If MAXITER EQ 0, then MPFIT does not iterate to adjust
 ;             parameter values; however, the user function is evaluated
@@ -452,7 +452,7 @@
 ;             Provides a mechanism for more sophisticated constraints
 ;             to be placed on parameter values.  When PARINFO is not
 ;             passed, then it is assumed that all parameters are free
-;             and unconstrained.  Values in PARINFO are never 
+;             and unconstrained.  Values in PARINFO are never
 ;             modified during a call to MPFIT.
 ;
 ;             See description above for the structure of PARINFO.
@@ -467,7 +467,7 @@
 ;            If the fit is unweighted (i.e. no errors were given, or
 ;            the weights were uniformly set to unity), then PERROR
 ;            will probably not represent the true parameter
-;            uncertainties.  
+;            uncertainties.
 ;
 ;            *If* you can assume that the true reduced chi-squared
 ;            value is unity -- meaning that the fit is implicitly
@@ -506,7 +506,7 @@
 ;             numerical overflow in the user's model function, which
 ;             must be avoided.
 ;
-;        -15 to -1 
+;        -15 to -1
 ;             these are error codes that either MYFUNCT or ITERPROC
 ;             may return to terminate the fitting process (see
 ;             description of MPFIT_ERROR common below).  If either
@@ -516,27 +516,27 @@
 ;             clash with MPFIT.
 ;
 ;	   0  improper input parameters.
-;         
+;
 ;	   1  both actual and predicted relative reductions
 ;	      in the sum of squares are at most FTOL.
-;         
+;
 ;	   2  relative error between two consecutive iterates
 ;	      is at most XTOL
-;         
+;
 ;	   3  conditions for STATUS = 1 and STATUS = 2 both hold.
-;         
+;
 ;	   4  the cosine of the angle between fvec and any
 ;	      column of the jacobian is at most GTOL in
 ;	      absolute value.
-;         
+;
 ;	   5  the maximum number of iterations has been reached
-;         
+;
 ;	   6  FTOL is too small. no further reduction in
 ;	      the sum of squares is possible.
-;         
+;
 ;	   7  XTOL is too small. no further improvement in
 ;	      the approximate solution x is possible.
-;         
+;
 ;	   8  GTOL is too small. fvec is orthogonal to the
 ;	      columns of the jacobian to machine precision.
 ;
@@ -558,7 +558,7 @@
 ;                  is ignored
 ;                * if WEIGHTS is NaN or Infinite, and the NAN keyword is
 ;                  set, then the corresponding data point is ignored
-;                * if WEIGHTS is negative, then the absolute value of 
+;                * if WEIGHTS is negative, then the absolute value of
 ;                  WEIGHTS is used.
 ;
 ;   XTOL - a nonnegative input variable. Termination occurs when the
@@ -569,12 +569,12 @@
 ;
 ;   YFIT - the best-fit model function, as returned by MYFUNCT.
 ;
-;   
+;
 ; EXAMPLE:
 ;
 ;   ; First, generate some synthetic data
 ;   npts = 200
-;   x  = dindgen(npts) * 0.1 - 10.                  ; Independent variable 
+;   x  = dindgen(npts) * 0.1 - 10.                  ; Independent variable
 ;   yi = gauss1(x, [2.2D, 1.4, 3000.])              ; "Ideal" Y variable
 ;   y  = yi + randomn(seed, npts) * sqrt(1000. + yi); Measured, w/ noise
 ;   sy = sqrt(1000.D + y)                           ; Poisson errors
@@ -609,7 +609,7 @@
 ; REFERENCES:
 ;
 ;   MINPACK-1, Jorge More', available from netlib (www.netlib.org).
-;   "Optimization Software Guide," Jorge More' and Stephen Wright, 
+;   "Optimization Software Guide," Jorge More' and Stephen Wright,
 ;     SIAM, *Frontiers in Applied Mathematics*, Number 14.
 ;
 ; MODIFICATION HISTORY:
@@ -706,11 +706,11 @@ function mpfitfun_eval, p, dp, _EXTRA=extra
   endif else begin
       result = (y-f)
   endelse
-      
+
   ;; Make sure the returned result is one-dimensional.
   result = reform(result, n_elements(result), /overwrite)
   return, result
-  
+
 end
 
 ;; Implement residual and gradient scaling according to the
@@ -732,7 +732,7 @@ pro mpfitfun_cash, resid, dresid
   ;; Scale gradient by sqrt(y)/f
   gfact = temporary(dresid) * rebin(reform(sqrt(y)/f,m,1),m,n)
   dresid = reform(dresid, m, n, /overwrite)
-  
+
   ;; Scale residuals by 1/sqrt(y)
   resid = temporary(resid)/sqrt(y)
 
@@ -817,7 +817,7 @@ function mpfitfun, fcn, x, y, err, p, WEIGHTS=wts, FUNCTARGS=fa, $
       return, !values.d_nan
   endif
 
-  ;; If the weights/errors are a scalar value, and not finite, then 
+  ;; If the weights/errors are a scalar value, and not finite, then
   ;; the fit will surely fail
   if n_elements(wc) EQ 1 then begin
       if finite(wc[0]) EQ 0 then begin

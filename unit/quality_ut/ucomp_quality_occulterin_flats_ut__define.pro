@@ -5,7 +5,7 @@ function ucomp_quality_occulterin_flats_ut::init, _extra=e
 
   if (~self->MGutTestCase::init(_extra=e)) then return, 0
 
-  
+
   self->addTestingRoutine, ['ucomp_quality_occulterin_flats'], $
                            /is_function
 

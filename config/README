@@ -1,6 +1,6 @@
 Config files specify the options for running the pipeline. A pipeline run must
 have a valid config file specifying all the options in the `comp.spec.cfg` file
-that don't have default values. 
+that don't have default values.
 
 Place config files in this directory -- the pipeline will only find config files
 placed here.
