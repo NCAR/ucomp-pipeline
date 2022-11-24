@@ -281,3 +281,4 @@
 0.2.79 [Nov 23, 2022]
   fix center wavelength for 991 wave region
 0.2.80
+  fix center wavelength for more new wave regions: 670, 802, 991
