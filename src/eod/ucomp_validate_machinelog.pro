@@ -66,7 +66,7 @@ function ucomp_validate_machinelog, present=present, $
   for f = 0L, n_files - 1L do begin
     !null = where(files[f] eq lines, n_matches)
     if (n_matches ne 1L) then begin
-      mg_log, 'missing %s in machine log', files[i], name=run.logger_name, /error
+      mg_log, 'missing %s in machine log', files[f], name=run.logger_name, /error
       valid = 0B
       n_extra_files += 1L
     endif
