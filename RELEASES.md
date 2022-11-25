@@ -280,5 +280,6 @@
   new display ranges for new lines
 0.2.79 [Nov 23, 2022]
   fix center wavelength for 991 wave region
-0.2.80
+0.2.80 [Nov 25, 2022]
   fix center wavelength for more new wave regions: 670, 802, 991
+  fix for typo in machine log validation that caused crashes
