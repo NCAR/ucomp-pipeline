@@ -283,3 +283,5 @@
 0.2.80 [Nov 25, 2022]
   fix center wavelength for more new wave regions: 670, 802, 991
   fix for typo in machine log validation that caused crashes
+0.2.81 [Nov 28, 2022]
+  change center wavelength by epoch for new lines
