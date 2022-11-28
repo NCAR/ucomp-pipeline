@@ -67,6 +67,11 @@ pro ucomp_l2_dynamics, file, run=run
                 /error
         goto, done
       end
+    (center_indices[0] lt 1L) || (center_indices[0] gt n_extensions - 1L): then begin
+        mg_log, 'not enough wavelengths (center index: %d / %d)', $
+                center_indices[0], n_extensions, $
+                name=run.logger_name, /error
+      end
     else:
   endcase
   center_index = center_indices[0]
