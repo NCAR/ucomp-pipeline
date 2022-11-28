@@ -158,6 +158,8 @@ pro ucomp_write_all_iquv_image, file, data, run=run
 
   iquv_filename = iquv_filename_format
   write_png, iquv_filename, tvrd(true=1)
+  mg_log, 'wrote %s', file_basename(iquv_filename), $
+          name=run.logger_name, /info
 
   done:
   gamma_ct, 1.0, /current   ; reset gamma to linear ramp
