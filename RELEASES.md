@@ -287,3 +287,4 @@
   change center wavelength by epoch for new lines
 0.2.82 [Nov 28, 2022]
   fix typo
+0.2.83
