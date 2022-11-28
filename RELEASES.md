@@ -285,3 +285,4 @@
   fix for typo in machine log validation that caused crashes
 0.2.81 [Nov 28, 2022]
   change center wavelength by epoch for new lines
+0.2.82
