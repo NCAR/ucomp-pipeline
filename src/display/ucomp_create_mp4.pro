@@ -51,9 +51,10 @@ pro ucomp_create_mp4, image_filenames, mp4_filename, run=run, status=status
                ext, $
                mp4_filename, $
                format=cmd_format)
-  spawn, cmd, result, error_result, exit_status=status
+  bash_cmd = string(cmd, format='(%"sh -c \"%s\"")')
+  spawn, bash_cmd, result, error_result, exit_status=status
   if (status ne 0L) then begin
-    mg_log, 'problem creating mp4 with command: %s', cmd, $
+    mg_log, 'problem creating mp4 with command: %s', bash_cmd, $
             name=run.logger_name, /error
     mg_log, '%s', strjoin(error_result, ' '), name=run.logger_name, /error
   endif
@@ -65,25 +66,24 @@ end
 
 ; main-level example program
 
-date = '20190924'
+date = '20221123'
 
 config_filename = filepath('ucomp.latest.cfg', $
                            subdir=['..', '..', 'config'], $
                            root=mg_src_root())
-run = ucomp_run(date, config_filename=config_filename)
+run = ucomp_run(date, 'test', config_filename)
 
-nrgf_glob = filepath('*_kcor_l2_nrgf.fts.gz', $
-                     subdir=[date, 'level2'], $
-                     root=run->config('processing/raw_basedir'))
-nrgf_files = file_search(nrgf_glob, count=n_nrgf_files)
+image_glob = filepath('*.ucomp.1074.l1.3.int.gif', $
+                      subdir=[date, 'level1'], $
+                      root=run->config('processing/basedir'))
+image_files = file_search(image_glob, count=n_image_files)
 
-image_filenames = file_basename(nrgf_files, '_nrgf.fts.gz') + '.gif'
-dailymp4_filename = string(date, format='(%"%s_kcor_l2.mp4")')
+int_mp4_basename = string(date, format='(%"%s_ucomp_int_test.mp4")')
+int_mp4_filename = filepath(int_mp4_basename, $
+                            subdir=[date, 'level1'], $
+                            root=run->config('processing/basedir'))
 
-l2_dir = filepath('level2', subdir=date, root=run->config('processing/raw_basedir'))
-cd, l2_dir
-
-ucomp_create_mp4, image_filenames, dailymp4_filename, run=run, status=status
+ucomp_create_mp4, image_files, int_mp4_filename, run=run, status=status
 help, status
 
 obj_destroy, run
