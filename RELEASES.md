@@ -288,3 +288,4 @@
 0.2.82 [Nov 28, 2022]
   fix typo
 0.2.83
+  subtract rest wavelength in velocity

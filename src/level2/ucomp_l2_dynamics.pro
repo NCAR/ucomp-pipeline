@@ -134,6 +134,22 @@ pro ucomp_l2_dynamics, file, run=run
     endif
   endif
 
+  ; mask data on various thresholds
+  good_indices = where(intensity_center gt 1.0 $
+                         and intensity_center lt 100.0 $
+                         and line_width lt 60.0 $
+                         and line_width gt 15.0 $
+                         and abs(doppler_shift) lt 30.0 $
+                         and doppler_shift ne 0.0, $
+                         complement=bad_indices, /null)
+
+  peak_intensity[bad_indices]     = !values.f_nan
+  enhanced_intensity[bad_indices] = !values.f_nan
+  doppler_shift[bad_indices]      = !values.f_nan
+  line_width[bad_indices]         = !values.f_nan
+
+  doppler_shift -= median(doppler_shift)
+
   l2_dir = filepath('', $
                     subdir=[run.date, 'level2'], $
                     root=run->config('processing/basedir'))
