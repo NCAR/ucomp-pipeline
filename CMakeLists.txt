@@ -90,7 +90,15 @@ include_directories(${IDL_INCLUDE_DIR})
 # must be done before bin/
 add_subdirectory(lib)
 
+message(STATUS "Installation location = ${CMAKE_INSTALL_PREFIX}")
+message(STATUS "Installation version = ${VERSION}")
+
+set(DEFAULT_CONFIG_PATH "${CMAKE_INSTALL_PREFIX}/config" CACHE PATH "default path to configuration files")
+set(CONFIG_DIR "${DEFAULT_CONFIG_PATH}" CACHE PATH "path to configuration files")
+message(STATUS "configuration directory = ${CONFIG_DIR}")
+
 add_subdirectory(bin)
+
 add_subdirectory(config)
 add_subdirectory(gen)
 add_subdirectory(regression)
@@ -161,10 +169,3 @@ add_custom_target(dist
 if (IDLdoc_FOUND)
   add_dependencies(dist doc)
 endif ()
-
-message(STATUS "Installation location = ${CMAKE_INSTALL_PREFIX}")
-message(STATUS "Installation version = ${VERSION}")
-
-set(DEFAULT_CONFIG_PATH "${CMAKE_CURRENT_BINARY_DIR}/config" CACHE PATH "default path to configuration files")
-set(CONFIG_DIR "${DEFAULT_CONFIG_PATH}" CACHE PATH "path to configuration files")
-message(STATUS "configuration directory = ${CONFIG_DIR}")

@@ -16,7 +16,7 @@ PYTHON_ROOT_DIR=/home/mgalloy/anaconda3
 
 /home/mgalloy/software/bin/cmake \
   -DCMAKE_INSTALL_PREFIX:PATH=~/software/ucomp-pipeline${FLAGS} \
-  -DCONFIG_DIR:PATH=~/projects/ucomp-config \
+  -DCONFIG_DIR:PATH=/home/mgalloy/projects/ucomp-config} \
   -DIDL_ROOT_DIR:PATH=${IDL_ROOT_DIR} \
   -DPython3_ROOT_DIR:PATH=${PYTHON_ROOT_DIR} \
   -DNIGHTLY_MACHINE:STRING=dawn \
