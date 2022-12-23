@@ -4,9 +4,12 @@ pro ucomp_loadct_rgb, rgb
   compile_opt strictarr
   common colors, r_orig, g_orig, b_orig, r_curr, g_curr, b_curr
 
-  r_orig = bindgen(256)
-  g_orig = bindgen(256)
-  b_orig = bindgen(256)
+  dims = size(rgb, /dimensions)
+  n_colors = dims[0]
+
+  r_orig = bindgen(n_colors)
+  g_orig = bindgen(n_colors)
+  b_orig = bindgen(n_colors)
 
   r_orig[0] = rgb[*, 0]
   g_orig[0] = rgb[*, 1]
