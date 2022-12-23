@@ -63,6 +63,7 @@ DATE_FORMAT = "%Y%m%d"
 
 DEVNULL = open(os.devnull, "w")
 PIPELINE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+CONFIG_DIR = "@CONFIG_DIR@"
 
 
 # config file helpers
