@@ -73,7 +73,7 @@ def get_config_filename(flags):
     config_basename = f"ucomp.{flags}.cfg"
 
     # construct config file filename
-    config_filename = os.path.join(PIPELINE_DIR, "config", config_basename)
+    config_filename = os.path.join(CONFIG_DIR, config_basename)
 
     return(config_filename)
 
@@ -740,7 +740,7 @@ def get_login(flags, error):
     config_basename = f"ucomp.{flags}.cfg"
 
     # construct config file filename
-    config_filename = os.path.join(PIPELINE_DIR, "config", config_basename)
+    config_filename = get_config_filename(flags)
     if not os.path.isfile(config_filename):
         basename = os.path.basename(config_filename)
         error(f"configuration file does not exist: {basename}")
@@ -913,12 +913,14 @@ def launch_processes(args, routine):
     if len(dates) != 1 and routine == "ucomp_realtime_wrapper":
         args.parser.error("realtime mode is only valid for a single date")
 
+    config_filename = get_config_filename(args.flags)
+
     for d in dates:
         cmd = [os.path.join(PIPELINE_DIR,
                             "bin",
                             "ucomp_script.sh"),
                routine,
-               args.flags,
+               config_filename,
                d]
 
         process = subprocess.Popen(cmd, stderr=subprocess.STDOUT)
@@ -965,8 +967,7 @@ def simulate(args):
 
     # read config file to get options
     pipeline_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-    config_basename = "ucomp.%s.cfg" % args.flags
-    config_filename = os.path.join(pipeline_dir, "config", config_basename)
+    config_filename = get_config_filename(args.flags)
 
     config = configparser.ConfigParser()
     config.read(config_filename)

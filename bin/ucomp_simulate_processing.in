@@ -11,6 +11,16 @@ import time
 # wait after RT pipeline is launched to launch EOD pipeline
 EOD_WAIT = 30   # seconds
 
+CONFIG_DIR = "@CONFIG_DIR@"
+
+
+def get_config_filename(flags):
+    config_basename = f"ucomp.{flags}.cfg"
+
+    # construct config file filename
+    config_filename = os.path.join(CONFIG_DIR, config_basename)
+
+    return(config_filename)
 
 # setup the logging mechanism
 logging.basicConfig(format='%(asctime)s %(message)s',
@@ -24,12 +34,13 @@ def launch_loop(date, config_flags, launch_interval, no_eod):
     logging.info('launch_interval   : %d minutes', launch_interval)
 
     pipeline_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+    config_filename = get_config_filename(config_flags)
 
     realtime_cmd = [os.path.join(pipeline_dir, 'bin', 'ucomp_realtime.sh'),
-                    config_flags,
+                    config_filename,
                     date]
     eod_cmd = [os.path.join(pipeline_dir, 'bin', 'ucomp_eod.sh'),
-               config_flags,
+               config_filename,
                date]
 
     while True:
