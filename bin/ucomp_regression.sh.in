@@ -25,7 +25,7 @@ source ${BIN_DIR}/ucomp_regression_include.sh
 MACHINE=@NIGHTLY_MACHINE@
 LOG_DIR=/hao/${MACHINE}/Data/UCoMP/logs.regression
 
-CONFIG=${PIPE_DIR}/config/ucomp.regression.cfg
+CONFIG=@CONFIG_DIR@/ucomp.regression.cfg
 STATUS=0
 for day in ${REGRESSION_DATES[@]}; do
   ${IDL} -quiet -IDL_QUIET 1 -IDL_STARTUP "" \
