@@ -5,8 +5,7 @@ function ucomp_file_ut::test_basic
 
   date = '20210810'
   config_filename = filepath('ucomp.production.cfg', $
-                             subdir=['..', 'config'], $
-                             root=self.root)
+                             root=ucomp_unit_config_dir())
   run = ucomp_run(date, 'test', config_filename)
   raw_basedir = run->config('raw/basedir')
   basenames = ['20210810.175229.68.ucomp.637.l0.fts', $
@@ -99,8 +98,7 @@ function ucomp_file_ut::test_dark
 
   date = '20210810'
   config_filename = filepath('ucomp.production.cfg', $
-                             subdir=['..', 'config'], $
-                             root=self.root)
+                             root=ucomp_unit_config_dir())
   run = ucomp_run(date, 'test', config_filename)
   raw_basedir = run->config('raw/basedir')
   basename = '20210810.170156.99.ucomp.l0.fts'

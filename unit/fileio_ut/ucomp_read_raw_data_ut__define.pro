@@ -5,8 +5,7 @@ function ucomp_read_raw_data_ut::test_basic
 
   date = '20210326'
   config_filename = filepath('ucomp.production.cfg', $
-                             subdir=['..', 'config'], $
-                             root=self.root)
+                             root=ucomp_unit_config_dir())
   run = ucomp_run(date, 'test', config_filename)
   raw_basedir = run->config('raw/basedir')
   obj_destroy, run
@@ -40,8 +39,7 @@ function ucomp_read_raw_data_ut::test_repair
 
   date = '20210326'
   config_filename = filepath('ucomp.production.cfg', $
-                             subdir=['..', 'config'], $
-                             root=self.root)
+                             root=ucomp_unit_config_dir())
 
   run = ucomp_run(date, 'test', config_filename)
   raw_basedir = run->config('raw/basedir')
