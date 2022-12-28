@@ -1,0 +1,7 @@
+; docformat = 'rst'
+
+function ucomp_unit_config_dir
+  compile_opt strictarr
+
+  return, '@CONFIG_DIR@'
+end
