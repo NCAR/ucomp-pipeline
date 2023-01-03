@@ -128,8 +128,8 @@ pro ucomp_regression_wrapper, date, config_filename
             status or= 4L
           end
         end
-      stregex(results[result_matches[m]], '.*\.gif', /boolean): begin
-          ucomp_compare_binary, result_path, standard_path, run.logger_name, status=compare_status
+      stregex(results[result_matches[m]], '.*(\.txt|\.log|\.cfg|\.olog|\.tarlist)', /boolean): begin
+          ucomp_compare_text, result_path, standard_path, run.logger_name, status=compare_status
           if (compare_status ne 0L) then begin
             mg_log, 'binary file %s does not match standard', $
                     file_basename(result_path), $
@@ -138,9 +138,9 @@ pro ucomp_regression_wrapper, date, config_filename
           endif
         end
       else: begin
-          ucomp_compare_text, result_path, standard_path, run.logger_name, status=compare_status
+          ucomp_compare_binary, result_path, standard_path, run.logger_name, status=compare_status
           if (compare_status ne 0L) then begin
-            mg_log, 'text file %s does not match standard', $
+            mg_log, 'binary file %s does not match standard', $
                     file_basename(result_path), $
                     name=run.logger_name, /warn
             status or= 4L
