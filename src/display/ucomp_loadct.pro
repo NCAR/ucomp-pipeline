@@ -51,7 +51,16 @@ pro ucomp_loadct, name, n_colors=n_colors
     'quv': ucomp_loadct_rgb, mg_makect(cyan, black, pink, ncolors=n_colors)
     'linpol': loadct, 0, /silent, ncolors=n_colors
     'azimuth': loadct, 4, /silent, ncolors=n_colors
-    'radial_azimuth': loadct, 6, /silent, ncolors=n_colors
+    'radial_azimuth': begin
+        loadct, 6, /silent, ncolors=n_colors
+        ; shift the used part of the color table so that black is in the middle
+        ; and green is on the ends, i.e., by half the number of colors in the
+        ; color table
+        _n_colors = n_elements(n_colors) eq 0L ? 256L : n_colors
+        tvlct, rgb, /get
+        rgb[0:_n_colors - 1L, *] = shift(rgb[0:_n_colors - 1L, *], _n_colors / 2, 0)
+        tvlct, rgb
+      end
     'doppler': ucomp_loadct_rgb, mg_makect(blue, white, red, ncolors=n_colors)
     'line_width': loadct, 4, /silent, ncolors=n_colors
     else: message, string(name, format='(%"unknown colortable name: %s")')
