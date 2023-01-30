@@ -1058,7 +1058,7 @@ function ucomp_run::init, date, mode, config_filename, $
     self.lines[wave_regions[w]] = wave_region_options
   endfor
 
-  program_names_filename = filepath('program_names.cfg', root=self.resource_dir)
+  program_names_filename = filepath('program_names.cfg', root=self.resource_root)
   self.program_names = mg_read_config(program_names_filename)
 
   for i = 0L, 3L do begin
