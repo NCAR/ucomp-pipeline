@@ -56,7 +56,9 @@ pro ucomp_write_composite_image, red_file, red_data, $
   im = [[[red]], [[green]], [[blue]]]
 
   mg_image, im, /new
- end
+  ; TODO: annotations
+  ; TODO: write image file
+end
 
 
 ; main-level example program

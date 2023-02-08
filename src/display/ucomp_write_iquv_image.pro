@@ -164,7 +164,7 @@ pro ucomp_write_iquv_image, data, l1_basename, wave_region, wavelengths, $
 
     write_png, iquv_filename, tvrd(true=1)
     mg_log, 'wrote %s', file_basename(iquv_filename), $
-            name=run.logger_name, /info
+            name=run.logger_name, /debug
   endfor
 
   done:
