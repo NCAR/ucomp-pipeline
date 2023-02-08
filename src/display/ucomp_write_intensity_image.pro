@@ -176,7 +176,7 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
 
     write_gif, intensity_filename, tvrd(), r, g, b
     mg_log, 'wrote %s', file_basename(intensity_filename), $
-            name=run.logger_name, /info
+            name=run.logger_name, /debug
   endfor
 
   done:
