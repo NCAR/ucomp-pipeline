@@ -234,20 +234,23 @@ pro ucomp_calibration::cache_flats, filenames, $
   self.run->getProperty, logger_name=logger_name
 
   ; master flat file with extensions 1..n:
-  ;   exts 1 to n - 4:   flat images
-  ;   ext n - 3:         times of the flat images
-  ;   ext n - 2:         exposure times of the flat images
-  ;   ext n - 1:         wavelengths of the flat images
-  ;   ext n:             gain modes of the flat images
+  ;   exts 1 to n - 5:   flat images
+  ;   ext n - 4:         times of the flat images
+  ;   ext n - 3:         exposure times of the flat images
+  ;   ext n - 2:         wavelengths of the flat images
+  ;   ext n - 1:         gain modes of the flat images
+  ;   ext n:             onbands of the flat images
+  n_index_exts = 5L
 
   if (n_elements(filenames) gt 0L) then begin
     ; determine total number of flats in all flat files
-    n_flats = 0L
+    n_flats_per_file = lonarr(n_elements(filenames))
     for f = 0L, n_elements(filenames) - 1L do begin
       fits_open, filenames[f], fcb
-      n_flats += fcb.nextend - 4L  ; not including the index extensions
+      n_flats_per_file[f] = fcb.nextend - n_index_exts  ; not including the index extensions
       fits_close, fcb
     endfor
+    n_flats = total(n_flats_per_file, /integer)
 
     n_cameras   = 2L
     flats       = fltarr(nx, ny, n_cameras, n_flats)
@@ -263,7 +266,7 @@ pro ucomp_calibration::cache_flats, filenames, $
     for f = 0L, n_elemens(filenames) - 1L do begin
       fits_open, filenames[f], fcb
 
-      for e = 1L, fcb.nextend - 5L do begin   ; there are 5 "index" extensions at end of file
+      for e = 1L, fcb.nextend - n_index_exts do begin   ; not including the index extensions
         fits_read, fcb, flat_image, flat_header, exten_no=e
         flats[0, 0, 0, i + e - 1L] = flat_image
         raw_files[e - 1L] = ucomp_getpar(flat_header, 'RAWFILE')
@@ -300,6 +303,11 @@ pro ucomp_calibration::cache_flats, filenames, $
     *self.flat_onbands = onbands
     *self.flat_extensions = extensions
     *self.flat_raw_files = raw_files
+    if (n_elements(n_flats_per_file) eq 0L) then begin
+      *self.flat_wave_region_offsets = [n_elements(times)]
+    endif else begin
+      *self.flat_wave_region_offsets = n_flats_per_file
+    endelse
   endif else begin
     dims = size(*self.flats, /dimensions)
     n_existing_flats = n_elements(*self.flat_times)
@@ -320,12 +328,52 @@ pro ucomp_calibration::cache_flats, filenames, $
     *self.flat_onbands = [*self.flat_onbands, onbands]
     *self.flat_extensions = [*self.flat_extensions, extensions]
     *self.flat_raw_files = [*self.flat_raw_files, raw_files]
+    *self.flat_wave_region_offsets = [*self.flat_wave_region_offsets, n_elements(times)]
   endelse
+
+  ; debug = 1B
+  ; if (debug) then begin
+  ;   mg_log, 'offsets: %s', strjoin(strtrim(*self.flat_wave_region_offsets, 2), ','), name=logger_name, /debug
+  ;   offsets = total(*self.flat_wave_region_offsets, /cumulative, /preserve_type)
+  ;   offset = n_elements(offsets) gt 1 ? offsets[-2] : 0L
+  ;   mg_log, 'offset: %d', offset, name=logger_name, /debug
+  ;   for f = offset, n_elements(*self.flat_times) - 1L do begin
+  ;     mg_log, '[index: %d] %0.2f, %0.3f ms, %0.2f nm, %d, %d, %s, %s', $
+  ;             f, $
+  ;             (*self.flat_times)[f], $
+  ;             (*self.flat_exptimes)[f], $
+  ;             (*self.flat_wavelengths)[f], $
+  ;             (*self.flat_gain_modes)[f], $
+  ;             (*self.flat_onbands)[f], $
+  ;             (*self.flat_extensions)[f], $
+  ;             (*self.flat_raw_files)[f], $
+  ;             name=logger_name, /debug
+  ;   endfor
+  ; endif
 
   mg_log, '%d flats cached', n_elements(times), name=logger_name, /info
   mg_log, '%d total flats cached', n_elements(*self.flat_times), name=logger_name, /info
 end
 
+
+;+
+; Convert global index into flats cache to an index into the wave region based
+; index.
+;
+; :Returns:
+;   long
+;
+; :Params:
+;   indices : in, required, type=long/lonarr
+;     index, or indices, into the global flat cache
+;-
+function ucomp_calibration::convert_flat_index_to_wave_region, indices
+  compile_opt strictarr
+
+  region_markers = total(*self.flat_wave_region_offsets, /cumulative, /preserve_type)
+  region_marker_index = value_locate(region_markers, indices)
+  return, indices - region_markers[region_marker_index]
+end
 
 ;+
 ; Discard the flat cache.
@@ -381,6 +429,7 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
   compile_opt strictarr
 
   interpolate = self.run->config('calibration/interpolate_flats')
+  self.run->getProperty, logger_name=logger_name
 
   ; Science data and flats should match number of tunings, i.e., a science
   ; image from a file with 5 wavelength tunings should be corrected with a flat
@@ -435,7 +484,7 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
     endif
     interpolated_flat -= flat_dark
 
-    master_extensions = valid_indices[0] + 1L
+    master_extensions = self->convert_flat_index_to_wave_region(valid_indices[0]) + 1L
     raw_extensions = (*self.flat_extensions)[valid_indices[0]]
     raw_filenames = strtrim((*self.flat_raw_files)[valid_indices[0]], 2)
     coefficients = 1.0
@@ -456,7 +505,7 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
     endif
     interpolated_flat -= flat_dark
 
-    master_extensions = valid_indices[n_valid_flats - 1] + 1L
+    master_extensions = self->convert_flat_index_to_wave_region(valid_indices[n_valid_flats - 1]) + 1L
     raw_extensions = (*self.flat_extensions)[valid_indices[n_valid_flats - 1]]
     raw_filenames = strtrim((*self.flat_raw_files)[valid_indices[n_valid_flats - 1]], 2)
     coefficients = 1.0
@@ -497,16 +546,17 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
       a2 = (obsday_hours - valid_times[index1]) / (valid_times[index2] - valid_times[index1])
       interpolated_flat = a1 * flat1 + a2 * flat2
 
-      master_extensions = valid_indices[[index1, index2]] + 1L
+      master_extensions = self->convert_flat_index_to_wave_region(valid_indices[[index1, index2]]) + 1L
       raw_extensions = (*self.flat_extensions)[valid_indices[[index1, index2]]]
       raw_filenames = strtrim((*self.flat_raw_files)[valid_indices[[index1, index2]]], 2)
 
       coefficients = [a1, a2]
     endif else begin
       index = value_locate(valid_times, obsday_hours)
+
       interpolated_flat = valid_flats[*, *, *, index]
 
-      exptime_found = (*self.flat_exptimes)[valid_indices[n_valid_flats - 1]]
+      exptime_found = (*self.flat_exptimes)[valid_indices[index]]
       interpolated_flat *= exptime / exptime_found
 
       times_found = (*self.flat_times)[valid_indices[index]]
@@ -519,9 +569,9 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
       endif
       interpolated_flat -= flat_dark
 
-      master_extensions = valid_indices[index] + 1L
+      master_extensions = self->convert_flat_index_to_wave_region(valid_indices[index]) + 1L
       raw_extensions = (*self.flat_extensions)[valid_indices[index]]
-      raw_filenames = strtrim((*self.flat_raw_files)[index], 2)
+      raw_filenames = strtrim((*self.flat_raw_files)[valid_indices[index]], 2)
       coefficients = 1.0
     endelse
   endelse
@@ -540,7 +590,8 @@ pro ucomp_calibration::cleanup
             self.dark_gain_modes, self.dark_raw_files
   ptr_free, self.flats, self.flat_times, self.flat_exptimes, $
             self.flat_wavelengths, self.flat_gain_modes, self.flat_onbands, $$
-            self.flat_extensions, self.flat_raw_files
+            self.flat_extensions, self.flat_raw_files, $
+            self.flat_wave_region_offsets
 
 end
 
@@ -576,7 +627,7 @@ function ucomp_calibration::init, run=run
   self.flat_onbands     = ptr_new(/allocate_heap)
   self.flat_extensions  = ptr_new(/allocate_heap)
   self.flat_raw_files   = ptr_new(/allocate_heap)
-
+  self.flat_wave_region_offsets = ptr_new(/allocate_heap)
   return, 1
 end
 
@@ -605,7 +656,8 @@ pro ucomp_calibration__define
            flat_gain_modes: ptr_new(), $   ; 'low' or 'high'
            flat_onbands: ptr_new(), $      ; 'tcam' or 'rcam'
            flat_extensions: ptr_new(), $   ; extension into flat file
-           flat_raw_files: ptr_new() $     ; basename of raw file containing flat
+           flat_raw_files: ptr_new(), $    ; basename of raw file containing flat
+           flat_wave_region_offsets: ptr_new() $ ; offset
 
            ; TODO: demodulation matrices
   }
