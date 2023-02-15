@@ -43,6 +43,7 @@ pro ucomp_l1_continuum_subtraction, file, primary_header, ext_data, ext_headers,
     exptime[e]    = ucomp_getpar(ext_headers[e], 'EXPTIME')
     onband[e]     = ucomp_getpar(ext_headers[e], 'ONBAND') eq 'tcam'
     wavelength[e] = ucomp_getpar(ext_headers[e], 'WAVELNG')
+    raw_exts[e]   = ucomp_getpar(ext_headers[e], 'RAWEXTS')
 
     master_flat_ext1[e]   = strtrim(ucomp_getpar(ext_headers[e], 'MFLTEXT1'), 2)
     mfe2 = ucomp_getpar(ext_headers[e], 'MFLTEXT2', found=found)
