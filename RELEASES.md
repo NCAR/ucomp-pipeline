@@ -290,3 +290,4 @@
 0.2.83
   subtract rest wavelength in velocity
   add CONFIG_DIR CMake variable
+  fix for empty RAWEXTS keyword
