@@ -74,11 +74,12 @@ message(STATUS "git branch   = ${GIT_BRANCH}")
 message(STATUS "git version  = ${GIT_VERSION}")
 message(STATUS "git revision = ${GIT_REVISION}")
 
-message(STATUS "Python3_ROOT_DIR = ${Python3_ROOT_DIR}")
-message(STATUS "Python3_DIR = ${Python3_DIR}")
-find_package(Python3 COMPONENTS Interpreter Development
-             HINTS ${Python3_ROOT_DIR})
-message(STATUS "Python3_EXECUTABLE = ${Python3_EXECUTABLE}")
+if (${APPLE})
+  find_package(Python3 COMPONENTS Interpreter Development
+               HINTS ${Python3_ROOT_DIR})
+else()
+  find_package(Python3 COMPONENTS Interpreter Development)
+endif()
 
 include(${CMAKE_SOURCE_DIR}/cmake/GetDate.cmake)
 LONG_TODAY(ucomp_pipeline_BUILD_DATE)
