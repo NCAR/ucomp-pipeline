@@ -6,7 +6,6 @@ from email.mime.text import MIMEText
 import fnmatch
 import glob
 import os
-import psutil
 import re
 import smtplib
 import socket
@@ -23,6 +22,12 @@ if PY3:
     import configparser
 else:
     import ConfigParser as configparser
+
+try:
+    import psutil
+    ps_requirements = True
+except ModuleNotFoundError as e:
+    ps_requirements = False
 
 try:
     from astropy.io import fits
@@ -190,6 +195,9 @@ def notify_completed(args, task):
 # list sub-command
 
 def list_processes(args):
+    if not ps_requirements:
+        args.parser.error("missing Python packages required for listing processes")
+
     ucomp_processes = []
     for p in psutil.process_iter():
         cmdline = p.cmdline()
