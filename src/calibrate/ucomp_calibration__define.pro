@@ -181,11 +181,14 @@ function ucomp_calibration::get_dark, obsday_hours, exptime, gain_mode, $
 
       coefficients = [a1, a2]
     endif else begin
-      index = value_locate(valid_times, obsday_hours)
-      interpolated_dark = valid_darks[*, *, *, index]
+      indices = [0L, 1L] + value_locate(valid_times, obsday_hours)
 
-      master_extensions = index + 1L
-      raw_filenames = strtrim((*self.dark_raw_files)[index], 2)
+      !null = min(abs(valid_times[indices] - obsday_hours), index)
+
+      interpolated_dark = valid_darks[*, *, *, indices[index]]
+
+      master_extensions = indices[index] + 1L
+      raw_filenames = strtrim((*self.dark_raw_files)[indices[index]], 2)
 
       coefficients = 1.0
     endelse
