@@ -123,10 +123,10 @@ pro ucomp_l1_apply_gain, file, primary_header, data, headers, run=run, status=st
                     comment='name of raw flat file used'
       ucomp_addpar, h, string(fe + 1L, format='FLTEXTS%d'), raw_flat_extensions[fe], $
                     comment=string(flat_raw_files[fe], $
-                                   format='(%"ext in %s used")')
+                                   format='(%"%s ext used")')
       ucomp_addpar, h, string(fe + 1L, format='MFLTEXT%d'), master_flat_extensions[fe], $
                     comment=string(run.date, file.wave_region, flat_coefficients[fe], $
-                                   format='(%"ext in %s.ucomp.flat.%s.fts, wt %0.2f")')
+                                   format='(%"%s.ucomp.flat.%s.fts ext, wt %0.2f")')
     endfor
 
     ucomp_addpar, h, 'BOPAL', opal_radiance, $
