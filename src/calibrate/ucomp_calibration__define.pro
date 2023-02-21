@@ -307,9 +307,9 @@ pro ucomp_calibration::cache_flats, filenames, $
     *self.flat_extensions = extensions
     *self.flat_raw_files = raw_files
     if (n_elements(n_flats_per_file) eq 0L) then begin
-      *self.flat_wave_region_offsets = [n_elements(times)]
+      *self.flat_wave_region_offsets = [*self.flat_wave_region_offsets, n_elements(times)]
     endif else begin
-      *self.flat_wave_region_offsets = n_flats_per_file
+      *self.flat_wave_region_offsets = [*self.flat_wave_region_offsets, n_flats_per_file]
     endelse
   endif else begin
     dims = size(*self.flats, /dimensions)
@@ -375,7 +375,8 @@ function ucomp_calibration::convert_flat_index_to_wave_region, indices
 
   region_markers = total(*self.flat_wave_region_offsets, /cumulative, /preserve_type)
   region_marker_index = value_locate(region_markers, indices)
-  return, indices - region_markers[region_marker_index]
+  wave_region_indices = indices - region_markers[region_marker_index]
+  return, wave_region_indices
 end
 
 ;+
@@ -631,6 +632,8 @@ function ucomp_calibration::init, run=run
   self.flat_extensions  = ptr_new(/allocate_heap)
   self.flat_raw_files   = ptr_new(/allocate_heap)
   self.flat_wave_region_offsets = ptr_new(/allocate_heap)
+  *self.flat_wave_region_offsets = [0L]
+
   return, 1
 end
 
