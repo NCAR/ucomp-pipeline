@@ -71,7 +71,7 @@ pro ucomp_l1_promote_header, file, primary_header, data, headers, $
   remove_keywords = ['COMMENT', 'ONBAND', 'V_LCVR1', 'V_LCVR2', $
                      'V_LCVR3', 'V_LCVR4', 'V_LCVR5', 'NUMSUM', 'SEQNUM', $
                      'OCCLTR', 'CALOPTIC', 'COVER', 'DIFFUSR', 'DARKSHUT', $
-                     'POLANGLE', 'RETANGLE']
+                     'POLANGLE', 'RETANGLE', 'DATE-BEG']
   promote_keywords = [{name: 'CONTIN', format: '(A)'}, $
                       {name: 'FRAMERT', format: '(F0.3)'}, $
                       {name: 'EXPTIME', format: '(F0.3)'}]
