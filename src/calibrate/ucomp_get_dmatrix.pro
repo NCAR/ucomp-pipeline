@@ -11,7 +11,7 @@
 ;   `fltarr(4, 4)` demodulation matrix
 ;
 ; :Params:
-;   dmx_coefs : in, required, type="fltarr(4, 4, 9, 2)"
+;   dmx_coefs : in, required, type="fltarr(4, 4, n_wave_regions, 2)"
 ;     array of D matrix coefficients obtained by restoring IDL save file
 ;     Dmx_Temp_Coefs.sav
 ;   mod_temp : in, required, type=float
