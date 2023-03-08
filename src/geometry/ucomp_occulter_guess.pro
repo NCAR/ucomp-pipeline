@@ -27,13 +27,7 @@ function ucomp_occulter_guess, camera_index, datetime, occulter_x, occulter_y, $
   nx = run->epoch('nx', datetime=datetime)
   ny = run->epoch('ny', datetime=datetime)
 
-;   camera_name = camera_index eq 0 ? 'rcam' : 'tcam'
-;   xcoeffs = run->epoch(camera_name + '_camera_xoffset_coeffs', datetime=datetime)
-;   ycoeffs = run->epoch(camera_name + '_camera_yoffset_coeffs', datetime=datetime)
-;
-;   x0 = (nx - 1.0) / 2.0 + total(xcoeffs * [1.0, occulter_x])
-;   y0 = (ny - 1.0) / 2.0 + total(ycoeffs * [1.0, occulter_y])
-
+  ; center about the center of the array
   x0 = (nx - 1.0) / 2.0
   y0 = (ny - 1.0) / 2.0
 
