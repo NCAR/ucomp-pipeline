@@ -44,11 +44,10 @@ function ucomp_radial_derivative, data, radius_guess, dr, $
                                   points=points, $
                                   pt_weights=pt_weights
   compile_opt strictarr
-  ;on_error, 2
 
   dims = size(data, /dimensions)
 
-  n_scan = 360L   ; number of radial scans around circumference
+  n_scan = 180L
   angles = dblarr(n_scan)
   radii = dblarr(n_scan)
 
@@ -64,8 +63,8 @@ function ucomp_radial_derivative, data, radius_guess, dr, $
   n_values = dr * 2   ; number of points in interpolated radial scan
 
   ; make radial scans
-  points = fltarr(2L, n_scan)
-  pt_weights = fltarr(n_scan)
+  points = dblarr(2L, n_scan)
+  pt_weights = dblarr(n_scan)
 
   for s = 0L, n_scan - 1L do begin
     ; angle for radial scan
@@ -90,7 +89,7 @@ function ucomp_radial_derivative, data, radius_guess, dr, $
     rad = deriv(rad)    ; take derivative of radial intensity scan
 
     ; find position of maximum derivative, imax
-    pt_weights[s] = abs(max(rad, imax))
+    pt_weights[s] = max(rad, imax)
     imax >= 2L
     imax <= n_values - 3L
 
@@ -104,6 +103,7 @@ function ucomp_radial_derivative, data, radius_guess, dr, $
                                   [rad[imax - 1], $
                                    rad[imax], $
                                    rad[imax + 1]])
+
     ; if (keyword_set(debug_local)) then begin
     ;   print, s, 'angle:', angles[s]
     ;   plot, rad
