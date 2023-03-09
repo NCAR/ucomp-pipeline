@@ -133,7 +133,8 @@ pro ucomp_write_intermediate_image, name, $
         geometry->display, c, $
                            occulter_color=253, $
                            guess_color=254, $
-                           inflection_color=255
+                           inflection_color=255, $
+                           no_rotate=file.rotated eq 0B
       endif
 
       write_gif, e_filename, tvrd(), r, g, b
