@@ -69,6 +69,7 @@ end
 ;       2 - moving optic elements, i.e., occulter, cal optics, etc.
 ;-
 pro ucomp_file::setProperty, demodulated=demodulated, $
+                             rotated=rotated, $
                              wrote_l1=wrote_l1, $
                              wrote_dynamics=wrote_dynamics, $
                              wrote_polarization=wrote_polarization, $
@@ -95,6 +96,7 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
   compile_opt strictarr
 
   if (n_elements(demodulated)) then self.demodulated = demodulated
+  if (n_elements(rotated)) then self.rotated = rotated
   if (n_elements(wrote_l1) gt 0L) then self.wrote_l1 = wrote_l1
   if (n_elements(wrote_dynamics)) then self.wrote_dynamics = wrote_dynamics
   if (n_elements(wrote_polarization)) then self.wrote_polarization = wrote_polarization
@@ -158,6 +160,7 @@ pro ucomp_file::getProperty, run=run, $
                              dynamics_basename=dynamics_basename, $
                              polarization_basename=polarization_basename, $
                              demodulated=demodulated, $
+                             rotated=rotated, $
                              wrote_l1=wrote_l1, $
                              wrote_dynamics=wrote_dynamics, $
                              wrote_polarization=wrote_polarization, $
@@ -302,6 +305,7 @@ pro ucomp_file::getProperty, run=run, $
   endif
 
   if (arg_present(demodulated)) then demodulated = self.demodulated
+  if (arg_present(rotated)) then rotated = self.rotated
   if (arg_present(wrote_l1)) then wrote_l1 = self.wrote_l1
   if (arg_present(wrote_dynamics)) then wrote_dynamics = self.wrote_dynamics
   if (arg_present(wrote_polarization)) then wrote_polarization = self.wrote_polarization
@@ -333,6 +337,12 @@ pro ucomp_file::getProperty, run=run, $
     sun, date_parts[0], date_parts[1], date_parts[2], hours, $
          carrington=carrington_rotation, pa=p_angle, lat0=b0, sd=semidiameter, $
          dist=distance_au, true_dec=true_dec
+
+    ; TODO: remove after verification
+    time_parts = long(ucomp_decompose_time(self.ut_time))
+    julian_date = julday(date_parts[1], date_parts[2], date_parts[0], $
+                         time_parts[0], time_parts[1], time_parts[2])
+    ephem2,julian_date, sol_ra, sol_dec, b0_steve, p_angle
   endif
 
   if (arg_present(obs_id)) then obs_id = self.obs_id
@@ -791,6 +801,7 @@ pro ucomp_file__define
            run                    : obj_new(), $
 
            demodulated            : 0B, $
+           rotated                : 0B, $
            wrote_l1               : 0B, $
            wrote_dynamics         : 0B, $
            wrote_polarization     : 0B, $
