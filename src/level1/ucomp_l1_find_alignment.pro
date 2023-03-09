@@ -135,6 +135,38 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
   ucomp_addpar, primary_header, 'IMAGESCL', image_scale, $
                 comment='[arcsec/pixel] image scale at focal plane'
 
+  ; determine eccentricity of cameras
+  rcam_elliptical_geometry = ucomp_find_geometry(smooth(rcam_background, 2, /nan), $
+                                                 xsize=run->epoch('nx'), $
+                                                 ysize=run->epoch('ny'), $
+                                                 center_guess=rcam_center_guess, $
+                                                 radius_guess=radius_guess, $
+                                                 dradius=dradius, $
+                                                 post_angle_guess=post_angle_guess, $
+                                                 post_angle_tolerance=post_angle_tolerance, $
+                                                 /elliptical, $
+                                                 eccentricity=rcam_eccentricity)
+  rcam.eccentricity = rcam_eccentricity
+  obj_destroy, rcam_elliptical_geometry
+
+  tcam_elliptical_geometry = ucomp_find_geometry(smooth(tcam_background, 2, /nan), $
+                                                 xsize=run->epoch('nx'), $
+                                                 ysize=run->epoch('ny'), $
+                                                 center_guess=rcam_center_guess, $
+                                                 radius_guess=radius_guess, $
+                                                 dradius=dradius, $
+                                                 post_angle_guess=post_angle_guess, $
+                                                 post_angle_tolerance=post_angle_tolerance, $
+                                                 /elliptical, $
+                                                 eccentricity=tcam_eccentricity)
+  tcam.eccentricity = tcam_eccentricity
+  obj_destroy, tcam_elliptical_geometry
+
+  ucomp_addpar, primary_header, 'RCAMECC', rcam_eccentricity, $
+                comment='occulter eccentricity in RCAM', format='(F0.6)'
+  ucomp_addpar, primary_header, 'TCAMECC', tcam_eccentricity, $
+                comment='occulter eccentricity in TCAM', format='(F0.6)'
+
   rcam_background = ucomp_center_image(rcam_background, rcam)
   tcam_background = ucomp_center_image(tcam_background, tcam)
   background = (rcam_background + tcam_background) / 2.0
