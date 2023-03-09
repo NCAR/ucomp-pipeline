@@ -84,6 +84,8 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
                                            post_angle_tolerance=post_angle_tolerance)
 
   rcam = file.rcam_geometry
+
+
   ucomp_addpar, primary_header, $
                 'XOFFSET0', $
                 (rcam.xsize - 1.0) / 2.0 - rcam.occulter_center[0], $
@@ -99,9 +101,10 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
                 format='(F0.3)'
   ucomp_addpar, primary_header, 'FITCHI0', rcam.occulter_chisq, $
                 comment='[px] chi-squared for RCAM center fit', $
-                format='(F0.3)'
+                format='(F0.6)'
 
   tcam = file.tcam_geometry
+
   ucomp_addpar, primary_header, $
                 'XOFFSET1', $
                 (tcam.xsize - 1.0) / 2.0 - tcam.occulter_center[0], $
@@ -117,7 +120,7 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
                 format='(F0.3)'
   ucomp_addpar, primary_header, 'FITCHI1', file.tcam_geometry.occulter_chisq, $
                 comment='[px] chi-squared for TCAM center fit', $
-                format='(F0.3)'
+                format='(F0.6)'
 
   ucomp_addpar, primary_header, 'POST_ANG', $
                 (rcam.post_angle + tcam.post_angle) / 2.0, $
@@ -152,7 +155,8 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
                 comment='[deg] solar P angle applied (image has N up)', $
                 format='(f9.3)'
   ucomp_addpar, primary_header, 'SOLAR_B', b0, $
-                comment='[deg] solar B-Angle'
+                comment='[deg] solar B-Angle', $
+                format='(f9.3)'
 
   sec_z = mlso_secant_z(file.julian_date, sidereal_time=sidereal_time)
   ucomp_addpar, primary_header, 'SECANT_Z', sec_z, $

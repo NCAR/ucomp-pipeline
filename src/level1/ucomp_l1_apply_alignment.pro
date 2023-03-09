@@ -41,11 +41,10 @@ pro ucomp_l1_apply_alignment, file, primary_header, data, headers, run=run, stat
     for e = 0L, file.n_extensions - 1L do begin
       data[*, *, p, 0, e] = ucomp_center_image(data[*, *, p, 0, e], rcam_geometry)
       data[*, *, p, 1, e] = ucomp_center_image(data[*, *, p, 1, e], tcam_geometry)
-
-      data[*, *, p, 0, e] = rot(reverse(data[*, *, p, 0, e], 2), file.p_angle, /interp, missing=0.0)
-      data[*, *, p, 1, e] = rot(reverse(data[*, *, p, 1, e], 2), file.p_angle, /interp, missing=0.0)
     endfor
   endfor
+
+  file.rotated = 1B
 
   ; apply geometry transformation to post angle found before the above
   ; transformation
