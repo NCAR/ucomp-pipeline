@@ -50,7 +50,8 @@ function ucomp_find_occulter, data, $
                               error=error, $
                               points=points, $
                               pt_weights=pt_weights, $
-                              elliptical=elliptical
+                              elliptical=elliptical, $
+                              eccentricity=eccentricity
   compile_opt strictarr
   ;common fit, x, y, radius
 
@@ -97,6 +98,10 @@ function ucomp_find_occulter, data, $
   error = status le 0
 
   chisq = bestnorm / n_elements(x)
+
+  if (keyword_set(elliptical)) then begin
+    eccentricity = sqrt(1 - (p[1] / p[0])^2)
+  endif
 
   return, p[keyword_set(elliptical) ? [2, 3, 0, 1, 4] : [2, 3, 0]]
 end
