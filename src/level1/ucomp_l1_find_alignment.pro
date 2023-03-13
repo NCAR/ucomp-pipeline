@@ -171,17 +171,6 @@ pro ucomp_l1_find_alignment, file, $
   ucomp_addpar, primary_header, 'TCAMECC', tcam_eccentricity, $
                 comment='occulter eccentricity in TCAM', format='(F0.6)'
 
-  rcam_background = ucomp_center_image(rcam_background, rcam)
-  tcam_background = ucomp_center_image(tcam_background, tcam)
-  background = (rcam_background + tcam_background) / 2.0
-  annulus_mask = ucomp_annulus(1.1 * radius, 1.5 * radius, $
-                               dimensions=size(background, /dimensions))
-  annulus_indices = where(annulus_mask, n_annulus_pts)
-  median_background = median(background[annulus_indices])
-  file.median_background = median_background
-  ucomp_addpar, primary_header, 'MED_BACK', median_background, $
-                comment='[ppm] median of background'
-
   file->getProperty, semidiameter=semidiameter, $
                      distance_au=distance_au, $
                      p_angle=p_angle, $
