@@ -131,8 +131,8 @@ pro ucomp_l1_continuum_subtraction, file, $
     cam1 = c1[0] * ext_data[*, *, *, 1, m] + c1[1] * ext_data[*, *, *, 1, match_indices[m]]
     combined_ext_data[*, *, *, 0, i] = cam0
     combined_ext_data[*, *, *, 1, i] = cam1
-    bacgkrounds[*, *, 0, i] = ext_data[*, *, 0, 0, b[0]]
-    bacgkrounds[*, *, 1, i] = ext_data[*, *, 0, 1, b[1]]
+    backgrounds[*, *, 0, i] = ext_data[*, *, 0, 0, b[0]]
+    backgrounds[*, *, 1, i] = ext_data[*, *, 0, 1, b[1]]
     keep_wavelengths[i] = wavelength[match_indices[m]]
 
     i += 1L
