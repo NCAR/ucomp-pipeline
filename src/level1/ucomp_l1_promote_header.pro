@@ -69,6 +69,17 @@ pro ucomp_l1_promote_header, file, $
   ucomp_addpar, primary_header, 'VCROSSTK', file.vcrosstalk_metric, $
                 comment='Stokes V crosstalk metric'
 
+  radius = ucomp_getpar(primary_header, 'RADIUS')
+  background = backgrounds[*, *, 3L * file.n_unique_wavelengths / 2L + 1L]
+  annulus_mask = ucomp_annulus(1.1 * radius, 1.5 * radius, $
+                               dimensions=size(background, /dimensions))
+  annulus_indices = where(annulus_mask, n_annulus_pts)
+  median_background = median(background[annulus_indices])
+  file.median_background = median_background
+  ucomp_addpar, primary_header, 'MED_BACK', median_background, $
+                comment='[ppm] median of background', $
+                format='(F0.3)'
+
   ; update extension headers
 
   remove_keywords = ['COMMENT', 'ONBAND', 'V_LCVR1', 'V_LCVR2', $
