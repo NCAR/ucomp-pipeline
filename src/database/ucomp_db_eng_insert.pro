@@ -60,8 +60,8 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
 
             {name: 'rcam_post_angle', type: '%s'}, $
             {name: 'tcam_post_angle', type: '%s'}, $
-            {name: 'rcam_eccentricity', type: '%'}, $
-            {name: 'tcam_eccentricity', type: '%'}, $
+            {name: 'rcam_eccentricity', type: '%s'}, $
+            {name: 'tcam_eccentricity', type: '%s'}, $
 
             {name: 'wave_region', type: '''%s'''}, $
             {name: 'ntunes', type: '%d'}, $
