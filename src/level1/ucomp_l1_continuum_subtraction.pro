@@ -12,9 +12,11 @@
 ;   primary_header : in, required, type=strarr
 ;     primary header
 ;   ext_data : in, out, required, type="fltarr(nx, ny, n_pol_states, n_cameras, n_exts)"
-;     extension data, removes `n_cameras` dimension on output
+;     extension data, cuts `n_exts` in half
 ;   ext_headers : in, required, type=list
 ;     extension headers as list of `strarr`
+;   backgrounds : out, type="fltarr(nx, ny, n_cameras, n_exts)"
+;     backgrounds created in this step
 ;
 ; :Keywords:
 ;   run : in, required, type=object
@@ -22,7 +24,8 @@
 ;   status : out, optional, type=integer
 ;     set to a named variable to retrieve the status of the step; 0 for success
 ;-
-pro ucomp_l1_continuum_subtraction, file, primary_header, ext_data, ext_headers, $
+pro ucomp_l1_continuum_subtraction, file, $
+                                    primary_header, ext_data, ext_headers, backgrounds, $
                                     run=run, status=status
   compile_opt strictarr
 
@@ -74,7 +77,9 @@ pro ucomp_l1_continuum_subtraction, file, primary_header, ext_data, ext_headers,
   type = size(ext_data, /type)
 
   combined_dims = [dims[0:3], dims[4] / 2L]
+  background_dims = [dims[0:1], dims[3], dims[4] / 2L]   ; only I
   combined_ext_data = make_array(dimension=combined_dims, type=type)
+  backgrounds       = make_array(dimension=background_dims, type=type)
   ext_headers_array = ext_headers->toArray(/transpose)
   ext_headers->remove, /all
 
@@ -89,11 +94,13 @@ pro ucomp_l1_continuum_subtraction, file, primary_header, ext_data, ext_headers,
       if (onband[m]) then begin
         c0 = [-1.0, 1.0]
         c1 = [1.0, -1.0]
+        b  = [m, match_indices[m]]
         msg0 = string(m, match_indices[m], format='(%"- ext %d + ext %d")')
         msg1 = string(m, match_indices[m], format='(%"+ ext %d - ext %d")')
       endif else begin
         c0 = [1.0, -1.0]
         c1 = [-1.0, 1.0]
+        b  = [match_indices[m], m]
         msg0 = string(m, match_indices[m], format='(%"+ ext %d - ext %d")')
         msg1 = string(m, match_indices[m], format='(%"- ext %d + ext %d")')
       endelse
@@ -103,22 +110,20 @@ pro ucomp_l1_continuum_subtraction, file, primary_header, ext_data, ext_headers,
       if (onband[m]) then begin
         c0 = [0.0, 1.0]
         c1 = [1.0, 0.0]
+        b  = [m, match_indices[m]]
         msg0 = string(match_indices[m], format='(%"+ ext %d")')
         msg1 = string(m, format='(%"+ ext %d")')
       endif else begin
         c0 = [1.0, 0.0]
         c1 = [0.0, 1.0]
+        b  = [match_indices[m], m]
         msg0 = string(m, format='(%"+ ext %d")')
         msg1 = string(match_indices[m], format='(%"+ ext %d")')
       endelse
     endelse
 
-    mg_log, 'ext %d cam 0: %s', $
-            i + 1L, msg0, $
-            name=run.logger_name, /debug
-    mg_log, 'ext %d cam 1: %s', $
-            i + 1L, msg1, $
-            name=run.logger_name, /debug
+    mg_log, 'ext %d cam 0: %s', i + 1L, msg0, name=run.logger_name, /debug
+    mg_log, 'ext %d cam 1: %s', i + 1L, msg1, name=run.logger_name, /debug
 
     ; note: in the following code, cam0 is not necessarily RCAM, cam1 is not
     ; necessarily TCAM
@@ -126,6 +131,8 @@ pro ucomp_l1_continuum_subtraction, file, primary_header, ext_data, ext_headers,
     cam1 = c1[0] * ext_data[*, *, *, 1, m] + c1[1] * ext_data[*, *, *, 1, match_indices[m]]
     combined_ext_data[*, *, *, 0, i] = cam0
     combined_ext_data[*, *, *, 1, i] = cam1
+    bacgkrounds[*, *, 0, i] = ext_data[*, *, 0, 0, b[0]]
+    bacgkrounds[*, *, 1, i] = ext_data[*, *, 0, 1, b[1]]
     keep_wavelengths[i] = wavelength[match_indices[m]]
 
     i += 1L

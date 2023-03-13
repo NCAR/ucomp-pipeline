@@ -10,10 +10,12 @@
 ;     `ucomp_file` object
 ;   primary_header : in, required, type=strarr
 ;     primary header
-;   data : in, required, type="fltarr(nx, nx, nexts)"
+;   data : in, out, required, type="fltarr(nx, nx, nexts)"
 ;     extension data
-;   headers : in, required, type=list
+;   headers : in, out, required, type=list
 ;     extension headers as list of `strarr`
+;   backgrounds : in, out, optional, type="fltarr(nx, ny, nexts)"
+;     background data
 ;
 ; :Keywords:
 ;   skip : in, optional, type=boolean
@@ -23,7 +25,8 @@
 ;   _extra : in, optional, type=keywords
 ;     keywords to pass along to `ROUTINE_NAME`
 ;-
-pro ucomp_l1_step, routine_name, file, primary_header, data, headers, $
+pro ucomp_l1_step, routine_name, file, $
+                   primary_header, data, headers, backgrounds, $
                    step_number=step_number, skip=skip, run=run, _extra=e
   compile_opt strictarr
   on_error, 2
@@ -34,7 +37,8 @@ pro ucomp_l1_step, routine_name, file, primary_header, data, headers, $
     mg_log, 'starting...', from=routine_name, name=run.logger_name, /debug
 
     clock_id = run->start(routine_name)
-    call_procedure, routine_name, file, primary_header, data, headers, $
+    call_procedure, routine_name, file, $
+                    primary_header, data, headers, backgrounds, $
                     run=run, status=status, _extra=e
     time = run->stop(clock_id)
     run->log_memory, routine_name
@@ -52,11 +56,11 @@ pro ucomp_l1_step, routine_name, file, primary_header, data, headers, $
 
     if (status eq 0L) then begin
       name = strmid(routine_name, 9)
-      ucomp_write_intermediate_file, name, $
-                                     file, primary_header, data, headers, $
+      ucomp_write_intermediate_file, name, file, primary_header, $
+                                     data, headers, backgrounds, $
                                      step_number=step_number, run=run
-      ucomp_write_intermediate_image, name, $
-                                      file, primary_header, data, headers, $
+      ucomp_write_intermediate_image, name, file, primary_header, $
+                                      data, headers, $
                                       step_number=step_number, run=run
     endif else begin
       message, string(routine_name, status, format='(%"%s failed with status %d")')

@@ -15,13 +15,15 @@
 ;     data to write
 ;   headers : in, required, type=list
 ;     list of `strarr` FITS headers
+;   backgrounds : out, type="fltarr(nx, ny, ..., n_exts)"
+;     background images
 ;
 ; :Keywords:
 ;   run : in, required, type=object
 ;     UCoMP run object
 ;-
-pro ucomp_write_intermediate_file, name, $
-                                   file, primary_header, data, headers, $
+pro ucomp_write_intermediate_file, name, file, $
+                                   primary_header, data, headers, backgrounds, $
                                    step_number=step_number, run=run
   compile_opt strictarr
 
@@ -32,6 +34,6 @@ pro ucomp_write_intermediate_file, name, $
     file->getProperty, l1_basename=basename, intermediate_name=name
     filename = filepath(basename, root=intermediate_dirname)
     if (~file_test(intermediate_dirname, /directory)) then file_mkdir, intermediate_dirname
-    ucomp_write_fits_file, filename, primary_header, data, headers
+    ucomp_write_fits_file, filename, primary_header, data, headers, backgrounds
   endif
 end

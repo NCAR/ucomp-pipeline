@@ -13,6 +13,8 @@
 ;     extension data, set to a named variable to average the data and reduce `n`
 ;   ext_headers : in, required, type=list
 ;     extension headers as list of `strarr`
+;   backgrounds : type=undefined
+;     not used in this step
 ;
 ; :Keywords:
 ;   run : in, required, type=object
@@ -20,7 +22,8 @@
 ;   status : out, optional, type=integer
 ;     set to a named variable to retrieve the status of the step; 0 for success
 ;-
-pro ucomp_l1_average_data, file, primary_header, ext_data, ext_headers, $
+pro ucomp_l1_average_data, file, $
+                           primary_header, ext_data, ext_headers, backgrounds, $
                            run=run, status=status
   compile_opt strictarr
 

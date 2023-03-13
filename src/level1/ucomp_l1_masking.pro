@@ -12,6 +12,8 @@
 ;     extension data
 ;   headers : in, required, type=list
 ;     extension headers as list of `strarr`
+;   backgrounds : out, type="fltarr(nx, ny, n_exts)"
+;     background images
 ;
 ; :Keywords:
 ;   run : in, required, type=object
@@ -19,14 +21,12 @@
 ;   status : out, optional, type=integer
 ;     set to a named variable to retrieve the status of the step; 0 for success
 ;-
-pro ucomp_l1_masking, file, primary_header, data, headers, $
+pro ucomp_l1_masking, file, $
+                      primary_header, data, headers, backgrounds, $
                       run=run, status=status
   compile_opt strictarr
 
   status = 0L
 
-  ; TODO: implement, this add an extension to the L1 for the mask
-  ; - occulter
-  ; - field
-  ; - areas from rotating a rectangular image
+  ; TODO: mask areas from rotating a rectangular image?
 end
