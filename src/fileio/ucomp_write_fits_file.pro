@@ -12,17 +12,21 @@
 ;     extension data
 ;   ext_headers : in, required, type=list
 ;     list of `strarr`, each a FITS header for the corresponding extension
+;   backgrounds : out, type="fltarr(nx, ny, ..., n_exts)"
+;     background images
 ;
 ; :Keywords:
 ;   intensity : in, optional, type=boolean
 ;     set to extract intensity from `ext_data`
 ;-
-pro ucomp_write_fits_file, filename, primary_header, ext_data, ext_headers, $
+pro ucomp_write_fits_file, filename, $
+                           primary_header, ext_data, ext_headers, backgrounds, $
                            intensity=intensity
   compile_opt strictarr
   on_error, 2
 
   n_dims = size(ext_data, /n_dimensions)
+  n_background_dims = size(backgrounds, /n_dimensions)
   n_extensions = n_elements(ext_headers)
 
   fits_open, filename, fcb, /write
@@ -50,5 +54,30 @@ pro ucomp_write_fits_file, filename, primary_header, ext_data, ext_headers, $
                       extname=extname, /no_abort, message=error_msg
     if (error_msg ne '') then message, error_msg
   endfor
+
+  if (~keyword_set(intensity) && n_elements(backgrounds) gt 0L) then begin
+    for e = 1L, n_extensions do begin
+      ; define extension name
+      wavelength = ucomp_getpar(ext_headers[e - 1], 'WAVELNG')
+      extname = string(wavelength, format='(%"Background I [%0.2f nm]")')
+
+      case n_background_dims of
+        2: data = backgrounds
+        3: data = backgrounds[*, *, e - 1]
+        4: data = backgrounds[*, *, *, e - 1]
+        else: begin
+           dims = strjoin(strtrim(size(backgrounds, /dimensions), 2), ', ')
+           message, string(dims, format='(%"invalid number of background dimensions to write: [%s]")')
+         endelse
+      endcase
+
+      ucomp_fits_write, fcb, $
+                        reform(data), $
+                        ext_headers[e - 1], $
+                        extname=extname, /no_abort, message=error_msg
+      if (error_msg ne '') then message, error_msg
+    endfor
+  endif
+
   fits_close, fcb
 end
