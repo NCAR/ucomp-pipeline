@@ -8,6 +8,7 @@ function ucomp_find_geometry, data, $
                               dradius=dradius, $
                               elliptical=elliptical, $
                               eccentricity=eccentricity, $
+                              ellipse_angle=ellipse_angle, $
                               post_angle_guess=post_angle_guess, $
                               post_angle_tolerance=post_angle_tolerance
   compile_opt strictarr
@@ -20,7 +21,8 @@ function ucomp_find_geometry, data, $
                                  error=occulter_error, $
                                  points=points, $
                                  elliptical=elliptical, $
-                                 eccentricity=eccentricity)
+                                 eccentricity=eccentricity, $
+                                 ellipse_angle=ellipse_angle)
 
   post_angle = ucomp_find_post(data, $
                                occulter[0:1], $
