@@ -102,7 +102,7 @@ function ucomp_write_composite_image_annotation, im, $
     xyouts, nx - x_margin, ny - y_margin - 2 * line_height, /device, $
             alignment=1.0, $
             strjoin(['Corona hottest in regions colored white or red', $
-                     'Corona coolest in regions colored blue'], '!C)'), $
+                     'Corona coolest in regions colored blue'], '!C'), $
             charsize=charsize, color=text_color
   endelse
 
