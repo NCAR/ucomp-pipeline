@@ -22,7 +22,6 @@ create table ucomp_eng (
   retangle            tinyint (1),
   caloptic            tinyint (1),
 
-  -- TODO: ask Giuliana if this is sufficient for centering?
   -- distortion corrected centers/radii for occulter
   rcam_xcenter        float(8, 4),    -- center x for RCAM image
   rcam_ycenter        float(8, 4),    -- center y for RCAM image
@@ -36,6 +35,8 @@ create table ucomp_eng (
 
   rcam_eccentricity   float(7, 3),
   tcam_eccentricity   float(7, 3),
+  rcam_ellipse_angle  float(7, 3),    -- radians
+  tcam_ellipse_angle  float(7, 3),    -- radians
 
   wave_region         char (4),
   ntunes              tinyint (2),

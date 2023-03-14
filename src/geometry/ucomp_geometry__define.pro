@@ -112,6 +112,7 @@ pro ucomp_geometry::setProperty, xsize=xsize, $
                                  occulter_error=occulter_error, $
                                  post_angle=post_angle, $
                                  eccentricity=eccentricity, $
+                                 ellipse_angle=ellipse_angle, $
                                  p_angle=p_angle
   compile_opt strictarr
 
@@ -127,6 +128,7 @@ pro ucomp_geometry::setProperty, xsize=xsize, $
   if (n_elements(occulter_error) gt 0L) then self.occulter_error = occulter_error
   if (n_elements(post_angle) gt 0L) then self.post_angle = post_angle
   if (n_elements(eccentricity) gt 0L) then self.eccentricity = eccentricity
+  if (n_elements(ellipse_angle) gt 0L) then self.ellipse_angle = ellipse_angle
   if (n_elements(p_angle) gt 0L) then self.p_angle = p_angle
 end
 
@@ -143,6 +145,7 @@ pro ucomp_geometry::getProperty, xsize=xsize, $
                                  occulter_error=occulter_error, $
                                  post_angle=post_angle, $
                                  eccentricity=eccentricity, $
+                                 ellipse_angle=ellipse_angle, $
                                  p_angle=p_angle
   compile_opt strictarr
 
@@ -158,6 +161,7 @@ pro ucomp_geometry::getProperty, xsize=xsize, $
   if (arg_present(occulter_error)) then occulter_error = self.occulter_error
   if (arg_present(post_angle)) then post_angle = self.post_angle
   if (arg_present(eccentricity)) then eccentricity = self.eccentricity
+  if (arg_present(ellipse_angle)) then ellipse_angle = self.ellipse_angle
   if (arg_present(p_angle)) then p_angle = self.p_angle
 end
 
@@ -183,6 +187,7 @@ function ucomp_geometry::init, _extra=e
 
   self.post_angle = !values.f_nan
   self.eccentricity = !values.f_nan
+  self.ellipse_angle = !values.f_nan
 
   self.occulter_color   = 'ffff00'x
   self.guess_color      = '00ffff'x
@@ -213,6 +218,7 @@ pro ucomp_geometry__define
             occulter_error    : 0L, $
             post_angle        : 0.0, $
             eccentricity      : 0.0, $
+            ellipse_angle     : 0.0, $
             p_angle           : 0.0, $
             occulter_color    : 0UL, $
             guess_color       : 0UL, $

@@ -149,8 +149,10 @@ pro ucomp_l1_find_alignment, file, $
                                                  post_angle_guess=post_angle_guess, $
                                                  post_angle_tolerance=post_angle_tolerance, $
                                                  /elliptical, $
-                                                 eccentricity=rcam_eccentricity)
+                                                 eccentricity=rcam_eccentricity, $
+                                                 ellipse_angle=rcam_ellipse_angle)
   rcam.eccentricity = rcam_eccentricity
+  rcam.ellipse_angle = rcam_ellipse_angle
   obj_destroy, rcam_elliptical_geometry
 
   tcam_elliptical_geometry = ucomp_find_geometry(smooth(tcam_background, 2, /nan), $
@@ -162,8 +164,10 @@ pro ucomp_l1_find_alignment, file, $
                                                  post_angle_guess=post_angle_guess, $
                                                  post_angle_tolerance=post_angle_tolerance, $
                                                  /elliptical, $
-                                                 eccentricity=tcam_eccentricity)
+                                                 eccentricity=tcam_eccentricity, $
+                                                 ellipse_angle=tcam_ellipse_angle)
   tcam.eccentricity = tcam_eccentricity
+  tcam.ellipse_angle = tcam_ellipse_angle
   obj_destroy, tcam_elliptical_geometry
 
   ucomp_addpar, primary_header, 'RCAMECC', rcam_eccentricity, $

@@ -51,7 +51,8 @@ function ucomp_find_occulter, data, $
                               points=points, $
                               pt_weights=pt_weights, $
                               elliptical=elliptical, $
-                              eccentricity=eccentricity
+                              eccentricity=eccentricity, $
+                              ellipse_angle=ellipse_angle
   compile_opt strictarr
   ;common fit, x, y, radius
 
@@ -101,6 +102,7 @@ function ucomp_find_occulter, data, $
 
   if (keyword_set(elliptical)) then begin
     eccentricity = sqrt(1 - (p[1] / p[0])^2)
+    ellipse_angle = p[4] * !radeg
   endif
 
   return, p[keyword_set(elliptical) ? [2, 3, 0, 1, 4] : [2, 3, 0]]
