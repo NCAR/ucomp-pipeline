@@ -32,4 +32,6 @@ pro ucomp_eod_steps, wave_regions, run=run
     ucomp_pipeline_step, 'ucomp_l2_process', wave_regions[w], run=run
     ucomp_pipeline_step, 'ucomp_write_l2_movies', wave_regions[w], run=run
   endfor
+
+  ucomp_pipeline_step, 'ucomp_l2_temperature_maps', run=run
 end

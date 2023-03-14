@@ -56,7 +56,7 @@ pro ucomp_l2_create_averages, wave_region, method, $
             method, n_files, wave_region, program_names[p], $
             name=run.logger_name, /info
 
-    ; TODO: convert "program" name to name to use in filename
+    ; convert "program" name to name to use in filename
     program_filename = run->convert_program_name(program_names[p])
 
     average_basename = string(run.date, wave_region, program_filename, method, $
