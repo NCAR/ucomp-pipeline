@@ -3,6 +3,8 @@
 pro ucomp_l2_temperature_maps, run=run
   compile_opt strictarr
 
+  method = 'median'
+
   l2_dir = filepath('', $
                     subdir=[run.date, 'level2'], $
                     root=run->config('processing/basedir'))
@@ -34,11 +36,11 @@ pro ucomp_l2_temperature_maps, run=run
         p = 0L
         program_filename = run->convert_program_name(program_names[p])
 
-        mean_basename = string(run.date, wave_region, program_filename, method, $
+        mean_basename = string(run.date, wave_regions[w], program_filename, method, $
                                format='(%"%s.ucomp.%s.%s.%s.fts")')
-        mean_filename = filepath(average_basename, root=l2_dir)
+        mean_filename = filepath(mean_basename, root=l2_dir)
         mean_filenames[w] = mean_filename
-        mg_log, '%s [%s]: %s', rgb[w], wave_regions[w], file_basename(average_filename), $
+        mg_log, '%s [%s]: %s', rgb[w], wave_regions[w], file_basename(mean_filename), $
                 name=run.logger_name, /debug
       ;endfor
     endfor
