@@ -70,7 +70,12 @@ pro ucomp_l1_promote_header, file, $
                 comment='Stokes V crosstalk metric'
 
   radius = ucomp_getpar(primary_header, 'RADIUS')
-  background = backgrounds[*, *, 3L * file.n_unique_wavelengths / 2L + 1L]
+  mg_log, 'backgrounds dimensions: %s', $
+          strjoin(strtrim(size(backgrounds, /dimensions), 2), ', '), $
+          name=run.logger_name, /debug
+  mg_log, 'background index: %d', file.n_unique_wavelengths / 2L, $
+          name=run.logger_name, /debug
+  background = backgrounds[*, *, file.n_unique_wavelengths / 2L]
   annulus_mask = ucomp_annulus(1.1 * radius, 1.5 * radius, $
                                dimensions=size(background, /dimensions))
   annulus_indices = where(annulus_mask, n_annulus_pts)
