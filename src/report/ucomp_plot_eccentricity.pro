@@ -49,20 +49,20 @@ pro ucomp_plot_eccentricity, wave_region, db, run=run
   !null = ucomp_hours_format(/minutes)
 
   eccentricity_range = [0.0, 0.1]
-  angle_range = [-360.0, 360.0]
+  angle_range = [0.0, 180.0]
 
   mg_range_plot, hours, data.rcam_eccentricity, $
                  title=string(wave_region, pdate, format='%s nm RCAM eccentricity of occulter center for %s'), $
                  xtitle='Hours [UT]', ytitle='Eccentricity', $
                  xrange=time_range, xtickformat='ucomp_hours_format', $
-                 /ynozero, ystyle=1, yrange=eccentricity_range, $
+                 /ynozero, ystyle=1, yrange=eccentricity_range, yticks=5, $
                  background=255, color=0, charsize=charsize, $
                  clip_thick=2.0, psym=6, symsize=symsize
   mg_range_plot, hours, data.tcam_eccentricity, $
                   title=string(wave_region, pdate, format='%s nm TCAM eccentricity of occulter center for %s'), $
                   xtitle='Hours [UT]', ytitle='Eccentricity', $
                   xrange=time_range, xtickformat='ucomp_hours_format', $
-                  /ynozero, ystyle=1, yrange=eccentricity_range, $
+                  /ynozero, ystyle=1, yrange=eccentricity_range, yticks=5, $
                   background=255, color=0, charsize=charsize, $
                   clip_thick=2.0, psym=6, symsize=symsize
 
@@ -70,7 +70,7 @@ pro ucomp_plot_eccentricity, wave_region, db, run=run
                  title=string(wave_region, pdate, format='%s nm RCAM ellipse angle of occulter center for %s'), $
                  xtitle='Hours [UT]', ytitle='Ellipse angle', $
                  xrange=time_range, xtickformat='ucomp_hours_format', $
-                 /ynozero, ystyle=1, yrange=angle_range, yticks=8, $
+                 /ynozero, ystyle=1, yrange=angle_range, yticks=6, $
                  background=255, color=0, charsize=charsize, $
                  clip_thick=2.0, psym=6, symsize=symsize
   mg_range_plot, hours, data.tcam_ellipse_angle, $
