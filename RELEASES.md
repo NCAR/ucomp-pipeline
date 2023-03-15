@@ -305,3 +305,4 @@
   change extension names from "sci [WWWW.WW nm]" to "Stokes IQUV [WWWW.WW nm]"
   add scheme to convert cookbook names to better user names for average files
   updating radial azimuth color table to match CoMP
+  report eccentricity/angle in FITS header, database, and daily plot
