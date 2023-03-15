@@ -56,30 +56,30 @@ pro ucomp_plot_eccentricity, wave_region, db, run=run
                  xtitle='Hours [UT]', ytitle='Eccentricity', $
                  xrange=time_range, xtickformat='ucomp_hours_format', $
                  /ynozero, ystyle=1, yrange=eccentricity_range, yticks=5, $
-                 background=255, color=0, charsize=charsize, $
-                 clip_thick=2.0, psym=6, symsize=symsize
+                 background=background_color, color=color, charsize=charsize, $
+                 clip_thick=2.0, clip_color=clip_color, psym=6, symsize=symsize
   mg_range_plot, hours, data.tcam_eccentricity, $
                   title=string(wave_region, pdate, format='%s nm TCAM eccentricity of occulter center for %s'), $
                   xtitle='Hours [UT]', ytitle='Eccentricity', $
                   xrange=time_range, xtickformat='ucomp_hours_format', $
                   /ynozero, ystyle=1, yrange=eccentricity_range, yticks=5, $
-                  background=255, color=0, charsize=charsize, $
-                  clip_thick=2.0, psym=6, symsize=symsize
+                  background=background_color, color=color, charsize=charsize, $
+                  clip_thick=2.0, clip_color=clip_color, psym=6, symsize=symsize
 
   mg_range_plot, hours, data.rcam_ellipse_angle, $
                  title=string(wave_region, pdate, format='%s nm RCAM ellipse angle of occulter center for %s'), $
                  xtitle='Hours [UT]', ytitle='Ellipse angle', $
                  xrange=time_range, xtickformat='ucomp_hours_format', $
                  /ynozero, ystyle=1, yrange=angle_range, yticks=6, $
-                 background=255, color=0, charsize=charsize, $
-                 clip_thick=2.0, psym=6, symsize=symsize
+                 background=background_color, color=color, charsize=charsize, $
+                 clip_thick=2.0, clip_color=clip_color, psym=6, symsize=symsize
   mg_range_plot, hours, data.tcam_ellipse_angle, $
                  title=string(wave_region, pdate, format='%s nm TCAM ellipse angle of occulter center for %s'), $
                  xtitle='Hours [UT]', ytitle='Ellipse angle', $
                  xrange=time_range, xtickformat='ucomp_hours_format', $
-                 /ynozero, ystyle=1, yrange=angle_range, yticks=8, $
-                 background=255, color=0, charsize=charsize, $
-                 clip_thick=2.0, psym=6, symsize=symsize
+                 /ynozero, ystyle=1, yrange=angle_range, yticks=6, $
+                 background=background_color, color=color, charsize=charsize, $
+                 clip_thick=2.0, clip_color=clip_color, psym=6, symsize=symsize
 
   ; save plots image file
   output_filename = filepath(string(run.date, wave_region, $
