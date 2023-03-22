@@ -287,3 +287,22 @@
   change center wavelength by epoch for new lines
 0.2.82 [Nov 28, 2022]
   fix typo
+0.2.83 [Mar 22, 2023]
+  add backgrounds to level 1 FITS files
+  fix MED_BACK FITS keyword calculation
+  subtract rest wavelength in velocity calculation
+  fix for RAWEXTS, FLTFILE{1,2}, and MFLTEXT{1,2} keywords
+  improved center finding
+    - ignore data under post for radial derivative
+    - better initial guesses for center and radius
+    - find mean over polarization state of background used for center finding
+  center and rotate in a single interpolation
+  add "vectorized" option for demodulation
+  add CONFIG_DIR CMake variable
+  allow config files to inherit from another config file
+  fix for finding dark when not interpolating (find nearest instead of previous)
+  move the dark correction to before the camera correction
+  change extension names from "sci [WWWW.WW nm]" to "Stokes IQUV [WWWW.WW nm]"
+  add scheme to convert cookbook names to better user names for average files
+  updating radial azimuth color table to match CoMP
+  report eccentricity/angle in FITS header, database, and daily plot

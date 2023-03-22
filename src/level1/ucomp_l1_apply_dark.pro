@@ -12,6 +12,8 @@
 ;     extension data
 ;   headers : in, required, type=list
 ;     extension headers as list of `strarr`
+;   backgrounds : type=undefined
+;     not used in this step
 ;
 ; :Keywords:
 ;   run : in, required, type=object
@@ -19,7 +21,9 @@
 ;   status : out, optional, type=integer
 ;     set to a named variable to retrieve the status of the step; 0 for success
 ;-
-pro ucomp_l1_apply_dark, file, primary_header, data, headers, run=run, status=status
+pro ucomp_l1_apply_dark, file, $
+                         primary_header, data, headers, backgrounds, $
+                         run=run, status=status
   compile_opt strictarr
 
   status = 0L
@@ -67,7 +71,7 @@ pro ucomp_l1_apply_dark, file, primary_header, data, headers, run=run, status=st
                                    format='(%"raw dark filename used, wt %0.2f")')
       ucomp_addpar, h, string(de + 1, format='(%"DARKEXT%d")'), master_dark_extensions[de], $
                     comment=string(run.date, dark_coefficients[de], $
-                                   format='(%"ext in %s.ucomp.dark.fts used, wt %0.2f")')
+                                   format='(%"%s.ucomp.dark.fts ext used, wt %0.2f")')
     endfor
     headers[e] = h
   endfor

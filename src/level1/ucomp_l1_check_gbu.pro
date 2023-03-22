@@ -15,6 +15,8 @@
 ;     extension data, removes `n_cameras` dimension on output
 ;   ext_headers : in, required, type=list
 ;     extension headers as list of `strarr`
+;   backgrounds : out, type="fltarr(nx, ny, n_exts)"
+;     background images
 ;
 ; :Keywords:
 ;   run : in, required, type=object
@@ -22,7 +24,8 @@
 ;   status : out, optional, type=integer
 ;     set to a named variable to retrieve the status of the step; 0 for success
 ;-
-pro ucomp_l1_check_gbu, file, primary_header, ext_data, ext_headers, $
+pro ucomp_l1_check_gbu, file, $
+                        primary_header, ext_data, ext_headers, backgrounds, $
                         run=run, status=status
   compile_opt strictarr
 
@@ -35,6 +38,7 @@ pro ucomp_l1_check_gbu, file, primary_header, ext_data, ext_headers, $
                         primary_header, $
                         ext_data, $
                         ext_headers, $
+                        backgrounds, $
                         run=run)
     file.gbu = gbu_conditions[g].mask * gbu
   endfor

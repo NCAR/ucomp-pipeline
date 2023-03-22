@@ -19,7 +19,7 @@ SCRIPT_LOC=$(canonicalpath $0)
 BIN_DIR=$(dirname ${SCRIPT_LOC})
 PIPE_DIR=$(dirname ${BIN_DIR})
 
-CONFIG=${PIPE_DIR}/config/ucomp.${1}.cfg
+CONFIG=${1}
 
 source ${BIN_DIR}/ucomp_include.sh
 

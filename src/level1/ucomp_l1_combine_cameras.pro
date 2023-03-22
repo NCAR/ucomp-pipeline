@@ -16,6 +16,8 @@
 ;     extension data, removes `n_cameras` dimension on output
 ;   ext_headers : in, required, type=list
 ;     extension headers as list of `strarr`
+;   backgrounds : out, type="fltarr(nx, ny, n_cameras, n_exts)"
+;     background images, removes `n_cameras` dimension on output
 ;
 ; :Keywords:
 ;   run : in, required, type=object
@@ -23,7 +25,8 @@
 ;   status : out, optional, type=integer
 ;     set to a named variable to retrieve the status of the step; 0 for success
 ;-
-pro ucomp_l1_combine_cameras, file, primary_header, ext_data, ext_headers, $
+pro ucomp_l1_combine_cameras, file, $
+                              primary_header, ext_data, ext_headers, backgrounds, $
                               run=run, status=status
   compile_opt strictarr
 
@@ -31,9 +34,18 @@ pro ucomp_l1_combine_cameras, file, primary_header, ext_data, ext_headers, $
 
   cameras = strlowcase(run->config('cameras/use'))
   case cameras of
-    'rcam': ext_data = reform(ext_data[*, *, *, 0, *])
-    'tcam': ext_data = reform(ext_data[*, *, *, 1, *])
-    'both': ext_data = mean(ext_data, dimension=4, /nan)
+    'rcam': begin
+        ext_data = reform(ext_data[*, *, *, 0, *])
+        backgrounds = reform(backgrouns[*, *, 0, *])
+      end
+    'tcam': begin
+        ext_data = reform(ext_data[*, *, *, 1, *])
+        backgrounds = reform(backgrouns[*, *, 1, *])
+      end
+    'both': begin
+        ext_data = mean(ext_data, dimension=4, /nan)
+        backgrounds = mean(backgrounds, dimension=3, /nan)
+      end
     else: message, string(cameras, format='(%"invalid combinecameras/use value: ''%s''")')
   endcase
 

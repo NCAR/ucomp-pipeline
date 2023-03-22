@@ -11,8 +11,14 @@ mkdir build
 cd build
 
 IDL_ROOT_DIR=/Applications/harris/idl
+PYTHON3_ROOT_DIR=/Users/mgalloy/anaconda3
 
 cmake \
   -DCMAKE_INSTALL_PREFIX:PATH=~/software/ucomp-pipeline${FLAGS} \
+  -DCONFIG_DIR:PATH=/home/mgalloy/projects/ucomp-config \
+  -DIDL_ROOT_DIR:PATH=${IDL_ROOT_DIR} \
+  -DPython3_ROOT_DIR:PATH=${PYTHON3_ROOT_DIR} \
+  -DPython3_DIR:PATH=${PYTHON3_ROOT_DIR} \
+  -DPython3_EXECUTABLE:PATH=${PYTHON3_ROOT_DIR}/bin/python \
   -DIDL_ROOT_DIR:PATH=${IDL_ROOT_DIR} \
   ..

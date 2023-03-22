@@ -13,6 +13,8 @@
 ;     extension data
 ;   headers : in, required, type=list
 ;     extension headers as list of `strarr`
+;   backgrounds : type=undefined
+;     not used in this step
 ;
 ; :Keywords:
 ;   run : in, required, type=object
@@ -20,7 +22,9 @@
 ;   status : out, optional, type=integer
 ;     set to a named variable to retrieve the status of the step; 0 for success
 ;-
-pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, status=status
+pro ucomp_l1_find_alignment, file, $
+                             primary_header, data, headers, backgrounds, $
+                             run=run, status=status
   compile_opt strictarr
 
   status = 0L
@@ -45,9 +49,10 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
   rcam_offband_indices = where(file.onband_indices eq 1, n_rcam_offband)
 
   mg_log, /check_math, name=run.logger_name, /debug
-  rcam_background = mean(data[*, *, *, 0, rcam_offband_indices], dimension=4, /nan)
+  rcam_background = mean(reform(data[*, *, *, 0, rcam_offband_indices]), dimension=4, /nan)
   while (size(rcam_background, /n_dimensions) gt 3L) do rcam_background = mean(rcam_background, dimension=4, /nan)
-  rcam_background = rcam_background[*, *, 0]
+  rcam_background = mean(rcam_background, dimension=3, /nan)
+
   ; if all elements of dimension 3 are NaNs then the above lines will produce
   ; an floating-point operand error (128)
   !null = check_math(mask=128)
@@ -65,9 +70,10 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
   tcam_offband_indices = where(file.onband_indices eq 0, n_tcam_offband)
 
   mg_log, /check_math, name=run.logger_name, /debug
-  tcam_background = mean(data[*, *, *, 1, tcam_offband_indices], dimension=4, /nan)
+  tcam_background = mean(reform(data[*, *, *, 1, tcam_offband_indices]), dimension=4, /nan)
   while (size(tcam_background, /n_dimensions) gt 3L) do tcam_background = mean(tcam_background, dimension=4, /nan)
-  tcam_background = tcam_background[*, *, 0]
+  tcam_background = mean(tcam_background, dimension=3, /nan)
+
   ; if all elements of dimension 3 are NaNs then the above lines will produce
   ; an floating-point operand error (128)
   !null = check_math(mask=128)
@@ -82,6 +88,8 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
                                            post_angle_tolerance=post_angle_tolerance)
 
   rcam = file.rcam_geometry
+
+
   ucomp_addpar, primary_header, $
                 'XOFFSET0', $
                 (rcam.xsize - 1.0) / 2.0 - rcam.occulter_center[0], $
@@ -97,9 +105,10 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
                 format='(F0.3)'
   ucomp_addpar, primary_header, 'FITCHI0', rcam.occulter_chisq, $
                 comment='[px] chi-squared for RCAM center fit', $
-                format='(F0.3)'
+                format='(F0.6)'
 
   tcam = file.tcam_geometry
+
   ucomp_addpar, primary_header, $
                 'XOFFSET1', $
                 (tcam.xsize - 1.0) / 2.0 - tcam.occulter_center[0], $
@@ -115,7 +124,7 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
                 format='(F0.3)'
   ucomp_addpar, primary_header, 'FITCHI1', file.tcam_geometry.occulter_chisq, $
                 comment='[px] chi-squared for TCAM center fit', $
-                format='(F0.3)'
+                format='(F0.6)'
 
   ucomp_addpar, primary_header, 'POST_ANG', $
                 (rcam.post_angle + tcam.post_angle) / 2.0, $
@@ -130,16 +139,41 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
   ucomp_addpar, primary_header, 'IMAGESCL', image_scale, $
                 comment='[arcsec/pixel] image scale at focal plane'
 
-  rcam_background = ucomp_center_image(rcam_background, rcam)
-  tcam_background = ucomp_center_image(tcam_background, tcam)
-  background = (rcam_background + tcam_background) / 2.0
-  annulus_mask = ucomp_annulus(1.1 * radius, 1.5 * radius, $
-                               dimensions=size(background, /dimensions))
-  annulus_indices = where(annulus_mask, n_annulus_pts)
-  median_background = median(background[annulus_indices])
-  file.median_background = median_background
-  ucomp_addpar, primary_header, 'MED_BACK', median_background, $
-                comment='[ppm] median of background'
+  ; determine eccentricity of cameras
+  rcam_elliptical_geometry = ucomp_find_geometry(smooth(rcam_background, 2, /nan), $
+                                                 xsize=run->epoch('nx'), $
+                                                 ysize=run->epoch('ny'), $
+                                                 center_guess=rcam_center_guess, $
+                                                 radius_guess=radius_guess, $
+                                                 dradius=dradius, $
+                                                 post_angle_guess=post_angle_guess, $
+                                                 post_angle_tolerance=post_angle_tolerance, $
+                                                 /elliptical, $
+                                                 eccentricity=rcam_eccentricity, $
+                                                 ellipse_angle=rcam_ellipse_angle)
+  rcam.eccentricity = rcam_eccentricity
+  rcam.ellipse_angle = rcam_ellipse_angle
+  obj_destroy, rcam_elliptical_geometry
+
+  tcam_elliptical_geometry = ucomp_find_geometry(smooth(tcam_background, 2, /nan), $
+                                                 xsize=run->epoch('nx'), $
+                                                 ysize=run->epoch('ny'), $
+                                                 center_guess=rcam_center_guess, $
+                                                 radius_guess=radius_guess, $
+                                                 dradius=dradius, $
+                                                 post_angle_guess=post_angle_guess, $
+                                                 post_angle_tolerance=post_angle_tolerance, $
+                                                 /elliptical, $
+                                                 eccentricity=tcam_eccentricity, $
+                                                 ellipse_angle=tcam_ellipse_angle)
+  tcam.eccentricity = tcam_eccentricity
+  tcam.ellipse_angle = tcam_ellipse_angle
+  obj_destroy, tcam_elliptical_geometry
+
+  ucomp_addpar, primary_header, 'RCAMECC', rcam_eccentricity, $
+                comment='occulter eccentricity in RCAM', format='(F0.6)'
+  ucomp_addpar, primary_header, 'TCAMECC', tcam_eccentricity, $
+                comment='occulter eccentricity in TCAM', format='(F0.6)'
 
   file->getProperty, semidiameter=semidiameter, $
                      distance_au=distance_au, $
@@ -150,7 +184,8 @@ pro ucomp_l1_find_alignment, file, primary_header, data, headers, run=run, statu
                 comment='[deg] solar P angle applied (image has N up)', $
                 format='(f9.3)'
   ucomp_addpar, primary_header, 'SOLAR_B', b0, $
-                comment='[deg] solar B-Angle'
+                comment='[deg] solar B-Angle', $
+                format='(f9.3)'
 
   sec_z = mlso_secant_z(file.julian_date, sidereal_time=sidereal_time)
   ucomp_addpar, primary_header, 'SECANT_Z', sec_z, $

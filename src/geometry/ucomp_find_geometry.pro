@@ -7,6 +7,8 @@ function ucomp_find_geometry, data, $
                               center_guess=center_guess, $
                               dradius=dradius, $
                               elliptical=elliptical, $
+                              eccentricity=eccentricity, $
+                              ellipse_angle=ellipse_angle, $
                               post_angle_guess=post_angle_guess, $
                               post_angle_tolerance=post_angle_tolerance
   compile_opt strictarr
@@ -18,7 +20,9 @@ function ucomp_find_geometry, data, $
                                  dradius=dradius, $
                                  error=occulter_error, $
                                  points=points, $
-                                 elliptical=elliptical)
+                                 elliptical=elliptical, $
+                                 eccentricity=eccentricity, $
+                                 ellipse_angle=ellipse_angle)
 
   post_angle = ucomp_find_post(data, $
                                occulter[0:1], $
@@ -26,7 +30,6 @@ function ucomp_find_geometry, data, $
                                angle_guess=post_angle_guess, $
                                angle_tolerance=post_angle_tolerance, $
                                error=post_error)
-  if (post_angle ne 0L) then post_angle = !values.f_nan
 
   geometry = ucomp_geometry(xsize=xsize, $
                             ysize=ysize, $

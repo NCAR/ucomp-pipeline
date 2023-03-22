@@ -2,7 +2,7 @@ project(ucomp-pipeline)
 
 set(VERSION_MAJOR "0")
 set(VERSION_MINOR "2")
-set(VERSION_PATCH "82")
+set(VERSION_PATCH "83")
 set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
 # required version of CMake
@@ -74,7 +74,12 @@ message(STATUS "git branch   = ${GIT_BRANCH}")
 message(STATUS "git version  = ${GIT_VERSION}")
 message(STATUS "git revision = ${GIT_REVISION}")
 
-find_package(Python3 COMPONENTS Interpreter Development)
+if (${APPLE})
+  find_package(Python3 COMPONENTS Interpreter Development
+               HINTS ${Python3_ROOT_DIR})
+else()
+  find_package(Python3 COMPONENTS Interpreter Development)
+endif()
 
 include(${CMAKE_SOURCE_DIR}/cmake/GetDate.cmake)
 LONG_TODAY(ucomp_pipeline_BUILD_DATE)
@@ -90,7 +95,15 @@ include_directories(${IDL_INCLUDE_DIR})
 # must be done before bin/
 add_subdirectory(lib)
 
+message(STATUS "Installation location = ${CMAKE_INSTALL_PREFIX}")
+message(STATUS "Installation version = ${VERSION}")
+
+set(DEFAULT_CONFIG_PATH "${CMAKE_INSTALL_PREFIX}/config" CACHE PATH "default path to configuration files")
+set(CONFIG_DIR "${DEFAULT_CONFIG_PATH}" CACHE PATH "path to configuration files")
+message(STATUS "configuration directory = ${CONFIG_DIR}")
+
 add_subdirectory(bin)
+
 add_subdirectory(config)
 add_subdirectory(gen)
 add_subdirectory(regression)
@@ -116,13 +129,13 @@ set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "api-docs")
 
 if (mgunit_FOUND)
   add_custom_target(unit
-    COMMAND ${IDL_EXECUTABLE} -IDL_STARTUP "\"\"" -IDL_PATH "${CMAKE_CURRENT_SOURCE_DIR}${SEP_CHAR}${CMAKE_CURRENT_SOURCE_DIR}/scripts${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/lib${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/src${SEP_CHAR}+${CMAKE_CURRENT_BINARY_DIR}/src${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/unit${SEP_CHAR}+${mgunit_DIR}${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/ssw${SEP_CHAR}\"<IDL_DEFAULT>\"" -quiet -e "ucomp_run_unittests"
+    COMMAND ${IDL_EXECUTABLE} -IDL_STARTUP "\"\"" -IDL_PATH "${CMAKE_CURRENT_SOURCE_DIR}${SEP_CHAR}${CMAKE_CURRENT_SOURCE_DIR}/scripts${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/lib${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/gen${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/src${SEP_CHAR}+${CMAKE_CURRENT_BINARY_DIR}/src${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/unit${SEP_CHAR}+${mgunit_DIR}${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/ssw${SEP_CHAR}+${CMAKE_CURRENT_BINARY_DIR}/unit${SEP_CHAR}\"<IDL_DEFAULT>\"" -quiet -e "ucomp_run_unittests"
   )
   add_custom_target(htmlunit
-    COMMAND ${IDL_EXECUTABLE} -IDL_STARTUP "\"\"" -IDL_PATH "${CMAKE_CURRENT_SOURCE_DIR}${SEP_CHAR}${CMAKE_CURRENT_SOURCE_DIR}/scripts${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/lib${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/src${SEP_CHAR}+${CMAKE_CURRENT_BINARY_DIR}/src${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/unit${SEP_CHAR}+${mgunit_DIR}${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/ssw${SEP_CHAR}\"<IDL_DEFAULT>\"" -quiet -e "ucomp_run_unittests, \\\"${CMAKE_CURRENT_BINARY_DIR}/unittests.html\\\""
+    COMMAND ${IDL_EXECUTABLE} -IDL_STARTUP "\"\"" -IDL_PATH "${CMAKE_CURRENT_SOURCE_DIR}${SEP_CHAR}${CMAKE_CURRENT_SOURCE_DIR}/scripts${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/lib${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/gen${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/src${SEP_CHAR}+${CMAKE_CURRENT_BINARY_DIR}/src${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/unit${SEP_CHAR}+${mgunit_DIR}${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/ssw${SEP_CHAR}+${CMAKE_CURRENT_BINARY_DIR}/unit${SEP_CHAR}\"<IDL_DEFAULT>\"" -quiet -e "ucomp_run_unittests, \\\"${CMAKE_CURRENT_BINARY_DIR}/unittests.html\\\""
   )
   add_custom_target(regression
-    COMMAND ${IDL_EXECUTABLE} -IDL_STARTUP "\"\"" -IDL_PATH "${CMAKE_CURRENT_SOURCE_DIR}${SEP_CHAR}${CMAKE_CURRENT_SOURCE_DIR}/scripts${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/lib${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/src${SEP_CHAR}+${CMAKE_CURRENT_BINARY_DIR}/src${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/unit${SEP_CHAR}+${mgunit_DIR}${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/ssw${SEP_CHAR}\"<IDL_DEFAULT>\"" -quiet -e ucomp_run_regressiontests
+    COMMAND ${IDL_EXECUTABLE} -IDL_STARTUP "\"\"" -IDL_PATH "${CMAKE_CURRENT_SOURCE_DIR}${SEP_CHAR}${CMAKE_CURRENT_SOURCE_DIR}/scripts${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/lib${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/gen${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/src${SEP_CHAR}+${CMAKE_CURRENT_BINARY_DIR}/src${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/unit${SEP_CHAR}+${mgunit_DIR}${SEP_CHAR}+${CMAKE_CURRENT_SOURCE_DIR}/ssw${SEP_CHAR}+${CMAKE_CURRENT_BINARY_DIR}/unit${SEP_CHAR}\"<IDL_DEFAULT>\"" -quiet -e ucomp_run_regressiontests
   )
 endif ()
 
@@ -152,6 +165,7 @@ endif ()
 
 if (mgunit_FOUND)
   install(DIRECTORY unit DESTINATION .)
+  configure_file(ucomp_unit_config_dir.pro.in unit/ucomp_unit_config_dir.pro @ONLY)
 endif ()
 
 add_custom_target(dist
@@ -161,6 +175,3 @@ add_custom_target(dist
 if (IDLdoc_FOUND)
   add_dependencies(dist doc)
 endif ()
-
-message(STATUS "Installation location = ${CMAKE_INSTALL_PREFIX}")
-message(STATUS "Installation version = ${VERSION}")

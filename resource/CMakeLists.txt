@@ -6,6 +6,7 @@ add_subdirectory(database)
 add_subdirectory(demodulation)
 add_subdirectory(distortion)
 add_subdirectory(logos)
+add_subdirectory(temperature)
 add_subdirectory(validation)
 add_subdirectory(wave_regions)
 

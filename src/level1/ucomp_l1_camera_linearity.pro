@@ -12,6 +12,8 @@
 ;     extension data
 ;   headers : in, required, type=list
 ;     extension headers as list of `strarr`
+;   backgrounds : type=undefined
+;     not used in this step
 ;
 ; :Keywords:
 ;   run : in, required, type=object
@@ -19,14 +21,15 @@
 ;   status : out, optional, type=integer
 ;     set to a named variable to retrieve the status of the step; 0 for success
 ;-
-pro ucomp_l1_camera_linearity, file, primary_header, data, headers, $
+pro ucomp_l1_camera_linearity, file, $
+                               primary_header, data, headers, backgrounds, $
                                run=run, status=status
   compile_opt strictarr
 
   status = 0L
 
   if (~run->config('cameras/linearity')) then begin
-    mg_log, 'skipping camera linearity correction', name=run.logger_name, /info
+    mg_log, 'skipping camera linearity correction', name=run.logger_name, /debug
     goto, done
   endif
 
