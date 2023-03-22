@@ -287,7 +287,7 @@
   change center wavelength by epoch for new lines
 0.2.82 [Nov 28, 2022]
   fix typo
-0.2.83
+0.2.83 [Mar 22, 2023]
   add backgrounds to level 1 FITS files
   fix MED_BACK FITS keyword calculation
   subtract rest wavelength in velocity calculation
