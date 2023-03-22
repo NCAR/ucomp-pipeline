@@ -12,6 +12,8 @@
 ;     extension data
 ;   headers : in, required, type=list
 ;     extension headers as list of `strarr`
+;   backgrounds : out, type="fltarr(nx, ny, n_exts)"
+;     background images
 ;
 ; :Keywords:
 ;   run : in, required, type=object
@@ -19,7 +21,8 @@
 ;   status : out, optional, type=integer
 ;     set to a named variable to retrieve the status of the step; 0 for success
 ;-
-pro ucomp_l1_promote_header, file, primary_header, data, headers, $
+pro ucomp_l1_promote_header, file, $
+                             primary_header, data, headers, backgrounds, $
                              run=run, status=status
   compile_opt strictarr
 
@@ -66,12 +69,28 @@ pro ucomp_l1_promote_header, file, primary_header, data, headers, $
   ucomp_addpar, primary_header, 'VCROSSTK', file.vcrosstalk_metric, $
                 comment='Stokes V crosstalk metric'
 
+  radius = ucomp_getpar(primary_header, 'RADIUS')
+  mg_log, 'backgrounds dimensions: %s', $
+          strjoin(strtrim(size(backgrounds, /dimensions), 2), ', '), $
+          name=run.logger_name, /debug
+  mg_log, 'background index: %d', file.n_unique_wavelengths / 2L, $
+          name=run.logger_name, /debug
+  background = backgrounds[*, *, file.n_unique_wavelengths / 2L]
+  annulus_mask = ucomp_annulus(1.1 * radius, 1.5 * radius, $
+                               dimensions=size(background, /dimensions))
+  annulus_indices = where(annulus_mask, n_annulus_pts)
+  median_background = median(background[annulus_indices])
+  file.median_background = median_background
+  ucomp_addpar, primary_header, 'MED_BACK', median_background, $
+                comment='[ppm] median of background', $
+                format='(F0.3)'
+
   ; update extension headers
 
   remove_keywords = ['COMMENT', 'ONBAND', 'V_LCVR1', 'V_LCVR2', $
                      'V_LCVR3', 'V_LCVR4', 'V_LCVR5', 'NUMSUM', 'SEQNUM', $
                      'OCCLTR', 'CALOPTIC', 'COVER', 'DIFFUSR', 'DARKSHUT', $
-                     'POLANGLE', 'RETANGLE']
+                     'POLANGLE', 'RETANGLE', 'DATE-BEG']
   promote_keywords = [{name: 'CONTIN', format: '(A)'}, $
                       {name: 'FRAMERT', format: '(F0.3)'}, $
                       {name: 'EXPTIME', format: '(F0.3)'}]

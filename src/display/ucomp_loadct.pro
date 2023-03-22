@@ -4,9 +4,12 @@ pro ucomp_loadct_rgb, rgb
   compile_opt strictarr
   common colors, r_orig, g_orig, b_orig, r_curr, g_curr, b_curr
 
-  r_orig = bindgen(256)
-  g_orig = bindgen(256)
-  b_orig = bindgen(256)
+  dims = size(rgb, /dimensions)
+  n_colors = dims[0]
+
+  r_orig = bindgen(n_colors)
+  g_orig = bindgen(n_colors)
+  b_orig = bindgen(n_colors)
 
   r_orig[0] = rgb[*, 0]
   g_orig[0] = rgb[*, 1]
@@ -48,7 +51,16 @@ pro ucomp_loadct, name, n_colors=n_colors
     'quv': ucomp_loadct_rgb, mg_makect(cyan, black, pink, ncolors=n_colors)
     'linpol': loadct, 0, /silent, ncolors=n_colors
     'azimuth': loadct, 4, /silent, ncolors=n_colors
-    'radial_azimuth': loadct, 6, /silent, ncolors=n_colors
+    'radial_azimuth': begin
+        loadct, 6, /silent, ncolors=n_colors
+        ; shift the used part of the color table so that black is in the middle
+        ; and green is on the ends, i.e., by half the number of colors in the
+        ; color table
+        _n_colors = n_elements(n_colors) eq 0L ? 256L : n_colors
+        tvlct, rgb, /get
+        rgb[0:_n_colors - 1L, *] = shift(rgb[0:_n_colors - 1L, *], _n_colors / 2, 0)
+        tvlct, rgb
+      end
     'doppler': ucomp_loadct_rgb, mg_makect(blue, white, red, ncolors=n_colors)
     'line_width': loadct, 4, /silent, ncolors=n_colors
     else: message, string(name, format='(%"unknown colortable name: %s")')

@@ -50,15 +50,18 @@ function ucomp_find_occulter, data, $
                               error=error, $
                               points=points, $
                               pt_weights=pt_weights, $
-                              elliptical=elliptical
+                              elliptical=elliptical, $
+                              eccentricity=eccentricity, $
+                              ellipse_angle=ellipse_angle
   compile_opt strictarr
+  ;common fit, x, y, radius
 
   ; if guess of radius is input, use it, otherwise use default guess
-  _radius_guess = n_elements(radius_guess) eq 0L ? 350.0 : radius_guess
+  _radius_guess = n_elements(radius_guess) eq 0L ? 330.0 : radius_guess
 
   ; if number of points around radius is input, use it, otherwise use default
   ; number of points (+/-) around radius for determination
-  _dradius = n_elements(dradius) eq 0L ? 40.0 : dradius
+  _dradius = n_elements(dradius) eq 0L ? 80.0 : dradius
 
   ; find limb positions, array of angles (theta) and limb positions (r) is returned
   r = ucomp_radial_derivative(data, _radius_guess, _dradius, $
@@ -67,16 +70,40 @@ function ucomp_find_occulter, data, $
                               points=points, $
                               pt_weights=pt_weights)
 
+  ; Steve's center finding method
+  ; c = circfit(angles, r, chisq=chisq)
+  ; return, [c[0] / 2.0, c[1] / 2.0, radius]
+
+  ; using MPFIT to find the center
   x = reform(points[0, *])
   y = reform(points[1, *])
+
+  ; remove points under the occulter post
+  post_width_angle = 8.0
+  l0_post_angle = -90.0
+  theta = atan(y - center_guess[1], x - center_guess[0]) * !radeg
+  non_post_indices = where(theta lt (l0_post_angle - post_width_angle / 2.0) $
+                             or theta gt (l0_post_angle + post_width_angle / 2.0))
+  x = x[non_post_indices]
+  y = y[non_post_indices]
+
+  points = points[*, non_post_indices]
+
   p = mpfitellipse(x, y, $
                    weights=pt_weights, $
                    circular=~keyword_set(elliptical), $
                    tilt=keyword_set(elliptical), $
                    /quiet, $
                    status=status, $
-                   bestnorm=chisq)
+                   bestnorm=bestnorm)
   error = status le 0
+
+  chisq = bestnorm / n_elements(x)
+
+  if (keyword_set(elliptical)) then begin
+    eccentricity = sqrt(1 - (p[1] / p[0])^2)
+    ellipse_angle = p[4] * !radeg
+  endif
 
   return, p[keyword_set(elliptical) ? [2, 3, 0, 1, 4] : [2, 3, 0]]
 end

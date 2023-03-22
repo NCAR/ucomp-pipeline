@@ -6,7 +6,6 @@ from email.mime.text import MIMEText
 import fnmatch
 import glob
 import os
-import psutil
 import re
 import smtplib
 import socket
@@ -23,6 +22,12 @@ if PY3:
     import configparser
 else:
     import ConfigParser as configparser
+
+try:
+    import psutil
+    ps_requirements = True
+except ModuleNotFoundError as e:
+    ps_requirements = False
 
 try:
     from astropy.io import fits
@@ -63,6 +68,7 @@ DATE_FORMAT = "%Y%m%d"
 
 DEVNULL = open(os.devnull, "w")
 PIPELINE_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+CONFIG_DIR = "@CONFIG_DIR@"
 
 
 # config file helpers
@@ -72,7 +78,7 @@ def get_config_filename(flags):
     config_basename = f"ucomp.{flags}.cfg"
 
     # construct config file filename
-    config_filename = os.path.join(PIPELINE_DIR, "config", config_basename)
+    config_filename = os.path.join(CONFIG_DIR, config_basename)
 
     return(config_filename)
 
@@ -189,6 +195,9 @@ def notify_completed(args, task):
 # list sub-command
 
 def list_processes(args):
+    if not ps_requirements:
+        args.parser.error("missing Python packages required for listing processes")
+
     ucomp_processes = []
     for p in psutil.process_iter():
         cmdline = p.cmdline()
@@ -739,7 +748,7 @@ def get_login(flags, error):
     config_basename = f"ucomp.{flags}.cfg"
 
     # construct config file filename
-    config_filename = os.path.join(PIPELINE_DIR, "config", config_basename)
+    config_filename = get_config_filename(flags)
     if not os.path.isfile(config_filename):
         basename = os.path.basename(config_filename)
         error(f"configuration file does not exist: {basename}")
@@ -912,12 +921,14 @@ def launch_processes(args, routine):
     if len(dates) != 1 and routine == "ucomp_realtime_wrapper":
         args.parser.error("realtime mode is only valid for a single date")
 
+    config_filename = get_config_filename(args.flags)
+
     for d in dates:
         cmd = [os.path.join(PIPELINE_DIR,
                             "bin",
                             "ucomp_script.sh"),
                routine,
-               args.flags,
+               config_filename,
                d]
 
         process = subprocess.Popen(cmd, stderr=subprocess.STDOUT)
@@ -964,8 +975,7 @@ def simulate(args):
 
     # read config file to get options
     pipeline_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-    config_basename = "ucomp.%s.cfg" % args.flags
-    config_filename = os.path.join(pipeline_dir, "config", config_basename)
+    config_filename = get_config_filename(args.flags)
 
     config = configparser.ConfigParser()
     config.read(config_filename)

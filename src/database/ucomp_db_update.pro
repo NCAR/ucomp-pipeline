@@ -116,6 +116,8 @@ pro ucomp_db_update, run=run
                                 'doppler velocity', 'doppler', 'doppler', $
                                 1.3, 'r13doppler', $
                                 db, run=run
+
+    ucomp_plot_eccentricity, wave_regions[w], db, run=run
   endfor
 
   done:

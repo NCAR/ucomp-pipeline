@@ -14,9 +14,10 @@ function ucomp_read_config, config_filename, spec=config_spec_filename
 
   include_filename = original_options->get('inherit', section='config')
   if (n_elements(include_filename) gt 0L) then begin
-    include_filename = filepath(include_filename, $
-                                subdir=['..', '..', 'config'], $
-                                root=mg_src_root())
+    if (~file_test(include_filename, /regular)) then begin
+      include_filename = filepath(file_basename(include_filename), $
+                                  root=file_dirname(config_filename))
+    endif
     parent_options = mg_read_config(include_filename, spec=config_spec_filename)
     options = mg_read_config(config_filename, $
                              defaults=parent_options, $

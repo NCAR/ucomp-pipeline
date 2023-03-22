@@ -2,7 +2,7 @@ if [[ $# -lt 1 ]]; then
   echo "missing configuration file FLAGS"
   exit 1
 else
-  CONFIG=${PIPE_DIR}/config/ucomp.${1}.cfg
+  CONFIG=${1}
 fi
 
 # use today if date not passed to script

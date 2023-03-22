@@ -6,8 +6,7 @@ function ucomp_validate_machinelog_ut::test_pass
   date = '20210503'
   config_basename = 'ucomp.unit.cfg'
   config_filename = filepath(config_basename, $
-                             subdir=['..', '..', 'config'], $
-                             root=mg_src_root())
+                             root=ucomp_unit_config_dir())
 
   run = ucomp_run(date, 'test', config_filename)
   is_valid = ucomp_validate_machinelog(run=run)
@@ -24,8 +23,7 @@ function ucomp_validate_machinelog_ut::test_missingfile
   date = '20210326'
   config_basename = 'ucomp.unit.cfg'
   config_filename = filepath(config_basename, $
-                             subdir=['..', '..', 'config'], $
-                             root=mg_src_root())
+                             root=ucomp_unit_config_dir())
 
   run = ucomp_run(date, 'test', config_filename)
   is_valid = ucomp_validate_machinelog(run=run)
@@ -43,8 +41,7 @@ function ucomp_validate_machinelog_ut::test_missinglog
   date = '20210311'
   config_basename = 'ucomp.unit.cfg'
   config_filename = filepath(config_basename, $
-                             subdir=['..', '..', 'config'], $
-                             root=mg_src_root())
+                             root=ucomp_unit_config_dir())
 
   run = ucomp_run(date, 'test', config_filename)
   is_valid = ucomp_validate_machinelog(present=present, run=run)
@@ -63,8 +60,7 @@ function ucomp_validate_machinelog_ut::test_missing
   date = '20210511'
   config_basename = 'ucomp.unit.cfg'
   config_filename = filepath(config_basename, $
-                             subdir=['..', '..', 'config'], $
-                             root=mg_src_root())
+                             root=ucomp_unit_config_dir())
 
   run = ucomp_run(date, 'test', config_filename)
   is_valid = ucomp_validate_machinelog(present=present, run=run)

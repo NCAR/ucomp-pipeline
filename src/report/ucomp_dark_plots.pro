@@ -193,7 +193,9 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
         xtitle='Time [HST]', $
         xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
         ytitle='Counts [DN]/NUMSUM', $
-        ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
+        ystyle=1, $
+        yrange=dark_range[0] + [0.0, 4.0 * (dark_range[1] - dark_range[0])], $
+        ytickformat='ucomp_dn_format'
 
   mg_range_oplot, [dark_info.times], [cam0_dark_means], $
                   psym=camera0_psym, symsize=symsize, $

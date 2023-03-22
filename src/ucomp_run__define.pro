@@ -212,6 +212,13 @@ function ucomp_run::get_programs, wave_region, count=count
 end
 
 
+function ucomp_run::convert_program_name, program_name
+  compile_opt strictarr
+
+  return, self.program_names->get(program_name, section='DEFAULT', default=program_name)
+end
+
+
 ;+
 ; Lock the raw directory if required and available.
 ;
@@ -778,6 +785,21 @@ function ucomp_run::can_send_alert, type, msg
 end
 
 
+function ucomp_run::all_temperature_maps, count=count
+  compile_opt strictarr
+
+  return, self.temperature_maps->sections(count=count)
+end
+
+
+function ucomp_run::temperature_map_option, map, option
+  compile_opt strictarr
+
+  value = self.temperature_maps->get(option, section=map, found=found)
+  return, value
+end
+
+
 ;= property access
 
 ;+
@@ -943,7 +965,8 @@ pro ucomp_run::cleanup
   compile_opt strictarr
 
   foreach options, self.lines do obj_destroy, options
-  obj_destroy, [self.options, self.epochs, self.lines]
+  obj_destroy, [self.options, self.epochs, self.lines, self.temperature_maps, $
+                self.program_names]
 
   ptr_free, self.hot_pixels[0], $
             self.hot_pixels[1], $
@@ -1051,6 +1074,14 @@ function ucomp_run::init, date, mode, config_filename, $
     self.lines[wave_regions[w]] = wave_region_options
   endfor
 
+  temperature_maps_filename = filepath('false-color-images.cfg', $
+                                       subdir=['temperature'], $
+                                       root=self.resource_root)
+  self.temperature_maps = mg_read_config(temperature_maps_filename)
+
+  program_names_filename = filepath('program_names.cfg', root=self.resource_root)
+  self.program_names = mg_read_config(program_names_filename)
+
   for i = 0L, 3L do begin
     self.hot_pixels[i] = ptr_new(/allocate_heap)
     self.adjacent_pixels[i] = ptr_new(/allocate_heap)
@@ -1094,6 +1125,8 @@ pro ucomp_run__define
 
            epochs                  : obj_new(), $
            lines                   : obj_new(), $
+           temperature_maps        : obj_new(), $
+           program_names           : obj_new(), $
 
            hot_pixels              : ptrarr(2, 2), $   ; gain, camera
            adjacent_pixels         : ptrarr(2, 2), $   ; gain, camera
