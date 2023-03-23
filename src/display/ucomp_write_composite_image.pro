@@ -119,6 +119,13 @@ end
 pro ucomp_write_composite_image, filenames, run=run
   compile_opt strictarr
 
+  files_exist = file_test(filenames, /regular)
+  if (total(files_exist, /integer)) then begin
+    mg_log, 'missing file(s) for composite image channel(s)', $
+            name=run.logger_name, /warn
+    goto, done
+  endif
+
   wave_regions = strarr(3)
   radii = fltarr(3)
 
@@ -161,6 +168,8 @@ pro ucomp_write_composite_image, filenames, run=run
                              root=run->config('processing/basedir'))
 
   write_png, output_filename, annotated_image
+
+  done:
 end
 
 
