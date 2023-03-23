@@ -119,9 +119,12 @@ end
 pro ucomp_write_composite_image, filenames, run=run
   compile_opt strictarr
 
+  channels = ['R', 'G', 'B']
   files_exist = file_test(filenames, /regular)
-  if (total(files_exist, /integer)) then begin
-    mg_log, 'missing file(s) for composite image channel(s)', $
+  if (total(files_exist, /integer) ne n_elements(filenames)) then begin
+    missing_indices = where(files_exist eq 0, /null)
+    mg_log, 'missing file(s) for composite image channel(s): %s', $
+            strjoin(strtrim(channels[missing_indices], 2)), $
             name=run.logger_name, /warn
     goto, done
   endif
