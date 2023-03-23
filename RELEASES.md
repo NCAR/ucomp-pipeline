@@ -306,4 +306,5 @@
   add scheme to convert cookbook names to better user names for average files
   updating radial azimuth color table to match CoMP
   report eccentricity/angle in FITS header, database, and daily plot
-0.2.84
+0.2.84 [Mar 23, 2023]
+  handle missing files for composite images
