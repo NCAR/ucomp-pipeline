@@ -60,7 +60,7 @@ function ucomp_radial_derivative, data, radius_guess, dr, $
     y0 = double(dims[1] - 1.0) / 2.0D
   endelse
 
-  n_values = dr * 2   ; number of points in interpolated radial scan
+  n_values = dr * 2 + 1L   ; number of points in interpolated radial scan
 
   ; make radial scans
   points = dblarr(2L, n_scan)
