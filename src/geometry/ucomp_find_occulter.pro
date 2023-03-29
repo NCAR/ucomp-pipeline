@@ -52,9 +52,9 @@ function ucomp_find_occulter, data, $
                               pt_weights=pt_weights, $
                               elliptical=elliptical, $
                               eccentricity=eccentricity, $
-                              ellipse_angle=ellipse_angle
+                              ellipse_angle=ellipse_angle, $
+                              remove_post=remove_post
   compile_opt strictarr
-  ;common fit, x, y, radius
 
   ; if guess of radius is input, use it, otherwise use default guess
   _radius_guess = n_elements(radius_guess) eq 0L ? 330.0 : radius_guess
@@ -70,42 +70,47 @@ function ucomp_find_occulter, data, $
                               points=points, $
                               pt_weights=pt_weights)
 
-  ; Steve's center finding method
-  ; c = circfit(angles, r, chisq=chisq)
-  ; return, [c[0] / 2.0, c[1] / 2.0, radius]
-
-  ; using MPFIT to find the center
   x = reform(points[0, *])
   y = reform(points[1, *])
 
   ; remove points under the occulter post
-  post_width_angle = 8.0
-  l0_post_angle = -90.0
-  theta = atan(y - center_guess[1], x - center_guess[0]) * !radeg
-  non_post_indices = where(theta lt (l0_post_angle - post_width_angle / 2.0) $
-                             or theta gt (l0_post_angle + post_width_angle / 2.0))
-  x = x[non_post_indices]
-  y = y[non_post_indices]
+  if (keyword_set(remove_post)) then begin
+    post_width_angle = 8.0
+    l0_post_angle = -90.0
+    theta = atan(y - center_guess[1], x - center_guess[0]) * !radeg
+    non_post_indices = where(theta lt (l0_post_angle - post_width_angle / 2.0) $
+                               or theta gt (l0_post_angle + post_width_angle / 2.0))
 
-  points = points[*, non_post_indices]
+    points = points[*, non_post_indices]
 
-  p = mpfitellipse(x, y, $
-                   weights=pt_weights, $
-                   circular=~keyword_set(elliptical), $
-                   tilt=keyword_set(elliptical), $
-                   /quiet, $
-                   status=status, $
-                   bestnorm=bestnorm)
-  error = status le 0
-
-  chisq = bestnorm / n_elements(x)
-
-  if (keyword_set(elliptical)) then begin
-    eccentricity = sqrt(1 - (p[1] / p[0])^2)
-    ellipse_angle = p[4] * !radeg
+    if (keyword_set(elliptical)) then begin
+      x = x[non_post_indices]
+      y = y[non_post_indices]
+      pt_weights = pt_weights[non_post_indices]
+    endif else begin
+      angles = angles[non_post_indices]
+      r = r[non_post_indices]
+    endelse
   endif
 
-  return, p[keyword_set(elliptical) ? [2, 3, 0, 1, 4] : [2, 3, 0]]
+  if (keyword_set(elliptical)) then begin
+    p = mpfitellipse(x, y, $
+                     weights=pt_weights, $
+                     circular=0B, $
+                     /tilt, $
+                     /quiet, $
+                     status=status, $
+                     bestnorm=bestnorm)
+    error = status le 0
+    chisq = bestnorm / n_elements(x)
+
+    eccentricity = sqrt(1 - (p[1] / p[0])^2)
+    ellipse_angle = p[4] * !radeg
+    return, p[[2, 3, 0, 1, 4]]
+  endif else begin
+    p = ucomp_circfit(angles, r, chisq=chisq, error=error)
+    return, [p[0] / 2.0 + center_guess[0], p[1] / 2.0 + center_guess[1], p[2]]
+  endelse
 end
 
 

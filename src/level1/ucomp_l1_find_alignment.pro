@@ -56,7 +56,6 @@ pro ucomp_l1_find_alignment, file, $
   ; if all elements of dimension 3 are NaNs then the above lines will produce
   ; an floating-point operand error (128)
   !null = check_math(mask=128)
-
   file.rcam_geometry = ucomp_find_geometry(smooth(rcam_background, 2, /nan), $
                                            xsize=run->epoch('nx'), $
                                            ysize=run->epoch('ny'), $
@@ -64,7 +63,13 @@ pro ucomp_l1_find_alignment, file, $
                                            radius_guess=radius_guess, $
                                            dradius=dradius, $
                                            post_angle_guess=post_angle_guess, $
-                                           post_angle_tolerance=post_angle_tolerance)
+                                           post_angle_tolerance=post_angle_tolerance, $
+                                           error=rcam_error, $
+                                           post_err_msg=rcam_post_err_msg)
+  mg_log, 'RCAM geometry error: %d', rcam_error, name=run.logger_name, /debug
+  if (strlen(rcam_post_err_msg) gt 0L) then begin
+    mg_log, 'RCAM post error message: %s', rcam_post_err_msg, name=run.logger_name, /warn
+  endif
 
   tcam_center_guess = ucomp_occulter_guess(1, date, occulter_x, occulter_y, run=run)
   tcam_offband_indices = where(file.onband_indices eq 0, n_tcam_offband)
@@ -77,7 +82,6 @@ pro ucomp_l1_find_alignment, file, $
   ; if all elements of dimension 3 are NaNs then the above lines will produce
   ; an floating-point operand error (128)
   !null = check_math(mask=128)
-
   file.tcam_geometry = ucomp_find_geometry(smooth(tcam_background, 2, /nan), $
                                            xsize=run->epoch('nx'), $
                                            ysize=run->epoch('ny'), $
@@ -85,10 +89,15 @@ pro ucomp_l1_find_alignment, file, $
                                            radius_guess=radius_guess, $
                                            dradius=dradius, $
                                            post_angle_guess=post_angle_guess, $
-                                           post_angle_tolerance=post_angle_tolerance)
+                                           post_angle_tolerance=post_angle_tolerance, $
+                                           error=tcam_error, $
+                                           post_err_msg=tcam_post_err_msg)
+  mg_log, 'TCAM geometry error: %d', tcam_error, name=run.logger_name, /debug
+  if (strlen(tcam_post_err_msg) gt 0L) then begin
+    mg_log, 'TCAM post error message: %s', tcam_post_err_msg, name=run.logger_name, /warn
+  endif
 
   rcam = file.rcam_geometry
-
 
   ucomp_addpar, primary_header, $
                 'XOFFSET0', $
