@@ -59,7 +59,7 @@ pro ucomp_loadct, name, n_colors=n_colors
         _n_colors = n_elements(n_colors) eq 0L ? 256L : n_colors
         tvlct, rgb, /get
         rgb[0:_n_colors - 1L, *] = shift(rgb[0:_n_colors - 1L, *], _n_colors / 2, 0)
-        tvlct, rgb
+        ucomp_loadct_rgb, rgb
       end
     'doppler': ucomp_loadct_rgb, mg_makect(blue, white, red, ncolors=n_colors)
     'line_width': loadct, 4, /silent, ncolors=n_colors
