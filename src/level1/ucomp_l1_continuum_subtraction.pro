@@ -95,14 +95,14 @@ pro ucomp_l1_continuum_subtraction, file, $
         c0 = [-1.0, 1.0]
         c1 = [1.0, -1.0]
         b  = [m, match_indices[m]]
-        msg0 = string(m, match_indices[m], format='(%"- ext %d + ext %d")')
-        msg1 = string(m, match_indices[m], format='(%"+ ext %d - ext %d")')
+        msg0 = string(m + 1L, match_indices[m] + 1L, format='(%"- ext %d + ext %d")')
+        msg1 = string(m + 1L, match_indices[m] + 1L, format='(%"+ ext %d - ext %d")')
       endif else begin
         c0 = [1.0, -1.0]
         c1 = [-1.0, 1.0]
         b  = [match_indices[m], m]
-        msg0 = string(m, match_indices[m], format='(%"+ ext %d - ext %d")')
-        msg1 = string(m, match_indices[m], format='(%"- ext %d + ext %d")')
+        msg0 = string(m + 1L, match_indices[m] + 1L, format='(%"+ ext %d - ext %d")')
+        msg1 = string(m + 1L, match_indices[m] + 1L, format='(%"- ext %d + ext %d")')
       endelse
     endif else begin
       mg_log, 'skipping continuum subtraction for %s file', file.wave_region, $
@@ -111,14 +111,14 @@ pro ucomp_l1_continuum_subtraction, file, $
         c0 = [0.0, 1.0]
         c1 = [1.0, 0.0]
         b  = [m, match_indices[m]]
-        msg0 = string(match_indices[m], format='(%"+ ext %d")')
-        msg1 = string(m, format='(%"+ ext %d")')
+        msg0 = string(match_indices[m] + 1L, format='(%"+ ext %d")')
+        msg1 = string(m + 1L, format='(%"+ ext %d")')
       endif else begin
         c0 = [1.0, 0.0]
         c1 = [0.0, 1.0]
         b  = [match_indices[m], m]
-        msg0 = string(m, format='(%"+ ext %d")')
-        msg1 = string(match_indices[m], format='(%"+ ext %d")')
+        msg0 = string(m + 1L, format='(%"+ ext %d")')
+        msg1 = string(match_indices[m] + 1L, format='(%"+ ext %d")')
       endelse
     endelse
 
