@@ -70,7 +70,7 @@ pro ucomp_test_centering, directory
   print, title
   plot, radius_diff, $
         xstyle=1, ystyle=1, xtitle='Image number', $
-        yrange=[-0.2, 0.2], ytitle='Radius difference', $
+        yrange=[-0.1, 0.1], ytitle='Radius difference', $
         title=title, $
         charsize=charsize
   !p.multi = 0

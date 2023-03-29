@@ -313,3 +313,4 @@
 0.2.86
   using CIRCFIT for occulter center finding
   fix for finding configuration file for verification script
+  fix for finding post

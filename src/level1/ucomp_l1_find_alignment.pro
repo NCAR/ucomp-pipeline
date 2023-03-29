@@ -135,10 +135,13 @@ pro ucomp_l1_find_alignment, file, $
                 comment='[px] chi-squared for TCAM center fit', $
                 format='(F0.6)'
 
+  mg_log, 'RCAM post angle: %0.1f, TCAM post angle: %0.1f', $
+          rcam.post_angle, tcam.post_angle, $
+          name=run.logger_name, /debug
   ucomp_addpar, primary_header, 'POST_ANG', $
-                (rcam.post_angle + tcam.post_angle) / 2.0, $
+                mean([rcam.post_angle, tcam.post_angle], /nan), $
                 comment='[deg] post angle CCW from north'
-  radius = (rcam.occulter_radius + tcam.occulter_radius) / 2.0
+  radius = mean([rcam.occulter_radius, tcam.occulter_radius], /nan)
   ucomp_addpar, primary_header, 'RADIUS', $
                 radius, $
                 comment='[px] occulter average radius'
