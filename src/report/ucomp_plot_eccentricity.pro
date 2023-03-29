@@ -1,12 +1,12 @@
 ; docformat = 'rst'
 
-pro ucomp_plot_eccentricity, wave_region, db, run=run
+pro ucomp_plot_eccentricity, wave_region, obsday_index, db, run=run
   compile_opt strictarr
 
   mg_log, 'plotting eccentricity info...', name=run.logger_name, /info
 
-  query = 'select * from ucomp_eng where wave_region=''%s'' order by date_obs'
-  data = db->query(query, wave_region, $
+  query = 'select * from ucomp_eng where wave_region=''%s'' and obsday_id=%d order by date_obs'
+  data = db->query(query, wave_region, obsday_index, $
                    count=n_files, error=error, fields=fields, sql_statement=sql)
   if (n_files eq 0L) then begin
     mg_log, 'no files found', name=run.logger_name, /warn
