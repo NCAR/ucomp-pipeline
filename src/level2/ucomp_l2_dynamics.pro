@@ -135,7 +135,7 @@ pro ucomp_l2_dynamics, file, run=run
   endif
 
   ; mask data on various thresholds
-  good_indices = where(intensity_center gt 1.0 $
+  good_indices = where(intensity_center gt 0.2 $
                          and intensity_center lt 100.0 $
                          and line_width lt 60.0 $
                          and line_width gt 15.0 $
