@@ -49,23 +49,29 @@ pro ucomp_test_centering, directory
 
   !p.multi = [0, 1, 3]
   charsize = 1.75
+  title = string(sqrt(total(x_diff^2) / n_files), mean(x_diff), $
+                 format='x-centoid, rms: %0.3f, offset: %0.3f')
+  print, title
   plot, x_diff, $
         xstyle=1, ystyle=1, xtitle='Image number', $
         yrange=[-0.2, 0.2], ytitle='x-difference', $
-        title=string(sqrt(total(x_diff^2) / n_files), mean(x_diff), $
-                     format='x-centoid, rms: %0.3f, offset: %0.3f'), $
+        title=title, $
         charsize=charsize
+  title = string(sqrt(total(y_diff^2) / n_files), mean(y_diff), $
+                 format='y-centoid, rms: %0.3f, offset: %0.3f')
+  print, title
   plot, y_diff, $
         xstyle=1, ystyle=1, xtitle='Image number', $
         yrange=[-0.2, 0.2], ytitle='y-difference', $
-        title=string(sqrt(total(y_diff^2) / n_files), mean(y_diff), $
-                     format='y-centoid, rms: %0.3f, offset: %0.3f'), $
+        title=title, $
         charsize=charsize
+  title = string(sqrt(total(radius_diff^2) / n_files), mean(radius_diff), $
+                 format='Radius, rms: %0.3f, offset: %0.3f')
+  print, title
   plot, radius_diff, $
         xstyle=1, ystyle=1, xtitle='Image number', $
         yrange=[-0.2, 0.2], ytitle='Radius difference', $
-        title=string(sqrt(total(radius_diff^2) / n_files), mean(radius_diff), $
-                     format='Radius, rms: %0.3f, offset: %0.3f'), $
+        title=title, $
         charsize=charsize
   !p.multi = 0
 
