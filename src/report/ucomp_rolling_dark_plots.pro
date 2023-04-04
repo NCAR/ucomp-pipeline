@@ -221,10 +221,10 @@ end
 
 ; main-level example program
 
-date = '20220831'
-config_basename = 'ucomp.production.cfg'
+date = '20220325'
+config_basename = 'ucomp.regression.cfg'
 config_filename = filepath(config_basename, $
-                           subdir=['..', '..', 'config'], $
+                           subdir=['..', '..', '..', 'ucomp-config'], $
                            root=mg_src_root())
 
 run = ucomp_run(date, 'test', config_filename)
