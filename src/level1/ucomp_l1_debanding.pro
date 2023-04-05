@@ -30,13 +30,15 @@ pro ucomp_l1_debanding, file, $
 
   dims = size(data, /dimensions)
   n_columns    = dims[0]
+  n_rows       = dims[1]
   n_polstates  = dims[2]
   n_cameras    = dims[3]
   n_extensions = n_elements(headers)
 
-  threshold = 1.5
+  threshold = run->line(file.wave_region, 'debanding_threshold')
   center_wavelength_extension = file.n_unique_wavelengths / 2L
 
+  ; vertical debanding
   for c = 0L, n_cameras - 1L do begin
     for p = 1L, n_polstates - 1L do begin
       for e = 0L, n_extensions - 1L do begin
@@ -53,4 +55,24 @@ pro ucomp_l1_debanding, file, $
       endfor
     endfor
   endfor
+
+  ; horizontal debanding
+  if (file.gain_mode eq 'low') then begin
+    for c = 0L, n_cameras - 1L do begin
+      for p = 1L, n_polstates - 1L do begin
+        for e = 0L, n_extensions - 1L do begin
+          for row = 0L, n_rows - 1L do begin
+            band = data[*, row, p, c, e]
+            center_intensity = data[*, row, 0, c, center_wavelength_extension]
+            center_polarization = data[*, row, p, c, center_wavelength_extension]
+            low_indices = where(center_intensity lt threshold $
+                                  and abs(center_polarization) lt threshold, $
+                                n_low)
+            stripe_offset = (n_low gt 5L) ? median(band[low_indices]) : 0.0
+            data[*, row, p, c, e] -= stripe_offset
+          endfor
+        endfor
+      endfor
+    endfor
+  endif
 end
