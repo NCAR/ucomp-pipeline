@@ -36,11 +36,11 @@ pro ucomp_l1_combine_cameras, file, $
   case cameras of
     'rcam': begin
         ext_data = reform(ext_data[*, *, *, 0, *])
-        backgrounds = reform(backgrouns[*, *, 0, *])
+        backgrounds = reform(backgrounds[*, *, 0, *])
       end
     'tcam': begin
         ext_data = reform(ext_data[*, *, *, 1, *])
-        backgrounds = reform(backgrouns[*, *, 1, *])
+        backgrounds = reform(backgrounds[*, *, 1, *])
       end
     'both': begin
         ext_data = mean(ext_data, dimension=4, /nan)
