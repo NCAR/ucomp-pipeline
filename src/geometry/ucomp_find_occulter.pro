@@ -109,7 +109,7 @@ function ucomp_find_occulter, data, $
     return, p[[2, 3, 0, 1, 4]]
   endif else begin
     p = ucomp_circfit(angles, r, chisq=chisq, error=error)
-    return, [p[0] / 2.0 + center_guess[0], p[1] / 2.0 + center_guess[1], p[2]]
+    return, [center_guess, 0.0] + [p[0] / 2.0, p[1] / 2.0, p[2]]
   endelse
 end
 
