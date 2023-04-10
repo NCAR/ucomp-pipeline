@@ -431,6 +431,57 @@ def cat_keywords(args):
         pass
 
 
+# diff sub-command
+
+def diff(args):
+    if not ls_requirements:
+        args.parser.error("missing Python packages required for diffing contents of FITS files")
+
+    a = args.files[0]
+    b = args.files[1]
+
+    for f in [a, b]:
+        if not os.path.exists(f):
+            args.parser.error(f"{f} does not exist")
+
+    differences = fits.FITSDiff(a, b)
+    hdu_count = differences.diff_hdu_count
+
+    is_same = True
+    if len(hdu_count) == 0:
+        for hdu_differences in differences.diff_hdus:
+            if args.extension is None or args.extension == hdu_differences[0]:
+                is_same = report_hdu_differences(hdu_differences) and is_same
+    else:
+        is_same = False
+        print(f"< {hdu_count[0]} HDUs")
+        print(f"> {hdu_count[1]} HDUs")
+
+    sys.exit(0 if is_same else 1)
+
+
+def report_hdu_differences(hdu_differences):
+    ext_no = hdu_differences[0]
+    hdu_diff = hdu_differences[1]
+
+    header_same, header_diffs = report_header_differences(hdu_diff.diff_headers)
+
+    if not header_same:
+        print(f"extension {ext_no}:")
+        print(header_diffs)
+
+    data_same = True
+    #data_diffs = hdu_diff.diff_data
+
+    return(header_same and data_same)
+
+
+def report_header_differences(header_differences):
+    is_same = header_differences.identical
+    diffs = header_differences.report()
+    return(is_same, diffs)
+
+
 # validate sub-command
 
 def validate(args):
@@ -1083,6 +1134,16 @@ if __name__ == "__main__":
        help="used with --header to specify which extension header to display",
        default=0)
     cat_parser.set_defaults(func=cat, parser=cat_parser)
+
+    # diff sub-command
+    diff_parser = subparsers.add_parser("diff",
+        help="report differences in UCoMP files")
+    diff_parser.add_argument("files", nargs=2, help="UCoMP file",
+        metavar="file")
+    diff_parser.add_argument("-e", "--extension", type=int,
+        help="used to specify which extension header to display differences for",
+        default=None)
+    diff_parser.set_defaults(func=diff, parser=diff_parser)
 
     # validate sub-command
     validate_parser = subparsers.add_parser("validate",
