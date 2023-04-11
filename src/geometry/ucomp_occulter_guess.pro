@@ -27,9 +27,5 @@ function ucomp_occulter_guess, camera_index, datetime, occulter_x, occulter_y, $
   nx = run->epoch('nx', datetime=datetime)
   ny = run->epoch('ny', datetime=datetime)
 
-  ; center about the center of the array
-  x0 = (nx - 1.0) / 2.0
-  y0 = (ny - 1.0) / 2.0
-
-  return, [x0, y0]
+  return, ([nx, ny] - 1.0) / 2.0
 end
