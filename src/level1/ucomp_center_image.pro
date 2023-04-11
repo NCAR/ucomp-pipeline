@@ -9,11 +9,8 @@
 ;   geometry : in, required, type=object
 ;     geometry object for the given image
 ;-
-function ucomp_center_image, im, geometry, xoffset=xoffset, yoffset=yoffset
+function ucomp_center_image, im, geometry
   compile_opt strictarr
-
-  _xoffset = n_elements(xoffset) eq 0L ? 0.0 : xoffset
-  _yoffset = n_elements(yoffset) eq 0L ? 0.0 : yoffset
 
   dims = size(im, /dimensions)
   nx = dims[0]
@@ -32,8 +29,8 @@ function ucomp_center_image, im, geometry, xoffset=xoffset, yoffset=yoffset
   yp = x * sin(angle / !radeg) + y * cos(angle / !radeg)
 
   ; add translation offsets
-  xpp = xp + geometry.occulter_center[0] + _xoffset
-  ypp = yp + geometry.occulter_center[1] + _yoffset
+  xpp = xp + geometry.occulter_center[0]
+  ypp = yp + geometry.occulter_center[1]
 
   return, interpolate(im, xpp, ypp, missing=0.0, cubic=-0.5, /double)
 end
