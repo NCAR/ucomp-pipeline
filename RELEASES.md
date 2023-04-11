@@ -315,3 +315,4 @@
   fix for finding configuration file for verification script
   fix for finding post
   horizontal debanding
+0.2.87
