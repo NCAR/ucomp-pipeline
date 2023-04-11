@@ -98,15 +98,20 @@ pro ucomp_l1_find_alignment, file, $
   endif
 
   rcam = file.rcam_geometry
+  tcam = file.tcam_geometry
+
+  ; TODO: remove this correction when done verifying
+  rcam.occulter_center += [0.010, 0.001]
+  tcam.occulter_center += [0.014, -0.001]
 
   ucomp_addpar, primary_header, $
                 'XOFFSET0', $
-                (rcam.xsize - 1.0) / 2.0 - rcam.occulter_center[0], $
+                rcam.occulter_center[0] - (rcam.xsize - 1.0) / 2.0, $
                 comment='[px] RCAM occulter x-offset', $
                 format='(F0.3)'
   ucomp_addpar, primary_header, $
                 'YOFFSET0', $
-                (rcam.ysize - 1.0) / 2.0 - rcam.occulter_center[1], $
+                rcam.occulter_center[1] - (rcam.ysize - 1.0) / 2.0, $
                 comment='[px] RCAM occulter y-offset', $
                 format='(F0.3)'
   ucomp_addpar, primary_header, 'RADIUS0', rcam.occulter_radius, $
@@ -116,16 +121,14 @@ pro ucomp_l1_find_alignment, file, $
                 comment='[px] chi-squared for RCAM center fit', $
                 format='(F0.6)'
 
-  tcam = file.tcam_geometry
-
   ucomp_addpar, primary_header, $
                 'XOFFSET1', $
-                (tcam.xsize - 1.0) / 2.0 - tcam.occulter_center[0], $
+                tcam.occulter_center[0] - (tcam.xsize - 1.0) / 2.0, $
                 comment='[px] TCAM occulter x-offset', $
                 format='(F0.3)'
   ucomp_addpar, primary_header, $
                 'YOFFSET1', $
-                (tcam.ysize - 1.0) / 2.0 - tcam.occulter_center[1], $
+                tcam.occulter_center[1] - (tcam.ysize - 1.0) / 2.0, $
                 comment='[px] TCAM occulter y-offset', $
                 format='(F0.3)'
   ucomp_addpar, primary_header, 'RADIUS1', file.tcam_geometry.occulter_radius, $
@@ -206,7 +209,8 @@ pro ucomp_l1_find_alignment, file, $
                 comment='[day fraction] GMST sidereal time'
 
   ucomp_addpar, primary_header, 'SEMIDIAM', semidiameter, $
-                comment='[arcsec] solar semi-diameter'
+                comment='[arcsec] solar semi-diameter', $
+                format='(f9.2)'
   ucomp_addpar, primary_header, 'RSUN_OBS', semidiameter, $
                 comment=string(distance_au * semidiameter, $
                                format='(%"[arcsec] solar radius using ref radius %0.2f\"")'), $
