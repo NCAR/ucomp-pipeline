@@ -117,7 +117,7 @@ pro ucomp_db_update, run=run
                                 1.3, 'r13doppler', $
                                 db, run=run
 
-    ucomp_plot_eccentricity, wave_regions[w], db, run=run
+    ucomp_plot_eccentricity, wave_regions[w], obsday_index, db, run=run
   endfor
 
   done:

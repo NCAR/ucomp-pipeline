@@ -56,7 +56,6 @@ pro ucomp_l1_find_alignment, file, $
   ; if all elements of dimension 3 are NaNs then the above lines will produce
   ; an floating-point operand error (128)
   !null = check_math(mask=128)
-
   file.rcam_geometry = ucomp_find_geometry(smooth(rcam_background, 2, /nan), $
                                            xsize=run->epoch('nx'), $
                                            ysize=run->epoch('ny'), $
@@ -64,7 +63,13 @@ pro ucomp_l1_find_alignment, file, $
                                            radius_guess=radius_guess, $
                                            dradius=dradius, $
                                            post_angle_guess=post_angle_guess, $
-                                           post_angle_tolerance=post_angle_tolerance)
+                                           post_angle_tolerance=post_angle_tolerance, $
+                                           error=rcam_error, $
+                                           post_err_msg=rcam_post_err_msg)
+  mg_log, 'RCAM geometry error: %d', rcam_error, name=run.logger_name, /debug
+  if (strlen(rcam_post_err_msg) gt 0L) then begin
+    mg_log, 'RCAM post error message: %s', rcam_post_err_msg, name=run.logger_name, /warn
+  endif
 
   tcam_center_guess = ucomp_occulter_guess(1, date, occulter_x, occulter_y, run=run)
   tcam_offband_indices = where(file.onband_indices eq 0, n_tcam_offband)
@@ -77,7 +82,6 @@ pro ucomp_l1_find_alignment, file, $
   ; if all elements of dimension 3 are NaNs then the above lines will produce
   ; an floating-point operand error (128)
   !null = check_math(mask=128)
-
   file.tcam_geometry = ucomp_find_geometry(smooth(tcam_background, 2, /nan), $
                                            xsize=run->epoch('nx'), $
                                            ysize=run->epoch('ny'), $
@@ -85,19 +89,29 @@ pro ucomp_l1_find_alignment, file, $
                                            radius_guess=radius_guess, $
                                            dradius=dradius, $
                                            post_angle_guess=post_angle_guess, $
-                                           post_angle_tolerance=post_angle_tolerance)
+                                           post_angle_tolerance=post_angle_tolerance, $
+                                           error=tcam_error, $
+                                           post_err_msg=tcam_post_err_msg)
+  mg_log, 'TCAM geometry error: %d', tcam_error, name=run.logger_name, /debug
+  if (strlen(tcam_post_err_msg) gt 0L) then begin
+    mg_log, 'TCAM post error message: %s', tcam_post_err_msg, name=run.logger_name, /warn
+  endif
 
   rcam = file.rcam_geometry
+  tcam = file.tcam_geometry
 
+  ; TODO: remove this correction when done verifying
+  rcam.occulter_center += [0.010, 0.001]
+  tcam.occulter_center += [0.014, -0.001]
 
   ucomp_addpar, primary_header, $
                 'XOFFSET0', $
-                (rcam.xsize - 1.0) / 2.0 - rcam.occulter_center[0], $
+                rcam.occulter_center[0] - (rcam.xsize - 1.0) / 2.0, $
                 comment='[px] RCAM occulter x-offset', $
                 format='(F0.3)'
   ucomp_addpar, primary_header, $
                 'YOFFSET0', $
-                (rcam.ysize - 1.0) / 2.0 - rcam.occulter_center[1], $
+                rcam.occulter_center[1] - (rcam.ysize - 1.0) / 2.0, $
                 comment='[px] RCAM occulter y-offset', $
                 format='(F0.3)'
   ucomp_addpar, primary_header, 'RADIUS0', rcam.occulter_radius, $
@@ -107,16 +121,14 @@ pro ucomp_l1_find_alignment, file, $
                 comment='[px] chi-squared for RCAM center fit', $
                 format='(F0.6)'
 
-  tcam = file.tcam_geometry
-
   ucomp_addpar, primary_header, $
                 'XOFFSET1', $
-                (tcam.xsize - 1.0) / 2.0 - tcam.occulter_center[0], $
+                tcam.occulter_center[0] - (tcam.xsize - 1.0) / 2.0, $
                 comment='[px] TCAM occulter x-offset', $
                 format='(F0.3)'
   ucomp_addpar, primary_header, $
                 'YOFFSET1', $
-                (tcam.ysize - 1.0) / 2.0 - tcam.occulter_center[1], $
+                tcam.occulter_center[1] - (tcam.ysize - 1.0) / 2.0, $
                 comment='[px] TCAM occulter y-offset', $
                 format='(F0.3)'
   ucomp_addpar, primary_header, 'RADIUS1', file.tcam_geometry.occulter_radius, $
@@ -126,10 +138,13 @@ pro ucomp_l1_find_alignment, file, $
                 comment='[px] chi-squared for TCAM center fit', $
                 format='(F0.6)'
 
+  mg_log, 'RCAM post angle: %0.1f, TCAM post angle: %0.1f', $
+          rcam.post_angle, tcam.post_angle, $
+          name=run.logger_name, /debug
   ucomp_addpar, primary_header, 'POST_ANG', $
-                (rcam.post_angle + tcam.post_angle) / 2.0, $
+                mean([rcam.post_angle, tcam.post_angle], /nan), $
                 comment='[deg] post angle CCW from north'
-  radius = (rcam.occulter_radius + tcam.occulter_radius) / 2.0
+  radius = mean([rcam.occulter_radius, tcam.occulter_radius], /nan)
   ucomp_addpar, primary_header, 'RADIUS', $
                 radius, $
                 comment='[px] occulter average radius'
@@ -194,7 +209,8 @@ pro ucomp_l1_find_alignment, file, $
                 comment='[day fraction] GMST sidereal time'
 
   ucomp_addpar, primary_header, 'SEMIDIAM', semidiameter, $
-                comment='[arcsec] solar semi-diameter'
+                comment='[arcsec] solar semi-diameter', $
+                format='(f9.2)'
   ucomp_addpar, primary_header, 'RSUN_OBS', semidiameter, $
                 comment=string(distance_au * semidiameter, $
                                format='(%"[arcsec] solar radius using ref radius %0.2f\"")'), $

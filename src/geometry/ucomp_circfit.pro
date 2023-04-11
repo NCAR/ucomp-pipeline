@@ -1,83 +1,94 @@
+; docformat = 'rst'
+
+function ucomp_circ, p
+  compile_opt strictarr
+  common fit, x, y, radius
+
+  yf = p[0] * cos(x) + p[1] * sin(x) + p[2]
+  return, total((yf - y)^2, /nan)
+end
+
+
 ;+
-;  Name: circfit
+; Function to iteratively fit a circle to points in polar coordinates. The
+; coordinates of the fit are returned. The value of chi^2 (chisq) is
+; optionally returned.
 ;
-;  Description:
-;    Procedure to iteractively fit the coordinates of a circle in polar coordinates.
-;
-;  Input Parameters:
-;    theta- the angle coordinates
-;    r - the radius coordinates
-;
-;  Keyword Parameters:
-;    chisq - the optional value of the chisq
-;
-;  Output:
+; :Returns:
 ;    The values of the fit are returned in a three element vector in the order:
 ;    radius of the circle center
 ;    angle of the circle center
 ;    radius of the circle
 ;
-;  Author: Tomczyk
-;  Modified by: Sitongia
+; :Params:
+;    theta : in, required, type=fltarr
+;      the angle coordinates
+;    r : in, required, type=fltarr
+;      the radius coordinates
 ;
-;  Example:
-;    circfit,theta,r
+; :Keywords:
+;   chisq : out, optional, type=float
+;     set to a named variable to retrieve the value of the chisq
+;   error : out, optional, type=integer
+;     set to a named variable to retrieve the error status of the fit, 0 for no
+;     error
+;
+; :Author: Tomczyk, modified by Sitongia
 ;-
-function circfit,theta,r,chisq=chisq
+function ucomp_circfit, theta, r, chisq=chisq, error=error
+  compile_opt strictarr
+  common fit, x, y, radius
 
-;  Function to iteratively fit a circle to points in polar coordinates. The coordinates of the fit are returned.
-;  The value of chi^2 (chisq) is optionally returned.
+  error = 0L
 
-common fit,x,y,radius
+  ans = ' '
+  debug = 0
 
-ans=' '
-debug=0
+  x = theta
+  rr = r
+  radius = mean(r, /nan)
+  y = r - radius^2 / r
+  count = 1
 
-x=theta
-rr=r
-radius=mean(r)
-y=r-radius^2/r
-count=1
+  while (count gt 0) do begin
+    a = amoeba(1.0e-4, $
+               p0=[0.0, 0.0, radius], $
+               function_name='ucomp_circ', $
+               function_value=values, $
+               ncalls=n_calls, $
+               scale=1.0, $
+               nmax=10000)
 
-while count gt 0 do begin
-  a=amoeba(1.e-4,p0=[0.,0.,radius],function_name='circ',scale=1.,nmax=10000)
-
-  ; Check if amoeba failed: it returns -1 but usually returns an array, so use
-  ; following hack rather than directly checking return value!
-  s = size(a)
-  if s[0] eq 0 then begin
-    print, 'circfit: amoeba failed.'
-    a = [-1.,-1.,radius]
-    chisq = -1.
-    goto,skip
-  endif
-
-  rfit=a(0)*cos(x)+a(1)*sin(x)+a(2)
-  diff=rfit - y
-  chisq=total(diff^2)/float(n_elements(diff))
-
-  rms=stdev(diff)
-  bad=where(abs(diff) ge 4.*rms,count,complement=good)
-  if count gt 0 then begin
-    radius=mean(r(good))
-    x=x[good]
-    rr=rr[good]
-    y=rr-radius^2/rr
-    if debug eq 1 then begin
-      print,count,' bad points:'
-      plot,theta,abs(diff)/rms
-      read,'enter return',ans
+    ; Check if amoeba failed: it returns -1 but usually returns an array, so
+    ; use following hack rather than directly checking return value!
+    if (size(a, /n_dimensions) eq 0) then begin
+      a = [-1.0, -1.0, radius]
+      chisq = -1.0
+      error = 1L
+      goto, skip
     endif
-  endif
-endwhile
 
-skip:
-return,a
-end
+    rfit = a[0] * cos(x) + a[1] * sin(x) + a[2]
+    diff = rfit - y
+    chisq = total(diff^2, /nan) / float(n_elements(diff))
 
-function circ,p
-common fit,x,y,radius
+    rms = stddev(diff, /nan)
+    bad = where(abs(diff) ge 4.0 * rms, count, complement=good)
+    if (count gt 0) then begin
+      radius = mean(r[good], /nan)
+      x = x[good]
+      rr = rr[good]
+      y = rr - radius^2 / rr
+      if (debug eq 1) then begin
+        print, count, ' bad points:'
+        plot, theta, abs(diff) / rms
+        read, 'enter return', ans
+      endif
+    endif
+  endwhile
 
-yf=p(0)*cos(x)+p(1)*sin(x)+p(2)
-return,total( (yf-y)^2 )
+  a = [a[0:1], radius]
+
+  skip:
+  return, a
 end

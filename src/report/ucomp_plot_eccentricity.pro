@@ -1,12 +1,12 @@
 ; docformat = 'rst'
 
-pro ucomp_plot_eccentricity, wave_region, db, run=run
+pro ucomp_plot_eccentricity, wave_region, obsday_index, db, run=run
   compile_opt strictarr
 
   mg_log, 'plotting eccentricity info...', name=run.logger_name, /info
 
-  query = 'select * from ucomp_eng where wave_region=''%s'' order by date_obs'
-  data = db->query(query, wave_region, $
+  query = 'select * from ucomp_eng where wave_region=''%s'' and obsday_id=%d order by date_obs'
+  data = db->query(query, wave_region, obsday_index, $
                    count=n_files, error=error, fields=fields, sql_statement=sql)
   if (n_files eq 0L) then begin
     mg_log, 'no files found', name=run.logger_name, /warn
@@ -51,29 +51,29 @@ pro ucomp_plot_eccentricity, wave_region, db, run=run
   eccentricity_range = [0.0, 0.1]
   angle_range = [0.0, 180.0]
 
-  mg_range_plot, hours, data.rcam_eccentricity, $
+  mg_range_plot, [hours], [data.rcam_eccentricity], $
                  title=string(wave_region, pdate, format='%s nm RCAM eccentricity of occulter center for %s'), $
                  xtitle='Hours [UT]', ytitle='Eccentricity', $
                  xrange=time_range, xtickformat='ucomp_hours_format', $
                  /ynozero, ystyle=1, yrange=eccentricity_range, yticks=5, $
                  background=background_color, color=color, charsize=charsize, $
                  clip_thick=2.0, clip_color=clip_color, psym=6, symsize=symsize
-  mg_range_plot, hours, data.tcam_eccentricity, $
-                  title=string(wave_region, pdate, format='%s nm TCAM eccentricity of occulter center for %s'), $
-                  xtitle='Hours [UT]', ytitle='Eccentricity', $
-                  xrange=time_range, xtickformat='ucomp_hours_format', $
-                  /ynozero, ystyle=1, yrange=eccentricity_range, yticks=5, $
-                  background=background_color, color=color, charsize=charsize, $
-                  clip_thick=2.0, clip_color=clip_color, psym=6, symsize=symsize
+  mg_range_plot, [hours], [data.tcam_eccentricity], $
+                 title=string(wave_region, pdate, format='%s nm TCAM eccentricity of occulter center for %s'), $
+                 xtitle='Hours [UT]', ytitle='Eccentricity', $
+                 xrange=time_range, xtickformat='ucomp_hours_format', $
+                 /ynozero, ystyle=1, yrange=eccentricity_range, yticks=5, $
+                 background=background_color, color=color, charsize=charsize, $
+                 clip_thick=2.0, clip_color=clip_color, psym=6, symsize=symsize
 
-  mg_range_plot, hours, data.rcam_ellipse_angle, $
+  mg_range_plot, [hours], [data.rcam_ellipse_angle], $
                  title=string(wave_region, pdate, format='%s nm RCAM ellipse angle of occulter center for %s'), $
                  xtitle='Hours [UT]', ytitle='Ellipse angle', $
                  xrange=time_range, xtickformat='ucomp_hours_format', $
                  /ynozero, ystyle=1, yrange=angle_range, yticks=6, $
                  background=background_color, color=color, charsize=charsize, $
                  clip_thick=2.0, clip_color=clip_color, psym=6, symsize=symsize
-  mg_range_plot, hours, data.tcam_ellipse_angle, $
+  mg_range_plot, [hours], [data.tcam_ellipse_angle], $
                  title=string(wave_region, pdate, format='%s nm TCAM ellipse angle of occulter center for %s'), $
                  xtitle='Hours [UT]', ytitle='Ellipse angle', $
                  xrange=time_range, xtickformat='ucomp_hours_format', $

@@ -10,8 +10,12 @@ function ucomp_find_geometry, data, $
                               eccentricity=eccentricity, $
                               ellipse_angle=ellipse_angle, $
                               post_angle_guess=post_angle_guess, $
-                              post_angle_tolerance=post_angle_tolerance
+                              post_angle_tolerance=post_angle_tolerance, $
+                              error=error, $
+                              post_err_msg=post_err_msg
   compile_opt strictarr
+
+  error = 0L
 
   occulter = ucomp_find_occulter(data, $
                                  chisq=occulter_chisq, $
@@ -22,14 +26,18 @@ function ucomp_find_geometry, data, $
                                  points=points, $
                                  elliptical=elliptical, $
                                  eccentricity=eccentricity, $
-                                 ellipse_angle=ellipse_angle)
+                                 ellipse_angle=ellipse_angle, $
+                                 /remove_post)
+  error or= occulter_error
 
   post_angle = ucomp_find_post(data, $
                                occulter[0:1], $
                                occulter[2], $
                                angle_guess=post_angle_guess, $
                                angle_tolerance=post_angle_tolerance, $
-                               error=post_error)
+                               error=post_error, $
+                               err_msg=post_err_msg)
+  error or= 2L * post_error
 
   geometry = ucomp_geometry(xsize=xsize, $
                             ysize=ysize, $
