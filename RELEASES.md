@@ -316,3 +316,4 @@
   fix for finding post
   horizontal debanding
 0.2.87
+  change display min/max for radial azimuth to +/- 50.0
