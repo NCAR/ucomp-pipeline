@@ -720,7 +720,8 @@ pro ucomp_file::_inventory
 
   if (self.n_extensions gt 0L) then begin
     self->getProperty, n_unique_wavelengths=n_unique_wavelengths
-    self.n_repeats = self.n_extensions / n_unique_wavelengths
+    n_cameras = 2L   ; number of values that ONBAND can take
+    self.n_repeats = self.n_extensions / n_unique_wavelengths / n_cameras
   endif
 
   fits_close, fcb
