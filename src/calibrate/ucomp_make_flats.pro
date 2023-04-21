@@ -138,18 +138,6 @@ pro ucomp_make_flats, wave_region, run=run
 
       dims = size(ext_data, /dimensions)
 
-      ; n_polstates = dims[2]
-      ; n_cameras = dims[3]
-      ; for c = 0L, n_cameras - 1L do begin
-      ;   run->get_hot_pixels, averaged_gain_mode[e], c, $
-      ;                        hot=hot, adjacent=adjacent
-      ;   for p = 0L, n_polstates - 1L do begin
-      ;     flat_image[*, *, p, c] = ucomp_fix_hot(flat_image[*, *, p, c], $
-      ;                                            hot=hot, $
-      ;                                            adjacent=adjacent)
-      ;   endfor
-      ; endfor
-
       flat_image = mean(flat_image, dimension=3)
 
       flat_extnames->add, string(averaged_wavelength[e], $
