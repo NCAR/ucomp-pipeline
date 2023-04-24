@@ -100,10 +100,6 @@ pro ucomp_l1_find_alignment, file, $
   rcam = file.rcam_geometry
   tcam = file.tcam_geometry
 
-  ; TODO: remove this correction when done verifying
-  rcam.occulter_center += [0.010, 0.001]
-  tcam.occulter_center += [0.014, -0.001]
-
   ucomp_addpar, primary_header, $
                 'XOFFSET0', $
                 rcam.occulter_center[0] - (rcam.xsize - 1.0) / 2.0, $
