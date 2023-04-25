@@ -100,55 +100,59 @@ pro ucomp_l1_find_alignment, file, $
   rcam = file.rcam_geometry
   tcam = file.tcam_geometry
 
+  after = 'WNDDIR'
   ucomp_addpar, primary_header, $
                 'XOFFSET0', $
                 rcam.occulter_center[0] - (rcam.xsize - 1.0) / 2.0, $
                 comment='[px] RCAM occulter x-offset', $
-                format='(F0.3)'
+                format='(F0.3)', after=after
   ucomp_addpar, primary_header, $
                 'YOFFSET0', $
                 rcam.occulter_center[1] - (rcam.ysize - 1.0) / 2.0, $
                 comment='[px] RCAM occulter y-offset', $
-                format='(F0.3)'
+                format='(F0.3)', after=after
   ucomp_addpar, primary_header, 'RADIUS0', rcam.occulter_radius, $
                 comment='[px] RCAM occulter radius', $
-                format='(F0.3)'
+                format='(F0.3)', after=after
   ucomp_addpar, primary_header, 'FITCHI0', rcam.occulter_chisq, $
                 comment='[px] chi-squared for RCAM center fit', $
-                format='(F0.6)'
+                format='(F0.6)', after=after
 
   ucomp_addpar, primary_header, $
                 'XOFFSET1', $
                 tcam.occulter_center[0] - (tcam.xsize - 1.0) / 2.0, $
                 comment='[px] TCAM occulter x-offset', $
-                format='(F0.3)'
+                format='(F0.3)', after=after
   ucomp_addpar, primary_header, $
                 'YOFFSET1', $
                 tcam.occulter_center[1] - (tcam.ysize - 1.0) / 2.0, $
                 comment='[px] TCAM occulter y-offset', $
-                format='(F0.3)'
+                format='(F0.3)', after=after
   ucomp_addpar, primary_header, 'RADIUS1', file.tcam_geometry.occulter_radius, $
                 comment='[px] TCAM occulter radius', $
-                format='(F0.3)'
+                format='(F0.3)', after=after
   ucomp_addpar, primary_header, 'FITCHI1', file.tcam_geometry.occulter_chisq, $
                 comment='[px] chi-squared for TCAM center fit', $
-                format='(F0.6)'
+                format='(F0.6)', after=after
 
   mg_log, 'RCAM post angle: %0.1f, TCAM post angle: %0.1f', $
           rcam.post_angle, tcam.post_angle, $
           name=run.logger_name, /debug
   ucomp_addpar, primary_header, 'POST_ANG', $
                 mean([rcam.post_angle, tcam.post_angle], /nan), $
-                comment='[deg] post angle CCW from north'
+                comment='[deg] post angle CCW from north', $
+                format='(F0.3)', after=after
   radius = mean([rcam.occulter_radius, tcam.occulter_radius], /nan)
   ucomp_addpar, primary_header, 'RADIUS', $
                 radius, $
-                comment='[px] occulter average radius'
+                comment='[px] occulter average radius', $
+                format='(F0.3)', after=after
 
   image_scale = ucomp_compute_platescale(radius, occulter_id, file.wave_region, $
                                          run=run)
   ucomp_addpar, primary_header, 'IMAGESCL', image_scale, $
-                comment='[arcsec/pixel] image scale at focal plane'
+                comment='[arcsec/pixel] image scale at focal plane', $
+                format='(F0.6)', after=after
 
   ; determine eccentricity of cameras
   rcam_elliptical_geometry = ucomp_find_geometry(smooth(rcam_background, 2, /nan), $
@@ -182,9 +186,11 @@ pro ucomp_l1_find_alignment, file, $
   obj_destroy, tcam_elliptical_geometry
 
   ucomp_addpar, primary_header, 'RCAMECC', rcam_eccentricity, $
-                comment='occulter eccentricity in RCAM', format='(F0.6)'
+                comment='occulter eccentricity in RCAM', $
+                format='(F0.6)', after=after
   ucomp_addpar, primary_header, 'TCAMECC', tcam_eccentricity, $
-                comment='occulter eccentricity in TCAM', format='(F0.6)'
+                comment='occulter eccentricity in TCAM', $
+                format='(F0.6)', after=after
 
   file->getProperty, semidiameter=semidiameter, $
                      distance_au=distance_au, $
@@ -196,13 +202,18 @@ pro ucomp_l1_find_alignment, file, $
                 format='(f9.3)'
   ucomp_addpar, primary_header, 'SOLAR_B', b0, $
                 comment='[deg] solar B-Angle', $
-                format='(f9.3)'
+                format='(f9.3)', after=after
 
   sec_z = mlso_secant_z(file.julian_date, sidereal_time=sidereal_time)
   ucomp_addpar, primary_header, 'SECANT_Z', sec_z, $
-                comment='secant of the Zenith Distance'
+                comment='secant of the Zenith Distance', $
+                format='(F0.6)', after=after
   ucomp_addpar, primary_header, 'SID_TIME', sidereal_time, $
-                comment='[day fraction] GMST sidereal time'
+                comment='[day fraction] GMST sidereal time', $
+                format='(F0.5)', after=after
+  ucomp_addpar, primary_header, 'JUL_DATE', file.julian_date, $
+                comment='[days] Julian date', $
+                format='F24.16', after=after
 
   ucomp_addpar, primary_header, 'SEMIDIAM', semidiameter, $
                 comment='[arcsec] solar semi-diameter', $
@@ -210,25 +221,26 @@ pro ucomp_l1_find_alignment, file, $
   ucomp_addpar, primary_header, 'RSUN_OBS', semidiameter, $
                 comment=string(distance_au * semidiameter, $
                                format='(%"[arcsec] solar radius using ref radius %0.2f\"")'), $
-                format='(f8.2)'
+                format='(f8.2)', after=after
   ucomp_addpar, primary_header, 'RSUN', $
                 semidiameter, $
                 comment='[arcsec] solar radius (old standard keyword)', $
-                format='(f8.2)'
+                format='(f8.2)', after=after
   ucomp_addpar, primary_header, 'R_SUN', $
                 semidiameter / run->line(file.wave_region, 'plate_scale'), $
-                comment='[pixel] solar radius', format='(f9.2)'
+                comment='[pixel] solar radius', $
+                format='(f9.2)', after=after
 
   ucomp_addpar, primary_header, $
                 'CDELT1', $
                 run->line(file.wave_region, 'plate_scale'), $
                 comment='[arcsec/pixel] solar X increment = platescale', $
-                format='(f9.4)'
+                format='(f9.4)', after=after
   ucomp_addpar, primary_header, $
                 'CDELT2', $
                 run->line(file.wave_region, 'plate_scale'), $
                 comment='[arcsec/pixel] solar Y increment = platescale', $
-                format='(f9.4)'
+                format='(f9.4)', after=after
 
   file.rcam_geometry.p_angle = p_angle
   file.tcam_geometry.p_angle = p_angle

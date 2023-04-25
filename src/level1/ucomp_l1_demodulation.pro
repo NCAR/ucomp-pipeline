@@ -73,7 +73,8 @@ pro ucomp_l1_demodulation, file, $
   demod_basename = run->epoch('demodulation_coeffs_basename', datetime=datetime)
   ucomp_addpar, primary_header, 'DEMOD_C', demod_basename, $
                 comment=string(ucomp_idlsave2dateobs(demod_info.date), $
-                               format='demod coeffs created %s')
+                               format='demod coeffs created %s'), $
+                after='LIN_CRCT'
 
 
   file.demodulated = 1B
