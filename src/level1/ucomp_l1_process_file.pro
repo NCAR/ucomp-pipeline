@@ -69,6 +69,10 @@ pro ucomp_l1_process_file, file, run=run
 
   step_number = 1L
 
+  ; remove comments from primary header
+  ; TODO: maybe this is not necessary?
+  sxdelpar, primary_header, 'COMMENT'
+
   ucomp_l1_step, 'ucomp_l1_average_data', $
                  file, primary_header, data, headers, step_number=step_number, run=run
   ucomp_l1_step, 'ucomp_l1_camera_linearity', $

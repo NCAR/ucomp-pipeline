@@ -101,6 +101,9 @@ pro ucomp_l1_find_alignment, file, $
   tcam = file.tcam_geometry
 
   after = 'WNDDIR'
+  ucomp_addpar, primary_header, 'COMMENT', 'Occulter centering info', $
+                after=after, /title
+
   ucomp_addpar, primary_header, $
                 'XOFFSET0', $
                 rcam.occulter_center[0] - (rcam.xsize - 1.0) / 2.0, $
@@ -197,9 +200,11 @@ pro ucomp_l1_find_alignment, file, $
                      p_angle=p_angle, $
                      b0=b0
 
+  ucomp_addpar, primary_header, 'COMMENT', 'Ephemeris info', $
+                after=after, /title
   ucomp_addpar, primary_header, 'SOLAR_P0', p_angle, $
                 comment='[deg] solar P angle applied (image has N up)', $
-                format='(f9.3)'
+                format='(f9.3)', after=after
   ucomp_addpar, primary_header, 'SOLAR_B', b0, $
                 comment='[deg] solar B-Angle', $
                 format='(f9.3)', after=after
@@ -231,6 +236,9 @@ pro ucomp_l1_find_alignment, file, $
                 comment='[pixel] solar radius', $
                 format='(f9.2)', after=after
 
+  ucomp_addpar, primary_header, 'COMMENT', $
+                'World Coordinate System (WCS) info', $
+                after=after, /title
   ucomp_addpar, primary_header, $
                 'CDELT1', $
                 run->line(file.wave_region, 'plate_scale'), $

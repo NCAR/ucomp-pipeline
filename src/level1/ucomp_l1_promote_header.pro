@@ -30,6 +30,18 @@ pro ucomp_l1_promote_header, file, $
 
   ; update primary header
 
+  ; add some headers to keywords from the level 0
+  ucomp_addpar, primary_header, 'COMMENT', 'Basic info', $
+                after='EXTEND', /title
+  ucomp_addpar, primary_header, 'COMMENT', 'Camera info', $
+                before='TCAMID', /title
+  ucomp_addpar, primary_header, 'COMMENT', 'Observing info', $
+                before='OBSERVER', /title
+  ; ucomp_addpar, primary_header, 'COMMENT', 'Hardware positions', $
+  ;               before='OCCLTR', /title
+  ucomp_addpar, primary_header, 'COMMENT', 'Temperatures', $
+                before='T_RACK'
+
   after = 'DATE-OBS'
   ucomp_addpar, primary_header, 'DATE-BEG', file.date_begin, $
                 comment='[UT] date/time when obs was started', after=after
@@ -37,6 +49,8 @@ pro ucomp_l1_promote_header, file, $
                 comment='[UT] date/time when obs ended', after=after
 
   after = 'OBJECT'
+  ucomp_addpar, primary_header, 'COMMENT', 'Level 1 processing info', $
+                after=after, /title
   ucomp_addpar, primary_header, 'LEVEL', 'L1', comment='level 1 calibrated'
 
   current_time = systime(/utc)
@@ -54,6 +68,7 @@ pro ucomp_l1_promote_header, file, $
                        format='(%"L1 processing software (%s) [%s]")'), $
                 after=after
 
+  ucomp_addpar, primary_header, 'COMMENT', 'Counts', after=after, /title
   ucomp_addpar, primary_header, 'NUM_WAVE', n_elements(headers), $
                 comment='number of wavelengths', after=after
   ucomp_addpar, primary_header, 'NUMSUM', file.numsum, $
@@ -70,6 +85,7 @@ pro ucomp_l1_promote_header, file, $
     file.vcrosstalk_metric = ucomp_vcrosstalk_metric(center_wavelength_data, average_radius)
   endif
 
+  ucomp_addpar, primary_header, 'COMMENT', 'Metrics', after=after, /title
   ucomp_addpar, primary_header, 'VCROSSTK', file.vcrosstalk_metric, $
                 comment='Stokes V crosstalk metric', after=after
 
@@ -95,9 +111,6 @@ pro ucomp_l1_promote_header, file, $
                      'V_LCVR3', 'V_LCVR4', 'V_LCVR5', 'NUMSUM', 'SEQNUM', $
                      'OCCLTR', 'CALOPTIC', 'COVER', 'DIFFUSR', 'DARKSHUT', $
                      'POLANGLE', 'RETANGLE', 'DATE-BEG']
-  promote_keywords = [{name: 'CONTIN', format: '(A)'}, $
-                      {name: 'FRAMERT', format: '(F0.3)'}, $
-                      {name: 'EXPTIME', format: '(F0.3)'}]
 
   for e = 0L, n_elements(headers) - 1L do begin
     h = headers[e]
@@ -116,6 +129,9 @@ pro ucomp_l1_promote_header, file, $
   endfor
 
   ; promote keywords to primary header
+  promote_keywords = [{name: 'CONTIN', format: '(A)', after: 'OCCLTRID'}, $
+                      {name: 'FRAMERT', format: '(F0.3)', after: 'CONTIN'}, $
+                      {name: 'EXPTIME', format: '(F0.3)', after: 'CONTIN'}]
   for k = 0L, n_elements(promote_keywords) - 1L do begin
     for e = 0L, n_elements(headers) - 1L do begin
       h = headers[e]
@@ -134,8 +150,13 @@ pro ucomp_l1_promote_header, file, $
         endif
       endelse
     endfor
+
     ucomp_addpar, primary_header, promote_keywords[k].name, value, $
                   format=promote_keywords[k].format, $
-                  comment=comment
+                  comment=comment, after=promote_keywords[k].after
   endfor
+
+  ; TODO: promote SGS values to primary header?
+  ; ucomp_addpar, primary_header, 'COMMENT', 'SGS info', $
+  ;               before='SGSSCINT', /title
 end
