@@ -388,6 +388,7 @@ def cat_header(args):
                 print(f"{file} not found")
 
 def cat_keywords(args):
+    # TODO: default keywords should vary by level of the data
     default_keywords = {"sci": ["EXTNAME", "DATATYPE", "DATE-BEG", "WAVELNG", "ONBAND"],
                         "cal": ["EXTNAME", "DATATYPE", "DATE-BEG", "WAVELNG", "ONBAND", "POLANGLE", "RETANGLE"],
                         "dark": ["EXTNAME", "DATATYPE", "DATE-BEG"],
