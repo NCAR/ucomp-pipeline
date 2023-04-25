@@ -30,14 +30,21 @@ pro ucomp_l1_promote_header, file, $
 
   ; update primary header
 
+  after = 'DATE-OBS'
+  ucomp_addpar, primary_header, 'DATE-BEG', file.date_begin, $
+                comment='[UT] date/time when obs was started', after=after
+  ucomp_addpar, primary_header, 'DATE-END', file.date_end, $
+                comment='[UT] date/time when obs ended', after=after
+
+  after = 'OBJECT'
   ucomp_addpar, primary_header, 'LEVEL', 'L1', comment='level 1 calibrated'
 
   current_time = systime(/utc)
   date_dp = string(bin_date(current_time), $
                    format='(%"%04d-%02d-%02dT%02d:%02d:%02d")')
   ucomp_addpar, primary_header, 'DATE_DP', date_dp, $
-                comment='L1 processing date/time [UTC]', $
-                after='LEVEL'
+                comment='[UT] L1 processing date/time', $
+                after=after
 
   version = ucomp_version(revision=revision, branch=branch, date=code_date)
   ucomp_addpar, primary_header, 'DPSWID',  $
@@ -45,20 +52,16 @@ pro ucomp_l1_promote_header, file, $
                        format='(%"%s [%s]")'), $
                 comment=string(code_date, branch, $
                        format='(%"L1 processing software (%s) [%s]")'), $
-                after='DATE_DP'
+                after=after
 
   ucomp_addpar, primary_header, 'NUM_WAVE', n_elements(headers), $
-                comment='number of wavelengths'
+                comment='number of wavelengths', after=after
   ucomp_addpar, primary_header, 'NUMSUM', file.numsum, $
-                comment='number of camera reads summed together'
+                comment='number of camera reads summed together', after=after
   ucomp_addpar, primary_header, 'NREPEAT', file.n_repeats, $
-                comment='number of repeats of wavelength scans'
+                comment='number of repeats of wavelength scans', after=after
   ucomp_addpar, primary_header, 'NUM_BEAM', 2, $
-                comment='number of beams'
-
-  ucomp_addpar, primary_header, 'JUL_DATE', file.julian_date, $
-                comment='[days] Julian date', $
-                format='F24.16'
+                comment='number of beams', after=after
 
   average_radius = ucomp_getpar(primary_header, 'RADIUS')
   center_wavelength_indices = file->get_center_wavelength_indices()
@@ -66,8 +69,9 @@ pro ucomp_l1_promote_header, file, $
     center_wavelength_data = data[*, *, *, center_wavelength_indices]
     file.vcrosstalk_metric = ucomp_vcrosstalk_metric(center_wavelength_data, average_radius)
   endif
+
   ucomp_addpar, primary_header, 'VCROSSTK', file.vcrosstalk_metric, $
-                comment='Stokes V crosstalk metric'
+                comment='Stokes V crosstalk metric', after=after
 
   radius = ucomp_getpar(primary_header, 'RADIUS')
   mg_log, 'backgrounds dimensions: %s', $
@@ -83,7 +87,7 @@ pro ucomp_l1_promote_header, file, $
   file.median_background = median_background
   ucomp_addpar, primary_header, 'MED_BACK', median_background, $
                 comment='[ppm] median of background', $
-                format='(F0.3)'
+                format='(F0.3)', after=after
 
   ; update extension headers
 

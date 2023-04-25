@@ -16,8 +16,9 @@
 ;     value of comment
 ;   before : in, optional, type=string
 ;     keyword name to place this keyword before
-;   after : in, optional, type=string
-;     keyword name to place this keyword before
+;   after : in, out, optional, type=string
+;     keyword name to place this keyword after; if a named variable is passed,
+;     then the AFTER value is updated to use for the next add
 ;   format : in, optional, type=string
 ;     IDL format code to use for value
 ;-
@@ -41,4 +42,6 @@ pro ucomp_addpar, header, name, value, $
               before=before, after=after, format=format, /null
   endelse
 
+  ; new AFTER is current keyword name
+  after = name
 end

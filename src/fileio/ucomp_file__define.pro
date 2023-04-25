@@ -70,6 +70,7 @@ end
 ;-
 pro ucomp_file::setProperty, demodulated=demodulated, $
                              rotated=rotated, $
+                             linearity_corrected=linearity_corrected, $
                              wrote_l1=wrote_l1, $
                              wrote_dynamics=wrote_dynamics, $
                              wrote_polarization=wrote_polarization, $
@@ -97,6 +98,7 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
 
   if (n_elements(demodulated)) then self.demodulated = demodulated
   if (n_elements(rotated)) then self.rotated = rotated
+  if (n_elements(linearity_corrected)) then self.linearity_corrected = linearity_corrected
   if (n_elements(wrote_l1) gt 0L) then self.wrote_l1 = wrote_l1
   if (n_elements(wrote_dynamics)) then self.wrote_dynamics = wrote_dynamics
   if (n_elements(wrote_polarization)) then self.wrote_polarization = wrote_polarization
@@ -161,6 +163,7 @@ pro ucomp_file::getProperty, run=run, $
                              polarization_basename=polarization_basename, $
                              demodulated=demodulated, $
                              rotated=rotated, $
+                             linearity_corrected=linearity_corrected, $
                              wrote_l1=wrote_l1, $
                              wrote_dynamics=wrote_dynamics, $
                              wrote_polarization=wrote_polarization, $
@@ -170,6 +173,8 @@ pro ucomp_file::getProperty, run=run, $
                              ut_time=ut_time, $
                              obsday_hours=obsday_hours, $
                              date_obs=date_obs, $
+                             date_begin=date_begin, $
+                             date_end=date_end, $
                              julian_date=julian_date, $
                              carrington_rotation=carrington_rotation, $
                              p_angle=p_angle, $
@@ -306,6 +311,7 @@ pro ucomp_file::getProperty, run=run, $
 
   if (arg_present(demodulated)) then demodulated = self.demodulated
   if (arg_present(rotated)) then rotated = self.rotated
+  if (arg_present(linearity_corrected)) then linearity_corrected = self.linearity_corrected
   if (arg_present(wrote_l1)) then wrote_l1 = self.wrote_l1
   if (arg_present(wrote_dynamics)) then wrote_dynamics = self.wrote_dynamics
   if (arg_present(wrote_polarization)) then wrote_polarization = self.wrote_polarization
@@ -319,6 +325,8 @@ pro ucomp_file::getProperty, run=run, $
   if (arg_present(obsday_hours)) then obsday_hours = self.obsday_hours
 
   if (arg_present(date_obs)) then date_obs = self.date_obs
+  if (arg_present(date_begin)) then date_begin = self.date_begin
+  if (arg_present(date_end)) then date_end = self.date_end
   if (arg_present(julian_date)) then begin
     date_parts = long(ucomp_decompose_date(self.ut_date))
     time_parts = long(ucomp_decompose_time(self.ut_time))
@@ -701,6 +709,9 @@ pro ucomp_file::_inventory
                /no_abort, message=error_msg
     if (error_msg ne '') then message, error_msg
 
+    if (e eq 1) then self.date_begin = ucomp_getpar(extension_header, 'DATE-BEG')
+    if (e eq self.n_extensions) then self.date_end = ucomp_getpar(extension_header, 'DATE-BEG')
+
     (*self.wavelengths)[e - 1] = ucomp_getpar(extension_header, 'WAVELNG', /float, found=found)
     (*self.onband_indices)[e - 1] = ucomp_getpar(extension_header, 'ONBAND', found=found) eq 'tcam'
 
@@ -807,6 +818,7 @@ pro ucomp_file__define
 
            demodulated            : 0B, $
            rotated                : 0B, $
+           linearity_corrected    : 0B, $
            wrote_l1               : 0B, $
            wrote_dynamics         : 0B, $
            wrote_polarization     : 0B, $
@@ -817,6 +829,8 @@ pro ucomp_file__define
            ut_time                : '', $
            obsday_hours           : 0.0, $
            date_obs               : '', $
+           date_begin             : '', $
+           date_end               : '', $
 
            n_extensions           : 0L, $
            n_repeats              : 0L, $
