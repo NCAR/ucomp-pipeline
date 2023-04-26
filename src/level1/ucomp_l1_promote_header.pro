@@ -33,14 +33,12 @@ pro ucomp_l1_promote_header, file, $
   ; add some headers to keywords from the level 0
   ucomp_addpar, primary_header, 'COMMENT', 'Basic info', $
                 after='EXTEND', /title
-  ucomp_addpar, primary_header, 'COMMENT', 'Camera info', $
-                before='TCAMID', /title
   ucomp_addpar, primary_header, 'COMMENT', 'Observing info', $
                 before='OBSERVER', /title
   ; ucomp_addpar, primary_header, 'COMMENT', 'Hardware positions', $
   ;               before='OCCLTR', /title
   ucomp_addpar, primary_header, 'COMMENT', 'Temperatures', $
-                before='T_RACK'
+                before='T_RACK', /title
 
   after = 'DATE-OBS'
   ucomp_addpar, primary_header, 'DATE-BEG', file.date_begin, $
@@ -49,13 +47,15 @@ pro ucomp_l1_promote_header, file, $
                 comment='[UT] date/time when obs ended', after=after
 
   after = 'OBJECT'
+  ucomp_addpar, primary_header, 'LEVEL', 'L1', comment='level 1 calibrated', $
+                after=after
   ucomp_addpar, primary_header, 'COMMENT', 'Level 1 processing info', $
-                after=after, /title
-  ucomp_addpar, primary_header, 'LEVEL', 'L1', comment='level 1 calibrated'
+                before='LEVEL', /title
 
   current_time = systime(/utc)
   date_dp = string(bin_date(current_time), $
                    format='(%"%04d-%02d-%02dT%02d:%02d:%02d")')
+  after = 'LEVEL'
   ucomp_addpar, primary_header, 'DATE_DP', date_dp, $
                 comment='[UT] L1 processing date/time', $
                 after=after
@@ -68,7 +68,6 @@ pro ucomp_l1_promote_header, file, $
                        format='(%"L1 processing software (%s) [%s]")'), $
                 after=after
 
-  ucomp_addpar, primary_header, 'COMMENT', 'Counts', after=after, /title
   ucomp_addpar, primary_header, 'NUM_WAVE', n_elements(headers), $
                 comment='number of wavelengths', after=after
   ucomp_addpar, primary_header, 'NUMSUM', file.numsum, $
@@ -77,6 +76,7 @@ pro ucomp_l1_promote_header, file, $
                 comment='number of repeats of wavelength scans', after=after
   ucomp_addpar, primary_header, 'NUM_BEAM', 2, $
                 comment='number of beams', after=after
+  ucomp_addpar, primary_header, 'COMMENT', 'Counts', before='NUM_WAVE', /title
 
   average_radius = ucomp_getpar(primary_header, 'RADIUS')
   center_wavelength_indices = file->get_center_wavelength_indices()
@@ -85,7 +85,6 @@ pro ucomp_l1_promote_header, file, $
     file.vcrosstalk_metric = ucomp_vcrosstalk_metric(center_wavelength_data, average_radius)
   endif
 
-  ucomp_addpar, primary_header, 'COMMENT', 'Metrics', after=after, /title
   ucomp_addpar, primary_header, 'VCROSSTK', file.vcrosstalk_metric, $
                 comment='Stokes V crosstalk metric', after=after
 
@@ -104,6 +103,7 @@ pro ucomp_l1_promote_header, file, $
   ucomp_addpar, primary_header, 'MED_BACK', median_background, $
                 comment='[ppm] median of background', $
                 format='(F0.3)', after=after
+  ucomp_addpar, primary_header, 'COMMENT', 'Metrics', before='VCROSSTK', /title
 
   ; update extension headers
 
@@ -155,6 +155,9 @@ pro ucomp_l1_promote_header, file, $
                   format=promote_keywords[k].format, $
                   comment=comment, after=promote_keywords[k].after
   endfor
+
+  ucomp_addpar, primary_header, 'COMMENT', 'Camera info', $
+                before='EXPTIME', /title
 
   ; TODO: promote SGS values to primary header?
   ; ucomp_addpar, primary_header, 'COMMENT', 'SGS info', $
