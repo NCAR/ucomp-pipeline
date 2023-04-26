@@ -101,8 +101,6 @@ pro ucomp_l1_find_alignment, file, $
   tcam = file.tcam_geometry
 
   after = 'WNDDIR'
-  ucomp_addpar, primary_header, 'COMMENT', 'Occulter centering info', $
-                after=after, /title
 
   ucomp_addpar, primary_header, $
                 'XOFFSET0', $
@@ -195,13 +193,14 @@ pro ucomp_l1_find_alignment, file, $
                 comment='occulter eccentricity in TCAM', $
                 format='(F0.6)', after=after
 
+  ucomp_addpar, primary_header, 'COMMENT', 'Occulter centering info', $
+                before='XOFFSET0', /title
+
   file->getProperty, semidiameter=semidiameter, $
                      distance_au=distance_au, $
                      p_angle=p_angle, $
                      b0=b0
 
-  ucomp_addpar, primary_header, 'COMMENT', 'Ephemeris info', $
-                after=after, /title
   ucomp_addpar, primary_header, 'SOLAR_P0', p_angle, $
                 comment='[deg] solar P angle applied (image has N up)', $
                 format='(f9.3)', after=after
@@ -222,7 +221,7 @@ pro ucomp_l1_find_alignment, file, $
 
   ucomp_addpar, primary_header, 'SEMIDIAM', semidiameter, $
                 comment='[arcsec] solar semi-diameter', $
-                format='(f9.2)'
+                format='(f9.2)', after=after
   ucomp_addpar, primary_header, 'RSUN_OBS', semidiameter, $
                 comment=string(distance_au * semidiameter, $
                                format='(%"[arcsec] solar radius using ref radius %0.2f\"")'), $
@@ -236,9 +235,9 @@ pro ucomp_l1_find_alignment, file, $
                 comment='[pixel] solar radius', $
                 format='(f9.2)', after=after
 
-  ucomp_addpar, primary_header, 'COMMENT', $
-                'World Coordinate System (WCS) info', $
-                after=after, /title
+  ucomp_addpar, primary_header, 'COMMENT', 'Ephemeris info', $
+                before='SOLAR_P0', /title
+
   ucomp_addpar, primary_header, $
                 'CDELT1', $
                 run->line(file.wave_region, 'plate_scale'), $
@@ -249,6 +248,10 @@ pro ucomp_l1_find_alignment, file, $
                 run->line(file.wave_region, 'plate_scale'), $
                 comment='[arcsec/pixel] solar Y increment = platescale', $
                 format='(f9.4)', after=after
+
+  ucomp_addpar, primary_header, 'COMMENT', $
+                'World Coordinate System (WCS) info', $
+                before='CDELT1', /title
 
   file.rcam_geometry.p_angle = p_angle
   file.tcam_geometry.p_angle = p_angle
