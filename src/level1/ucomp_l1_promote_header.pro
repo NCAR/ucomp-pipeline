@@ -46,20 +46,17 @@ pro ucomp_l1_promote_header, file, $
   ucomp_addpar, primary_header, 'DATE-END', file.date_end, $
                 comment='[UT] date/time when obs ended', after=after
 
+  sxdelpar, primary_header, 'LEVEL'
   after = 'OBJECT'
   ucomp_addpar, primary_header, 'LEVEL', 'L1', comment='level 1 calibrated', $
                 after=after
-  ucomp_addpar, primary_header, 'COMMENT', 'Level 1 processing info', $
-                before='LEVEL', /title
 
   current_time = systime(/utc)
   date_dp = string(bin_date(current_time), $
                    format='(%"%04d-%02d-%02dT%02d:%02d:%02d")')
-  after = 'LEVEL'
   ucomp_addpar, primary_header, 'DATE_DP', date_dp, $
                 comment='[UT] L1 processing date/time', $
                 after=after
-
   version = ucomp_version(revision=revision, branch=branch, date=code_date)
   ucomp_addpar, primary_header, 'DPSWID',  $
                 string(version, revision, $
@@ -67,7 +64,10 @@ pro ucomp_l1_promote_header, file, $
                 comment=string(code_date, branch, $
                        format='(%"L1 processing software (%s) [%s]")'), $
                 after=after
+  ucomp_addpar, primary_header, 'COMMENT', 'Level 1 processing info', $
+                before='LEVEL', /title
 
+  after = 'CAMERAS'
   ucomp_addpar, primary_header, 'NUM_WAVE', n_elements(headers), $
                 comment='number of wavelengths', after=after
   ucomp_addpar, primary_header, 'NUMSUM', file.numsum, $
@@ -162,4 +162,62 @@ pro ucomp_l1_promote_header, file, $
   ; TODO: promote SGS values to primary header?
   ; ucomp_addpar, primary_header, 'COMMENT', 'SGS info', $
   ;               before='SGSSCINT', /title
+end
+
+
+; main-level example program
+
+date = '20220901'
+config_basename = 'ucomp.latest.cfg'
+config_filename = filepath(config_basename, $
+                           subdir=['..', '..', '..', 'ucomp-config'], $
+                           root=mg_src_root())
+
+run = ucomp_run(date, 'test', config_filename)
+
+basename = '20220901.174648.65.ucomp.1074.l0.fts'
+filename = filepath(basename, $
+                    subdir=date, $
+                    root=run->config('raw/basedir'))
+
+file = ucomp_file(filename, run=run)
+
+ucomp_read_raw_data, file.raw_filename, $
+                     primary_header=primary_header, $
+                     ext_data=data, $
+                     ext_headers=headers, $
+                     repair_routine=run->epoch('raw_data_repair_routine'), $
+                     all_zero=all_zero
+
+data = reform(data[*, *, *, 0, *])
+backgrounds = reform(data[*, *, 0, *])
+
+ucomp_addpar, primary_header, 'LIN_CRCT', boolean(file.linearity_corrected), $
+              comment='camera linearity corrected', after='OBJECT'
+
+datetime = strmid(file_basename(file.raw_filename), 0, 15)
+dmatrix_coefficients = run->get_dmatrix_coefficients(datetime=datetime, info=demod_info)
+demod_basename = run->epoch('demodulation_coeffs_basename', datetime=datetime)
+ucomp_addpar, primary_header, 'DEMOD_C', demod_basename, $
+              comment=string(ucomp_idlsave2dateobs(demod_info.date), $
+                             format='demod coeffs created %s'), $
+              after='LIN_CRCT'
+
+cameras = 'both'
+ucomp_addpar, primary_header, 'CAMERAS', cameras, $
+            comment=string(cameras eq 'both' ? 's' : '', $
+                           format='(%"camera%s used in processing")'), $
+            after='DEMOD_C'
+
+ucomp_addpar, primary_header, 'RADIUS', $
+              333.195, $
+              comment='[px] occulter average radius', $
+              format='(F0.3)'
+
+ucomp_l1_promote_header, file, $
+                         primary_header, data, headers, backgrounds, $
+                         run=run, status=status
+
+obj_destroy, [file, run]
+
 end
