@@ -15,6 +15,9 @@
 ;     extension headers as list of `strarr`
 ;   backgrounds : type=undefined
 ;     not used in this step
+;   bad_ext_list : in, required, type = list 
+;     list of bad extension structures which have the 
+;     fields: camera, extension, modulation
 ;
 ; :Keywords:
 ;   run : in, required, type=object
@@ -24,7 +27,7 @@
 ;-
 pro ucomp_l1_average_data, file, $
                            primary_header, ext_data, ext_headers, backgrounds, $
-                           run=run, status=status
+                           run=run, status=status, bad_ext_list
   compile_opt strictarr
 
   status = 0L
@@ -34,6 +37,20 @@ pro ucomp_l1_average_data, file, $
   exptime     = fltarr(n_extensions)
   onband      = bytarr(n_extensions)
   wavelengths = fltarr(n_extensions)
+
+  ;  Example of a bad_ext_list 
+  ; bad_ext_list = [{camera:0,extension:8,modulation:0}, $
+  ;                 {camera:0,extension:12,modulation:1},$
+  ;                 {camera:0,extension:1,modulation:2}]
+  bad_header =""
+  foreach ext in bad_ext_list do begin
+      if  bad_header NE "" THEN bad_header = bad_header+","
+      bad_header = bad_header + strtrim(string(ext.camera),2)$
+                        +"_"+strtrim(string(ext.extension),2)$
+                        +"_"+strtrim(string(ext.modulation),2)
+      ext_data[*, *, ext.modulation_number, ext.camera, ext.extension_number] = !values.f_nan
+  endfor
+
 
   ; group by EXPTIME, ONBAND, WAVELNG
   for e = 0L, n_extensions - 1L do begin
@@ -71,7 +88,7 @@ pro ucomp_l1_average_data, file, $
     d = ext_data[*, *, *, *, gi]
     averaged_ext_data[*, *, *, *, g] = size(d, /n_dimensions) lt 5 $
                                          ? d $
-                                         : mean(d, dimension=5)
+                                         : mean(d, dimension=5,/nan)
 
     averaged_exptime[g]     = exptime[gi[0]]
     averaged_onband[g]      = onband[gi[0]]
@@ -86,6 +103,11 @@ pro ucomp_l1_average_data, file, $
                   comment='raw file'
     ucomp_addpar, averaged_header, 'RAWEXTS', extensions[g], after='RAWFILE', $
                   comment='extension(s) used from RAWFILE'
+
+    ucomp_addpar, averaged_header, 'BADEXTS', bad_header, after='RAWEXTS', $
+                  comment='extension(s) not used'
+
+
     ext_headers->add, averaged_header
   endfor
 
