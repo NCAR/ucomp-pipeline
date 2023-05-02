@@ -37,5 +37,8 @@ function ucomp_gbu_sgsdims, file, $
 
   voltage_threshold = 0.9 * i0 * exp(-0.05 * secz)
 
-  return, dims lt voltage_threshold
+  sgs_dims = fltarr(n_elements(ext_headers))
+  for e = 0L, n_elements(ext_headers) - 1L do sgs_dims = ucomp_getpar(ext_headers[e], 'SGSDIMS')
+
+  return, mean(sgs_dims, /nan) lt voltage_threshold
  end

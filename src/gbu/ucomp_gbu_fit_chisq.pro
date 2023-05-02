@@ -33,8 +33,8 @@ function ucomp_gbu_fit_chisq, file, $
   rcam = file.rcam_geometry
   tcam = file.tcam_geometry
 
-  dt = string(file.ut_date, file_ut_time, format='%s.%s')
-  max_fit_chisq = run->line(file.wave_region, 'gbu_max_fit_chisq', dt)
+  dt = string(file.ut_date, file.ut_time, format='%s.%s')
+  max_fit_chisq = run->line(file.wave_region, 'gbu_max_fit_chisq', datetime=dt)
 
   return, (rcam.occulter_chisq gt max_fit_chisq) || (tcam.occulter_chisq gt max_fit_chisq)
  end

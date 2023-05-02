@@ -30,7 +30,7 @@ function ucomp_gbu_min_background, file, $
                                    run=run
   compile_opt strictarr
 
-  dt = string(file.ut_date, file_ut_time, format='%s.%s')
-  min_background = run->line(file.wave_region, 'gbu_min_background', dt)
+  dt = string(file.ut_date, file.ut_time, format='%s.%s')
+  min_background = run->line(file.wave_region, 'gbu_min_background', datetime=dt)
   return, file.median_background lt min_background
  end
