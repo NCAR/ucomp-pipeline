@@ -14,11 +14,26 @@ function ucomp_gbu_conditions, wave_region, run=run
   ; don't set mask initially, set after creating so that conditions can be
   ; reordered easily
   gbu_conditions = [{mask: 0UL, $
-                     checker: 'ucomp_gbu_check_identical_temps', $
-                     description: 'at least two identical TU_LCVR{1,2,3,4,5} temperatures'}, $
+                     checker: 'ucomp_gbu_sgsloop', $
+                     description: 'spar guide control loop is not locked'}, $
                     {mask: 0UL, $
-                     checker: 'ucomp_gbu_check_nominal_temps', $
-                     description: 'a temperature outside the nominal range'}]
+                     checker: 'ucomp_gbu_sgsdims', $
+                     description: 'spar guider intensity below threshold'}, $
+                    {mask: 0UL, $
+                     checker: 'ucomp_gbu_max_background', $
+                     description: 'median background is above threshold'}, $
+                    {mask: 0UL, $
+                     checker: 'ucomp_gbu_min_background', $
+                     description: 'median background is below threshold'}, $
+                    {mask: 0UL, $
+                     checker: 'ucomp_gbu_vcrosstalk', $
+                     description: 'spurious Stokes V signal is above threshold'}, $
+                    {mask: 0UL, $
+                     checker: 'ucomp_gbu_fit_chisq', $
+                     description: 'the chi-squared of the occulter fit is above threshold'}, $
+                    {mask: 0UL, $
+                     checker: 'ucomp_gbu_median_diff', $
+                     description: 'the difference of the image with the median is above threshold'}]
   gbu_conditions.mask = 2UL ^ (ulindgen(n_elements(gbu_conditions)))
 
   return, gbu_conditions
