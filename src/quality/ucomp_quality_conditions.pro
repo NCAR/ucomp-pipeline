@@ -26,10 +26,6 @@ function ucomp_quality_conditions, wave_region, run=run
      checker: 'ucomp_quality_inout', $
      description: 'check for in/out values that are neither in or out'}, $
     {mask: 0UL, $
-     checker: 'ucomp_quality_sgsloop', $
-     description: string(run->epoch('sgsloop_min'), $
-                         format='(%"check for SGSLOOP below %0.2f")')}, $
-    {mask: 0UL, $
      checker: 'ucomp_quality_check_time_interval', $
      description: string(run->epoch('max_ext_time'), $
                          format='(%"check for sequential extensions acquired more than %0.1f secs apart")')}, $
