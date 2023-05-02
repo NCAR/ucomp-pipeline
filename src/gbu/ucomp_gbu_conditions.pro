@@ -17,7 +17,7 @@ function ucomp_gbu_conditions, wave_region, run=run
                      checker: 'ucomp_gbu_sgsloop', $
                      description: 'spar guide control loop is not locked'}, $
                     {mask: 0UL, $
-                     checker: 'ucomp_gbu_sgsdims', $
+                     checker: 'ucomp_gbu_sgsdimv', $
                      description: 'spar guider intensity below threshold'}, $
                     {mask: 0UL, $
                      checker: 'ucomp_gbu_max_background', $
