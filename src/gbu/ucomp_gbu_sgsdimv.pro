@@ -22,7 +22,7 @@
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-function ucomp_gbu_sgsdims, file, $
+function ucomp_gbu_sgsdimv, file, $
                             primary_header, $
                             ext_data, $
                             ext_headers, $
@@ -37,8 +37,8 @@ function ucomp_gbu_sgsdims, file, $
 
   voltage_threshold = 0.9 * i0 * exp(-0.05 * secz)
 
-  sgs_dims = fltarr(n_elements(ext_headers))
-  for e = 0L, n_elements(ext_headers) - 1L do sgs_dims = ucomp_getpar(ext_headers[e], 'SGSDIMS')
+  sgs_dimv = fltarr(n_elements(ext_headers))
+  for e = 0L, n_elements(ext_headers) - 1L do sgs_dimv = ucomp_getpar(ext_headers[e], 'SGSDIMV')
 
-  return, mean(sgs_dims, /nan) lt voltage_threshold
+  return, mean(sgs_dimv, /nan) lt voltage_threshold
  end
