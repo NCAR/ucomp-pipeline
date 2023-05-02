@@ -30,7 +30,7 @@ function ucomp_gbu_vcrosstalk, file, $
                                run=run
   compile_opt strictarr
 
-  dt = string(file.ut_date, file_ut_time, format='%s.%s')
-  max_v = run->line(file.wave_region, 'gbu_max_v_metric', dt)
+  dt = string(file.ut_date, file.ut_time, format='%s.%s')
+  max_v = run->line(file.wave_region, 'gbu_max_v_metric', datetime=dt)
   return, file.vcrosstalk_metric gt max_v
  end

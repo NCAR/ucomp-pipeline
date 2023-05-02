@@ -37,8 +37,8 @@ function ucomp_gbu_median_diff, file, $
   n_stokes = 4L
   sigma = fltarr(file.n_extensions, n_stokes)
 
-  dt = string(file.ut_date, file_ut_time, format='%s.%s')
-  max_stddev = run->line(file.wave_region, 'gbu_max_stddev', dt)
+  dt = string(file.ut_date, file.ut_time, format='%s.%s')
+  max_stddev = run->line(file.wave_region, 'gbu_max_stddev', datetime=dt)
 
   data_median = median(ext_data[*, *, *, *], dimension=4,/even)
   data_mean = mean(ext_data[*, *, *, *], dimension=4)

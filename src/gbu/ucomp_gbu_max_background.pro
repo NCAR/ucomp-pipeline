@@ -30,7 +30,7 @@ function ucomp_gbu_max_background, file, $
                                    run=run
   compile_opt strictarr
 
-  dt = string(file.ut_date, file_ut_time, format='%s.%s')
-  max_background = run->line(file.wave_region, 'gbu_max_background', dt)
+  dt = string(file.ut_date, file.ut_time, format='%s.%s')
+  max_background = run->line(file.wave_region, 'gbu_max_background', datetime=dt)
   return, file.median_background gt max_background
  end
