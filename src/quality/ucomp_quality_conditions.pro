@@ -34,7 +34,13 @@ function ucomp_quality_conditions, wave_region, run=run
      description: 'check for multiple datatypes in a file'}, $
     {mask: 0UL, $
      checker: 'ucomp_quality_all_zero', $
-     description: 'check if any extension is identically zero'}]
+     description: 'check if any extension is identically zero'}, $
+    {mask: 0UL, $
+     checker: 'ucomp_quality_check_identical_temps', $
+     description: 'check if any reported temperatures are identical'}, $
+    {mask: 0UL, $
+     checker: 'ucomp_quality_check_nominal_temps', $
+     description: 'check if all temperatures are in nominal range'}]
 
   quality_conditions.mask = 2UL ^ (ulindgen(n_elements(quality_conditions)))
 
