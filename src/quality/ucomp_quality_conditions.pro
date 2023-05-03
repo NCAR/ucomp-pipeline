@@ -24,23 +24,23 @@ function ucomp_quality_conditions, wave_region, run=run
   quality_conditions = [ $
     {mask: 0UL, $
      checker: 'ucomp_quality_inout', $
-     description: 'check for in/out values that are neither in or out'}, $
+     description: 'in/out values that are neither in or out'}, $
     {mask: 0UL, $
      checker: 'ucomp_quality_check_time_interval', $
      description: string(run->epoch('max_ext_time'), $
                          format='(%"check for sequential extensions acquired more than %0.1f secs apart")')}, $
     {mask: 0UL, $
      checker: 'ucomp_quality_datatype', $
-     description: 'check for multiple datatypes in a file'}, $
+     description: 'multiple datatypes in a file'}, $
     {mask: 0UL, $
      checker: 'ucomp_quality_all_zero', $
-     description: 'check if any extension is identically zero'}, $
+     description: 'an extension is identically zero'}, $
     {mask: 0UL, $
      checker: 'ucomp_quality_check_identical_temps', $
-     description: 'check if any reported temperatures are identical'}, $
+     description: 'any reported temperatures are identical'}, $
     {mask: 0UL, $
      checker: 'ucomp_quality_check_nominal_temps', $
-     description: 'check if all temperatures are in nominal range'}]
+     description: 'a temperature is not in the nominal range'}]
 
   quality_conditions.mask = 2UL ^ (ulindgen(n_elements(quality_conditions)))
 
