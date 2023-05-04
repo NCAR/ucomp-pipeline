@@ -75,8 +75,8 @@ run = ucomp_run(date, 'test', config_filename)
 raw_filename = filepath(raw_basename, subdir=date, root=run->config('raw/basedir'))
 file = ucomp_file(raw_filename, run=run)
 
-file.gbu = ucomp_gbu_check_identical_temps(file)
-print, file.gbu, format='(%"GBU: %d")'
+file.quality = ucomp_quality_check_identical_temps(file)
+print, file.gbu, format='(%"Quality: %d")'
 
 obj_destroy, run
 
