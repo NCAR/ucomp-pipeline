@@ -129,9 +129,8 @@ pro ucomp_l1_promote_header, file, $
   endfor
 
   ; promote keywords to primary header
-  promote_keywords = [{name: 'CONTIN', format: '(A)', after: 'OCCLTRID'}, $
-                      {name: 'FRAMERT', format: '(F0.3)', after: 'CONTIN'}, $
-                      {name: 'EXPTIME', format: '(F0.3)', after: 'CONTIN'}]
+  promote_keywords = [{name: 'FRAMERT', format: '(F0.3)', after: 'OCCLTRID'}, $
+                      {name: 'EXPTIME', format: '(F0.3)', after: 'OCCLTRID'}]
   for k = 0L, n_elements(promote_keywords) - 1L do begin
     for e = 0L, n_elements(headers) - 1L do begin
       h = headers[e]
