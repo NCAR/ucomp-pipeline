@@ -86,7 +86,8 @@ pro ucomp_make_flats, wave_region, run=run
                          ext_data=ext_data, $
                          ext_headers=ext_headers, $
                          n_extensions=n_extensions, $
-                         repair_routine=run->epoch('raw_data_repair_routine', datetime=datetime)
+                         repair_routine=run->epoch('raw_data_repair_routine', datetime=datetime), $
+                         badframes=run.badframes
 
     ext_data = float(ext_data)
 

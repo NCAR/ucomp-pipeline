@@ -71,7 +71,7 @@ pro ucomp_l1_average_data, file, $
     d = ext_data[*, *, *, *, gi]
     averaged_ext_data[*, *, *, *, g] = size(d, /n_dimensions) lt 5 $
                                          ? d $
-                                         : mean(d, dimension=5)
+                                         : mean(d, dimension=5, /nan)
 
     averaged_exptime[g]     = exptime[gi[0]]
     averaged_onband[g]      = onband[gi[0]]

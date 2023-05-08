@@ -21,6 +21,12 @@
 ;     set to a named variable to retrieve the number of extensions
 ;   repair_routine : in, optional, type=string
 ;     call procedure given by this keyword to repair data, if present
+;   badframes : in, optional, type=array of structures
+;     to set specific frames to NaNs, set to an array of structures of the form:
+;
+;         replicate({filename: '', camera: 0L, extension: 0L, polstate: 0L}, $
+;                   n_badframes)
+;
 ;   all_zero : out, optional, type=byte
 ;     set to a named variable to retrieve whether any extension of the file was
 ;     identically zero
@@ -32,6 +38,7 @@ pro ucomp_read_raw_data, filename, $
                          ext_headers=ext_headers, $
                          n_extensions=n_extensions, $
                          repair_routine=repair_routine, $
+                         badframes=badframes, $
                          all_zero=all_zero
   compile_opt strictarr
   on_error, 2
@@ -84,6 +91,14 @@ pro ucomp_read_raw_data, filename, $
   endif
 
   fits_close, fcb
+
+  if (n_elements(badframes) gt 0L) then begin
+    file_indices = where(badframes.filename eq basename(filename), n_file_badframes)
+    if (n_file_badframes ne 0L) then begin
+      file_badframes = badframes[file_indices]
+      ext_data[*, *, file_badframes.polstate, file_badframes.camera, file_badframes.extension] = !values.f_nan
+    endif
+  endif
 
   ; repair data
   if (n_elements(repair_routine) gt 0L) then begin

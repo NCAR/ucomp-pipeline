@@ -496,6 +496,17 @@ function ucomp_run::epoch, option_name, datetime=datetime, found=found
 end
 
 
+pro ucomp_run::load_badframes
+  compile_opt strictarr
+
+  badframes_dir = self->config('averaging/badframes_dir')
+  if (n_elements(badframes_dir) ne 0L) then begin
+    basename = string(self.date, format='%s.ucomp.badframes.csv')
+    *self.badframes = ucomp_read_badframes(filepath(basename, root=badframes_dir))
+  endif
+end
+
+
 ;+
 ; Get hot pixel information for camera and gain.
 ;
@@ -813,6 +824,7 @@ pro ucomp_run::getProperty, date=date, $
                             all_wave_regions=all_wave_regions, $
                             resource_root=resource_root, $
                             calibration=calibration, $
+                            badframes=badframes, $
                             dmatrix_coefficients=dmatrix_coefficients, $
                             t0=t0
   compile_opt strictarr
@@ -843,7 +855,11 @@ pro ucomp_run::getProperty, date=date, $
 
   if (arg_present(calibration)) then calibration = self.calibration
 
-  if (arg_present(dmatrix_coefficients)) then dmatrix_coefficients = *self.dmatrix_coefficients
+  if (arg_present(badframes)) then badframes = *self.badframes
+
+  if (arg_present(dmatrix_coefficients)) then begin
+    dmatrix_coefficients = *self.dmatrix_coefficients
+  endif
 
   if (arg_present(t0)) then t0 = self.t0
 end
@@ -968,6 +984,8 @@ pro ucomp_run::cleanup
   obj_destroy, [self.options, self.epochs, self.lines, self.temperature_maps, $
                 self.program_names]
 
+  ptr_free, self.badframes
+
   ptr_free, self.hot_pixels[0], $
             self.hot_pixels[1], $
             self.hot_pixels[2], $
@@ -1082,6 +1100,9 @@ function ucomp_run::init, date, mode, config_filename, $
   program_names_filename = filepath('program_names.cfg', root=self.resource_root)
   self.program_names = mg_read_config(program_names_filename)
 
+  self.badframes = ptr_new(/allocate_heap)
+  self->load_badframes
+
   for i = 0L, 3L do begin
     self.hot_pixels[i] = ptr_new(/allocate_heap)
     self.adjacent_pixels[i] = ptr_new(/allocate_heap)
@@ -1127,6 +1148,8 @@ pro ucomp_run__define
            lines                   : obj_new(), $
            temperature_maps        : obj_new(), $
            program_names           : obj_new(), $
+
+           badframes               : ptr_new(), $
 
            hot_pixels              : ptrarr(2, 2), $   ; gain, camera
            adjacent_pixels         : ptrarr(2, 2), $   ; gain, camera
