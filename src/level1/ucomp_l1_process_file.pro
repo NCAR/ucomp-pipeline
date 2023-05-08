@@ -46,6 +46,7 @@ pro ucomp_l1_process_file, file, run=run
                        ext_data=data, $
                        ext_headers=headers, $
                        repair_routine=run->epoch('raw_data_repair_routine'), $
+                       badframes=run.badframes, $
                        all_zero=all_zero
   file.all_zero = all_zero
   !null = run->stop(clock_id)
