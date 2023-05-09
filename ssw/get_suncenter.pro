@@ -150,7 +150,7 @@ if n_elements(xyt) eq 0 then begin            ; use hxa as reference
       tbeep, 3
       wcp = where(hcod eq -1)
       if (wcp(0) eq -1) then begin
-	 print, 'ERROR: No absolute pointing data available (HXA or commanded)
+	 print, 'ERROR: No absolute pointing data available (HXA or commanded)'
 	 return, 0
       end
    endif
@@ -197,7 +197,7 @@ repeat begin  ; loop through short time intervals for which gyros are linear
 
    wwi = sel_timrange(pnt(wip(wlis)),tilo,tihi)
    wwi = wlis(wwi)
-   list(wwi) = 0B                   ; cross off selected elements in list
+   list[wwi] = 0B                   ; cross off selected elements in list
 
    wwc = sel_timrange(pnt(wcp),tclo,tchi)
 
