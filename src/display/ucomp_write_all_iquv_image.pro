@@ -61,13 +61,9 @@ pro ucomp_write_all_iquv_image, file, data, run=run
   n_colors = 252
 
   text_color = 252
-  tvlct, 255, 255, 255, text_color
   occulter_color = 253
-  tvlct, 0, 255, 255, occulter_color
   guess_color = 254
-  tvlct, 255, 255, 0, guess_color
   inflection_color = 255
-  tvlct, 255, 0, 0, inflection_color
 
   tvlct, r, g, b, /get
 
@@ -97,11 +93,15 @@ pro ucomp_write_all_iquv_image, file, data, run=run
         display_gamma = quv_display_gamma
         display_power = quv_display_power
         ct_name = 'quv'
-        ;ct_name = 'intensity'
       endelse
 
       ucomp_loadct, ct_name, n_colors=n_colors
       gamma_ct, display_gamma, /current
+
+      tvlct, 255, 255, 255, text_color
+      tvlct, 0, 255, 255, occulter_color
+      tvlct, 255, 255, 0, guess_color
+      tvlct, 255, 0, 0, inflection_color
 
       im = rebin(ext_data[*, *, p], $
                  dims[0] / reduce_dims_factor, $
