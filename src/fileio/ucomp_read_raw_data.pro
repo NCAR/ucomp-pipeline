@@ -133,7 +133,7 @@ pro ucomp_read_raw_data, filename, $
                   comment='total number of image frames in file', $
                   after='SAVEALL'
     n_bad_frames = n_invalid_frames eq 0L ? n_file_badframes : 0L
-    ucomp_addpar, primary_header, 'BADFRAME', n_bad_frames, $
+    ucomp_addpar, primary_header, 'REMFRAME', n_bad_frames, $
                   comment='number of bad frames removed', $
                   after='NFRAME'
   endif
