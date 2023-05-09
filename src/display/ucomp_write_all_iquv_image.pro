@@ -65,7 +65,10 @@ pro ucomp_write_all_iquv_image, file, data, run=run
   guess_color = 254
   inflection_color = 255
 
-  tvlct, r, g, b, /get
+  tvlct, 255, 255, 255, text_color
+  tvlct, 0, 255, 255, occulter_color
+  tvlct, 255, 255, 0, guess_color
+  tvlct, 255, 0, 0, inflection_color
 
   xmargin = 0.05
   ymargin = 0.03
@@ -96,12 +99,7 @@ pro ucomp_write_all_iquv_image, file, data, run=run
       endelse
 
       ucomp_loadct, ct_name, n_colors=n_colors
-      gamma_ct, display_gamma, /current
-
-      tvlct, 255, 255, 255, text_color
-      tvlct, 0, 255, 255, occulter_color
-      tvlct, 255, 255, 0, guess_color
-      tvlct, 255, 0, 0, inflection_color
+      mg_gamma_ct, display_gamma, /current, n_colors=n_colors
 
       im = rebin(ext_data[*, *, p], $
                  dims[0] / reduce_dims_factor, $
