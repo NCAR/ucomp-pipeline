@@ -496,13 +496,20 @@ function ucomp_run::epoch, option_name, datetime=datetime, found=found
 end
 
 
+;+
+; Load the bad frames if a bad frames directory was set in the config file and
+; if there is a file for the day to be processed.
+;-
 pro ucomp_run::load_badframes
   compile_opt strictarr
 
   badframes_dir = self->config('averaging/badframes_dir')
   if (n_elements(badframes_dir) ne 0L) then begin
     basename = string(self.date, format='%s.ucomp.badframes.csv')
-    *self.badframes = ucomp_read_badframes(filepath(basename, root=badframes_dir))
+    filename = filepath(basename, root=badframes_dir)
+    if (file_test(filename, /regular)) then begin
+      *self.badframes = ucomp_read_badframes(filename)
+    endif
   endif
 end
 
