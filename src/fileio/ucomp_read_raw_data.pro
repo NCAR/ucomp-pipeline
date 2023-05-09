@@ -30,6 +30,8 @@
 ;   all_zero : out, optional, type=byte
 ;     set to a named variable to retrieve whether any extension of the file was
 ;     identically zero
+;   logger : in, optional, type=string
+;     name of logger to output to
 ;-
 pro ucomp_read_raw_data, filename, $
                          primary_data=primary_data, $
@@ -39,7 +41,8 @@ pro ucomp_read_raw_data, filename, $
                          n_extensions=n_extensions, $
                          repair_routine=repair_routine, $
                          badframes=badframes, $
-                         all_zero=all_zero
+                         all_zero=all_zero, $
+                         logger=logger
   compile_opt strictarr
   on_error, 2
 
@@ -92,12 +95,47 @@ pro ucomp_read_raw_data, filename, $
 
   fits_close, fcb
 
+  n_file_badframes = 0L
+  n_invalid_frames = 0L
+
   if (n_elements(badframes) gt 0L) then begin
     file_indices = where(badframes.filename eq file_basename(filename), n_file_badframes)
     if (n_file_badframes ne 0L) then begin
       file_badframes = badframes[file_indices]
-      ext_data[*, *, file_badframes.polstate, file_badframes.camera, file_badframes.extension - 1] = !values.f_nan
+      invalid_frames_indices = where((file_badframes.polstate ge 4) $
+                                       or (file_badframes.camera ge 2) $
+                                       or (file_badframes.extension gt n_extensions), $
+                                     n_invalid_frames)
+      if (n_invalid_frames gt 0L) then begin
+        mg_log, 'found %d invalid bad frame specification%s', $
+                n_invalid_frames, $
+                n_invalid_frames gt 1 ? 's' : '', $
+                name=logger, /warn
+        invalid_badframes = file_badframes[invalid_frames_indices]
+        for i = 0L, n_invalid_frames - 1L do begin
+          mg_log, 'invalid bad frame @ camera: %d, polstate: %d, ext: %d', $
+                  (invalid_badframes[i]).camera, $
+                  (invalid_badframes[i]).polstate, $
+                  (invalid_badframes[i]).extension, $
+                  name=logger, /warn
+        endfor
+      endif
+      if (n_invalid_frames eq 0L) then begin
+        ext_data[*, *, file_badframes.polstate, file_badframes.camera, file_badframes.extension - 1] = !values.f_nan
+      endif
     endif
+  endif
+
+  if (arg_present(primary_header)) then begin
+    dims = size(ext_data, /dimensions)
+    n_total_frames = product(dims[2:*], /preserve_type)
+    ucomp_addpar, primary_header, 'NFRAME', n_total_frames, $
+                  comment='total number of image frames in file', $
+                  after='SAVEALL'
+    n_bad_frames = n_invalid_frames eq 0L ? n_file_badframes : 0L
+    ucomp_addpar, primary_header, 'BADFRAME', n_bad_frames, $
+                  comment='number of bad frames removed', $
+                  after='NFRAME'
   endif
 
   ; repair data
