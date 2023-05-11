@@ -79,7 +79,7 @@ pro ucomp_l2_quick_invert, wave_region, $
                                       dims[1], $
                                       run->epoch('field_radius'))
         occulter_radius = ucomp_getpar(primary_header, 'RADIUS')
-        p_angle = ucomp_getpar(primary_header, 'P_ANGLE')
+        p_angle = ucomp_getpar(primary_header, 'SOLAR_P0')
         occulter_mask = ucomp_occulter_mask(dims[0], dims[1], occulter_radius)
         offsensor_mask = ucomp_offsensor_mask(dims[0], dims[1], p_angle)
         mask = field_mask and occulter_mask and offsensor_mask
