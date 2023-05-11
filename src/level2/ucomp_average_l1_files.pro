@@ -123,6 +123,8 @@ pro ucomp_average_l1_files, files, output_filename, method=method, run=run
   dims = size(ext_data, /dimensions)
   averaged_data = make_array(dimension=[dims[0:2], n_unique_wavelengths], $
                              type=size(ext_data, /type)) + !values.f_nan
+  averaged_background = make_array(dimension=[dims[0:1], n_unique_wavelengths], $
+                                   type=size(ext_data, /type)) + !values.f_nan
 
   averaged_headers = list()
 
@@ -138,14 +140,14 @@ pro ucomp_average_l1_files, files, output_filename, method=method, run=run
 
     wavelength_data = make_array(dimension=[dims[0:2], n_ok_files], $
                                  type=size(ext_data, /type)) + !values.f_nan
+    background_data = make_array(dimension=[dims[0:1], n_ok_files], $
+                                 type=size(ext_data, /type)) + !values.f_nan
     for f = 0L, n_ok_files - 1L do begin
       ucomp_read_l1_data, filepath(ok_files[f].l1_basename, root=l1_dir), $
                           primary_header=primary_header, $
                           ext_data=ext_data, $
                           ext_headers=ext_headers, $
-                          ; TODO: average backgrounds too
-                          ;background_data=background_data, $
-                          ;background_headers=background_headers, $
+                          background_data=ext_background_data, $
                           n_wavelengths=n_wavelengths
 
       file_wavelengths = strarr(n_wavelengths)
@@ -159,6 +161,7 @@ pro ucomp_average_l1_files, files, output_filename, method=method, run=run
         0L:
         1L: begin
             wavelength_data[*, *, *, f] = ext_data[*, *, *, matching_indices[0]]
+            background_data[*, *, f] = ext_background_data[*, *, matching_indices[0]]
             if (f eq 0L) then begin
               averaged_headers->add, ext_headers[matching_indices[0]]
             endif
@@ -166,6 +169,8 @@ pro ucomp_average_l1_files, files, output_filename, method=method, run=run
         else: begin
             wavelength_data[*, *, *, f] = mean(ext_data[*, *, *, matching_indices], $
                                                dimension=4)
+            background_data[*, *, f] = mean(ext_background_data[*, *, matching_indices], $
+                                            dimension=3)
             if (f eq 0L) then begin
               averaged_headers->add, ext_headers[matching_indices[0]]
             endif
@@ -191,17 +196,27 @@ pro ucomp_average_l1_files, files, output_filename, method=method, run=run
 
     if (size(wavelength_data, /n_dimensions) gt 3L) then begin
       case _method of
-        'mean': averaged_data[*, *, *, w] = mean(wavelength_data, dimension=4, /nan)
-        'median': averaged_data[*, *, *, w] = median(wavelength_data, dimension=4)
+        'mean': begin
+            averaged_data[*, *, *, w] = mean(wavelength_data, dimension=4, /nan)
+            averaged_background[*, *, *, w] = mean(background_data, dimension=3, /nan)
+          end
+        'median': begin
+            averaged_data[*, *, *, w] = median(wavelength_data, dimension=4)
+            averaged_background[*, *, *, w] = median(background_data, dimension=3)
+          end
         else:
       endcase
-    endif else averaged_data[*, *, *, w] = wavelength_data
+    endif else begin
+      averaged_data[*, *, *, w] = wavelength_data
+      averaged_background_data[*, *, w] = background_data
+    endelse
   endfor
 
   ucomp_write_fits_file, output_filename, $
                          primary_header, $
                          averaged_data, $
-                         averaged_headers
+                         averaged_headers, $
+                         averaged_background
 
   ucomp_write_iquv_image, averaged_data, $
                           file_basename(output_filename), $

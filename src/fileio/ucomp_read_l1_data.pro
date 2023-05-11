@@ -27,8 +27,7 @@ pro ucomp_read_l1_data, filename, $
                         ext_headers=ext_headers, $
                         background_data=background_data, $
                         background_headers=background_headers, $
-                        n_wavelengths=n_wavelengths, $
-                        no_backgrounds=no_backgrounds
+                        n_wavelengths=n_wavelengths
   compile_opt strictarr
   on_error, 2
 
@@ -36,7 +35,7 @@ pro ucomp_read_l1_data, filename, $
   if (msg ne '') then message, msg
 
   n_extensions = fcb.nextend
-  n_wavelengths = keyword_set(no_backgrounds) ? n_extensions : (n_extensions / 2L)
+  n_wavelengths = n_extensions / 2L
   if (n_extensions lt 1) then begin
     message, string(filename, $
                     format='(%"%s contains no extensions")')
