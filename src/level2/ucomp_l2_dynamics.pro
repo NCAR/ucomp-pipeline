@@ -49,7 +49,7 @@ pro ucomp_l2_dynamics, file, run=run
                       primary_header=primary_header, $
                       ext_data=ext_data, $
                       ext_headers=ext_headers, $
-                      n_extensions=n_extensions
+                      n_wavelengths=n_wavelengths
 
   ; find center wavelength
   center_indices = file->get_center_wavelength_indices()
@@ -67,9 +67,9 @@ pro ucomp_l2_dynamics, file, run=run
                 /error
         goto, done
       end
-    (center_indices[0] lt 1L) || (center_indices[0] gt n_extensions - 1L): begin
+    (center_indices[0] lt 1L) || (center_indices[0] gt n_wavelengths - 1L): begin
         mg_log, 'not enough wavelengths (center index: %d / %d)', $
-                center_indices[0], n_extensions, $
+                center_indices[0], n_wavelengths, $
                 name=run.logger_name, /error
       end
     else:

@@ -66,7 +66,7 @@ pro ucomp_write_intermediate_image, name, $
 
   n_colors = 253
   loadct, 0, /silent, ncolors=n_colors
-  gamma_ct, display_gamma, /current
+  mg_gamma_ct, display_gamma, /current, n_colors=n_colors
 
   occulter_color = 253
   tvlct, 0, 255, 255, occulter_color

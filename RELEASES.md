@@ -319,3 +319,4 @@
   change display min/max for radial azimuth to +/- 50.0
   improved GBU
   ability to remove bad frames
+  creating quick invert FITS and PNGs

@@ -69,6 +69,11 @@ pro ucomp_write_iquv_image, data, l1_basename, wave_region, wavelengths, $
   guess_color = 254
   inflection_color = 255
 
+  tvlct, 255, 255, 255, text_color
+  tvlct, 0, 255, 255, occulter_color
+  tvlct, 255, 255, 0, guess_color
+  tvlct, 255, 0, 0, inflection_color
+
   charsize = 1.25
   title_charsize = 1.75
   detail_charsize = 0.9
@@ -100,11 +105,7 @@ pro ucomp_write_iquv_image, data, l1_basename, wave_region, wavelengths, $
       endelse
 
       ucomp_loadct, ct_name, n_colors=n_colors
-      gamma_ct, display_gamma, /current
-      tvlct, 255, 255, 255, text_color
-      tvlct, 0, 255, 255, occulter_color
-      tvlct, 255, 255, 0, guess_color
-      tvlct, 255, 0, 0, inflection_color
+      mg_gamma_ct, display_gamma, /current, n_colors=n_colors
 
       im = rebin(ext_data[*, *, p], $
                  dims[0] / reduce_dims_factor, $
@@ -199,8 +200,8 @@ l1_filename = filepath(l1_basename, $
                        subdir=[date, 'level1'], $
                        root=run->config('processing/basedir'))
 
-ucomp_read_l1_data, l1_filename, ext_data=data, n_extensions=n_extensions
-file.n_extensions = n_extensions
+ucomp_read_l1_data, l1_filename, ext_data=data, n_wavelengths=n_wavelengths
+file.n_extensions = n_wavelengths
 
 ucomp_write_iquv_image, data, l1_basename, file.wave_region, file.wavelengths, $
                         run=run
