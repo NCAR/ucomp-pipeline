@@ -33,8 +33,7 @@ function ucomp_integrate, data, center_index=center_index, gaussian=gaussian
   endif else begin
     weights = (fltarr(n_weights) + 1.0)/ 2.0
   endelse
-print, weights
-print, _center_index
+
   weighted = data[*, *, _center_index - n_weights / 2:_center_index + n_weights / 2]
   for w = 0L, n_weights - 1L do weighted[*, *, w] *= weights[w]
   integrated = total(weighted, 3)
