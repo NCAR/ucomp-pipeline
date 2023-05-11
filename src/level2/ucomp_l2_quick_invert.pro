@@ -14,7 +14,9 @@
 ;
 ; :Params:
 ;   wave_region : in, required, type=string
+;     wave region, e.g., '1074'
 ;   average_filenames : in, required, type=string
+;     average filenames to create quick inverts for
 ;
 ; :Keywords:
 ;   run : in, required, type=object
@@ -27,19 +29,31 @@ pro ucomp_l2_quick_invert, wave_region, $
 
   for f = 0L, n_elements(average_filenames) - 1L do begin
     if (average_filenames[f] ne '') then begin
+      mg_log, 'creating quick invert for %s...', $
+              file_basename(average_filenames[f]), $
+              name=run.logger_name, /info
+
+      if (~file_test(average_filenames[f])) then begin
+        mg_log, '%s not found, skipping...', $
+                file_basename(average_filenames[f]), $
+                name=run.logger_name, /warn
+        continue
+      endif
+
       run.datetime = strmid(file_basename(average_filenames[f]), 0, 8)
 
       ucomp_read_l1_data, average_filenames[f], $
                           primary_header=primary_header, $
                           ext_data=ext_data, $
                           ext_headers=ext_headers, $
-                          n_extensions=n_extensions
+                          n_wavelengths=n_wavelengths, $
+                          /no_backgrounds
 
-      wavelengths = fltarr(n_extensions)
-      for e = 0L, n_extensions - 1L do begin
+      wavelengths = fltarr(n_wavelengths)
+      for e = 0L, n_wavelengths - 1L do begin
         wavelengths[e] = ucomp_getpar(ext_headers[e], 'WAVELNG')
       endfor
-      center_index = n_extensions / 2L
+      center_index = n_wavelengths / 2L
 
       center_intensity = reform(ext_data[*, *, 0, center_index - 1:center_index + 1])
 
@@ -62,8 +76,8 @@ pro ucomp_l2_quick_invert, wave_region, $
       l2_dirname = filepath('', $
                             subdir=[run.date, 'level2'], $
                             root=run->config('processing/basedir'))
-      ucomp_mkdir, l1_dirname, logger_name=run.logger_name
-      basename = string(file_basename(average_filenames[f], '.fts'), format='%s.quick_invert.fts'
+      ucomp_mkdir, l2_dirname, logger_name=run.logger_name
+      basename = string(file_basename(average_filenames[f], '.fts'), format='%s.quick_invert.fts')
       filename = filepath(basename, root=l2_dirname)
 
       ext_header = ext_headers[0]
@@ -77,13 +91,16 @@ pro ucomp_l2_quick_invert, wave_region, $
                   extname='Integrated intensity'
 
       ucomp_addpar, ext_header, 'UNITS', 'fraction'
-      fits_write, fcb, integrated_q / integrated_intensity, ext_header, $
+      integrated_q_i = integrated_q / integrated_intensity
+      fits_write, fcb, integrated_q_i, ext_header, $
                   extname='Integrated Q / I'
 
-      fits_write, fcb, integrated_u / integrated_intensity, ext_header, $
+      integrated_u_i = integrated_u / integrated_intensity
+      fits_write, fcb, integrated_u_i, ext_header, $
                   extname='Integrated U / I'
 
-      fits_write, fcb, integrated_linpol / integrated_intensity, ext_header, $
+      integrated_linpol_i = integrated_linpol / integrated_intensity
+      fits_write, fcb, integrated_linpol_i, ext_header, $
                   extname='Integrated L / I'
 
       ucomp_addpar, ext_header, 'UNITS', 'deg CCW from horizontal'
@@ -98,6 +115,20 @@ pro ucomp_l2_quick_invert, wave_region, $
       fits_write, fcb, line_width, ext_header, extname='Line width'
 
       fits_close, fcb
+
+      image_filename = string(file_basename(filename, '.fts'), format='%s.png')
+      ucomp_write_quick_invert_image, image_filename, $
+                                      integrated_intensity, $
+                                      integrated_q_i, $
+                                      integrated_u_i, $
+                                      integrated_linpol_i, $
+                                      azimuth, $
+                                      radial_azimuth, $
+                                      doppler_shift, $
+                                      line_width, $
+                                      reduce_factor=4L, $
+                                      wave_region=wave_region, $
+                                      run=run
     endif
   endfor
 end

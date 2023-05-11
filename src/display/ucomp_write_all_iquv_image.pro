@@ -191,8 +191,8 @@ l1_filename = filepath(l1_basename, $
                        subdir=[date, 'level1'], $
                        root=run->config('processing/basedir'))
 
-ucomp_read_l1_data, l1_filename, ext_data=data, n_extensions=n_extensions
-file.n_extensions = n_extensions
+ucomp_read_l1_data, l1_filename, ext_data=data, n_wavelengths=n_wavelengths
+file.n_extensions = n_wavelengths
 
 ucomp_write_all_iquv_image, file, data, run=run
 

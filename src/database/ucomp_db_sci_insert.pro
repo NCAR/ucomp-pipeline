@@ -91,7 +91,7 @@ pro ucomp_db_sci_insert, files, wave_region, $
                         primary_header=primary_header, $
                         ext_data=ext_data, $
                         ext_headers=ext_headers, $
-                        n_extensions=n_extensions
+                        n_wavelengths=n_wavelengths
 
     center_indices = file->get_center_wavelength_indices()
     if (n_elements(center_indices) eq 0L) then begin

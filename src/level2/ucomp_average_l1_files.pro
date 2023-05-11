@@ -143,10 +143,13 @@ pro ucomp_average_l1_files, files, output_filename, method=method, run=run
                           primary_header=primary_header, $
                           ext_data=ext_data, $
                           ext_headers=ext_headers, $
-                          n_extensions=n_extensions
+                          ; TODO: average backgrounds too
+                          ;background_data=background_data, $
+                          ;background_headers=background_headers, $
+                          n_wavelengths=n_wavelengths
 
-      file_wavelengths = strarr(n_extensions)
-      for e = 0L, n_extensions - 1L do begin
+      file_wavelengths = strarr(n_wavelengths)
+      for e = 0L, n_wavelengths - 1L do begin
         file_wavelengths[e] = string(ucomp_getpar(ext_headers[e], 'WAVELNG'), $
                                      format='(F0.2)')
       endfor

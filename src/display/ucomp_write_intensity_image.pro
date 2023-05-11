@@ -67,7 +67,7 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
 
   n_colors = 252
   ucomp_loadct, option_prefix + 'intensity', n_colors=n_colors
-  gamma_ct, display_gamma, /current
+  mg_gamma_ct, display_gamma, /current, n_colors=n_colors
 
   text_color = 252
   tvlct, 255, 255, 255, text_color
@@ -209,8 +209,8 @@ l1_filename = filepath(l1_basename, $
 ucomp_read_l1_data, l1_filename, $
                     primary_header=primary_header, $
                     ext_data=data, $
-                    n_extensions=n_extensions
-file.n_extensions = n_extensions
+                    n_wavelengths=n_wavelengths
+file.n_extensions = n_wavelengths
 
 ucomp_write_intensity_image, file, data, primary_header, /enhanced, run=run
 

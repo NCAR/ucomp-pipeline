@@ -36,7 +36,7 @@ pro ucomp_write_nrgf_image, file, primary_header, data, run=run
 
   n_colors = 253
   loadct, 0, /silent, ncolors=n_colors
-  gamma_ct, display_gamma, /current
+  mg_gamma_ct, display_gamma, /current, n_colors=n_colors
 
   occulter_color = 253
   tvlct, 0, 255, 255, occulter_color
@@ -98,8 +98,8 @@ l1_filename = filepath(l1_basename, $
 ucomp_read_l1_data, l1_filename, $
                     primary_header=primary_header, $
                     ext_data=data, $
-                    n_extensions=n_extensions
-file.n_extensions = n_extensions
+                    n_wavelengths=n_wavelengths
+file.n_extensions = n_wavelengths
 
 ucomp_write_nrgf_image, file, primary_header, data, run=run
 

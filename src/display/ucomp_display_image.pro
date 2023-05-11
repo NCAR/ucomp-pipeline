@@ -1,9 +1,10 @@
 ; docformat = 'rst'
 
-function ucomp_display_image, file, im, $
+function ucomp_display_image, wave_region, im, $
                               type=type, $
                               name=name, $
                               reduce_factor=reduce_factor, $
+                              datetime=datetime, $
                               run=run
   compile_opt strictarr
 
@@ -17,66 +18,63 @@ function ucomp_display_image, file, im, $
   case 1 of
     type eq 'intensity': begin
         colortable_name = 'intensity'
-        display_min   = run->line(file.wave_region, 'intensity_display_min')
-        display_max   = run->line(file.wave_region, 'intensity_display_max')
-        display_gamma = run->line(file.wave_region, 'intensity_display_gamma')
-        display_power = run->line(file.wave_region, 'intensity_display_power')
+        display_min   = run->line(wave_region, 'intensity_display_min')
+        display_max   = run->line(wave_region, 'intensity_display_max')
+        display_gamma = run->line(wave_region, 'intensity_display_gamma')
+        display_power = run->line(wave_region, 'intensity_display_power')
     end
     type eq 'enhanced_intensity': begin
         colortable_name = 'enhanced_intensity'
-        display_min   = run->line(file.wave_region, 'enhanced_intensity_display_min')
-        display_max   = run->line(file.wave_region, 'enhanced_intensity_display_max')
-        display_gamma = run->line(file.wave_region, 'enhanced_intensity_display_gamma')
-        display_power = run->line(file.wave_region, 'enhanced_intensity_display_power')
+        display_min   = run->line(wave_region, 'enhanced_intensity_display_min')
+        display_max   = run->line(wave_region, 'enhanced_intensity_display_max')
+        display_gamma = run->line(wave_region, 'enhanced_intensity_display_gamma')
+        display_power = run->line(wave_region, 'enhanced_intensity_display_power')
     end
     type eq 'quv': begin
         colortable_name = 'quv'
-        display_min   = run->line(file.wave_region, 'quv_display_min')
-        display_max   = run->line(file.wave_region, 'quv_display_max')
-        display_gamma = run->line(file.wave_region, 'quv_display_gamma')
-        display_power = run->line(file.wave_region, 'quv_display_power')
+        display_min   = run->line(wave_region, 'quv_display_min')
+        display_max   = run->line(wave_region, 'quv_display_max')
+        display_gamma = run->line(wave_region, 'quv_display_gamma')
+        display_power = run->line(wave_region, 'quv_display_power')
     end
     type eq 'linpol': begin
         ; TODO: use a log scale like Steve?
         colortable_name = 'linpol'
         _im = alog10(_im)
-        display_min   = run->line(file.wave_region, 'linpol_display_min')
-        display_max   = run->line(file.wave_region, 'linpol_display_max')
-        display_gamma = run->line(file.wave_region, 'linpol_display_gamma')
-        display_power = run->line(file.wave_region, 'linpol_display_power')
+        display_min   = run->line(wave_region, 'linpol_display_min')
+        display_max   = run->line(wave_region, 'linpol_display_max')
+        display_gamma = run->line(wave_region, 'linpol_display_gamma')
+        display_power = run->line(wave_region, 'linpol_display_power')
     end
     type eq 'azimuth': begin
         colortable_name = 'azimuth'
-        display_min   = run->line(file.wave_region, 'azimuth_display_min')
-        display_max   = run->line(file.wave_region, 'azimuth_display_max')
-        display_gamma = run->line(file.wave_region, 'azimuth_display_gamma')
-        display_power = run->line(file.wave_region, 'azimuth_display_power')
+        display_min   = run->line(wave_region, 'azimuth_display_min')
+        display_max   = run->line(wave_region, 'azimuth_display_max')
+        display_gamma = run->line(wave_region, 'azimuth_display_gamma')
+        display_power = run->line(wave_region, 'azimuth_display_power')
     end
     type eq 'radial_azimuth': begin
         colortable_name = 'radial_azimuth'
-        display_min   = run->line(file.wave_region, 'radial_azimuth_display_min')
-        display_max   = run->line(file.wave_region, 'radial_azimuth_display_max')
-        display_gamma = run->line(file.wave_region, 'radial_azimuth_display_gamma')
-        display_power = run->line(file.wave_region, 'radial_azimuth_display_power')
+        display_min   = run->line(wave_region, 'radial_azimuth_display_min')
+        display_max   = run->line(wave_region, 'radial_azimuth_display_max')
+        display_gamma = run->line(wave_region, 'radial_azimuth_display_gamma')
+        display_power = run->line(wave_region, 'radial_azimuth_display_power')
     end
     type eq 'doppler': begin
         colortable_name = 'doppler'
-        display_min   = run->line(file.wave_region, 'doppler_display_min')
-        display_max   = run->line(file.wave_region, 'doppler_display_max')
-        display_gamma = run->line(file.wave_region, 'doppler_display_gamma')
-        display_power = run->line(file.wave_region, 'doppler_display_power')
+        display_min   = run->line(wave_region, 'doppler_display_min')
+        display_max   = run->line(wave_region, 'doppler_display_max')
+        display_gamma = run->line(wave_region, 'doppler_display_gamma')
+        display_power = run->line(wave_region, 'doppler_display_power')
     end
     type eq 'line_width': begin
         colortable_name = 'line_width'
-        display_min   = run->line(file.wave_region, 'line_width_display_min')
-        display_max   = run->line(file.wave_region, 'line_width_display_max')
-        display_gamma = run->line(file.wave_region, 'line_width_display_gamma')
-        display_power = run->line(file.wave_region, 'line_width_display_power')
+        display_min   = run->line(wave_region, 'line_width_display_min')
+        display_max   = run->line(wave_region, 'line_width_display_max')
+        display_gamma = run->line(wave_region, 'line_width_display_gamma')
+        display_power = run->line(wave_region, 'line_width_display_power')
     end
   endcase
-
-  datetime = strmid(file_basename(file.raw_filename), 0, 15)
-  date_stamp = ucomp_dt2stamp(datetime)
 
   original_device = !d.name
   set_plot, 'Z'
@@ -88,7 +86,7 @@ function ucomp_display_image, file, im, $
 
   n_colors = 251
   ucomp_loadct, colortable_name, n_colors=n_colors
-  gamma_ct, display_gamma, /current
+  mg_gamma_ct, display_gamma, /current, n_colors=n_colors
 
   background_color = 251
   tvlct, 0, 0, 0, background_color
@@ -132,13 +130,18 @@ function ucomp_display_image, file, im, $
   tv, scaled_im
 
   xyouts, 15, dims[1] - 2.0 * line_height, /device, $
-          string(run->line(file.wave_region, 'ionization'), $
-                 file.wave_region, $
+          string(run->line(wave_region, 'ionization'), $
+                 wave_region, $
                  format='(%"MLSO UCoMP %s %s nm")'), $
           charsize=charsize, color=text_color
-  xyouts, 15, line_height, /device, alignment=0.0, $
-          string(date_stamp, format='(%"%s")'), $
-          charsize=detail_charsize, color=text_color
+
+  if (n_elements(datetime) gt 0L) then begin
+    date_stamp = ucomp_dt2stamp(datetime)
+    xyouts, 15, line_height, /device, alignment=0.0, $
+            string(date_stamp, format='(%"%s")'), $
+            charsize=detail_charsize, color=text_color
+  endif
+
   if (n_elements(name) gt 0L) then begin
     xyouts, 0.5, 0.55, /normal, alignment=0.5, $
             name, $

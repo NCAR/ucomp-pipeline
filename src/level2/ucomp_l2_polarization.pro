@@ -52,7 +52,7 @@ pro ucomp_l2_polarization, file, run=run
                       primary_header=primary_header, $
                       ext_data=ext_data, $
                       ext_headers=ext_headers, $
-                      n_extensions=n_extensions
+                      n_wavelengths=n_wavelengths
 
   ; find center wavelength
   center_indices = file->get_center_wavelength_indices()

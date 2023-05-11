@@ -537,7 +537,7 @@ pro ucomp_file::_update_to_level1
   ucomp_read_l1_data, l1_filename, $
                       primary_header=primary_header, $
                       ext_headers=ext_headers, $
-                      n_extensions=n_extensions
+                      n_wavelengths=n_wavelengths
 
   ; find alignment
   center = [ucomp_getpar(primary_header, 'CRPIX1'), ucomp_getpar(primary_header, 'CRPIX2')] - 1.0
@@ -548,9 +548,9 @@ pro ucomp_file::_update_to_level1
   self.tcam_geometry = geometry
 
   ; continuum subtraction
-  self.n_extensions = n_extensions
-  wavelengths = fltarr(n_extensions)
-  for e = 0L, n_extensions - 1L do begin
+  self.n_extensions = n_wavelengths
+  wavelengths = fltarr(n_wavelengths)
+  for e = 0L, n_wavelengths - 1L do begin
     wavelengths[e] = ucomp_getpar(ext_headers[e], 'WAVELNG')
   endfor
   *self.wavelengths = wavelengths
