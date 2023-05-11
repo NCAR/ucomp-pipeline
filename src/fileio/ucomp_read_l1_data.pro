@@ -73,7 +73,7 @@ pro ucomp_read_l1_data, filename, $
       if (msg ne '') then message, msg
 
       ; need to setup arrays the first time
-      if (e eq 1 && arg_present(background_data)) then begin
+      if ((e eq n_wavelengths + 1L) && arg_present(background_data)) then begin
         type = 4   ; always convert to float
         dims = size(data, /dimensions)
 
