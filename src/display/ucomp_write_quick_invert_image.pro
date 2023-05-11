@@ -87,5 +87,5 @@ pro ucomp_write_quick_invert_image, filename, $
   endif
 
   write_png, filename, display_image
-  mg_log, 'wrote %s', file_basename(filename), name=run.logger_name, /info
+  mg_log, 'wrote quick invert PNG', name=run.logger_name, /debug
 end

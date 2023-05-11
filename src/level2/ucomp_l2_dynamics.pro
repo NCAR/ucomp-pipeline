@@ -109,6 +109,7 @@ pro ucomp_l2_dynamics, file, run=run
   ; convert line width to velocity (km/s)
   line_width *= c / mean(wavelengths)
 
+  ; TODO: move this to ucomp_write_dynamics_image
   if (run->config('display/mask_l2')) then begin
     ; mask outputs
     dims = size(peak_intensity, /dimensions)
@@ -160,7 +161,7 @@ pro ucomp_l2_dynamics, file, run=run
   ; write dynamics file: YYYYMMDD.HHMMSS.ucomp.WWWW.dynamics.fts
   dynamics_filename = filepath(file.dynamics_basename, root=l2_dir)
 
-  mg_log, 'writing %s', file.dynamics_basename, name=run.logger_name, /info
+  mg_log, 'writing %s', file.dynamics_basename, name=run.logger_name, /debug
 
   ; promote header
   ucomp_addpar, primary_header, 'LEVEL', 'L2', comment='level 2 calibrated'

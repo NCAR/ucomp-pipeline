@@ -49,9 +49,9 @@ pro ucomp_write_intensity_mp4, wave_region, run=run, enhanced=enhanced
     goto, done
   endif
 
-  mg_log, 'creating %sintensity mp4 for %s nm from %d images', $
-          keyword_set(enhanced) ? 'enhanced ' : '', $
+  mg_log, 'creating %s nm %sintensity mp4 from %d images', $
           wave_region, $
+          keyword_set(enhanced) ? 'enhanced ' : '', $
           n_use, $
           name=run.logger_name, /info
 

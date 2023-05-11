@@ -123,8 +123,9 @@ pro ucomp_write_composite_image, filenames, run=run
   files_exist = file_test(filenames, /regular)
   if (total(files_exist, /integer) ne n_elements(filenames)) then begin
     missing_indices = where(files_exist eq 0, /null)
-    mg_log, 'missing file(s) for composite image channel(s): %s', $
+    mg_log, 'missing %s channel%s for composite image', $
             strjoin(strtrim(channels[missing_indices], 2)), $
+            n_elements(missing_indices) gt 2 ? 's' : '', $
             name=run.logger_name, /warn
     goto, done
   endif

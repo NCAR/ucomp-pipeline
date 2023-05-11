@@ -50,7 +50,7 @@ pro ucomp_write_dynamics_image, filename, $
   endif
 
   write_png, filename, display_image
-  mg_log, 'wrote %s', file_basename(filename), name=run.logger_name, /info
+  mg_log, 'wrote dynamics PNG', name=run.logger_name, /debug
 
   peak_intensity_image = ucomp_display_image(file.wave_region, peak_intensity, $
                                              type='intensity', $
@@ -63,7 +63,7 @@ pro ucomp_write_dynamics_image, filename, $
                                  format='(%"%s.ucomp.%s.l2.peakint.png")')
   peak_intensity_filename = filepath(peak_intensity_basename, root=l2_dir)
   write_png, peak_intensity_filename, peak_intensity_image
-  mg_log, 'wrote %s', peak_intensity_basename, name=run.logger_name, /info
+  mg_log, 'wrote peak intensity PNG', name=run.logger_name, /debug
 
   enhanced_peak_intensity_image = ucomp_display_image(file.wave_region, enhanced_intensity, $
                                                       type='enhanced_intensity', $
@@ -76,7 +76,7 @@ pro ucomp_write_dynamics_image, filename, $
                                  format='(%"%s.ucomp.%s.l2.enhanced-peakint.png")')
   enhanced_peak_intensity_filename = filepath(enhanced_peak_intensity_basename, root=l2_dir)
   write_png, enhanced_peak_intensity_filename, enhanced_peak_intensity_image
-  mg_log, 'wrote %s', enhanced_peak_intensity_basename, name=run.logger_name, /info
+  mg_log, 'wrote enhanced peak intensity PNG', name=run.logger_name, /debug
 
   doppler_image = ucomp_display_image(file.wave_region, doppler_shift, $
                                       type='doppler', $
@@ -89,7 +89,7 @@ pro ucomp_write_dynamics_image, filename, $
                                  format='(%"%s.ucomp.%s.l2.velocity.png")')
   doppler_filename = filepath(doppler_basename, root=l2_dir)
   write_png, doppler_filename, doppler_image
-  mg_log, 'wrote %s', doppler_basename, name=run.logger_name, /info
+  mg_log, 'wrote doppler PNG', name=run.logger_name, /debug
 
   line_width_image = ucomp_display_image(file.wave_region, line_width, $
                                          type='line_width', $
@@ -102,5 +102,5 @@ pro ucomp_write_dynamics_image, filename, $
                                  format='(%"%s.ucomp.%s.l2.linewidth.png")')
   line_width_filename = filepath(line_width_basename, root=l2_dir)
   write_png, line_width_filename, line_width_image
-  mg_log, 'wrote %s', line_width_basename, name=run.logger_name, /info
+  mg_log, 'wrote line width PNG', name=run.logger_name, /debug
 end
