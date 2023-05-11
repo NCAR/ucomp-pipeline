@@ -78,7 +78,7 @@ pro ucomp_write_polarization_image, filename, $
   endif
 
   write_png, filename, display_image
-  mg_log, 'wrote %s', file_basename(filename), name=run.logger_name, /info
+  mg_log, 'wrote polarization PNG', name=run.logger_name, /debug
 
   integrated_linpol_display = ucomp_display_image(file.wave_region, integrated_linpol, $
                                                   type='linpol', $
@@ -91,7 +91,7 @@ pro ucomp_write_polarization_image, filename, $
                                  format='(%"%s.ucomp.%s.l2.linpol.png")')
   linpol_filename = filepath(linpol_basename, root=l2_dir)
   write_png, linpol_filename, integrated_linpol_display
-  mg_log, 'wrote %s', linpol_basename, name=run.logger_name, /info
+  mg_log, 'wrote linear polarization PNG', name=run.logger_name, /debug
 
   radial_azimuth_display = ucomp_display_image(file.wave_region, radial_azimuth, $
                                                type='radial_azimuth', $
@@ -104,5 +104,5 @@ pro ucomp_write_polarization_image, filename, $
                                  format='(%"%s.ucomp.%s.l2.radazi.png")')
   radial_azimuth_filename = filepath(radial_azimuth_basename, root=l2_dir)
   write_png, radial_azimuth_filename, radial_azimuth_display
-  mg_log, 'wrote %s', radial_azimuth_basename, name=run.logger_name, /info
+  mg_log, 'wrote radial azimuth PNG', name=run.logger_name, /debug
 end

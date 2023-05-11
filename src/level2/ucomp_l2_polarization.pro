@@ -105,6 +105,7 @@ pro ucomp_l2_polarization, file, run=run
 
   azimuth = ucomp_azimuth(integrated_q, integrated_u, radial_azimuth=radial_azimuth)
 
+  ; TODO: move this to ucomp_write_polarization_image
   if (run->config('display/mask_l2')) then begin
     ; mask outputs
     dims = size(integrated_intensity, /dimensions)
@@ -143,7 +144,7 @@ pro ucomp_l2_polarization, file, run=run
   ; write polarization file: YYYYMMDD.HHMMSS.ucomp.WWWW.polarization.fts
   polarization_filename = filepath(file.polarization_basename, root=l2_dir)
 
-  mg_log, 'writing %s', file.polarization_basename, name=run.logger_name, /info
+  mg_log, 'writing %s', file.polarization_basename, name=run.logger_name, /debug
 
   ; promote header
   ucomp_addpar, primary_header, 'LEVEL', 'L2', comment='level 2 calibrated'
