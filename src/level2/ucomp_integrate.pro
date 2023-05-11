@@ -31,11 +31,12 @@ function ucomp_integrate, data, center_index=center_index, gaussian=gaussian
   if (keyword_set(gaussian)) then begin
     weights = [0.3, 0.7, 0.3]
   endif else begin
-    weights = fltarr(n_weights) / 2.0
+    weights = (fltarr(n_weights) + 1.0)/ 2.0
   endelse
-
+print, weights
+print, _center_index
   weighted = data[*, *, _center_index - n_weights / 2:_center_index + n_weights / 2]
-  for i = 0L, n - 1L weighted[*, *, i] *= weights[i]
+  for w = 0L, n_weights - 1L do weighted[*, *, w] *= weights[w]
   integrated = total(weighted, 3)
 
   return, integrated
