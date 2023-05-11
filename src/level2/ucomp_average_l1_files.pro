@@ -198,11 +198,11 @@ pro ucomp_average_l1_files, files, output_filename, method=method, run=run
       case _method of
         'mean': begin
             averaged_data[*, *, *, w] = mean(wavelength_data, dimension=4, /nan)
-            averaged_background[*, *, *, w] = mean(background_data, dimension=3, /nan)
+            averaged_background[*, *, w] = mean(background_data, dimension=3, /nan)
           end
         'median': begin
             averaged_data[*, *, *, w] = median(wavelength_data, dimension=4)
-            averaged_background[*, *, *, w] = median(background_data, dimension=3)
+            averaged_background[*, *, w] = median(background_data, dimension=3)
           end
         else:
       endcase

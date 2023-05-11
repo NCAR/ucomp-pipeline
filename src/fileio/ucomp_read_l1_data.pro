@@ -80,7 +80,7 @@ pro ucomp_read_l1_data, filename, $
         background_data = make_array(dimension=[dims, n_wavelengths], type=type)
       endif
 
-      if (arg_present(background_data)) then background_data[0, 0, 0, e - 1] = data
+      if (arg_present(background_data)) then background_data[0, 0, e - 1 - n_wavelengths] = data
       if (arg_present(background_headers)) then background_headers->add, header
     endfor
   endif
