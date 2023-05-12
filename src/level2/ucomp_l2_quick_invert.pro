@@ -116,6 +116,7 @@ pro ucomp_l2_quick_invert, wave_region, $
       fits_close, fcb
 
       occulter_radius = ucomp_getpar(primary_header, 'RADIUS')
+      post_angle = ucomp_getpar(primary_header, 'POST_ANG')
       p_angle = ucomp_getpar(primary_header, 'SOLAR_P0')
 
       image_filename = filepath(string(file_basename(basename, '.fts'), $
@@ -132,6 +133,7 @@ pro ucomp_l2_quick_invert, wave_region, $
                                       reduce_factor=4L, $
                                       wave_region=wave_region, $
                                       occulter_radius=occulter_radius, $
+                                      post_angle=post_angle, $
                                       p_angle=p_angle, $
                                       run=run
     endif

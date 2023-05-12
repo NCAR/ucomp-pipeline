@@ -11,6 +11,7 @@ pro ucomp_write_quick_invert_image, filename, $
                                     line_width, $
                                     reduce_factor=reduce_factor, $
                                     wave_region=wave_region, $
+                                    post_angle=post_angle, $
                                     p_angle=p_angle, $
                                     occulter_radius=occulter_radius, $
                                     run=run
@@ -24,14 +25,20 @@ pro ucomp_write_quick_invert_image, filename, $
 
   if (run->config('display/mask_l2')) then begin
     ; mask outputs
-    dims = size(integrated_intensity, /dimensions)
-    field_mask = ucomp_field_mask(dims[0], $
-                                  dims[1], $
-                                  run->epoch('field_radius'))
+    field_mask = ucomp_field_mask(nx, ny, run->epoch('field_radius'))
+    mask = field_mask
 
-    occulter_mask = ucomp_occulter_mask(dims[0], dims[1], occulter_radius)
-    offsensor_mask = ucomp_offsensor_mask(dims[0], dims[1], p_angle)
-    mask = field_mask and occulter_mask and offsensor_mask
+    occulter_mask = ucomp_occulter_mask(nx, ny], occulter_radius)
+    mask and= occulter_mask
+
+    if (n_elements(post_angle) gt 0L) then begin
+      post_mask = ucomp_post_mask(nx, ny, post_angle)
+      mask and= post_mask
+    endif
+
+    offsensor_mask = ucomp_offsensor_mask(nx, ny, p_angle)
+    mask and= offsensor_mask
+
     outside_mask_indices = where(mask eq 0, n_outside_mask)
 
     if (n_outside_mask gt 0L) then begin
