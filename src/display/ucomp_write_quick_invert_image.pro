@@ -94,7 +94,7 @@ pro ucomp_write_quick_invert_image, filename, $
                                            reduce_factor=reduce_factor, $
                                            run=run)
 
-  display_image = bytarr(3, 4 * dims[0], 2 * dims[1])
+  display_image = bytarr(3, 4 * nx, 2 * ny)
 
   display_image[0,      0, ny] = integrated_intensity_display
   display_image[0, 1 * nx, ny] = integrated_q_display
@@ -114,4 +114,57 @@ pro ucomp_write_quick_invert_image, filename, $
 
   write_png, filename, display_image
   mg_log, 'wrote quick invert PNG', name=run.logger_name, /debug
+end
+
+
+; main-level example program
+date = '20220310'
+wave_region = '1074'
+basename = '20220310.ucomp.1074.synoptic.mean.quick_invert.fts'
+mode = 'test'
+
+config_basename = 'ucomp.latest.cfg'
+config_filename = filepath(config_basename, $
+                           subdir=['..', '..', '..', 'ucomp-config'], $
+                           root=mg_src_root())
+
+run = ucomp_run(date, mode, config_filename)
+
+l2_dirname = filepath('', subdir=[date, 'level2'], root=run->config('processing/basedir'))
+
+filename = filepath(basename, root=l2_dirname)
+fits_open, filename, fcb
+fits_read, fcb, primary_data, primary_header, exten_no=0
+fits_read, fcb, integrated_intensity, exten_no=1
+fits_read, fcb, integrated_q_i, exten_no=2
+fits_read, fcb, integrated_u_i, exten_no=3
+fits_read, fcb, integrated_linpol_i, exten_no=4
+fits_read, fcb, azimuth, exten_no=5
+fits_read, fcb, radial_azimuth, exten_no=6
+fits_read, fcb, doppler_shift, exten_no=7
+fits_read, fcb, line_width, exten_no=8
+fits_close, fcb
+
+occulter_radius = ucomp_getpar(primary_header, 'RADIUS')
+p_angle = ucomp_getpar(primary_header, 'SOLAR_P0')
+
+image_filename = filepath(string(file_basename(basename, '.fts'), $
+                                 format='%s.png'), root=l2_dirname)
+
+ucomp_write_quick_invert_image, image_filename, $
+                                integrated_intensity, $
+                                integrated_q_i, $
+                                integrated_u_i, $
+                                integrated_linpol_i, $
+                                azimuth, $
+                                radial_azimuth, $
+                                doppler_shift, $
+                                line_width, $
+                                reduce_factor=4L, $
+                                wave_region=wave_region, $
+                                p_angle=p_angle, $
+                                occulter_radius=occulter_radius, $
+                                run=run
+obj_destroy, run
+
 end
