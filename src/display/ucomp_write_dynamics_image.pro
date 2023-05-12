@@ -11,27 +11,16 @@ pro ucomp_write_dynamics_image, filename, $
   compile_opt strictarr
 
   dims = size(peak_intensity, /dimensions)
-  if (n_elements(reduce_factor) gt 0L) then dims /= reduce_factor
-  nx = dims[0]
-  ny = dims[1]
 
   if (run->config('display/mask_l2')) then begin
     ; mask outputs
-    field_mask = ucomp_field_mask(nx, ny, run->epoch('field_radius'))
-    mask = field_mask
-
-    occulter_mask = ucomp_occulter_mask(nx, ny, file.occulter_radius)
-    mask and= occulter_mask
-
     rcam = file.rcam_geometry
     tcam = file.tcam_geometry
-
-    post_angle = (rcam.post_angle + tcam.post_angle) / 2.0
-    post_mask = ucomp_post_mask(dims[0], dims[1], post_angle)
-    mask and= post_mask
-
-    offsensor_mask = ucomp_offsensor_mask(dims[0], dims[1], file.p_angle)
-    mask and= offsensor_mask
+    mask = ucomp_mask(dims[0:1], $
+                      field_radius=run->epoch('field_radius'), $
+                      occulter_radius=file.occulter_radius, $
+                      post_angle=(rcam.post_angle + tcam.post_angle) / 2.0, $
+                      p_angle=file.p_angle)
 
     ; TODO: should we do this intensity mask? what should the threshold be?
     intensity_threshold_mask = peak_intensity gt 0.1
@@ -46,6 +35,10 @@ pro ucomp_write_dynamics_image, filename, $
       line_width[outside_mask_indices]         = !values.f_nan
     endif
   endif
+
+  if (n_elements(reduce_factor) gt 0L) then dims /= reduce_factor
+  nx = dims[0]
+  ny = dims[1]
 
   peak_intensity_display = ucomp_display_image(file.wave_region, peak_intensity, $
                                                type='intensity', $
