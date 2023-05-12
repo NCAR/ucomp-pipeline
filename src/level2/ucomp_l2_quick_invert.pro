@@ -72,31 +72,6 @@ pro ucomp_l2_quick_invert, wave_region, $
                                 line_width=line_width, $
                                 peak_intensity=peak_intensity
 
-      if (run->config('display/mask_l2')) then begin
-        ; mask outputs
-        dims = size(integrated_intensity, /dimensions)
-        field_mask = ucomp_field_mask(dims[0], $
-                                      dims[1], $
-                                      run->epoch('field_radius'))
-        occulter_radius = ucomp_getpar(primary_header, 'RADIUS')
-        p_angle = ucomp_getpar(primary_header, 'SOLAR_P0')
-        occulter_mask = ucomp_occulter_mask(dims[0], dims[1], occulter_radius)
-        offsensor_mask = ucomp_offsensor_mask(dims[0], dims[1], p_angle)
-        mask = field_mask and occulter_mask and offsensor_mask
-        outside_mask_indices = where(mask eq 0, n_outside_mask)
-
-        if (n_outside_mask gt 0L) then begin
-          integrated_intensity[outside_mask_indices] = !values.f_nan
-          integrated_q[outside_mask_indices]         = !values.f_nan
-          integrated_u[outside_mask_indices]         = !values.f_nan
-          integrated_linpol[outside_mask_indices]    = !values.f_nan
-          line_width[outside_mask_indices]           = !values.f_nan
-          doppler_shift[outside_mask_indices]        = !values.f_nan
-          azimuth[outside_mask_indices]              = !values.f_nan
-          radial_azimuth[outside_mask_indices]       = !values.f_nan
-        endif
-      endif
-
       l2_dirname = filepath('', $
                             subdir=[run.date, 'level2'], $
                             root=run->config('processing/basedir'))
@@ -140,8 +115,11 @@ pro ucomp_l2_quick_invert, wave_region, $
 
       fits_close, fcb
 
+      occulter_radius = ucomp_getpar(primary_header, 'RADIUS')
+      p_angle = ucomp_getpar(primary_header, 'SOLAR_P0')
+
       image_filename = filepath(string(file_basename(basename, '.fts'), $
-                                       format='%s.png'), root=l1_dir)
+                                       format='%s.png'), root=l2_dirname)
       ucomp_write_quick_invert_image, image_filename, $
                                       integrated_intensity, $
                                       integrated_q_i, $
@@ -153,6 +131,8 @@ pro ucomp_l2_quick_invert, wave_region, $
                                       line_width, $
                                       reduce_factor=4L, $
                                       wave_region=wave_region, $
+                                      radius=occulter_radius, $
+                                      p_angle=p_angle, $
                                       run=run
     endif
   endfor
