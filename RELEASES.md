@@ -321,3 +321,4 @@
   ability to remove bad frames
   creating quick invert FITS and PNGs
   adding backgrounds to average files
+  fixed post finding
