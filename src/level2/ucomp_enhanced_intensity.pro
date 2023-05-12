@@ -48,11 +48,10 @@ function ucomp_enhanced_intensity, intensity, $
 
   if (keyword_set(mask)) then begin
     dims = size(intensity, /dimensions)
-
-    occulter_mask = ucomp_occulter_mask(dims[0], dims[1], 1.01 * occulter_radius)
-    field_mask    = ucomp_field_mask(dims[0], dims[1], r_outer)
-    post_mask     = ucomp_post_mask(dims[0], dims[1], post_angle)
-
+    mask = ucomp_mask(dims[0:1], $
+                      field_radius=r_outer, $
+                      occulter_radius=1.01 * occulter_radius, $
+                      post_angle=post_angle)
     masked_intensity = intensity * (field_mask and occulter_mask and post_mask)
   endif else begin
     masked_intensity = intensity

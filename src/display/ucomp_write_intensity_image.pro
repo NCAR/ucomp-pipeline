@@ -109,16 +109,13 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
 
     dims = size(im, /dimensions)
     if (run->config('display/mask_l1')) then begin
-      field_mask = ucomp_field_mask(dims[0], $
-                                    dims[1], $
-                                    run->epoch('field_radius'))
-      occulter_mask = ucomp_occulter_mask(dims[0], dims[1], file.occulter_radius)
       rcam = file.rcam_geometry
       tcam = file.tcam_geometry
-      post_angle = (rcam.post_angle + tcam.post_angle) / 2.0
-      post_mask = ucomp_post_mask(dims[0], dims[1], post_angle)
-      offsensor_mask = ucomp_offsensor_mask(dims[0], dims[1], file.p_angle)
-      mask = field_mask and occulter_mask and post_mask and offsensor_mask
+      mask = ucomp_mask(dims[0:1], $
+                        field_radius=run->epoch('field_radius'), $
+                        occulter_radius=file.occulter_radius, $
+                        post_angle=(rcam.post_angle + tcam.post_angle) / 2.0, $
+                        p_angle=file.p_angle)
     endif else begin
       mask = bytarr(dims[0], dims[1]) + 1B
     endelse

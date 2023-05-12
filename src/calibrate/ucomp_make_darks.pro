@@ -153,7 +153,7 @@ pro ucomp_make_darks, run=run
 
     dims = size(dark_image, /dimensions)
     r_outer = run->epoch('field_radius', datetime=datetime)
-    field_mask = ucomp_field_mask(dims[0], dims[1], r_outer)
+    field_mask = ucomp_field_mask(dims[0:1], r_outer)
     field_mask_indices = where(field_mask, /null)
     rcam_image = dark_image[*, *, 0]
     tcam_image = dark_image[*, *, 1]

@@ -151,7 +151,7 @@ pro ucomp_make_flats, wave_region, run=run
         rcam_image = flat_image[*, *, 0]
         tcam_image = flat_image[*, *, 1]
         r_outer = run->epoch('field_radius', datetime=datetime)
-        field_mask = ucomp_field_mask(dims[0], dims[1], r_outer)
+        field_mask = ucomp_field_mask(dims[0:1], r_outer)
         field_mask_indices = where(field_mask, /null)
 
         if (averaged_onband[e] eq 0) then begin

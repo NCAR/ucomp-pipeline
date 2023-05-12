@@ -15,6 +15,8 @@ function ucomp_write_composite_image_channel, filename, $
 
   wave_region = ucomp_getpar(primary_header, 'FILTER')
   occulter_radius = ucomp_getpar(primary_header, 'RADIUS')
+  post_angle = ucomp_getpar(primary_header, 'POST_ANG')
+  p_angle = ucomp_getpar(primary_header, 'SOLAR_P0')
 
   display_min   = run->line(wave_region, 'intensity_display_min')
   display_max   = run->line(wave_region, 'intensity_display_max')
@@ -24,17 +26,17 @@ function ucomp_write_composite_image_channel, filename, $
   dims = size(data, /dimensions)
   intensity = reform(data[*, *, 0])
 
-  field_mask = ucomp_field_mask(dims[0], $
-                                dims[1], $
-                                run->epoch('field_radius'))
+  field_mask = ucomp_field_mask(dims[0:1], run->epoch('field_radius'))
   scaled_intensity = bytscl((intensity * field_mask)^display_power, $
                             min=display_min, $
                             max=display_max, $
                             /nan)
 
-  occulter_mask = ucomp_occulter_mask(dims[0], dims[1], occulter_radius)
-  post_mask = ucomp_post_mask(dims[0], dims[1], 0.0)
-  scaled_intensity *= occulter_mask * post_mask
+  mask = ucomp_mask(dims[0:1], $
+                    occulter_radius=occulter_radius, $
+                    post_angle=post_angle, $
+                    p_angle=p_angle)
+  scaled_intensity *= mask
 
   return, scaled_intensity
 end

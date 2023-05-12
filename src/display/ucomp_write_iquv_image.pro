@@ -111,8 +111,7 @@ pro ucomp_write_iquv_image, data, l1_basename, wave_region, wavelengths, $
                  dims[0] / reduce_dims_factor, $
                  dims[1] / reduce_dims_factor)
       if (run->config('display/mask_l1')) then begin
-        field_mask = ucomp_field_mask(dims[0] / reduce_dims_factor, $
-                                      dims[1] / reduce_dims_factor, $
+        field_mask = ucomp_field_mask(dims[0:1] / reduce_dims_factor, $
                                       run->epoch('field_radius') / reduce_dims_factor)
       endif else begin
         field_mask = bytarr(dims[0] / reduce_dims_factor, dims[1] / reduce_dims_factor) + 1B

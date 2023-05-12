@@ -18,26 +18,14 @@ pro ucomp_write_quick_invert_image, filename, $
   compile_opt strictarr
 
   dims = size(integrated_intensity, /dimensions)
-  if (n_elements(reduce_factor) gt 0L) then dims /= reduce_factor
-
-  nx = dims[0]
-  ny = dims[1]
 
   if (run->config('display/mask_l2')) then begin
     ; mask outputs
-    field_mask = ucomp_field_mask(nx, ny, run->epoch('field_radius'))
-    mask = field_mask
-
-    occulter_mask = ucomp_occulter_mask(nx, ny], occulter_radius)
-    mask and= occulter_mask
-
-    if (n_elements(post_angle) gt 0L) then begin
-      post_mask = ucomp_post_mask(nx, ny, post_angle)
-      mask and= post_mask
-    endif
-
-    offsensor_mask = ucomp_offsensor_mask(nx, ny, p_angle)
-    mask and= offsensor_mask
+    mask = ucomp_mask(dims[0:1], $
+                      field_radius=run->epoch('field_radius'), $
+                      occulter_radius=occulter_radius, $
+                      post_angle=post_angle, $
+                      p_angle=file.p_angle)
 
     outside_mask_indices = where(mask eq 0, n_outside_mask)
 
@@ -52,6 +40,10 @@ pro ucomp_write_quick_invert_image, filename, $
       radial_azimuth[outside_mask_indices]       = !values.f_nan
     endif
   endif
+
+  if (n_elements(reduce_factor) gt 0L) then dims /= reduce_factor
+  nx = dims[0]
+  ny = dims[1]
 
   integrated_intensity_display = ucomp_display_image(wave_region, integrated_intensity, $
                                                      type='intensity', $

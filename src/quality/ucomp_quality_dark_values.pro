@@ -20,7 +20,7 @@ function ucomp_quality_dark_values, file, $
   dims = size(ext_data, /dimensions)
 
   r_outer = run->epoch('field_radius')
-  field_mask = ucomp_field_mask(dims[0], dims[1], r_outer)
+  field_mask = ucomp_field_mask(dims[0:1], r_outer)
   field_mask_indices = where(field_mask, /null)
 
   rcam_test_data = ext_data[*, *, *, 0, *]
