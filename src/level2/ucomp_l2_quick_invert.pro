@@ -131,7 +131,7 @@ pro ucomp_l2_quick_invert, wave_region, $
                                       line_width, $
                                       reduce_factor=4L, $
                                       wave_region=wave_region, $
-                                      radius=occulter_radius, $
+                                      occulter_radius=occulter_radius, $
                                       p_angle=p_angle, $
                                       run=run
     endif
