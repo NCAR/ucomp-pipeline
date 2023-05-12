@@ -12,7 +12,7 @@ pro ucomp_write_quick_invert_image, filename, $
                                     reduce_factor=reduce_factor, $
                                     wave_region=wave_region, $
                                     p_angle=p_angle, $
-                                    radius=radius, $
+                                    occulter_radius=occulter_radius, $
                                     run=run
   compile_opt strictarr
 
