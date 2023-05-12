@@ -105,35 +105,6 @@ pro ucomp_l2_polarization, file, run=run
 
   azimuth = ucomp_azimuth(integrated_q, integrated_u, radial_azimuth=radial_azimuth)
 
-  ; TODO: move this to ucomp_write_polarization_image
-  if (run->config('display/mask_l2')) then begin
-    ; mask outputs
-    dims = size(integrated_intensity, /dimensions)
-    field_mask = ucomp_field_mask(dims[0], $
-                                  dims[1], $
-                                  run->epoch('field_radius'))
-    occulter_mask = ucomp_occulter_mask(dims[0], dims[1], file.occulter_radius)
-    rcam = file.rcam_geometry
-    tcam = file.tcam_geometry
-    post_angle = (rcam.post_angle + tcam.post_angle) / 2.0
-    post_mask = ucomp_post_mask(dims[0], dims[1], post_angle)
-    offsensor_mask = ucomp_offsensor_mask(dims[0], dims[1], file.p_angle)
-    ; TODO: should we do this intensity mask? what should the threshold be?
-    intensity_threshold_mask = peak_intensity gt 0.1
-    mask = field_mask and occulter_mask and post_mask and offsensor_mask and intensity_threshold_mask
-    outside_mask_indices = where(mask eq 0, n_outside_mask)
-
-    if (n_outside_mask gt 0L) then begin
-      integrated_intensity[outside_mask_indices]  = !values.f_nan
-      integrated_q[outside_mask_indices]          = !values.f_nan
-      integrated_u[outside_mask_indices]          = !values.f_nan
-      integrated_linpol[outside_mask_indices]     = !values.f_nan
-      enhanced_intensity[outside_mask_indices] = !values.f_nan
-      azimuth[outside_mask_indices]            = !values.f_nan
-      radial_azimuth[outside_mask_indices]     = !values.f_nan
-    endif
-  endif
-
   l2_dir = filepath('', $
                     subdir=[run.date, 'level2'], $
                     root=run->config('processing/basedir'))

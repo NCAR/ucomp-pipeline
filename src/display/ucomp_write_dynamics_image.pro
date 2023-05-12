@@ -15,32 +15,69 @@ pro ucomp_write_dynamics_image, filename, $
   nx = dims[0]
   ny = dims[1]
 
-  display_image = bytarr(3, 2 * dims[0], 2 * dims[1])
+  if (run->config('display/mask_l2')) then begin
+    ; mask outputs
+    field_mask = ucomp_field_mask(nx, ny, run->epoch('field_radius'))
+    mask = field_mask
 
-  display_image[0, 0, ny] = ucomp_display_image(file.wave_region, peak_intensity, $
-                                                type='intensity', $
-                                                name='Peak intensity', $
-                                                reduce_factor=reduce_factor, $
-                                                datetime=strmid(file_basename(file.raw_filename), 0, 15), $
-                                                run=run)
-  display_image[0, 0, 0] = ucomp_display_image(file.wave_region, enhanced_intensity, $
-                                               type='enhanced_intensity', $
-                                               name='Enhanced peak intensity', $
+    occulter_mask = ucomp_occulter_mask(nx, ny, file.occulter_radius)
+    mask and= occulter_mask
+
+    rcam = file.rcam_geometry
+    tcam = file.tcam_geometry
+
+    post_angle = (rcam.post_angle + tcam.post_angle) / 2.0
+    post_mask = ucomp_post_mask(dims[0], dims[1], post_angle)
+    mask and= post_mask
+
+    offsensor_mask = ucomp_offsensor_mask(dims[0], dims[1], file.p_angle)
+    mask and= offsensor_mask
+
+    ; TODO: should we do this intensity mask? what should the threshold be?
+    intensity_threshold_mask = peak_intensity gt 0.1
+    mask and= intensity_threshold_mask
+
+    outside_mask_indices = where(mask eq 0, n_outside_mask)
+
+    if (n_outside_mask gt 0L) then begin
+      peak_intensity[outside_mask_indices]     = !values.f_nan
+      enhanced_intensity[outside_mask_indices] = !values.f_nan
+      doppler_shift[outside_mask_indices]      = !values.f_nan
+      line_width[outside_mask_indices]         = !values.f_nan
+    endif
+  endif
+
+  peak_intensity_display = ucomp_display_image(file.wave_region, peak_intensity, $
+                                               type='intensity', $
+                                               name='Peak intensity', $
                                                reduce_factor=reduce_factor, $
                                                datetime=strmid(file_basename(file.raw_filename), 0, 15), $
                                                run=run)
-  display_image[0, nx, ny] = ucomp_display_image(file.wave_region, doppler_shift, $
-                                                 type='doppler', $
-                                                 name='Doppler velocity', $
-                                                 reduce_factor=reduce_factor, $
-                                                 datetime=strmid(file_basename(file.raw_filename), 0, 15), $
-                                                 run=run)
-  display_image[0, nx, 0] = ucomp_display_image(file.wave_region, line_width, $
-                                                type='line_width', $
-                                                name='Line width', $
-                                                reduce_factor=reduce_factor, $
-                                                datetime=strmid(file_basename(file.raw_filename), 0, 15), $
-                                                run=run)
+  enhanced_peak_intensity_display = ucomp_display_image(file.wave_region, enhanced_intensity, $
+                                                        type='enhanced_intensity', $
+                                                        name='Enhanced peak intensity', $
+                                                        reduce_factor=reduce_factor, $
+                                                        datetime=strmid(file_basename(file.raw_filename), 0, 15), $
+                                                        run=run)
+  doppler_display = ucomp_display_image(file.wave_region, doppler_shift, $
+                                        type='doppler', $
+                                        name='Doppler velocity', $
+                                        reduce_factor=reduce_factor, $
+                                        datetime=strmid(file_basename(file.raw_filename), 0, 15), $
+                                        run=run)
+  line_width_display = ucomp_display_image(file.wave_region, line_width, $
+                                           type='line_width', $
+                                           name='Line width', $
+                                           reduce_factor=reduce_factor, $
+                                           datetime=strmid(file_basename(file.raw_filename), 0, 15), $
+                                           run=run)
+
+  display_image = bytarr(3, 2 * nx, 2 * ny)
+
+  display_image[0,  0, ny] = peak_intensity_display
+  display_image[0, nx, ny] = doppler_display
+  display_image[0,  0,  0] = enhanced_peak_intensity_display
+  display_image[0, nx,  0] = line_width_display
 
   l2_dir = filepath('', $
                     subdir=[run.date, 'level2'], $
