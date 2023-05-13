@@ -130,7 +130,7 @@ pro ucomp_l2_quick_invert, wave_region, $
                                       radial_azimuth, $
                                       doppler_shift, $
                                       line_width, $
-                                      reduce_factor=4L, $
+                                      reduce_factor=2L, $
                                       wave_region=wave_region, $
                                       occulter_radius=occulter_radius, $
                                       post_angle=post_angle, $

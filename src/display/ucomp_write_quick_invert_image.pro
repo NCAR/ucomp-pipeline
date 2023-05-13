@@ -83,7 +83,7 @@ pro ucomp_write_quick_invert_image, filename, $
 
   doppler_shift_display = ucomp_display_image(wave_region, doppler_shift, $
                                               type='doppler', $
-                                              name='Radial azimuth', $
+                                              name='Doppler velocity', $
                                               reduce_factor=reduce_factor, $
                                               run=run)
 
