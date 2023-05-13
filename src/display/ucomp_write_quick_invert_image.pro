@@ -25,7 +25,7 @@ pro ucomp_write_quick_invert_image, filename, $
                       field_radius=run->epoch('field_radius'), $
                       occulter_radius=occulter_radius, $
                       post_angle=post_angle, $
-                      p_angle=file.p_angle)
+                      p_angle=p_angle)
 
     outside_mask_indices = where(mask eq 0, n_outside_mask)
 

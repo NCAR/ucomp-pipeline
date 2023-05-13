@@ -52,7 +52,7 @@ function ucomp_enhanced_intensity, intensity, $
                       field_radius=r_outer, $
                       occulter_radius=1.01 * occulter_radius, $
                       post_angle=post_angle)
-    masked_intensity = intensity * (field_mask and occulter_mask and post_mask)
+    masked_intensity = intensity * mask
   endif else begin
     masked_intensity = intensity
   endelse
