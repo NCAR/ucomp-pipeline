@@ -208,7 +208,7 @@ pro ucomp_average_l1_files, files, output_filename, method=method, run=run
       endcase
     endif else begin
       averaged_data[*, *, *, w] = wavelength_data
-      averaged_background_data[*, *, w] = background_data
+      averaged_background[*, *, w] = background_data
     endelse
   endfor
 
