@@ -50,19 +50,19 @@ pro ucomp_write_dynamics_image, filename, $
                                                         type='enhanced_intensity', $
                                                         name='Enhanced peak intensity', $
                                                         reduce_factor=reduce_factor, $
-                                                        datetime=strmid(file_basename(file.raw_filename), 0, 15), $
+                                                        /no_wave_region_annotation, $
                                                         run=run)
   doppler_display = ucomp_display_image(file.wave_region, doppler_shift, $
                                         type='doppler', $
                                         name='Doppler velocity', $
                                         reduce_factor=reduce_factor, $
-                                        datetime=strmid(file_basename(file.raw_filename), 0, 15), $
+                                        /no_wave_region_annotation, $
                                         run=run)
   line_width_display = ucomp_display_image(file.wave_region, line_width, $
                                            type='line_width', $
                                            name='Line width', $
                                            reduce_factor=reduce_factor, $
-                                           datetime=strmid(file_basename(file.raw_filename), 0, 15), $
+                                           /no_wave_region_annotation, $
                                            run=run)
 
   display_image = bytarr(3, 2 * nx, 2 * ny)

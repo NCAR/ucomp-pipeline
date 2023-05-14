@@ -1,10 +1,11 @@
 ; docformat = 'rst'
 
 function ucomp_display_image, wave_region, im, $
-                              type=type, $
+                              type=type, normalized=normalized, $
                               name=name, $
                               reduce_factor=reduce_factor, $
                               datetime=datetime, $
+                              no_wave_region_annotation=no_wave_region_annotation, $
                               run=run
   compile_opt strictarr
 
@@ -36,6 +37,13 @@ function ucomp_display_image, wave_region, im, $
         display_max   = run->line(wave_region, 'quv_display_max')
         display_gamma = run->line(wave_region, 'quv_display_gamma')
         display_power = run->line(wave_region, 'quv_display_power')
+    end
+    type eq 'quv_i': begin
+        colortable_name = 'quv'
+        display_min   = run->line(wave_region, 'quv_i_display_min')
+        display_max   = run->line(wave_region, 'quv_i_display_max')
+        display_gamma = run->line(wave_region, 'quv_i_display_gamma')
+        display_power = run->line(wave_region, 'quv_i_display_power')
     end
     type eq 'linpol': begin
         ; TODO: use a log scale like Steve?
@@ -129,16 +137,22 @@ function ucomp_display_image, wave_region, im, $
 
   tv, scaled_im
 
-  xyouts, 15, dims[1] - 2.0 * line_height, /device, $
-          string(run->line(wave_region, 'ionization'), $
-                 wave_region, $
-                 format='(%"MLSO UCoMP %s %s nm")'), $
-          charsize=charsize, color=text_color
+  if (~keyword_set(no_wave_region_annotation)) then begin
+    xyouts, 15, dims[1] - 2.0 * line_height, /device, $
+            string(run->line(wave_region, 'ionization'), $
+                   wave_region, $
+                   format='(%"MLSO UCoMP %s %s nm")'), $
+            charsize=charsize, color=text_color
+  endif
 
   if (n_elements(datetime) gt 0L) then begin
-    date_stamp = ucomp_dt2stamp(datetime)
+    case strlen(datetime) of
+      8: date_stamp = strjoin(ucomp_decompose_date(datetime), '-')
+      15: date_stamp = ucomp_dt2stamp(datetime)
+      else: date_stamp = datetime
+    endcase
     xyouts, 15, line_height, /device, alignment=0.0, $
-            string(date_stamp, format='(%"%s")'), $
+            date_stamp, $
             charsize=detail_charsize, color=text_color
   endif
 
