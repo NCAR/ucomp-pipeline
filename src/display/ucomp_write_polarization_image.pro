@@ -56,37 +56,37 @@ pro ucomp_write_polarization_image, filename, $
                                                    type='enhanced_intensity', $
                                                    name='Enhanced intensity', $
                                                    reduce_factor=reduce_factor, $
-                                                   datetime=strmid(file_basename(file.raw_filename), 0, 15), $
+                                                   /no_wave_region_annotation, $
                                                    run=run)
   integrated_q_display = ucomp_display_image(file.wave_region, integrated_q, $
                                              type='quv', $
                                              name='Integrated Q', $
                                              reduce_factor=reduce_factor, $
-                                             datetime=strmid(file_basename(file.raw_filename), 0, 15), $
+                                             /no_wave_region_annotation, $
                                              run=run)
   integrated_u_display = ucomp_display_image(file.wave_region, integrated_u, $
                                              type='quv', $
                                              name='Integrated U', $
                                              reduce_factor=reduce_factor, $
-                                             datetime=strmid(file_basename(file.raw_filename), 0, 15), $
+                                             /no_wave_region_annotation, $
                                              run=run)
   integrated_linpol_display = ucomp_display_image(file.wave_region, integrated_linpol, $
                                                   type='linpol', $
                                                   name='Integrated log(L)', $
                                                   reduce_factor=reduce_factor, $
-                                                  datetime=strmid(file_basename(file.raw_filename), 0, 15), $
+                                                  /no_wave_region_annotation, $
                                                   run=run)
   azimuth_display = ucomp_display_image(file.wave_region, azimuth, $
                                         type='azimuth', $
                                         name='Azimuth', $
                                         reduce_factor=reduce_factor, $
-                                        datetime=strmid(file_basename(file.raw_filename), 0, 15), $
+                                        /no_wave_region_annotation, $
                                         run=run)
   radial_azimuth_display = ucomp_display_image(file.wave_region, radial_azimuth, $
                                                type='radial_azimuth', $
                                                name='Radial azimuth', $
                                                reduce_factor=reduce_factor, $
-                                               datetime=strmid(file_basename(file.raw_filename), 0, 15), $
+                                               /no_wave_region_annotation, $
                                                run=run)
 
   display_image = bytarr(3, 3 * nx, 3 * ny)

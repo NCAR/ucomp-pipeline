@@ -47,51 +47,59 @@ pro ucomp_write_quick_invert_image, filename, $
 
   integrated_intensity_display = ucomp_display_image(wave_region, integrated_intensity, $
                                                      type='intensity', $
-                                                     name='Integrated intensity', $
+                                                     name='Integrated I', $
                                                      reduce_factor=reduce_factor, $
+                                                     datetime=run.date, $
                                                      run=run)
 
   integrated_q_display = ucomp_display_image(wave_region, integrated_q_i, $
-                                             type='quv', $
-                                             name='Integrated Q /I', $
+                                             type='quv', /normalized, $
+                                             name='Integrated Q / I', $
                                              reduce_factor=reduce_factor, $
+                                             /no_wave_region_annotation, $
                                              run=run)
 
   integrated_u_display = ucomp_display_image(wave_region, integrated_u_i, $
-                                             type='quv', $
+                                             type='quv', /normalized, $
                                              name='Integrated U / I', $
                                              reduce_factor=reduce_factor, $
+                                             /no_wave_region_annotation, $
                                              run=run)
 
   integrated_linpol_display = ucomp_display_image(wave_region, integrated_linpol_i, $
                                                   type='linpol', $
                                                   name='Integrated L / I', $
                                                   reduce_factor=reduce_factor, $
+                                                  /no_wave_region_annotation, $
                                                   run=run)
-
-  azimuth_display = ucomp_display_image(wave_region, azimuth, $
-                                        type='azimuth', $
-                                        name='Azimuth', $
-                                        reduce_factor=reduce_factor, $
-                                        run=run)
-
-  radial_azimuth_display = ucomp_display_image(wave_region, radial_azimuth, $
-                                               type='radial_azimuth', $
-                                               name='Radial azimuth', $
-                                               reduce_factor=reduce_factor, $
-                                               run=run)
 
   doppler_shift_display = ucomp_display_image(wave_region, doppler_shift, $
                                               type='doppler', $
-                                              name='Doppler velocity', $
+                                              name='LOS velocity', $
                                               reduce_factor=reduce_factor, $
+                                              /no_wave_region_annotation, $
                                               run=run)
 
   line_width_display = ucomp_display_image(wave_region, line_width, $
                                            type='line_width', $
                                            name='Line width', $
                                            reduce_factor=reduce_factor, $
+                                           /no_wave_region_annotation, $
                                            run=run)
+
+  azimuth_display = ucomp_display_image(wave_region, azimuth, $
+                                        type='azimuth', $
+                                        name='Azimuth', $
+                                        reduce_factor=reduce_factor, $
+                                        /no_wave_region_annotation, $
+                                        run=run)
+
+  radial_azimuth_display = ucomp_display_image(wave_region, radial_azimuth, $
+                                               type='radial_azimuth', $
+                                               name='Radial azimuth', $
+                                               reduce_factor=reduce_factor, $
+                                               /no_wave_region_annotation, $
+                                               run=run)
 
   display_image = bytarr(3, 4 * nx, 2 * ny)
 
@@ -99,10 +107,10 @@ pro ucomp_write_quick_invert_image, filename, $
   display_image[0, 1 * nx, ny] = integrated_q_display
   display_image[0, 2 * nx, ny] = integrated_u_display
   display_image[0, 3 * nx, ny] = integrated_linpol_display
-  display_image[0,      0,  0] = azimuth_display
-  display_image[0, 1 * nx,  0] = radial_azimuth_display
-  display_image[0, 2 * nx,  0] = doppler_shift_display
-  display_image[0, 3 * nx,  0] = line_width_display
+  display_image[0,      0,  0] = doppler_shift_display
+  display_image[0, 1 * nx,  0] = line_width_display
+  display_image[0, 2 * nx,  0] = azimuth_display
+  display_image[0, 3 * nx,  0] = radial_azimuth_display
 
   l2_dir = filepath('', $
                     subdir=[run.date, 'level2'], $
