@@ -54,8 +54,6 @@ pro ucomp_l2_quick_invert, wave_region, $
       endfor
       center_index = n_wavelengths / 2L
 
-      center_intensity = reform(ext_data[*, *, 0, center_index - 1:center_index + 1])
-
       integrated_intensity = ucomp_integrate(reform(ext_data[*, *, 0, *]), center_index=center_index)
       integrated_q         = ucomp_integrate(reform(ext_data[*, *, 1, *]), center_index=center_index)
       integrated_u         = ucomp_integrate(reform(ext_data[*, *, 2, *]), center_index=center_index)
@@ -63,14 +61,46 @@ pro ucomp_l2_quick_invert, wave_region, $
 
       azimuth = ucomp_azimuth(integrated_q, integrated_u, radial_azimuth=radial_azimuth)
 
+      intensity_blue   = reform(ext_data[*, *, 0, center_index - 1])
+      intensity_center = reform(ext_data[*, *, 0, center_index])
+      intensity_red    = reform(ext_data[*, *, 0, center_index + 1])
       d_lambda = wavelengths[center_index] - wavelengths[center_index - 1]
-      ucomp_analytic_gauss_fit, center_intensity[*, *, 0], $
-                                center_intensity[*, *, 1], $
-                                center_intensity[*, *, 2], $
+
+      ucomp_analytic_gauss_fit, intensity_blue, $
+                                intensity_center, $
+                                intensity_red, $
                                 d_lambda, $
                                 doppler_shift=doppler_shift, $
                                 line_width=line_width, $
                                 peak_intensity=peak_intensity
+
+      integrated_q_i = integrated_q / integrated_intensity
+      integrated_u_i = integrated_u / integrated_intensity
+      integrated_linpol_i = integrated_linpol / integrated_intensity
+
+      c = 299792.458D
+
+      ; convert Doppler shift to velocity [km/s]
+      doppler_shift *= c / mean(wavelengths)
+
+      ; convert line width to velocity (km/s)
+      line_width *= c / mean(wavelengths)
+
+      ; mask data on various thresholds
+      good_indices = where(integrated_intensity gt 0.25 $
+                             and integrated_intensity lt 120.0, $
+                             complement=bad_indices, /null)
+
+      integrated_intensity[bad_indices] = !values.f_nan
+      integrated_q_i[bad_indices]       = !values.f_nan
+      integrated_u_i[bad_indices]       = !values.f_nan
+      integrated_linpol_i[bad_indices]  = !values.f_nan
+      azimuth[bad_indices]              = !values.f_nan
+      radial_azimuth[bad_indices]       = !values.f_nan
+      doppler_shift[bad_indices]        = !values.f_nan
+      line_width[bad_indices]           = !values.f_nan
+
+      doppler_shift -= median(doppler_shift) - 1.0
 
       l2_dirname = filepath('', $
                             subdir=[run.date, 'level2'], $
@@ -90,15 +120,13 @@ pro ucomp_l2_quick_invert, wave_region, $
                   extname='Integrated intensity'
 
       ucomp_addpar, ext_header, 'UNITS', 'fraction'
-      integrated_q_i = integrated_q / integrated_intensity
+
       fits_write, fcb, integrated_q_i, ext_header, $
                   extname='Integrated Q / I'
 
-      integrated_u_i = integrated_u / integrated_intensity
       fits_write, fcb, integrated_u_i, ext_header, $
                   extname='Integrated U / I'
 
-      integrated_linpol_i = integrated_linpol / integrated_intensity
       fits_write, fcb, integrated_linpol_i, ext_header, $
                   extname='Integrated L / I'
 
@@ -138,4 +166,31 @@ pro ucomp_l2_quick_invert, wave_region, $
                                       run=run
     endif
   endfor
+end
+
+
+; main-level example program
+
+date = '20220310'
+wave_region = '1074'
+
+config_basename = 'ucomp.latest.cfg'
+config_filename = filepath(config_basename, $
+                           subdir=['..', '..', '..', 'ucomp-config'], $
+                           root=mg_src_root())
+run = ucomp_run(date, 'test', config_filename)
+
+l2_dirname = filepath('', $
+                      subdir=[run.date, 'level2'], $
+                      root=run->config('processing/basedir'))
+
+mean_basename = '20220310.ucomp.1074.synoptic.mean.fts'
+mean_filename = filepath(mean_basename, root=l2_dirname)
+
+ucomp_l2_quick_invert, wave_region, $
+                       average_filenames=[mean_filename], $
+                       run=run
+
+obj_destroy, run
+
 end

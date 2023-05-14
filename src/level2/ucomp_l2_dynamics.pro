@@ -78,9 +78,9 @@ pro ucomp_l2_dynamics, file, run=run
   wavelengths = file.wavelengths
 
   ; calculate intensity
-  intensity_blue = reform(ext_data[*, *, 0, center_index - 1])
+  intensity_blue   = reform(ext_data[*, *, 0, center_index - 1])
   intensity_center = reform(ext_data[*, *, 0, center_index])
-  intensity_red = reform(ext_data[*, *, 0, center_index + 1])
+  intensity_red    = reform(ext_data[*, *, 0, center_index + 1])
   d_lambda = wavelengths[center_index] - wavelengths[center_index - 1]
 
   ucomp_analytic_gauss_fit, intensity_blue, $
