@@ -68,7 +68,7 @@ pro ucomp_write_quick_invert_image, filename, $
 
   integrated_linpol_display = ucomp_display_image(wave_region, integrated_linpol_i, $
                                                   type='linpol', $
-                                                  name='Integrated L / I', $
+                                                  name='Integrated log(L / I)', $
                                                   reduce_factor=reduce_factor, $
                                                   /no_wave_region_annotation, $
                                                   run=run)
