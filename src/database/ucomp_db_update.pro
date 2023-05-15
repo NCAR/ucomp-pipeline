@@ -80,6 +80,8 @@ pro ucomp_db_update, run=run
                           obsday_index, sw_index, db, $
                           logger_name=run.logger_name
 
+    ucomp_db_l2_average_insert, wave_regions[w], obsday_index, sw_index, db, run=run
+
     ucomp_rolling_flat_plots, wave_regions[w], db, run=run
 
     ucomp_rolling_background_plot, wave_regions[w], db, run=run
