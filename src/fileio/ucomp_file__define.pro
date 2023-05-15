@@ -674,14 +674,8 @@ pro ucomp_file::_inventory
   self.wind_speed     = ucomp_getpar(primary_header, 'WNDSPD', /float, found=found)
   self.wind_direction = ucomp_getpar(primary_header, 'WNDDIR', /float, found=found)
 
-  ; allocate inventory variables
-  if (self.n_extensions gt 0L) then begin
-    *self.wavelengths = fltarr(self.n_extensions)
-    *self.onband_indices = lonarr(self.n_extensions)
-  endif
-
   if (n_elements(extension_header) gt 0L) then begin
-    self.numsum = ucomp_getpar(extension_header, 'NUMSUM', found=found)
+    self.numsum  = ucomp_getpar(extension_header, 'NUMSUM', found=found)
     self.exptime = ucomp_getpar(extension_header, 'EXPTIME', /float, found=found)
     self.o1focus = ucomp_getpar(extension_header, 'O1FOCUS', /float, found=found)
   endif
@@ -689,19 +683,25 @@ pro ucomp_file::_inventory
   ; inventory extensions for things that vary by extension
   moving_parts = 0B
 
+  ; allocate inventory variables
   if (self.n_extensions gt 0L) then begin
-    *self.sgs_dimv  = fltarr(self.n_extensions)
-    *self.sgs_dims  = fltarr(self.n_extensions)
-    *self.sgs_scint = fltarr(self.n_extensions)
-    *self.sgs_sumv  = fltarr(self.n_extensions)
-    *self.sgs_sums  = fltarr(self.n_extensions)
-    *self.sgs_loop  = fltarr(self.n_extensions)
-    *self.sgs_rav   = fltarr(self.n_extensions)
-    *self.sgs_ras   = fltarr(self.n_extensions)
-    *self.sgs_razr  = fltarr(self.n_extensions)
-    *self.sgs_decv  = fltarr(self.n_extensions)
-    *self.sgs_decs  = fltarr(self.n_extensions)
-    *self.sgs_deczr = fltarr(self.n_extensions)
+    *self.wavelengths    = fltarr(self.n_extensions)
+    *self.onband_indices = lonarr(self.n_extensions)
+
+    *self.v_lcvr3        = fltarr(self.n_extensions)
+
+    *self.sgs_dimv       = fltarr(self.n_extensions)
+    *self.sgs_dims       = fltarr(self.n_extensions)
+    *self.sgs_scint      = fltarr(self.n_extensions)
+    *self.sgs_sumv       = fltarr(self.n_extensions)
+    *self.sgs_sums       = fltarr(self.n_extensions)
+    *self.sgs_loop       = fltarr(self.n_extensions)
+    *self.sgs_rav        = fltarr(self.n_extensions)
+    *self.sgs_ras        = fltarr(self.n_extensions)
+    *self.sgs_razr       = fltarr(self.n_extensions)
+    *self.sgs_decv       = fltarr(self.n_extensions)
+    *self.sgs_decs       = fltarr(self.n_extensions)
+    *self.sgs_deczr      = fltarr(self.n_extensions)
   endif
 
   for e = 1L, self.n_extensions do begin
@@ -711,6 +711,8 @@ pro ucomp_file::_inventory
 
     if (e eq 1) then self.date_begin = ucomp_getpar(extension_header, 'DATE-BEG')
     if (e eq self.n_extensions) then self.date_end = ucomp_getpar(extension_header, 'DATE-BEG')
+
+    (*self.v_lcvr3)[e - 1] = ucomp_getpar(extension_header, 'V_LCVR3', /float, found=found)
 
     (*self.wavelengths)[e - 1] = ucomp_getpar(extension_header, 'WAVELNG', /float, found=found)
     (*self.onband_indices)[e - 1] = ucomp_getpar(extension_header, 'ONBAND', found=found) eq 'tcam'
@@ -746,6 +748,7 @@ pro ucomp_file::cleanup
   compile_opt strictarr
 
   ptr_free, self.wavelengths, self.onband_indices
+  ptr_free, self.v_lcvr3
   ptr_free, self.sgs_dimv, self.sgs_dims, self.sgs_scint, self.sgs_sumv, $
             self.sgs_sums, self.sgs_loop, self.sgs_rav, self.sgs_ras, $
             self.sgs_razr, self.sgs_decv, self.sgs_decs, self.sgs_deczr
@@ -783,6 +786,8 @@ function ucomp_file::init, raw_filename, run=run
   self.tcam_median_linecenter = !values.f_nan
 
   ; allocate inventory variables for extensions
+  self.v_lcvr3 = ptr_new(/allocate_heap)
+
   self.wavelengths = ptr_new(/allocate_heap)
   self.onband_indices = ptr_new(/allocate_heap)
 
@@ -909,6 +914,8 @@ pro ucomp_file__define
            t_c0pcb                : 0.0, $
            t_c1arr                : 0.0, $
            t_c1pcb                : 0.0, $
+
+           v_lcvr3                : ptr_new(), $
 
            wavelengths            : ptr_new(), $
            onband_indices         : ptr_new(), $
