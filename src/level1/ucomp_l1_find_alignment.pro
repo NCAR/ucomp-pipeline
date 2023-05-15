@@ -215,6 +215,10 @@ pro ucomp_l1_find_alignment, file, $
   ucomp_addpar, primary_header, 'SID_TIME', sidereal_time, $
                 comment='[day fraction] GMST sidereal time', $
                 format='(F0.5)', after=after
+  ucomp_addpar, primary_header, 'CARR_ROT', $
+                long(file.carrington_rotation), $
+                comment='Carrington Rotation Number', $
+                after=after
   ucomp_addpar, primary_header, 'JUL_DATE', file.julian_date, $
                 comment='[days] Julian date', $
                 format='F24.16', after=after
@@ -234,10 +238,6 @@ pro ucomp_l1_find_alignment, file, $
                 semidiameter / run->line(file.wave_region, 'plate_scale'), $
                 comment='[pixel] solar radius', $
                 format='(f9.2)', after=after
-  ucomp_addpar, primary_header, 'CARR_ROT', $
-                long(file.carrington_rotation), $
-                comment='Carrington Rotation Number', $
-                after=after
 
   ucomp_addpar, primary_header, 'COMMENT', 'Ephemeris info', $
                 before='SOLAR_P0', /title
