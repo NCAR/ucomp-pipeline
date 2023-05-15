@@ -322,3 +322,6 @@
   creating quick invert FITS and PNGs
   adding backgrounds to average files
   fixed post finding
+  adding mean/median and quick invert files to ucomp_file database table
+  can specify dates in options/dates in config file for eod, rt, cal, clearday,
+    regression, and archive sub-commands

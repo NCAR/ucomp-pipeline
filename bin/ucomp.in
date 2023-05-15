@@ -96,6 +96,20 @@ def get_config(flags, error):
     return(config)
 
 
+def get_dates(flags, error):
+    ucomp_config = get_config(flags, error)
+    try:
+        dates_expr = ucomp_config.get("options", "dates")
+        dates = parse_date_expr(dates_expr)
+    except configparser.NoSectionError:
+        error("no options section in config file")
+        dates = []
+    except configparser.NoOptionError:
+        error("missing dates option in config file")
+        dates = []
+    return(dates)
+
+
 def get_remote_location(flags, error):
     ucomp_config = get_config(flags, error)
 
@@ -974,15 +988,19 @@ def regression(args):
 
 
 def launch_processes(args, routine):
+    # command line dates override options/dates in config file, error if no
+    # dates in either
     if len(args.dates) == 0:
-        args.parser.error("too few arguments")
+        dates = get_dates(args.flags, args.parser.error)
+        if len(dates) == 0:
+            args.parser.error("no date arguments and none in config file")
+    else:
+        dates = parse_date_expr(",".join(args.dates))
 
-    dates = parse_date_expr(",".join(args.dates))
+    config_filename = get_config_filename(args.flags)
 
     if len(dates) != 1 and routine == "ucomp_realtime_wrapper":
         args.parser.error("realtime mode is only valid for a single date")
-
-    config_filename = get_config_filename(args.flags)
 
     for d in dates:
         cmd = [os.path.join(PIPELINE_DIR,
@@ -1257,15 +1275,15 @@ if __name__ == "__main__":
     clearday_parser = subparsers.add_parser("clearday",
         help="clear database and processing for date(s)")
 
-    eod_parser.add_argument("dates", type=str, nargs="*", help=date_help,
+    eod_parser.add_argument("dates", type=str, help=date_help, nargs="*",
         metavar="date-expr")
-    rt_parser.add_argument("dates", type=str, nargs="*", help=date_help,
+    rt_parser.add_argument("dates", type=str, help=date_help, nargs="*",
         metavar="date-expr")
-    cal_parser.add_argument("dates", type=str, nargs="*", help=date_help,
+    cal_parser.add_argument("dates", type=str, help=date_help, nargs="*",
         metavar="date-expr")
-    reprocess_parser.add_argument("dates", type=str, nargs="*", help=date_help,
+    reprocess_parser.add_argument("dates", type=str, help=date_help, nargs="*",
         metavar="date-expr")
-    clearday_parser.add_argument("dates", type=str, nargs="*", help=date_help,
+    clearday_parser.add_argument("dates", type=str, help=date_help, nargs="*",
         metavar="date-expr")
 
     eod_parser.add_argument("-f", "--flags", type=str, help=flags_help,
