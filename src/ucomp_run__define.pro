@@ -592,12 +592,12 @@ function ucomp_run::get_dmatrix_coefficients, wave_region, datetime=datetime, in
 
     ; defines dmx_coeffs variable
     restore, filename=demodulation_coeffs_filename
-    (*self.dmatrix_coefficients)[wave_region] = dmx_coeffs
+    (self.dmatrix_coefficients)[wave_region] = dmx_coeffs
     *self.demod_info = info
   endif
 
   info = *self.demod_info
-  return, (*self.dmatrix_coefficients)[wave_region]
+  return, (self.dmatrix_coefficients)[wave_region]
 end
 
 

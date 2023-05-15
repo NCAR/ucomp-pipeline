@@ -234,6 +234,10 @@ pro ucomp_l1_find_alignment, file, $
                 semidiameter / run->line(file.wave_region, 'plate_scale'), $
                 comment='[pixel] solar radius', $
                 format='(f9.2)', after=after
+  ucomp_addpar, primary_header, 'CARR_ROT', $
+                long(file.carrington_rotation), $
+                comment='Carrington Rotation Number', $
+                after=after
 
   ucomp_addpar, primary_header, 'COMMENT', 'Ephemeris info', $
                 before='SOLAR_P0', /title
