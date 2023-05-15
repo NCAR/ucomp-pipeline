@@ -30,13 +30,12 @@ pro ucomp_l1_demodulation, file, $
 
   datetime = strmid(file_basename(file.raw_filename), 0, 15)
 
-  wave_region_index = where(file.wave_region eq run.all_wave_regions, n_found)
-  mg_log, 'wave region index: %d', wave_region_index[0], name=run.logger_name, /debug
   mg_log, 'TU_MOD temperature: %0.3f C', file.tu_mod, name=run.logger_name, /debug
-  dmatrix_coefficients = run->get_dmatrix_coefficients(datetime=datetime, info=demod_info)
+  dmatrix_coefficients = run->get_dmatrix_coefficients(file.wave_region, $
+                                                       datetime=datetime, $
+                                                       info=demod_info)
   dmatrix = ucomp_get_dmatrix(dmatrix_coefficients, $
-                              file.tu_mod, $
-                              wave_region_index[0])
+                              file.tu_mod)
 
   demodulation_method = run->config('options/demodulation_method')
   case strlowcase(demodulation_method) of
@@ -70,10 +69,10 @@ pro ucomp_l1_demodulation, file, $
                           format='unknown demodulation method ''%s''')
   endcase
 
-  demod_basename = run->epoch('demodulation_coeffs_basename', datetime=datetime)
-  ucomp_addpar, primary_header, 'DEMOD_C', demod_basename, $
+  demod_version = run->epoch('demodulation_coeffs_version', datetime=datetime)
+  ucomp_addpar, primary_header, 'DEMODV', demod_version, $
                 comment=string(ucomp_idlsave2dateobs(demod_info.date), $
-                               format='demod coeffs created %s'), $
+                               format='demod coeffs version, created %s'), $
                 after='LIN_CRCT'
 
 
