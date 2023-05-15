@@ -42,7 +42,7 @@ pro ucomp_plot_temp_vs_voltage, filename, wave_region, run=run
   t_lcvr3 = fltarr(n_files)
   v_lcvr3 = fltarr(n_files)
 
-  center_wavelength = run->lines(wave_region, 'center_wavelength')
+  center_wavelength = run->line(wave_region, 'center_wavelength')
   for f = 0L, n_files - 1L do begin
     t_lcvr3[f] = files[f].t_lcvr3
 
