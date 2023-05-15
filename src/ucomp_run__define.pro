@@ -565,16 +565,23 @@ end
 ; :Returns:
 ;    `fltarr(4, 4, 9, 2)`
 ;
+; :Params:
+;   wave_region : in, required, type=string
+;     wave region
+;
 ; :Keywords:
 ;   datetime : in, required, type=string
 ;     date/time in the format "YYYYMMDD_HHMMSS"
+;   info : out, optional, type=structure
+;     IDL savefile info structure
 ;-
-function ucomp_run::get_dmatrix_coefficients, datetime=datetime, info=info
+function ucomp_run::get_dmatrix_coefficients, wave_region, datetime=datetime, info=info
   compile_opt strictarr
 
-  if (n_elements(*self.dmatrix_coefficients) eq 0L) then begin
-    demodulation_coeffs_basename = self->epoch('demodulation_coeffs_basename', $
-                                               datetime=datetime)
+  if (~self.dmatrix_coefficients->hasKey(wave_region)) then begin
+    version = self->epoch('demodulation_coeffs_version', datetime=datetime)
+    demodulation_coeffs_basename = string(wave_region, version, $
+                                          format='ucomp.%s.dmx-temp-coeffs.%d.sav')
     demodulation_coeffs_filename = filepath(demodulation_coeffs_basename, $
                                             subdir='demodulation', $
                                             root=self.resource_root)
@@ -583,13 +590,14 @@ function ucomp_run::get_dmatrix_coefficients, datetime=datetime, info=info
     info = f->contents()
     obj_destroy, f
 
-    ; defines dmx_coefs variable
+    ; defines dmx_coeffs variable
     restore, filename=demodulation_coeffs_filename
-    *self.dmatrix_coefficients = dmx_coefs
+    (*self.dmatrix_coefficients)[wave_region] = dmx_coeffs
     *self.demod_info = info
-  endif else info = *self.demod_info
+  endif
 
-  return, *self.dmatrix_coefficients
+  info = *self.demod_info
+  return, (*self.dmatrix_coefficients)[wave_region]
 end
 
 
@@ -832,7 +840,6 @@ pro ucomp_run::getProperty, date=date, $
                             resource_root=resource_root, $
                             calibration=calibration, $
                             badframes=badframes, $
-                            dmatrix_coefficients=dmatrix_coefficients, $
                             t0=t0
   compile_opt strictarr
   on_error, 2
@@ -863,10 +870,6 @@ pro ucomp_run::getProperty, date=date, $
   if (arg_present(calibration)) then calibration = self.calibration
 
   if (arg_present(badframes)) then badframes = *self.badframes
-
-  if (arg_present(dmatrix_coefficients)) then begin
-    dmatrix_coefficients = *self.dmatrix_coefficients
-  endif
 
   if (arg_present(t0)) then t0 = self.t0
 end
@@ -1003,7 +1006,8 @@ pro ucomp_run::cleanup
             self.adjacent_pixels[3]
 
   ptr_free, self.distortion_coefficients
-  ptr_free, self.dmatrix_coefficients, self.demod_info
+  obj_destroy, self.dmatrix_coefficients
+  ptr_free, self.demod_info
 
   ; performance monitoring API
   obj_destroy, [self.calls, self.times]
@@ -1115,7 +1119,7 @@ function ucomp_run::init, date, mode, config_filename, $
     self.adjacent_pixels[i] = ptr_new(/allocate_heap)
   endfor
 
-  self.dmatrix_coefficients    = ptr_new(/allocate_heap)
+  self.dmatrix_coefficients    = hash()
   self.demod_info              = ptr_new(/allocate_heap)
   self.distortion_coefficients = ptr_new(/allocate_heap)
 
@@ -1161,7 +1165,7 @@ pro ucomp_run__define
            hot_pixels              : ptrarr(2, 2), $   ; gain, camera
            adjacent_pixels         : ptrarr(2, 2), $   ; gain, camera
 
-           dmatrix_coefficients    : ptr_new(), $
+           dmatrix_coefficients    : obj_new(), $
            demod_info              : ptr_new(), $
 
            distortion_basename     : '', $
