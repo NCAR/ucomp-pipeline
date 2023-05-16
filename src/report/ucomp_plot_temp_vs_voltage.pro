@@ -50,16 +50,22 @@ pro ucomp_plot_temp_vs_voltage, filename, wave_region, run=run
     v_lcvr3[f] = mean((files[f].v_lcvr3)[center_indices])
   endfor
 
-  mg_range_plot, t_lcvr3, v_lcvr3, $
-                 title=string(center_wavelength, pdate, $
-                              format='%0.2f nm temperature vs. voltage for LCVR3 for %s'), $
-                 xtitle='LCVR3 temperature [C]', ytitle='LCVR3 voltage [V]', $
-                 xstyle=1, xrange=temperature_range, $
-                 /ynozero, ystyle=1, yrange=voltage_range, $
-                 background=255, color=0, charsize=charsize, $
-                 clip_thick=2.0, psym=6, symsize=symsize
+  if (total(finite(t_lcvr3), /integer) gt 0L $
+        || total(finite(v_lcvr3), /integer) gt 0L) then begin
+    mg_range_plot, t_lcvr3, v_lcvr3, $
+                   title=string(center_wavelength, pdate, $
+                                format='%0.2f nm temperature vs. voltage for LCVR3 for %s'), $
+                   xtitle='LCVR3 temperature [C]', ytitle='LCVR3 voltage [V]', $
+                   xstyle=1, xrange=temperature_range, $
+                   /ynozero, ystyle=1, yrange=voltage_range, $
+                   background=255, color=0, charsize=charsize, $
+                   clip_thick=2.0, psym=6, symsize=symsize
 
-  write_gif, filename, tvrd()
+    write_gif, filename, tvrd()
+  endif else begin
+    mg_log, 'no finite temperature or voltage values, skipping', $
+            name=run.logger_name, /info
+  endelse
 
   done:
   !p.multi = 0
