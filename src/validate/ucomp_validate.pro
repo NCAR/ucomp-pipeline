@@ -1,9 +1,15 @@
 ; docformat = 'rst'
 
 ;+
+; Validate all the files of a given level.
+;
 ; :Params:
 ;   level_name : in, required, type=string
 ;     name of the level to validate, i.e, "l0", "l1", or "l2"
+;
+; :Keywords:
+;   run : in, required, type=object
+;     `ucomp_run` object
 ;-
 pro ucomp_validate, level_name, run=run
   compile_opt strictarr

@@ -1,7 +1,24 @@
-; docformat = 'run'
+; docformat = 'rst'
 
 ;+
 ; Check median dark values by camera are in a nominal range.
+;
+; :Returns:
+;   `0UL` if `file` passed this test, `1UL` if not
+;
+; :Params:
+;   file : in, required, type=object
+;     `ucomp_file` object
+;   primary_header : in, required, type=strarr
+;     primary header for the given file
+;   ext_data : in, required, type="fltarr(nx, ny, n_polstates, n_cameras, n_exts)"
+;     extension data
+;   ext_headers : in, required, type=list
+;     list of extension headers, each a `strarr`
+;
+; :Keywords:
+;   run : in, required, type=object
+;     `ucomp_run` object
 ;-
 function ucomp_quality_dark_values, file, $
                                     primary_header, $

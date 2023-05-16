@@ -21,7 +21,7 @@
 ;     then the AFTER value is updated to use for the next add
 ;   format : in, optional, type=string
 ;     IDL format code to use for value
-;   header : in, optional, type=boolean
+;   title : in, optional, type=boolean
 ;     set to indicate that value is a comment header name
 ;-
 pro ucomp_addpar, header, name, value, $

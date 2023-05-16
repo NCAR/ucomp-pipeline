@@ -4,6 +4,8 @@
 ; Average similar flat extensions in a flat file.
 ;
 ; :Params:
+;   primary_header : in, required, type=strarr
+;     primary header for the flat file
 ;   ext_data : in, out, required, type="fltarr(nx, ny, n_pol, n_cameras, n)"
 ;     data to average where n is the number of extensions on input, and the
 ;     number of unique types of flats in the file on exit
