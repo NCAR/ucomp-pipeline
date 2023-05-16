@@ -15,25 +15,32 @@ function ucomp_gbu_conditions, wave_region, run=run
   ; reordered easily
   gbu_conditions = [{mask: 0UL, $
                      checker: 'ucomp_gbu_sgsloop', $
-                     description: 'spar guide control loop is not locked'}, $
+                     description: 'spar guide control loop is below threshold (%(sgsloop_min)0.2f)', $
+                     values: 'Esgsloop_min'}, $
                     {mask: 0UL, $
                      checker: 'ucomp_gbu_sgsdimv', $
-                     description: 'spar guider intensity below threshold'}, $
+                     description: 'spar guider intensity below threshold (0.9 * %(i0)0.3f * exp(-0.05 * secz))', $
+                     values: 'Ei0'}, $
                     {mask: 0UL, $
                      checker: 'ucomp_gbu_max_background', $
-                     description: 'median background is above threshold'}, $
+                     description: 'median background is above threshold (%(gbu_max_background)0.1f)', $
+                     values: 'Wgbu_max_background'}, $
                     {mask: 0UL, $
                      checker: 'ucomp_gbu_min_background', $
-                     description: 'median background is below threshold'}, $
+                     description: 'median background is below threshold (%(gbu_min_background)0.1f)', $
+                     values: 'Wgbu_min_background'}, $
                     {mask: 0UL, $
                      checker: 'ucomp_gbu_vcrosstalk', $
-                     description: 'spurious Stokes V signal is above threshold'}, $
+                     description: 'spurious Stokes V signal is above threshold (%(gbu_max_v_metric)0.1f)', $
+                     values: 'Wgbu_max_v_metric'}, $
                     {mask: 0UL, $
                      checker: 'ucomp_gbu_fit_chisq', $
-                     description: 'the chi-squared of the occulter fit is above threshold'}, $
+                     description: 'the chi-squared of the occulter fit is above threshold (%(gbu_max_fit_chisq)0.1f)', $
+                     values: 'Wgbu_max_fit_chisq'}, $
                     {mask: 0UL, $
                      checker: 'ucomp_gbu_median_diff', $
-                     description: 'the difference of the image with the median is above threshold'}]
+                     description: 'the difference of the image with the median is above threshold (%(gbu_max_stddev)0.1f)', $
+                     values: 'Wgbu_max_stddev'}]
   gbu_conditions.mask = 2UL ^ (ulindgen(n_elements(gbu_conditions)))
 
   return, gbu_conditions
