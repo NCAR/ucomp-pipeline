@@ -488,11 +488,11 @@ end
 ;     set to a named variable to retrieve whether `option_name` was found, if
 ;     `FOUND` is present, errors will not be generated
 ;-
-function ucomp_run::epoch, option_name, datetime=datetime, found=found
+function ucomp_run::epoch, option_name, datetime=datetime, found=found, changed=changed
   compile_opt strictarr
   on_error, 2
 
-  return, self.epochs->get(option_name, datetime=datetime, found=found)
+  return, self.epochs->get(option_name, datetime=datetime, found=found, changed=changed)
 end
 
 
@@ -672,13 +672,14 @@ end
 ;     set to a named variable to retrieve whether `option_name` was found, if
 ;     `FOUND` is present, errors will not be generated
 ;-
-function ucomp_run::line, wave_region, option_name, datetime=datetime, found=found
+function ucomp_run::line, wave_region, option_name, datetime=datetime, $
+                          found=found, changed=changed
   compile_opt strictarr
 
   self->getProperty, logger_name=logger_name
 
   options = self.lines[wave_region]
-  return, options->get(option_name, datetime=datetime, found=found)
+  return, options->get(option_name, datetime=datetime, found=found, changed=changed)
 end
 
 
