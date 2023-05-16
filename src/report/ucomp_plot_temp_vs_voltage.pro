@@ -46,7 +46,7 @@ pro ucomp_plot_temp_vs_voltage, filename, wave_region, run=run
   for f = 0L, n_files - 1L do begin
     t_lcvr3[f] = files[f].t_lcvr3
 
-    center_indices = where((file.wavelengths - center_wavelength) lt 0.001, /null)
+    center_indices = where((files[f].wavelengths - center_wavelength) lt 0.001, /null)
     v_lcvr3[f] = mean((files[f].v_lcvr3)[center_indices])
   endfor
 

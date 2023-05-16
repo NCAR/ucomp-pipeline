@@ -260,6 +260,7 @@ pro ucomp_file::getProperty, run=run, $
                              t_c1pcb=t_c1pcb, $
                              numsum=numsum, $
                              n_repeats=n_repeats, $
+                             v_lcvr3=v_lcvr3, $
                              sgs_dimv=sgs_dimv, $
                              sgs_dims=sgs_dims, $
                              sgs_scint=sgs_scint, $
@@ -489,6 +490,8 @@ pro ucomp_file::getProperty, run=run, $
 
   if (arg_present(numsum)) then numsum = self.numsum
   if (arg_present(n_repeats)) then n_repeats = self.n_repeats
+
+  if (arg_present(v_lcvr3)) then v_lcvr3 = *self.v_lcvr3
 
   if (arg_present(sgs_dimv)) then sgs_dimv = *self.sgs_dimv
   if (arg_present(sgs_dims)) then sgs_dims = *self.sgs_dims
