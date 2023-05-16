@@ -6,7 +6,15 @@
 ; :Returns:
 ;   array of structures defined::
 ;
-;     {mask: 0UL, checker: '', descriptions: ''}
+;     {mask: 0UL, checker: '', description: '', values: ''}
+;
+; :Params:
+;   wave_region : in, required, type=string
+;     wave region to retrieve the GBU conditions for
+;
+; :Keywords:
+;   run : in, required, type=object
+;     `ucomp_run` object
 ;-
 function ucomp_gbu_conditions, wave_region, run=run
    compile_opt strictarr

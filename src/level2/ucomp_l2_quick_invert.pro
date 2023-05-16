@@ -15,10 +15,10 @@
 ; :Params:
 ;   wave_region : in, required, type=string
 ;     wave region, e.g., '1074'
-;   average_filenames : in, required, type=string
-;     average filenames to create quick inverts for
 ;
 ; :Keywords:
+;   average_filenames : in, required, type=string
+;     average filenames to create quick inverts for
 ;   run : in, required, type=object
 ;     UCoMP run object
 ;-

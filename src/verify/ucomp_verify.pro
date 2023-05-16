@@ -32,6 +32,13 @@ end
 
 ;+
 ; Make sure the files are for the correct date.
+;
+; :Keywords:
+;   run : in, required, type=object
+;     `ucomp_run` object
+;   status : out, optional, type=long
+;     set to a named variable to retrieve the status of check, `0L` for no
+;     errors, `1L` for errors
 ;-
 pro ucomp_verify_check_files, run=run, status=status
   compile_opt strictarr
@@ -72,6 +79,13 @@ end
 
 ;+
 ; Check the permissions on the files.
+;
+; :Keywords:
+;   run : in, required, type=object
+;     `ucomp_run` object
+;   status : out, optional, type=long
+;     set to a named variable to retrieve the status of check, `0L` for no
+;     errors, `1L` for errors
 ;-
 pro ucomp_verify_check_permissions, run=run, status=status
   compile_opt strictarr
@@ -99,6 +113,22 @@ pro ucomp_verify_check_permissions, run=run, status=status
 end
 
 
+;+
+; Find the missing files.
+;
+; :Returns:
+;   missing files listed in machine log, but not in the raw files as a `strarr`
+;
+; :Params:
+;   raw_files : in, required, type=strarr
+;     array of raw filenames in the raw directory
+;   machine_log_filename : in, required, type=string
+;     filename of machine log
+;
+; :Keywords:
+;   extra_files : out, optional, type=strarr
+;     files in `raw_files`, but not listed in machine log
+;-
 function ucomp_verify_missing, raw_files, machine_log_filename, $
                                extra_files=extra_files
   compile_opt strictarr
@@ -132,6 +162,31 @@ function ucomp_verify_missing, raw_files, machine_log_filename, $
 end
 
 
+;+
+; Check collection server for files that are missing locally.
+;
+; :Returns:
+;   returns number of missing files on collection server as a `long`
+;
+; :Params:
+;   date : in, required, type=string
+;     date to run on in the form "YYYYMMDD"
+;   missing_files : in, required, type=strarr
+;     array of basenames of the files that are missing locally
+;   collection_server : in, required, type=string
+;     collection server name
+;   collection_basedir : in, required, type=string
+;     collection server base directory
+;   collection_ssh_key : in, optional, type=string
+;     full path to SSH key to use to connect to collection server
+;
+; :Keywords:
+;   logger_name : in, optional, type=string
+;     name of logger to send log messages to
+;   error : out, optional, type=long
+;     set to a named variable to retrieve the error status, `0L` for no error,
+;     `1L` for an error
+;-
 function ucomp_verify_check_missing, date, $
                                      missing_files, $
                                      collection_server, $
@@ -338,6 +393,13 @@ end
 
 ;+
 ; Check the filenames/sizes match those on the collection server.
+;
+; :Keywords:
+;   run : in, required, type=object
+;     `ucomp_run` object
+;   status : out, optional, type=long
+;     set to a named variable to retrieve the status of check, `0L` for no
+;     errors, `1L` for errors
 ;-
 pro ucomp_verify_check_collection_server, run=run, status=status
   compile_opt strictarr
@@ -425,6 +487,13 @@ end
 
 ;+
 ; Check the filenames/sizes of the tarballs match those on the archive server.
+;
+; :Keywords:
+;   run : in, required, type=object
+;     `ucomp_run` object
+;   status : out, optional, type=long
+;     set to a named variable to retrieve the status of check, `0L` for no
+;     errors, `1L` for errors
 ;-
 pro ucomp_verify_check_archive_server, run=run, status=status
   compile_opt strictarr
@@ -491,6 +560,8 @@ end
 ;   log_filename : out, optional, type=string
 ;     set to a named variable to retrieve the filename of the log file for the
 ;     date
+;   mode : in, optional, type=string, default=verify
+;     logger mode
 ;-
 pro ucomp_verify, date, config_filename, $
                   status=status, $

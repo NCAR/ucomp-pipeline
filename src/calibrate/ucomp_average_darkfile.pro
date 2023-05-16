@@ -4,6 +4,8 @@
 ; Average similar flat extensions in a flat file.
 ;
 ; :Params:
+;   primary_header : in, required, type=strarr
+;     primary header for the flat file
 ;   ext_data : in, out, required, type="fltarr(nx, ny, n_pol, n_cameras, n)"
 ;     data to average where n is the number of extensions on input, and the
 ;     number of unique types of flats in the file on exit
@@ -14,6 +16,10 @@
 ;   n_extensions : out, optional, type=long
 ;     set to a named variable to retrieve the new number of extensions after
 ;     averaging
+;   exptime : out, optional, type=fltarr(n_extensions)
+;     exposure times for the new averaged extensions
+;   gain_mode : out, optional, type=bytarr(n_extensions)
+;     gain modes for the new averaged extensions
 ;-
 pro ucomp_average_darkfile, primary_header, ext_data, ext_headers, $
                             n_extensions=n_extensions, $

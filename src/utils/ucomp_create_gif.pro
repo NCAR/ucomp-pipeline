@@ -1,7 +1,7 @@
 ; docformat = 'rst'
 
 ;+
-; Create a GIF of a FITS file.
+; Create a GIF of image data.
 ;
 ; :Params:
 ;   data : in, required, type=2-d numerical data
@@ -10,10 +10,14 @@
 ;     filename of output FITS file
 ;
 ; :Keywords:
+;   title : in, optional, type=string
+;     title to use, if present
 ;   show_range : in, optional, type=boolean
 ;     annotate GIF with display min/max, exponent, and gamma
 ;   show_angles : in, optional, type=boolean
 ;     annotate GIF with angles around occulter and field stop
+;   colortable : in, optional, type=string, default=b/w
+;     color table name
 ;   display_minimum : in, optional, type=float
 ;     set the display minimum, defaults to minimum of data
 ;   display_maximum : in, optional, type=float

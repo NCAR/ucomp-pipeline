@@ -20,7 +20,7 @@
 ;       condition to assert
 ;    msg : in, optional, type=string, default="'Assertion failed'"
 ;       message to throw if condition is not met
-;    arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8 : in, optional, type=string
+;    arg1, arg2, arg3, arg4, arg5 : in, optional, type=string
 ;       arguments for any C format codes in msg
 ;
 ; :Keywords:

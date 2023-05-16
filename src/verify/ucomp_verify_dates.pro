@@ -1,6 +1,13 @@
 ; docformat = 'rst'
 
 
+;+
+; Print the contents of the given log file to stdout.
+;
+; :Params:
+;   log_filename : in, required, type=string
+;     log filename to print
+;-
 pro ucomp_verify_dates_display_log, log_filename
   compile_opt strictarr
 
@@ -12,9 +19,7 @@ pro ucomp_verify_dates_display_log, log_filename
   readf, lun, log_lines
   free_lun, lun
 
-  for i = 0L, n_lines - 1L do begin
-    print, log_lines[i]
-  endfor
+  for i = 0L, n_lines - 1L do print, log_lines[i]
 end
 
 
@@ -22,6 +27,9 @@ end
 ; Expand a date range into an array of dates where the the start date is
 ; inclusive and the end date is exclusive, i.e., 20200101-20200107 expands to
 ; 20200101, 20200102, 20200103, 20200104, 20200105, and 20200106.
+;
+; :Returns:
+;   `strarr(n_days)`
 ;
 ; :Params:
 ;   start_date : in, required, type=string
