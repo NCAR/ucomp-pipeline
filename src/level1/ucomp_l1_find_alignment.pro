@@ -221,7 +221,7 @@ pro ucomp_l1_find_alignment, file, $
                 after=after
   ucomp_addpar, primary_header, 'JUL_DATE', file.julian_date, $
                 comment='[days] Julian date', $
-                format='F24.16', after=after
+                format='F24.13', after=after
 
   ucomp_addpar, primary_header, 'SEMIDIAM', semidiameter, $
                 comment='[arcsec] solar semi-diameter', $
