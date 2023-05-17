@@ -171,7 +171,7 @@ function ucomp_display_image, wave_region, im, $
   if (~keyword_set(small)) then begin
     xyouts, dims[0] - 15, line_height, /device, alignment=1.0, $
             string(display_min, display_max, display_gamma, display_power, $
-                   format='(%"min/max: %0.2f/%0.1f, gamma: %0.1f, exp: %0.2f")'), $
+                   format='(%"min/max: %0.2f/%0.2f, gamma: %0.1f, exp: %0.2f")'), $
             charsize=detail_charsize, color=text_color
   endif
 
