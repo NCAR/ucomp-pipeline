@@ -31,7 +31,7 @@ pro ucomp_write_gbu, wave_region, run=run
                       root=run->config('processing/basedir'))
   openw, lun, filename, /get_lun
   printf, lun, 'Filename', 'Reason', 'Med Back', 'V Crosstalk', $
-          format='(%"%-40s %-6s %-8s %-11s")'
+          format='(%"%-38s %6s %10s %13s")'
 
   for f = 0L, n_files - 1L do begin
     printf, lun, $
@@ -39,7 +39,7 @@ pro ucomp_write_gbu, wave_region, run=run
             files[f].gbu, $
             files[f].median_background, $
             files[f].vcrosstalk_metric, $
-            format='(%"%-40s %6d %8.3f %11.6f")'
+            format='(%"%-38s %6d %10.3f %13.6f")'
   endfor
 
   printf, lun
