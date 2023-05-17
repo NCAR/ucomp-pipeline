@@ -105,12 +105,12 @@ pro ucomp_l1_find_alignment, file, $
   ucomp_addpar, primary_header, $
                 'XOFFSET0', $
                 rcam.occulter_center[0] - (rcam.xsize - 1.0) / 2.0, $
-                comment='[px] RCAM occulter x-offset', $
+                comment='[px] RCAM occulter x-offset from CRPIX1', $
                 format='(F0.3)', after=after
   ucomp_addpar, primary_header, $
                 'YOFFSET0', $
                 rcam.occulter_center[1] - (rcam.ysize - 1.0) / 2.0, $
-                comment='[px] RCAM occulter y-offset', $
+                comment='[px] RCAM occulter y-offset from CRPIX2', $
                 format='(F0.3)', after=after
   ucomp_addpar, primary_header, 'RADIUS0', rcam.occulter_radius, $
                 comment='[px] RCAM occulter radius', $
@@ -122,12 +122,12 @@ pro ucomp_l1_find_alignment, file, $
   ucomp_addpar, primary_header, $
                 'XOFFSET1', $
                 tcam.occulter_center[0] - (tcam.xsize - 1.0) / 2.0, $
-                comment='[px] TCAM occulter x-offset', $
+                comment='[px] TCAM occulter x-offset from CRPIX1', $
                 format='(F0.3)', after=after
   ucomp_addpar, primary_header, $
                 'YOFFSET1', $
                 tcam.occulter_center[1] - (tcam.ysize - 1.0) / 2.0, $
-                comment='[px] TCAM occulter y-offset', $
+                comment='[px] TCAM occulter y-offset from CRPIX2', $
                 format='(F0.3)', after=after
   ucomp_addpar, primary_header, 'RADIUS1', file.tcam_geometry.occulter_radius, $
                 comment='[px] TCAM occulter radius', $
@@ -215,7 +215,7 @@ pro ucomp_l1_find_alignment, file, $
   ucomp_addpar, primary_header, 'SID_TIME', sidereal_time, $
                 comment='[day fraction] GMST sidereal time', $
                 format='(F0.5)', after=after
-  ucomp_addpar, primary_header, 'CARR_ROT', $
+  ucomp_addpar, primary_header, 'CAR_ROT', $
                 long(file.carrington_rotation), $
                 comment='Carrington Rotation Number', $
                 after=after
