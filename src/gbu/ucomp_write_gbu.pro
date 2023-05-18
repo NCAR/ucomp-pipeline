@@ -47,8 +47,7 @@ pro ucomp_write_gbu, wave_region, run=run
   printf, lun, 'Code', 'Description', format='(%"%-5s   %s")'
 
   ; check to see if the epoch or wave region epoch value changed on this day
-  tomorrow = ucomp_increment_date(run.date)
-  date_range = [run.date, tomorrow]
+  date_range = [run.date, ucomp_increment_date(run.date)]
 
   for g = 0L, n_elements(gbu_conditions) - 1L do begin
     options = strsplit(gbu_conditions[g].values, ',', /extract, count=n_options)
