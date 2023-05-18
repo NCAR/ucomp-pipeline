@@ -21,7 +21,7 @@ pro ucomp_l2_dynamics, file, run=run
 
   ; check GBU
   if (~file.ok || file.gbu ne 0L) then begin
-    mg_log, 'poor quality, skipping %s', file.l1_basename, $
+    mg_log, 'poor quality for %s', file.l1_basename, $
             name=run.logger_name, /warn
     goto, done
   endif
@@ -33,13 +33,13 @@ pro ucomp_l2_dynamics, file, run=run
                          subdir=[run.date, 'level1'], $
                          root=run->config('processing/basedir'))
   if (~file_test(l1_filename, /regular)) then begin
-    mg_log, '%s does not exist, skipping', file.l1_basename, $
+    mg_log, '%s does not exist', file.l1_basename, $
             name=run.logger_name, /warn
     goto, done
   endif
 
   if (file.n_unique_wavelengths lt 3L) then begin
-    mg_log, '%s does not have 3 unique wavelengths, skipping', $
+    mg_log, '%s does not have 3 unique wavelengths', $
             file.l1_basename, $
             name=run.logger_name, /warn
     goto, done
