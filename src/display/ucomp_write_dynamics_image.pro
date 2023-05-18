@@ -1,6 +1,30 @@
 ; docformat = 'rst'
 
-pro ucomp_write_dynamics_image, filename, $
+;+
+; Write a level 2 dynamics display image as a PNG, as well as separate peak
+; intensity, enhanced peak intensity, doppler velocity, and line width PNGs.
+;
+; :Params:
+;   output_filename : in, required, type=string
+;     full path of output file to write
+;   file : in, required, type=object
+;     `ucomp_file` object to corresponding level 1 file
+;   peak_intensity : in, required, type="fltarr(nx, ny)"
+;     peak intensity image
+;   enhanced_intensity : in, required, type="fltarr(nx, ny)"
+;     enhanced peak intensity image
+;   doppler_shift : in, required, type="fltarr(nx, ny)"
+;     doppler velocity image
+;   line_width : in, required, type="fltarr(nx, ny)"
+;     line width image
+;
+; :Keywords:
+;   reduce_factor : in, optional, type=integer, default=1
+;     factor to reduce the height and width of the input image dimensions by
+;   run : in, required, type=object
+;     `ucomp_run` object
+;-
+pro ucomp_write_dynamics_image, output_filename, $
                                 file, $
                                 peak_intensity, $
                                 enhanced_intensity, $
@@ -79,7 +103,7 @@ pro ucomp_write_dynamics_image, filename, $
     ucomp_mkdir, l2_dir, logger_name=run.logger_name
   endif
 
-  write_png, filename, display_image
+  write_png, output_filename, display_image
   mg_log, 'wrote dynamics PNG', name=run.logger_name, /debug
 
   peak_intensity_image = ucomp_display_image(file.wave_region, peak_intensity, $

@@ -1,5 +1,23 @@
 ; docformat = 'rst'
 
+;+
+; Insert an array of mean/median and quick invert files into the ucomp_file
+; database table.
+;
+; :Params:
+;   wave_region : in, required, type=string
+;     wave region, e.g., '1074'
+;   obsday_index : in, required, type=integer
+;     index into mlso_numfiles database table
+;   sw_index : in, required, type=integer
+;     index into the ucomp_sw database table
+;   db : in, optional, type=object
+;     `UCOMPdbMySQL` database connection to use
+;
+; :Keywords:
+;   run : in, required, type=object
+;     `ucomp_run` object
+;-
 pro ucomp_db_l2_average_insert, wave_region, obsday_index, sw_index, db, run=run
   compile_opt strictarr
 

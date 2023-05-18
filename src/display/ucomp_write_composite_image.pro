@@ -1,6 +1,25 @@
 ; docformat = 'rst'
 
 
+;+
+; Scale one channel of a composite image from the intensity in the given level
+; 1 or mean/median file and return as an array.
+;
+; :Returns:
+;   scaled image as `bytarr(nx, ny)`
+;
+; :Params:
+;   filename : in, required, type=string
+;     filename of level 1 or mean/median file
+;
+; :Keywords:
+;   wave_region : in, required, type=string
+;     wave_region, e.g., "1074"
+;   radius : out, optional, type=float
+;     set to a named variable to retrieve the occulter radius
+;   run : in, required, type=object
+;     `ucomp_run` object
+;-
 function ucomp_write_composite_image_channel, filename, $
                                               wave_region=wave_region, $
                                               radius=occulter_radius, $
@@ -9,8 +28,9 @@ function ucomp_write_composite_image_channel, filename, $
 
   fits_open, filename, fcb
   n_extensions = fcb.nextend
+  n_wavelengths = n_extensions / 2L
   fits_read, fcb, !null, primary_header, exten_no=0
-  fits_read, fcb, data, header, exten_no=n_extensions / 2 + 1
+  fits_read, fcb, data, header, exten_no=n_wavelengths / 2 + 1
   fits_close, fcb
 
   wave_region = ucomp_getpar(primary_header, 'FILTER')
@@ -42,6 +62,26 @@ function ucomp_write_composite_image_channel, filename, $
 end
 
 
+;+
+; Annotate a given display image.
+;
+; :Returns:
+;   display image as `bytarr(3, nx, ny)` array
+;
+; :Params:
+;   im : in, required, type='bytarr(3, nx, ny)'
+;     input composite image
+;
+; :Keywords:
+;   wave_regions : in, required, type=strarr(3)
+;     array of wave regions corresponding to the channels of the input
+;     composite image
+;   radii : in, required, type=fltarr(3)
+;     radii of the 3 channels of the input image used to scale the size of the
+;     channels to match
+;   run : in, required, type=object
+;     `ucomp_run` object
+;-
 function ucomp_write_composite_image_annotation, im, $
                                                  wave_regions=wave_regions, $
                                                  radii=radii, $
@@ -118,6 +158,17 @@ function ucomp_write_composite_image_annotation, im, $
 end
 
 
+;+
+; Write a composite image given 3 level 1 or mean/median filenames.
+;
+; :Params:
+;   filenames : in, required, type=strarr(3)
+;     three level 1 filenames
+;
+; :Keywords:
+;   run : in, required, type=object
+;     `ucomp_run` object
+;-
 pro ucomp_write_composite_image, filenames, run=run
   compile_opt strictarr
 

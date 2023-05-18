@@ -13,6 +13,10 @@
 ;     section name to use in `filename`
 ;
 ; :Keywords:
+;   logger_name : in, optional, type=string
+;     name of logger to log messages to
+;   log_statements : in, optional, type=boolean
+;     set to log all database commands
 ;   status : out, optional, type=long
 ;     set to a named variable to retrieve the status of the database creation;
 ;     0 if no error

@@ -1,7 +1,34 @@
 ; docformat = 'rst'
 
+;+
+; Create an annotated display of an image.
+;
+; :Returns:
+;   `bytarr(3, reduced_nx, reduced_ny)`
+;
+; :Params:
+;   wave_region : in, required, type=string
+;     wave region, e.g., '1074'
+;   im : in, required, type="fltarr(nx, ny"
+;     input image of the type specified by `TYPE`
+;
+; :Keywords:
+;   type : in, required, type=string
+;     type of input image given in `im`, e.g., "intensity", "quv", etc.
+;   name : in, optional, type=string
+;     if present, use as a title annotation on the displayed image
+;   reduce_factor : in, optional, type=integer, default=1
+;     factor to reduce the height and width of the input image dimensions by
+;   datetime : in, optional, type=string
+;     if present, date/time is placed on the image; can be of the form
+;     "YYYYMMDD" or "YYYYMMDD.HHMMSS"
+;   no_wave_region_annotation : in, optional, type=boolean
+;     set to not annotate the displayed image with the wave region information
+;   run : in, required, type=object
+;     `ucomp_run` object
+;-
 function ucomp_display_image, wave_region, im, $
-                              type=type, normalized=normalized, $
+                              type=type, $
                               name=name, $
                               reduce_factor=reduce_factor, $
                               datetime=datetime, $

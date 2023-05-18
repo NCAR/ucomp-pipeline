@@ -1,5 +1,17 @@
 ; docformat = 'rst'
 
+;+
+; Create a mask that does not display outside the given radius.
+;
+; :Returns:
+;   mask as a `bytarr(dims)` array
+;
+; :Params:
+;   dims : in, required, type=lonarr(2)
+;     dimensions of the mask to produce
+;   field_radius : in, required, type=float
+;     radius in pixels to exclude
+;-
 function ucomp_field_mask, dims, field_radius
   compile_opt strictarr
 
