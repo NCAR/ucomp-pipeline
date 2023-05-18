@@ -61,7 +61,10 @@ pro ucomp_l1_process_file, file, run=run
     ucomp_l1_step, 'ucomp_l1_check_quality', $
                    file, primary_header, data, headers, run=run
     if (~file.ok) then begin
-      mg_log, 'skipping for poor quality (%b)', file.quality_bitmask, $
+      conditions = ucomp_quality_conditions(file.wave_region, run=run)
+      bad_condition_indices = where(file.quality_bitmask and conditions.mask, /null)
+      bad_conditions = strjoin(strmid(conditions[bad_condition_indices].checker, 14), '|')
+      mg_log, 'skipping for poor quality (%s)', bad_conditions, $
               name=run.logger_name, /warn
       goto, done
     endif
