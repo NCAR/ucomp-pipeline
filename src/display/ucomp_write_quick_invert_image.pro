@@ -53,14 +53,14 @@ pro ucomp_write_quick_invert_image, filename, $
                                                      run=run)
 
   integrated_q_display = ucomp_display_image(wave_region, integrated_q_i, $
-                                             type='quv_i', /normalized, $
+                                             type='quv_i', $
                                              name='Integrated Q / I', $
                                              reduce_factor=reduce_factor, $
                                              /no_wave_region_annotation, $
                                              run=run)
 
   integrated_u_display = ucomp_display_image(wave_region, integrated_u_i, $
-                                             type='quv_i', /normalized, $
+                                             type='quv_i', $
                                              name='Integrated U / I', $
                                              reduce_factor=reduce_factor, $
                                              /no_wave_region_annotation, $
