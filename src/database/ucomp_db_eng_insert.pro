@@ -8,6 +8,8 @@
 ;     array of `UCOMP_FILE` objects
 ;   obsday_index : in, required, type=integer
 ;     index into mlso_numfiles database table
+;   sw_index : in, required, type=integer
+;     index into the ucomp_sw database table
 ;   db : in, optional, type=object
 ;     `UCOMPdbMySQL` database connection to use
 ;

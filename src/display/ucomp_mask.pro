@@ -1,5 +1,26 @@
 ; docformat = 'rst'
 
+;+
+; Produce a mask of the given size.
+;
+; :Returns:
+;   mask as a `bytarr(dims)` array
+;
+; :Params:
+;   dims : in, required, type=lonarr(2)
+;     dimensions of the mask to produce
+;
+; :Keywords:
+;   field_radius : in, optional, type=float
+;     if present, mask field using this radius, in pixels
+;   occulter_radius : in, optional, type=float
+;     if present, mask occulter using this radius, in pixels
+;   post_angle : in, optional, type=float
+;     if present, mask the post using this position angle, in degrees
+;   p_angle : in, optional, type=float
+;     if present, mask the pixels that are brought into the frame by the
+;     p-angle rotation, in degrees
+;-
 function ucomp_mask, dims, $
                      field_radius=field_radius, $
                      occulter_radius=occulter_radius, $

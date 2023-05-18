@@ -1,6 +1,36 @@
 ; docformat = 'rst'
 
-pro ucomp_write_polarization_image, filename, $
+;+
+; Write a level 2 dynamics display image as a PNG, as well as separate peak
+; intensity, enhanced peak intensity, doppler velocity, and line width PNGs.
+;
+; :Params:
+;   output_filename : in, required, type=string
+;     full path of output file to write
+;   file : in, required, type=object
+;     `ucomp_file` object to corresponding level 1 file
+;   integrated_intensity : in, required, type="fltarr(nx, ny)"
+;     integrated intensity image
+;   enhanced_intensity : in, required, type="fltarr(nx, ny)"
+;     enhanced integrated intensity image
+;   integrated_q : in, required, type="fltarr(nx, ny)"
+;     integrated Q image
+;   integrated_u : in, required, type="fltarr(nx, ny)"
+;     integrated U image
+;   integrated_linpol : in, required, type="fltarr(nx, ny)"
+;     integrated linear polarization image
+;   azimuth : in, required, type="fltarr(nx, ny)"
+;     azimuth image
+;   radial_azimuth : in, required, type="fltarr(nx, ny)"
+;     radial azimuth image
+;
+; :Keywords:
+;   reduce_factor : in, optional, type=integer, default=1
+;     factor to reduce the height and width of the input image dimensions by
+;   run : in, required, type=object
+;     `ucomp_run` object
+;-
+pro ucomp_write_polarization_image, output_filename, $
                                     file, $
                                     integrated_intensity, $
                                     enhanced_intensity, $
@@ -106,7 +136,7 @@ pro ucomp_write_polarization_image, filename, $
     ucomp_mkdir, l2_dir, logger_name=run.logger_name
   endif
 
-  write_png, filename, display_image
+  write_png, output_filename, display_image
   mg_log, 'wrote polarization PNG', name=run.logger_name, /debug
 
   integrated_linpol_display = ucomp_display_image(file.wave_region, integrated_linpol, $

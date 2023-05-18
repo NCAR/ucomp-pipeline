@@ -4,7 +4,7 @@
 ; Create mask of post.
 ;
 ; :Returns:
-;   `bytarr(nx, ny)`
+;   `bytarr(dims)`
 ;
 ; :Params:
 ;   dims : in, required, type=lonarr(2)
