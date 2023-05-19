@@ -23,6 +23,7 @@
 function ucomp_write_composite_image_channel, filename, $
                                               wave_region=wave_region, $
                                               radius=occulter_radius, $
+                                              enhanced=enhanced, $
                                               run=run
   compile_opt strictarr
 
@@ -38,13 +39,22 @@ function ucomp_write_composite_image_channel, filename, $
   post_angle = ucomp_getpar(primary_header, 'POST_ANG')
   p_angle = ucomp_getpar(primary_header, 'SOLAR_P0')
 
-  display_min   = run->line(wave_region, 'intensity_display_min')
-  display_max   = run->line(wave_region, 'intensity_display_max')
-  display_gamma = run->line(wave_region, 'intensity_display_gamma')  ; TODO: how to use?
-  display_power = run->line(wave_region, 'intensity_display_power')
+  prefix = keyword_set(enhanced) ? 'enhanced_' : ''
+  display_min   = run->line(wave_region, prefix + 'intensity_display_min')
+  display_max   = run->line(wave_region, prefix + 'intensity_display_max')
+  display_gamma = run->line(wave_region, prefix + 'intensity_display_gamma')  ; TODO: how to use?
+  display_power = run->line(wave_region, prefix + 'intensity_display_power')
 
   dims = size(data, /dimensions)
   intensity = reform(data[*, *, 0])
+  if (keyword_set(enhanced)) then begin
+    intensity = ucomp_enhanced_intensity(intensity, $
+                                         !null, !null, $
+                                         primary_header, $
+                                         radius=run->line(wave_region, 'enhanced_intensity_radius'), $
+                                         amount=run->line(wave_region, 'enhanced_intensity_amount'), $
+                                         /mask)
+  endif
 
   field_mask = ucomp_field_mask(dims[0:1], run->epoch('field_radius'))
   scaled_intensity = bytscl((intensity * field_mask)^display_power, $
@@ -109,13 +119,16 @@ function ucomp_write_composite_image_annotation, im, $
 
   x_margin = 12
   y_margin = 12
-  line_height = 14
-  charsize = 1.5
+  charsize = 1.4
+  line_height = 16 * charsize
   text_color = 'ffffff'x
 
   xyouts, x_margin, ny - y_margin - line_height, /device, $
+          'MLSO UCoMP Daily Temperature Image', $
+          charsize=charsize, color=text_color
+  xyouts, x_margin, ny - y_margin - 2 * line_height, /device, $
           string(ucomp_decompose_date(run.date), $
-                 format='MLSO UCoMP Daily Temperature Image!C%s-%s-%s'), $
+                 format='%s-%s-%s'), $
           charsize=charsize, color=text_color
 
   rgb = ['Red', 'Green', 'Blue']
@@ -129,11 +142,13 @@ function ucomp_write_composite_image_annotation, im, $
   endfor
   legend[-1] = 'Teff=effective temperature'
 
-  xyouts, x_margin, $
-          y_margin + (n_elements(wave_regions) + 1L) * line_height, $
-          /device, $
-          strjoin(legend, '!C'), $
-          charsize=charsize, color=text_color
+  for i = 0L, n_elements(legend) - 1L do begin
+    xyouts, x_margin, $
+            y_margin + i * line_height, $
+            /device, $
+            legend[i], $
+            charsize=charsize, color=text_color
+  endfor
 
   if (wave_regions[0] eq '1074') then begin
     xyouts, nx - x_margin, ny - y_margin - line_height, /device, $
@@ -141,10 +156,13 @@ function ucomp_write_composite_image_annotation, im, $
             'Corona coolest in regions colored blue', $
             charsize=charsize, color=text_color
   endif else begin
+    xyouts, nx - x_margin, ny - y_margin - line_height, /device, $
+            alignment=1.0, $
+            'Corona hottest in regions colored white or red', $
+            charsize=charsize, color=text_color
     xyouts, nx - x_margin, ny - y_margin - 2 * line_height, /device, $
             alignment=1.0, $
-            strjoin(['Corona hottest in regions colored white or red', $
-                     'Corona coolest in regions colored blue'], '!C'), $
+            'Corona coolest in regions colored blue', $
             charsize=charsize, color=text_color
   endelse
 
@@ -166,10 +184,12 @@ end
 ;     three level 1 filenames
 ;
 ; :Keywords:
+;   enhanced : in, optional, type=boolean
+;     set to produce enhanced intensity channels
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-pro ucomp_write_composite_image, filenames, run=run
+pro ucomp_write_composite_image, filenames, enhanced=enhanced, run=run
   compile_opt strictarr
 
   channels = ['R', 'G', 'B']
@@ -188,21 +208,21 @@ pro ucomp_write_composite_image, filenames, run=run
 
   red = ucomp_write_composite_image_channel(filenames[0], $
                                             wave_region=wave_region, $
-                                            radius=radius, $
+                                            radius=radius, enhanced=enhanced, $
                                             run=run)
   wave_regions[0] = wave_region
   radii[0] = radius
 
   green = ucomp_write_composite_image_channel(filenames[1], $
-                                              radius=radius, $
                                               wave_region=wave_region, $
+                                              radius=radius, enhanced=enhanced, $
                                               run=run)
   wave_regions[1] = wave_region
   radii[1] = radius
 
   blue = ucomp_write_composite_image_channel(filenames[2], $
-                                             radius=radius, $
                                              wave_region=wave_region, $
+                                             radius=radius, enhanced=enhanced, $
                                              run=run)
   wave_regions[2] = wave_region
   radii[2] = radius
@@ -232,26 +252,29 @@ end
 
 ; main-level example program
 
-date = '20220901'
+date = '20220325'
 
-config_basename = 'ucomp.latest.cfg'
+config_basename = 'ucomp.regression.cfg'
 config_filename = filepath(config_basename, $
                            subdir=['..', '..', '..', 'ucomp-config'], $
                            root=mg_src_root())
 run = ucomp_run(date, 'test', config_filename)
 
+enhanced = 1B
 
-mean_basenames = ['20220901.ucomp.1074.synoptic.mean.fts', $
-                  '20220901.ucomp.789.synoptic.mean.fts', $
-                  '20220901.ucomp.637.synoptic.mean.fts']
-; mean_basenames = ['20220901.ucomp.706.synoptic.mean.fts', $
-;                   '20220901.ucomp.1074.synoptic.mean.fts', $
-;                   '20220901.ucomp.789.synoptic.mean.fts']
+wave_regions = ['1074', '789', '637']
+mean_basenames = date + '.ucomp.' + wave_regions + '.synoptic.mean.fts'
 mean_filenames = filepath(mean_basenames, $
                           subdir=[date, 'level2'], $
                           root=run->config('processing/basedir'))
+ucomp_write_composite_image, mean_filenames, enhanced=enhanced, run=run
 
-ucomp_write_composite_image, mean_filenames, run=run
+wave_regions = ['706', '1074', '789']
+mean_basenames = date + '.ucomp.' + wave_regions + '.synoptic.mean.fts'
+mean_filenames = filepath(mean_basenames, $
+                          subdir=[date, 'level2'], $
+                          root=run->config('processing/basedir'))
+ucomp_write_composite_image, mean_filenames, enhanced=enhanced, run=run
 
 obj_destroy, run
 
