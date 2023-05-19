@@ -48,10 +48,12 @@ pro ucomp_platescale, start_date, end_date, process_basedir
 
     for f = 0L, n_l1_files - 1L do begin
       info = ucomp_platescale_fileinfo(l1_files[f])
-      indices = where(info.wave_region eq wave_regions, /null)
-      printf, wave_region_luns[indices[0]], $
-              info.jd, info.occulter_id, info.image_scale, info.fit_chi_0, info.fit_chi_1, $
-              format='%0.5f %s %0.5f %0.7f %0.7f'
+      indices = where(info.wave_region eq wave_regions, count)
+      if (count gt 0L) then begin
+        printf, wave_region_luns[indices[0]], $
+                info.jd, info.occulter_id, info.image_scale, info.fit_chi_0, info.fit_chi_1, $
+                format='%0.5f %s %0.5f %0.7f %0.7f'
+      endif
     endfor
 
     date = ucomp_increment_date(date)
