@@ -1,6 +1,46 @@
 ; docformat = 'rst'
 
-pro ucomp_write_quick_invert_image, filename, $
+;+
+; Write a level 2 quick invert display image as a PNG.
+;
+; :Params:
+;   output_filename : in, required, type=string
+;     full path of output file to write
+;   integrated_intensity : in, required, type="fltarr(nx, ny)"
+;     integrated intensity image
+;   integrated_q_i : in, required, type="fltarr(nx, ny)"
+;     integrated Q over I image
+;   integrated_u_i: in, required, type="fltarr(nx, ny)"
+;     integrated U over I image
+;   integrated_linpol_i : in, required, type="fltarr(nx, ny)"
+;     integrated linear polarization over I image
+;   azimuth : in, required, type="fltarr(nx, ny)"
+;     azimuth image
+;   radial_azimuth : in, required, type="fltarr(nx, ny)"
+;     radial azimuth image
+;   doppler_shift : in, required, type="fltarr(nx, ny)"
+;     doppler velocity image
+;   line_width : in, required, type="fltarr(nx, ny)"
+;     line width image
+;
+; :Keywords:
+;   reduce_factor : in, optional, type=integer, default=1
+;     factor to reduce the height and width of the input image dimensions by
+;   wave_region : in, required, type=string
+;     wave region, e.g., "1074"
+;   post_angle : in, optional, type=float
+;     post angle in degrees from north; if present, mask the post in the output
+;     images
+;   p_angle : in, optional, type=float
+;     p-angle in degrees from north; if present, mask the offsensor pixels in
+;     the output images
+;   occulter_radius : in, optional, type=float
+;     occulter radius in pixels; if present, mask the occulter in the output
+;     image
+;   run : in, required, type=object
+;     `ucomp_run` object
+;-
+pro ucomp_write_quick_invert_image, output_filename, $
                                     integrated_intensity, $
                                     integrated_q_i, $
                                     integrated_u_i, $
@@ -119,7 +159,7 @@ pro ucomp_write_quick_invert_image, filename, $
     ucomp_mkdir, l2_dir, logger_name=run.logger_name
   endif
 
-  write_png, filename, display_image
+  write_png, output_filename, display_image
   mg_log, 'wrote quick invert PNG', name=run.logger_name, /debug
 end
 

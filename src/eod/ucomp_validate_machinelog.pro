@@ -10,6 +10,15 @@
 ; :Keywords:
 ;   present : out, optional, type=boolean
 ;     set to a named variable to retrieve whether the machine log is present
+;   n_missing_files : out, optional, type=long
+;     set to a named variable to retrieve the number of files missing in the
+;     raw directory, that are present in the machine log
+;   n_extra_files : out, optional, type=long
+;     set to a named variable to retrieve the number of files present in the
+;     raw directory, but are missing in the machine log
+;   n_files : out, optional, type=long
+;     set to a named variable to retrieve the number of files present in the
+;     raw directory
 ;   run : in, required, type=object
 ;     UCoMP run object
 ;-

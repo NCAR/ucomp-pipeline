@@ -529,6 +529,9 @@ pro ucomp_file::_extract_datetime
 end
 
 
+;+
+; Update this `ucomp_file` object to a level 1 file.
+;-
 pro ucomp_file::_update_to_level1
   compile_opt strictarr
 
@@ -561,6 +564,14 @@ pro ucomp_file::_update_to_level1
 end
 
 
+;+
+; Update the `ucomp_file` object to the given type.
+;
+; :Params:
+;   type : in, required, type=string
+;     type of file to update the file object to: "level1", "dynamics", or
+;     "polarization"
+;-
 pro ucomp_file::update, type
   compile_opt strictarr
 
@@ -760,12 +771,18 @@ end
 
 
 ;+
+; Initialize UCoMP file object.
+;
 ; :Returns:
 ;   1 for success, 0 otherwise
 ;
 ; :Params:
 ;   raw_filename : in, required, type=str
 ;     filename of raw UCoMP file
+;
+; :Keywords:
+;   run : in, required, type=object
+;     `ucomp_run` object
 ;-
 function ucomp_file::init, raw_filename, run=run
   compile_opt strictarr

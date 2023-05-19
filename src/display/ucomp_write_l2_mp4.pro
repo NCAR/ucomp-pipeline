@@ -7,6 +7,9 @@
 ; :Params:
 ;   wave_region : in, required, type=string
 ;     wave region, i.e., "1074"
+;   type : in, required, type=string
+;     type of data to be used in the creating the mp4, corresponding to the
+;     name indicating type used in the PNG files
 ;
 ; :Keywords:
 ;   run : in, required, type=object
