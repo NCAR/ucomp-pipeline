@@ -109,7 +109,7 @@ function ucomp_write_composite_image_annotation, im, $
 
   x_margin = 12
   y_margin = 12
-  line_height = 12
+  line_height = 14
   charsize = 1.5
   text_color = 'ffffff'x
 
