@@ -22,8 +22,10 @@
 ;     threshold values below this minimum value
 ;   max_value : in, optional, type=float, default=`max(im)``
 ;     threshold values above this maximum value
-;   mean_profile : in, optional, type=
-;   stddev_profile : in, optional, type=
+;   mean_profile : in, optional, type=fltarr
+;     radial profile of mean used to computer NRGF
+;   stddev_profile : in, optional, type=fltarr
+;     radial profile of standard deviation used to computer NRGF
 ;
 ; :History:
 ;   adapted from a routine for the K-Coronagraph written by Silvano Fineschi
@@ -54,8 +56,8 @@ function ucomp_nrgf, im, occulter_radius, $
   d_e = _xcenter
   d_s = _ycenter
   d_w = xsize - _xcenter
-  field_radius = min([d_n, d_e, d_s, d_w])
-  field_radius = sqrt(_xcenter^2 + _ycenter^2)  ; TODO: not in general
+  ;field_radius = min([d_n, d_e, d_s, d_w])
+  ;field_radius = sqrt(_xcenter^2 + _ycenter^2)  ; TODO: not in general
   field_radius = 750L
   ;field_radius = 818.89712419
 
