@@ -6,6 +6,8 @@
 ; :Params:
 ;   file : in, required, type=object
 ;     `ucomp_file` object
+;   primary_header : in, required, type=strarr
+;     primary header of the image
 ;   data : in, required, type="fltarr(nx, ny, nstokes, nexts)"
 ;     extension data
 ;

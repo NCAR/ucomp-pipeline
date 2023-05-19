@@ -17,6 +17,8 @@
 ;     list of `strarr` FITS headers
 ;
 ; :Keywords:
+;   step_number : in, required, type=integer
+;     number of the step in the level 1 processing for a file
 ;   run : in, required, type=object
 ;     UCoMP run object
 ;-

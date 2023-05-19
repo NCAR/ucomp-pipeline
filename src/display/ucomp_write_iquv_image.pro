@@ -7,10 +7,17 @@
 ;   data : in, required, type="fltarr(nx, ny, nstokes, nexts)"
 ;     extension data
 ;   l1_basename : in, required, type=string
+;     level 1 basename for corresponding to the given data
 ;   wave_region : in, required, type=string
-;   wavelengths : in, required, type=fltarr
+;     wave region, e.g., "1074"
+;   wavelengths : in, required, type=fltarr(nexts)
+;     wavelengths corresponding to the images in the `nexts` dimension of the
+;     data
 ;
 ; :Keywords:
+;   daily : in, optional, type=boolean
+;     set to indicate that the image corresponds to a daily average in the
+;     level 2 directory
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-

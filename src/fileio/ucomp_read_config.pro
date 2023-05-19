@@ -6,6 +6,14 @@
 ;
 ; :Returns:
 ;   `MGffSpecOptions` object
+;
+; :Params:
+;   config_filename : in, required, type=string
+;     config file to read
+;
+; :Keywords:
+;   spec : in, optional, type=string
+;     specification for config file to read
 ;-
 function ucomp_read_config, config_filename, spec=config_spec_filename
   compile_opt strictarr

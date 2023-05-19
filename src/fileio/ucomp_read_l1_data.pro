@@ -13,10 +13,14 @@
 ;     (should always be 0.0)
 ;   primary_header : out, optional, type=strarr(n_keywords)
 ;     set to a named variable to retrieve the primary header
-;   ext_data : out, optional, type="fltarr(nx, ny, n_polstates, n_cameras, n_exts)"
+;   ext_data : out, optional, type="fltarr(nx, ny, n_polstates, n_exts)"
 ;     set to a named variable to retrieve the extension data
 ;   ext_headers : out, optional, type="list of strarr(n_ext_keywords)"
 ;     set to a named variable to retrieve the extension headers
+;   background_data : out, optional, type="fltarr(nx, ny, n_exts)"
+;     set to a named variable to retrieve the background data
+;   background_headers : out, optional, type="list of strarr(n_ext_keywords)"
+;     set to a named variable to retrieve the background headers
 ;   n_wavelengths : out, optional, type=long
 ;     set to a named variable to retrieve the number of wavelengths
 ;-
