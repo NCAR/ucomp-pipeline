@@ -325,3 +325,4 @@
   adding mean/median and quick invert files to ucomp_file database table
   can specify dates in options/dates in config file for eod, rt, cal, clearday,
     reprocess, regression, script, and archive sub-commands
+  fixed temperature composite images
