@@ -1,5 +1,19 @@
 ; docformat = 'rst'
 
+;+
+; Read a file containing bad frames data.
+;
+; :Returns:
+;   array of structures of the form::
+;
+;     {filename: '', camera: 0L, extension: 0L, polstate: 0L}
+;
+;  `!null` if file is empty
+;
+; :Params:
+;   filename : in, required, type=string
+;     full path to file containing bad frames data
+;-
 function ucomp_read_badframes, filename
   compile_opt strictarr
 

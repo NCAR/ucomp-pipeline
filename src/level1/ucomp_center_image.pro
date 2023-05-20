@@ -3,6 +3,9 @@
 ;+
 ; Shift the image to the center of the occulter and rotate by the p-angle.
 ;
+; :Returns:
+;   centered image as `fltarr(nx, ny)`
+;
 ; :Params:
 ;   im : in, required, type=`fltarr(nx, ny)`
 ;     image to transform
