@@ -31,6 +31,9 @@
 ;     guess for the center; if not provided, use center of `data`
 ;   points : out, optional, type="fltarr(2, n_scan)"
 ;     set to a named variable to retrieve the individual occulter edge points
+;   pt_weights : out, optional, type=fltarr(n_scans)
+;     set to a named variable to retrieve a normalized weighting of the points
+;     returned in `POINTS`
 ;
 ; :Author:
 ;   MLSO Software Team

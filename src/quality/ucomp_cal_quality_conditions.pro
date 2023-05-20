@@ -8,6 +8,14 @@
 ;   array of structures defined::
 ;
 ;     {mask: 0UL, checker: '', description: ''}
+;
+; :Params:
+;   wave_region : in, required, type=string
+;     wave region, e.g., "1074"
+;
+; :Keywords:
+;   run : in, required, type=object
+;     `ucomp_run` object
 ;-
 function ucomp_cal_quality_conditions, wave_region, run=run
    compile_opt strictarr
