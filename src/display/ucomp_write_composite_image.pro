@@ -153,7 +153,7 @@ function ucomp_write_composite_image_annotation, im, $
 
   for i = 0L, n_elements(legend) - 1L do begin
     xyouts, x_margin, $
-            y_margin + i * line_height, $
+            y_margin + (n_elements(legend) - i - 1L) * line_height, $
             /device, $
             legend[i], $
             charsize=charsize, color=text_color
