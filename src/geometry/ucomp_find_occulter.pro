@@ -13,7 +13,7 @@
 ;     ucomp_find_occulter, data, radius_guess=350.0
 ;
 ; :Uses:
-;   ucomp_radial_derivative, mpfitellipse
+;   ucomp_radial_derivative, mpfitellipse, ucomp_circfit
 ;
 ; :Returns:
 ;   `fltarr(3)` in the form `[x, y, r]`, or, if `ELLIPTICAL` is set, `fltarr(5)`
@@ -36,8 +36,19 @@
 ;     0 if no error
 ;   points : out, optional, type="fltarr(2, n_points)"
 ;     points that are fitted to find occulter
+;   pt_weights : out, optional, type=fltarr(n_points)
+;     set to a named variable to retrieve a normalized weighting of the points
+;     returned in `POINTS`
 ;   elliptical : in, optional, type=boolean
 ;     set to find elliptical occulter instead of circular occulter
+;   eccentricity : out, optional, type=float
+;     set to a named variable to retrieve the eccentricity of a valid fit when
+;     `ELLIPICAL` is set
+;   ellipse_angle : out, optional, type=float
+;     set to a named variable to retrieve the angle of the major axis of the
+;     ellipse found when `ELLIPTICAL` is set
+;   remove_post : in, optional, type=boolean
+;     set to remove points in the estimated location of the post from the search
 ;
 ; :Author:
 ;   MLSO Software Team

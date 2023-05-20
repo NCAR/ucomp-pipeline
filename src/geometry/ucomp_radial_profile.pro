@@ -3,6 +3,9 @@
 ;+
 ; Extract a radial intensity profile from a FITS file.
 ;
+; :Returns:
+;   profile as a `fltarr(n_radii)`
+;
 ; :Params:
 ;   component : in, required, type="fltarr(m, n)"
 ;     intensity, Q, or U image

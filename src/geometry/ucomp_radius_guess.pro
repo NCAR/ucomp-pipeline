@@ -10,6 +10,12 @@
 ; :Params:
 ;   occulter_id : in, required, type=string
 ;     OCCLTRID value, i.e., "28", "34", etc.
+;   wave_region : in, required, type=string
+;     wave region, e.g., "1074"
+;
+; :Keywords:
+;   run : in, required, type=object
+;     `ucomp_run` object
 ;-
 function ucomp_radius_guess, occulter_id, wave_region, run=run
   compile_opt strictarr

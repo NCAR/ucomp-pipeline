@@ -3,6 +3,9 @@
 ;+
 ; Compute the image scale for a given image.
 ;
+; :Returns:
+;   plate scale as float
+;
 ; :Params:
 ;   radius : in, required, type=float
 ;     found radius of an image

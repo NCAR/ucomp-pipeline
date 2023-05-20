@@ -17,6 +17,10 @@
 ;     wave_region, e.g., "1074"
 ;   radius : out, optional, type=float
 ;     set to a named variable to retrieve the occulter radius
+;   enhanced : in, optional, type=boolean
+;     set to enhance the intensity image when displayed
+;   nrgf : in, optional, type=boolean
+;     set to use the NGRF on the intensity image when displayed
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
@@ -195,6 +199,8 @@ end
 ; :Keywords:
 ;   enhanced : in, optional, type=boolean
 ;     set to produce enhanced intensity channels
+;   nrgf : in, optional, type=boolean
+;     set to use the NRGF on the intensity channels
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-

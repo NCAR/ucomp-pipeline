@@ -17,6 +17,18 @@
 ;   occulter_radius : in, required, type=float
 ;     occulter radius in pixels
 ;
+; :Keywords:
+;   angle_guess : in, optional, type=float, default=180.0
+;     initial guess angle in degrees from north for the location of the post
+;   angle_tolerance : in, optional, type=float, default=30.0
+;     amount added and subtracted to `post_angle_guess` to search for post in
+;   error : out, optional, type=long
+;     set to a named variable to retrieve the error status of the process of
+;     finding the post, 0 for no error, otherwise an error
+;   err_msg : out, optional, type=string
+;     set to a named variable to retrieve any error message generated in the
+;     post finding process, empty string if no error
+;
 ; :Author:
 ;   MLSO Software Team
 ;
