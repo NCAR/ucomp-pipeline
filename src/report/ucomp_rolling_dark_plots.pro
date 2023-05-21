@@ -1,9 +1,24 @@
 ; docformat = 'rst'
 
+;+
+; Plot median dark value over the last year.
+;
+; :Params:
+;   db : in, required, type=object
+;     `UCoMPdbMySQL` object
+;
+; :Keywords:
+;   run : in, required, type=object
+;     `ucomp_run` object
+;-
 pro ucomp_rolling_dark_plots, db, run=run
   compile_opt strictarr
 
-  start_date = '2022-02-23T19:51:17'
+  date_components = long(ucomp_decompose_date(run.date))
+  start_date = string(date_components[0] - 1, $
+                      date_components[1], $
+                      date_components[2], $
+                      format='%04d-%02d-%02dT00:00:00')
 
   ; group the darks by gain mode and NUC value
   group_by_type = 0B

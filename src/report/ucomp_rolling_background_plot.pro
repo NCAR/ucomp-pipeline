@@ -1,5 +1,18 @@
 ; docformat = 'rst'
 
+;+
+; Plot median background value over the mission.
+;
+; :Params:
+;   wave_region : in, required, type=string
+;     wave region, e.g., "1074"
+;   db : in, required, type=object
+;     `UCoMPdbMySQL` object
+;
+; :Keywords:
+;   run : in, required, type=object
+;     `ucomp_run` object
+;-
 pro ucomp_rolling_background_plot, wave_region, db, run=run
   compile_opt strictarr
 
