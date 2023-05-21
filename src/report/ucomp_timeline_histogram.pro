@@ -1,5 +1,32 @@
 ; docformat = 'rst'
 
+;+
+; Produce an end-of-day stacked histogram plot showing the timeline of various
+; types of files, e.g., the distribution of the files by wave region.
+;
+; :Params:
+;   output_filename : in, required, type=string
+;     full path to output filename
+;   histograms : in, required, type="lonarr(n_files, n_categories)"
+;     data for stacked histogram
+;   bin_size : in, required, type=float
+;     size, in minutes, of the bins in the histogram
+;   item_names : in, required, type=strarr
+;     names of the various categories in the stacked histogram
+;
+; :Keywords:
+;   start_time : in, required, type=float, default=6
+;     local time for start of plot
+;   end_time : in, required, type=float, default=19
+;     local time for end of plot
+;   ymax : in, optional, type=float
+;     maximum y-axis value to plot, default is the total over the first
+;     dimension of `histograms`
+;   colors : in, required, type=lonarr
+;     array of colors to use for the various categories in the histogram
+;   logger_name : in, optional, type=string
+;     name of logger to send messages to
+;-
 pro ucomp_timeline_histogram, output_filename, $
                               histograms, $
                               bin_size, $

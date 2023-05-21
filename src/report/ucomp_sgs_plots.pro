@@ -3,6 +3,10 @@
 ;+
 ; Produce SGS plots.
 ;
+; :Params:
+;   engineering_dir : in, required, type=string
+;     directory to place plots into
+;
 ; :Keywords:
 ;   run : in, required, type=object
 ;     `ucomp_run` object
