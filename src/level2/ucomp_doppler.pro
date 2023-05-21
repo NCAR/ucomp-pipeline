@@ -1,7 +1,22 @@
 ; docformat = 'rst'
 
 ;+
-; Compute the doppler, and optionally the doppler velocity.
+; Compute the doppler shift, and optionally the doppler velocity.
+;
+; :Returns:
+;   doppler shift as `fltarr(nx, ny)`
+;
+; :Params:
+;   file : in, required, type=object
+;     `ucomp_file` object
+;   ext_data : in, required, type="fltarr(nx, ny, n_polstates, n_wavelengths)"
+;     extension date
+;
+; :Keywords:
+;   velocity : out, optional, type="fltarr(nx, ny)"
+;     set to a named variable to retrieve the doppler velocity
+;   run : in, required, type=object
+;     `ucomp_run` object
 ;-
 function ucomp_doppler, file, ext_data, velocity=velocity, run=run
   compile_opt strictarr
