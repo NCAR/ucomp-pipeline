@@ -151,6 +151,7 @@ pro ucomp_l1_find_alignment, file, $
 
   image_scale = ucomp_compute_platescale(radius, occulter_id, file.wave_region, $
                                          run=run)
+  file.image_scale = image_scale
   ucomp_addpar, primary_header, 'IMAGESCL', image_scale, $
                 comment='[arcsec/pixel] image scale at focal plane', $
                 format='(F0.6)', after=after
