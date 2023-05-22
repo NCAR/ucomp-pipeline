@@ -13,9 +13,9 @@
 function ucomp_dateobs2julday, dateobs
   compile_opt strictarr
 
-  ut_year     = float(strmid(dateobs, 0, 4))
-  ut_month    = float(strmid(dateobs, 5, 2))
-  ut_day      = float(strmid(dateobs, 8, 2))
+  ut_year   = float(strmid(dateobs, 0, 4))
+  ut_month  = float(strmid(dateobs, 5, 2))
+  ut_day    = float(strmid(dateobs, 8, 2))
 
   ut_hour   = float(strmid(dateobs, 11, 2))
   ut_minute = float(strmid(dateobs, 14, 2))
