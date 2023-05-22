@@ -153,7 +153,7 @@ pro ucomp_l1_find_alignment, file, $
                                          run=run)
   file.image_scale = image_scale
   ucomp_addpar, primary_header, 'IMAGESCL', image_scale, $
-                comment='[arcsec/pixel] image scale at focal plane', $
+                comment='[arcsec/pixel] image scale measured in this file', $
                 format='(F0.6)', after=after
 
   ; determine eccentricity of cameras
