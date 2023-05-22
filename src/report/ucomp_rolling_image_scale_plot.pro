@@ -28,6 +28,12 @@ pro ucomp_rolling_image_scale_plot, wave_region, db, run=run
   endelse
 
   image_scale = data.image_scale
+  plate_scale = 0.0 * image_scale
+
+  for f = 0L, n_files - 1L do begin
+    datetime = ucomp_dateobs2datetime((data.date_obs)[f])
+    plate_scale[f] = run->line(wave_region, 'plate_scale', datetime=datetime)
+  endfor
 
   jds = ucomp_dateobs2julday(data.date_obs)
   !null = label_date(date_format='%Y-%N-%D')
@@ -48,11 +54,13 @@ pro ucomp_rolling_image_scale_plot, wave_region, db, run=run
   tvlct, 0, 0, 0, 0
   tvlct, 255, 255, 255, 1
   tvlct, 255, 0, 0, 2
+  tvlct, 128, 128, 128, 3
   tvlct, r, g, b, /get
 
   color            = 0
   background_color = 1
   clip_color       = 2
+  platescale_color = 3
 
   psym             = 6
   symsize          = 0.25
@@ -77,6 +85,8 @@ pro ucomp_rolling_image_scale_plot, wave_region, db, run=run
                  xminor=3, $
                  ytitle='Image scale [arcsec/pixel]', $
                  ystyle=1, yrange=image_scale_range
+
+  plots, jds, plate_scale, linestyle=0, color=platescale_color
 
   ; save plots image file
   output_filename = filepath(string(run.date, wave_region, $
