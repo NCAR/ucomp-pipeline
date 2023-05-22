@@ -224,17 +224,17 @@ pro ucomp_l1_find_alignment, file, $
                 comment='[days] Julian date', $
                 format='F24.13', after=after
 
-  ucomp_addpar, primary_header, 'SEMIDIAM', semidiameter, $
-                comment='[arcsec] solar semi-diameter', $
-                format='(f9.2)', after=after
+  ; ucomp_addpar, primary_header, 'SEMIDIAM', semidiameter, $
+  ;               comment='[arcsec] solar semi-diameter', $
+  ;               format='(f9.2)', after=after
   ucomp_addpar, primary_header, 'RSUN_OBS', semidiameter, $
                 comment=string(distance_au * semidiameter, $
                                format='(%"[arcsec] solar radius using ref radius %0.2f\"")'), $
                 format='(f8.2)', after=after
-  ucomp_addpar, primary_header, 'RSUN', $
-                semidiameter, $
-                comment='[arcsec] solar radius (old standard keyword)', $
-                format='(f8.2)', after=after
+  ; ucomp_addpar, primary_header, 'RSUN', $
+  ;               semidiameter, $
+  ;               comment='[arcsec] solar radius (old standard keyword)', $
+  ;               format='(f8.2)', after=after
   ucomp_addpar, primary_header, 'R_SUN', $
                 semidiameter / run->line(file.wave_region, 'plate_scale'), $
                 comment='[pixel] solar radius', $
