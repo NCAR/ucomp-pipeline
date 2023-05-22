@@ -67,6 +67,8 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
             {name: 'rcam_ellipse_angle', type: '%s'}, $
             {name: 'tcam_ellipse_angle', type: '%s'}, $
 
+            {name: 'image_scale', type: '%s'}, $
+
             {name: 'wave_region', type: '''%s'''}, $
             {name: 'ntunes', type: '%d'}, $
             {name: 'pol_list', type: '''%s'''}, $
@@ -189,6 +191,8 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
                  ucomp_db_float(tcam_eccentricity, valid_range=[0.0, 1.0]), $
                  ucomp_db_float(rcam_ellipse_angle), $
                  ucomp_db_float(tcam_ellipse_angle), $
+
+                 ucomp_db_float(file.image_scale), $
 
                  file.wave_region, $
                  file.n_unique_wavelengths, $

@@ -86,6 +86,7 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
                              flat_rcam_median_continuum=flat_rcam_median_continuum, $
                              flat_tcam_median_linecenter=flat_tcam_median_linecenter, $
                              flat_tcam_median_continuum=flat_tcam_median_continuum, $
+                             image_scale=image_scale, $
                              median_background=median_background, $
                              quality_bitmask=quality_bitmask, $
                              gbu=gbu, $
@@ -118,6 +119,8 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
   if (n_elements(flat_rcam_median_continuum)) then self.flat_rcam_median_continuum = flat_rcam_median_continuum
   if (n_elements(flat_tcam_median_linecenter)) then self.flat_tcam_median_linecenter = flat_tcam_median_linecenter
   if (n_elements(flat_tcam_median_continuum)) then self.flat_tcam_median_continuum = flat_tcam_median_continuum
+
+  if (n_elements(image_scale)) then self.image_scale = image_scale
 
   if (n_elements(median_background)) then self.median_background = median_background
 
@@ -233,6 +236,7 @@ pro ucomp_file::getProperty, run=run, $
                              flat_tcam_median_continuum=flat_tcam_median_continuum, $
                              rcam_geometry=rcam_geometry, $
                              tcam_geometry=tcam_geometry, $
+                             image_scale=image_scale, $
                              occulter_radius=occulter_radius, $
                              t_base=t_base, $
                              t_lcvr1=t_lcvr1, $
@@ -433,6 +437,8 @@ pro ucomp_file::getProperty, run=run, $
 
   if (arg_present(rcam_geometry)) then rcam_geometry = self.rcam_geometry
   if (arg_present(tcam_geometry)) then tcam_geometry = self.tcam_geometry
+
+  if (arg_present(image_scale)) then image_scale = self.image_scale
 
   if (arg_present(occulter_radius)) then begin
     self.rcam_geometry->getProperty, occulter_radius=rcam_radius
@@ -805,6 +811,8 @@ function ucomp_file::init, raw_filename, run=run
   self.tcam_median_continuum  = !values.f_nan
   self.tcam_median_linecenter = !values.f_nan
 
+  self.image_scale = !values.f_nan
+
   ; allocate inventory variables for extensions
   self.v_lcvr3 = ptr_new(/allocate_heap)
 
@@ -909,6 +917,8 @@ pro ucomp_file__define
            occulter_y             : 0.0, $
            rcam_geometry          : obj_new(), $
            tcam_geometry          : obj_new(), $
+
+           image_scale            : 0.0, $
 
            t_base                 : 0.0, $
            t_lcvr1                : 0.0, $
