@@ -645,9 +645,14 @@ end
 ; :Keywords:
 ;   datetime : in, required, type=string
 ;     date/time in the format "YYYYMMDD_HHMMSS"
-;   dx0_c, dy0_c, dx1_c, dy1_c : out, optional, type="fltarr(3, 3)"
-;     set to a named variable to retrieve the corresponding distortion
-;     coefficients
+;   dx0_c : out, optional, type="fltarr(3, 3)"
+;     set to a named variable to retrieve the RCAM x distortion coefficients
+;   dy0_c : out, optional, type="fltarr(3, 3)"
+;     set to a named variable to retrieve the RCAM y distortion coefficients
+;   dx1_c : out, optional, type="fltarr(3, 3)"
+;     set to a named variable to retrieve the TCAM x distortion coefficients
+;   dy1_c : out, optional, type="fltarr(3, 3)"
+;     set to a named variable to retrieve the TCAM y distortion coefficients
 ;-
 pro ucomp_run::get_distortion, datetime=datetime, $
                                dx0_c=dx0_c, $
