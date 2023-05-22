@@ -100,8 +100,8 @@ pro ucomp_l1_promote_header, file, $
   annulus_indices = where(annulus_mask, n_annulus_pts)
   median_background = median(background[annulus_indices])
   file.median_background = median_background
-  ucomp_addpar, primary_header, 'MED_BACK', median_background, $
-                comment='[ppm] median of background', $
+  ucomp_addpar, primary_header, 'MED-BKG', median_background, $
+                comment='[ppm] median of background, i.e., continuum', $
                 format='(F0.3)', after=after
   ucomp_addpar, primary_header, 'COMMENT', 'Metrics', before='VCROSSTK', /title
 
