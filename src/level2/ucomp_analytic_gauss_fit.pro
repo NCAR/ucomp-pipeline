@@ -36,9 +36,9 @@ pro ucomp_analytic_gauss_fit, blue, center, red, d_lambda, $
   compile_opt strictarr
 
   ; initialize arrays
-  peak_intensity = bue * 0.0D
-  doppler_shift  = bue * 0.0D
-  line_width     = bue * 0.0D
+  peak_intensity = blue * 0.0D
+  doppler_shift  = blue * 0.0D
+  line_width     = blue * 0.0D
 
   positive_indices = where(blue gt 0.0 and center gt 0.0 and red gt 0.0, n_positive)
   a = alog(red[positive_indices] / center[positive_indices])
