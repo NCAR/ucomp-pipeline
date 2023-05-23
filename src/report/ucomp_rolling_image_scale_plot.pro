@@ -91,16 +91,29 @@ pro ucomp_rolling_image_scale_plot, wave_region, db, run=run
                  ytitle='Image scale [arcsec/pixel]', $
                  ystyle=1, yrange=image_scale_range
 
-  polyfill, [jds, reverse(jds), jds[0]], $
-            [plate_scale + plate_scale_tolerance, $
-             reverse(plate_scale - plate_scale_tolerance), $
-             plate_scale[0] + plate_scale_tolerance[0]], $
-            color=tolerance_color
+
+  if (n_files gt 1L) then begin
+    diffs = [0.0, plate_scale[1:-1] - plate_scale[0:-2]]
+    change_indices = where(diffs gt 0.0, n_changes, /null)
+    change_indices = [0L, change_indices, n_elements(plate_scale)]
+    for c = 0L, n_changes do begin
+      s = change_indices[c]
+      e = change_indices[c+1] - 1
+      polyfill, [jds[s:e], reverse(jds[s:e]), jds[s]], $
+                [plate_scale[s:e] + plate_scale_tolerance, $
+                 reverse(plate_scale[s:e] - plate_scale_tolerance), $
+                 plate_scale[s] + plate_scale_tolerance], $
+                color=tolerance_color
+      plots, jds[s:e], plate_scale[s:e], linestyle=0, color=platescale_color
+    endfor
+  endif else begin
+    plots, [jds], [plate_scale], linestyle=0, color=platescale_color
+  endelse
+
   mg_range_oplot, jds, image_scale, $
                   color=color, $
                   psym=psym, symsize=symsize, $
                   clip_color=2, clip_psym=7, clip_symsize=1.0
-  plots, jds, plate_scale, linestyle=0, color=platescale_color
 
   ; save plots image file
   output_filename = filepath(string(run.date, wave_region, $
