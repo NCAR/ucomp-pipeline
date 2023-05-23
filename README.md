@@ -2,20 +2,25 @@
 
 This repository contains all the code for processing the level 0 UCoMP data to levels 1 and 2.
 
-It produces:
+The UCoMP pipeline produces:
 
 - level 1 FITS and quick look image files, as well as some animations
-- level 2 FITS and quick look image files, as well as soom animations
-- engineering plots to monitor instrument performance
+- level 2 FITS and quick look image files, as well as some animations
+- engineering plots to monitor instrument performance, data quality, and the
+  performance of the pipeline itself
 - a detailed log of the actions the pipeline performed
-- optionally, updates a database with the created files
+- optionally, updates to a database with the created files
+
+
+#### Using the pipeline
 
 See the repo wiki for:
 
 - requirements for running the pipeline
-- building and installtion instructions
+- building and installation instructions
 - how to run the pipeline
 - guidelines for the code in the repo
+
 
 #### Repo structure
 
