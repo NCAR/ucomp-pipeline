@@ -105,35 +105,35 @@ pro ucomp_l1_find_alignment, file, $
   ucomp_addpar, primary_header, $
                 'XOFFSET0', $
                 rcam.occulter_center[0] - (rcam.xsize - 1.0) / 2.0, $
-                comment='[px] RCAM occulter x-offset from CRPIX1', $
+                comment='[pixels] RCAM occulter x-offset from CRPIX1', $
                 format='(F0.3)', after=after
   ucomp_addpar, primary_header, $
                 'YOFFSET0', $
                 rcam.occulter_center[1] - (rcam.ysize - 1.0) / 2.0, $
-                comment='[px] RCAM occulter y-offset from CRPIX2', $
+                comment='[pixels] RCAM occulter y-offset from CRPIX2', $
                 format='(F0.3)', after=after
   ucomp_addpar, primary_header, 'RADIUS0', rcam.occulter_radius, $
-                comment='[px] RCAM occulter radius', $
+                comment='[pixels] RCAM occulter radius', $
                 format='(F0.3)', after=after
   ucomp_addpar, primary_header, 'FITCHI0', rcam.occulter_chisq, $
-                comment='[px] chi-squared for RCAM center fit', $
+                comment='[pixels] chi-squared for RCAM center fit', $
                 format='(F0.6)', after=after
 
   ucomp_addpar, primary_header, $
                 'XOFFSET1', $
                 tcam.occulter_center[0] - (tcam.xsize - 1.0) / 2.0, $
-                comment='[px] TCAM occulter x-offset from CRPIX1', $
+                comment='[pixels] TCAM occulter x-offset from CRPIX1', $
                 format='(F0.3)', after=after
   ucomp_addpar, primary_header, $
                 'YOFFSET1', $
                 tcam.occulter_center[1] - (tcam.ysize - 1.0) / 2.0, $
-                comment='[px] TCAM occulter y-offset from CRPIX2', $
+                comment='[pixels] TCAM occulter y-offset from CRPIX2', $
                 format='(F0.3)', after=after
   ucomp_addpar, primary_header, 'RADIUS1', file.tcam_geometry.occulter_radius, $
-                comment='[px] TCAM occulter radius', $
+                comment='[pixels] TCAM occulter radius', $
                 format='(F0.3)', after=after
   ucomp_addpar, primary_header, 'FITCHI1', file.tcam_geometry.occulter_chisq, $
-                comment='[px] chi-squared for TCAM center fit', $
+                comment='[pixels] chi-squared for TCAM center fit', $
                 format='(F0.6)', after=after
 
   mg_log, 'RCAM post angle: %0.1f, TCAM post angle: %0.1f', $
@@ -146,14 +146,14 @@ pro ucomp_l1_find_alignment, file, $
   radius = mean([rcam.occulter_radius, tcam.occulter_radius], /nan)
   ucomp_addpar, primary_header, 'RADIUS', $
                 radius, $
-                comment='[px] occulter average radius', $
+                comment='[pixels] occulter average radius', $
                 format='(F0.3)', after=after
 
   image_scale = ucomp_compute_platescale(radius, occulter_id, file.wave_region, $
                                          run=run)
   file.image_scale = image_scale
   ucomp_addpar, primary_header, 'IMAGESCL', image_scale, $
-                comment='[arcsec/pixel] image scale measured in this file', $
+                comment='[arcsec/pixels] image scale measured in this file', $
                 format='(F0.6)', after=after
 
   ; determine eccentricity of cameras
@@ -240,12 +240,12 @@ pro ucomp_l1_find_alignment, file, $
                 'CDELT1', $
                 run->line(file.wave_region, 'plate_scale'), $
                 comment='[arcsec/pixel] solar X increment = platescale', $
-                format='(f9.4)', after=after
+                format='(f9.3)', after=after
   ucomp_addpar, primary_header, $
                 'CDELT2', $
                 run->line(file.wave_region, 'plate_scale'), $
                 comment='[arcsec/pixel] solar Y increment = platescale', $
-                format='(f9.4)', after=after
+                format='(f9.3)', after=after
 
   ucomp_addpar, primary_header, 'COMMENT', $
                 'World Coordinate System (WCS) info', $
