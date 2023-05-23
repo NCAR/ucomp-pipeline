@@ -326,3 +326,5 @@
   can specify dates in options/dates in config file for eod, rt, cal, clearday,
     reprocess, regression, script, and archive sub-commands
   fixed temperature composite images
+  produce image scale plot for evaluating changes in plate scale
+  updating FITS keywords
