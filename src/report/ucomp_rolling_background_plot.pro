@@ -21,10 +21,10 @@ pro ucomp_rolling_background_plot, wave_region, db, run=run
                    count=n_files, error=error, fields=fields, sql_statement=sql)
 
   if (n_files eq 0L) then begin
-    mg_log, 'no files found', name=run.logger_name, /warn
+    mg_log, 'no %s nm files found', wave_region, name=run.logger_name, /warn
     goto, done
   endif else begin
-    mg_log, '%d files found', n_files, name=run.logger_name, /info
+    mg_log, '%d %s nm files found', n_files, wave_region, name=run.logger_name, /info
   endelse
 
   median_background = data.median_background
