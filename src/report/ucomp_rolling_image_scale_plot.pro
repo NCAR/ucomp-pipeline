@@ -29,10 +29,13 @@ pro ucomp_rolling_image_scale_plot, wave_region, db, run=run
 
   image_scale = data.image_scale
   plate_scale = 0.0 * image_scale
+  plate_scale_tolerance = 0.0 * image_scale
 
   for f = 0L, n_files - 1L do begin
     datetime = ucomp_dateobs2datetime((data.date_obs)[f])
     plate_scale[f] = run->line(wave_region, 'plate_scale', datetime=datetime)
+    plate_scale_tolerance[f] = run->line(wave_region, 'plate_scale_tolerance', $
+                                         datetime=datetime)
   endfor
 
   jds = ucomp_dateobs2julday(data.date_obs)
@@ -54,13 +57,15 @@ pro ucomp_rolling_image_scale_plot, wave_region, db, run=run
   tvlct, 0, 0, 0, 0
   tvlct, 255, 255, 255, 1
   tvlct, 255, 0, 0, 2
-  tvlct, 128, 128, 128, 3
+  tvlct, 255, 128, 128, 3
+  tvlct, 240, 240, 240, 4
   tvlct, r, g, b, /get
 
   color            = 0
   background_color = 1
   clip_color       = 2
   platescale_color = 3
+  tolerance_color  = 4
 
   psym             = 6
   symsize          = 0.25
@@ -73,7 +78,7 @@ pro ucomp_rolling_image_scale_plot, wave_region, db, run=run
   endelse
 
   mg_range_plot, [jds], [image_scale], $
-                 charsize=charsize, title='Image scale vs. time', $
+                 charsize=charsize, title='Image scale measured per file over the UCoMP mission', $
                  color=color, background=background_color, $
                  psym=psym, symsize=symsize, $
                  clip_color=2, clip_psym=7, clip_symsize=1.0, $
@@ -86,6 +91,15 @@ pro ucomp_rolling_image_scale_plot, wave_region, db, run=run
                  ytitle='Image scale [arcsec/pixel]', $
                  ystyle=1, yrange=image_scale_range
 
+  polyfill, [jds, reverse(jds), jds[0]], $
+            [plate_scale + plate_scale_tolerance, $
+             reverse(plate_scale - plate_scale_tolerance), $
+             plate_scale[0] + plate_scale_tolerance[0]], $
+            color=tolerance_color
+  mg_range_oplot, jds, image_scale, $
+                  color=color, $
+                  psym=psym, symsize=symsize, $
+                  clip_color=2, clip_psym=7, clip_symsize=1.0
   plots, jds, plate_scale, linestyle=0, color=platescale_color
 
   ; save plots image file
@@ -106,8 +120,8 @@ end
 
 ; main-level example program
 
-date = '20221123'
-config_basename = 'ucomp.production.cfg'
+date = '20220223'
+config_basename = 'ucomp.latest.cfg'
 config_filename = filepath(config_basename, $
                            subdir=['..', '..', '..', 'ucomp-config'], $
                            root=mg_src_root())
@@ -120,7 +134,7 @@ db = ucomp_db_connect(run->config('database/config_filename'), $
                       log_statements=run->config('database/log_statements'), $
                       status=status)
 
-ucomp_rolling_image_scale_plot, '1074', db, run=run
+ucomp_rolling_image_scale_plot, '1079', db, run=run
 
 obj_destroy, [db, run]
 
