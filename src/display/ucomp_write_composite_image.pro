@@ -17,18 +17,12 @@
 ;     wave_region, e.g., "1074"
 ;   radius : out, optional, type=float
 ;     set to a named variable to retrieve the occulter radius
-;   enhanced : in, optional, type=boolean
-;     set to enhance the intensity image when displayed
-;   nrgf : in, optional, type=boolean
-;     set to use the NGRF on the intensity image when displayed
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
 function ucomp_write_composite_image_channel, filename, $
                                               wave_region=wave_region, $
                                               radius=occulter_radius, $
-                                              enhanced=enhanced, $
-                                              nrgf=nrgf, $
                                               run=run
   compile_opt strictarr
 
@@ -46,6 +40,7 @@ function ucomp_write_composite_image_channel, filename, $
 
   dims = size(data, /dimensions)
   intensity = reform(data[*, *, 0])
+  enhanced = run->line(wave_region, 'temperature_enhancement')
   if (keyword_set(enhanced)) then begin
     intensity = ucomp_enhanced_intensity(intensity, $
                                          !null, !null, $
@@ -55,19 +50,12 @@ function ucomp_write_composite_image_channel, filename, $
                                          /mask)
   endif
 
-  if (keyword_set(nrgf)) then begin
-    intensity = ucomp_nrgf(intensity, occulter_radius)
-    display_min   = 0.0
-    display_max   = 256.0
-    display_gamma = 1.0
-    display_power = 1.0
-  endif else begin
-    prefix = keyword_set(enhanced) ? 'enhanced_' : ''
-    display_min   = run->line(wave_region, prefix + 'intensity_display_min')
-    display_max   = run->line(wave_region, prefix + 'intensity_display_max')
-    display_gamma = run->line(wave_region, prefix + 'intensity_display_gamma')  ; TODO: how to use?
-    display_power = run->line(wave_region, prefix + 'intensity_display_power')
-  endelse
+  prefix = keyword_set(enhanced) ? 'enhanced_' : ''
+  display_min   = run->line(wave_region, prefix + 'intensity_display_min')
+  display_max   = run->line(wave_region, prefix + 'intensity_display_max')
+  ; TODO: how to use gamma?
+  display_gamma = run->line(wave_region, prefix + 'intensity_display_gamma')
+  display_power = run->line(wave_region, prefix + 'intensity_display_power')
 
   field_mask = ucomp_field_mask(dims[0:1], run->epoch('field_radius'))
   scaled_intensity = bytscl((intensity * field_mask)^display_power, $
@@ -197,14 +185,10 @@ end
 ;     three level 1 filenames
 ;
 ; :Keywords:
-;   enhanced : in, optional, type=boolean
-;     set to produce enhanced intensity channels
-;   nrgf : in, optional, type=boolean
-;     set to use the NRGF on the intensity channels
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-pro ucomp_write_composite_image, filenames, enhanced=enhanced, nrgf=nrgf, run=run
+pro ucomp_write_composite_image, filenames, run=run
   compile_opt strictarr
 
   channels = ['R', 'G', 'B']
@@ -224,7 +208,6 @@ pro ucomp_write_composite_image, filenames, enhanced=enhanced, nrgf=nrgf, run=ru
   red = ucomp_write_composite_image_channel(filenames[0], $
                                             wave_region=wave_region, $
                                             radius=radius, $
-                                            enhanced=enhanced, nrgf=nrgf, $
                                             run=run)
   wave_regions[0] = wave_region
   radii[0] = radius
@@ -232,7 +215,6 @@ pro ucomp_write_composite_image, filenames, enhanced=enhanced, nrgf=nrgf, run=ru
   green = ucomp_write_composite_image_channel(filenames[1], $
                                               wave_region=wave_region, $
                                               radius=radius, $
-                                              enhanced=enhanced, nrgf=nrgf, $
                                               run=run)
   wave_regions[1] = wave_region
   radii[1] = radius
@@ -240,7 +222,6 @@ pro ucomp_write_composite_image, filenames, enhanced=enhanced, nrgf=nrgf, run=ru
   blue = ucomp_write_composite_image_channel(filenames[2], $
                                              wave_region=wave_region, $
                                              radius=radius, $
-                                             enhanced=enhanced, nrgf=nrgf, $
                                              run=run)
   wave_regions[2] = wave_region
   radii[2] = radius
