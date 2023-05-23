@@ -1,7 +1,10 @@
 # UCoMP Pipeline
 
+This repository contains all the code for processing the level 0 UCoMP data to levels 1 and 2.
 
-## Requirements
+See the repo wiki for:
 
-* IDL 8.2.3 or later
-* cmake 3.1.3 or later
+- requirements for running the pipeline
+- building and installtion instructions
+- how to run the pipeline
+- guidelines for the code in the repo
