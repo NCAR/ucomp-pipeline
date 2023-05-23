@@ -78,7 +78,9 @@ pro ucomp_rolling_image_scale_plot, wave_region, db, run=run
   endelse
 
   mg_range_plot, [jds], [image_scale], $
-                 charsize=charsize, title='Image scale measured per file over the UCoMP mission', $
+                 charsize=charsize, $
+                 title=string(wave_region, $
+                              format='Image scale measured per %s nm file over the UCoMP mission'), $
                  color=color, background=background_color, $
                  psym=psym, symsize=symsize, $
                  clip_color=2, clip_psym=7, clip_symsize=1.0, $
