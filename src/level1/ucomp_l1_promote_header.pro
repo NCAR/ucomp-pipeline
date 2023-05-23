@@ -161,6 +161,32 @@ pro ucomp_l1_promote_header, file, $
   ; TODO: promote SGS values to primary header?
   ; ucomp_addpar, primary_header, 'COMMENT', 'SGS info', $
   ;               before='SGSSCINT', /title
+
+  ; add HISTORY of processing of the file
+  ; TODO: update when continuum correction and sky transmission are performed
+  history = ['Level 1 calibration and processing steps:', $
+             '  - quality check to determine if the file should be processed', $
+             '  - average level 0 data with same onband and wavelength', $
+             '  - apply dark', $
+             '  - apply gain', $
+             '  - camera corrections such as hot pixel correction', $
+             ;'  - correct continuum', $
+             '  - demodulation', $
+             '  - distortion correction', $
+             '  - find the occulter position and radius', $
+             '  - subtract continuum', $
+             '  - deband', $
+             '  - center images using occulter position and rotate to north up', $
+             '  - combine the cameras', $
+             '  - polarimetric correction', $
+             ;'  - correct for sky transmission', $
+             '  - update FITS keywords']
+  for h = 0L, n_elements(history) - 1L do begin
+    if (strlen('HISTORY  ' + history[h]) gt 80L) then begin
+      mg_log, 'too long: %s', history[h], name=run.logger_name, /warn
+    endif
+    ucomp_addpar, primary_header, 'HISTORY', history[h]
+  endfor
 end
 
 
