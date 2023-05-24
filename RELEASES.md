@@ -328,6 +328,6 @@
   fixed temperature composite images
   produce image scale plot for evaluating changes in plate scale
   updating FITS keywords
-0.2.88
+0.2.88 -- 0.3.0
   change quality conditions checked in early mission
   option to not perform noise masking in level 2 products
