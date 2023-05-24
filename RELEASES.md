@@ -328,3 +328,4 @@
   fixed temperature composite images
   produce image scale plot for evaluating changes in plate scale
   updating FITS keywords
+0.2.88
