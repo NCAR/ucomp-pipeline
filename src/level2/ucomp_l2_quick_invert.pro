@@ -87,18 +87,21 @@ pro ucomp_l2_quick_invert, wave_region, $
       line_width *= c / mean(wavelengths)
 
       ; mask data on various thresholds
-      good_indices = where(integrated_intensity gt 0.25 $
-                             and integrated_intensity lt 120.0, $
-                             complement=bad_indices, /null)
+      ; TODO: constants should be retrieved from wave region config file
+      if (run->config('quickinvert/mask_noise')) then begin
+        good_indices = where(integrated_intensity gt 0.25 $
+                               and integrated_intensity lt 120.0, $
+                               complement=bad_indices, /null)
 
-      integrated_intensity[bad_indices] = !values.f_nan
-      integrated_q_i[bad_indices]       = !values.f_nan
-      integrated_u_i[bad_indices]       = !values.f_nan
-      integrated_linpol_i[bad_indices]  = !values.f_nan
-      azimuth[bad_indices]              = !values.f_nan
-      radial_azimuth[bad_indices]       = !values.f_nan
-      doppler_shift[bad_indices]        = !values.f_nan
-      line_width[bad_indices]           = !values.f_nan
+        integrated_intensity[bad_indices] = !values.f_nan
+        integrated_q_i[bad_indices]       = !values.f_nan
+        integrated_u_i[bad_indices]       = !values.f_nan
+        integrated_linpol_i[bad_indices]  = !values.f_nan
+        azimuth[bad_indices]              = !values.f_nan
+        radial_azimuth[bad_indices]       = !values.f_nan
+        doppler_shift[bad_indices]        = !values.f_nan
+        line_width[bad_indices]           = !values.f_nan
+      endif
 
       doppler_shift -= median(doppler_shift) - 1.0
 
