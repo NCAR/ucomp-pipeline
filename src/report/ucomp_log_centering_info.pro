@@ -3,6 +3,10 @@
 ;+
 ; Log the centering information for all the images in the run.
 ;
+; :Params:
+;   filename : in, required, type=string
+;     output log filename
+;
 ; :Keywords:
 ;   run : in, required, type=object
 ;     KCor run object

@@ -1,9 +1,26 @@
 ; docformat = 'rst'
 
+;+
+; Plot median flat value over the last year.
+;
+; :Params:
+;   wave_region : in, required, type=string
+;     wave region, e.g., "1074"
+;   db : in, required, type=object
+;     `UCoMPdbMySQL` object
+;
+; :Keywords:
+;   run : in, required, type=object
+;     `ucomp_run` object
+;-
 pro ucomp_rolling_flat_plots, wave_region, db, run=run
   compile_opt strictarr
 
-  start_date = '2022-02-23T19:51:17'
+  date_components = long(ucomp_decompose_date(run.date))
+  start_date = string(date_components[0] - 1, $
+                      date_components[1], $
+                      date_components[2], $
+                      format='%04d-%02d-%02dT00:00:00')
 
   query = 'select * from ucomp_eng where wave_region=''%s'' and date_obs > ''%s'' order by date_obs'
   data = db->query(query, wave_region, start_date, $

@@ -38,6 +38,8 @@ create table ucomp_eng (
   rcam_ellipse_angle  float(7, 3),    -- radians
   tcam_ellipse_angle  float(7, 3),    -- radians
 
+  image_scale         float(7, 3),    -- plate scale computed for this file
+
   wave_region         char (4),
   ntunes              tinyint (2),
   pol_list            char (4),

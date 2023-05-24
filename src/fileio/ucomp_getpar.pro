@@ -21,6 +21,8 @@
 ;   comment : out, optional, type=string
 ;     set to a named variable to retrieve the comment associated with the
 ;     keyword
+;   _extra : in, optional, type=keywords
+;     keywords to `FXPAR`
 ;-
 function ucomp_getpar, header, name, $
                        float=float, $

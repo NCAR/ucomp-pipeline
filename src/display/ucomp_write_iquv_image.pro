@@ -7,10 +7,17 @@
 ;   data : in, required, type="fltarr(nx, ny, nstokes, nexts)"
 ;     extension data
 ;   l1_basename : in, required, type=string
+;     level 1 basename for corresponding to the given data
 ;   wave_region : in, required, type=string
-;   wavelengths : in, required, type=fltarr
+;     wave region, e.g., "1074"
+;   wavelengths : in, required, type=fltarr(nexts)
+;     wavelengths corresponding to the images in the `nexts` dimension of the
+;     data
 ;
 ; :Keywords:
+;   daily : in, optional, type=boolean
+;     set to indicate that the image corresponds to a daily average in the
+;     level 2 directory
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
@@ -69,6 +76,11 @@ pro ucomp_write_iquv_image, data, l1_basename, wave_region, wavelengths, $
   guess_color = 254
   inflection_color = 255
 
+  tvlct, 255, 255, 255, text_color
+  tvlct, 0, 255, 255, occulter_color
+  tvlct, 255, 255, 0, guess_color
+  tvlct, 255, 0, 0, inflection_color
+
   charsize = 1.25
   title_charsize = 1.75
   detail_charsize = 0.9
@@ -100,18 +112,13 @@ pro ucomp_write_iquv_image, data, l1_basename, wave_region, wavelengths, $
       endelse
 
       ucomp_loadct, ct_name, n_colors=n_colors
-      gamma_ct, display_gamma, /current
-      tvlct, 255, 255, 255, text_color
-      tvlct, 0, 255, 255, occulter_color
-      tvlct, 255, 255, 0, guess_color
-      tvlct, 255, 0, 0, inflection_color
+      mg_gamma_ct, display_gamma, /current, n_colors=n_colors
 
       im = rebin(ext_data[*, *, p], $
                  dims[0] / reduce_dims_factor, $
                  dims[1] / reduce_dims_factor)
       if (run->config('display/mask_l1')) then begin
-        field_mask = ucomp_field_mask(dims[0] / reduce_dims_factor, $
-                                      dims[1] / reduce_dims_factor, $
+        field_mask = ucomp_field_mask(dims[0:1] / reduce_dims_factor, $
                                       run->epoch('field_radius') / reduce_dims_factor)
       endif else begin
         field_mask = bytarr(dims[0] / reduce_dims_factor, dims[1] / reduce_dims_factor) + 1B
@@ -199,8 +206,8 @@ l1_filename = filepath(l1_basename, $
                        subdir=[date, 'level1'], $
                        root=run->config('processing/basedir'))
 
-ucomp_read_l1_data, l1_filename, ext_data=data, n_extensions=n_extensions
-file.n_extensions = n_extensions
+ucomp_read_l1_data, l1_filename, ext_data=data, n_wavelengths=n_wavelengths
+file.n_extensions = n_wavelengths
 
 ucomp_write_iquv_image, data, l1_basename, file.wave_region, file.wavelengths, $
                         run=run

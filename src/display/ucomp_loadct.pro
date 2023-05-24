@@ -1,5 +1,13 @@
 ; docformat = 'rst'
 
+;+
+; Load a color table specified by `rgb` into the current color table as well as
+; into the `colors` common block, current and original colors.
+;
+; :Params:
+;   rgb : in, required, type="bytarr(n_colors, 3)"
+;     color table
+;-
 pro ucomp_loadct_rgb, rgb
   compile_opt strictarr
   common colors, r_orig, g_orig, b_orig, r_curr, g_curr, b_curr
@@ -31,8 +39,8 @@ end
 ;     name of color table to load, e.g., "intensity", "azimuth", etc.
 ;
 ; :Keywords:
-;   n_colors : in, optional, type=integer
-;     number of colors needed, defaults to 256
+;   n_colors : in, optional, type=integer, default=256
+;     number of colors needed
 ;-
 pro ucomp_loadct, name, n_colors=n_colors
   compile_opt strictarr

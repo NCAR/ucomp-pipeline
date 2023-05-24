@@ -3,6 +3,9 @@
 ;+
 ; Return a human readable string for a number of seconds.
 ;
+; :Returns:
+;   string
+;
 ; :Examples:
 ;   For example::
 ;

@@ -21,9 +21,17 @@
 ;     set to a named variable to retrieve the number of extensions
 ;   repair_routine : in, optional, type=string
 ;     call procedure given by this keyword to repair data, if present
+;   badframes : in, optional, type=array of structures
+;     to set specific frames to NaNs, set to an array of structures of the form:
+;
+;         replicate({filename: '', camera: 0L, extension: 0L, polstate: 0L}, $
+;                   n_badframes)
+;
 ;   all_zero : out, optional, type=byte
 ;     set to a named variable to retrieve whether any extension of the file was
 ;     identically zero
+;   logger : in, optional, type=string
+;     name of logger to output to
 ;-
 pro ucomp_read_raw_data, filename, $
                          primary_data=primary_data, $
@@ -32,7 +40,9 @@ pro ucomp_read_raw_data, filename, $
                          ext_headers=ext_headers, $
                          n_extensions=n_extensions, $
                          repair_routine=repair_routine, $
-                         all_zero=all_zero
+                         badframes=badframes, $
+                         all_zero=all_zero, $
+                         logger=logger
   compile_opt strictarr
   on_error, 2
 
@@ -85,6 +95,49 @@ pro ucomp_read_raw_data, filename, $
 
   fits_close, fcb
 
+  n_file_badframes = 0L
+  n_invalid_frames = 0L
+
+  if (n_elements(badframes) gt 0L) then begin
+    file_indices = where(badframes.filename eq file_basename(filename), n_file_badframes)
+    if (n_file_badframes ne 0L) then begin
+      file_badframes = badframes[file_indices]
+      invalid_frames_indices = where((file_badframes.polstate ge 4) $
+                                       or (file_badframes.camera ge 2) $
+                                       or (file_badframes.extension gt n_extensions), $
+                                     n_invalid_frames)
+      if (n_invalid_frames gt 0L) then begin
+        mg_log, 'found %d invalid bad frame specification%s', $
+                n_invalid_frames, $
+                n_invalid_frames gt 1 ? 's' : '', $
+                name=logger, /warn
+        invalid_badframes = file_badframes[invalid_frames_indices]
+        for i = 0L, n_invalid_frames - 1L do begin
+          mg_log, 'invalid bad frame @ camera: %d, polstate: %d, ext: %d', $
+                  (invalid_badframes[i]).camera, $
+                  (invalid_badframes[i]).polstate, $
+                  (invalid_badframes[i]).extension, $
+                  name=logger, /warn
+        endfor
+      endif
+      if (n_invalid_frames eq 0L) then begin
+        ext_data[*, *, file_badframes.polstate, file_badframes.camera, file_badframes.extension - 1] = !values.f_nan
+      endif
+    endif
+  endif
+
+  if (arg_present(primary_header)) then begin
+    dims = size(ext_data, /dimensions)
+    n_total_frames = product(dims[2:*], /preserve_type)
+    ucomp_addpar, primary_header, 'NFRAME', n_total_frames, $
+                  comment='total number of image frames in file', $
+                  after='SAVEALL'
+    n_bad_frames = n_invalid_frames eq 0L ? n_file_badframes : 0L
+    ucomp_addpar, primary_header, 'REMFRAME', n_bad_frames, $
+                  comment='number of bad frames removed', $
+                  after='NFRAME'
+  endif
+
   ; repair data
   if (n_elements(repair_routine) gt 0L) then begin
     call_procedure, repair_routine, primary_header, ext_data, ext_headers
@@ -94,13 +147,15 @@ end
 
 ; main-level example program
 
-date = '20220302'
+;date = '20220302'
+date = '20220310'
 ;raw_basename = '20220302.211521.32.ucomp.l0.fts'
-raw_basename = '20220302.174547.40.ucomp.l0.fts'
+;raw_basename = '20220302.174547.40.ucomp.l0.fts'
+raw_basename = '20220310.180408.94.ucomp.1074.l0.fts'
 
 config_basename = 'ucomp.latest.cfg'
 config_filename = filepath(config_basename, $
-                           subdir=['..', '..', 'config'], $
+                           subdir=['..', '..', '..', 'ucomp-config'], $
                            root=mg_src_root())
 
 run = ucomp_run(date, 'test', config_filename)
@@ -113,10 +168,11 @@ ucomp_read_raw_data, raw_filename, $
                      ext_data=ext_data, $
                      ext_headers=ext_headers, $
                      repair_routine=run->epoch('raw_data_repair_routine'), $
+                     ;badframes=run.badframes, $
                      all_zero=all_zero
 print, raw_filename
 print, raw_basename, all_zero ? 'YES' : 'NO', format='%s all zero: %s'
 
-obj_destroy, run
+;obj_destroy, run
 
 end

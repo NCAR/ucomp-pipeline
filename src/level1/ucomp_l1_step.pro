@@ -18,12 +18,14 @@
 ;     background data
 ;
 ; :Keywords:
+;   step_number : in, required, type=long
+;     set number in the level 1 processing for a file
 ;   skip : in, optional, type=boolean
 ;     set to skip routine
 ;   run : in, required, type=object
 ;     UCoMP run object
 ;   _extra : in, optional, type=keywords
-;     keywords to pass along to `ROUTINE_NAME`
+;     keywords to pass along to `routine_name`
 ;-
 pro ucomp_l1_step, routine_name, file, $
                    primary_header, data, headers, backgrounds, $

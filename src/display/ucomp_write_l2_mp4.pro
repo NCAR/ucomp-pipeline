@@ -7,6 +7,9 @@
 ; :Params:
 ;   wave_region : in, required, type=string
 ;     wave region, i.e., "1074"
+;   type : in, required, type=string
+;     type of data to be used in the creating the mp4, corresponding to the
+;     name indicating type used in the PNG files
 ;
 ; :Keywords:
 ;   run : in, required, type=object
@@ -39,9 +42,8 @@ pro ucomp_write_l2_mp4, wave_region, type, run=run
                         format='(%"%s.ucomp.%s.l2.%s.mp4")')
   mp4_filename = filepath(mp4_basename, root=l2_dir)
 
-  mg_log, 'creating %s from %d images...', $
+  mg_log, 'writing %s...', $
           mp4_basename, $
-          n_images, $
           name=run.logger_name, /info
   ucomp_create_mp4, image_filenames, mp4_filename, run=run, status=status
 

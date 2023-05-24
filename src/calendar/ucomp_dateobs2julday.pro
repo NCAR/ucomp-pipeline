@@ -8,7 +8,7 @@
 ;
 ; :Params:
 ;   dateobs : in, required, type=string
-;     DATE-OBS string like "2020-05-09T00:45:03.04"
+;     DATE-OBS string like "2020-05-09T00:45:03.04" or "2020-05-09"
 ;-
 function ucomp_dateobs2julday, dateobs
   compile_opt strictarr

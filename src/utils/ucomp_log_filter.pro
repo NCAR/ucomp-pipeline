@@ -4,6 +4,9 @@
 ; Returns the log messages from the `logfile` that are at the level given or
 ; more important.
 ;
+; :Returns:
+;   `strarr`
+;
 ; :Params:
 ;   logfile : in, required, type=string
 ;     filename of log file

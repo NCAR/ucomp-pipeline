@@ -1,5 +1,32 @@
 ; docformat = 'rst'
 
+;+
+; Check a file existence and properties on a remote server compared to the
+; local file.
+;
+; :Returns:
+;   `0UL` if no error, otherwise an error occurred (`1UL` indicates local file
+;   not found, `2UL` indicates a problem checking remote file, `4UL` indicates
+;   a bad format for `ls` output on remote server, `8UL` indicates bad remote
+;   permissions, `16UL` indicates bad remote group owner, and `32UL` indicates
+;   bad remote file size)
+;
+; :Params:
+;   basename : in, required, type=string
+;     basename of file to be checked
+;   local_dir : in, required, type=string
+;     local directory for file to be checked
+;   remote_server : in, required, type=string
+;     server name for remote location of file
+;   remote_dir : in, required, type=string
+;     remote directory for file
+;   ssh_key : in, optional, type=string
+;     full path to SSH key to use when connecting to remote server
+;
+; :Keywords:
+;   logger_name : in, optional, type=string
+;     name of logger to send log messages to
+;-
 function ucomp_verify_check_remote_file, basename, $
                                          local_dir, $
                                          remote_server, $

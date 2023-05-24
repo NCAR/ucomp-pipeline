@@ -11,6 +11,8 @@
 ;     filename of a routing file
 ;   date : in, required, type=string
 ;     date in the form "YYYYMMDD"
+;   type : in, required, type=string
+;     type of routine to get, i.e., "raw" or "process"
 ;
 ; :Keywords:
 ;   found : out, optional, type=boolean

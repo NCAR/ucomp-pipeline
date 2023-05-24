@@ -70,6 +70,7 @@ end
 ;-
 pro ucomp_file::setProperty, demodulated=demodulated, $
                              rotated=rotated, $
+                             linearity_corrected=linearity_corrected, $
                              wrote_l1=wrote_l1, $
                              wrote_dynamics=wrote_dynamics, $
                              wrote_polarization=wrote_polarization, $
@@ -85,6 +86,7 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
                              flat_rcam_median_continuum=flat_rcam_median_continuum, $
                              flat_tcam_median_linecenter=flat_tcam_median_linecenter, $
                              flat_tcam_median_continuum=flat_tcam_median_continuum, $
+                             image_scale=image_scale, $
                              median_background=median_background, $
                              quality_bitmask=quality_bitmask, $
                              gbu=gbu, $
@@ -97,6 +99,7 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
 
   if (n_elements(demodulated)) then self.demodulated = demodulated
   if (n_elements(rotated)) then self.rotated = rotated
+  if (n_elements(linearity_corrected)) then self.linearity_corrected = linearity_corrected
   if (n_elements(wrote_l1) gt 0L) then self.wrote_l1 = wrote_l1
   if (n_elements(wrote_dynamics)) then self.wrote_dynamics = wrote_dynamics
   if (n_elements(wrote_polarization)) then self.wrote_polarization = wrote_polarization
@@ -116,6 +119,8 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
   if (n_elements(flat_rcam_median_continuum)) then self.flat_rcam_median_continuum = flat_rcam_median_continuum
   if (n_elements(flat_tcam_median_linecenter)) then self.flat_tcam_median_linecenter = flat_tcam_median_linecenter
   if (n_elements(flat_tcam_median_continuum)) then self.flat_tcam_median_continuum = flat_tcam_median_continuum
+
+  if (n_elements(image_scale)) then self.image_scale = image_scale
 
   if (n_elements(median_background)) then self.median_background = median_background
 
@@ -161,6 +166,7 @@ pro ucomp_file::getProperty, run=run, $
                              polarization_basename=polarization_basename, $
                              demodulated=demodulated, $
                              rotated=rotated, $
+                             linearity_corrected=linearity_corrected, $
                              wrote_l1=wrote_l1, $
                              wrote_dynamics=wrote_dynamics, $
                              wrote_polarization=wrote_polarization, $
@@ -170,6 +176,8 @@ pro ucomp_file::getProperty, run=run, $
                              ut_time=ut_time, $
                              obsday_hours=obsday_hours, $
                              date_obs=date_obs, $
+                             date_begin=date_begin, $
+                             date_end=date_end, $
                              julian_date=julian_date, $
                              carrington_rotation=carrington_rotation, $
                              p_angle=p_angle, $
@@ -228,6 +236,7 @@ pro ucomp_file::getProperty, run=run, $
                              flat_tcam_median_continuum=flat_tcam_median_continuum, $
                              rcam_geometry=rcam_geometry, $
                              tcam_geometry=tcam_geometry, $
+                             image_scale=image_scale, $
                              occulter_radius=occulter_radius, $
                              t_base=t_base, $
                              t_lcvr1=t_lcvr1, $
@@ -255,6 +264,7 @@ pro ucomp_file::getProperty, run=run, $
                              t_c1pcb=t_c1pcb, $
                              numsum=numsum, $
                              n_repeats=n_repeats, $
+                             v_lcvr3=v_lcvr3, $
                              sgs_dimv=sgs_dimv, $
                              sgs_dims=sgs_dims, $
                              sgs_scint=sgs_scint, $
@@ -306,6 +316,7 @@ pro ucomp_file::getProperty, run=run, $
 
   if (arg_present(demodulated)) then demodulated = self.demodulated
   if (arg_present(rotated)) then rotated = self.rotated
+  if (arg_present(linearity_corrected)) then linearity_corrected = self.linearity_corrected
   if (arg_present(wrote_l1)) then wrote_l1 = self.wrote_l1
   if (arg_present(wrote_dynamics)) then wrote_dynamics = self.wrote_dynamics
   if (arg_present(wrote_polarization)) then wrote_polarization = self.wrote_polarization
@@ -319,6 +330,8 @@ pro ucomp_file::getProperty, run=run, $
   if (arg_present(obsday_hours)) then obsday_hours = self.obsday_hours
 
   if (arg_present(date_obs)) then date_obs = self.date_obs
+  if (arg_present(date_begin)) then date_begin = self.date_begin
+  if (arg_present(date_end)) then date_end = self.date_end
   if (arg_present(julian_date)) then begin
     date_parts = long(ucomp_decompose_date(self.ut_date))
     time_parts = long(ucomp_decompose_time(self.ut_time))
@@ -425,6 +438,8 @@ pro ucomp_file::getProperty, run=run, $
   if (arg_present(rcam_geometry)) then rcam_geometry = self.rcam_geometry
   if (arg_present(tcam_geometry)) then tcam_geometry = self.tcam_geometry
 
+  if (arg_present(image_scale)) then image_scale = self.image_scale
+
   if (arg_present(occulter_radius)) then begin
     self.rcam_geometry->getProperty, occulter_radius=rcam_radius
     self.tcam_geometry->getProperty, occulter_radius=tcam_radius
@@ -482,6 +497,8 @@ pro ucomp_file::getProperty, run=run, $
   if (arg_present(numsum)) then numsum = self.numsum
   if (arg_present(n_repeats)) then n_repeats = self.n_repeats
 
+  if (arg_present(v_lcvr3)) then v_lcvr3 = *self.v_lcvr3
+
   if (arg_present(sgs_dimv)) then sgs_dimv = *self.sgs_dimv
   if (arg_present(sgs_dims)) then sgs_dims = *self.sgs_dims
   if (arg_present(sgs_scint)) then sgs_scint = *self.sgs_scint
@@ -518,6 +535,9 @@ pro ucomp_file::_extract_datetime
 end
 
 
+;+
+; Update this `ucomp_file` object to a level 1 file.
+;-
 pro ucomp_file::_update_to_level1
   compile_opt strictarr
 
@@ -529,7 +549,7 @@ pro ucomp_file::_update_to_level1
   ucomp_read_l1_data, l1_filename, $
                       primary_header=primary_header, $
                       ext_headers=ext_headers, $
-                      n_extensions=n_extensions
+                      n_wavelengths=n_wavelengths
 
   ; find alignment
   center = [ucomp_getpar(primary_header, 'CRPIX1'), ucomp_getpar(primary_header, 'CRPIX2')] - 1.0
@@ -540,9 +560,9 @@ pro ucomp_file::_update_to_level1
   self.tcam_geometry = geometry
 
   ; continuum subtraction
-  self.n_extensions = n_extensions
-  wavelengths = fltarr(n_extensions)
-  for e = 0L, n_extensions - 1L do begin
+  self.n_extensions = n_wavelengths
+  wavelengths = fltarr(n_wavelengths)
+  for e = 0L, n_wavelengths - 1L do begin
     wavelengths[e] = ucomp_getpar(ext_headers[e], 'WAVELNG')
   endfor
   *self.wavelengths = wavelengths
@@ -550,6 +570,14 @@ pro ucomp_file::_update_to_level1
 end
 
 
+;+
+; Update the `ucomp_file` object to the given type.
+;
+; :Params:
+;   type : in, required, type=string
+;     type of file to update the file object to: "level1", "dynamics", or
+;     "polarization"
+;-
 pro ucomp_file::update, type
   compile_opt strictarr
 
@@ -666,14 +694,8 @@ pro ucomp_file::_inventory
   self.wind_speed     = ucomp_getpar(primary_header, 'WNDSPD', /float, found=found)
   self.wind_direction = ucomp_getpar(primary_header, 'WNDDIR', /float, found=found)
 
-  ; allocate inventory variables
-  if (self.n_extensions gt 0L) then begin
-    *self.wavelengths = fltarr(self.n_extensions)
-    *self.onband_indices = lonarr(self.n_extensions)
-  endif
-
   if (n_elements(extension_header) gt 0L) then begin
-    self.numsum = ucomp_getpar(extension_header, 'NUMSUM', found=found)
+    self.numsum  = ucomp_getpar(extension_header, 'NUMSUM', found=found)
     self.exptime = ucomp_getpar(extension_header, 'EXPTIME', /float, found=found)
     self.o1focus = ucomp_getpar(extension_header, 'O1FOCUS', /float, found=found)
   endif
@@ -681,25 +703,36 @@ pro ucomp_file::_inventory
   ; inventory extensions for things that vary by extension
   moving_parts = 0B
 
+  ; allocate inventory variables
   if (self.n_extensions gt 0L) then begin
-    *self.sgs_dimv  = fltarr(self.n_extensions)
-    *self.sgs_dims  = fltarr(self.n_extensions)
-    *self.sgs_scint = fltarr(self.n_extensions)
-    *self.sgs_sumv  = fltarr(self.n_extensions)
-    *self.sgs_sums  = fltarr(self.n_extensions)
-    *self.sgs_loop  = fltarr(self.n_extensions)
-    *self.sgs_rav   = fltarr(self.n_extensions)
-    *self.sgs_ras   = fltarr(self.n_extensions)
-    *self.sgs_razr  = fltarr(self.n_extensions)
-    *self.sgs_decv  = fltarr(self.n_extensions)
-    *self.sgs_decs  = fltarr(self.n_extensions)
-    *self.sgs_deczr = fltarr(self.n_extensions)
+    *self.wavelengths    = fltarr(self.n_extensions)
+    *self.onband_indices = lonarr(self.n_extensions)
+
+    *self.v_lcvr3        = fltarr(self.n_extensions)
+
+    *self.sgs_dimv       = fltarr(self.n_extensions)
+    *self.sgs_dims       = fltarr(self.n_extensions)
+    *self.sgs_scint      = fltarr(self.n_extensions)
+    *self.sgs_sumv       = fltarr(self.n_extensions)
+    *self.sgs_sums       = fltarr(self.n_extensions)
+    *self.sgs_loop       = fltarr(self.n_extensions)
+    *self.sgs_rav        = fltarr(self.n_extensions)
+    *self.sgs_ras        = fltarr(self.n_extensions)
+    *self.sgs_razr       = fltarr(self.n_extensions)
+    *self.sgs_decv       = fltarr(self.n_extensions)
+    *self.sgs_decs       = fltarr(self.n_extensions)
+    *self.sgs_deczr      = fltarr(self.n_extensions)
   endif
 
   for e = 1L, self.n_extensions do begin
     fits_read, fcb, data, extension_header, exten_no=e, /header_only, $
                /no_abort, message=error_msg
     if (error_msg ne '') then message, error_msg
+
+    if (e eq 1) then self.date_begin = ucomp_getpar(extension_header, 'DATE-BEG')
+    if (e eq self.n_extensions) then self.date_end = ucomp_getpar(extension_header, 'DATE-BEG')
+
+    (*self.v_lcvr3)[e - 1] = ucomp_getpar(extension_header, 'V_LCVR3', /float, found=found)
 
     (*self.wavelengths)[e - 1] = ucomp_getpar(extension_header, 'WAVELNG', /float, found=found)
     (*self.onband_indices)[e - 1] = ucomp_getpar(extension_header, 'ONBAND', found=found) eq 'tcam'
@@ -720,7 +753,8 @@ pro ucomp_file::_inventory
 
   if (self.n_extensions gt 0L) then begin
     self->getProperty, n_unique_wavelengths=n_unique_wavelengths
-    self.n_repeats = self.n_extensions / n_unique_wavelengths
+    n_cameras = 2L   ; number of values that ONBAND can take
+    self.n_repeats = self.n_extensions / n_unique_wavelengths / n_cameras
   endif
 
   fits_close, fcb
@@ -734,6 +768,7 @@ pro ucomp_file::cleanup
   compile_opt strictarr
 
   ptr_free, self.wavelengths, self.onband_indices
+  ptr_free, self.v_lcvr3
   ptr_free, self.sgs_dimv, self.sgs_dims, self.sgs_scint, self.sgs_sumv, $
             self.sgs_sums, self.sgs_loop, self.sgs_rav, self.sgs_ras, $
             self.sgs_razr, self.sgs_decv, self.sgs_decs, self.sgs_deczr
@@ -742,12 +777,18 @@ end
 
 
 ;+
+; Initialize UCoMP file object.
+;
 ; :Returns:
 ;   1 for success, 0 otherwise
 ;
 ; :Params:
 ;   raw_filename : in, required, type=str
 ;     filename of raw UCoMP file
+;
+; :Keywords:
+;   run : in, required, type=object
+;     `ucomp_run` object
 ;-
 function ucomp_file::init, raw_filename, run=run
   compile_opt strictarr
@@ -770,7 +811,11 @@ function ucomp_file::init, raw_filename, run=run
   self.tcam_median_continuum  = !values.f_nan
   self.tcam_median_linecenter = !values.f_nan
 
+  self.image_scale = !values.f_nan
+
   ; allocate inventory variables for extensions
+  self.v_lcvr3 = ptr_new(/allocate_heap)
+
   self.wavelengths = ptr_new(/allocate_heap)
   self.onband_indices = ptr_new(/allocate_heap)
 
@@ -806,6 +851,7 @@ pro ucomp_file__define
 
            demodulated            : 0B, $
            rotated                : 0B, $
+           linearity_corrected    : 0B, $
            wrote_l1               : 0B, $
            wrote_dynamics         : 0B, $
            wrote_polarization     : 0B, $
@@ -816,6 +862,8 @@ pro ucomp_file__define
            ut_time                : '', $
            obsday_hours           : 0.0, $
            date_obs               : '', $
+           date_begin             : '', $
+           date_end               : '', $
 
            n_extensions           : 0L, $
            n_repeats              : 0L, $
@@ -870,6 +918,8 @@ pro ucomp_file__define
            rcam_geometry          : obj_new(), $
            tcam_geometry          : obj_new(), $
 
+           image_scale            : 0.0, $
+
            t_base                 : 0.0, $
            t_lcvr1                : 0.0, $
            t_lcvr2                : 0.0, $
@@ -894,6 +944,8 @@ pro ucomp_file__define
            t_c0pcb                : 0.0, $
            t_c1arr                : 0.0, $
            t_c1pcb                : 0.0, $
+
+           v_lcvr3                : ptr_new(), $
 
            wavelengths            : ptr_new(), $
            onband_indices         : ptr_new(), $

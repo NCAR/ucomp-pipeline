@@ -16,14 +16,9 @@
 ;     Dmx_Temp_Coefs.sav
 ;   mod_temp : in, required, type=float
 ;     modulator unfiltered temperature [C]
-;   wave_region_index : in, required, type=integer
-;     index of wavelength region, i.e., 530=0, 637=1, ..., 1083=8
 ;-
-function ucomp_get_dmatrix, dmx_coefs, mod_temp, wave_region_index
+function ucomp_get_dmatrix, dmx_coefs, mod_temp
   compile_opt strictarr
 
-  dmx = dmx_coefs[*, *, wave_region_index, 0] $
-          + mod_temp * dmx_coefs[*, *, wave_region_index, 1]
-
-  return, dmx
+  return, dmx_coefs[*, *, 0] + mod_temp * dmx_coefs[*, *, 1]
 end

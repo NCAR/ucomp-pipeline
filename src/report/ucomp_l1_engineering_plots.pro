@@ -44,5 +44,10 @@ pro ucomp_l1_engineering_plots, run=run
                                         root=engineering_dir), $
                                wave_regions[w], $
                                run=run
+    ucomp_plot_temp_vs_voltage, filepath(string(run.date, wave_regions[w], $
+                                                format='(%"%s.ucomp.%s.temp_vs_volt.gif")'), $
+                                         root=engineering_dir), $
+                                wave_regions[w], $
+                                run=run
   endfor
 end

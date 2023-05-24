@@ -22,12 +22,12 @@
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-function ucomp_gbu_check_nominal_temps, file, $
-                                        primary_header, $
-                                        ext_data, $
-                                        ext_headers, $
-                                        backgrounds, $
-                                        run=run
+function ucomp_quality_check_nominal_temps, file, $
+                                            primary_header, $
+                                            ext_data, $
+                                            ext_headers, $
+                                            backgrounds, $
+                                            run=run
   compile_opt strictarr
 
   tolerance = 0.001

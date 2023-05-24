@@ -113,6 +113,7 @@ pro ucomp_send_notification, run=run
       endfor
     endif
 
+    date_range = [run.date, ucomp_increment_date(run.date)]
     gbu_indices = where(gbu gt 0L, n_bad_gbu)
     if (n_bad_gbu gt 0L) then begin
       body->add, ''
@@ -123,8 +124,33 @@ pro ucomp_send_notification, run=run
       for g = 0L, n_elements(gbu_conditions) - 1L do begin
         !null = where(gbu_conditions[g].mask and gbu, n_condition_files)
         if (n_condition_files gt 0L) then begin
-          body->add, string(mg_plural(n_condition_files, 'file'), $
-                            gbu_conditions[g].description, $
+          options = strsplit(gbu_conditions[g].values, ',', $
+                             /extract, count=n_options)
+
+          any_changed_value = 0B
+          values = hash()
+
+          for o = 0L, n_options - 1L do begin
+            value_location = strmid(options[o], 0, 1)
+            options[o] = strmid(options[o], 1)
+            case value_location of
+              'E': value = run->epoch(options[o], $
+                                      datetime=date_range, changed=changed)
+              'W': value = run->line(wave_regions[w], options[o], $
+                                     datetime=date_range, changed=changed)
+              else: message, string(value_location, options[o], $
+                                    format='invalid location %s for option %s')
+            endcase
+
+            any_changed_value or= changed
+            values[options[o]] = value
+          endfor
+
+          description = mg_subs(gbu_conditions[g].description, values)
+          obj_destroy, values
+          if (any_changed_value) then description += '*'
+
+          body->add, string(mg_plural(n_condition_files, 'file'), description, $
                             format='(%"%s with %s")')
         endif
       endfor

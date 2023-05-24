@@ -17,6 +17,18 @@
 ;   occulter_radius : in, required, type=float
 ;     occulter radius in pixels
 ;
+; :Keywords:
+;   angle_guess : in, optional, type=float, default=180.0
+;     initial guess angle in degrees from north for the location of the post
+;   angle_tolerance : in, optional, type=float, default=30.0
+;     amount added and subtracted to `post_angle_guess` to search for post in
+;   error : out, optional, type=long
+;     set to a named variable to retrieve the error status of the process of
+;     finding the post, 0 for no error, otherwise an error
+;   err_msg : out, optional, type=string
+;     set to a named variable to retrieve any error message generated in the
+;     post finding process, empty string if no error
+;
 ; :Author:
 ;   MLSO Software Team
 ;
@@ -29,13 +41,17 @@ function ucomp_find_post, im, occulter_center, occulter_radius, $
                           angle_guess=angle_guess, $
                           angle_tolerance=angle_tolerance, $
                           error=error, err_msg=err_msg
-  compile_opt idl2
+  compile_opt strictarr
+
+  dims = size(im, /dimensions)
+  nx = dims[0]
+  ny = dims[1]
 
   _angle_guess = mg_default(angle_guess, 180.0)
   _angle_tolerance = mg_default(angle_tolerance, 30.0)
 
   n_theta = 4 * 360     ; sampling in theta direction
-  n_radius = 70         ; sampling in radius direction
+  n_radius = 60         ; sampling in radius direction
 
   ; this is theta from 0 to 2*pi
   theta = rebin(2.0D * !dpi * findgen(n_theta) / float(n_theta), n_theta, n_radius)
@@ -46,7 +62,6 @@ function ucomp_find_post, im, occulter_center, occulter_radius, $
             n_theta, n_radius)
 
   ; convert to rectangular coordinates
-  ; occulter.x and occulter.y are the center of the occulter - not the offset
   x = r * cos(theta) + occulter_center[0]
   y = r * sin(theta) + occulter_center[1]
 
@@ -63,13 +78,6 @@ function ucomp_find_post, im, occulter_center, occulter_radius, $
   ; a guess for the post position
   y = median(theta_scan) - theta_scan
   x = findgen(n_theta) / (float(n_theta) - 1.0) * 360.0
-
-  lower_limit = _angle_guess + 90.0 - _angle_tolerance
-  upper_limit = _angle_guess + 90.0 + _angle_tolerance
-  ind = where((x gt lower_limit) and (x lt upper_limit), count)
-
-  x = x[ind]
-  y = y[ind]
 
   max_value = max(y, max_pixel)
   estimates = [max(y), x[max_pixel], 15.0, 0.0, 0.0]
@@ -92,8 +100,6 @@ function ucomp_find_post, im, occulter_center, occulter_radius, $
   ; coordinate system, where theta=0 is on the right. This angle is measured
   ; CCW from North.
   post_angle = coeff[1] - 90.0
-
-  if (post_angle lt -180.0 || post_angle gt 180.0) then post_angle = !values.f_nan
 
   return, post_angle
 end

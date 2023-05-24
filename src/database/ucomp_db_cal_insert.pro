@@ -10,6 +10,8 @@
 ;     type of cal file, i.e., 'dark', 'flat', or 'cal'
 ;   obsday_index : in, required, type=integer
 ;     index into mlso_numfiles database table
+;   sw_index : in, required, type=integer
+;     index into the ucomp_sw database table
 ;   db : in, optional, type=object
 ;     `UCOMPdbMySQL` database connection to use
 ;
@@ -18,7 +20,8 @@
 ;     logger name to use for logging, i.e., "ucomp/rt", "ucomp/eod", etc.
 ;-
 pro ucomp_db_cal_insert, files, type, $
-                         obsday_index, sw_index, db, logger_name=logger_name
+                         obsday_index, sw_index, db, $
+                         logger_name=logger_name
   compile_opt strictarr
 
   n_files = n_elements(files)

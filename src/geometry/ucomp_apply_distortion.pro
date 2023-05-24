@@ -4,6 +4,9 @@
 ; Applies distortion correction to a sub-image `sub_image` given the
 ; distortion coefficients.
 ;
+; :Returns:
+;   distortion corrected image
+;
 ; :Params:
 ;   sub_image : in, out, required, type="fltarr(nx, ny)"
 ;     sub-image to correct
