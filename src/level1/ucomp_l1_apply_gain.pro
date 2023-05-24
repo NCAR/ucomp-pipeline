@@ -75,22 +75,12 @@ pro ucomp_l1_apply_gain, file, $
       continue
     endif
 
-    ; mg_log, 'dark corrected flat mean by camera: %0.3f, %0.3f', $
-    ;         mean(mean(dark_corrected_flat, dimension=1), dimension=1), $
-    ;         name=run.logger_name, /debug
-
     im = data[*, *, *, *, e]
+
+    flat_median = median(dark_corrected_flat)
 
     zero_indices = where(dark_corrected_flat eq 0.0, n_zeros)
     if (n_zeros gt 0L) then dark_corrected_flat[zero_indices] = 1.0
-
-    ; fix hot pixels before applying the flat
-    for c = 0L, n_cameras - 1L do begin
-      run->get_hot_pixels, gain_mode, c, hot=hot, adjacent=adjacent
-      dark_corrected_flat[*, *, c] = ucomp_fix_hot(dark_corrected_flat[*, *, c], $
-                                                   hot=hot, $
-                                                   adjacent=adjacent)
-    endfor
 
     ; apply flat
     for p = 0L, n_pol_states - 1L do begin
@@ -138,6 +128,10 @@ pro ucomp_l1_apply_gain, file, $
     ucomp_addpar, h, 'BUNIT', '1.0E-06 B/Bsun', $
                   comment='brightness with respect to solar disk', $
                   after='BOPAL'
+    ucomp_addpar, h, 'FLATDN', flat_median, $
+                  comment='median DN value of the dark-corrected flat used', $
+                  format='(F0.2)'
+                  after='BUNIT'
     headers[e] = h
   endfor
 end
