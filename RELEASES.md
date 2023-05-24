@@ -315,7 +315,7 @@
   fix for finding configuration file for verification script
   fix for finding post
   horizontal debanding
-0.2.87
+0.2.87 [May 23, 2023]
   change display min/max for radial azimuth to +/- 50.0
   improved GBU
   ability to remove bad frames
