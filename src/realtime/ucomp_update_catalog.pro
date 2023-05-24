@@ -21,6 +21,8 @@
 ;     wave regions of `new_files`
 ;   n_points : in, required, type=lonarr
 ;     number of unique wavelengths
+;   numsum : in, required, type=lonarr
+;     `NUMSUM` value for each file
 ;-
 pro ucomp_update_catalog, catalog_filename, $
                           new_files, $

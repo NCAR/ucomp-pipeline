@@ -1,5 +1,20 @@
 ; docformat = 'rst'
 
+;+
+; Plot eccentricity of occulter fit.
+;
+; :Params:
+;   wave_region : in, required, type=string
+;     wave region, e.g., "1074"
+;   obsday_index : in, required, type=integer
+;     index used to identify observing day in database tables
+;   db : in, required, type=object
+;     `UCoMPdbMySQL` object
+;
+; :Keywords:
+;   run : in, required, type=object
+;     `ucomp_run` object
+;-
 pro ucomp_plot_eccentricity, wave_region, obsday_index, db, run=run
   compile_opt strictarr
 

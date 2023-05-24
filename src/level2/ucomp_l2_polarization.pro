@@ -3,11 +3,11 @@
 ;+
 ; Produce the polarization images:
 ;
-; - average intensity
-; - enhanced intensity
-; - average Q
-; - average U
-; - average L
+; - integrated intensity
+; - enhanced integrated intensity
+; - integrated Q
+; - integrated U
+; - integrated L
 ; - azimuth
 ; - radial azimuth
 ;
@@ -24,7 +24,7 @@ pro ucomp_l2_polarization, file, run=run
 
   ; check GBU
   if (~file.ok || file.gbu ne 0L) then begin
-    mg_log, 'poor quality, skipping %s', file.l1_basename, $
+    mg_log, 'poor quality for %s', file.l1_basename, $
             name=run.logger_name, /warn
     goto, done
   endif
@@ -36,13 +36,13 @@ pro ucomp_l2_polarization, file, run=run
                          subdir=[run.date, 'level1'], $
                          root=run->config('processing/basedir'))
   if (~file_test(l1_filename, /regular)) then begin
-    mg_log, '%s does not exist, skipping', file.l1_basename, $
+    mg_log, '%s does not exist', file.l1_basename, $
             name=run.logger_name, /warn
     goto, done
   endif
 
   if (file.n_unique_wavelengths lt 3L) then begin
-    mg_log, '%s does not have 3 unique wavelengths, skipping', $
+    mg_log, '%s does not have 3 unique wavelengths', $
             file.l1_basename, $
             name=run.logger_name, /warn
     goto, done
@@ -52,7 +52,7 @@ pro ucomp_l2_polarization, file, run=run
                       primary_header=primary_header, $
                       ext_data=ext_data, $
                       ext_headers=ext_headers, $
-                      n_extensions=n_extensions
+                      n_wavelengths=n_wavelengths
 
   ; find center wavelength
   center_indices = file->get_center_wavelength_indices()
@@ -78,14 +78,12 @@ pro ucomp_l2_polarization, file, run=run
   center_indices = [center_index - 1, center_index, center_index + 1]
 
   center_intensity = reform(ext_data[*, *, 0, center_index - 1:center_index + 1])
-  center_q         = reform(ext_data[*, *, 1, center_index - 1:center_index + 1])
-  center_u         = reform(ext_data[*, *, 2, center_index - 1:center_index + 1])
 
-  average_intensity = total(center_intensity, 3) / 2.0
-  average_q         = total(center_q, 3) / 2.0
-  average_u         = total(center_u, 3) / 2.0
+  integrated_intensity = ucomp_integrate(reform(ext_data[*, *, 0, *]), center_index=center_index)
+  integrated_q         = ucomp_integrate(reform(ext_data[*, *, 1, *]), center_index=center_index)
+  integrated_u         = ucomp_integrate(reform(ext_data[*, *, 2, *]), center_index=center_index)
 
-  average_linpol = sqrt(average_q^2 + average_u^2)
+  integrated_linpol = sqrt(integrated_q^2 + integrated_u^2)
 
   d_lambda = wavelengths[center_index] - wavelengths[center_index - 1]
   ucomp_analytic_gauss_fit, center_intensity[*, *, 0], $
@@ -96,7 +94,7 @@ pro ucomp_l2_polarization, file, run=run
                             line_width=line_width, $
                             peak_intensity=peak_intensity
 
-  enhanced_intensity = ucomp_enhanced_intensity(average_intensity, $
+  enhanced_intensity = ucomp_enhanced_intensity(integrated_intensity, $
                                                 line_width, $
                                                 doppler_shift, $
                                                 primary_header, $
@@ -105,35 +103,7 @@ pro ucomp_l2_polarization, file, run=run
                                                 amount=run->line(file.wave_region, 'enhanced_intensity_amount'), $
                                                 mask=run->config('display/mask_l2'))
 
-  azimuth = ucomp_azimuth(average_q, average_u, radial_azimuth=radial_azimuth)
-
-  if (run->config('display/mask_l2')) then begin
-    ; mask outputs
-    dims = size(average_intensity, /dimensions)
-    field_mask = ucomp_field_mask(dims[0], $
-                                  dims[1], $
-                                  run->epoch('field_radius'))
-    occulter_mask = ucomp_occulter_mask(dims[0], dims[1], file.occulter_radius)
-    rcam = file.rcam_geometry
-    tcam = file.tcam_geometry
-    post_angle = (rcam.post_angle + tcam.post_angle) / 2.0
-    post_mask = ucomp_post_mask(dims[0], dims[1], post_angle)
-    offsensor_mask = ucomp_offsensor_mask(dims[0], dims[1], file.p_angle)
-    ; TODO: should we do this intensity mask? what should the threshold be?
-    intensity_threshold_mask = peak_intensity gt 0.1
-    mask = field_mask and occulter_mask and post_mask and offsensor_mask and intensity_threshold_mask
-    outside_mask_indices = where(mask eq 0, n_outside_mask)
-
-    if (n_outside_mask gt 0L) then begin
-      average_intensity[outside_mask_indices]  = !values.f_nan
-      average_q[outside_mask_indices]          = !values.f_nan
-      average_u[outside_mask_indices]          = !values.f_nan
-      average_linpol[outside_mask_indices]     = !values.f_nan
-      enhanced_intensity[outside_mask_indices] = !values.f_nan
-      azimuth[outside_mask_indices]            = !values.f_nan
-      radial_azimuth[outside_mask_indices]     = !values.f_nan
-    endif
-  endif
+  azimuth = ucomp_azimuth(integrated_q, integrated_u, radial_azimuth=radial_azimuth)
 
   l2_dir = filepath('', $
                     subdir=[run.date, 'level2'], $
@@ -145,7 +115,7 @@ pro ucomp_l2_polarization, file, run=run
   ; write polarization file: YYYYMMDD.HHMMSS.ucomp.WWWW.polarization.fts
   polarization_filename = filepath(file.polarization_basename, root=l2_dir)
 
-  mg_log, 'writing %s', file.polarization_basename, name=run.logger_name, /info
+  mg_log, 'writing %s', file.polarization_basename, name=run.logger_name, /debug
 
   ; promote header
   ucomp_addpar, primary_header, 'LEVEL', 'L2', comment='level 2 calibrated'
@@ -155,28 +125,28 @@ pro ucomp_l2_polarization, file, run=run
   if (error_msg ne '') then message, error_msg
 
   ; write intensity
-  ucomp_fits_write, fcb, float(average_intensity), ext_headers[0], $
-                    extname='Average intensity', /no_abort, message=error_msg
+  ucomp_fits_write, fcb, float(integrated_intensity), ext_headers[0], $
+                    extname='Integrated intensity', /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
 
   ; write enhanced intensity
   ucomp_fits_write, fcb, float(enhanced_intensity), ext_headers[0], $
-                    extname='Enhanced average intensity', /no_abort, message=error_msg
+                    extname='Enhanced integrated intensity', /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
 
   ; write Q
-  ucomp_fits_write, fcb, float(average_q), ext_headers[0], $
-                    extname='Average Q', /no_abort, message=error_msg
+  ucomp_fits_write, fcb, float(integrated_q), ext_headers[0], $
+                    extname='Integrated Q', /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
 
   ; write U
-  ucomp_fits_write, fcb, float(average_u), ext_headers[0], $
-                    extname='Average U', /no_abort, message=error_msg
+  ucomp_fits_write, fcb, float(integrated_u), ext_headers[0], $
+                    extname='Integrated U', /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
 
   ; write linear polarization
-  ucomp_fits_write, fcb, float(average_linpol), ext_headers[0], $
-                    extname='Average log(L)', /no_abort, message=error_msg
+  ucomp_fits_write, fcb, float(integrated_linpol), ext_headers[0], $
+                    extname='Integrated log(L)', /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
 
   ; write azimuth
@@ -198,11 +168,11 @@ pro ucomp_l2_polarization, file, run=run
 
   ucomp_write_polarization_image, polarization_filename, $
                                   file, $
-                                  average_intensity, $
+                                  integrated_intensity, $
                                   enhanced_intensity, $
-                                  average_q, $
-                                  average_u, $
-                                  average_linpol, $
+                                  integrated_q, $
+                                  integrated_u, $
+                                  integrated_linpol, $
                                   azimuth, $
                                   radial_azimuth, $
                                   reduce_factor=4L, $

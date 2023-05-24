@@ -30,11 +30,11 @@ pro ucomp_db_file_insert, files, level, product_type, $
   n_files = n_elements(files)
 
   if (n_files eq 0L) then begin
-    mg_log, 'no %s %s files for ucomp_sci', level, product_type, $
+    mg_log, 'no %s %s files for ucomp_file', level, product_type, $
             name=logger_name, /info
     goto, done
   endif else begin
-    mg_log, 'inserting up to %d %s nm %s %s files into ucomp_sci', $
+    mg_log, 'inserting up to %d %s nm %s %s files into ucomp_file', $
             n_files, files[0].wave_region, level, product_type, $
             name=logger_name, /info
   endelse

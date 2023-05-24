@@ -3,10 +3,6 @@
 ;+
 ; Compute GBU (good/bad/ugly) for the level 1 images for a given wave region.
 ;
-; ::
-;
-;   1          at least two identical T_LCVR{1,2,3,4,5} temperatures
-;
 ; :Params:
 ;   wave_region : in, required, type=string
 ;     wave region
@@ -34,19 +30,58 @@ pro ucomp_write_gbu, wave_region, run=run
                       subdir=[run.date, 'level1'], $
                       root=run->config('processing/basedir'))
   openw, lun, filename, /get_lun
-  printf, lun, 'Filename', 'Reason', format='(%"%-40s %-6s")'
+  printf, lun, 'Filename', 'Reason', 'Med Back', 'V Crosstalk', $
+          format='(%"%-38s %6s %10s %13s")'
 
   for f = 0L, n_files - 1L do begin
-    printf, lun, files[f].l1_basename, files[f].gbu, format='(%"%-40s %6d")'
+    printf, lun, $
+            files[f].l1_basename, $
+            files[f].gbu, $
+            files[f].median_background, $
+            files[f].vcrosstalk_metric, $
+            format='(%"%-38s %6d %10.3f %13.6f")'
   endfor
 
   printf, lun
   printf, lun, 'GBU bitmask codes'
   printf, lun, 'Code', 'Description', format='(%"%-5s   %s")'
+
+  ; check to see if the epoch or wave region epoch value changed on this day
+  date_range = [run.date, ucomp_increment_date(run.date)]
+
   for g = 0L, n_elements(gbu_conditions) - 1L do begin
-    printf, lun, gbu_conditions[g].mask, gbu_conditions[g].description, $
-            format='(%"%5d   %s")'
+    options = strsplit(gbu_conditions[g].values, ',', /extract, count=n_options)
+
+    any_changed_value = 0B
+    values = hash()
+    for o = 0L, n_options - 1L do begin
+      value_location = strmid(options[o], 0, 1)
+      options[o] = strmid(options[o], 1)
+      case value_location of
+        'E': value = run->epoch(options[o], $
+                                datetime=date_range, changed=changed)
+        'W': value = run->line(wave_region, options[o], $
+                               datetime=date_range, changed=changed)
+        else: message, string(value_location, options[o], $
+                              format='invalid location %s for option %s')
+      endcase
+
+      any_changed_value or= changed
+      values[options[o]] = value
+    endfor
+
+    description = mg_subs(gbu_conditions[g].description, values)
+    obj_destroy, values
+
+    ; add an asterisk to the description if any value in the condition changed
+    ; over the day
+    if (any_changed_value) then description += '*'
+
+    printf, lun, gbu_conditions[g].mask, description, format='(%"%5d   %s")'
   endfor
+
+  printf, lun
+  printf, lun, '* indicates that the threshold values changed on the day'
 
   free_lun, lun
 

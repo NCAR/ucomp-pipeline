@@ -3,6 +3,23 @@
 
 ;= graphics
 
+;+
+; Output annotations on the current graphics window, displaying the geometry.
+;
+; :Params:
+;   camera : in, required, type=integer
+;     camera index, 0 for RCAM, 1 for TCAM
+;
+; :Keywords:
+;   occulter_color : in, optional, type=long
+;     color to use for the occulter center and edge display
+;   guess_color : in, optional, type=long
+;     color to use for the guess center and edge display
+;   inflection_color : in, optional, type=long
+;     color to use for the inflection points display
+;   no_rotate : in, optional, type=boolean
+;     don't rotate the geometry by the p-angle
+;-
 pro ucomp_geometry::display, camera, $
                              occulter_color=occulter_color, $
                              guess_color=guess_color, $
@@ -100,6 +117,9 @@ end
 
 ;= property access
 
+;+
+; Set object properties.
+;-
 pro ucomp_geometry::setProperty, xsize=xsize, $
                                  ysize=ysize, $
                                  center_guess=center_guess, $
@@ -133,6 +153,9 @@ pro ucomp_geometry::setProperty, xsize=xsize, $
 end
 
 
+;+
+; Get object properties.
+;-
 pro ucomp_geometry::getProperty, xsize=xsize, $
                                  ysize=ysize, $
                                  center_guess=center_guess, $
@@ -168,6 +191,9 @@ end
 
 ;= lifecycle methods
 
+;+
+; Free resources of the geometry object.
+;-
 pro ucomp_geometry::cleanup
   compile_opt strictarr
 
@@ -175,6 +201,16 @@ pro ucomp_geometry::cleanup
 end
 
 
+;+
+; Initialize the geometry object.
+;
+; :Returns:
+;   1 for successful initialization, 0 for failure
+;
+; :Keywords:
+;   _extra : in, optional, type=keywords
+;     keywords to `setProperty`
+;-
 function ucomp_geometry::init, _extra=e
   compile_opt strictarr
 

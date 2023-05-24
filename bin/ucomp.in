@@ -96,6 +96,20 @@ def get_config(flags, error):
     return(config)
 
 
+def get_dates(flags, error):
+    ucomp_config = get_config(flags, error)
+    try:
+        dates_expr = ucomp_config.get("options", "dates")
+        dates = parse_date_expr(dates_expr)
+    except configparser.NoSectionError:
+        error("no options section in config file")
+        dates = []
+    except configparser.NoOptionError:
+        error("missing dates option in config file")
+        dates = []
+    return(dates)
+
+
 def get_remote_location(flags, error):
     ucomp_config = get_config(flags, error)
 
@@ -388,6 +402,7 @@ def cat_header(args):
                 print(f"{file} not found")
 
 def cat_keywords(args):
+    # TODO: default keywords should vary by level of the data
     default_keywords = {"sci": ["EXTNAME", "DATATYPE", "DATE-BEG", "WAVELNG", "ONBAND"],
                         "cal": ["EXTNAME", "DATATYPE", "DATE-BEG", "WAVELNG", "ONBAND", "POLANGLE", "RETANGLE"],
                         "dark": ["EXTNAME", "DATATYPE", "DATE-BEG"],
@@ -465,20 +480,29 @@ def report_hdu_differences(hdu_differences):
     hdu_diff = hdu_differences[1]
 
     header_same, header_diffs = report_header_differences(hdu_diff.diff_headers)
+    data_same, data_diffs = report_data_differences(hdu_diff.diff_data)
+
+    if not header_same or not data_same:
+        print(f"extension {ext_no}:")
 
     if not header_same:
-        print(f"extension {ext_no}:")
         print(header_diffs)
 
-    data_same = True
-    #data_diffs = hdu_diff.diff_data
+    if not data_same:
+        print(data_diffs)
 
     return(header_same and data_same)
 
 
 def report_header_differences(header_differences):
     is_same = header_differences.identical
-    diffs = header_differences.report()
+    diffs = header_differences.report(indent=1)
+    return(is_same, diffs)
+
+
+def report_data_differences(data_differences):
+    is_same = data_differences.identical
+    diffs = data_differences.report(indent=1)
     return(is_same, diffs)
 
 
@@ -964,15 +988,19 @@ def regression(args):
 
 
 def launch_processes(args, routine):
+    # command line dates override options/dates in config file, error if no
+    # dates in either
     if len(args.dates) == 0:
-        args.parser.error("too few arguments")
+        dates = get_dates(args.flags, args.parser.error)
+        if len(dates) == 0:
+            args.parser.error("no date arguments and none in config file")
+    else:
+        dates = parse_date_expr(",".join(args.dates))
 
-    dates = parse_date_expr(",".join(args.dates))
+    config_filename = get_config_filename(args.flags)
 
     if len(dates) != 1 and routine == "ucomp_realtime_wrapper":
         args.parser.error("realtime mode is only valid for a single date")
-
-    config_filename = get_config_filename(args.flags)
 
     for d in dates:
         cmd = [os.path.join(PIPELINE_DIR,
@@ -1247,15 +1275,15 @@ if __name__ == "__main__":
     clearday_parser = subparsers.add_parser("clearday",
         help="clear database and processing for date(s)")
 
-    eod_parser.add_argument("dates", type=str, nargs="*", help=date_help,
+    eod_parser.add_argument("dates", type=str, help=date_help, nargs="*",
         metavar="date-expr")
-    rt_parser.add_argument("dates", type=str, nargs="*", help=date_help,
+    rt_parser.add_argument("dates", type=str, help=date_help, nargs="*",
         metavar="date-expr")
-    cal_parser.add_argument("dates", type=str, nargs="*", help=date_help,
+    cal_parser.add_argument("dates", type=str, help=date_help, nargs="*",
         metavar="date-expr")
-    reprocess_parser.add_argument("dates", type=str, nargs="*", help=date_help,
+    reprocess_parser.add_argument("dates", type=str, help=date_help, nargs="*",
         metavar="date-expr")
-    clearday_parser.add_argument("dates", type=str, nargs="*", help=date_help,
+    clearday_parser.add_argument("dates", type=str, help=date_help, nargs="*",
         metavar="date-expr")
 
     eod_parser.add_argument("-f", "--flags", type=str, help=flags_help,

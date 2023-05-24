@@ -33,17 +33,20 @@ pro ucomp_l1_average_data, file, $
 
   exptime     = fltarr(n_extensions)
   onband      = bytarr(n_extensions)
+  continuum   = strarr(n_extensions)
   wavelengths = fltarr(n_extensions)
 
   ; group by EXPTIME, ONBAND, WAVELNG
   for e = 0L, n_extensions - 1L do begin
     exptime[e]     = ucomp_getpar(ext_headers[e], 'EXPTIME')
     onband[e]      = ucomp_getpar(ext_headers[e], 'ONBAND') eq 'tcam'
+    continuum[e]   = ucomp_getpar(ext_headers[e], 'CONTIN')
     wavelengths[e] = ucomp_getpar(ext_headers[e], 'WAVELNG')
   endfor
 
   ext_ids = string(exptime, format='(%"%0.1f")') $
               + '-' + strtrim(fix(onband), 2) $
+              + '-' + strtrim(continuum, 2) $
               + '-' + string(wavelengths, format='(%"%0.2f")')
 
   group_indices = mg_groupby(ext_ids, $
@@ -71,7 +74,7 @@ pro ucomp_l1_average_data, file, $
     d = ext_data[*, *, *, *, gi]
     averaged_ext_data[*, *, *, *, g] = size(d, /n_dimensions) lt 5 $
                                          ? d $
-                                         : mean(d, dimension=5)
+                                         : mean(d, dimension=5, /nan)
 
     averaged_exptime[g]     = exptime[gi[0]]
     averaged_onband[g]      = onband[gi[0]]

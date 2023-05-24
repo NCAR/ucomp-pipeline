@@ -11,21 +11,23 @@
 ;     raw files to inventory, default is all raw files in the `l0_dir`
 ;
 ; :Keywords:
-;   data_types : out, optional, type=strarr
-;     set to a named variable to retrieve the data types of the given files
-;   wave_regions : out, optional, type=strarr
-;     set to a named variable to retrieve the wave regions of the given files
 ;   n_extensions : out, optional, type=lonarr
 ;     set to a named variable to retrieve the number of extensions for each of
 ;     the given files
-;  exptimes : out, optional, type=fltarr
+;   data_types : out, optional, type=strarr
+;     set to a named variable to retrieve the data types of the given files
+;   exptimes : out, optional, type=fltarr
 ;     set to a named variable to retrieve the exptime [ms] for the given files
-;  gain_modes : out, optional, type=strarr
+;   gain_modes : out, optional, type=strarr
 ;     set to a named variable to retrieve the gain modes [high/low] for the
 ;     given files
-;  n_points : out, optional, type=lonarr
+;   wave_regions : out, optional, type=strarr
+;     set to a named variable to retrieve the wave regions of the given files
+;   n_points : out, optional, type=lonarr
 ;     set to a named variable to retrieve the number of unique wavelengths for
 ;     the given files
+;   numsum : out, optional, type=lonarr
+;     set to a named variable to retrieve the NUMSUM for the given files
 ;-
 pro ucomp_run::make_raw_inventory, raw_files, $
                                    n_extensions=n_extensions, $
@@ -111,7 +113,7 @@ end
 ;   data_type : in, optional, type=string
 ;     set to data type of files to return: 'sci', 'cal', etc.; by default,
 ;     returns files of all data_types
-;   program : in, optional, type=string
+;   program_name : in, optional, type=string
 ;     set to program name of files to return
 ;   count : out, optional, type=long
 ;     set to a named variable to retrieve the number of files returned
@@ -192,6 +194,21 @@ function ucomp_run::get_files, wave_region=wave_region, $
 end
 
 
+;+
+; Get the program names for a given wave region.
+;
+; :Returns:
+;   `strarr`
+;
+; :Params:
+;   wave_region : in, optional, type=string
+;     set to specific wave region to retrieve program names for that wave
+;     region, returns programs from all wave regions if not set 
+;
+; :Keywords:
+;   count : out, optional, type=long
+;     set to a named variable to retrieve the number of program names returned
+;-
 function ucomp_run::get_programs, wave_region, count=count
   compile_opt strictarr
 
@@ -212,6 +229,16 @@ function ucomp_run::get_programs, wave_region, count=count
 end
 
 
+;+
+; Convert an internal program name a name suitable for data users.
+;
+; :Returns:
+;   string
+;
+; :Params:
+;   program_name : in, required, type=string
+;     internal program name
+;-
 function ucomp_run::convert_program_name, program_name
   compile_opt strictarr
 
@@ -359,6 +386,8 @@ end
 
 
 ;+
+; Start a timer for the given routine.
+;
 ; :Returns:
 ;   clock identifier structure with fields `name` (string) and `time` (double)
 ;
@@ -481,18 +510,45 @@ end
 ;     name of an epoch option
 ;
 ; :Keywords:
-;   datetime : in, optional, type=string
+;   datetime : in, optional, type=string/strarr
 ;     datetime in the form 'YYYYMMDD' or 'YYYYMMDD.HHMMSS'; defaults to the
-;     value of the `DATETIME` property if this keyword is not given
+;     value of the `DATETIME` property if this keyword is not given; set to a
+;     2-element `strarr` to set `CHANGED` if the value of the option changes in
+;     the given range
 ;   found : out, optional, type=boolean
 ;     set to a named variable to retrieve whether `option_name` was found, if
 ;     `FOUND` is present, errors will not be generated
+;   changed : out, optional, type=boolean
+;     set to a named variable to retrieve whether the option changed in the
+;     date/time range given by `DATETIME` (only useful if `DATETIME` is set to
+;     a 2-element array)
 ;-
-function ucomp_run::epoch, option_name, datetime=datetime, found=found
+function ucomp_run::epoch, option_name, $
+                           datetime=datetime, $
+                           found=found, $
+                           changed=changed
   compile_opt strictarr
   on_error, 2
 
-  return, self.epochs->get(option_name, datetime=datetime, found=found)
+  return, self.epochs->get(option_name, datetime=datetime, found=found, changed=changed)
+end
+
+
+;+
+; Load the bad frames if a bad frames directory was set in the config file and
+; if there is a file for the day to be processed.
+;-
+pro ucomp_run::load_badframes
+  compile_opt strictarr
+
+  badframes_dir = self->config('averaging/badframes_dir')
+  if (n_elements(badframes_dir) ne 0L) then begin
+    basename = string(self.date, format='%s.ucomp.badframes.csv')
+    filename = filepath(basename, root=badframes_dir)
+    if (file_test(filename, /regular)) then begin
+      *self.badframes = ucomp_read_badframes(filename)
+    endif
+  endif
 end
 
 
@@ -547,16 +603,23 @@ end
 ; :Returns:
 ;    `fltarr(4, 4, 9, 2)`
 ;
+; :Params:
+;   wave_region : in, required, type=string
+;     wave region
+;
 ; :Keywords:
 ;   datetime : in, required, type=string
 ;     date/time in the format "YYYYMMDD_HHMMSS"
+;   info : out, optional, type=structure
+;     IDL savefile info structure
 ;-
-function ucomp_run::get_dmatrix_coefficients, datetime=datetime, info=info
+function ucomp_run::get_dmatrix_coefficients, wave_region, datetime=datetime, info=info
   compile_opt strictarr
 
-  if (n_elements(*self.dmatrix_coefficients) eq 0L) then begin
-    demodulation_coeffs_basename = self->epoch('demodulation_coeffs_basename', $
-                                               datetime=datetime)
+  if (~self.dmatrix_coefficients->hasKey(wave_region)) then begin
+    version = self->epoch('demodulation_coeffs_version', datetime=datetime)
+    demodulation_coeffs_basename = string(wave_region, version, $
+                                          format='ucomp.%s.dmx-temp-coeffs.%d.sav')
     demodulation_coeffs_filename = filepath(demodulation_coeffs_basename, $
                                             subdir='demodulation', $
                                             root=self.resource_root)
@@ -565,13 +628,14 @@ function ucomp_run::get_dmatrix_coefficients, datetime=datetime, info=info
     info = f->contents()
     obj_destroy, f
 
-    ; defines dmx_coefs variable
+    ; defines dmx_coeffs variable
     restore, filename=demodulation_coeffs_filename
-    *self.dmatrix_coefficients = dmx_coefs
+    (self.dmatrix_coefficients)[wave_region] = dmx_coeffs
     *self.demod_info = info
-  endif else info = *self.demod_info
+  endif
 
-  return, *self.dmatrix_coefficients
+  info = *self.demod_info
+  return, (self.dmatrix_coefficients)[wave_region]
 end
 
 
@@ -581,9 +645,14 @@ end
 ; :Keywords:
 ;   datetime : in, required, type=string
 ;     date/time in the format "YYYYMMDD_HHMMSS"
-;   dx0_c, dy0_c, dx1_c, dy1_c : out, optional, type="fltarr(3, 3)"
-;     set to a named variable to retrieve the corresponding distortion
-;     coefficients
+;   dx0_c : out, optional, type="fltarr(3, 3)"
+;     set to a named variable to retrieve the RCAM x distortion coefficients
+;   dy0_c : out, optional, type="fltarr(3, 3)"
+;     set to a named variable to retrieve the RCAM y distortion coefficients
+;   dx1_c : out, optional, type="fltarr(3, 3)"
+;     set to a named variable to retrieve the TCAM x distortion coefficients
+;   dy1_c : out, optional, type="fltarr(3, 3)"
+;     set to a named variable to retrieve the TCAM y distortion coefficients
 ;-
 pro ucomp_run::get_distortion, datetime=datetime, $
                                dx0_c=dx0_c, $
@@ -639,20 +708,27 @@ end
 ;     name of an epoch option, e.g., 'center_wavelength'
 ;
 ; :Keywords:
-;   datetime : in, optional, type=string
+;   datetime : in, optional, type=string/strarr
 ;     datetime in the form 'YYYYMMDD' or 'YYYYMMDD.HHMMSS'; defaults to the
-;     value of the `DATETIME` property if this keyword is not given
+;     value of the `DATETIME` property if this keyword is not given; set to a
+;     2-element `strarr` to set `CHANGED` if the value of the option changes in
+;     the given range
 ;   found : out, optional, type=boolean
 ;     set to a named variable to retrieve whether `option_name` was found, if
 ;     `FOUND` is present, errors will not be generated
+;   changed : out, optional, type=boolean
+;     set to a named variable to retrieve whether the option changed in the
+;     date/time range given by `DATETIME` (only useful if `DATETIME` is set to
+;     a 2-element array)
 ;-
-function ucomp_run::line, wave_region, option_name, datetime=datetime, found=found
+function ucomp_run::line, wave_region, option_name, datetime=datetime, $
+                          found=found, changed=changed
   compile_opt strictarr
 
   self->getProperty, logger_name=logger_name
 
   options = self.lines[wave_region]
-  return, options->get(option_name, datetime=datetime, found=found)
+  return, options->get(option_name, datetime=datetime, found=found, changed=changed)
 end
 
 
@@ -785,6 +861,16 @@ function ucomp_run::can_send_alert, type, msg
 end
 
 
+;+
+; Get the names of all the temperature maps.
+;
+; :Returns:
+;   `strarr`
+;
+; :Keywords:
+;   count : out, optional, type=long
+;     set to a named variable to retrieve the number of temperature maps
+;-
 function ucomp_run::all_temperature_maps, count=count
   compile_opt strictarr
 
@@ -792,6 +878,18 @@ function ucomp_run::all_temperature_maps, count=count
 end
 
 
+;+
+; Retrieve an option for a given temperature map.
+;
+; :Returns:
+;   value
+;
+; :Params:
+;   map : in, required, type=string
+;     name of temperature map
+;   option : in, required, type=string
+;     name of option of the given temperature
+;-
 function ucomp_run::temperature_map_option, map, option
   compile_opt strictarr
 
@@ -813,7 +911,7 @@ pro ucomp_run::getProperty, date=date, $
                             all_wave_regions=all_wave_regions, $
                             resource_root=resource_root, $
                             calibration=calibration, $
-                            dmatrix_coefficients=dmatrix_coefficients, $
+                            badframes=badframes, $
                             t0=t0
   compile_opt strictarr
   on_error, 2
@@ -843,7 +941,7 @@ pro ucomp_run::getProperty, date=date, $
 
   if (arg_present(calibration)) then calibration = self.calibration
 
-  if (arg_present(dmatrix_coefficients)) then dmatrix_coefficients = *self.dmatrix_coefficients
+  if (arg_present(badframes)) then badframes = *self.badframes
 
   if (arg_present(t0)) then t0 = self.t0
 end
@@ -869,6 +967,12 @@ end
 
 ;= overload operators
 
+;+
+; Returns basic information about the run; used when `PRINT`-ing a run object.
+;
+; :Returns:
+;   string
+;-
 function ucomp_run::_overloadPrint
   compile_opt strictarr
 
@@ -877,6 +981,17 @@ function ucomp_run::_overloadPrint
                     '  mode: ' + self.mode])
 end
 
+
+;+
+; Retrieve info used when `HELP`-ing on the run object.
+;
+; :Returns:
+;   string
+;
+; :Params:
+;   varname : in, required, type=string
+;     variable name of the run used in the `HELP` output
+;-
 function ucomp_run::_overloadHelp, varname
   compile_opt strictarr
 
@@ -968,6 +1083,8 @@ pro ucomp_run::cleanup
   obj_destroy, [self.options, self.epochs, self.lines, self.temperature_maps, $
                 self.program_names]
 
+  ptr_free, self.badframes
+
   ptr_free, self.hot_pixels[0], $
             self.hot_pixels[1], $
             self.hot_pixels[2], $
@@ -978,7 +1095,8 @@ pro ucomp_run::cleanup
             self.adjacent_pixels[3]
 
   ptr_free, self.distortion_coefficients
-  ptr_free, self.dmatrix_coefficients, self.demod_info
+  obj_destroy, self.dmatrix_coefficients
+  ptr_free, self.demod_info
 
   ; performance monitoring API
   obj_destroy, [self.calls, self.times]
@@ -996,6 +1114,9 @@ end
 ;+
 ; Initialize the run.
 ;
+; :Returns:
+;   1 for success, 0 otherwise
+;
 ; :Params:
 ;   date : in, required, type=string
 ;     observing date in the form 'YYYYMMDD'; this is the local HST date of the
@@ -1009,6 +1130,8 @@ end
 ; :Keywords:
 ;   no_log : in, optional, type=boolean
 ;     set to not initialize the logs
+;   reprocess : in, optional, type=boolean
+;     set if this is a reprocessing run
 ;-
 function ucomp_run::init, date, mode, config_filename, $
                           no_log=no_log, reprocess=reprocess
@@ -1082,12 +1205,15 @@ function ucomp_run::init, date, mode, config_filename, $
   program_names_filename = filepath('program_names.cfg', root=self.resource_root)
   self.program_names = mg_read_config(program_names_filename)
 
+  self.badframes = ptr_new(/allocate_heap)
+  self->load_badframes
+
   for i = 0L, 3L do begin
     self.hot_pixels[i] = ptr_new(/allocate_heap)
     self.adjacent_pixels[i] = ptr_new(/allocate_heap)
   endfor
 
-  self.dmatrix_coefficients    = ptr_new(/allocate_heap)
+  self.dmatrix_coefficients    = hash()
   self.demod_info              = ptr_new(/allocate_heap)
   self.distortion_coefficients = ptr_new(/allocate_heap)
 
@@ -1128,10 +1254,12 @@ pro ucomp_run__define
            temperature_maps        : obj_new(), $
            program_names           : obj_new(), $
 
+           badframes               : ptr_new(), $
+
            hot_pixels              : ptrarr(2, 2), $   ; gain, camera
            adjacent_pixels         : ptrarr(2, 2), $   ; gain, camera
 
-           dmatrix_coefficients    : ptr_new(), $
+           dmatrix_coefficients    : obj_new(), $
            demod_info              : ptr_new(), $
 
            distortion_basename     : '', $

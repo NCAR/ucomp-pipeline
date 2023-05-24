@@ -64,8 +64,10 @@ pro ucomp_l2_create_averages, wave_region, method, $
     average_filename = filepath(average_basename, root=l2_dir)
     average_filenames[p] = average_filename
 
+    n_digits = floor(alog10(n_files)) + 1L
     for f = 0L, n_files - 1L do begin
-      mg_log, '%03d/%d: %s', f + 1L, n_files, $
+      mg_log, mg_format('%*d/%d: %s', n_digits, /simple), $
+              f + 1L, n_files, $
               file_basename(program_files[f].l1_basename), $
               name=run.logger_name, /debug
     endfor

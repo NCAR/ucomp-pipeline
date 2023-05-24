@@ -6,7 +6,17 @@
 ; :Params:
 ;   wave_region : in, required, type=string
 ;     wave region, i.e., '1074'
+;   flat_times : in, required, type=fltarr(n_flats)
+;     array of times of the flats in hours into the observing day
+;   flat_exposures : in, required, type=fltarr(n_flats)
+;     array of exposure times of the flats
+;   flat_wavelengths : in, required, type=fltarr(n_flats)
+;     array of wavelengths of the flats
+;   flat_gain_modes : in, required, type=strarr(n_flats)
+;     array of gain modes of the flats, 'high' or 'low'
 ;   flat_onbands : in, required, type=intarr(n_flats)
+;     array of ONBAND values: 0 for RCAM, 1 for TCAM
+;   flat_data : in, required, type="fltarr(nx, ny, n_cameras, n_extensions)"
 ;     array of ONBAND values: 0 for RCAM, 1 for TCAM
 ;
 ; :Keywords:

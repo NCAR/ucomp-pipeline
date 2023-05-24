@@ -19,6 +19,8 @@
 ;     background images
 ;
 ; :Keywords:
+;   step_number : in, required, type=integer
+;     number of step in the level 1 processing of a file
 ;   run : in, required, type=object
 ;     UCoMP run object
 ;-

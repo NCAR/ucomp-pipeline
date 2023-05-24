@@ -51,6 +51,7 @@ pro ucomp_l1_combine_cameras, file, $
 
   ucomp_addpar, primary_header, 'CAMERAS', cameras, $
                 comment=string(cameras eq 'both' ? 's' : '', $
-                               format='(%"camera%s used in processing")')
+                               format='(%"camera%s used in processing")'), $
+                after='DEMOD_C'
   done:
 end

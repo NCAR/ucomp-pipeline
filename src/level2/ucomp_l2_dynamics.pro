@@ -21,7 +21,7 @@ pro ucomp_l2_dynamics, file, run=run
 
   ; check GBU
   if (~file.ok || file.gbu ne 0L) then begin
-    mg_log, 'poor quality, skipping %s', file.l1_basename, $
+    mg_log, 'poor quality for %s', file.l1_basename, $
             name=run.logger_name, /warn
     goto, done
   endif
@@ -33,13 +33,13 @@ pro ucomp_l2_dynamics, file, run=run
                          subdir=[run.date, 'level1'], $
                          root=run->config('processing/basedir'))
   if (~file_test(l1_filename, /regular)) then begin
-    mg_log, '%s does not exist, skipping', file.l1_basename, $
+    mg_log, '%s does not exist', file.l1_basename, $
             name=run.logger_name, /warn
     goto, done
   endif
 
   if (file.n_unique_wavelengths lt 3L) then begin
-    mg_log, '%s does not have 3 unique wavelengths, skipping', $
+    mg_log, '%s does not have 3 unique wavelengths', $
             file.l1_basename, $
             name=run.logger_name, /warn
     goto, done
@@ -49,7 +49,7 @@ pro ucomp_l2_dynamics, file, run=run
                       primary_header=primary_header, $
                       ext_data=ext_data, $
                       ext_headers=ext_headers, $
-                      n_extensions=n_extensions
+                      n_wavelengths=n_wavelengths
 
   ; find center wavelength
   center_indices = file->get_center_wavelength_indices()
@@ -67,9 +67,9 @@ pro ucomp_l2_dynamics, file, run=run
                 /error
         goto, done
       end
-    (center_indices[0] lt 1L) || (center_indices[0] gt n_extensions - 1L): begin
+    (center_indices[0] lt 1L) || (center_indices[0] gt n_wavelengths - 1L): begin
         mg_log, 'not enough wavelengths (center index: %d / %d)', $
-                center_indices[0], n_extensions, $
+                center_indices[0], n_wavelengths, $
                 name=run.logger_name, /error
       end
     else:
@@ -78,9 +78,9 @@ pro ucomp_l2_dynamics, file, run=run
   wavelengths = file.wavelengths
 
   ; calculate intensity
-  intensity_blue = reform(ext_data[*, *, 0, center_index - 1])
+  intensity_blue   = reform(ext_data[*, *, 0, center_index - 1])
   intensity_center = reform(ext_data[*, *, 0, center_index])
-  intensity_red = reform(ext_data[*, *, 0, center_index + 1])
+  intensity_red    = reform(ext_data[*, *, 0, center_index + 1])
   d_lambda = wavelengths[center_index] - wavelengths[center_index - 1]
 
   ucomp_analytic_gauss_fit, intensity_blue, $
@@ -109,31 +109,6 @@ pro ucomp_l2_dynamics, file, run=run
   ; convert line width to velocity (km/s)
   line_width *= c / mean(wavelengths)
 
-  if (run->config('display/mask_l2')) then begin
-    ; mask outputs
-    dims = size(peak_intensity, /dimensions)
-    field_mask = ucomp_field_mask(dims[0], $
-                                  dims[1], $
-                                  run->epoch('field_radius'))
-    occulter_mask = ucomp_occulter_mask(dims[0], dims[1], file.occulter_radius)
-    rcam = file.rcam_geometry
-    tcam = file.tcam_geometry
-    post_angle = (rcam.post_angle + tcam.post_angle) / 2.0
-    post_mask = ucomp_post_mask(dims[0], dims[1], post_angle)
-    offsensor_mask = ucomp_offsensor_mask(dims[0], dims[1], file.p_angle)
-    ; TODO: should we do this intensity mask? what should the threshold be?
-    intensity_threshold_mask = peak_intensity gt 0.1
-    mask = field_mask and occulter_mask and post_mask and offsensor_mask and intensity_threshold_mask
-    outside_mask_indices = where(mask eq 0, n_outside_mask)
-
-    if (n_outside_mask gt 0L) then begin
-      peak_intensity[outside_mask_indices]     = !values.f_nan
-      enhanced_intensity[outside_mask_indices] = !values.f_nan
-      doppler_shift[outside_mask_indices]      = !values.f_nan
-      line_width[outside_mask_indices]         = !values.f_nan
-    endif
-  endif
-
   ; mask data on various thresholds
   good_indices = where(intensity_center gt 0.2 $
                          and intensity_center lt 100.0 $
@@ -160,7 +135,7 @@ pro ucomp_l2_dynamics, file, run=run
   ; write dynamics file: YYYYMMDD.HHMMSS.ucomp.WWWW.dynamics.fts
   dynamics_filename = filepath(file.dynamics_basename, root=l2_dir)
 
-  mg_log, 'writing %s', file.dynamics_basename, name=run.logger_name, /info
+  mg_log, 'writing %s', file.dynamics_basename, name=run.logger_name, /debug
 
   ; promote header
   ucomp_addpar, primary_header, 'LEVEL', 'L2', comment='level 2 calibrated'

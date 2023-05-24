@@ -1,8 +1,13 @@
 ; docformat = 'rst'
 
 ;+
-; To write a FITS primary data unit or extension.
-
+; To write a FITS primary data unit or extension. This version fixes problems
+; with the FITS_WRITE routine:
+;
+;   - Use custom FITS write routine for primary header as well as extension headers
+;   - Allows for comments on NAXIS{1,2,3} FITS keywords
+;   - Fixes space after / issue on required keyword comments
+;
 ; NOTE: This version of FITS_READ must be used with a post Sep 2006 version of
 ; FITS_OPEN.
 ;

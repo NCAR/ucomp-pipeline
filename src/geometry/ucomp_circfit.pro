@@ -1,5 +1,15 @@
 ; docformat = 'rst'
 
+;+
+; Model for `UCOMP_CIRCFIT` call.
+;
+; :Returns:
+;   error for the given parameters
+;
+; :Params:
+;   p : in, required, type=fltarr(3)
+;     fits parameters
+;-
 function ucomp_circ, p
   compile_opt strictarr
   common fit, x, y, radius

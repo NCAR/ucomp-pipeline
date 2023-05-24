@@ -4,13 +4,11 @@
 ; Create mask of post.
 ;
 ; :Returns:
-;   `bytarr(nx, ny)`
+;   `bytarr(dims)`
 ;
 ; :Params:
-;   nx : in, required, type=long
-;     width of image
-;   ny : in, required, type=long
-;     height of image
+;   dims : in, required, type=lonarr(2)
+;     width and height of image
 ;   post_angle : in, optional, type=float
 ;     position angle of post
 ;
@@ -18,12 +16,15 @@
 ;   post_width : in, optional, type=float, default=60.0
 ;     width of the post in pixels
 ;-
-function ucomp_post_mask, nx, ny, post_angle, post_width=post_width
+function ucomp_post_mask, dims, post_angle, post_width=post_width
   compile_opt strictarr
+
+  nx = dims[0]
+  ny = dims[1]
 
   _post_width = mg_default(post_width, 60.0)
 
-  post_mask = fltarr(nx,ny) + 1.0
+  post_mask = fltarr(nx, ny) + 1.0
 
   if (n_elements(post_angle) eq 0L || ~finite(post_angle)) then begin
     return, byte(post_mask)

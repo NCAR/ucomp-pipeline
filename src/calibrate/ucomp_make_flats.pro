@@ -86,7 +86,9 @@ pro ucomp_make_flats, wave_region, run=run
                          ext_data=ext_data, $
                          ext_headers=ext_headers, $
                          n_extensions=n_extensions, $
-                         repair_routine=run->epoch('raw_data_repair_routine', datetime=datetime)
+                         repair_routine=run->epoch('raw_data_repair_routine', datetime=datetime), $
+                         badframes=run.badframes, $
+                         logger=run.logger_name
 
     ext_data = float(ext_data)
 
@@ -138,18 +140,6 @@ pro ucomp_make_flats, wave_region, run=run
 
       dims = size(ext_data, /dimensions)
 
-      ; n_polstates = dims[2]
-      ; n_cameras = dims[3]
-      ; for c = 0L, n_cameras - 1L do begin
-      ;   run->get_hot_pixels, averaged_gain_mode[e], c, $
-      ;                        hot=hot, adjacent=adjacent
-      ;   for p = 0L, n_polstates - 1L do begin
-      ;     flat_image[*, *, p, c] = ucomp_fix_hot(flat_image[*, *, p, c], $
-      ;                                            hot=hot, $
-      ;                                            adjacent=adjacent)
-      ;   endfor
-      ; endfor
-
       flat_image = mean(flat_image, dimension=3)
 
       flat_extnames->add, string(averaged_wavelength[e], $
@@ -161,7 +151,7 @@ pro ucomp_make_flats, wave_region, run=run
         rcam_image = flat_image[*, *, 0]
         tcam_image = flat_image[*, *, 1]
         r_outer = run->epoch('field_radius', datetime=datetime)
-        field_mask = ucomp_field_mask(dims[0], dims[1], r_outer)
+        field_mask = ucomp_field_mask(dims[0:1], r_outer)
         field_mask_indices = where(field_mask, /null)
 
         if (averaged_onband[e] eq 0) then begin

@@ -1,5 +1,12 @@
 ; docformat = 'rst'
 
+;+
+; Plot temperatures reported in level 0 files.
+;
+; :Keywords:
+;   run : in, required, type=object
+;     `ucomp_run` object
+;-
 pro ucomp_raw_plots, run=run
   compile_opt strictarr
 

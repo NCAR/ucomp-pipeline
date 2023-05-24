@@ -57,26 +57,28 @@ pro ucomp_l1_apply_alignment, file, $
   rcam_geometry.post_angle -= file.p_angle
   tcam_geometry.post_angle -= file.p_angle
 
+  ucomp_addpar, primary_header, 'POST_ANG', $
+                mean([rcam_geometry.post_angle, tcam_geometry.post_angle], /nan), $
+                format='(F0.3)'
+
+  after = 'CDELT2'
   ucomp_addpar, primary_header, 'CRPIX1', (dims[0] - 1.0) / 2.0 + 1.0, $
                 comment='[pixel] solar X center (index origin=1)', $
-                format='(F0.1)'
+                format='(F0.1)', after=after
   ucomp_addpar, primary_header, 'CRVAL1', 0.0, $
                 comment='[arcsec] solar X sun center', $
-                format='(F0.2)'
+                format='(F0.2)', after=after
   ucomp_addpar, primary_header, 'CRUNIT1', 'arcsec', $
-                comment='unit of CRVAL1'
+                comment='unit of CRVAL1', after=after
 
   ucomp_addpar, primary_header, 'CRPIX2', (dims[1] - 1.0) / 2.0 + 1.0, $
                 comment='[pixel] solar Y center (index origin=1)', $
-                format='(F0.1)'
+                format='(F0.1)', after=after
   ucomp_addpar, primary_header, 'CRVAL2', 0.0, $
                 comment='[arcsec] solar Y sun center', $
-                format='(F0.2)'
+                format='(F0.2)', after=after
   ucomp_addpar, primary_header, 'CRUNIT2', 'arcsec', $
-                comment='unit of CRVAL2'
-
-  ucomp_addpar, primary_header, 'POST_ANG', $
-                mean([rcam_geometry.post_angle, tcam_geometry.post_angle], /nan)
+                comment='unit of CRVAL2', after=after
 
   done:
 end

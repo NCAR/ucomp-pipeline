@@ -61,15 +61,14 @@ pro ucomp_write_all_iquv_image, file, data, run=run
   n_colors = 252
 
   text_color = 252
-  tvlct, 255, 255, 255, text_color
   occulter_color = 253
-  tvlct, 0, 255, 255, occulter_color
   guess_color = 254
-  tvlct, 255, 255, 0, guess_color
   inflection_color = 255
-  tvlct, 255, 0, 0, inflection_color
 
-  tvlct, r, g, b, /get
+  tvlct, 255, 255, 255, text_color
+  tvlct, 0, 255, 255, occulter_color
+  tvlct, 255, 255, 0, guess_color
+  tvlct, 255, 0, 0, inflection_color
 
   xmargin = 0.05
   ymargin = 0.03
@@ -97,19 +96,17 @@ pro ucomp_write_all_iquv_image, file, data, run=run
         display_gamma = quv_display_gamma
         display_power = quv_display_power
         ct_name = 'quv'
-        ;ct_name = 'intensity'
       endelse
 
       ucomp_loadct, ct_name, n_colors=n_colors
-      gamma_ct, display_gamma, /current
+      mg_gamma_ct, display_gamma, /current, n_colors=n_colors
 
       im = rebin(ext_data[*, *, p], $
                  dims[0] / reduce_dims_factor, $
                  dims[1] / reduce_dims_factor)
 
       if (run->config('display/mask_l1')) then begin
-        field_mask = ucomp_field_mask(dims[0] / reduce_dims_factor, $
-                                      dims[1] / reduce_dims_factor, $
+        field_mask = ucomp_field_mask(dims[0:1] / reduce_dims_factor, $
                                       run->epoch('field_radius') / reduce_dims_factor)
       endif else begin
         field_mask = bytarr(dims[0] / reduce_dims_factor, dims[1] / reduce_dims_factor) + 1B
@@ -193,8 +190,8 @@ l1_filename = filepath(l1_basename, $
                        subdir=[date, 'level1'], $
                        root=run->config('processing/basedir'))
 
-ucomp_read_l1_data, l1_filename, ext_data=data, n_extensions=n_extensions
-file.n_extensions = n_extensions
+ucomp_read_l1_data, l1_filename, ext_data=data, n_wavelengths=n_wavelengths
+file.n_extensions = n_wavelengths
 
 ucomp_write_all_iquv_image, file, data, run=run
 

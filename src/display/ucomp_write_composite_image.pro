@@ -1,6 +1,25 @@
 ; docformat = 'rst'
 
 
+;+
+; Scale one channel of a composite image from the intensity in the given level
+; 1 or mean/median file and return as an array.
+;
+; :Returns:
+;   scaled image as `bytarr(nx, ny)`
+;
+; :Params:
+;   filename : in, required, type=string
+;     filename of level 1 or mean/median file
+;
+; :Keywords:
+;   wave_region : in, required, type=string
+;     wave_region, e.g., "1074"
+;   radius : out, optional, type=float
+;     set to a named variable to retrieve the occulter radius
+;   run : in, required, type=object
+;     `ucomp_run` object
+;-
 function ucomp_write_composite_image_channel, filename, $
                                               wave_region=wave_region, $
                                               radius=occulter_radius, $
@@ -9,37 +28,71 @@ function ucomp_write_composite_image_channel, filename, $
 
   fits_open, filename, fcb
   n_extensions = fcb.nextend
+  n_wavelengths = n_extensions / 2L
   fits_read, fcb, !null, primary_header, exten_no=0
-  fits_read, fcb, data, header, exten_no=n_extensions / 2 + 1
+  fits_read, fcb, data, header, exten_no=n_wavelengths / 2 + 1
   fits_close, fcb
 
   wave_region = ucomp_getpar(primary_header, 'FILTER')
   occulter_radius = ucomp_getpar(primary_header, 'RADIUS')
-
-  display_min   = run->line(wave_region, 'intensity_display_min')
-  display_max   = run->line(wave_region, 'intensity_display_max')
-  display_gamma = run->line(wave_region, 'intensity_display_gamma')  ; TODO: how to use?
-  display_power = run->line(wave_region, 'intensity_display_power')
+  post_angle = ucomp_getpar(primary_header, 'POST_ANG')
+  p_angle = ucomp_getpar(primary_header, 'SOLAR_P0')
 
   dims = size(data, /dimensions)
   intensity = reform(data[*, *, 0])
+  enhanced = run->line(wave_region, 'temperature_enhancement')
+  if (keyword_set(enhanced)) then begin
+    intensity = ucomp_enhanced_intensity(intensity, $
+                                         !null, !null, $
+                                         primary_header, $
+                                         radius=run->line(wave_region, 'enhanced_intensity_radius'), $
+                                         amount=run->line(wave_region, 'enhanced_intensity_amount'), $
+                                         /mask)
+  endif
 
-  field_mask = ucomp_field_mask(dims[0], $
-                                dims[1], $
-                                run->epoch('field_radius'))
+  prefix = keyword_set(enhanced) ? 'enhanced_' : ''
+  display_min   = run->line(wave_region, prefix + 'intensity_display_min')
+  display_max   = run->line(wave_region, prefix + 'intensity_display_max')
+  ; TODO: how to use gamma?
+  display_gamma = run->line(wave_region, prefix + 'intensity_display_gamma')
+  display_power = run->line(wave_region, prefix + 'intensity_display_power')
+
+  field_mask = ucomp_field_mask(dims[0:1], run->epoch('field_radius'))
   scaled_intensity = bytscl((intensity * field_mask)^display_power, $
                             min=display_min, $
                             max=display_max, $
                             /nan)
 
-  occulter_mask = ucomp_occulter_mask(dims[0], dims[1], occulter_radius)
-  post_mask = ucomp_post_mask(dims[0], dims[1], 0.0)
-  scaled_intensity *= occulter_mask * post_mask
+  mask = ucomp_mask(dims[0:1], $
+                    occulter_radius=occulter_radius, $
+                    post_angle=post_angle, $
+                    p_angle=p_angle)
+  scaled_intensity *= mask
 
   return, scaled_intensity
 end
 
 
+;+
+; Annotate a given display image.
+;
+; :Returns:
+;   display image as `bytarr(3, nx, ny)` array
+;
+; :Params:
+;   im : in, required, type='bytarr(3, nx, ny)'
+;     input composite image
+;
+; :Keywords:
+;   wave_regions : in, required, type=strarr(3)
+;     array of wave regions corresponding to the channels of the input
+;     composite image
+;   radii : in, required, type=fltarr(3)
+;     radii of the 3 channels of the input image used to scale the size of the
+;     channels to match
+;   run : in, required, type=object
+;     `ucomp_run` object
+;-
 function ucomp_write_composite_image_annotation, im, $
                                                  wave_regions=wave_regions, $
                                                  radii=radii, $
@@ -67,13 +120,16 @@ function ucomp_write_composite_image_annotation, im, $
 
   x_margin = 12
   y_margin = 12
-  line_height = 12
-  charsize = 1.5
+  charsize = 1.4
+  line_height = 16 * charsize
   text_color = 'ffffff'x
 
   xyouts, x_margin, ny - y_margin - line_height, /device, $
+          'MLSO UCoMP Daily Temperature Image', $
+          charsize=charsize, color=text_color
+  xyouts, x_margin, ny - y_margin - 2 * line_height, /device, $
           string(ucomp_decompose_date(run.date), $
-                 format='MLSO UCoMP Daily Temperature Image!C%s-%s-%s'), $
+                 format='%s-%s-%s'), $
           charsize=charsize, color=text_color
 
   rgb = ['Red', 'Green', 'Blue']
@@ -87,11 +143,13 @@ function ucomp_write_composite_image_annotation, im, $
   endfor
   legend[-1] = 'Teff=effective temperature'
 
-  xyouts, x_margin, $
-          y_margin + (n_elements(wave_regions) + 1L) * line_height, $
-          /device, $
-          strjoin(legend, '!C'), $
-          charsize=charsize, color=text_color
+  for i = 0L, n_elements(legend) - 1L do begin
+    xyouts, x_margin, $
+            y_margin + (n_elements(legend) - i - 1L) * line_height, $
+            /device, $
+            legend[i], $
+            charsize=charsize, color=text_color
+  endfor
 
   if (wave_regions[0] eq '1074') then begin
     xyouts, nx - x_margin, ny - y_margin - line_height, /device, $
@@ -99,10 +157,13 @@ function ucomp_write_composite_image_annotation, im, $
             'Corona coolest in regions colored blue', $
             charsize=charsize, color=text_color
   endif else begin
+    xyouts, nx - x_margin, ny - y_margin - line_height, /device, $
+            alignment=1.0, $
+            'Corona hottest in regions colored white or red', $
+            charsize=charsize, color=text_color
     xyouts, nx - x_margin, ny - y_margin - 2 * line_height, /device, $
             alignment=1.0, $
-            strjoin(['Corona hottest in regions colored white or red', $
-                     'Corona coolest in regions colored blue'], '!C'), $
+            'Corona coolest in regions colored blue', $
             charsize=charsize, color=text_color
   endelse
 
@@ -116,6 +177,17 @@ function ucomp_write_composite_image_annotation, im, $
 end
 
 
+;+
+; Write a composite image given 3 level 1 or mean/median filenames.
+;
+; :Params:
+;   filenames : in, required, type=strarr(3)
+;     three level 1 filenames
+;
+; :Keywords:
+;   run : in, required, type=object
+;     `ucomp_run` object
+;-
 pro ucomp_write_composite_image, filenames, run=run
   compile_opt strictarr
 
@@ -123,8 +195,9 @@ pro ucomp_write_composite_image, filenames, run=run
   files_exist = file_test(filenames, /regular)
   if (total(files_exist, /integer) ne n_elements(filenames)) then begin
     missing_indices = where(files_exist eq 0, /null)
-    mg_log, 'missing file(s) for composite image channel(s): %s', $
+    mg_log, 'missing %s channel%s for composite image', $
             strjoin(strtrim(channels[missing_indices], 2)), $
+            n_elements(missing_indices) gt 2 ? 's' : '', $
             name=run.logger_name, /warn
     goto, done
   endif
@@ -140,15 +213,15 @@ pro ucomp_write_composite_image, filenames, run=run
   radii[0] = radius
 
   green = ucomp_write_composite_image_channel(filenames[1], $
-                                              radius=radius, $
                                               wave_region=wave_region, $
+                                              radius=radius, $
                                               run=run)
   wave_regions[1] = wave_region
   radii[1] = radius
 
   blue = ucomp_write_composite_image_channel(filenames[2], $
-                                             radius=radius, $
                                              wave_region=wave_region, $
+                                             radius=radius, $
                                              run=run)
   wave_regions[2] = wave_region
   radii[2] = radius
@@ -178,26 +251,30 @@ end
 
 ; main-level example program
 
-date = '20220901'
+date = '20220325'
 
-config_basename = 'ucomp.latest.cfg'
+config_basename = 'ucomp.regression.cfg'
 config_filename = filepath(config_basename, $
                            subdir=['..', '..', '..', 'ucomp-config'], $
                            root=mg_src_root())
 run = ucomp_run(date, 'test', config_filename)
 
+enhanced = 0B
+nrgf = 0B
 
-mean_basenames = ['20220901.ucomp.1074.synoptic.mean.fts', $
-                  '20220901.ucomp.789.synoptic.mean.fts', $
-                  '20220901.ucomp.637.synoptic.mean.fts']
-; mean_basenames = ['20220901.ucomp.706.synoptic.mean.fts', $
-;                   '20220901.ucomp.1074.synoptic.mean.fts', $
-;                   '20220901.ucomp.789.synoptic.mean.fts']
+wave_regions = ['1074', '789', '637']
+mean_basenames = date + '.ucomp.' + wave_regions + '.synoptic.mean.fts'
 mean_filenames = filepath(mean_basenames, $
                           subdir=[date, 'level2'], $
                           root=run->config('processing/basedir'))
+ucomp_write_composite_image, mean_filenames, enhanced=enhanced, run=run
 
-ucomp_write_composite_image, mean_filenames, run=run
+wave_regions = ['706', '1074', '789']
+mean_basenames = date + '.ucomp.' + wave_regions + '.synoptic.mean.fts'
+mean_filenames = filepath(mean_basenames, $
+                          subdir=[date, 'level2'], $
+                          root=run->config('processing/basedir'))
+ucomp_write_composite_image, mean_filenames, enhanced=enhanced, nrgf=nrgf, run=run
 
 obj_destroy, run
 

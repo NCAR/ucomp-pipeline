@@ -31,16 +31,16 @@ function ucomp_quality_occulterin_flats, file, $
       occulter_out = strtrim(ucomp_getpar(ext_headers[e], 'OCCLTR'), 2) eq 'out'
       diffuser_in = strtrim(ucomp_getpar(ext_headers[e], 'DIFFUSR'), 2) eq 'in'
       if (~occulter_out) then begin
-        mg_log, 'rejecting flat file %s', file_basename(file.raw_filename), $
+        mg_log, 'rejecting %s', file_basename(file.raw_filename), $
                 name=run.logger_name, /warn
-        mg_log, 'occulter is not out for ext %d', e + 1L, $
+        mg_log, 'occulter is not out for ext %d in flat file', e + 1L, $
                 name=run.logger_name, /warn
         return, 1UL
       endif
       if (~diffuser_in) then begin
-        mg_log, 'rejecting flat file %s', file_basename(file.raw_filename), $
+        mg_log, 'rejecting %s', file_basename(file.raw_filename), $
                 name=run.logger_name, /warn
-        mg_log, 'diffuser is not in for ext %d', e + 1L, $
+        mg_log, 'diffuser is not in for ext %d in flat file', e + 1L, $
                 name=run.logger_name, /warn
         return, 1UL
       endif

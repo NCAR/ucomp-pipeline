@@ -87,7 +87,9 @@ pro ucomp_make_darks, run=run
                          ext_data=ext_data, $
                          ext_headers=ext_headers, $
                          n_extensions=n_extensions, $
-                         repair_routine=run->epoch('raw_data_repair_routine', datetime=datetime)
+                         repair_routine=run->epoch('raw_data_repair_routine', datetime=datetime), $
+                         badframes=run.badframes, $
+                         logger=run.logger_name
 
     ext_data = float(ext_data)
 
@@ -134,18 +136,6 @@ pro ucomp_make_darks, run=run
       dark_extnames->add, strmid(file_basename(dark_files[d].raw_filename), 9, 6)
 
       dark_image = reform(ext_data[*, *, *, *, e])
-      ; dims = size(ext_data, /dimensions)
-      ; n_polstates = dims[2]
-      ; n_cameras = dims[3]
-      ; for c = 0L, n_cameras - 1L do begin
-      ;   run->get_hot_pixels, averaged_gain_mode[e], c, $
-      ;                        hot=hot, adjacent=adjacent
-      ;   for p = 0L, n_polstates - 1L do begin
-      ;     dark_image[*, *, p, c] = ucomp_fix_hot(dark_image[*, *, p, c], $
-      ;                                            hot=hot, $
-      ;                                            adjacent=adjacent)
-      ;   endfor
-      ; endfor
 
       dark_image = mean(dark_image, dimension=3)
 
@@ -163,7 +153,7 @@ pro ucomp_make_darks, run=run
 
     dims = size(dark_image, /dimensions)
     r_outer = run->epoch('field_radius', datetime=datetime)
-    field_mask = ucomp_field_mask(dims[0], dims[1], r_outer)
+    field_mask = ucomp_field_mask(dims[0:1], r_outer)
     field_mask_indices = where(field_mask, /null)
     rcam_image = dark_image[*, *, 0]
     tcam_image = dark_image[*, *, 1]

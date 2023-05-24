@@ -315,3 +315,16 @@
   fix for finding configuration file for verification script
   fix for finding post
   horizontal debanding
+0.2.87 [May 23, 2023]
+  change display min/max for radial azimuth to +/- 50.0
+  improved GBU
+  ability to remove bad frames
+  creating quick invert FITS and PNGs
+  adding backgrounds to average files
+  fixed post finding
+  adding mean/median and quick invert files to ucomp_file database table
+  can specify dates in options/dates in config file for eod, rt, cal, clearday,
+    reprocess, regression, script, and archive sub-commands
+  fixed temperature composite images
+  produce image scale plot for evaluating changes in plate scale
+  updating FITS keywords

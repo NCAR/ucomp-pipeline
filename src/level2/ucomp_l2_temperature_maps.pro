@@ -1,5 +1,12 @@
 ; docformat = 'rst'
 
+;+
+; Create the temperature maps.
+;
+; :Keywords:
+;   run : in, required, type=object
+;     `ucomp_run` object
+;-
 pro ucomp_l2_temperature_maps, run=run
   compile_opt strictarr
 

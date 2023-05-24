@@ -15,13 +15,19 @@
 ;     extension data, removes `n_cameras` dimension on output
 ;   ext_headers : in, required, type=list
 ;     extension headers as list of `strarr`
+;   backgrounds : out, type="fltarr(nx, ny, n_cameras, n_exts)"
+;     background images
 ;
 ; :Keywords:
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-function ucomp_quality_sgsloop, file, primary_header, ext_data, ext_headers, $
-                                run=run
+function ucomp_gbu_sgsloop, file, $
+                            primary_header, $
+                            ext_data, $
+                            ext_headers, $
+                            backgrounds, $
+                            run=run
   compile_opt strictarr
 
   limit = run->epoch('sgsloop_min')

@@ -1,5 +1,12 @@
 ; docformat = 'rst'
 
+;+
+; Report memory usage over run.
+;
+; :Keywords:
+;   run : in, required, type=object
+;     `ucomp_run` object
+;-
 pro ucomp_memory_plot, run=run
   compile_opt strictarr
 

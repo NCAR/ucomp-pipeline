@@ -14,9 +14,6 @@
 pro ucomp_write_iquv_mp4, wave_region, run=run
   compile_opt strictarr
 
-  mg_log, 'creating IQUV mp4 for %s nm', wave_region, $
-          name=run.logger_name, /info
-
   center_wavelength_only = run->config('intensity/center_wavelength_gifs_only')
   if (~center_wavelength_only) then begin
     mg_log, 'skipping writing IQUV mp4 because not only center wavelength images', $

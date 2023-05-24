@@ -3,6 +3,10 @@
 ;+
 ; Perform the steps of the end-of-day processing.
 ;
+; :Params:
+;   wave_regions : in, required, type=strarr
+;     wave regions, e.g., ["1074", "1079"]
+;
 ; :Keywords:
 ;   run : in, required, type=object
 ;     KCor run object

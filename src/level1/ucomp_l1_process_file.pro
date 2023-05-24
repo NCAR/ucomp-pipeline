@@ -46,7 +46,9 @@ pro ucomp_l1_process_file, file, run=run
                        ext_data=data, $
                        ext_headers=headers, $
                        repair_routine=run->epoch('raw_data_repair_routine'), $
-                       all_zero=all_zero
+                       badframes=run.badframes, $
+                       all_zero=all_zero, $
+                       logger=run.logger_name
   file.all_zero = all_zero
   !null = run->stop(clock_id)
 
@@ -59,7 +61,10 @@ pro ucomp_l1_process_file, file, run=run
     ucomp_l1_step, 'ucomp_l1_check_quality', $
                    file, primary_header, data, headers, run=run
     if (~file.ok) then begin
-      mg_log, 'skipping for poor quality (%b)', file.quality_bitmask, $
+      conditions = ucomp_quality_conditions(file.wave_region, run=run)
+      bad_condition_indices = where(file.quality_bitmask and conditions.mask, /null)
+      bad_conditions = strjoin(strmid(conditions[bad_condition_indices].checker, 14), '|')
+      mg_log, 'skipping for poor quality (%s)', bad_conditions, $
               name=run.logger_name, /warn
       goto, done
     endif
@@ -69,6 +74,10 @@ pro ucomp_l1_process_file, file, run=run
 
   step_number = 1L
 
+  ; remove comments from primary header
+  ; TODO: maybe this is not necessary?
+  sxdelpar, primary_header, 'COMMENT'
+
   ucomp_l1_step, 'ucomp_l1_average_data', $
                  file, primary_header, data, headers, step_number=step_number, run=run
   ucomp_l1_step, 'ucomp_l1_camera_linearity', $
@@ -76,10 +85,10 @@ pro ucomp_l1_process_file, file, run=run
 
   ucomp_l1_step, 'ucomp_l1_apply_dark', $
                  file, primary_header, data, headers, step_number=step_number, run=run
-  ucomp_l1_step, 'ucomp_l1_camera_correction', $
+  ucomp_l1_step, 'ucomp_l1_apply_gain', $
                  file, primary_header, data, headers, step_number=step_number, run=run
 
-  ucomp_l1_step, 'ucomp_l1_apply_gain', $
+  ucomp_l1_step, 'ucomp_l1_camera_correction', $
                  file, primary_header, data, headers, step_number=step_number, run=run
 
   ucomp_l1_step, 'ucomp_l1_continuum_correction', $

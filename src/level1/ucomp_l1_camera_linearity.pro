@@ -33,6 +33,8 @@ pro ucomp_l1_camera_linearity, file, $
     goto, done
   endif
 
+  file.linearity_corrected = 1B
+
   dims = size(data, /dimensions)
   n_polstates = dims[2]
   n_cameras = dims[3]
@@ -52,4 +54,6 @@ pro ucomp_l1_camera_linearity, file, $
   endfor
 
   done:
+  ucomp_addpar, primary_header, 'LIN_CRCT', boolean(file.linearity_corrected), $
+                comment='camera linearity corrected', after='OBJECT'
 end
