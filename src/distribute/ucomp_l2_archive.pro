@@ -18,7 +18,7 @@ pro ucomp_l2_archive, wave_region, run=run
 
   if (~run->config(wave_region + '/send_to_archive')) then begin
     mg_log, 'skipping archiving %s nm L2 data', wave_region, $
-            name=run.logger, /info
+            name=run.logger_name, /info
     goto, done
   endif
 
