@@ -88,6 +88,8 @@ pro ucomp_db_file_insert, files, level, product_type, $
               {name: 'obs_id', type: '''%s'''}, $
 
               {name: 'quality', type: '%d'}, $
+              {name: 'gbu', type: '%d'}, $
+
               {name: 'median_background', type: '%s'}, $
               {name: 'vcrosstalk_metric', type: '%s'}, $
               {name: 'wind_speed', type: '%s'}, $
@@ -110,7 +112,10 @@ pro ucomp_db_file_insert, files, level, product_type, $
                  filetype_index, $
                  file.obs_plan, $
                  file.obs_id, $
+
                  file.quality_bitmask, $
+                 file.gbu, $
+
                  ucomp_db_float(file.median_background, format='%0.4f'), $
                  ucomp_db_float(file.vcrosstalk_metric, $
                                 valid_range=[0.0, 999.0], $

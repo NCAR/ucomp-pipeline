@@ -16,7 +16,9 @@ create table ucomp_file (
   obs_plan              char (60),
   obs_id                char (60),
 
-  quality               tinyint (2),
+  quality               int,
+  gbu                   int,
+
   median_background     float(8, 4),
   vcrosstalk_metric     float(8, 4),
   wind_speed            float(7, 3),

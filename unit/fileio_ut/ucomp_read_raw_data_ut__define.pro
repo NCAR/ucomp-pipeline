@@ -3,14 +3,14 @@
 function ucomp_read_raw_data_ut::test_basic
   compile_opt strictarr
 
-  date = '20210326'
+  date = '20220325'
   config_filename = filepath('ucomp.production.cfg', $
                              root=ucomp_unit_config_dir())
   run = ucomp_run(date, 'test', config_filename)
   raw_basedir = run->config('raw/basedir')
   obj_destroy, run
 
-  basename = '20210326.172953.92.ucomp.l0.fts'
+  basename = '20220325.215353.21.ucomp.l0.fts'
   filename = filepath(basename, subdir=date, root=raw_basedir)
 
   ucomp_read_raw_data, filename, $
@@ -22,11 +22,16 @@ function ucomp_read_raw_data_ut::test_basic
                        repair_routine=repair_routine
 
   assert, primary_data eq 0, 'incorrect primary data'
-  assert, n_elements(primary_header) eq 68, 'incorrect number of elements in primary header'
-  assert, array_equal(size(ext_data, /dimensions), [1280, 1024, 4, 2, 2]), $
-          'incorrect ext data size'
-  assert, n_elements(ext_headers) eq 2, 'incorrect number of ext headers'
-  assert, n_extensions eq 2, 'incorrect number of extensions: %d', n_extensions
+  assert, n_elements(primary_header) eq 111, $
+          'incorrect number of elements in primary header (%d)', $
+          n_elements(primary_header)
+  assert, array_equal(size(ext_data, /dimensions), [1280, 1024, 4, 2, 10]), $
+          'incorrect ext data size: [%s]', $
+          strjoin(strtrim(size(ext_data, /dimensions), 2), ', ')
+  assert, n_elements(ext_headers) eq 10, $
+          'incorrect number of ext headers (%d)', $
+          n_elements(ext_headers)
+  assert, n_extensions eq 10, 'incorrect number of extensions: %d', n_extensions
 
   obj_destroy, ext_headers
 
@@ -37,7 +42,7 @@ end
 function ucomp_read_raw_data_ut::test_repair
   compile_opt strictarr
 
-  date = '20210326'
+  date = '20220325'
   config_filename = filepath('ucomp.production.cfg', $
                              root=ucomp_unit_config_dir())
 
@@ -45,7 +50,7 @@ function ucomp_read_raw_data_ut::test_repair
   raw_basedir = run->config('raw/basedir')
   obj_destroy, run
 
-  basename = '20210326.172953.92.ucomp.l0.fts'
+  basename = '20220325.215353.21.ucomp.l0.fts'
   filename = filepath(basename, subdir=date, root=raw_basedir)
 
   ucomp_read_raw_data, filename, $
