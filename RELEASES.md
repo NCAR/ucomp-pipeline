@@ -331,3 +331,5 @@
 0.3.0 [May 25, 2023]
   change quality conditions checked in early mission
   option to not perform noise masking in level 2 products
+0.3.1 [Jun 6, 2023]
+  handle extra files in the raw directory with ".fts" in the filename
