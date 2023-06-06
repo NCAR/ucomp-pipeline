@@ -48,7 +48,7 @@ function ucomp_new_files, dir, catalog_filename, count=count, error=error
   endelse
 
   ; search dir for matching files
-  all_files = file_search(filepath('*.fts*', root=dir), count=n_all_files)
+  all_files = file_search(filepath('*.fts{,.gz}', root=dir), count=n_all_files)
   if (n_all_files eq 0L) then begin
     all_files = !null
   endif else begin
