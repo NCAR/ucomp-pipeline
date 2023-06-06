@@ -1,1 +1,2 @@
 insert into ucomp_quality (quality, description) values ('ok', 'OK images')
+insert into ucomp_quality (quality, description) values ('bad', 'bad images')
