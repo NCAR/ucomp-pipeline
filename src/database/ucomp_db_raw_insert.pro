@@ -23,9 +23,14 @@ pro ucomp_db_raw_insert, l0_files, obsday_index, db, logger_name=logger_name
 
   ; get index for OK quality data files
   q = 'select * from ucomp_quality where quality=''OK'''
-  quality_results = db->query(q, status=status)
+  ok_quality_results = db->query(q, status=status)
   if (status ne 0L) then goto, done
-  quality_index = quality_results.quality_id
+  ok_quality_index = ok_quality_results.quality_id
+
+  q = 'select * from ucomp_quality where quality=''bad'''
+  bad_quality_results = db->query(q, status=status)
+  if (status ne 0L) then goto, done
+  bad_quality_index = bad_quality_results.quality_id
 
   ; get index for raw (level 0) data files
   q = 'select * from ucomp_level where level=''L0'''
@@ -83,7 +88,7 @@ pro ucomp_db_raw_insert, l0_files, obsday_index, db, logger_name=logger_name
                  obsday_index, $
 
                  file.wave_region, $
-                 quality_index, $
+                 file.quality_bitmask eq 0 ? ok_quality_index : bad_quality_index, $
                  level_index, $
 
                  file.obs_id, $
