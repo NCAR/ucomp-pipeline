@@ -10,6 +10,7 @@ create table ucomp_raw (
   wave_region      char(4),
 
   quality_id       tinyint (2) not null,
+  quality_bitmask  int,
   level_id         tinyint (2) not null,
 
   obs_plan         char (60),      -- name of current program
