@@ -239,12 +239,12 @@ pro ucomp_l1_find_alignment, file, $
   ucomp_addpar, primary_header, $
                 'CDELT1', $
                 run->line(file.wave_region, 'plate_scale'), $
-                comment='[arcsec/pixel] solar X increment = platescale', $
+                comment='[arcsec/pixel] image X increment = platescale', $
                 format='(f9.3)', after=after
   ucomp_addpar, primary_header, $
                 'CDELT2', $
                 run->line(file.wave_region, 'plate_scale'), $
-                comment='[arcsec/pixel] solar Y increment = platescale', $
+                comment='[arcsec/pixel] image Y increment = platescale', $
                 format='(f9.3)', after=after
 
   ucomp_addpar, primary_header, 'COMMENT', $
