@@ -31,6 +31,8 @@ pro ucomp_l1_continuum_subtraction, file, $
 
   status = 0L
 
+  subtract_continuum = run->line(file.wave_region, 'subtract_continuum')
+
   ; find extensions with matching wavelengths and opposite ONBAND
   n_extensions = n_elements(ext_headers)
 
@@ -90,7 +92,7 @@ pro ucomp_l1_continuum_subtraction, file, $
     if (matched[m]) then continue
 
     ; combine index m and index match_indices[m]
-    if (run->line(file.wave_region, 'subtract_continuum')) then begin
+    if (subtract_continuum) then begin
       if (onband[m]) then begin
         c0 = [-1.0, 1.0]
         c1 = [1.0, -1.0]
@@ -158,6 +160,10 @@ pro ucomp_l1_continuum_subtraction, file, $
   endfor
 
   ext_data = combined_ext_data
+
+  ucomp_addpar, primary_header, 'CONTSUB', boolean(subtract_continuum), $
+                comment='whether the continuum was subtracted', $
+                after='DEMODV'
 
   file.n_extensions = n_elements(ext_headers)
   file.wavelengths = keep_wavelengths
