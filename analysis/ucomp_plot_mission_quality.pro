@@ -50,8 +50,6 @@ pro ucomp_plot_mission_quality, db, wave_region, start_date, end_date
     date = ucomp_increment_date(date)
   endwhile
 
-print, jds[0]
-stop
   colors = ['008800'x, '000088'x]
   !null = label_date(date_format='%Y-%N-%D')
   window, xsize=1000, ysize=300, /free
