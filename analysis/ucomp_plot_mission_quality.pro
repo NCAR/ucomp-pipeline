@@ -15,7 +15,6 @@ pro ucomp_plot_mission_quality, db, wave_region, start_date, end_date
   n_quality_files = lonarr(2, n_days)
   jds = dblarr(n_days)
 
-
   d = 0L
   date = start_date
   while (date ne end_date) do begin
