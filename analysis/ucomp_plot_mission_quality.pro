@@ -50,14 +50,16 @@ pro ucomp_plot_mission_quality, db, wave_region, start_date, end_date
     date = ucomp_increment_date(date)
   endwhile
 
-  colors = ['008800'x, '000088'x]
+  charsize = 1.0
+  colors = ['008800'x, '3366ff'x]
   !null = label_date(date_format='%Y-%N-%D')
-  window, xsize=1000, ysize=300, /free
+  window, xsize=1500, ysize=400, /free
   mg_stacked_histplot, jds, $
                        n_quality_files, $
+                       title=string(wave_region, format='Quality files for %s nm'), $
                        axis_color='000000'x, $
                        background='ffffff'x, color=colors, /fill, $
-                       charsize=0.85, $
+                       charsize=charsize, $
                        xtitle='Date', ytitle='# of files', $
                        xstyle=9, xyrange=[start_jd, end_jd], xtickformat='label_date', $
                        ystyle=9, yrange=[0, 500]
@@ -82,9 +84,12 @@ db = ucomp_db_connect(run->config('database/config_filename'), $
                       log_statements=run->config('database/log_statements'), $
                       status=status)
 
-wave_region = '1074'
+wave_regions = ['530', '637', '656', '670', '691', '706', '761', '789', '802', $
+                '991', '1074', '1079', '1083']
 
-ucomp_plot_mission_quality, db, wave_region, start_date, end_date
+for w = 0L, n_elements(wave_regions) - 1L do begin
+  ucomp_plot_mission_quality, db, wave_regions[w], start_date, end_date
+endfor
 
 obj_destroy, [db, run]
 
