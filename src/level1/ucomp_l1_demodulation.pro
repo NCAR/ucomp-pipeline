@@ -72,7 +72,7 @@ pro ucomp_l1_demodulation, file, $
   demod_version = run->epoch('demodulation_coeffs_version', datetime=datetime)
   ucomp_addpar, primary_header, 'DEMODV', demod_version, $
                 comment=string(ucomp_idlsave2dateobs(demod_info.date), $
-                               format='demod coeffs version, created %s'), $
+                               format='demod coeffs version [%s]'), $
                 after='LIN_CRCT'
 
 
