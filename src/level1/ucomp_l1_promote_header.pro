@@ -50,6 +50,9 @@ pro ucomp_l1_promote_header, file, $
   after = 'OBJECT'
   ucomp_addpar, primary_header, 'LEVEL', 'L1', comment='level 1 calibrated', $
                 after=after
+  ucomp_addpar, primary_header, 'DOI', run->line(file.wave_region, 'doi'), $
+                comment='Digital Object Identifier', $
+                after=after
 
   current_time = systime(/utc)
   date_dp = string(bin_date(current_time), $
