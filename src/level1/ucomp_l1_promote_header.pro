@@ -120,9 +120,9 @@ pro ucomp_l1_promote_header, file, $
 
     ; fix up comments to NAXIS keywords
     ucomp_addpar, h, 'NAXIS1', ucomp_getpar(h, 'NAXIS1'), $
-                  comment='[px] width'
+                  comment='[pixels] width'
     ucomp_addpar, h, 'NAXIS2', ucomp_getpar(h, 'NAXIS2'), $
-                  comment='[px] height'
+                  comment='[pixels] height'
     ucomp_addpar, h, 'NAXIS3', ucomp_getpar(h, 'NAXIS3'), $
                   comment='polarization states: I, Q, U, V'
     headers[e] = h
@@ -164,28 +164,32 @@ pro ucomp_l1_promote_header, file, $
 
   ; add HISTORY of processing of the file
   ; TODO: update when continuum correction and sky transmission are performed
-  history = ['Level 1 calibration and processing steps:', $
-             '  - quality check to determine if the file should be processed', $
-             '  - average level 0 data with same onband and wavelength', $
-             '  - apply dark', $
-             '  - apply gain', $
-             '  - camera corrections such as hot pixel correction', $
-             ;'  - correct continuum', $
-             '  - demodulation', $
-             '  - distortion correction', $
-             '  - find the occulter position and radius', $
-             '  - subtract continuum', $
-             '  - deband', $
-             '  - center images using occulter position and rotate to north up', $
-             '  - combine the cameras', $
-             '  - polarimetric correction', $
-             ;'  - correct for sky transmission', $
-             '  - update FITS keywords']
+  history = [{text: '', include: 1B}, $
+             {text: 'Level 1 calibration and processing steps:', include: 1B}, $
+             {text: '  - quality check to determine if the file should be processed', include: 1B}, $
+             {text: '  - average level 0 data with same onband and wavelength', include: 1B}, $
+             {text: '  - apply dark', include: 1B}, $
+             {text: '  - apply gain', include: 1B}, $
+             {text: '  - camera corrections such as hot pixel correction', include: 1B}, $
+             ;{text: '  - correct continuum', include: 1B}, $
+             {text: '  - demodulation', include: 1B}, $
+             {text: '  - distortion correction', include: 1B}, $
+             {text: '  - find the occulter position and radius', include: 1B}, $
+             {text: '  - subtract continuum', $
+              include: run->line(file.wave_region, 'subtract_continuum')}, $
+             {text: '  - deband', include: 1B}, $
+             {text: '  - center images using occulter position and rotate to north up', include: 1B}, $
+             {text: '  - combine the cameras', include: 1B}, $
+             {text: '  - polarimetric correction', include: 1B}, $
+             ;{text: '  - correct for sky transmission', include: 1B}, $
+             {text: '  - update FITS keywords', include: 1B}]
   for h = 0L, n_elements(history) - 1L do begin
-    if (strlen('HISTORY  ' + history[h]) gt 80L) then begin
-      mg_log, 'too long: %s', history[h], name=run.logger_name, /warn
+    if (history[h].include) then begin
+      if (strlen('HISTORY  ' + history[h].text) gt 80L) then begin
+        mg_log, 'too long: %s', history[h], name=run.logger_name, /warn
+      endif
+      ucomp_addpar, primary_header, 'HISTORY', history[h]
     endif
-    ucomp_addpar, primary_header, 'HISTORY', history[h]
   endfor
 end
 
