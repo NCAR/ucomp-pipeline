@@ -60,7 +60,7 @@ pro ucomp_plot_mission_quality, db, wave_region, start_date, end_date
                        background='ffffff'x, color=colors, /fill, $
                        charsize=charsize, $
                        xtitle='Date', ytitle='# of files', $
-                       xstyle=9, xyrange=[start_jd, end_jd], xtickformat='label_date', $
+                       xstyle=9, xrange=[start_jd, end_jd], xtickformat='label_date', $
                        ystyle=9, yrange=[0, 500]
 end
 
