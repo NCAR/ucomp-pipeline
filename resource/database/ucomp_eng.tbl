@@ -26,9 +26,11 @@ create table ucomp_eng (
   rcam_xcenter        float(8, 4),    -- center x for RCAM image
   rcam_ycenter        float(8, 4),    -- center y for RCAM image
   rcam_radius         float(8, 4),    -- radius for RCAM image
+  rcam_occulter_chisq float(8, 4),    -- chi squared for RCAM occulter fit
   tcam_xcenter        float(8, 4),    -- center x for TCAM image
   tcam_ycenter        float(8, 4),    -- center y for TCAM image
   tcam_radius         float(8, 4),    -- radius for TCAM image
+  tcam_occulter_chisq float(8, 4),    -- chi squared for TCAM occulter fit
 
   rcam_post_angle     float(7, 3),
   tcam_post_angle     float(7, 3),
