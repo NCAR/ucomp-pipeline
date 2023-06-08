@@ -14,17 +14,20 @@ pro ucomp_plot_fit_chisq, db, wave_region, start_date, end_date
   data = db->query(query, wave_region, $
                    count=n_files, error=error, sql_statement=sql)
 
+  jds = dblarr(n_files)
+  for f = 0L, n_files - 1L do jds[f] = ucomp_dateobs2julday(data[f].date_obs)
 
   charsize = 1.0
-  colors = ['008800'x, '3366ff'x]
   !null = label_date(date_format='%Y-%N-%D')
   window, xsize=1500, ysize=400, /free
   !p.multi = [0, 1, 2]
 
   plot, jds, data.rcam_occulter_chisq, $
-        xrange=[start_jd, end_jd]
-  plot, jds, data.rcam_occulter_chisq, $
-        xrange=[start_jd, end_jd]
+        xstyle=9, xrange=[start_jd, end_jd], xtickformat='label_date', $
+        ystyle=9
+  plot, jds, data.tcam_occulter_chisq, $
+        xstyle=9, xrange=[start_jd, end_jd], xtickformat='label_date', $
+        ystyle=9
 
   !p.multi = 0
 end
