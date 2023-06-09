@@ -92,11 +92,6 @@ pro ucomp_l1_promote_header, file, $
                 comment='Stokes V crosstalk metric', after=after
 
   radius = ucomp_getpar(primary_header, 'RADIUS')
-  mg_log, 'backgrounds dimensions: %s', $
-          strjoin(strtrim(size(backgrounds, /dimensions), 2), ', '), $
-          name=run.logger_name, /debug
-  mg_log, 'background index: %d', file.n_unique_wavelengths / 2L, $
-          name=run.logger_name, /debug
   background = backgrounds[*, *, file.n_unique_wavelengths / 2L]
   annulus_mask = ucomp_annulus(1.1 * radius, 1.5 * radius, $
                                dimensions=size(background, /dimensions))
@@ -189,9 +184,9 @@ pro ucomp_l1_promote_header, file, $
   for h = 0L, n_elements(history) - 1L do begin
     if (history[h].include) then begin
       if (strlen('HISTORY  ' + history[h].text) gt 80L) then begin
-        mg_log, 'too long: %s', history[h], name=run.logger_name, /warn
+        mg_log, 'too long: %s', history[h].text, name=run.logger_name, /warn
       endif
-      ucomp_addpar, primary_header, 'HISTORY', history[h]
+      ucomp_addpar, primary_header, 'HISTORY', history[h].text
     endif
   endfor
 end
