@@ -30,6 +30,11 @@ pro ucomp_addpar, header, name, value, $
                   format=format, $
                   title=title
   compile_opt strictarr
+  on_error, 2
+
+  if (size(value, /n_dimensions) gt 0L) then begin
+    message, string(name, format='value for %s is not a non-structure scalar')
+  endif
 
   ; add a leading space to comment, if it's not already there
   if (n_elements(comment) gt 0L) then begin
