@@ -37,7 +37,15 @@ function ucomp_centering_metric, rcam, tcam, occulter_radius, $
   dims = size(rcam, /dimensions)
 
   test_annulus = ucomp_annulus(inner_radius, outer_radius, dimensions=dims)
-  annulus_indices = where(test_annulus)
+  good_values = rcam gt 0.0 and rcam lt 100.0 and tcam gt 0.0 and tcam gt 100.0
+  annulus_indices = where(test_annulus and good_values, n_annulus_points)
+
+  if (n_annulus_points eq 0L) then begin
+    difference_median = !values.f_nan
+    rcam_median = !values.f_nan
+    tcam_median = !values.f_nan
+    return, !values.f_nan
+  endif
 
   difference_median = median((abs(rcam - tcam))[annulus_indices])
   rcam_median = median(rcam[annulus_indices])
