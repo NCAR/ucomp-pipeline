@@ -53,15 +53,19 @@ pro ucomp_l1_combine_cameras, file, $
     after = 'FLATDN'
     ucomp_addpar, ext_header, 'CAMCORR', camera_correlation, $
                   comment='correlation between camera images', $
+                  format='F0.3', $
                   after=after
     ucomp_addpar, ext_header, 'CAMDIFF', difference_median, $
                   comment='median of absolute difference between camera images', $
+                  format='F0.3', $
                   after=after
     ucomp_addpar, ext_header, 'RCAMMED', rcam_median, $
                   comment='median value in test annulus in RCAM', $
+                  format='F0.3', $
                   after=after
     ucomp_addpar, ext_header, 'TCAMMED', tcam_median, $
                   comment='median value in test annulus in TCAM', $
+                  format='F0.3', $
                   after=after
 
     ext_headers[e] = ext_header
