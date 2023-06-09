@@ -33,6 +33,41 @@ pro ucomp_l1_combine_cameras, file, $
   status = 0L
 
   cameras = strlowcase(run->config('cameras/use'))
+  ucomp_addpar, primary_header, 'CAMERAS', cameras, $
+                comment=string(cameras eq 'both' ? 's' : '', $
+                               format='(%"camera%s used in processing")'), $
+                after='DEMOD_C'
+
+  occulter_radius = (file.rcam_geometry.radius + file.tcam_geometry.radius) / 2.0
+
+  for e = 0L, n_elements(ext_headers) - 1L do begin
+    ; use intensity for each camera for this extension
+    rcam = reform(ext_data[*, *, 0, 0, e])
+    tcam = reform(ext_data[*, *, 0, 1, e])
+    camera_correlation = ucomp_centering_metric(rcam, tcam, occulter_radius, $
+                                                difference_median=difference_median, $
+                                                rcam_median=rcam_median, $
+                                                tcam_median=tcam_median)
+
+    ext_header = ext_headers[e]
+
+    after = 'FLATDN'
+    ucomp_addpar, ext_header, 'CAMCORR', camera_correlation, $
+                  comment='correlation between camera images', $
+                  after=after
+    ucomp_addpar, ext_header, 'CAMDIFF', difference_median, $
+                  comment='median of absolute difference between camera images', $
+                  after=after
+    ucomp_addpar, ext_header, 'RCAMMED', rcam_median, $
+                  comment='median value in test annulus in RCAM', $
+                  after=after
+    ucomp_addpar, ext_header, 'TCAMMED', tcam_median, $
+                  comment='median value in test annulus in TCAM', $
+                  after=after
+
+    ext_headers[e] = ext_header
+  endfor
+
   case cameras of
     'rcam': begin
         ext_data = reform(ext_data[*, *, *, 0, *])
@@ -49,9 +84,5 @@ pro ucomp_l1_combine_cameras, file, $
     else: message, string(cameras, format='(%"invalid combinecameras/use value: ''%s''")')
   endcase
 
-  ucomp_addpar, primary_header, 'CAMERAS', cameras, $
-                comment=string(cameras eq 'both' ? 's' : '', $
-                               format='(%"camera%s used in processing")'), $
-                after='DEMOD_C'
   done:
 end
