@@ -160,14 +160,41 @@ pro ucomp_l1_promote_header, file, $
   for e = 0L, n_elements(headers) - 1L do begin
     h = headers[e]
     ucomp_addpar, h, 'CONTOFF', continuum_offset, $
-                  '[nm] distance from WAVELNG for continuum wavelength', $
+                  format='(F0.5)', $
+                  comment='[nm] distance from WAVELNG for continuum wavelength', $
                   after='CONTIN'
     headers[e] = h
   endfor
 
-  ; TODO: promote SGS values to primary header?
-  ; ucomp_addpar, primary_header, 'COMMENT', 'SGS info', $
-  ;               before='SGSSCINT', /title
+  ; promote SGS values to primary header after the temperatures
+  sgs_keywords = ['SGSSCINT', $
+                  'SGSDIMV', 'SGSDIMS', $
+                  'SGSSUMV', 'SGSSUMS', $
+                  'SGSRAV', 'SGSRAS', $
+                  'SGSDECV', 'SGSDECS', $
+                  'SGSLOOP', $
+                  'SGSRAZR', 'SGSDECZR']
+  sgs_values = fltarr(n_elements(sgs_keywords), n_elements(header))
+  sgs_comments = strarr(n_elements(sgs_keywords))
+  for e = 0L, n_elements(headers) - 1L do begin
+    h = headers[e]
+    for s = 0L, n_elements(sgs_keywords) - 1L do begin
+      sgs_values[s, e] = ucomp_getpar(h, sgs_keywords[s], comment=comment, /float)
+      if (e eq 0L) then sgs_comments[e] = comment
+      sxdelpar, h, sgs_keywords[s]
+    endfor
+    headers[e] = h
+  endfor
+  sgs_values = mean(values, dimension=1)
+
+  after = 'T_C1PCB'
+  for s = 0L, n_elements(sgs_keywords) - 1L do begin
+    ucomp_addpar, primary_header, sgs_keywords[s], sgs_values[s], $
+                  format='(F0.5)', comment=sgs_comments[s], $
+                  after=after
+  endfor
+  ucomp_addpar, primary_header, 'COMMENT', 'SGS info', $
+                before='SGSSCINT', /title
 
   ; add HISTORY of processing of the file
   ; TODO: update when continuum correction and sky transmission are performed
