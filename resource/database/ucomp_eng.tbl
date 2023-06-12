@@ -7,11 +7,11 @@ create table ucomp_eng (
   obsday_id           mediumint (5) not null,
   level_id            tinyint (2) not null,
 
-  focus               float (6, 2),   -- focus stage position
-  o1focus             float (8, 3),   -- O1 position in mm
+  focus               float (6, 2),  -- focus stage position
+  o1focus             float (8, 3),  -- O1 position in mm
 
-  obs_plan            char (60),      -- name of current program
-  obs_id              char (60),      -- name of current measurement
+  obs_plan            char (60),     -- name of current program
+  obs_id              char (60),     -- name of current measurement
 
   -- TODO: how about gain?
 
@@ -23,24 +23,24 @@ create table ucomp_eng (
   caloptic            tinyint (1),
 
   -- distortion corrected centers/radii for occulter
-  rcam_xcenter        float(8, 4),    -- center x for RCAM image
-  rcam_ycenter        float(8, 4),    -- center y for RCAM image
-  rcam_radius         float(8, 4),    -- radius for RCAM image
-  rcam_occulter_chisq float(8, 4),    -- chi squared for RCAM occulter fit
-  tcam_xcenter        float(8, 4),    -- center x for TCAM image
-  tcam_ycenter        float(8, 4),    -- center y for TCAM image
-  tcam_radius         float(8, 4),    -- radius for TCAM image
-  tcam_occulter_chisq float(8, 4),    -- chi squared for TCAM occulter fit
+  rcam_xcenter        float(8, 4),   -- center x for RCAM image
+  rcam_ycenter        float(8, 4),   -- center y for RCAM image
+  rcam_radius         float(8, 4),   -- radius for RCAM image
+  rcam_occulter_chisq float(10, 3),  -- chi squared for RCAM occulter fit
+  tcam_xcenter        float(8, 4),   -- center x for TCAM image
+  tcam_ycenter        float(8, 4),   -- center y for TCAM image
+  tcam_radius         float(8, 4),   -- radius for TCAM image
+  tcam_occulter_chisq float(10, 3),  -- chi squared for TCAM occulter fit
 
   rcam_post_angle     float(7, 3),
   tcam_post_angle     float(7, 3),
 
   rcam_eccentricity   float(7, 3),
   tcam_eccentricity   float(7, 3),
-  rcam_ellipse_angle  float(7, 3),    -- radians
-  tcam_ellipse_angle  float(7, 3),    -- radians
+  rcam_ellipse_angle  float(7, 3),   -- radians
+  tcam_ellipse_angle  float(7, 3),   -- radians
 
-  image_scale         float(7, 3),    -- plate scale computed for this file
+  image_scale         float(7, 3),   -- plate scale computed for this file
 
   wave_region         char (4),
   ntunes              tinyint (2),
