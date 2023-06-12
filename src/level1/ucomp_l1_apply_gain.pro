@@ -44,6 +44,8 @@ pro ucomp_l1_apply_gain, file, $
   field_mask = ucomp_field_mask(dims[0:1], r_outer)
   field_mask_indices = where(field_mask, /null)
 
+  opal_radiance = ucomp_opal_radiance(file.wave_region, run=run)
+
   cal = run.calibration
 
   center_indices = file->get_center_wavelength_indices()
@@ -106,7 +108,6 @@ pro ucomp_l1_apply_gain, file, $
     endif
 
     ; make flat a gain
-    opal_radiance = ucomp_opal_radiance(file.wave_region, run=run)
     im *= opal_radiance
 
     data[*, *, *, *, e] = im
@@ -123,15 +124,18 @@ pro ucomp_l1_apply_gain, file, $
                                    format='(%"%s.ucomp.flat.%s.fts ext, wt %0.2f")')
     endfor
 
-    ucomp_addpar, h, 'BOPAL', opal_radiance, $
-                  comment='[B/Bsun] opal radiance', format='(F0.2)'
-    ucomp_addpar, h, 'BUNIT', '1.0E-06 B/Bsun', $
-                  comment='brightness with respect to solar disk', $
-                  after='BOPAL'
     ucomp_addpar, h, 'FLATDN', flat_median, $
                   comment='median DN value of the dark-corrected flat used', $
                   format='(F0.2)'
                   after='BUNIT'
     headers[e] = h
   endfor
+
+  ucomp_addpar, primary_header, 'BOPAL', opal_radiance, $
+                comment='[B/Bsun] opal radiance', format='(F0.2)', $
+                after='FILTER'
+  ucomp_addpar, primary_header, 'BUNIT', '1.0E-06 B/Bsun', $
+                comment='brightness with respect to solar disk', $
+                after='BOPAL'
+
 end
