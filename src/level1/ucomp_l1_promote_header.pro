@@ -88,6 +88,7 @@ pro ucomp_l1_promote_header, file, $
     file.vcrosstalk_metric = ucomp_vcrosstalk_metric(center_wavelength_data, average_radius)
   endif
 
+  ; quality metrics
   ucomp_addpar, primary_header, 'VCROSSTK', file.vcrosstalk_metric, $
                 comment='Stokes V crosstalk metric', after=after
 
@@ -101,7 +102,8 @@ pro ucomp_l1_promote_header, file, $
   ucomp_addpar, primary_header, 'MED-BKG', median_background, $
                 comment='[ppm] median of background, i.e., continuum', $
                 format='(F0.3)', after=after
-  ucomp_addpar, primary_header, 'COMMENT', 'Metrics', before='VCROSSTK', /title
+  ucomp_addpar, primary_header, 'COMMENT', 'Quality metrics', $
+                before='VCROSSTK', /title
 
   ; update extension headers
 
