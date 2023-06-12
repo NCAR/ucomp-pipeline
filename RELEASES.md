@@ -337,3 +337,4 @@
   report correct quality in ucomp_raw database table
 0.3.3 [Jun 12, 2023]
   FITS header changes
+0.3.4
