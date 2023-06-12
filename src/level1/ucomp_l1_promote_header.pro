@@ -110,7 +110,7 @@ pro ucomp_l1_promote_header, file, $
   remove_keywords = ['COMMENT', 'ONBAND', 'V_LCVR1', 'V_LCVR2', $
                      'V_LCVR3', 'V_LCVR4', 'V_LCVR5', 'NUMSUM', 'SEQNUM', $
                      'OCCLTR', 'CALOPTIC', 'COVER', 'DIFFUSR', 'DARKSHUT', $
-                     'POLANGLE', 'RETANGLE', 'DATE-BEG']
+                     'POLANGLE', 'RETANGLE', 'DATE-BEG', 'O1ND']
 
   for e = 0L, n_elements(headers) - 1L do begin
     h = headers[e]
