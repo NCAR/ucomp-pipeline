@@ -1,0 +1,47 @@
+; docformat = 'rst'
+
+;+
+; Move a FITS keyword to a different location in a header. Use `AFTER` or
+; `BEFORE` to specify the new location. If neither is specified, the keyword
+; will be moved to the end of the header.
+;
+; :Params:
+;   header : in, out, required, type=strarr
+;     FITS header
+;   name : in, required, type=string
+;     name of FITS keyword to move
+;
+; :Keywords:
+;   after : in, optional, type=string
+;     name of keyword to place the given keyword behind
+;   before : in, optional, type=string
+;     name of keyword to place the given keyword before
+;-
+pro ucomp_movepar, header, name, after=after, before=before
+  compile_opt strictarr
+  on_error, 2
+
+  if ((n_elements(after) gt 0L) && (n_elements(before) gt 0L)) then begin
+    message, 'AFTER and BEFORE cannot both be specified'
+  endif
+
+  indices = findgen(n_elements(header))
+  src_index = (where(strmatch(header, string(name, format='%s*'))))[0]
+
+  if (n_elements(after) gt 0L) then begin
+    dst_index = (where(strmatch(header, string(after, format='%s*'))))[0]
+    indices[src_index] = dst_index + 0.5
+  endif
+
+  if (n_elements(before) gt 0L) then begin
+    dst_index = (where(strmatch(header, string(before, format='%s*'))))[0]
+    indices[src_index] = dst_index - 0.5
+  endif
+
+  if ((n_elements(after) eq 0L) && (n_elements(before) eq 0L)) then begin
+    dst_index = n_elements(header)
+    indices[src_index] = dst_index
+  endif
+
+  header = header[sort(indices)]
+end
