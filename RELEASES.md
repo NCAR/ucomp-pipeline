@@ -335,5 +335,5 @@
   handle extra files in the raw directory with ".fts" in the filename
 0.3.2 [Jun 7, 2023]
   report correct quality in ucomp_raw database table
-0.3.3
+0.3.3 [Jun 12, 2023]
   FITS header changes
