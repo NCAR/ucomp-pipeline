@@ -156,6 +156,15 @@ pro ucomp_l1_promote_header, file, $
   ucomp_addpar, primary_header, 'COMMENT', 'Camera info', $
                 before='EXPTIME', /title
 
+  continuum_offset = run->line(file.wave_region, 'continuum_offset')
+  for e = 0L, n_elements(headers) - 1L do begin
+    h = headers[e]
+    ucomp_addpar, h, 'CONTOFF', continuum_offset, $
+                  '[nm] distance from WAVELNG for continuum wavelength', $
+                  after='CONTIN'
+    headers[e] = h
+  endfor
+
   ; TODO: promote SGS values to primary header?
   ; ucomp_addpar, primary_header, 'COMMENT', 'SGS info', $
   ;               before='SGSSCINT', /title
