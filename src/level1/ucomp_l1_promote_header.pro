@@ -176,7 +176,7 @@ pro ucomp_l1_promote_header, file, $
                   'SGSDECV', 'SGSDECS', $
                   'SGSLOOP', $
                   'SGSRAZR', 'SGSDECZR']
-  sgs_values = fltarr(n_elements(sgs_keywords), n_elements(header))
+  sgs_values = fltarr(n_elements(sgs_keywords), n_elements(headers))
   sgs_comments = strarr(n_elements(sgs_keywords))
   for e = 0L, n_elements(headers) - 1L do begin
     h = headers[e]
