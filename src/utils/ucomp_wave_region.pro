@@ -19,8 +19,10 @@ function ucomp_wave_region, wavelength, central_wavelength=central_wavelength
   compile_opt strictarr
 
   ; TODO: this is information that is leaking from the ucomp.lines.spec.cfg file
-  wave_regions = ['530', '637', '656', '691', '706', '789', '1074', '1079', '1083']
-  wave_centers = [530.3, 637.4, 656.3, 691.8, 706.2, 789.4, 1074.62, 1079.8, 1083.0]
+  wave_regions = ['530', '637', '656', '670', '691', '706', '761', '789', $
+                  '802', '991', '1074', '1079', '1083']
+  wave_centers = [530.3, 637.4, 656.3, 670.20, 691.8, 706.2, 761.10, 789.4, $
+                  1074.7, 1079.8, 1083.0]
 
   !null = min(abs(wave_centers - wavelength), w)
   return, keyword_set(central_wavelength) ? wave_centers[w] : wave_regions[w]
