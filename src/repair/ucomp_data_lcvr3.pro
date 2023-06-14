@@ -14,14 +14,11 @@
 pro ucomp_data_lcvr3, primary_header, ext_data, ext_headers
   compile_opt strictarr
 
-  for e = 0L, n_elements(ext_headers) - 1L do begin
-    h = ext_headers[e]
+  temp_value = ucomp_getpar(primary_header, 'T_LCVR3')
+  ucomp_addpar, primary_header, 'T_LCVR3', temp_value, $
+                comment='[C] Lyot LCVR3 Temp'
 
-    temp = ucomp_getpar(h, 'T_LCVR3')
-    ucomp_addpar, h, 'T_LCVR3', comment='[C] Lyot LCVR3 Temp'
-    temp = ucomp_getpar(h, 'TU_LCVR3')
-    ucomp_addpar, h, 'TU_LCVR3', comment='[C] Lyot LCVR3 Temp Unfiltered'
-
-    ext_headers[e] = h
-  endfor
+  temp_value = ucomp_getpar(primary_header, 'TU_LCVR3')
+  ucomp_addpar, primary_header, 'TU_LCVR3', temp_value, $
+                comment='[C] Lyot LCVR3 Temp Unfiltered'
 end
