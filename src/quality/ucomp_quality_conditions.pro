@@ -40,7 +40,10 @@ function ucomp_quality_conditions, wave_region, run=run
      description: 'any reported temperatures are identical'}, $
     {mask: 0UL, $
      checker: 'ucomp_quality_check_nominal_temps', $
-     description: 'a temperature is not in the nominal range'}]
+     description: 'a temperature is not in the nominal range'}, $
+    {mask: 0UL, $
+     checker: 'ucomp_quality_check_o1focus', $
+     description: 'multiple O1FOCUS values in a file'}]
 
   quality_conditions.mask = 2UL ^ (ulindgen(n_elements(quality_conditions)))
 
