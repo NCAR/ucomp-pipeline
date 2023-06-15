@@ -154,8 +154,8 @@ pro ucomp_l1_continuum_subtraction, file, $
     endif
     ucomp_addpar, header, 'RAWEXTS', raw_exts[m] + ',' + raw_exts[match_indices[m]]
 
-    average_flat_median = ucomp_getpar(ext_headers_array[*, m], 'FLATDN') $
-                            + ucomp_getpar(ext_headers_array[*, match_indices[m]], 'FLATDN')
+    average_flat_median = (ucomp_getpar(ext_headers_array[*, m], 'FLATDN') $
+                            + ucomp_getpar(ext_headers_array[*, match_indices[m]], 'FLATDN')) / 2.0
     ucomp_addpar, header, 'FLATDN', average_flat_median, format='(F0.2)'
 
     ext_headers->add, header
