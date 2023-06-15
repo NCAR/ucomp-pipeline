@@ -14,6 +14,8 @@
 ;     extension headers as list of `strarr`
 ;   backgrounds : out, type="fltarr(nx, ny, n_exts)"
 ;     background images
+;   background_headers : in, required, type=list
+;     extension headers for background images as list of `strarr`
 ;
 ; :Keywords:
 ;   run : in, required, type=object
@@ -22,7 +24,9 @@
 ;     set to a named variable to retrieve the status of the step; 0 for success
 ;-
 pro ucomp_l1_promote_header, file, $
-                             primary_header, data, headers, backgrounds, $
+                             primary_header, $
+                             data, headers, $
+                             backgrounds, background_headers, $
                              run=run, status=status
   compile_opt strictarr
 
@@ -110,23 +114,42 @@ pro ucomp_l1_promote_header, file, $
   remove_keywords = ['COMMENT', 'ONBAND', 'V_LCVR1', 'V_LCVR2', $
                      'V_LCVR3', 'V_LCVR4', 'V_LCVR5', 'NUMSUM', 'SEQNUM', $
                      'OCCLTR', 'CALOPTIC', 'COVER', 'DIFFUSR', 'DARKSHUT', $
-                     'POLANGLE', 'RETANGLE', 'DATE-BEG', 'O1ND']
+                     'POLANGLE', 'RETANGLE', 'DATE-BEG', 'O1ND', 'O1FOCUS']
 
   for e = 0L, n_elements(headers) - 1L do begin
     h = headers[e]
+    b = background_headers[e]
 
     ; remove keywords
-    for k = 0L, n_elements(remove_keywords) - 1L do sxdelpar, h, remove_keywords[k]
+    for k = 0L, n_elements(remove_keywords) - 1L do begin
+      sxdelpar, h, remove_keywords[k]
+      sxdelpar, b, remove_keywords[k]
+    endfor
 
     ; fix up comments to NAXIS keywords
     ucomp_addpar, h, 'NAXIS1', ucomp_getpar(h, 'NAXIS1'), $
                   comment='[pixels] width'
+    ucomp_addpar, b, 'NAXIS1', ucomp_getpar(b, 'NAXIS1'), $
+                  comment='[pixels] width'
+
     ucomp_addpar, h, 'NAXIS2', ucomp_getpar(h, 'NAXIS2'), $
                   comment='[pixels] height'
+    ucomp_addpar, b, 'NAXIS2', ucomp_getpar(b, 'NAXIS2'), $
+                  comment='[pixels] height'
+
     ucomp_addpar, h, 'NAXIS3', ucomp_getpar(h, 'NAXIS3'), $
                   comment='polarization states: I, Q, U, V'
+
     headers[e] = h
+    background_headers[e] = b
   endfor
+
+  ; deleted O1FOCUS from extension headers above, can now rename O1FOCUSE to
+  ; O1FOCUS in primary header
+  o1focus_value = ucomp_getpar(primary_header, 'O1FOCUSE', comment=o1focus_comment)
+  ucomp_addpar, primary_header, 'O1FOCUS', oc1focus_value, $
+                comment=o1focus_comment, after='O1FOCUSE', format='(F0.3)'
+  sxdelpar, primary_header, 'O1FOCUSE'
 
   ; promote keywords to primary header
   promote_keywords = [{name: 'FRAMERT', format: '(F0.3)', after: 'OCCLTRID'}, $
@@ -134,9 +157,14 @@ pro ucomp_l1_promote_header, file, $
   for k = 0L, n_elements(promote_keywords) - 1L do begin
     for e = 0L, n_elements(headers) - 1L do begin
       h = headers[e]
+      b = background_headers[e]
+
       new_value = ucomp_getpar(h, promote_keywords[k].name, comment=comment)
       sxdelpar, h, promote_keywords[k].name
+      sxdelpar, b, promote_keywords[k].name
+
       headers[e] = h
+      background_headers[e] = b
 
       ; make sure value is consistent before promoting
       if (e eq 0L) then begin
@@ -158,14 +186,39 @@ pro ucomp_l1_promote_header, file, $
   ucomp_addpar, primary_header, 'COMMENT', 'Camera info', $
                 before='EXPTIME', /title
 
+  continuum_comment = 'Continuum can be "red", "blue", or "both": "both" gives equal weight to red and blue sides, "red" measures the continuum on the red side of the WAVELNG by CONTOFF, "blue" measures the continuum on the blue side of the WAVELNG by CONTOFF'
+  continuum_comment = mg_strwrap(continuum_comment, width=72)
+
   continuum_offset = run->line(file.wave_region, 'continuum_offset')
   for e = 0L, n_elements(headers) - 1L do begin
     h = headers[e]
+    ucomp_addpar, h, 'CONTIN', ucomp_getpar(h, 'CONTIN'), $
+                  comment='[both/blue/red] location of continuum'
+    for i = n_elements(continuum_comment) - 1L, 0L, -1L do begin
+      ucomp_addpar, h, 'COMMENT', continuum_comment[i], after='CONTIN'
+    endfor
     ucomp_addpar, h, 'CONTOFF', continuum_offset, $
                   format='(F0.5)', $
                   comment='[nm] distance from WAVELNG for continuum wavelength', $
                   after='CONTIN'
     headers[e] = h
+  endfor
+
+  ; update DATATYPE and OBJECT keywords
+  for e = 0L, n_elements(headers) - 1L do begin
+    h = headers[e]
+    b = background_headers[e]
+
+    ucomp_addpar, h, 'DATATYPE', 'science', $
+                  comment='[sci/cal/dark/flat] science or calibration'
+
+    ucomp_addpar, b, 'DATATYPE', 'science', $
+                  comment='[sci/cal/dark/flat] science or calibration'
+    ucomp_addpar, b, 'OBJECT', ucomp_getpar(b, 'OBJECT'), $
+                  comment='continuum emission'
+
+    headers[e] = h
+    background_headers[e] = b
   endfor
 
   ; promote SGS values to primary header after the temperatures
@@ -180,14 +233,17 @@ pro ucomp_l1_promote_header, file, $
   sgs_comments = strarr(n_elements(sgs_keywords))
   for e = 0L, n_elements(headers) - 1L do begin
     h = headers[e]
+    b = background_headers[e]
     for s = 0L, n_elements(sgs_keywords) - 1L do begin
       sgs_values[s, e] = ucomp_getpar(h, sgs_keywords[s], comment=comment, /float)
-      if (e eq 0L) then sgs_comments[e] = comment
+      if (e eq 0L) then sgs_comments[s] = comment
       sxdelpar, h, sgs_keywords[s]
+      sxdelpar, b, sgs_keywords[s]
     endfor
     headers[e] = h
+    background_headers[e] = b
   endfor
-  sgs_values = mean(values, dimension=1)
+  sgs_values = mean(sgs_values, dimension=2)
 
   after = 'T_C1PCB'
   for s = 0L, n_elements(sgs_keywords) - 1L do begin

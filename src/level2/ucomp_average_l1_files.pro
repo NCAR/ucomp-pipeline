@@ -127,6 +127,7 @@ pro ucomp_average_l1_files, files, output_filename, method=method, run=run
                                    type=size(ext_data, /type)) + !values.f_nan
 
   averaged_headers = list()
+  averaged_background_headers = list()
 
   ; second pass of files: compute total and number of extensions for each
   ; wavelength
@@ -148,6 +149,7 @@ pro ucomp_average_l1_files, files, output_filename, method=method, run=run
                           ext_data=ext_data, $
                           ext_headers=ext_headers, $
                           background_data=ext_background_data, $
+                          background_headers=background_headers, $
                           n_wavelengths=n_wavelengths
 
       file_wavelengths = strarr(n_wavelengths)
@@ -164,6 +166,7 @@ pro ucomp_average_l1_files, files, output_filename, method=method, run=run
             background_data[*, *, f] = ext_background_data[*, *, matching_indices[0]]
             if (f eq 0L) then begin
               averaged_headers->add, ext_headers[matching_indices[0]]
+              averaged_background_headers->add, background_headers[matching_indices[0]]
             endif
           end
         else: begin
@@ -173,11 +176,12 @@ pro ucomp_average_l1_files, files, output_filename, method=method, run=run
                                             dimension=3)
             if (f eq 0L) then begin
               averaged_headers->add, ext_headers[matching_indices[0]]
+              averaged_background_headers->add, background_headers[matching_indices[0]]
             endif
           end
       endcase
 
-      obj_destroy, ext_headers
+      obj_destroy, [ext_headers, background_headers]
     endfor
 
     ; TODO: need to average SGS values also
@@ -216,7 +220,8 @@ pro ucomp_average_l1_files, files, output_filename, method=method, run=run
                          primary_header, $
                          averaged_data, $
                          averaged_headers, $
-                         averaged_background
+                         averaged_background, $
+                         averaged_background_headers
 
   ucomp_write_iquv_image, averaged_data, $
                           file_basename(output_filename), $
@@ -225,7 +230,7 @@ pro ucomp_average_l1_files, files, output_filename, method=method, run=run
                           /daily, $
                           run=run
 
-  obj_destroy, averaged_headers
+  obj_destroy, [averaged_headers, averaged_background_headers]
 
   done:
 end

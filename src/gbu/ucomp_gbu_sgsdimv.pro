@@ -17,6 +17,8 @@
 ;     extension headers as list of `strarr`
 ;   backgrounds : out, type="fltarr(nx, ny, n_cameras, n_exts)"
 ;     background images
+;   background_headers : in, required, type=list
+;     extension headers of backgrounds as list of `strarr`
 ;
 ; :Keywords:
 ;   run : in, required, type=object
@@ -27,6 +29,7 @@ function ucomp_gbu_sgsdimv, file, $
                             ext_data, $
                             ext_headers, $
                             backgrounds, $
+                            background_headers, $
                             run=run
   compile_opt strictarr
 
@@ -37,8 +40,7 @@ function ucomp_gbu_sgsdimv, file, $
 
   voltage_threshold = 0.9 * i0 * exp(-0.05 * secz)
 
-  sgs_dimv = fltarr(n_elements(ext_headers))
-  for e = 0L, n_elements(ext_headers) - 1L do sgs_dimv = ucomp_getpar(ext_headers[e], 'SGSDIMV')
+  sgs_dimv = ucomp_getpar(primary_header, 'SGSDIMV')
 
-  return, mean(sgs_dimv, /nan) lt voltage_threshold
+  return, sgs_dimv lt voltage_threshold
  end

@@ -12,8 +12,10 @@
 ;     extension data
 ;   headers : in, required, type=list
 ;     extension headers as list of `strarr`
-;   backgrounds : out, type="fltarr(nx, ny, n_cameras, n_exts)"
-;     not used in this step
+;   backgrounds : out, type="fltarr(nx, ny, n_pol_states, n_cameras, n_exts)"
+;     background images
+;   background_headers : in, required, type=list
+;     extension headers for background images as list of `strarr`
 ;
 ; :Keywords:
 ;   run : in, required, type=object
@@ -22,7 +24,9 @@
 ;     set to a named variable to retrieve the status of the step; 0 for success
 ;-
 pro ucomp_l1_debanding, file, $
-                        primary_header, data, headers, backgrounds, $
+                        primary_header, $
+                        data, headers, $
+                        backgrounds, background_headers, $
                         run=run, status=status
   compile_opt strictarr
 

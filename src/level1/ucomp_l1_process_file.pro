@@ -101,44 +101,59 @@ pro ucomp_l1_process_file, file, run=run
                  file, primary_header, data, headers, step_number=step_number, run=run
   ucomp_l1_step, 'ucomp_l1_find_alignment', $
                  file, primary_header, data, headers, step_number=step_number, run=run
+
   ucomp_l1_step, 'ucomp_l1_continuum_subtraction', $
-                 file, primary_header, data, headers, backgrounds, $
+                 file, primary_header, data, headers, $
+                 backgrounds, background_headers, $
                  step_number=step_number, run=run
   ucomp_l1_step, 'ucomp_l1_debanding', $
-                 file, primary_header, data, headers, backgrounds, $
+                 file, primary_header, data, headers, $
+                 backgrounds, background_headers, $
                  step_number=step_number, run=run
   ucomp_l1_step, 'ucomp_l1_apply_alignment', $
-                 file, primary_header, data, headers, backgrounds, $
+                 file, primary_header, data, headers, $
+                 backgrounds, background_headers, $
                  step_number=step_number, run=run
   ucomp_l1_step, 'ucomp_l1_combine_cameras', $
-                 file, primary_header, data, headers, backgrounds, $
+                 file, primary_header, data, headers, $
+                 backgrounds, background_headers, $
                  step_number=step_number, run=run
 
   ucomp_l1_step, 'ucomp_l1_masking', $
-                 file, primary_header, data, headers, backgrounds, $
+                 file, primary_header, data, headers, $
+                 backgrounds, background_headers, $
                  step_number=step_number, run=run
 
   ucomp_l1_step, 'ucomp_l1_polarimetric_correction', $
-                 file, primary_header, data, headers, backgrounds, $
+                 file, primary_header, data, headers, $
+                 backgrounds, background_headers, $
                  step_number=step_number, run=run
   ucomp_l1_step, 'ucomp_l1_sky_transmission', $
-                 file, primary_header, data, headers, backgrounds, $
+                 file, primary_header, data, headers, $
+                 backgrounds, background_headers, $
                  step_number=step_number, run=run
 
   ucomp_l1_step, 'ucomp_l1_promote_header', $
-                 file, primary_header, data, headers, backgrounds, $
+                 file, primary_header, data, headers, $
+                 backgrounds, background_headers, $
                  step_number=step_number, run=run
 
   ucomp_l1_step, 'ucomp_l1_check_gbu', $
-                 file, primary_header, data, headers, backgrounds, $
+                 file, primary_header, data, headers, $
+                 backgrounds, background_headers, $
                  run=run
 
   l1_filename = filepath(file.l1_basename, root=l1_dirname)
-  ucomp_write_fits_file, l1_filename, primary_header, data, headers, backgrounds
+  ucomp_write_fits_file, l1_filename, $
+                         primary_header, $
+                         data, headers, $
+                         backgrounds, background_headers
 
   l1_intensity_filename = filepath(file.l1_intensity_basename, root=l1_dirname)
   ucomp_write_fits_file, l1_intensity_filename, $
-                         primary_header, data, headers, backgrounds, $
+                         primary_header, $
+                         data, headers, $
+                         backgrounds, background_headers, $
                          /intensity
   file.wrote_l1 = 1B
 
@@ -150,4 +165,5 @@ pro ucomp_l1_process_file, file, run=run
 
   done:
   if (obj_valid(headers)) then obj_destroy, headers
+  if (obj_valid(background_headers)) then obj_destroy, background_headers
 end
