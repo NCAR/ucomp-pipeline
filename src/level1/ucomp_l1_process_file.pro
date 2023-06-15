@@ -110,6 +110,11 @@ pro ucomp_l1_process_file, file, run=run
                  file, primary_header, data, headers, $
                  backgrounds, background_headers, $
                  step_number=step_number, run=run
+  ucomp_l1_step, 'ucomp_l1_despiking', $
+                  file, primary_header, data, headers, $
+                  backgrounds, background_headers, $
+                  step_number=step_number, run=run
+
   ucomp_l1_step, 'ucomp_l1_apply_alignment', $
                  file, primary_header, data, headers, $
                  backgrounds, background_headers, $
