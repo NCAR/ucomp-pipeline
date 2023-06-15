@@ -37,6 +37,8 @@ function ucomp_quality_check_nominal_temps, file, $
 
   result = 0B
 
+  ; TODO: should I only check temperature if it present?
+
   both_temp_keywords = ['RACK', 'BASE', 'LCVR1', 'LCVR2', 'LCVR3', 'LCVR4', 'LCVR5']
   for t = 0L, n_elements(both_temp_keywords) - 1L do begin
     temp = ucomp_getpar(primary_header, 'T_' + both_temp_keywords[t], /float, found=found)
