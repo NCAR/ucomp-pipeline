@@ -137,6 +137,13 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
                                      occulter_color=occulter_color, $
                                      guess_color=guess_color, $
                                      inflection_color=inflection_color
+        line_height = 12.0
+        xyouts, dims[0] - 5.0, dims[1] - line_height, /device, alignment=1.0, $
+                'occulter initial guesses', charsize=detail_charsize, color=guess_color
+        xyouts, dims[0] - 5.0, dims[1], - 2.0 * line_height, /device, alignment=1.0, $
+                'fitted occulter', charsize=detail_charsize, color=occulter_color
+        xyouts, dims[0] - 5.0, dims[1] - 3.0 * line_height, /device, alignment=1.0, $
+                'inflection points', charsize=detail_charsize, color=inflection_color
     endif else begin
       xyouts, 0.5, 0.62, /normal, alignment=0.5, $
               string(run->line(file.wave_region, 'ionization'), $
