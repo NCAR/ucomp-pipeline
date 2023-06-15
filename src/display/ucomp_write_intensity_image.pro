@@ -128,7 +128,7 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
 
     tv, scaled_im
 
-    if (keyword_set(occulter_annotation)) then begin
+    if (keyword_set(occulter_annotation) and ~keyword_set(enhanced)) then begin
         file.rcam_geometry->display, 0, $
                                      occulter_color=occulter_color, $
                                      guess_color=guess_color, $
