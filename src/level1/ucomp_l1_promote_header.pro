@@ -147,7 +147,7 @@ pro ucomp_l1_promote_header, file, $
   ; deleted O1FOCUS from extension headers above, can now rename O1FOCUSE to
   ; O1FOCUS in primary header
   o1focus_value = ucomp_getpar(primary_header, 'O1FOCUSE', comment=o1focus_comment)
-  ucomp_addpar, primary_header, 'O1FOCUS', oc1focus_value, $
+  ucomp_addpar, primary_header, 'O1FOCUS', o1focus_value, $
                 comment=o1focus_comment, after='O1FOCUSE', format='(F0.3)'
   sxdelpar, primary_header, 'O1FOCUSE'
 
