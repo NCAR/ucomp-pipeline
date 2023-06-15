@@ -19,12 +19,16 @@
 ;     color to use for the inflection points display
 ;   no_rotate : in, optional, type=boolean
 ;     don't rotate the geometry by the p-angle
+;   final_only : in, optional, type=boolean
+;     set to only display the final occulter position, not the initial guess
+;     center/circle
 ;-
 pro ucomp_geometry::display, camera, $
                              occulter_color=occulter_color, $
                              guess_color=guess_color, $
                              inflection_color=inflection_color, $
-                             no_rotate=no_rotate
+                             no_rotate=no_rotate, $
+                             final_only=final_only
   compile_opt strictarr
 
   _occulter_color   = mg_default(occulter_color, self.occulter_color)
@@ -59,7 +63,7 @@ pro ucomp_geometry::display, camera, $
   endif
 
   ; display occulter guess
-  if (finite(self.radius_guess)) then begin
+  if (finite(self.radius_guess) && ~keyword_set(final_only)) then begin
     t = findgen(360) * !dtor
     xshift = self.occulter_center[0] - self.center_guess[0]
     yshift = self.occulter_center[1] - self.center_guess[1]
