@@ -17,6 +17,8 @@
 ;     extension headers as list of `strarr`
 ;   backgrounds : type=undefined
 ;     not used in this step
+;   background_headers : in, required, type=undefined
+;     not used in this step
 ;
 ; :Keywords:
 ;   run : in, required, type=object
@@ -25,7 +27,9 @@
 ;     set to a named variable to retrieve the status of the step; 0 for success
 ;-
 pro ucomp_l1_check_quality, file, $
-                            primary_header, ext_data, ext_headers, backgrounds, $
+                            primary_header, $
+                            ext_data, ext_headers, $
+                            backgrounds, background_headers, $
                             run=run, status=status
   compile_opt strictarr
 

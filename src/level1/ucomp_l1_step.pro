@@ -16,6 +16,8 @@
 ;     extension headers as list of `strarr`
 ;   backgrounds : in, out, optional, type="fltarr(nx, ny, nexts)"
 ;     background data
+;   background_headers : in, out, required, type=list
+;     extension headers for background as list of `strarr`
 ;
 ; :Keywords:
 ;   step_number : in, required, type=long
@@ -28,7 +30,9 @@
 ;     keywords to pass along to `routine_name`
 ;-
 pro ucomp_l1_step, routine_name, file, $
-                   primary_header, data, headers, backgrounds, $
+                   primary_header, $
+                   data, headers, $
+                   backgrounds, background_headers, $
                    step_number=step_number, skip=skip, run=run, _extra=e
   compile_opt strictarr
   on_error, 2
@@ -40,7 +44,9 @@ pro ucomp_l1_step, routine_name, file, $
 
     clock_id = run->start(routine_name)
     call_procedure, routine_name, file, $
-                    primary_header, data, headers, backgrounds, $
+                    primary_header, $
+                    data, headers, $
+                    backgrounds, background_headers, $
                     run=run, status=status, _extra=e
     time = run->stop(clock_id)
     run->log_memory, routine_name

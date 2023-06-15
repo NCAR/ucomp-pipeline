@@ -14,13 +14,18 @@
 ;     list of `strarr`, each a FITS header for the corresponding extension
 ;   backgrounds : out, type="fltarr(nx, ny, ..., n_exts)"
 ;     background images
+;   background_headers : in, required, type=list
+;     list of `strarr`, each a FITS header for the corresponding background
+;     extension
 ;
 ; :Keywords:
 ;   intensity : in, optional, type=boolean
 ;     set to extract intensity from `ext_data`
 ;-
 pro ucomp_write_fits_file, filename, $
-                           primary_header, ext_data, ext_headers, backgrounds, $
+                           primary_header, $
+                           ext_data, ext_headers, $
+                           backgrounds, background_headers, $
                            intensity=intensity
   compile_opt strictarr
   on_error, 2
@@ -73,7 +78,7 @@ pro ucomp_write_fits_file, filename, $
 
       ucomp_fits_write, fcb, $
                         reform(data), $
-                        ext_headers[e - 1], $
+                        background_headers[e - 1], $
                         extname=extname, /no_abort, message=error_msg
       if (error_msg ne '') then message, error_msg
     endfor

@@ -17,6 +17,8 @@
 ;     extension headers as list of `strarr`
 ;   backgrounds : out, type="fltarr(nx, ny, n_cameras, n_exts)"
 ;     background images
+;   background_headers : in, required, type=list
+;     extension headers of backgrounds as list of `strarr`
 ;
 ; :Keywords:
 ;   run : in, required, type=object
@@ -27,18 +29,17 @@ function ucomp_gbu_sgsloop, file, $
                             ext_data, $
                             ext_headers, $
                             backgrounds, $
+                            background_headers, $
                             run=run
   compile_opt strictarr
 
   limit = run->epoch('sgsloop_min')
-  for e = 0L, n_elements(ext_headers) - 1L do begin
-    sgsloop = ucomp_getpar(ext_headers[e], 'SGSLOOP')
-    if (sgsloop lt limit) then begin
-      mg_log, 'SGSLOOP %0.3f (< %0.3f) in ext %d', sgsloop, limit, e + 1L, $
-              name=run.logger_name, /warn
-      return, 1B
-    endif
-  endfor
+  sgsloop = ucomp_getpar(primary_header, 'SGSLOOP')
+  if (sgsloop lt limit) then begin
+    mg_log, 'SGSLOOP %0.3f (< %0.3f)', sgsloop, limit, $
+            name=run.logger_name, /warn
+    return, 1B
+  endif
 
   return, 0B
 end

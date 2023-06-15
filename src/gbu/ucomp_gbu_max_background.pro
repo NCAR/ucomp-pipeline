@@ -17,6 +17,8 @@
 ;     extension headers as list of `strarr`
 ;   backgrounds : out, type="fltarr(nx, ny, n_cameras, n_exts)"
 ;     background images
+;   background_headers : in, required, type=list
+;     extension headers of backgrounds as list of `strarr`
 ;
 ; :Keywords:
 ;   run : in, required, type=object
@@ -27,6 +29,7 @@ function ucomp_gbu_max_background, file, $
                                    ext_data, $
                                    ext_headers, $
                                    backgrounds, $
+                                   background_headers, $
                                    run=run
   compile_opt strictarr
 

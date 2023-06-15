@@ -17,6 +17,8 @@
 ;     extension headers as list of `strarr`
 ;   backgrounds : out, type="fltarr(nx, ny, n_cameras, n_exts)"
 ;     backgrounds created in this step
+;   background_headers : in, required, type=list
+;     extension headers for background images as list of `strarr`
 ;
 ; :Keywords:
 ;   run : in, required, type=object
@@ -25,7 +27,9 @@
 ;     set to a named variable to retrieve the status of the step; 0 for success
 ;-
 pro ucomp_l1_continuum_subtraction, file, $
-                                    primary_header, ext_data, ext_headers, backgrounds, $
+                                    primary_header, $
+                                    ext_data, ext_headers, $
+                                    backgrounds, background_headers, $
                                     run=run, status=status
   compile_opt strictarr
 
@@ -84,6 +88,7 @@ pro ucomp_l1_continuum_subtraction, file, $
   backgrounds       = make_array(dimension=background_dims, type=type)
   ext_headers_array = ext_headers->toArray(/transpose)
   ext_headers->remove, /all
+  background_headers = list()
 
   matched = bytarr(n_matches)
   keep_wavelengths = fltarr(dims[4] / 2L)
@@ -154,6 +159,7 @@ pro ucomp_l1_continuum_subtraction, file, $
     ucomp_addpar, header, 'FLATDN', average_flat_median, format='(F0.2)'
 
     ext_headers->add, header
+    background_headers->add, header
 
     matched[m] = 1B
     matched[match_indices[m]] = 1B

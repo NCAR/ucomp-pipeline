@@ -26,15 +26,15 @@ pro ucomp_movepar, header, name, after=after, before=before
   endif
 
   indices = findgen(n_elements(header))
-  src_index = (where(strmatch(header, string(name, format='%s*'))))[0]
+  src_index = (where(strmatch(header, string(name, format='%-8s=*'))))[0]
 
   if (n_elements(after) gt 0L) then begin
-    dst_index = (where(strmatch(header, string(after, format='%s*'))))[0]
+    dst_index = (where(strmatch(header, string(after, format='%-8s=*'))))[0]
     indices[src_index] = dst_index + 0.5
   endif
 
   if (n_elements(before) gt 0L) then begin
-    dst_index = (where(strmatch(header, string(before, format='%s*'))))[0]
+    dst_index = (where(strmatch(header, string(before, format='%-8s=*'))))[0]
     indices[src_index] = dst_index - 0.5
   endif
 
