@@ -749,6 +749,8 @@ def make_version_filter(filter_expression):
     def filter_function(version):
         if version is None:
             return(False)
+        if version.startswith("-"):
+            return(False)
         return(packaging.version.parse(version) in spec)
 
     spec = packaging.specifiers.SpecifierSet(filter_expression, prereleases=True)
