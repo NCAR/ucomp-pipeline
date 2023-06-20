@@ -37,12 +37,19 @@ pro ucomp_geometry::display, camera, $
 
   ; display inflection points
   if (n_elements(*self.inflection_points) gt 0L) then begin
-    x_center = (self.xsize - 1.0) / 2.0
-    y_center = (self.ysize - 1.0) / 2.0
+    if (keyword_set(no_rotate)) then begin
+      x_center = self.occulter_center[0]
+      y_center = self.occulter_center[1]
+    endif else begin
+      x_center = (self.xsize - 1.0) / 2.0
+      y_center = (self.ysize - 1.0) / 2.0
+    endelse
+
     points = *self.inflection_points
 
     xshift = x_center - self.occulter_center[0]
     yshift = y_center - self.occulter_center[1]
+
     x = points[0, *] + xshift
     y = points[1, *] + yshift
 
@@ -65,12 +72,15 @@ pro ucomp_geometry::display, camera, $
   ; display occulter guess
   if (finite(self.radius_guess) && ~keyword_set(final_only)) then begin
     t = findgen(360) * !dtor
-    xshift = self.occulter_center[0] - self.center_guess[0]
-    yshift = self.occulter_center[1] - self.center_guess[1]
-    x0 = (self.xsize - 1.0) / 2.0 - xshift
-    y0 = (self.ysize - 1.0) / 2.0 - yshift
-    x0 = camera eq 0 ? (self.xsize - x0) : x0
-    y0 = self.ysize - y0
+
+    if (keyword_set(no_rotate)) then begin
+      x0 = self.occulter_center[0]
+      y0 = self.occulter_center[1]
+    endif else begin
+      x0 = (self.xsize - 1.0) / 2.0
+      y0 = (self.ysize - 1.0) / 2.0
+    endelse
+
     inner_x = (self.radius_guess - self.dradius) * cos(t) + x0
     inner_y = (self.radius_guess - self.dradius) * sin(t) + y0
     plots, inner_x, inner_y, /device, $
@@ -89,8 +99,13 @@ pro ucomp_geometry::display, camera, $
   ; display occulter fit
   if (finite(self.occulter_radius)) then begin
     t = findgen(360) * !dtor
-    x0 = (self.xsize - 1.0) / 2.0
-    y0 = (self.ysize - 1.0) / 2.0
+    if (keyword_set(no_rotate)) then begin
+      x0 = self.occulter_center[0]
+      y0 = self.occulter_center[1]
+    endif else begin
+      x0 = (self.xsize - 1.0) / 2.0
+      y0 = (self.ysize - 1.0) / 2.0
+    endelse
     x = self.occulter_radius * cos(t) + x0
     y = self.occulter_radius * sin(t) + y0
     plots, x, y, /device, color=_occulter_color, thick=2.0, linestyle=3
@@ -101,9 +116,13 @@ pro ucomp_geometry::display, camera, $
   if (finite(self.post_angle)) then begin
     width = 35.0
     t = (self.post_angle + 90.0) * !dtor
-    ; TODO: handle if NO_ROTATE is set
-    x0 = (self.xsize - 1.0) / 2.0
-    y0 = (self.ysize - 1.0) / 2.0
+    if (keyword_set(no_rotate)) then begin
+      x0 = self.occulter_center[0]
+      y0 = self.occulter_center[1]
+    endif else begin
+      x0 = (self.xsize - 1.0) / 2.0
+      y0 = (self.ysize - 1.0) / 2.0
+    endelse
     x1 = self.occulter_radius * cos(t) + x0
     y1 = self.occulter_radius * sin(t) + y0
     v = [y1 - y0, x0 - x1]
