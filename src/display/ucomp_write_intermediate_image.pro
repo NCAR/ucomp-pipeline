@@ -131,11 +131,12 @@ pro ucomp_write_intermediate_image, name, $
         0: geometry = file.rcam_geometry
         1: geometry = file.tcam_geometry
       endcase
-      if (obj_valid(geometry) and file.rotated) then begin
+      if (obj_valid(geometry)) then begin
         geometry->display, c, $
                            occulter_color=253, $
                            guess_color=254, $
-                           inflection_color=255
+                           inflection_color=255, $
+                           no_rotate=file.rotated eq 0B
       endif
 
       write_gif, e_filename, tvrd(), r, g, b
