@@ -65,7 +65,7 @@ pro ucomp_l1_step, routine_name, file, $
     if (status eq 0L) then begin
       name = strmid(routine_name, 9)
       ucomp_write_intermediate_file, name, file, primary_header, $
-                                     data, headers, backgrounds, $
+                                     data, headers, backgrounds, background_headers, $
                                      step_number=step_number, run=run
       ucomp_write_intermediate_image, name, file, primary_header, $
                                       data, headers, $
