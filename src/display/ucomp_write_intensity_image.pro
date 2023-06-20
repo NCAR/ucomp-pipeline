@@ -137,7 +137,7 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
                                      occulter_color=occulter_color, $
                                      guess_color=guess_color, $
                                      inflection_color=inflection_color
-        line_height = 12.0
+        line_height = 14.0
         xyouts, dims[0] - 5.0, dims[1] - line_height, /device, alignment=1.0, $
                 'occulter initial guesses', charsize=detail_charsize, color=guess_color
         xyouts, dims[0] - 5.0, dims[1] - 2.0 * line_height, /device, alignment=1.0, $
