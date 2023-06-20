@@ -17,6 +17,8 @@
 ;     list of `strarr` FITS headers
 ;   backgrounds : out, type="fltarr(nx, ny, ..., n_exts)"
 ;     background images
+;   background_headers : in, optional, type=list
+;     extension headers for background as list of `strarr`
 ;
 ; :Keywords:
 ;   step_number : in, required, type=integer
@@ -25,7 +27,9 @@
 ;     UCoMP run object
 ;-
 pro ucomp_write_intermediate_file, name, file, $
-                                   primary_header, data, headers, backgrounds, $
+                                   primary_header, $
+                                   data, headers, $
+                                   backgrounds, background_headers, $
                                    step_number=step_number, run=run
   compile_opt strictarr
 
@@ -36,6 +40,9 @@ pro ucomp_write_intermediate_file, name, file, $
     file->getProperty, l1_basename=basename, intermediate_name=name
     filename = filepath(basename, root=intermediate_dirname)
     if (~file_test(intermediate_dirname, /directory)) then file_mkdir, intermediate_dirname
-    ucomp_write_fits_file, filename, primary_header, data, headers, backgrounds
+    ucomp_write_fits_file, filename, $
+                           primary_header, $
+                           data, headers, $
+                           backgrounds, background_headers
   endif
 end
