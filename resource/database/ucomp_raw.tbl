@@ -5,8 +5,7 @@ create table ucomp_raw (
   date_obs         datetime not null,
   obsday_id        mediumint (5) not null,
 
-  -- TODO: datatype (not sure about this, DATATYPE is per ext and can change in a file)
-
+  datatype         char(4),        -- data type of first extension
   wave_region      char(4),
 
   quality_id       tinyint (2) not null,
