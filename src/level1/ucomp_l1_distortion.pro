@@ -41,7 +41,7 @@ pro ucomp_l1_distortion, file, $
 
   for p = 0, 3 do begin
     for e = 0L, file.n_extensions - 1L do begin
-      ; We do a reverse here for camera 0 to deal with the image flip.
+      ; we do a reverse here for camera 0 to deal with the image flip
       data[*, *, p, 0, e] = reverse(ucomp_apply_distortion(reverse(data[*, *, p, 0, e], 1), $
                                                            dx0_c, dy0_c), 2)
       data[*, *, p, 1, e] = reverse(ucomp_apply_distortion(data[*, *, p, 1, e], $
