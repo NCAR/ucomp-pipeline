@@ -12,8 +12,11 @@ pro ucomp_plot_mission_quality, db, wave_region, start_date, end_date
 
   n_days = long(end_jd - start_jd)
 
-  n_quality_files = lonarr(2, n_days)
+  n_quality_files = lonarr(3, n_days)   ; good, bad GBU, and bad quality
   jds = dblarr(n_days)
+
+  producttype_results = db->query('select * from mlso_producttype where producttype="IQUV" and description like "UCoMP%%";')
+  level1_producttype_id = producttype_results.producttype_id
 
   d = 0L
   date = start_date
@@ -30,17 +33,18 @@ pro ucomp_plot_mission_quality, db, wave_region, start_date, end_date
                            count=n_dates, error=error, sql_statement=sql)
 
     if (n_dates gt 0L) then begin
-      query = 'select ucomp_raw.file_name, ucomp_raw.quality_bitmask, ucomp_file.gbu, ucomp_raw.obsday_id, ucomp_raw.wave_region from ucomp_raw inner join ucomp_file on ucomp_raw.date_obs = ucomp_file.date_obs where ucomp_file.producttype_id = 28 and ucomp_raw.obsday_id = 9312 and ucomp_raw.wave_region = "1074"'
-
       query = 'select * from ucomp_raw where wave_region=''%s'' and obsday_id=%d order by date_obs'
       data = db->query(query, wave_region, obsday_ids[0], $
-                       count=n_files, error=error, sql_statement=sql)
+                       count=n_total_files, error=error, sql_statement=sql)
 
-      if (n_files gt 0L) then begin
-        !null = where(data.quality_id eq 1, n_day_good_files)
-        !null = where(data.quality_id ne 1, n_day_bad_files)
-        n_quality_files[0, d] = n_day_good_files
-        n_quality_files[1, d] = n_day_bad_files
+      query = 'select  ucomp_raw.file_name, ucomp_raw.quality_bitmask, ucomp_file.gbu, ucomp_raw.obsday_id, ucomp_raw.wave_region from ucomp_raw inner join ucomp_file on ucomp_raw.file_name = ucomp_file.l0_file_name where ucomp_raw.wave_region="%s" and ucomp_file.producttype_id=%d and ucomp_raw.obsday_id=%d;'
+      data = db->query(query, wave_region, level1_producttype_id, obsday_ids[0], $
+                       count=n_ok_files, error=error, sql_statement=sql)
+      if (n_ok_files gt 0L) then begin
+        !null = where(data.gbu eq 0, n_good_files)
+        n_quality_files[0, d] = n_good_files
+        n_quality_files[1, d] = n_ok_files - n_good_files
+        n_quality_files[2, d] = n_total_files - n_ok_files
       endif
     endif
 
@@ -52,7 +56,7 @@ pro ucomp_plot_mission_quality, db, wave_region, start_date, end_date
   endwhile
 
   charsize = 1.0
-  colors = ['008800'x, '3366ff'x]
+  colors = ['008800'x, '30a0c0'x, '3366ff'x]
   !null = label_date(date_format='%Y-%N-%D')
   window, xsize=1500, ysize=400, /free
   mg_stacked_histplot, jds, $
