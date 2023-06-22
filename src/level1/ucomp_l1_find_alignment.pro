@@ -37,6 +37,14 @@ pro ucomp_l1_find_alignment, file, $
 
   dims = size(data, /dimensions)
   n_pol_states = dims[2]
+  if (run->config('centering/step_order') eq 'pre-gaincorrection') then begin
+    datetime = strmid(file_basename(file.raw_filename), 0, 15)
+    run->get_distortion, datetime=datetime, $
+                         dx0_c=dx0_c, $
+                         dy0_c=dy0_c, $
+                         dx1_c=dx1_c, $
+                         dy1_c=dy1_c
+  endif
 
   occulter_x = ucomp_getpar(primary_header, 'OCCLTR-X')
   occulter_y = ucomp_getpar(primary_header, 'OCCLTR-Y')
@@ -60,7 +68,14 @@ pro ucomp_l1_find_alignment, file, $
   ; if all elements of dimension 3 are NaNs then the above lines will produce
   ; an floating-point operand error (128)
   !null = check_math(mask=128)
-  file.rcam_geometry = ucomp_find_geometry(smooth(rcam_background, 2, /nan), $
+  if (run->config('centering/step_order') eq 'pre-gaincorrection') then begin
+    rcam_background = reverse(ucomp_apply_distortion(reverse(rcam_background, $
+                                                             1), $
+                                                     dx0_c, dy0_c), $
+                              2)
+  endif
+  rcam_background = smooth(rcam_background, 2, /nan)
+  file.rcam_geometry = ucomp_find_geometry(rcam_background, $
                                            xsize=run->epoch('nx'), $
                                            ysize=run->epoch('ny'), $
                                            center_guess=rcam_center_guess, $
@@ -86,7 +101,13 @@ pro ucomp_l1_find_alignment, file, $
   ; if all elements of dimension 3 are NaNs then the above lines will produce
   ; an floating-point operand error (128)
   !null = check_math(mask=128)
-  file.tcam_geometry = ucomp_find_geometry(smooth(tcam_background, 2, /nan), $
+  if (run->config('centering/step_order') eq 'pre-gaincorrection') then begin
+    tcam_background = reverse(ucomp_apply_distortion(tcam_background, $
+                                                     dx1_c, dy1_c), $
+                              2)
+  endif
+  tcam_background = smooth(tcam_background, 2, /nan)
+  file.tcam_geometry = ucomp_find_geometry(tcam_background, $
                                            xsize=run->epoch('nx'), $
                                            ysize=run->epoch('ny'), $
                                            center_guess=tcam_center_guess, $
@@ -161,7 +182,7 @@ pro ucomp_l1_find_alignment, file, $
                 format='(F0.6)', after=after
 
   ; determine eccentricity of cameras
-  rcam_elliptical_geometry = ucomp_find_geometry(smooth(rcam_background, 2, /nan), $
+  rcam_elliptical_geometry = ucomp_find_geometry(rcam_background, $
                                                  xsize=run->epoch('nx'), $
                                                  ysize=run->epoch('ny'), $
                                                  center_guess=rcam_center_guess, $
@@ -176,7 +197,7 @@ pro ucomp_l1_find_alignment, file, $
   rcam.ellipse_angle = rcam_ellipse_angle
   obj_destroy, rcam_elliptical_geometry
 
-  tcam_elliptical_geometry = ucomp_find_geometry(smooth(tcam_background, 2, /nan), $
+  tcam_elliptical_geometry = ucomp_find_geometry(tcam_background, $
                                                  xsize=run->epoch('nx'), $
                                                  ysize=run->epoch('ny'), $
                                                  center_guess=rcam_center_guess, $
