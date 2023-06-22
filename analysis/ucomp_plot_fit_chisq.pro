@@ -22,12 +22,21 @@ pro ucomp_plot_fit_chisq, db, wave_region, start_date, end_date
   window, xsize=1500, ysize=400, /free
   !p.multi = [0, 1, 2]
 
-  plot, jds, data.rcam_occulter_chisq, $
-        xstyle=9, xrange=[start_jd, end_jd], xtickformat='label_date', $
-        ystyle=9
-  plot, jds, data.tcam_occulter_chisq, $
-        xstyle=9, xrange=[start_jd, end_jd], xtickformat='label_date', $
-        ystyle=9
+  gbu_max_fit_chisq = 0.1
+
+  mg_range_plot, jds, data.rcam_occulter_chisq, $
+                 title=string(wave_region, format='%s nm RCAM occuler chi squared'), $
+                 xstyle=9, xrange=[start_jd, end_jd], xtickformat='label_date', $
+                 ystyle=9, yrange=[0.0, gbu_max_fit_chisq], $
+                 color='000000'x, background='ffffff'x, $
+                 clip_thick=2.0, clip_color='0000ff'x, psym=6, symsize=0.2
+
+  mg_range_plot, jds, data.tcam_occulter_chisq, $
+                 title=string(wave_region, format='%s nm TCAM occuler chi squared'), $
+                 xstyle=9, xrange=[start_jd, end_jd], xtickformat='label_date', $
+                 ystyle=9, yrange=[0.0, gbu_max_fit_chisq], $
+                 color='000000'x, background='ffffff'x, $
+                 clip_thick=2.0, clip_color='0000ff'x, psym=6, symsize=0.2
 
   !p.multi = 0
 end

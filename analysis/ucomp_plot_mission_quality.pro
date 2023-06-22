@@ -30,6 +30,8 @@ pro ucomp_plot_mission_quality, db, wave_region, start_date, end_date
                            count=n_dates, error=error, sql_statement=sql)
 
     if (n_dates gt 0L) then begin
+      query = 'select ucomp_raw.file_name, ucomp_raw.quality_bitmask, ucomp_file.gbu, ucomp_raw.obsday_id, ucomp_raw.wave_region from ucomp_raw inner join ucomp_file on ucomp_raw.date_obs = ucomp_file.date_obs where ucomp_file.producttype_id = 28 and ucomp_raw.obsday_id = 9312 and ucomp_raw.wave_region = "1074"'
+
       query = 'select * from ucomp_raw where wave_region=''%s'' and obsday_id=%d order by date_obs'
       data = db->query(query, wave_region, obsday_ids[0], $
                        count=n_files, error=error, sql_statement=sql)
@@ -42,8 +44,8 @@ pro ucomp_plot_mission_quality, db, wave_region, start_date, end_date
       endif
     endif
 
-    print, date, total(n_quality_files[*, d], /preserve_type), wave_region, $
-           format='%s: %d %s nm files'
+    print, date, total(n_quality_files[*, d], /preserve_type), wave_region, n_quality_files[0, d], $
+           format='%s: %d %s nm files (%d good ones)'
 
     d += 1L
     date = ucomp_increment_date(date)
@@ -83,9 +85,9 @@ db = ucomp_db_connect(run->config('database/config_filename'), $
                       log_statements=run->config('database/log_statements'), $
                       status=status)
 
-wave_regions = ['530', '637', '656', '670', '691', '706', '761', '789', '802', $
-                '991', '1074', '1079', '1083']
-
+;wave_regions = ['530', '637', '656', '670', '691', '706', '761', '789', '802', $
+;                '991', '1074', '1079', '1083']
+wave_regions = ['530']
 for w = 0L, n_elements(wave_regions) - 1L do begin
   ucomp_plot_mission_quality, db, wave_regions[w], start_date, end_date
 endfor
