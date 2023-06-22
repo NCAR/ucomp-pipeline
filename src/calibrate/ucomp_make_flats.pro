@@ -212,7 +212,7 @@ pro ucomp_make_flats, wave_region, run=run
 
   ; write master flat FITS file in the process_dir/level1
 
-  output_basename = string(run.date, wave_region, format='(%"%s.ucomp.flat.%s.fts")')
+  output_basename = string(run.date, wave_region, format='(%"%s.ucomp.%s.flat.fts")')
   output_filename = filepath(output_basename, root=l1_dir)
 
   fits_open, output_filename, output_fcb, /write
