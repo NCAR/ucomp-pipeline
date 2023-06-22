@@ -125,7 +125,7 @@ pro ucomp_l1_apply_gain, file, $
                                    format='(%"%s ext used")')
       ucomp_addpar, h, string(fe + 1L, format='MFLTEXT%d'), master_flat_extensions[fe], $
                     comment=string(run.date, file.wave_region, flat_coefficients[fe], $
-                                   format='(%"%s.ucomp.flat.%s.fts ext, wt %0.2f")')
+                                   format='(%"%s.ucomp.%s.flat.fts ext, wt %0.2f")')
     endfor
 
     ucomp_addpar, h, 'FLATDN', flat_median, $
