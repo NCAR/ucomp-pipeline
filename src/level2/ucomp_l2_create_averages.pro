@@ -60,7 +60,7 @@ pro ucomp_l2_create_averages, wave_region, method, $
     program_filename = run->convert_program_name(program_names[p])
 
     average_basename = string(run.date, wave_region, program_filename, method, $
-                              format='(%"%s.ucomp.%s.%s.%s.fts")')
+                              format='(%"%s.ucomp.%s.l2.%s.%s.fts")')
     average_filename = filepath(average_basename, root=l2_dir)
     average_filenames[p] = average_filename
 
