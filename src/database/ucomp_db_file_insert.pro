@@ -76,6 +76,7 @@ pro ucomp_db_file_insert, files, level, product_type, $
 
     mg_log, 'ingesting %s', file.l1_basename, name=logger_name, /info
     fields = [{name: 'file_name', type: '''%s'''}, $
+              {name: 'l0_file_name', type: '''%s'''}, $
               {name: 'date_obs', type: '''%s'''}, $
               {name: 'obsday_id', type: '%d'}, $
               {name: 'carrington_rotation', type: '%d'}, $
@@ -104,6 +105,7 @@ pro ucomp_db_file_insert, files, level, product_type, $
                      format='(%"insert into ucomp_file (%s) values (%s)")')
     db->execute, sql_cmd, $
                  filename, $
+                 file_basename(file.raw_filename), $
                  file.date_obs,$
                  obsday_index, $
                  long(file.carrington_rotation), $
