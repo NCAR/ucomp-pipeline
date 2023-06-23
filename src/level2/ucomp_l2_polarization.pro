@@ -146,7 +146,7 @@ pro ucomp_l2_polarization, file, run=run
 
   ; write linear polarization
   ucomp_fits_write, fcb, float(integrated_linpol), ext_headers[0], $
-                    extname='Integrated log(L)', /no_abort, message=error_msg
+                    extname='Integrated L', /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
 
   ; write azimuth
