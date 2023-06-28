@@ -36,7 +36,7 @@ pro ucomp_geometry::display, camera, $
   _inflection_color = mg_default(inflection_color, self.inflection_color)
 
   ; display inflection points
-  if (n_elements(*self.inflection_points) gt 0L) then begin
+  if ((n_elements(*self.inflection_points) gt 0L) and ~keyword_set(final_only)) then begin
     if (keyword_set(no_rotate)) then begin
       x_center = self.occulter_center[0]
       y_center = self.occulter_center[1]
@@ -108,7 +108,7 @@ pro ucomp_geometry::display, camera, $
     endelse
     x = self.occulter_radius * cos(t) + x0
     y = self.occulter_radius * sin(t) + y0
-    plots, x, y, /device, color=_occulter_color, thick=2.0, linestyle=3
+    plots, x, y, /device, color=_occulter_color, thick=2.0, linestyle=2
     plots, x0, y0, /device, color=_occulter_color, psym=1
   endif
 
