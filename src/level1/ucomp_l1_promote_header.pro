@@ -52,6 +52,7 @@ pro ucomp_l1_promote_header, file, $
 
   sxdelpar, primary_header, 'LEVEL'
   after = 'OBJECT'
+  ucomp_addpar, primary_header, 'OBJECT', 'SUN', comment=' '
   ucomp_addpar, primary_header, 'LEVEL', 'L1', comment='level 1 calibrated', $
                 after=after
   ucomp_addpar, primary_header, 'DOI', run->line(file.wave_region, 'doi'), $
@@ -104,7 +105,7 @@ pro ucomp_l1_promote_header, file, $
   median_background = median(background[annulus_indices])
   file.median_background = median_background
   ucomp_addpar, primary_header, 'MED-BKG', median_background, $
-                comment='[ppm] median of background, i.e., continuum', $
+                comment='[ppm] median of line center background annulus', $
                 format='(F0.3)', after=after
   ucomp_addpar, primary_header, 'COMMENT', 'Quality metrics', $
                 before='VCROSSTK', /title
@@ -185,6 +186,9 @@ pro ucomp_l1_promote_header, file, $
 
   ucomp_addpar, primary_header, 'COMMENT', 'Camera info', $
                 before='EXPTIME', /title
+
+  ucomp_movepar, primary_header, 'GAIN', after='FRAMERT'
+  ucomp_movepar, primary_header, 'SAVEALL', after='GAIN'
 
   continuum_comment = 'Continuum can be "red", "blue", or "both": "both" gives equal weight to red and blue sides, "red" measures the continuum on the red side of the WAVELNG by CONTOFF, "blue" measures the continuum on the blue side of the WAVELNG by CONTOFF'
   continuum_comment = mg_strwrap(continuum_comment, width=72)

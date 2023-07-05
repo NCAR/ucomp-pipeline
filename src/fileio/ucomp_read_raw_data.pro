@@ -131,7 +131,7 @@ pro ucomp_read_raw_data, filename, $
     n_total_frames = product(dims[2:*], /preserve_type)
     ucomp_addpar, primary_header, 'NFRAME', n_total_frames, $
                   comment='total number of image frames in file', $
-                  after='SAVEALL'
+                  after='RCAMNUC'
     n_bad_frames = n_invalid_frames eq 0L ? n_file_badframes : 0L
     ucomp_addpar, primary_header, 'REMFRAME', n_bad_frames, $
                   comment='number of bad frames removed', $
