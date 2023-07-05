@@ -75,6 +75,23 @@ pro ucomp_l1_combine_cameras, file, $
     ext_headers[e] = ext_header
   endfor
 
+  create_difference = run->config('centering/create_difference')
+  if (create_difference) then begin
+    diff_basename = string(strmid(file.l1_basename, 0, 15), $
+                           format='%s.ucomp.centering-diff.png')
+    diff_filename = filepath(diff_basename, $
+                             subdir=ucomp_decompose_date(run.date), $
+                             root=run->config('engineering/basedir'))
+    center_line_index = n_elements(ext_headers) / 2L + 1L
+    diff = ext_data[*, *, 0, 0, center_line_index] $
+             - ext_data[*, *, 0, 1, center_line_index]
+
+    ucomp_loadct, 'difference'
+    tvlct, r, g, b
+
+    write_png, diff_filename, bytscl(diff, min=-5.0, max=5.0, /nan), r, g, b
+  endif
+
   case cameras of
     'rcam': begin
         ext_data = reform(ext_data[*, *, *, 0, *])

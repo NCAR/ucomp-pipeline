@@ -71,6 +71,7 @@ pro ucomp_loadct, name, n_colors=n_colors
       end
     'doppler': ucomp_loadct_rgb, mg_makect(blue, white, red, ncolors=n_colors)
     'line_width': loadct, 4, /silent, ncolors=n_colors
+    'difference': ucomp_loadct_rgb, mg_makect(cyan, black, pink, ncolors=n_colors)
     else: message, string(name, format='(%"unknown colortable name: %s")')
   endcase
 end
