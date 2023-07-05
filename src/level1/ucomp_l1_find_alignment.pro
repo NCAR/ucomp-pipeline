@@ -225,6 +225,24 @@ pro ucomp_l1_find_alignment, file, $
                 'X/YOFFSET define position w.r.t. distortion corrected L0 images', $
                 before='XOFFSET0'
 
+  after = 'OBJECT'
+  ucomp_addpar, primary_header, $
+                'CDELT1', $
+                run->line(file.wave_region, 'plate_scale'), $
+                comment='[arcsec/pixel] image X increment = platescale', $
+                format='(f9.3)', after=after
+  ucomp_addpar, primary_header, $
+                'CDELT2', $
+                run->line(file.wave_region, 'plate_scale'), $
+                comment='[arcsec/pixel] image Y increment = platescale', $
+                format='(f9.3)', after=after
+
+  ucomp_addpar, primary_header, 'COMMENT', $
+                'World Coordinate System (WCS) info', $
+                before='CDELT1', /title
+
+  after = 'CDELT2'
+
   file->getProperty, semidiameter=semidiameter, $
                      distance_au=distance_au, $
                      p_angle=p_angle, $
@@ -265,22 +283,6 @@ pro ucomp_l1_find_alignment, file, $
                 before='SOLAR_P0', /title
   ucomp_addpar, primary_header, 'COMMENT', 'Ephemeris calculations done by sun.pro', $
                 before='SOLAR_P0'
-
-  after = 'OBJECT'
-  ucomp_addpar, primary_header, $
-                'CDELT1', $
-                run->line(file.wave_region, 'plate_scale'), $
-                comment='[arcsec/pixel] image X increment = platescale', $
-                format='(f9.3)', after=after
-  ucomp_addpar, primary_header, $
-                'CDELT2', $
-                run->line(file.wave_region, 'plate_scale'), $
-                comment='[arcsec/pixel] image Y increment = platescale', $
-                format='(f9.3)', after=after
-
-  ucomp_addpar, primary_header, 'COMMENT', $
-                'World Coordinate System (WCS) info', $
-                before='CDELT1', /title
 
   file.rcam_geometry.p_angle = p_angle
   file.tcam_geometry.p_angle = p_angle
