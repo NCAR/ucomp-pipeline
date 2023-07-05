@@ -39,8 +39,8 @@ pro ucomp_l1_promote_header, file, $
                 after='EXTEND', /title
   ucomp_addpar, primary_header, 'COMMENT', 'Observing info', $
                 before='OBSERVER', /title
-  ; ucomp_addpar, primary_header, 'COMMENT', 'Hardware positions', $
-  ;               before='OCCLTR', /title
+  ucomp_addpar, primary_header, 'COMMENT', 'Hardware settings', $
+                before='FLCVNEG', /title
   ucomp_addpar, primary_header, 'COMMENT', 'Temperatures', $
                 before='T_RACK', /title
 
@@ -198,6 +198,11 @@ pro ucomp_l1_promote_header, file, $
 
   ucomp_movepar, primary_header, 'GAIN', after='FRAMERT'
   ucomp_movepar, primary_header, 'SAVEALL', after='GAIN'
+
+  hardware_keywords = ['DARKID', 'O1ID', 'DIFFSRID', 'OCCLTRID']
+  for k = 0L, n_elements(hardware_keywords) - 1L do begin
+    ucomp_movepar, primary_header, hardware_keywords[k], before='FLCVNEG'
+  endfor
 
   continuum_comment = 'Continuum can be "red", "blue", or "both": "both" gives equal weight to red and blue sides, "red" measures the continuum on the red side of the WAVELNG by CONTOFF, "blue" measures the continuum on the blue side of the WAVELNG by CONTOFF'
   continuum_comment = mg_strwrap(continuum_comment, width=72)
