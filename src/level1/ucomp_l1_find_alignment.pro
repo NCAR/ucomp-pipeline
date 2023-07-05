@@ -222,7 +222,7 @@ pro ucomp_l1_find_alignment, file, $
   ucomp_addpar, primary_header, 'COMMENT', 'Occulter centering info', $
                 before='XOFFSET0', /title
   ucomp_addpar, primary_header, 'COMMENT', $
-                comment='X/YOFFSET define position w.r.t. distortion corrected L0 images', $
+                'X/YOFFSET define position w.r.t. distortion corrected L0 images', $
                 before='XOFFSET0'
 
   file->getProperty, semidiameter=semidiameter, $
@@ -263,6 +263,8 @@ pro ucomp_l1_find_alignment, file, $
 
   ucomp_addpar, primary_header, 'COMMENT', 'Ephemeris info', $
                 before='SOLAR_P0', /title
+  ucomp_addpar, primary_header, 'COMMENT', 'Ephemeris calculations done by sun.pro', $
+                before='SOLAR_P0'
 
   after = 'OBJECT'
   ucomp_addpar, primary_header, $

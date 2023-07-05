@@ -86,10 +86,10 @@ pro ucomp_l1_promote_header, file, $
   ucomp_addpar, primary_header, 'NUM_BEAM', 2, $
                 comment='number of beams', after=after
   ucomp_addpar, primary_header, 'COMMENT', $
-                comment='  NFRAME = NUM_WAVE * NREPEAT * NUM_BEAM * 2(Cameras) * 4(Polarizations)', $
+                '  NFRAME = NUM_WAVE * NREPEAT * NUM_BEAM * 2(Cameras) * 4(Polarizations)', $
                 after=after
   ucomp_addpar, primary_header, 'COMMENT', $
-                comment='Total camera reads in this file = NFRAME * NUMSUM where', $
+                'Total camera reads in this file = NFRAME * NUMSUM where', $
                 after=after
 
   average_radius = ucomp_getpar(primary_header, 'RADIUS')
