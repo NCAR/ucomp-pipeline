@@ -40,11 +40,16 @@ end
 wave_region = '1074'
 
 ;dates = ['20210817', '20220225', '20220901', '20221125']
-dates = ['20210817', '20220225', '20221125']
+;dates = ['20210817', '20220225', '20221125']
+
+dates = ['20210817',  '20220225', '20220901', '20221125']
 
 for d = 0L, n_elements(dates) - 1L do begin
-  dir1 = string(dates[d], format='/hao/dawn/Data/UCoMP/process/%s/level1')
-  dir2 = string(dates[d], format='/hao/corona3/Data/UCoMP/Steve/process/%s/level1')
+  ; dir1 = string(dates[d], format='/hao/dawn/Data/UCoMP/process/%s/level1')
+  ; dir2 = string(dates[d], format='/hao/corona3/Data/UCoMP/Steve/process/%s/level1')
+
+  dir1 = string(dates[d], format='/hao/dawn/Data/UCoMP/process.pre-gain/%s/level1')
+  dir2 = string(dates[d], format='/hao/dawn/Data/UCoMP/process.intermediate/%s/level1')
 
   print, dates[d], format='## %s'
   ucomp_compare_offsets, wave_region, dir1, dir2
