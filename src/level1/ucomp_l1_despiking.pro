@@ -42,17 +42,25 @@ pro ucomp_l1_despiking, file, $
   ; TODO: this should be in a config file and probably depends on wave region
   max_difference = 10.0
 
+  annulus = ucomp_annulus(file.occulter_radius + 3.0, $
+                          run->epoch('field_radius') - 3.0, $
+                          dimensions=dims)
+
   mask = bytarr(n_columns, n_rows, n_cameras, n_extensions)
   for e = 0L, n_extensions - 1L do begin
     for c = 0L, n_cameras - 1L do begin
       d = data[*, *, 0, c, e]
       s = smooth(d, 3, /edge_zero)
-      mask[*, *, c, e] = abs(s - d) gt max_difference
+      mask[*, *, c, e] = annulus * (abs(s - d) gt max_difference)
+      bad_pixel_indices = where(mask[*, *, c, e], n_bad_pixels)
+      mg_log, '%d spiked pixels in annulus in cam %d, ext %d', $
+              n_bad_pixels, c, e, $
+              name=run.logger_name, /debug
+      d[bad_pixel_indices] = s[bad_pixel_indices]
+      data[*, *, 0, c, e] = d
+      ; TODO: should I fix Q, U, and V also?
     endfor
   endfor
-
-  bad_pixel_indices = where(mask, n_bad_pixels)
-  mg_log, '%d spiked pixels', n_bad_pixels, name=run.logger_name, /warn
 
   done:
 end
