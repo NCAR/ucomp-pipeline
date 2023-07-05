@@ -52,9 +52,10 @@ pro ucomp_l1_promote_header, file, $
   ucomp_addpar, primary_header, 'DATE-END', file.date_end, $
                 comment='[UT] date/time when obs ended', after=after
 
-  sxdelpar, primary_header, 'LEVEL'
-  after = 'CRUNIT2'
   ucomp_addpar, primary_header, 'OBJECT', 'SUN', comment=' '
+
+  after = 'R_SUN'
+  sxdelpar, primary_header, 'LEVEL'
   ucomp_addpar, primary_header, 'LEVEL', 'L1', comment='level 1 calibrated', $
                 after=after
   ucomp_addpar, primary_header, 'DOI', run->line(file.wave_region, 'doi'), $
@@ -102,7 +103,7 @@ pro ucomp_l1_promote_header, file, $
   endif
 
   ; quality metrics
-  after = 'R_SUN'
+  after = 'BUNIT'
   ucomp_addpar, primary_header, 'VCROSSTK', file.vcrosstalk_metric, $
                 comment='Stokes V crosstalk metric', after=after
 
