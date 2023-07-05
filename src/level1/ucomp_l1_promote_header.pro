@@ -266,21 +266,26 @@ pro ucomp_l1_promote_header, file, $
 
   ; add HISTORY of processing of the file
   ; TODO: update when continuum correction and sky transmission are performed
+
   history = [{text: '', include: 1B}, $
              {text: 'Level 1 calibration and processing steps:', include: 1B}, $
              {text: '  - quality check to determine if the file should be processed', include: 1B}, $
              {text: '  - average level 0 data with same onband and wavelength', include: 1B}, $
-             {text: '  - apply dark', include: 1B}, $
-             {text: '  - apply gain', include: 1B}, $
+             {text: '  - apply dark correction', include: 1B}, $
+             {text: '  - find the occulter position and radius', $
+              include: run->config('centering/step_order') eq 'pre-gaincorrection'}, $
+             {text: '  - apply gain correction', include: 1B}, $
              {text: '  - camera corrections such as hot pixel correction', include: 1B}, $
              ;{text: '  - correct continuum', include: 1B}, $
              {text: '  - demodulation', include: 1B}, $
              {text: '  - distortion correction', include: 1B}, $
-             {text: '  - find the occulter position and radius', include: 1B}, $
+             {text: '  - find the occulter position and radius', $
+              include: run->config('centering/step_order') eq 'post-distortion'}, $
              {text: '  - subtract continuum', $
               include: run->line(file.wave_region, 'subtract_continuum')}, $
-             {text: '  - deband', include: 1B}, $
-             {text: '  - center images using occulter position and rotate to north up', include: 1B}, $
+             {text: '  - remove hoizontal/vertical bands', include: 1B}, $
+             {text: '  - center images using occulter position and rotate to north up', $
+              include: 1B}, $
              {text: '  - combine the cameras', include: 1B}, $
              {text: '  - polarimetric correction', include: 1B}, $
              ;{text: '  - correct for sky transmission', include: 1B}, $
