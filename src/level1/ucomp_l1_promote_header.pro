@@ -44,9 +44,11 @@ pro ucomp_l1_promote_header, file, $
   ucomp_addpar, primary_header, 'COMMENT', 'Temperatures', $
                 before='T_RACK', /title
 
+  ucomp_addpar, primary_header, 'OBSSWID', $
+                ucomp_getpar(primary_header, 'OBSSWID'), $
+                comment='data collection software ID'
+
   after = 'DATE-OBS'
-  ucomp_addpar, primary_header, 'DATE-BEG', file.date_begin, $
-                comment='[UT] date/time when obs was started', after=after
   ucomp_addpar, primary_header, 'DATE-END', file.date_end, $
                 comment='[UT] date/time when obs ended', after=after
 
@@ -87,10 +89,10 @@ pro ucomp_l1_promote_header, file, $
                 comment='number of beams', after=after
   ucomp_addpar, primary_header, 'COMMENT', $
                 '  NFRAME = NUM_WAVE * NREPEAT * NUM_BEAM * 2(Cameras) * 4(Polarizations)', $
-                after=after
+                after='NUM_BEAM'
   ucomp_addpar, primary_header, 'COMMENT', $
                 'Total camera reads in this file = NFRAME * NUMSUM where', $
-                after=after
+                after='NUM_BEAM'
 
   average_radius = ucomp_getpar(primary_header, 'RADIUS')
   center_wavelength_indices = file->get_center_wavelength_indices()
@@ -100,6 +102,7 @@ pro ucomp_l1_promote_header, file, $
   endif
 
   ; quality metrics
+  after = 'R_SUN'
   ucomp_addpar, primary_header, 'VCROSSTK', file.vcrosstalk_metric, $
                 comment='Stokes V crosstalk metric', after=after
 
@@ -263,6 +266,22 @@ pro ucomp_l1_promote_header, file, $
   endfor
   ucomp_addpar, primary_header, 'COMMENT', 'SGS info', $
                 before='SGSSCINT', /title
+
+  after = 'MED-BKG'
+  ucomp_addpar, primary_header, $
+                'WNDSPD', $
+                ucomp_getpar(primary_header, 'WNDSPD'), $
+                comment='[mph] wind speed', $
+                format='(F0.3)', $
+                after=after
+  ucomp_addpar, primary_header, $
+                'WNDDIR', $
+                ucomp_getpar(primary_header, 'WNDSPD'), $
+                comment='[deg] wind direction', $
+                format='(F0.3)', $
+                after=after
+  ucomp_addpar, primary_header, 'COMMENT', 'Weather info', $
+                before='WNDSPD', /title
 
   ; add HISTORY of processing of the file
   ; TODO: update when continuum correction and sky transmission are performed
