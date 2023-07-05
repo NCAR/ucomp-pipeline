@@ -51,7 +51,7 @@ pro ucomp_l1_promote_header, file, $
                 comment='[UT] date/time when obs ended', after=after
 
   sxdelpar, primary_header, 'LEVEL'
-  after = 'OBJECT'
+  after = 'CRUNIT2'
   ucomp_addpar, primary_header, 'OBJECT', 'SUN', comment=' '
   ucomp_addpar, primary_header, 'LEVEL', 'L1', comment='level 1 calibrated', $
                 after=after
@@ -75,16 +75,22 @@ pro ucomp_l1_promote_header, file, $
   ucomp_addpar, primary_header, 'COMMENT', 'Level 1 processing info', $
                 before='LEVEL', /title
 
-  after = 'CAMERAS'
+  after = 'REMFRAME'
   ucomp_addpar, primary_header, 'NUM_WAVE', n_elements(headers), $
                 comment='number of wavelengths', after=after
   ucomp_addpar, primary_header, 'NUMSUM', file.numsum, $
-                comment='number of camera reads summed together', after=after
+                comment='number of camera reads summed in an image frame', $
+                after=after
   ucomp_addpar, primary_header, 'NREPEAT', file.n_repeats, $
                 comment='number of repeats of wavelength scans', after=after
   ucomp_addpar, primary_header, 'NUM_BEAM', 2, $
                 comment='number of beams', after=after
-  ucomp_addpar, primary_header, 'COMMENT', 'Counts', before='NUM_WAVE', /title
+  ucomp_addpar, primary_header, 'COMMENT', $
+                comment='  NFRAME = NUM_WAVE * NREPEAT * NUM_BEAM * 2(Cameras) * 4(Polarizations)', $
+                after=after
+  ucomp_addpar, primary_header, 'COMMENT', $
+                comment='Total camera reads in this file = NFRAME * NUMSUM where', $
+                after=after
 
   average_radius = ucomp_getpar(primary_header, 'RADIUS')
   center_wavelength_indices = file->get_center_wavelength_indices()

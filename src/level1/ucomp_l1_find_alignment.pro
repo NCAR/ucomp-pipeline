@@ -178,7 +178,7 @@ pro ucomp_l1_find_alignment, file, $
                                          run=run)
   file.image_scale = image_scale
   ucomp_addpar, primary_header, 'IMAGESCL', image_scale, $
-                comment='[arcsec/pixels] image scale measured in this file', $
+                comment='[arcsec/pixels] image scale for this file', $
                 format='(F0.6)', after=after
 
   ; determine eccentricity of cameras
@@ -214,13 +214,16 @@ pro ucomp_l1_find_alignment, file, $
 
   ucomp_addpar, primary_header, 'RCAMECC', rcam_eccentricity, $
                 comment='occulter eccentricity in RCAM', $
-                format='(F0.6)', after=after
+                format='(F0.4)', after=after
   ucomp_addpar, primary_header, 'TCAMECC', tcam_eccentricity, $
                 comment='occulter eccentricity in TCAM', $
-                format='(F0.6)', after=after
+                format='(F0.4)', after=after
 
   ucomp_addpar, primary_header, 'COMMENT', 'Occulter centering info', $
                 before='XOFFSET0', /title
+  ucomp_addpar, primary_header, 'COMMENT', $
+                comment='X/YOFFSET define position w.r.t. distortion corrected L0 images', $
+                before='XOFFSET0'
 
   file->getProperty, semidiameter=semidiameter, $
                      distance_au=distance_au, $
@@ -247,7 +250,7 @@ pro ucomp_l1_find_alignment, file, $
                 after=after
   ucomp_addpar, primary_header, 'JUL_DATE', file.julian_date, $
                 comment='[days] Julian date', $
-                format='F24.13', after=after
+                format='F0.9', after=after
 
   ucomp_addpar, primary_header, 'RSUN_OBS', semidiameter, $
                 comment=string(distance_au * semidiameter, $
@@ -261,6 +264,7 @@ pro ucomp_l1_find_alignment, file, $
   ucomp_addpar, primary_header, 'COMMENT', 'Ephemeris info', $
                 before='SOLAR_P0', /title
 
+  after = 'OBJECT'
   ucomp_addpar, primary_header, $
                 'CDELT1', $
                 run->line(file.wave_region, 'plate_scale'), $
