@@ -137,7 +137,7 @@ pro ucomp_l1_apply_gain, file, $
 
   ucomp_addpar, primary_header, 'BOPAL', opal_radiance, $
                 comment='[B/Bsun] opal radiance', format='(F0.2)', $
-                after='FILTER'
+                after='LIN_CRCT'
   ucomp_addpar, primary_header, 'BUNIT', '1.0E-06 B/Bsun', $
                 comment='brightness with respect to solar disk', $
                 after='BOPAL'
