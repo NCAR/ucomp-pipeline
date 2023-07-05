@@ -27,7 +27,7 @@
 ;   amount : in, optional, type=float, default=2.0
 ;     `amount` argument to `UNSHARP_MASK`
 ;   mask : in, optional, type=booleam
-;     set to mask the result 
+;     set to mask the result
 ;
 ; :Author:
 ;   MLSO Software Team
