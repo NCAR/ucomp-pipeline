@@ -266,7 +266,6 @@ pro ucomp_l1_promote_header, file, $
 
   ; add HISTORY of processing of the file
   ; TODO: update when continuum correction and sky transmission are performed
-
   history = [{text: '', include: 1B}, $
              {text: 'Level 1 calibration and processing steps:', include: 1B}, $
              {text: '  - quality check to determine if the file should be processed', include: 1B}, $
