@@ -53,14 +53,14 @@ pro ucomp_compare_file, compare
 
         display_max = 0.125
       end
-    
+
     'debanding': begin
       f_steve = 'ucomp-intermediate-steve/data_after_deband.sav'
       restore, f_steve, /verbose
       center_steve = corona[*, *, *, 1, *]
       center_steve = reform(center_steve)
       center_steve = center_steve[*, *, 0, 0]
-  
+
       f_mike = 'ucomp-intermediate-mike/20220901.182014.ucomp.1074.debanding.3.fts'
       fits_open, f_mike, fcb
       fits_read, fcb, center_mike, exten_no=2
@@ -107,7 +107,7 @@ pro ucomp_compare_file, compare
                format='xoffset1: mike: %0.3f, steve: %0.3f, mike-steve: %0.3f'
         print, yoffset1_mike, yoffset1_steve, yoffset1_mike - yoffset1_steve, $
                format='yoffset1: mike: %0.3f, steve: %0.3f, mike-steve: %0.3f'
-        
+
         tvlct, rgb, /get
         loadct, 0, /silent
         ;mg_image, bytscl(center_mike, 0.0, 40.0), /new, title='Mike'
@@ -136,7 +136,7 @@ pro ucomp_compare_file, compare
         fits_read, fcb, primary_steve, primary_header_steve, exten_no=0
         fits_read, fcb, center_steve, header_steve, exten_no=2
         fits_close, fcb
-      
+
         f_mike = 'ucomp-intermediate-mike/20220901.182014.ucomp.1074.l1.3.fts'
         fits_open, f_mike, fcb
         fits_read, fcb, primary_mike, primary_header_mike, exten_no=0

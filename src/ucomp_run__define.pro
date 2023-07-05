@@ -203,7 +203,7 @@ end
 ; :Params:
 ;   wave_region : in, optional, type=string
 ;     set to specific wave region to retrieve program names for that wave
-;     region, returns programs from all wave regions if not set 
+;     region, returns programs from all wave regions if not set
 ;
 ; :Keywords:
 ;   count : out, optional, type=long
