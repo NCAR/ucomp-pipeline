@@ -132,11 +132,13 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
         file.rcam_geometry->display, 0, $
                                      occulter_color=occulter_color, $
                                      guess_color=guess_color, $
-                                     inflection_color=inflection_color
+                                     inflection_color=inflection_color, $
+                                     /final_only
         file.tcam_geometry->display, 1, $
                                      occulter_color=occulter_color, $
                                      guess_color=guess_color, $
-                                     inflection_color=inflection_color
+                                     inflection_color=inflection_color, $
+                                     /final_only
         line_height = 14.0
         xyouts, dims[0] - 5.0, dims[1] - line_height, /device, alignment=1.0, $
                 'occulter initial guesses', charsize=detail_charsize, color=guess_color
