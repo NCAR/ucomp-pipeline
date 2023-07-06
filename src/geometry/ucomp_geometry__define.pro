@@ -65,7 +65,6 @@ pro ucomp_geometry::display, camera, $
     plots, x_rotated, y_rotated, $
            /device, $
            color=_inflection_color, $
-           thick=1.0, $
            psym=6, symsize=0.75
   endif
 
@@ -108,7 +107,7 @@ pro ucomp_geometry::display, camera, $
     endelse
     x = self.occulter_radius * cos(t) + x0
     y = self.occulter_radius * sin(t) + y0
-    plots, x, y, /device, color=_occulter_color, thick=2.0, linestyle=2
+    plots, x, y, /device, color=_occulter_color, thick=1.0, linestyle=2
     plots, x0, y0, /device, color=_occulter_color, psym=1
   endif
 
