@@ -49,6 +49,8 @@ pro ucomp_l1_promote_header, file, $
                 comment='data collection software ID'
 
   after = 'DATE-OBS'
+  ucomp_addpar, primary_header, ucomp_getpar(primary_header, 'DATE-OBS'), $
+                comment='[UT] date/time when obs started'
   ucomp_addpar, primary_header, 'DATE-END', file.date_end, $
                 comment='[UT] date/time when obs ended', after=after
 
@@ -114,7 +116,7 @@ pro ucomp_l1_promote_header, file, $
   annulus_indices = where(annulus_mask, n_annulus_pts)
   median_background = median(background[annulus_indices])
   file.median_background = median_background
-  ucomp_addpar, primary_header, 'MED-BKG', median_background, $
+  ucomp_addpar, primary_header, 'MED_BKG', median_background, $
                 comment='[ppm] median of line center background annulus', $
                 format='(F0.3)', after=after
   ucomp_addpar, primary_header, 'COMMENT', 'Quality metrics', $
