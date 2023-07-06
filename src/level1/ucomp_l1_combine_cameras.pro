@@ -77,8 +77,8 @@ pro ucomp_l1_combine_cameras, file, $
 
   create_difference = run->config('centering/create_difference')
   if (create_difference) then begin
-    diff_basename = string(strmid(file.l1_basename, 0, 15), $
-                           format='%s.ucomp.centering-diff.png')
+    diff_basename = string(strmid(file.l1_basename, 0, 15), file.wave_region, $
+                           format='%s.ucomp.%s.centering-diff.png')
     diff_filename = filepath(diff_basename, $
                              subdir=ucomp_decompose_date(run.date), $
                              root=run->config('engineering/basedir'))
@@ -87,7 +87,7 @@ pro ucomp_l1_combine_cameras, file, $
              - ext_data[*, *, 0, 1, center_line_index]
 
     ucomp_loadct, 'difference'
-    tvlct, r, g, b
+    tvlct, r, g, b, /get
 
     write_png, diff_filename, bytscl(diff, min=-5.0, max=5.0, /nan), r, g, b
   endif
