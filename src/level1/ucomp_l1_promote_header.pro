@@ -284,7 +284,7 @@ pro ucomp_l1_promote_header, file, $
                 after=after
   ucomp_addpar, primary_header, $
                 'WNDDIR', $
-                ucomp_getpar(primary_header, 'WNDSPD'), $
+                ucomp_getpar(primary_header, 'WNDDIR'), $
                 comment='[deg] wind direction', $
                 format='(F0.3)', $
                 after=after
