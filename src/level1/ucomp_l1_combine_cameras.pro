@@ -75,8 +75,8 @@ pro ucomp_l1_combine_cameras, file, $
     ext_headers[e] = ext_header
   endfor
 
-  create_difference = run->config('centering/create_difference')
-  if (create_difference) then begin
+  create_differences = run->config('centering/create_differences')
+  if (create_differences) then begin
     diff_basename = string(strmid(file.l1_basename, 0, 15), file.wave_region, $
                            format='%s.ucomp.%s.centering-diff.png')
     diff_filename = filepath(diff_basename, $
