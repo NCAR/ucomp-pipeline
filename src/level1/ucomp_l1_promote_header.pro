@@ -276,20 +276,22 @@ pro ucomp_l1_promote_header, file, $
                 before='SGSSCINT', /title
 
   after = 'MED-BKG'
-  ucomp_addpar, primary_header, $
-                'WNDSPD', $
-                ucomp_getpar(primary_header, 'WNDSPD'), $
-                comment='[mph] wind speed', $
-                format='(F0.3)', $
-                after=after
-  ucomp_addpar, primary_header, $
-                'WNDDIR', $
-                ucomp_getpar(primary_header, 'WNDDIR'), $
-                comment='[deg] wind direction', $
-                format='(F0.3)', $
-                after=after
-  ucomp_addpar, primary_header, 'COMMENT', 'Weather info', $
-                before='WNDSPD', /title
+  wind_speed = ucomp_getpar(primary_header, 'WNDSPD', found=wind_speed_found)
+  if (wind_speed_found) then begin
+    ucomp_addpar, primary_header, 'WNDSPD', wind_speed, $
+                  comment='[mph] wind speed', $
+                  format='(F0.3)', $
+                  after=after
+    ucomp_addpar, primary_header, 'COMMENT', 'Weather info', $
+                    before='WNDSPD', /title
+  endif
+  wind_dir = ucomp_getpar(primary_header, 'WNDDIR', found=wind_dir_found)
+  if (wind_dir_found) then begin
+    ucomp_addpar, primary_header, 'WNDDIR', wind_dir, $
+                  comment='[deg] wind direction', $
+                  format='(F0.3)', $
+                  after=after
+  endif
 
   ; add HISTORY of processing of the file
   ; TODO: update when continuum correction and sky transmission are performed
