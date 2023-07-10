@@ -86,8 +86,10 @@ pro ucomp_l1_combine_cameras, file, $
     diff = ext_data[*, *, 0, 0, center_line_index] $
              - ext_data[*, *, 0, 1, center_line_index]
 
-    ucomp_loadct, 'difference'
-    tvlct, r, g, b, /get
+    ucomp_loadct, 'difference', rgb_table=rgb
+    r = rgb[*, 0]
+    g = rgb[*, 1]
+    b = rgb[*, 2]
 
     write_png, diff_filename, bytscl(diff, min=-5.0, max=5.0, /nan), r, g, b
   endif
