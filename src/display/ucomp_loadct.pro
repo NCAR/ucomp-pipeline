@@ -42,7 +42,7 @@ end
 ;   n_colors : in, optional, type=integer, default=256
 ;     number of colors needed
 ;-
-pro ucomp_loadct, name, n_colors=n_colors
+pro ucomp_loadct, name, n_colors=n_colors, rgb_table=rgb_table
   compile_opt strictarr
   on_error, 2
 
@@ -54,24 +54,58 @@ pro ucomp_loadct, name, n_colors=n_colors
   white = [255B, 255B, 255B]
 
   case strlowcase(name) of
-    'intensity': loadct, 0, /silent, ncolors=n_colors
-    'enhanced_intensity': loadct, 0, /silent, ncolors=n_colors   ; used 3 before
-    'quv': ucomp_loadct_rgb, mg_makect(cyan, black, pink, ncolors=n_colors)
-    'linpol': loadct, 0, /silent, ncolors=n_colors
-    'azimuth': loadct, 4, /silent, ncolors=n_colors
+    'intensity': begin
+        if (arg_present(rgb_table)) then begin
+          loadct, 0, /silent, ncolors=n_colors, rgb_table=rgb_table
+        endif else begin
+          loadct, 0, /silent, ncolors=n_colors
+        endelse
+      end
+    'enhanced_intensity': begin
+        loadct, 0, /silent, ncolors=n_colors   ; used 3 before
+      end
+    'quv': begin
+        rgb_table = mg_makect(cyan, black, pink, ncolors=n_colors)
+        if (~arg_present(rgb_table)) then ucomp_loadct_rgb, rgb_table
+      end
+    'linpol': begin
+        if (arg_present(rgb_table)) then begin
+          loadct, 0, /silent, ncolors=n_colors, rgb_table=rgb_table
+        endif else begin
+          loadct, 0, /silent, ncolors=n_colors
+        endelse
+      end
+    'azimuth': begin
+        if (arg_present(rgb_table)) then begin
+          loadct, 4, /silent, ncolors=n_colors, rgb_table=rgb_table
+        endif else begin
+          loadct, 4, /silent, ncolors=n_colors
+        endelse
+      end
     'radial_azimuth': begin
-        loadct, 6, /silent, ncolors=n_colors
+        loadct, 6, /silent, ncolors=n_colors, rgb_table=rgb_table
         ; shift the used part of the color table so that black is in the middle
         ; and green is on the ends, i.e., by half the number of colors in the
         ; color table
         _n_colors = n_elements(n_colors) eq 0L ? 256L : n_colors
-        tvlct, rgb, /get
-        rgb[0:_n_colors - 1L, *] = shift(rgb[0:_n_colors - 1L, *], _n_colors / 2, 0)
-        ucomp_loadct_rgb, rgb
+        rgb_table[0:_n_colors - 1L, *] = shift(rgb_table[0:_n_colors - 1L, *], _n_colors / 2, 0)
+        if (~arg_present(rgb_table)) then ucomp_loadct_rgb, rgb
       end
-    'doppler': ucomp_loadct_rgb, mg_makect(blue, white, red, ncolors=n_colors)
-    'line_width': loadct, 4, /silent, ncolors=n_colors
-    'difference': ucomp_loadct_rgb, mg_makect(cyan, black, pink, ncolors=n_colors)
+    'doppler': begin
+        rgb_table = mg_makect(blue, white, red, ncolors=n_colors)
+        if (arg_present(rgb_table)) then ucomp_loadct_rgb, rgb_table
+      end
+    'line_width': begin
+        if (arg_present(rgb_table)) then begin
+          loadct, 4, /silent, ncolors=n_colors, rgb_table=rgb_table
+        endif else begin
+          loadct, 4, /silent, ncolors=n_colors
+        endelse
+      end
+    'difference': begin
+        rgb_table = mg_makect(cyan, black, pink, ncolors=n_colors)
+        if (arg_present(rgb_table)) then ucomp_loadct_rgb, rgb_table
+      end
     else: message, string(name, format='(%"unknown colortable name: %s")')
   endcase
 end
