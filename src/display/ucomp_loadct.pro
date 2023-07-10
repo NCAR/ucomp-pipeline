@@ -41,6 +41,9 @@ end
 ; :Keywords:
 ;   n_colors : in, optional, type=integer, default=256
 ;     number of colors needed
+;   rgb_table : out, optional, type="bytarr(n_colors, 3)"
+;     set to a named variable to retrieve the RGB color table values instead
+;     of setting the color table
 ;-
 pro ucomp_loadct, name, n_colors=n_colors, rgb_table=rgb_table
   compile_opt strictarr
@@ -55,32 +58,20 @@ pro ucomp_loadct, name, n_colors=n_colors, rgb_table=rgb_table
 
   case strlowcase(name) of
     'intensity': begin
-        if (arg_present(rgb_table)) then begin
-          loadct, 0, /silent, ncolors=n_colors, rgb_table=rgb_table
-        endif else begin
-          loadct, 0, /silent, ncolors=n_colors
-        endelse
+        loadct, 0, /silent, ncolors=n_colors, rgb_table=rgb_table
       end
     'enhanced_intensity': begin
-        loadct, 0, /silent, ncolors=n_colors   ; used 3 before
+        ; used color table 3 previously
+        loadct, 0, /silent, ncolors=n_colors, rgb_table=rgb_table
       end
     'quv': begin
         rgb_table = mg_makect(cyan, black, pink, ncolors=n_colors)
-        if (~arg_present(rgb_table)) then ucomp_loadct_rgb, rgb_table
       end
     'linpol': begin
-        if (arg_present(rgb_table)) then begin
-          loadct, 0, /silent, ncolors=n_colors, rgb_table=rgb_table
-        endif else begin
-          loadct, 0, /silent, ncolors=n_colors
-        endelse
+        loadct, 0, /silent, ncolors=n_colors, rgb_table=rgb_table
       end
     'azimuth': begin
-        if (arg_present(rgb_table)) then begin
-          loadct, 4, /silent, ncolors=n_colors, rgb_table=rgb_table
-        endif else begin
-          loadct, 4, /silent, ncolors=n_colors
-        endelse
+        loadct, 4, /silent, ncolors=n_colors, rgb_table=rgb_table
       end
     'radial_azimuth': begin
         loadct, 6, /silent, ncolors=n_colors, rgb_table=rgb_table
@@ -88,24 +79,21 @@ pro ucomp_loadct, name, n_colors=n_colors, rgb_table=rgb_table
         ; and green is on the ends, i.e., by half the number of colors in the
         ; color table
         _n_colors = n_elements(n_colors) eq 0L ? 256L : n_colors
-        rgb_table[0:_n_colors - 1L, *] = shift(rgb_table[0:_n_colors - 1L, *], _n_colors / 2, 0)
-        if (~arg_present(rgb_table)) then ucomp_loadct_rgb, rgb
+        rgb_table[0:_n_colors - 1L, *] = shift(rgb_table[0:_n_colors - 1L, *], $
+                                               _n_colors / 2, 0)
       end
     'doppler': begin
         rgb_table = mg_makect(blue, white, red, ncolors=n_colors)
-        if (arg_present(rgb_table)) then ucomp_loadct_rgb, rgb_table
       end
     'line_width': begin
-        if (arg_present(rgb_table)) then begin
-          loadct, 4, /silent, ncolors=n_colors, rgb_table=rgb_table
-        endif else begin
-          loadct, 4, /silent, ncolors=n_colors
-        endelse
+        loadct, 4, /silent, ncolors=n_colors, rgb_table=rgb_table
       end
     'difference': begin
         rgb_table = mg_makect(cyan, black, pink, ncolors=n_colors)
-        if (arg_present(rgb_table)) then ucomp_loadct_rgb, rgb_table
       end
     else: message, string(name, format='(%"unknown colortable name: %s")')
   endcase
+
+  ; load the rgb_table if not just retrieving the table values
+  if (~arg_present(rgb_table)) then ucomp_loadct_rgb, rgb_table
 end
