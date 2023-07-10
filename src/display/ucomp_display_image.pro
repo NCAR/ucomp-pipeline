@@ -147,7 +147,7 @@ function ucomp_display_image, wave_region, im, $
     line_height = 11
   endif else begin
     charsize = 1.2
-    title_charsize = 1.5
+    title_charsize = 1.75
     detail_charsize = 1.0
     n_divisions = 4L
     small = 0B
@@ -165,7 +165,7 @@ function ucomp_display_image, wave_region, im, $
   tv, scaled_im
 
   if (~keyword_set(no_wave_region_annotation)) then begin
-    xyouts, 15, dims[1] - 2.0 * line_height, /device, $
+    xyouts, 0.5, 0.62, /normal, alignment=0.5, $
             string(run->line(wave_region, 'ionization'), $
                    wave_region, $
                    format='(%"MLSO UCoMP %s %s nm")'), $
@@ -178,14 +178,14 @@ function ucomp_display_image, wave_region, im, $
       15: date_stamp = ucomp_dt2stamp(datetime)
       else: date_stamp = datetime
     endcase
-    xyouts, 15, line_height, /device, alignment=0.0, $
-            date_stamp, $
+    xyouts, 0.5, 0.59, /normal, alignment=0.5, $
+            string(date_stamp, format='(%"%s")'), $
             charsize=detail_charsize, color=text_color
   endif
 
   if (n_elements(name) gt 0L) then begin
-    xyouts, 0.5, 0.55, /normal, alignment=0.5, $
-            name, $
+    xyouts, 0.5, 0.54, /normal, alignment=0.5, $
+            string(name, display_power, format='(%"%s!E%0.2f!N")'), $
             charsize=title_charsize, color=text_color
   endif
   colorbar2, position=[0.35, 0.5, 0.65, 0.52], $
@@ -196,9 +196,11 @@ function ucomp_display_image, wave_region, im, $
              divisions=n_divisions, $
              format='(F0.1)'
   if (~keyword_set(small)) then begin
-    xyouts, dims[0] - 15, line_height, /device, alignment=1.0, $
-            string(display_min, display_max, display_gamma, display_power, $
-                   format='(%"min/max: %0.2f/%0.2f, gamma: %0.1f, exp: %0.2f")'), $
+    xyouts, 0.5, 0.45, /normal, alignment=0.5, $
+            string(display_min, display_power, $
+                   display_max, display_power, $
+                   display_gamma, $
+                   format='(%"min/max: %0.2f!E%0.2f!N - %0.1f!E%0.2f!N, gamma: %0.1f")'), $
             charsize=detail_charsize, color=text_color
   endif
 
