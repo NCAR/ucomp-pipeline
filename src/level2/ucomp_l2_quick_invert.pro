@@ -29,7 +29,7 @@ pro ucomp_l2_quick_invert, wave_region, $
 
   for f = 0L, n_elements(average_filenames) - 1L do begin
     if (average_filenames[f] ne '') then begin
-      mg_log, 'creating quick invert for %s...', $
+      mg_log, 'creating %s...', $
               file_basename(average_filenames[f]), $
               name=run.logger_name, /info
 
