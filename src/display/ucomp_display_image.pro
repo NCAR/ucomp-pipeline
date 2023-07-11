@@ -39,7 +39,8 @@ function ucomp_display_image, wave_region, im, $
   display_im = !null
 
   dims = size(im, /dimensions)
-  if (n_elements(reduce_factor) gt 0L) then dims /= reduce_factor
+  _reduce_factor = mg_default(reduce_factor, 1L)
+  dims /= _reduce_factor
 
   _im = rebin(im, dims[0], dims[1])
 
@@ -58,12 +59,19 @@ function ucomp_display_image, wave_region, im, $
         display_gamma = run->line(wave_region, 'enhanced_intensity_display_gamma')
         display_power = run->line(wave_region, 'enhanced_intensity_display_power')
     end
-    type eq 'quv': begin
+    type eq 'qu': begin
         colortable_name = 'quv'
-        display_min   = run->line(wave_region, 'quv_display_min')
-        display_max   = run->line(wave_region, 'quv_display_max')
-        display_gamma = run->line(wave_region, 'quv_display_gamma')
-        display_power = run->line(wave_region, 'quv_display_power')
+        display_min   = run->line(wave_region, 'qu_display_min')
+        display_max   = run->line(wave_region, 'qu_display_max')
+        display_gamma = run->line(wave_region, 'qu_display_gamma')
+        display_power = run->line(wave_region, 'qu_display_power')
+    end
+    type eq 'v': begin
+        colortable_name = 'quv'
+        display_min   = run->line(wave_region, 'v_display_min')
+        display_max   = run->line(wave_region, 'v_display_max')
+        display_gamma = run->line(wave_region, 'v_display_gamma')
+        display_power = run->line(wave_region, 'v_display_power')
     end
     type eq 'quv_i': begin
         colortable_name = 'quv'
@@ -138,21 +146,42 @@ function ucomp_display_image, wave_region, im, $
 
   nan_indices = where(finite(_im) eq 0, n_nan)
 
-  if (n_elements(reduce_factor) gt 0L && reduce_factor ge 4L) then begin
-    charsize = 0.9
-    title_charsize = 1.25
-    detail_charsize = 0.9
-    n_divisions = 2L
-    small = 1B
-    line_height = 11
-  endif else begin
-    charsize = 1.2
-    title_charsize = 1.75
-    detail_charsize = 1.0
-    n_divisions = 4L
-    small = 0B
-    line_height = 15
-  endelse
+  case _reduce_factor of
+    1: begin
+        charsize = 1.3
+        title_charsize = 1.75
+        detail_charsize = 1.2
+        n_divisions = 4L
+        small = 0B
+        ionization_height = 0.62
+        date_height = 0.59
+        title_height = 0.54
+        display_params_height = 0.45
+      end
+    2: begin
+        charsize = 0.9
+        title_charsize = 1.3
+        detail_charsize = 0.9
+        n_divisions = 2L
+        small = 0B
+        ionization_height = 0.635
+        date_height = 0.60
+        title_height = 0.54
+        display_params_height = 0.42
+      end
+    else: begin
+        charsize = 0.8
+        title_charsize = 1.05
+        detail_charsize = 0.8
+        n_divisions = 2L
+        small = 1B
+        mlso_height = 0.675
+        ionization_height = 0.62
+        date_height = 0.375
+        title_height = 0.55
+        display_params_height = 0.40
+      end
+  end
 
   scaled_im = bytscl(_im^display_power, $
                      min=display_min^display_power, $
@@ -165,11 +194,22 @@ function ucomp_display_image, wave_region, im, $
   tv, scaled_im
 
   if (~keyword_set(no_wave_region_annotation)) then begin
-    xyouts, 0.5, 0.62, /normal, alignment=0.5, $
-            string(run->line(wave_region, 'ionization'), $
-                   wave_region, $
-                   format='(%"MLSO UCoMP %s %s nm")'), $
-            charsize=charsize, color=text_color
+    if (keyword_set(small)) then begin
+      xyouts, 0.5, mlso_height, /normal, alignment=0.5, $
+              'MLSO UCoMP', $
+              charsize=charsize, color=text_color
+      xyouts, 0.5, ionization_height, /normal, alignment=0.5, $
+              string(run->line(wave_region, 'ionization'), $
+                     wave_region, $
+                     format='%s %s nm'), $
+              charsize=charsize, color=text_color
+    endif else begin
+      xyouts, 0.5, ionization_height, /normal, alignment=0.5, $
+              string(run->line(wave_region, 'ionization'), $
+                     wave_region, $
+                     format='MLSO UCoMP %s %s nm'), $
+              charsize=charsize, color=text_color
+    endelse
   endif
 
   if (n_elements(datetime) gt 0L) then begin
@@ -178,14 +218,16 @@ function ucomp_display_image, wave_region, im, $
       15: date_stamp = ucomp_dt2stamp(datetime)
       else: date_stamp = datetime
     endcase
-    xyouts, 0.5, 0.59, /normal, alignment=0.5, $
+    xyouts, 0.5, date_height, /normal, alignment=0.5, $
             string(date_stamp, format='(%"%s")'), $
             charsize=detail_charsize, color=text_color
   endif
 
   if (n_elements(name) gt 0L) then begin
-    xyouts, 0.5, 0.54, /normal, alignment=0.5, $
-            string(name, display_power, format='(%"%s!E%0.2f!N")'), $
+    xyouts, 0.5, title_height, /normal, alignment=0.5, $
+            display_power eq 1.0 $
+              ? string(name, format='%s') $
+              : string(name, display_power, format='(%"%s!E%0.2f!N")'), $
             charsize=title_charsize, color=text_color
   endif
   colorbar2, position=[0.35, 0.5, 0.65, 0.52], $
@@ -196,11 +238,11 @@ function ucomp_display_image, wave_region, im, $
              divisions=n_divisions, $
              format='(F0.1)'
   if (~keyword_set(small)) then begin
-    xyouts, 0.5, 0.45, /normal, alignment=0.5, $
-            string(display_min, display_power, $
-                   display_max, display_power, $
-                   display_gamma, $
-                   format='(%"min/max: %0.2f!E%0.2f!N - %0.1f!E%0.2f!N, gamma: %0.1f")'), $
+    xyouts, 0.5, display_params_height, /normal, alignment=0.5, $
+            ucomp_display_image_params(display_min, $
+                                       display_max, $
+                                       display_power, $
+                                       display_gamma), $
             charsize=detail_charsize, color=text_color
   endif
 

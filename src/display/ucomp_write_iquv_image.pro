@@ -48,10 +48,15 @@ pro ucomp_write_iquv_image, data, l1_basename, wave_region, wavelengths, $
   intensity_display_gamma = run->line(wave_region, 'intensity_display_gamma')
   intensity_display_power = run->line(wave_region, 'intensity_display_power')
 
-  quv_display_min   = run->line(wave_region, 'quv_display_min')
-  quv_display_max   = run->line(wave_region, 'quv_display_max')
-  quv_display_gamma = run->line(wave_region, 'quv_display_gamma')
-  quv_display_power = run->line(wave_region, 'quv_display_power')
+  qu_display_min   = run->line(wave_region, 'qu_display_min')
+  qu_display_max   = run->line(wave_region, 'qu_display_max')
+  qu_display_gamma = run->line(wave_region, 'qu_display_gamma')
+  qu_display_power = run->line(wave_region, 'qu_display_power')
+
+  v_display_min   = run->line(wave_region, 'v_display_min')
+  v_display_max   = run->line(wave_region, 'v_display_max')
+  v_display_gamma = run->line(wave_region, 'v_display_gamma')
+  v_display_power = run->line(wave_region, 'v_display_power')
 
   datetime = strmid(l1_basename, 0, keyword_set(daily) ? 8 : 15)
   date_stamp = ucomp_dt2stamp(datetime)
@@ -103,11 +108,17 @@ pro ucomp_write_iquv_image, data, l1_basename, wave_region, wavelengths, $
         display_gamma = intensity_display_gamma
         display_power = intensity_display_power
         ct_name = 'intensity'
+      endif else if (p eq 3) then begin
+        display_min = v_display_min
+        display_max = v_display_max
+        display_gamma = v_display_gamma
+        display_power = v_display_power
+        ct_name = 'quv'
       endif else begin
-        display_min = quv_display_min
-        display_max = quv_display_max
-        display_gamma = quv_display_gamma
-        display_power = quv_display_power
+        display_min = qu_display_min
+        display_max = qu_display_max
+        display_gamma = qu_display_gamma
+        display_power = qu_display_power
         ct_name = 'quv'
       endelse
 
