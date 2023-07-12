@@ -223,7 +223,7 @@ pro ucomp_l1_promote_header, file, $
     endfor
     ucomp_addpar, h, 'CONTOFF', continuum_offset, $
                   format='(F0.5)', $
-                  comment='[nm] distance from WAVELNG for continuum wavelength', $
+                  comment='[nm] distance from WAVELNG for continuum', $
                   after='CONTIN'
     headers[e] = h
   endfor
