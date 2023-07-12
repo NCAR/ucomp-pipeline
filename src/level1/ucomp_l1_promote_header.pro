@@ -53,7 +53,10 @@ pro ucomp_l1_promote_header, file, $
                 comment='[UT] date/time when obs started'
   ucomp_addpar, primary_header, 'DATE-END', file.date_end, $
                 comment='[UT] date/time when obs ended', after=after
-
+  ucomp_movepar, primary_header, 'FILTER', $
+                 after='DATE-END'
+  ucomp_addpar, primary_header, ucomp_getpar(primary_header, 'FILTER'), $
+                comment='[nm] prefilter wavelength region identifier'
   ucomp_addpar, primary_header, 'OBJECT', 'SUN', comment=' '
 
   after = 'R_SUN'
