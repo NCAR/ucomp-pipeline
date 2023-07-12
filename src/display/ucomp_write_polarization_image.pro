@@ -91,13 +91,13 @@ pro ucomp_write_polarization_image, output_filename, $
                                                    /no_wave_region_annotation, $
                                                    run=run)
   integrated_q_display = ucomp_display_image(file.wave_region, integrated_q, $
-                                             type='quv', $
+                                             type='qu', $
                                              name='Integrated Q', $
                                              reduce_factor=reduce_factor, $
                                              /no_wave_region_annotation, $
                                              run=run)
   integrated_u_display = ucomp_display_image(file.wave_region, integrated_u, $
-                                             type='quv', $
+                                             type='qu', $
                                              name='Integrated U', $
                                              reduce_factor=reduce_factor, $
                                              /no_wave_region_annotation, $

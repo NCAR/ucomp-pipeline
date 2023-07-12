@@ -40,15 +40,15 @@ pro ucomp_write_all_iquv_image, file, data, run=run
   intensity_display_gamma = run->line(file.wave_region, 'intensity_display_gamma')
   intensity_display_power = run->line(file.wave_region, 'intensity_display_power')
 
-  qu_display_min   = run->line(wave_region, 'qu_display_min')
-  qu_display_max   = run->line(wave_region, 'qu_display_max')
-  qu_display_gamma = run->line(wave_region, 'qu_display_gamma')
-  qu_display_power = run->line(wave_region, 'qu_display_power')
+  qu_display_min   = run->line(file.wave_region, 'qu_display_min')
+  qu_display_max   = run->line(file.wave_region, 'qu_display_max')
+  qu_display_gamma = run->line(file.wave_region, 'qu_display_gamma')
+  qu_display_power = run->line(file.wave_region, 'qu_display_power')
 
-  v_display_min   = run->line(wave_region, 'v_display_min')
-  v_display_max   = run->line(wave_region, 'v_display_max')
-  v_display_gamma = run->line(wave_region, 'v_display_gamma')
-  v_display_power = run->line(wave_region, 'v_display_power')
+  v_display_min   = run->line(file.wave_region, 'v_display_min')
+  v_display_max   = run->line(file.wave_region, 'v_display_max')
+  v_display_gamma = run->line(file.wave_region, 'v_display_gamma')
+  v_display_power = run->line(file.wave_region, 'v_display_power')
 
   datetime = strmid(file_basename(file.raw_filename), 0, 15)
   date_stamp = ucomp_dt2stamp(datetime)
@@ -180,23 +180,26 @@ end
 ; main-level example program
 
 ;date = '20220105'
-date = '20211213'
+;date = '20211213'
+date = '20220901'
 
 config_basename = 'ucomp.latest.cfg'
 config_filename = filepath(config_basename, $
-                           subdir=['..', '..', 'config'], $
+                           subdir=['..', '..', '..', 'ucomp-config'], $
                            root=mg_src_root())
 run = ucomp_run(date, 'test', config_filename)
 
 ;l0_basename = '20220105.204523.49.ucomp.1074.l0.fts'
-l0_basename = '20211213.190812.67.ucomp.1074.l0.fts'
+;l0_basename = '20211213.190812.67.ucomp.1074.l0.fts'
+l0_basename = '20220902.024313.36.ucomp.1074.l0.fts'
 l0_filename = filepath(l0_basename, $
                        subdir=date, $
                        root=run->config('raw/basedir'))
 file = ucomp_file(l0_filename, run=run)
 
 ;l1_basename = '20220105.204523.ucomp.1074.l1.5.fts'
-l1_basename = '20211213.190812.ucomp.1074.l1.5.fts'
+;l1_basename = '20211213.190812.ucomp.1074.l1.5.fts'
+l1_basename = '20220902.024313.ucomp.1074.l1.3.fts'
 l1_filename = filepath(l1_basename, $
                        subdir=[date, 'level1'], $
                        root=run->config('processing/basedir'))
