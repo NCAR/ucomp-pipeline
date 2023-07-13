@@ -14,13 +14,17 @@
 ;     times of the V crosstalk readings in hours in the observing day
 ;   vcrosstalk : in, required, type=fltarr(n)
 ;     V crosstalk readings
+;   max_value : in, optional, type=float, default=max(vcrosstalk)
 ;-
 pro ucomp_vcrosstalk_plots_wave_region, date, $
                                         wave_region, $
                                         output_dir, $
                                         times, $
-                                        vcrosstalk
+                                        vcrosstalk, $
+                                        max_value=max_value
   compile_opt strictarr
+
+  _max_value = mg_default(max_value, max(vcrosstalk))
 
   if (n_elements(wave_region) eq 0L) then begin
     basename = string(date, format='(%"%s.ucomp.vcrosstalk.gif")')
@@ -48,7 +52,7 @@ pro ucomp_vcrosstalk_plots_wave_region, date, $
                  psym=6, symsize=0.25, color=0, background=254, $
                  clip_psym=6, clip_color=255, $
                  xstyle=1, xrange=[6.0, 18.0], xtitle='Hours into HST observing day', $
-                 ystyle=1, yrange=[0.0, 4.0], ytitle='V crosstalk'
+                 ystyle=1, yrange=[0.0, _max_value], ytitle='V crosstalk'
 
   write_gif, filename, tvrd(), r, g, b
 
@@ -91,7 +95,8 @@ pro ucomp_vcrosstalk_plots, output_dir, run=run
                                           wave_regions[w], $
                                           output_dir, $
                                           times, $
-                                          vcrosstalk
+                                          vcrosstalk, $
+                                          max_value=run->line(wave_regions[w], 'gbu_max_v_metric')
     endif
   endfor
 
