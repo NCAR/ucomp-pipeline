@@ -84,7 +84,7 @@ pro ucomp_db_update, run=run
 
     ucomp_rolling_flat_plots, wave_regions[w], db, run=run
 
-    ucomp_rolling_background_plot, wave_regions[w], db, run=run
+    ucomp_mission_background_plot, wave_regions[w], db, run=run
 
     ucomp_rolling_image_scale_plot, wave_regions[w], db, run=run
 
