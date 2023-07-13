@@ -73,9 +73,7 @@ pro ucomp_l2_archive, wave_region, run=run
   glob = strjoin(types[glob_indices], ' ')
 
   ; make tarball
-  tar_cmd = string(tarfile, $
-                   glob, $
-                   format='(%"tar cf %s %s")')
+  tar_cmd = string(tarfile, glob, format='(%"tar cf %s %s")')
   mg_log, 'creating tarfile %s...', file_basename(tarfile), $
           name=run.logger_name, /info
   spawn, tar_cmd, result, error_result, exit_status=status
@@ -88,8 +86,7 @@ pro ucomp_l2_archive, wave_region, run=run
   ucomp_fix_permissions, tarfile, logger_name=run.logger_name
 
   ; make tarlist
-  tarlist_cmd = string(tarfile, tarlist, $
-                       format='(%"tar tfv %s > %s")')
+  tarlist_cmd = string(tarfile, tarlist, format='(%"tar tfv %s > %s")')
   mg_log, 'creating tarlist %s...', file_basename(tarlist), name=run.logger_name, /info
   spawn, tarlist_cmd, result, error_result, exit_status=status
   if (status ne 0L) then begin
