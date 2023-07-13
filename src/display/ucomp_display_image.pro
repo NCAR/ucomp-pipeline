@@ -81,7 +81,6 @@ function ucomp_display_image, wave_region, im, $
         display_power = run->line(wave_region, 'quv_i_display_power')
     end
     type eq 'linpol': begin
-        ; TODO: use a log scale like Steve?
         colortable_name = 'linpol'
         _im = alog10(_im)
         display_min   = run->line(wave_region, 'linpol_display_min')
