@@ -21,9 +21,13 @@ pro ucomp_rolling_flat_plots, wave_region, db, run=run
                       date_components[1], $
                       date_components[2], $
                       format='%04d-%02d-%02dT00:00:00')
+  end_date = string(date_components[0], $
+                    date_components[1], $
+                    date_components[2], $
+                    format='%04d-%02d-%02dT00:00:00')
 
-  query = 'select * from ucomp_eng where wave_region=''%s'' and date_obs > ''%s'' order by date_obs'
-  data = db->query(query, wave_region, start_date, $
+  query = 'select * from ucomp_eng where wave_region=''%s'' and date_obs > ''%s'' and date_obs < ''%s'' order by date_obs'
+  data = db->query(query, wave_region, start_date, end_date, $
                    count=n_flats, error=error, fields=fields, sql_statement=sql)
 
   if (n_flats eq 0L) then begin
