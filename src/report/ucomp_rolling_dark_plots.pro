@@ -19,22 +19,26 @@ pro ucomp_rolling_dark_plots, db, run=run
                       date_components[1], $
                       date_components[2], $
                       format='%04d-%02d-%02dT00:00:00')
+  end_date = string(date_components[0], $
+                    date_components[1], $
+                    date_components[2], $
+                    format='%04d-%02d-%02dT00:00:00')
 
   ; group the darks by gain mode and NUC value
   group_by_type = 0B
 
   if (group_by_type) then begin
     ;query = 'select * from ucomp_cal where darkshutter=1 and rcamnuc=''%s'' and gain_mode=''%s'' and date_obs > ''2022-01-01'' order by date_obs'
-    query = 'select * from ucomp_cal where darkshutter=1 and rcamnuc=''%s'' and gain_mode=''%s'' and date_obs > ''%s'' order by date_obs'
+    query = 'select * from ucomp_cal where darkshutter=1 and rcamnuc=''%s'' and gain_mode=''%s'' and date_obs > ''%s'' and date_obs < ''%s'' order by date_obs'
     gain_mode = ['high', 'low']
     m = 0
     rcamnuc = ['normal', 'Offset + gain corrected']
     n = 1
-    data = db->query(query, rcamnuc[n], gain_mode[m], start_date, $
+    data = db->query(query, rcamnuc[n], gain_mode[m], start_date, end_date, $
                      count=n_darks, error=error, fields=fields, sql_statement=sql)
   endif else begin
-    query = 'select * from ucomp_cal where darkshutter=1 and date_obs > ''%s'' order by date_obs'
-    data = db->query(query, start_date, $
+    query = 'select * from ucomp_cal where darkshutter=1 and date_obs > ''%s'' and date_obs < ''%s'' order by date_obs'
+    data = db->query(query, start_date, end_date, $
                      count=n_darks, error=error, fields=fields, sql_statement=sql)
   endelse
 
