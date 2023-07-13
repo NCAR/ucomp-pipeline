@@ -13,7 +13,7 @@
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-pro ucomp_rolling_image_scale_plot, wave_region, db, run=run
+pro ucomp_mission_image_scale_plot, wave_region, db, run=run
   compile_opt strictarr
 
   query = 'select * from ucomp_eng where wave_region=''%s'' order by date_obs'
@@ -119,7 +119,7 @@ pro ucomp_rolling_image_scale_plot, wave_region, db, run=run
 
   ; save plots image file
   output_filename = filepath(string(run.date, wave_region, $
-                                    format='(%"%s.ucomp.%s.image_scale.gif")'), $
+                                    format='(%"%s.ucomp.%s.mission.image_scale.gif")'), $
                              subdir=ucomp_decompose_date(run.date), $
                              root=run->config('engineering/basedir'))
   write_gif, output_filename, tvrd(), r, g, b
