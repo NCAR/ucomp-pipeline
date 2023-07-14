@@ -165,7 +165,7 @@ pro ucomp_l1_find_alignment, file, $
           rcam.post_angle, tcam.post_angle, $
           name=run.logger_name, /debug
   ucomp_addpar, primary_header, 'POST_ANG', $
-                mean([rcam.post_angle, tcam.post_angle], /nan), $
+                file.post_angle, $
                 comment='[deg] post angle CCW from north', $
                 format='(F0.3)', after=after
   radius = mean([rcam.occulter_radius, tcam.occulter_radius], /nan)
