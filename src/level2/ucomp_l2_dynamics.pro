@@ -93,12 +93,11 @@ pro ucomp_l2_dynamics, file, run=run
 
   ; calculate enhanced intensity
   enhanced_intensity = ucomp_enhanced_intensity(peak_intensity, $
-                                                line_width, $
-                                                doppler_shift, $
-                                                primary_header, $
-                                                run->epoch('field_radius'), $
                                                 radius=run->line(file.wave_region, 'enhanced_intensity_radius'), $
                                                 amount=run->line(file.wave_region, 'enhanced_intensity_amount'), $
+                                                occulter_radius=file.occulter_radius, $
+                                                post_angle=file.post_angle, $
+                                                field_radius=run->epoch('field_radius'), $
                                                 mask=run->config('display/mask_l2'))
 
   c = 299792.458D

@@ -43,10 +43,11 @@ function ucomp_write_composite_image_channel, filename, $
   enhanced = run->line(wave_region, 'temperature_enhancement')
   if (keyword_set(enhanced)) then begin
     intensity = ucomp_enhanced_intensity(intensity, $
-                                         !null, !null, $
-                                         primary_header, $
                                          radius=run->line(wave_region, 'enhanced_intensity_radius'), $
                                          amount=run->line(wave_region, 'enhanced_intensity_amount'), $
+                                         occulter_radius=occulter_radius, $
+                                         post_angle=post_angle, $
+                                         field_radius=run->epoch('field_radius'), $
                                          /mask)
   endif
 

@@ -98,12 +98,11 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
 
     if (keyword_set(enhanced)) then begin
       im = ucomp_enhanced_intensity(im, $
-                                    !null, $
-                                    !null, $
-                                    primary_header, $
-                                    run->epoch('field_radius'), $
                                     radius=run->line(file.wave_region, 'enhanced_intensity_radius'), $
                                     amount=run->line(file.wave_region, 'enhanced_intensity_amount'), $
+                                    occulter_radius=file.occulter_radius, $
+                                    post_angle=file.post_angle, $
+                                    field_radius=run->epoch('field_radius'), $
                                     mask=run->config('display/mask_l1'))
     endif
 
