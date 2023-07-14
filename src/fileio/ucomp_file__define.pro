@@ -300,7 +300,7 @@ pro ucomp_file::getProperty, run=run, $
                                    self.wave_region, $
                                    name, $
                                    n_unique_wavelengths, $
-                                   format='(%"%s.%s.ucomp.%s.%s.%d.int.fts")')
+                                   format='(%"%s.%s.ucomp.%s.%s.%d.intensity.fts")')
   endif
   if (arg_present(dynamics_basename)) then begin
     dynamics_basename = string(self.ut_date, $

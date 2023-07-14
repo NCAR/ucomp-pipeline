@@ -17,11 +17,9 @@ pro ucomp_write_intensity_mp4, wave_region, run=run, enhanced=enhanced
   compile_opt strictarr
 
   if (keyword_set(enhanced)) then begin
-    option_prefix = 'enhanced_'
-    filename_prefix = 'enhanced-int'
+    filename_prefix = 'enhanced_intensity'
   endif else begin
-    option_prefix = ''
-    filename_prefix = 'int'
+    filename_prefix = 'intensity'
   endelse
 
   center_wavelength_only = run->config('intensity/center_wavelength_gifs_only')
