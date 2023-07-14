@@ -140,7 +140,7 @@ pro ucomp_realtime_wrapper, date, config_filename
               name=run.logger_name, /info
       ucomp_pipeline_step, 'ucomp_quicklook', files[f], run=run
     endfor
-    ucomp_pipeline_step, 'ucomp_quicklook_distribute', files, run=run
+    ucomp_pipeline_step, 'ucomp_rt_quicklook_distribute', files, run=run
   endfor
 
 

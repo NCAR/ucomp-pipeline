@@ -14,8 +14,6 @@
 pro ucomp_l1_distribute, wave_region, run=run
   compile_opt strictarr
 
-  ucomp_l1_archive, wave_region, run=run
-
   if (~run->config(wave_region + '/distribute_l1')) then begin
     mg_log, 'skipping distributing %s nm L1 data', wave_region, $
             name=run.logger, /info

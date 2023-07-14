@@ -14,9 +14,6 @@
 pro ucomp_l2_distribute, wave_region, run=run
   compile_opt strictarr
 
-  ; send level 2 files to archive
-  ucomp_l2_archive, wave_region, run=run
-
   ; copy L2 data into archive, etc. directories
 
   web_basedir = run->config('results/web_basedir')
