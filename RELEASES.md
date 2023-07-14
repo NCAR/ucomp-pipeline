@@ -339,3 +339,5 @@
   FITS header changes
 0.3.4
   FITS header changes
+  remove threshold masking in enhanced intensity
+  polarization/dynamics and quicklook distribution
