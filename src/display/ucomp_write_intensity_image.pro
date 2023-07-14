@@ -39,9 +39,9 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
 
   intensity_basename_format = file_basename(file.l1_basename, '.fts')
   if (keyword_set(enhanced)) then begin
-    intensity_basename_format += '.enhanced-int'
+    intensity_basename_format += '.enhanced_intensity'
   endif else begin
-    intensity_basename_format += '.int'
+    intensity_basename_format += '.intensity'
   endelse
   if (~center_wavelength_only) then intensity_basename_format += '.ext%02d'
   intensity_basename_format += '.gif'

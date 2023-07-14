@@ -114,7 +114,7 @@ pro ucomp_write_dynamics_image, output_filename, $
                                              run=run)
   peak_intensity_basename = string(strmid(file.l1_basename, 0, 15), $
                                  file.wave_region, $
-                                 format='(%"%s.ucomp.%s.l2.peakint.png")')
+                                 format='(%"%s.ucomp.%s.l2.peak_intensity.png")')
   peak_intensity_filename = filepath(peak_intensity_basename, root=l2_dir)
   write_png, peak_intensity_filename, peak_intensity_image
   mg_log, 'wrote peak intensity PNG', name=run.logger_name, /debug
@@ -127,7 +127,7 @@ pro ucomp_write_dynamics_image, output_filename, $
                                                       run=run)
   enhanced_peak_intensity_basename = string(strmid(file.l1_basename, 0, 15), $
                                  file.wave_region, $
-                                 format='(%"%s.ucomp.%s.l2.enhanced-peakint.png")')
+                                 format='(%"%s.ucomp.%s.l2.enhanced_peak_intensity.png")')
   enhanced_peak_intensity_filename = filepath(enhanced_peak_intensity_basename, root=l2_dir)
   write_png, enhanced_peak_intensity_filename, enhanced_peak_intensity_image
   mg_log, 'wrote enhanced peak intensity PNG', name=run.logger_name, /debug
@@ -153,7 +153,7 @@ pro ucomp_write_dynamics_image, output_filename, $
                                          run=run)
   line_width_basename = string(strmid(file.l1_basename, 0, 15), $
                                  file.wave_region, $
-                                 format='(%"%s.ucomp.%s.l2.linewidth.png")')
+                                 format='(%"%s.ucomp.%s.l2.line_width.png")')
   line_width_filename = filepath(line_width_basename, root=l2_dir)
   write_png, line_width_filename, line_width_image
   mg_log, 'wrote line width PNG', name=run.logger_name, /debug
