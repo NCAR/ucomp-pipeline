@@ -119,9 +119,9 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
       mask = bytarr(dims[0], dims[1]) + 1B
     endelse
 
-    scaled_im = bytscl((im * mask)^display_power, $
-                       min=display_min^display_power, $
-                       max=display_max^display_power, $
+    scaled_im = bytscl(mg_signed_power(im * mask, display_power), $
+                       min=mg_signed_power(display_min, display_power), $
+                       max=mg_signed_power(display_max, display_power), $
                        top=n_colors - 1L, $
                        /nan)
 
@@ -162,7 +162,7 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
                  charsize=detail_charsize, $
                  color=text_color, $
                  ncolors=n_colors, $
-                 range=[display_min, display_max]^display_power, $
+                 range=mg_signed_power([display_min, display_max], display_power), $
                  divisions=n_divisions, $
                  format='(F0.1)'
       xyouts, 0.5, 0.45, /normal, alignment=0.5, $
@@ -194,19 +194,19 @@ end
 
 date = '20220901'
 
-config_basename = 'ucomp.bilinear.cfg'
+config_basename = 'ucomp.latest.cfg'
 config_filename = filepath(config_basename, $
-                           subdir=['..', '..', 'config'], $
+                           subdir=['..', '..', '..', 'ucomp-config'], $
                            root=mg_src_root())
 run = ucomp_run(date, 'test', config_filename)
 
-l0_basename = '20220901.190352.15.ucomp.1079.l0.fts'
+l0_basename = '20220901.180411.02.ucomp.637.l0.fts'
 l0_filename = filepath(l0_basename, $
                        subdir=date, $
                        root=run->config('raw/basedir'))
 file = ucomp_file(l0_filename, run=run)
 
-l1_basename = '20220901.190352.ucomp.1079.l1.3.fts'
+l1_basename = '20220901.180411.ucomp.637.l1.3.fts'
 l1_filename = filepath(l1_basename, $
                        subdir=[date, 'level1'], $
                        root=run->config('processing/basedir'))

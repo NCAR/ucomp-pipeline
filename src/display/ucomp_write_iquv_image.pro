@@ -135,9 +135,9 @@ pro ucomp_write_iquv_image, data, l1_basename, wave_region, wavelengths, $
         field_mask = bytarr(dims[0] / reduce_dims_factor, dims[1] / reduce_dims_factor) + 1B
       endelse
 
-      scaled_im = bytscl((im * field_mask)^display_power, $
-                         min=display_min^display_power, $
-                         max=display_max^display_power, $
+      scaled_im = bytscl(mg_signed_power(im * field_mask, display_power), $
+                         min=mg_signed_power(display_min, display_power), $
+                         max=mg_signed_power(display_max, display_power), $
                          top=n_colors - 1L, $
                          /nan)
 
@@ -169,7 +169,7 @@ pro ucomp_write_iquv_image, data, l1_basename, wave_region, wavelengths, $
                  charsize=detail_charsize, $
                  color=text_color, $
                  ncolors=n_colors, $
-                 range=[display_min, display_max]^display_power, $
+                 range=mg_signed_power([display_min, display_max], display_power), $
                  divisions=n_divisions, $
                  format='(F0.1)'
     endfor
