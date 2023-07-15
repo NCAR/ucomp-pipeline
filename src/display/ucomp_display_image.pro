@@ -14,7 +14,7 @@
 ;
 ; :Keywords:
 ;   type : in, required, type=string
-;     type of input image given in `im`, e.g., "intensity", "quv", etc.
+;     type of input image given in `im`, e.g., "intensity", "qu", etc.
 ;   name : in, optional, type=string
 ;     if present, use as a title annotation on the displayed image
 ;   reduce_factor : in, optional, type=integer, default=1
@@ -182,9 +182,9 @@ function ucomp_display_image, wave_region, im, $
       end
   end
 
-  scaled_im = bytscl(_im^display_power, $
-                     min=display_min^display_power, $
-                     max=display_max^display_power, $
+  scaled_im = bytscl(mg_signed_power(_im, display_power), $
+                     min=mg_signed_power(display_min, display_power), $
+                     max=mg_signed_power(display_max, display_power), $
                      top=n_colors - 1L, $
                      /nan)
 
@@ -233,7 +233,7 @@ function ucomp_display_image, wave_region, im, $
              charsize=detail_charsize, $
              color=text_color, $
              ncolors=n_colors, $
-             range=[display_min, display_max]^display_power, $
+             range=mg_signed_power([display_min, display_max], display_power), $
              divisions=n_divisions, $
              format='(F0.1)'
   if (~keyword_set(small)) then begin

@@ -123,9 +123,9 @@ pro ucomp_write_all_iquv_image, file, data, run=run
         field_mask = bytarr(dims[0] / reduce_dims_factor, dims[1] / reduce_dims_factor) + 1B
       endelse
 
-      scaled_im = bytscl((im * field_mask)^display_power, $
-                         min=display_min^display_power, $
-                         max=display_max^display_power, $
+      scaled_im = bytscl(mg_signed_power(im * field_mask, display_power), $
+                         min=mg_signed_power(display_min, display_power), $
+                         max=mg_signed_power(display_max, display_power), $
                          top=n_colors - 1L, $
                          /nan)
 
