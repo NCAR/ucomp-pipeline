@@ -14,13 +14,13 @@ pro ucomp_l2_tar_type, name, wave_region, $
   cd, l2_dir
 
   tarfile_basename = string(run.date, wave_region, name, $
-                            format='(%"%s.ucomp.%s.l2.%s.tar")')
+                            format='(%"%s.ucomp.%s.l2.%s.tgz")')
   tarlist_basename = string(run.date, wave_region, name, $
                             format='(%"%s.ucomp.%s.l2.%s.tarlist")')
   tarfile = filepath(tarfile_basename, root=l2_dir)
   tarlist = filepath(tarlist_basename, root=l2_dir)
 
-  glob = string(wave_region, name, format='*.ucomp.%s.l2.%s.fts{,.gz}')
+  glob = string(wave_region, name, format='*.ucomp.%s.l2.%s.fts')
   filenames = file_search(glob, count=n_files)
 
   if (n_files eq 0L) then begin
@@ -30,7 +30,7 @@ pro ucomp_l2_tar_type, name, wave_region, $
   endif
 
   ; make tarball
-  tar_cmd = string(tarfile, glob, format='(%"tar cf %s %s")')
+  tar_cmd = string(tarfile, glob, format='(%"tar cfz %s %s")')
   mg_log, 'creating tarfile %s...', file_basename(tarfile), $
           name=run.logger_name, /info
   spawn, tar_cmd, result, error_result, exit_status=status

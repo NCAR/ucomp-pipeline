@@ -341,3 +341,4 @@
   FITS header changes
   remove threshold masking in enhanced intensity
   polarization/dynamics and quicklook distribution
+  use power for display of divergent colortables for Q, U, and V
