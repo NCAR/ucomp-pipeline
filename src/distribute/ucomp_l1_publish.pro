@@ -11,10 +11,10 @@
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-pro ucomp_l1_distribute, wave_region, run=run
+pro ucomp_l1_publish, wave_region, run=run
   compile_opt strictarr
 
-  if (~run->config(wave_region + '/distribute_l1')) then begin
+  if (~run->config(wave_region + '/publish_l1')) then begin
     mg_log, 'skipping distributing %s nm L1 data', wave_region, $
             name=run.logger, /info
     goto, done
