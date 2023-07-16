@@ -104,12 +104,12 @@ pro ucomp_reprocess_wrapper, date, config_filename
 
   for w = 0L, n_elements(wave_regions) - 1L do begin
     ucomp_pipeline_step, 'ucomp_l1_archive', wave_regions[w], run=run
-    ucomp_pipeline_step, 'ucomp_l1_distribute', wave_regions[w], run=run
+    ucomp_pipeline_step, 'ucomp_l1_publish', wave_regions[w], run=run
     ucomp_pipeline_step, 'ucomp_l2_archive', wave_regions[w], run=run
-    ucomp_pipeline_step, 'ucomp_l2_distribute', wave_regions[w], run=run
+    ucomp_pipeline_step, 'ucomp_l2_publish', wave_regions[w], run=run
   endfor
 
-  ucomp_pipeline_step, 'ucomp_quicklook_distribute', run=run
+  ucomp_pipeline_step, 'ucomp_quicklook_publish', run=run
 
   ucomp_pipeline_step, 'ucomp_send_notification', run=run
 
