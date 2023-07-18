@@ -108,7 +108,7 @@ pro ucomp_write_quick_invert_image, output_filename, $
 
   integrated_linpol_display = ucomp_display_image(wave_region, integrated_linpol_i, $
                                                   type='linpol', $
-                                                  name='Integrated log(L / I)', $
+                                                  name='Integrated log!E10!N(L / I)', $
                                                   reduce_factor=reduce_factor, $
                                                   /no_wave_region_annotation, $
                                                   run=run)
@@ -161,6 +161,69 @@ pro ucomp_write_quick_invert_image, output_filename, $
 
   write_png, output_filename, display_image
   mg_log, 'wrote quick invert PNG', name=run.logger_name, /debug
+
+  basename = file_basename(output_filename, '.png')
+  base_filename = filepath(basename, root=file_dirname(output_filename))
+
+  integrated_intensity_display = ucomp_display_image(wave_region, $
+                                                     integrated_intensity, $
+                                                     type='intensity', $
+                                                     name='Integrated I', $
+                                                     reduce_factor=1, $
+                                                     run=run)
+  integrated_intensity_filename = string(base_filename, format='%s.intensity.png')
+  write_png, integrated_intensity_filename, integrated_intensity_display
+  mg_log, 'wrote integrated intensity PNG', name=run.logger_name, /debug
+
+  integrated_q_i_display = ucomp_display_image(wave_region, $
+                                               integrated_q_i, $
+                                               type='quv_i', $
+                                               name='Integrated Q / I', $
+                                               reduce_factor=1, $
+                                               run=run)
+  integrated_q_i_filename = string(base_filename, format='%s.stokesq.png')
+  write_png, integrated_q_i_filename, integrated_q_i_display
+  mg_log, 'wrote integrated Q / I PNG', name=run.logger_name, /debug
+
+  integrated_u_i_display = ucomp_display_image(wave_region, $
+                                               integrated_u_i, $
+                                               type='quv_i', $
+                                               name='Integrated U / I', $
+                                               reduce_factor=1, $
+                                               run=run)
+  integrated_u_i_filename = string(base_filename, format='%s.stokesu.png')
+  write_png, integrated_u_i_filename, integrated_u_i_display
+  mg_log, 'wrote integrated U / I PNG', name=run.logger_name, /debug
+
+  integrated_linpol_i_display = ucomp_display_image(wave_region, $
+                                                    integrated_linpol_i, $
+                                                    type='linpol', $
+                                                    name='Integrated log!I10!N(L)', $
+                                                    reduce_factor=1, $
+                                                    run=run)
+  linpol_filename = string(base_filename, format='%s.linear_polarization.png')
+  write_png, linpol_filename, integrated_linpol_i_display
+  mg_log, 'wrote linear polarization PNG', name=run.logger_name, /debug
+
+  azimuth_display = ucomp_display_image(wave_region, $
+                                        azimuth, $
+                                        type='azimuth', $
+                                        name='Azimuth', $
+                                        reduce_factor=1, $
+                                        run=run)
+  azimuth_filename = string(base_filename, format='%s.azimuth.png')
+  write_png, azimuth_filename, azimuth_display
+  mg_log, 'wrote azimuth PNG', name=run.logger_name, /debug
+
+  radial_azimuth_display = ucomp_display_image(wave_region, $
+                                               radial_azimuth, $
+                                               type='radial_azimuth', $
+                                               name='Radial azimuth', $
+                                               reduce_factor=1, $
+                                               run=run)
+  radial_azimuth_filename = string(base_filename, format='%s.radial_azimuth.png')
+  write_png, radial_azimuth_filename, radial_azimuth_display
+  mg_log, 'wrote radial azimuth PNG', name=run.logger_name, /debug
 end
 
 

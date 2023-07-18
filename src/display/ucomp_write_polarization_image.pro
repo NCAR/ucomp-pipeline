@@ -78,6 +78,10 @@ pro ucomp_write_polarization_image, output_filename, $
   nx = dims[0]
   ny = dims[1]
 
+  integrated_q_i = integrated_q / integrated_intensity
+  integrated_u_i = integrated_u / integrated_intensity
+  integrated_linpol_i = integrated_linpol / integrated_intensity
+
   integrated_intensity_display = ucomp_display_image(file.wave_region, integrated_intensity, $
                                                      type='intensity', $
                                                      name='Integrated intensity', $
@@ -90,21 +94,21 @@ pro ucomp_write_polarization_image, output_filename, $
                                                    reduce_factor=reduce_factor, $
                                                    /no_wave_region_annotation, $
                                                    run=run)
-  integrated_q_display = ucomp_display_image(file.wave_region, integrated_q, $
-                                             type='qu', $
-                                             name='Integrated Q', $
+  integrated_q_display = ucomp_display_image(file.wave_region, integrated_q_i, $
+                                             type='quv_i', $
+                                             name='Integrated Q / I', $
                                              reduce_factor=reduce_factor, $
                                              /no_wave_region_annotation, $
                                              run=run)
-  integrated_u_display = ucomp_display_image(file.wave_region, integrated_u, $
-                                             type='qu', $
-                                             name='Integrated U', $
+  integrated_u_display = ucomp_display_image(file.wave_region, integrated_u_i, $
+                                             type='quv_i', $
+                                             name='Integrated U / I', $
                                              reduce_factor=reduce_factor, $
                                              /no_wave_region_annotation, $
                                              run=run)
-  integrated_linpol_display = ucomp_display_image(file.wave_region, integrated_linpol, $
+  integrated_linpol_display = ucomp_display_image(file.wave_region, integrated_linpol_i, $
                                                   type='linpol', $
-                                                  name='Integrated log(L)', $
+                                                  name='Integrated log!I10!N(L / I)', $
                                                   reduce_factor=reduce_factor, $
                                                   /no_wave_region_annotation, $
                                                   run=run)
@@ -141,17 +145,17 @@ pro ucomp_write_polarization_image, output_filename, $
   write_png, output_filename, display_image
   mg_log, 'wrote polarization PNG', name=run.logger_name, /debug
 
-  integrated_linpol_display = ucomp_display_image(file.wave_region, integrated_linpol, $
-                                                  type='linpol', $
-                                                  name='Integrated log(L)', $
-                                                  reduce_factor=1, $
-                                                  datetime=strmid(file_basename(file.raw_filename), 0, 15), $
-                                                  run=run)
+  integrated_linpol_i_display = ucomp_display_image(file.wave_region, integrated_linpol_i, $
+                                                    type='linpol', $
+                                                    name='Integrated log!I10!N(L)', $
+                                                    reduce_factor=1, $
+                                                    datetime=strmid(file_basename(file.raw_filename), 0, 15), $
+                                                    run=run)
   linpol_basename = string(strmid(file.l1_basename, 0, 15), $
                                  file.wave_region, $
                                  format='(%"%s.ucomp.%s.l2.linear_polarization.png")')
   linpol_filename = filepath(linpol_basename, root=l2_dir)
-  write_png, linpol_filename, integrated_linpol_display
+  write_png, linpol_filename, integrated_linpol_i_display
   mg_log, 'wrote linear polarization PNG', name=run.logger_name, /debug
 
   radial_azimuth_display = ucomp_display_image(file.wave_region, radial_azimuth, $
