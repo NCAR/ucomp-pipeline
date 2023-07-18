@@ -100,11 +100,11 @@ pro ucomp_l1_promote_header, file, $
                 'Total camera reads in this file = NFRAME * NUMSUM where', $
                 after='NUM_BEAM'
 
-  average_radius = ucomp_getpar(primary_header, 'RADIUS')
+  solar_radius = file.semidiameter / run->line(file.wave_region, 'plate_scale')
   center_wavelength_indices = file->get_center_wavelength_indices()
   if (n_elements(center_wavelength_indices) gt 0L) then begin
     center_wavelength_data = data[*, *, *, center_wavelength_indices]
-    file.vcrosstalk_metric = ucomp_vcrosstalk_metric(center_wavelength_data, average_radius)
+    file.vcrosstalk_metric = ucomp_vcrosstalk_metric(center_wavelength_data, solar_radius)
   endif
 
   ; quality metrics
@@ -112,9 +112,8 @@ pro ucomp_l1_promote_header, file, $
   ucomp_addpar, primary_header, 'VCROSSTK', file.vcrosstalk_metric, $
                 comment='Stokes V crosstalk metric', after=after
 
-  radius = ucomp_getpar(primary_header, 'RADIUS')
   background = backgrounds[*, *, file.n_unique_wavelengths / 2L]
-  annulus_mask = ucomp_annulus(1.1 * radius, 1.5 * radius, $
+  annulus_mask = ucomp_annulus(1.14 * solar_radius, 1.5 * solar_radius, $
                                dimensions=size(background, /dimensions))
   annulus_indices = where(annulus_mask, n_annulus_pts)
   median_background = median(background[annulus_indices])
