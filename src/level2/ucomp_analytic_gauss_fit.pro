@@ -47,11 +47,12 @@ pro ucomp_analytic_gauss_fit, blue, center, red, d_lambda, $
 
   good_indices = where(apb lt 0.0, n_good)
   if (n_good gt 0L) then begin
-    line_width[positive_indices[good_indices]] $
-      = sqrt(-2.0D * d_lambda^2D / (apb[good_indices]))
-    doppler_shift[positive_indices[good_indices]] $
-      = line_width[positive_indices[good_indices]]^2 / (4.0D * d_lambda)*(a[good_indices] - b[good_indices])
-    peak_intensity[positive_indices[good_indices]] $
-      = center[positive_indices[good_indices]] * exp(doppler_shift[positive_indices[good_indices]]^2 / line_width[positive_indices[good_indices]]^2)
+    indices = positive_indices[good_indices]
+
+    line_width[indices] = sqrt(-2.0D * d_lambda^2D / (apb[good_indices]))
+    doppler_shift[indices] $
+      = line_width[indices]^2 / (4.0D * d_lambda)*(a[good_indices] - b[good_indices])
+    peak_intensity[indices] $
+      = center[indices] * exp(doppler_shift[indices]^2 / line_width[indices]^2)
   endif
 end
