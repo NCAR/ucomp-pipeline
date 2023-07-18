@@ -31,7 +31,7 @@ pro ucomp_l2_tar_type, name, wave_region, $
 
   ; make tarball
   tar_cmd = string(tarfile, glob, format='(%"tar cfz %s %s")')
-  mg_log, 'creating tarfile %s...', file_basename(tarfile), $
+  mg_log, 'creating %s...', file_basename(tarfile), $
           name=run.logger_name, /info
   spawn, tar_cmd, result, error_result, exit_status=status
   if (status ne 0L) then begin
@@ -44,7 +44,7 @@ pro ucomp_l2_tar_type, name, wave_region, $
 
   ; make tarlist
   tarlist_cmd = string(tarfile, tarlist, format='(%"tar tfv %s > %s")')
-  mg_log, 'creating tarlist %s...', file_basename(tarlist), name=run.logger_name, /info
+  mg_log, 'creating %s...', file_basename(tarlist), name=run.logger_name, /info
   spawn, tarlist_cmd, result, error_result, exit_status=status
   if (status ne 0L) then begin
     mg_log, 'problem create tarlist file with command: %s', tarlist_cmd, $
