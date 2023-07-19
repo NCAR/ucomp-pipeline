@@ -339,6 +339,7 @@
   FITS header changes
 0.3.4
   FITS header changes
+  updated image annotations/display parameters
   remove threshold masking in enhanced intensity
   polarization/dynamics and quicklook distribution
   track saturated pixels and pixels in the non-linear region of the camera
