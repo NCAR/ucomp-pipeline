@@ -223,10 +223,12 @@ pro ucomp_average_l1_files, files, output_filename, method=method, run=run
                          averaged_background, $
                          averaged_background_headers
 
+  occulter_radius = ucomp_getpar(primary_header, 'RADIUS')
   ucomp_write_iquv_image, averaged_data, $
                           file_basename(output_filename), $
                           ok_files[0].wave_region, $
                           float(all_wavelengths), $
+                          occulter_radius=occulter_radius, $
                           /daily, $
                           run=run
 

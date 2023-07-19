@@ -116,14 +116,17 @@ pro ucomp_write_all_iquv_image, file, data, run=run
                  dims[0] / reduce_dims_factor, $
                  dims[1] / reduce_dims_factor)
 
-      if (run->config('display/mask_l1')) then begin
-        field_mask = ucomp_field_mask(dims[0:1] / reduce_dims_factor, $
-                                      run->epoch('field_radius') / reduce_dims_factor)
+      if (run->config('display/mask_l1') || run->line(file.wave_region, 'mask_l1')) then begin
+        mask = ucomp_mask(dims[0:1] / reduce_dims_factor, $
+                          field_radius=run->epoch('field_radius') / reduce_dims_factor, $
+                          occulter_radius=file.occulter_radius / reduce_dims_factor, $
+                          post_angle=file.post_angle, $
+                          p_angle=file.p_angle)
       endif else begin
-        field_mask = bytarr(dims[0] / reduce_dims_factor, dims[1] / reduce_dims_factor) + 1B
+        mask = bytarr(dims[0] / reduce_dims_factor, dims[1] / reduce_dims_factor) + 1B
       endelse
 
-      scaled_im = bytscl(mg_signed_power(im * field_mask, display_power), $
+      scaled_im = bytscl(mg_signed_power(im * mask, display_power), $
                          min=mg_signed_power(display_min, display_power), $
                          max=mg_signed_power(display_max, display_power), $
                          top=n_colors - 1L, $
@@ -174,42 +177,4 @@ pro ucomp_write_all_iquv_image, file, data, run=run
   tvlct, original_rgb
   device, decomposed=original_decomposed
   set_plot, original_device
-end
-
-
-; main-level example program
-
-;date = '20220105'
-;date = '20211213'
-date = '20220901'
-
-config_basename = 'ucomp.latest.cfg'
-config_filename = filepath(config_basename, $
-                           subdir=['..', '..', '..', 'ucomp-config'], $
-                           root=mg_src_root())
-run = ucomp_run(date, 'test', config_filename)
-
-;l0_basename = '20220105.204523.49.ucomp.1074.l0.fts'
-;l0_basename = '20211213.190812.67.ucomp.1074.l0.fts'
-l0_basename = '20220902.024313.36.ucomp.1074.l0.fts'
-l0_filename = filepath(l0_basename, $
-                       subdir=date, $
-                       root=run->config('raw/basedir'))
-file = ucomp_file(l0_filename, run=run)
-
-;l1_basename = '20220105.204523.ucomp.1074.l1.5.fts'
-;l1_basename = '20211213.190812.ucomp.1074.l1.5.fts'
-l1_basename = '20220902.024313.ucomp.1074.l1.3.fts'
-l1_filename = filepath(l1_basename, $
-                       subdir=[date, 'level1'], $
-                       root=run->config('processing/basedir'))
-
-ucomp_read_l1_data, l1_filename, ext_data=data, n_wavelengths=n_wavelengths
-file.n_extensions = n_wavelengths
-
-ucomp_write_all_iquv_image, file, data, run=run
-
-obj_destroy, file
-obj_destroy, run
-
 end

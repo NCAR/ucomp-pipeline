@@ -22,6 +22,7 @@
 ;     `ucomp_run` object
 ;-
 pro ucomp_write_iquv_image, data, l1_basename, wave_region, wavelengths, $
+                            occulter_radius=occulter_radius, $
                             daily=daily, $
                             run=run
   compile_opt strictarr
@@ -128,14 +129,17 @@ pro ucomp_write_iquv_image, data, l1_basename, wave_region, wavelengths, $
       im = rebin(ext_data[*, *, p], $
                  dims[0] / reduce_dims_factor, $
                  dims[1] / reduce_dims_factor)
-      if (run->config('display/mask_l1')) then begin
-        field_mask = ucomp_field_mask(dims[0:1] / reduce_dims_factor, $
-                                      run->epoch('field_radius') / reduce_dims_factor)
+      if (run->config('display/mask_l1') || run->line(wave_region, 'mask_l1')) then begin
+        mask = ucomp_mask(dims[0:1] / reduce_dims_factor, $
+                          occulter_radius=n_elements(occulter_radius) gt 0L $
+                            ? occulter_radius / reduce_dims_factor $
+                            : !null, $
+                          field_radius=run->epoch('field_radius') / reduce_dims_factor)
       endif else begin
-        field_mask = bytarr(dims[0] / reduce_dims_factor, dims[1] / reduce_dims_factor) + 1B
+        mask = bytarr(dims[0] / reduce_dims_factor, dims[1] / reduce_dims_factor) + 1B
       endelse
 
-      scaled_im = bytscl(mg_signed_power(im * field_mask, display_power), $
+      scaled_im = bytscl(mg_signed_power(im * mask, display_power), $
                          min=mg_signed_power(display_min, display_power), $
                          max=mg_signed_power(display_max, display_power), $
                          top=n_colors - 1L, $
@@ -195,32 +199,41 @@ end
 
 ; main-level example program
 
-;date = '20220105'
-date = '20220727'
+; date = '20220105'
+; date = '20220727'
+date = '20220901'
 
 config_basename = 'ucomp.latest.cfg'
 config_filename = filepath(config_basename, $
-                           subdir=['..', '..', 'config'], $
+                           subdir=['..', '..', '..', 'ucomp-config'], $
                            root=mg_src_root())
 run = ucomp_run(date, 'test', config_filename)
 
-;l0_basename = '20220105.204523.49.ucomp.1074.l0.fts'
-l0_basename = '20220727.225643.89.ucomp.1074.l0.fts'
+; l0_basename = '20220105.204523.49.ucomp.1074.l0.fts'
+; l0_basename = '20220727.225643.89.ucomp.1074.l0.fts'
+; l0_basename = '20220902.024545.71.ucomp.1074.l0.fts'
+l0_basename = '20220902.031311.23.ucomp.706.l0.fts'
 l0_filename = filepath(l0_basename, $
                        subdir=date, $
                        root=run->config('raw/basedir'))
 file = ucomp_file(l0_filename, run=run)
 
-;l1_basename = '20220105.204523.ucomp.1074.l1.5.fts'
-l1_basename = '20220727.225643.ucomp.1074.l1.3.fts'
+; l1_basename = '20220105.204523.ucomp.1074.l1.5.fts'
+; l1_basename = '20220727.225643.ucomp.1074.l1.3.fts'
+; l1_basename = '20220902.024545.ucomp.1074.l1.3.fts'
+l1_basename = '20220902.031311.ucomp.706.l1.3.fts'
 l1_filename = filepath(l1_basename, $
                        subdir=[date, 'level1'], $
                        root=run->config('processing/basedir'))
 
-ucomp_read_l1_data, l1_filename, ext_data=data, n_wavelengths=n_wavelengths
+ucomp_read_l1_data, l1_filename, ext_data=data, n_wavelengths=n_wavelengths, $
+                    primary_header=primary_header
 file.n_extensions = n_wavelengths
 
+occulter_radius = ucomp_getpar(primary_header, 'RADIUS')
+
 ucomp_write_iquv_image, data, l1_basename, file.wave_region, file.wavelengths, $
+                        occulter_radius=occulter_radius, $
                         run=run
 
 obj_destroy, file
