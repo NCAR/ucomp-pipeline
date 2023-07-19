@@ -31,6 +31,7 @@ pro ucomp_reprocess_cleanup, is_available=is_available, run=run
                      subdir=ucomp_decompose_date(run.date), $
                      root=run->config('engineering/basedir'))
   file_delete, eng_dir, /recursive, /allow_nonexistent
+  file_mkdir, eng_dir
 
   ; remove results that have been distributed for the date
   web_basedir = run->config('results/web_basedir')
