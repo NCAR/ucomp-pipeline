@@ -26,13 +26,6 @@ pro ucomp_reprocess_cleanup, is_available=is_available, run=run
   date_dir = filepath(run.date, root=run->config('processing/basedir'))
   file_delete, date_dir, /recursive, /allow_nonexistent
 
-  ; completely remove engineering directory for the date
-  eng_dir = filepath('', $
-                     subdir=ucomp_decompose_date(run.date), $
-                     root=run->config('engineering/basedir'))
-  file_delete, eng_dir, /recursive, /allow_nonexistent
-  file_mkdir, eng_dir
-
   ; remove results that have been distributed for the date
   web_basedir = run->config('results/web_basedir')
   if (n_elements(web_basedir) gt 0L) then begin
