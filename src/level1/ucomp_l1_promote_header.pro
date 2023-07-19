@@ -123,29 +123,29 @@ pro ucomp_l1_promote_header, file, $
                 format='(F0.3)', after=after
 
   ucomp_addpar, primary_header, 'NUMSAT0O', file.n_rcam_onband_saturated_pixels, $
-                comment='[pixels] number of saturated pixels in onband RCAM', $
+                comment='number of saturated pixels in onband RCAM', $
                 after=after
   ucomp_addpar, primary_header, 'NUMSAT1O', file.n_tcam_onband_saturated_pixels, $
-                comment='[pixels] number of saturated pixels in onband TCAM', $
+                comment='number of saturated pixels in onband TCAM', $
                 after=after
   ucomp_addpar, primary_header, 'NUMSAT0C', file.n_rcam_bkg_saturated_pixels, $
-                comment='[pixels] number of saturated pixels in bkg RCAM', $
+                comment='number of saturated pixels in bkg RCAM', $
                 after=after
   ucomp_addpar, primary_header, 'NUMSAT1C', file.n_tcam_bkg_saturated_pixels, $
-                comment='[pixels] number of saturated pixels in bkg TCAM', $
+                comment='number of saturated pixels in bkg TCAM', $
                 after=after
 
   ucomp_addpar, primary_header, 'NUMNL0O', file.n_rcam_onband_nonlinear_pixels, $
-                comment='[pixels] number of non-linear pixels in onband RCAM', $
+                comment='number of non-linear pixels in onband RCAM', $
                 after=after
   ucomp_addpar, primary_header, 'NUMNL1O', file.n_tcam_onband_nonlinear_pixels, $
-                comment='[pixels] number of non-linear pixels in onband TCAM', $
+                comment='number of non-linear pixels in onband TCAM', $
                 after=after
   ucomp_addpar, primary_header, 'NUMNL0C', file.n_rcam_bkg_nonlinear_pixels, $
-                comment='[pixels] number of non-linear pixels in bkg RCAM', $
+                comment='number of non-linear pixels in bkg RCAM', $
                 after=after
   ucomp_addpar, primary_header, 'NUMNL1C', file.n_tcam_bkg_nonlinear_pixels, $
-                comment='[pixels] number of non-linear pixels in bkg TCAM', $
+                comment='number of non-linear pixels in bkg TCAM', $
                 after=after
 
   ucomp_addpar, primary_header, 'COMMENT', 'Quality metrics', $
