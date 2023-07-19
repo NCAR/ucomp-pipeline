@@ -133,7 +133,7 @@ pro ucomp_l1_promote_header, file, $
                 after=after
   ucomp_addpar, primary_header, 'NUMSAT1C', file.n_tcam_bkg_saturated_pixels, $
                 comment='[pixels] number of saturated pixels in bkg TCAM', $
-                fafter=after
+                after=after
 
   ucomp_addpar, primary_header, 'NUMNL0O', file.n_rcam_onband_nonlinear_pixels, $
                 comment='[pixels] number of non-linear pixels in onband RCAM', $
