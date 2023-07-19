@@ -89,10 +89,14 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
                              image_scale=image_scale, $
                              median_background=median_background, $
                              quality_bitmask=quality_bitmask, $
-                             n_rcam_saturated_pixels=n_rcam_saturated_pixels, $
-                             n_tcam_saturated_pixels=n_tcam_saturated_pixels, $
-                             n_rcam_nonlinear_pixels=n_rcam_nonlinear_pixels, $
-                             n_tcam_nonlinear_pixels=n_tcam_nonlinear_pixels, $
+                             n_rcam_onband_saturated_pixels=n_rcam_onband_saturated_pixels, $
+                             n_tcam_onband_saturated_pixels=n_tcam_onband_saturated_pixels, $
+                             n_rcam_bkg_saturated_pixels=n_rcam_bkg_saturated_pixels, $
+                             n_tcam_bkg_saturated_pixels=n_tcam_bkg_saturated_pixels, $
+                             n_rcam_onband_nonlinear_pixels=n_rcam_onband_nonlinear_pixels, $
+                             n_tcam_onband_nonlinear_pixels=n_tcam_onband_nonlinear_pixels, $
+                             n_rcam_bkg_nonlinear_pixels=n_rcam_bkg_nonlinear_pixels, $
+                             n_tcam_bkg_nonlinear_pixels=n_tcam_bkg_nonlinear_pixels, $
                              gbu=gbu, $
                              vcrosstalk_metric=vcrosstalk_metric, $
                              n_extensions=n_extensions, $
@@ -131,10 +135,16 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
   if (n_elements(quality_bitmask) gt 0L) then begin
     self.quality_bitmask or= quality_bitmask
   endif
-  if (n_elements(n_rcam_saturated_pixels) gt 0L) then self.n_rcam_saturated_pixels = n_rcam_saturated_pixels
-  if (n_elements(n_tcam_saturated_pixels) gt 0L) then self.n_tcam_saturated_pixels = n_tcam_saturated_pixels
-  if (n_elements(n_rcam_nonlinear_pixels) gt 0L) then self.n_rcam_nonlinear_pixels = n_rcam_nonlinear_pixels
-  if (n_elements(n_tcam_nonlinear_pixels) gt 0L) then self.n_tcam_nonlinear_pixels = n_tcam_nonlinear_pixels
+
+  if (n_elements(n_rcam_onband_saturated_pixels) gt 0L) then self.n_rcam_onband_saturated_pixels = n_rcam_onband_saturated_pixels
+  if (n_elements(n_tcam_onband_saturated_pixels) gt 0L) then self.n_tcam_onband_saturated_pixels = n_tcam_onband_saturated_pixels
+  if (n_elements(n_rcam_bkg_saturated_pixels) gt 0L) then self.n_rcam_bkg_saturated_pixels = n_rcam_bkg_saturated_pixels
+  if (n_elements(n_tcam_bkg_saturated_pixels) gt 0L) then self.n_tcam_bkg_saturated_pixels = n_tcam_bkg_saturated_pixels
+  if (n_elements(n_rcam_onband_nonlinear_pixels) gt 0L) then self.n_rcam_onband_nonlinear_pixels = n_rcam_onband_nonlinear_pixels
+  if (n_elements(n_tcam_onband_nonlinear_pixels) gt 0L) then self.n_tcam_onband_nonlinear_pixels = n_tcam_onband_nonlinear_pixels
+  if (n_elements(n_rcam_bkg_nonlinear_pixels) gt 0L) then self.n_rcam_bkg_nonlinear_pixels = n_rcam_bkg_nonlinear_pixels
+  if (n_elements(n_tcam_bkg_nonlinear_pixels) gt 0L) then self.n_tcam_bkg_nonlinear_pixels = n_tcam_bkg_nonlinear_pixels
+
   if (n_elements(gbu) gt 0L) then self.gbu or= gbu
   if (n_elements(vcrosstalk_metric) gt 0L) then self.vcrosstalk_metric = vcrosstalk_metric
 
@@ -212,10 +222,14 @@ pro ucomp_file::getProperty, run=run, $
                              onband_indices=onband_indices, $
                              median_background=median_background, $
                              quality_bitmask=quality_bitmask, $
-                             n_rcam_saturated_pixels=n_rcam_saturated_pixels, $
-                             n_tcam_saturated_pixels=n_tcam_saturated_pixels, $
-                             n_rcam_nonlinear_pixels=n_rcam_nonlinear_pixels, $
-                             n_tcam_nonlinear_pixels=n_tcam_nonlinear_pixels, $
+                             n_rcam_onband_saturated_pixels=n_rcam_onband_saturated_pixels, $
+                             n_tcam_onband_saturated_pixels=n_tcam_onband_saturated_pixels, $
+                             n_rcam_bkg_saturated_pixels=n_rcam_bkg_saturated_pixels, $
+                             n_tcam_bkg_saturated_pixels=n_tcam_bkg_saturated_pixels, $
+                             n_rcam_onband_nonlinear_pixels=n_rcam_onband_nonlinear_pixels, $
+                             n_tcam_onband_nonlinear_pixels=n_tcam_onband_nonlinear_pixels, $
+                             n_rcam_bkg_nonlinear_pixels=n_rcam_bkg_nonlinear_pixels, $
+                             n_tcam_bkg_nonlinear_pixels=n_tcam_bkg_nonlinear_pixels, $
                              gbu=gbu, $
                              ok=ok, $
                              vcrosstalk_metric=vcrosstalk_metric, $
@@ -398,10 +412,14 @@ pro ucomp_file::getProperty, run=run, $
   if (arg_present(median_background)) then median_background = self.median_background
 
   if (arg_present(quality_bitmask)) then quality_bitmask = self.quality_bitmask
-  if (arg_present(n_rcam_saturated_pixels)) then n_rcam_saturated_pixels = self.n_rcam_saturated_pixels
-  if (arg_present(n_tcam_saturated_pixels)) then n_tcam_saturated_pixels = self.n_tcam_saturated_pixels
-  if (arg_present(n_rcam_nonlinear_pixels)) then n_rcam_nonlinear_pixels = self.n_rcam_nonlinear_pixels
-  if (arg_present(n_tcam_nonlinear_pixels)) then n_tcam_nonlinear_pixels = self.n_tcam_nonlinear_pixels
+  if (arg_present(n_rcam_onband_saturated_pixels)) then n_rcam_onband_saturated_pixels = self.n_rcam_onband_saturated_pixels
+  if (arg_present(n_tcam_onband_saturated_pixels)) then n_tcam_onband_saturated_pixels = self.n_tcam_onband_saturated_pixels
+  if (arg_present(n_rcam_bkg_saturated_pixels)) then n_rcam_bkg_saturated_pixels = self.n_rcam_bkg_saturated_pixels
+  if (arg_present(n_tcam_bkg_saturated_pixels)) then n_tcam_bkg_saturated_pixels = self.n_tcam_bkg_saturated_pixels
+  if (arg_present(n_rcam_onband_nonlinear_pixels)) then n_rcam_onband_nonlinear_pixels = self.n_rcam_onband_nonlinear_pixels
+  if (arg_present(n_tcam_onband_nonlinear_pixels)) then n_tcam_onband_nonlinear_pixels = self.n_tcam_onband_nonlinear_pixels
+  if (arg_present(n_rcam_bkg_nonlinear_pixels)) then n_rcam_bkg_nonlinear_pixels = self.n_rcam_bkg_nonlinear_pixels
+  if (arg_present(n_tcam_bkg_nonlinear_pixels)) then n_tcam_bkg_nonlinear_pixels = self.n_tcam_bkg_nonlinear_pixels
   if (arg_present(gbu)) then gbu = self.gbu
   if (arg_present(ok)) then ok = self.quality_bitmask eq 0
   if (arg_present(vcrosstalk_metric)) then vcrosstalk_metric = self.vcrosstalk_metric
@@ -987,10 +1005,16 @@ pro ucomp_file__define
            sgs_deczr               : ptr_new(), $
 
            quality_bitmask         : 0UL, $
-           n_rcam_saturated_pixels : 0UL, $
-           n_tcam_saturated_pixels : 0UL, $
-           n_rcam_nonlinear_pixels : 0UL, $
-           n_tcam_nonlinear_pixels : 0UL, $
+
+           n_rcam_onband_saturated_pixels : 0UL, $
+           n_tcam_onband_saturated_pixels : 0UL, $
+           n_rcam_bkg_saturated_pixels    : 0UL, $
+           n_tcam_bkg_saturated_pixels    : 0UL, $
+           n_rcam_onband_nonlinear_pixels : 0UL, $
+           n_tcam_onband_nonlinear_pixels : 0UL, $
+           n_rcam_bkg_nonlinear_pixels    : 0UL, $
+           n_tcam_bkg_nonlinear_pixels    : 0UL, $
+
            gbu                     : 0UL, $
            processed               : 0B, $
            vcrosstalk_metric       : 0.0, $
