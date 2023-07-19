@@ -11,12 +11,10 @@
 ;     UCoMP file object
 ;   primary_header : in, required, type=strarr
 ;     primary header
-;   ext_data : in, out, required, type="fltarr(nx, ny, n_pol_states, n_exts)"
-;     extension data, removes `n_cameras` dimension on output
+;   ext_data : in, required, type="fltarr(nx, ny, n_pol_states, n_cameras, n_exts)"
+;     extension data
 ;   ext_headers : in, required, type=list
 ;     extension headers as list of `strarr`
-;   backgrounds : out, type="fltarr(nx, ny, n_cameras, n_exts)"
-;     background images
 ;
 ; :Keywords:
 ;   run : in, required, type=object
@@ -26,7 +24,6 @@ function ucomp_quality_check_nominal_temps, file, $
                                             primary_header, $
                                             ext_data, $
                                             ext_headers, $
-                                            backgrounds, $
                                             run=run
   compile_opt strictarr
 
