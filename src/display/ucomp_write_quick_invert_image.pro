@@ -234,9 +234,9 @@ end
 
 
 ; main-level example program
-date = '20220313'
+date = '20220901'
 wave_region = '1074'
-basename = '20220313.ucomp.1074.l2.synoptic.mean.quick_invert.fts'
+basename = '20220901.ucomp.1074.l2.synoptic.mean.quick_invert.fts'
 mode = 'test'
 
 config_basename = 'ucomp.publish.cfg'

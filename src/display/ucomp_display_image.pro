@@ -44,6 +44,8 @@ function ucomp_display_image, wave_region, im, $
 
   _im = rebin(im, dims[0], dims[1])
 
+  n_colors = 251
+
   case 1 of
     type eq 'intensity': begin
         colortable_name = 'intensity'
@@ -101,6 +103,10 @@ function ucomp_display_image, wave_region, im, $
         display_max   = run->line(wave_region, 'radial_azimuth_display_max')
         display_gamma = run->line(wave_region, 'radial_azimuth_display_gamma')
         display_power = run->line(wave_region, 'radial_azimuth_display_power')
+        van_vleck_angle = atan(sqrt(2)) * !radeg  ; 54.7356
+        band_location = (n_colors - 1L) / (display_max - display_min) * (van_vleck_angle - display_min)
+        band_color = [255B, 255B, 0B]
+        band_width = 3L
     end
     type eq 'doppler': begin
         colortable_name = 'doppler'
@@ -126,8 +132,10 @@ function ucomp_display_image, wave_region, im, $
           set_pixel_depth=24, $
           set_resolution=dims
 
-  n_colors = 251
-  ucomp_loadct, colortable_name, n_colors=n_colors
+  ucomp_loadct, colortable_name, n_colors=n_colors, $
+                band_location=band_location, $
+                band_color=band_color, $
+                band_width=band_width
   mg_gamma_ct, display_gamma, /current, n_colors=n_colors
 
   background_color = 251

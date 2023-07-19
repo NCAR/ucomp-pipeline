@@ -44,8 +44,17 @@ end
 ;   rgb_table : out, optional, type="bytarr(n_colors, 3)"
 ;     set to a named variable to retrieve the RGB color table values instead
 ;     of setting the color table
+;   band_color : in, optional, type=bytarr(3)
+;     color of band
+;   band_location : in, optional, type=byte
+;     index in the color table to place center of band
+;   band_width : in, optional, type=integer
+;     width of band
 ;-
-pro ucomp_loadct, name, n_colors=n_colors, rgb_table=rgb_table
+pro ucomp_loadct, name, n_colors=n_colors, rgb_table=rgb_table, $
+                  band_color=band_color, $
+                  band_location=band_location, $
+                  band_width=band_width
   compile_opt strictarr
   on_error, 2
 
@@ -94,6 +103,14 @@ pro ucomp_loadct, name, n_colors=n_colors, rgb_table=rgb_table
       end
     else: message, string(name, format='(%"unknown colortable name: %s")')
   endcase
+
+  if (n_elements(band_location) gt 0L) then begin
+    _band_color = mg_default(band_color, bytarr(3) + 255B)
+    _band_width = mg_default(band_wdith, 3L)
+    start_index = band_location - _band_width / 2L
+    band = rebin(reform(_band_color, 1, 3), _band_width, 3)
+    rgb_table[start_index:start_index + _band_width - 1L, *] = band
+  endif
 
   ; load the rgb_table if not just retrieving the table values
   if (~arg_present(rgb_table)) then ucomp_loadct_rgb, rgb_table
