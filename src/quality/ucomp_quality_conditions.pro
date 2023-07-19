@@ -43,7 +43,10 @@ function ucomp_quality_conditions, wave_region, run=run
      description: 'a temperature is not in the nominal range'}, $
     {mask: 0UL, $
      checker: 'ucomp_quality_check_o1focus', $
-     description: 'multiple O1FOCUS values in a file'}]
+     description: 'multiple O1FOCUS values in a file'}, $
+    {mask: 0UL, $
+     checker: 'ucomp_quality_saturated', $
+     description: 'checked for saturated and non-linear pixels in a file'}]
 
   quality_conditions.mask = 2UL ^ (ulindgen(n_elements(quality_conditions)))
 

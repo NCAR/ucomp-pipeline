@@ -89,6 +89,10 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
                              image_scale=image_scale, $
                              median_background=median_background, $
                              quality_bitmask=quality_bitmask, $
+                             n_rcam_saturated_pixels=n_rcam_saturated_pixels, $
+                             n_tcam_saturated_pixels=n_tcam_saturated_pixels, $
+                             n_rcam_nonlinear_pixels=n_rcam_nonlinear_pixels, $
+                             n_tcam_nonlinear_pixels=n_tcam_nonlinear_pixels, $
                              gbu=gbu, $
                              vcrosstalk_metric=vcrosstalk_metric, $
                              n_extensions=n_extensions, $
@@ -127,6 +131,10 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
   if (n_elements(quality_bitmask) gt 0L) then begin
     self.quality_bitmask or= quality_bitmask
   endif
+  if (n_elements(n_rcam_saturated_pixels) gt 0L) then self.n_rcam_saturated_pixels = n_rcam_saturated_pixels
+  if (n_elements(n_tcam_saturated_pixels) gt 0L) then self.n_tcam_saturated_pixels = n_tcam_saturated_pixels
+  if (n_elements(n_rcam_nonlinear_pixels) gt 0L) then self.n_rcam_nonlinear_pixels = n_rcam_nonlinear_pixels
+  if (n_elements(n_tcam_nonlinear_pixels) gt 0L) then self.n_tcam_nonlinear_pixels = n_tcam_nonlinear_pixels
   if (n_elements(gbu) gt 0L) then self.gbu or= gbu
   if (n_elements(vcrosstalk_metric) gt 0L) then self.vcrosstalk_metric = vcrosstalk_metric
 
@@ -204,6 +212,10 @@ pro ucomp_file::getProperty, run=run, $
                              onband_indices=onband_indices, $
                              median_background=median_background, $
                              quality_bitmask=quality_bitmask, $
+                             n_rcam_saturated_pixels=n_rcam_saturated_pixels, $
+                             n_tcam_saturated_pixels=n_tcam_saturated_pixels, $
+                             n_rcam_nonlinear_pixels=n_rcam_nonlinear_pixels, $
+                             n_tcam_nonlinear_pixels=n_tcam_nonlinear_pixels, $
                              gbu=gbu, $
                              ok=ok, $
                              vcrosstalk_metric=vcrosstalk_metric, $
@@ -386,6 +398,10 @@ pro ucomp_file::getProperty, run=run, $
   if (arg_present(median_background)) then median_background = self.median_background
 
   if (arg_present(quality_bitmask)) then quality_bitmask = self.quality_bitmask
+  if (arg_present(n_rcam_saturated_pixels)) then n_rcam_saturated_pixels = self.n_rcam_saturated_pixels
+  if (arg_present(n_tcam_saturated_pixels)) then n_tcam_saturated_pixels = self.n_tcam_saturated_pixels
+  if (arg_present(n_rcam_nonlinear_pixels)) then n_rcam_nonlinear_pixels = self.n_rcam_nonlinear_pixels
+  if (arg_present(n_tcam_nonlinear_pixels)) then n_tcam_nonlinear_pixels = self.n_tcam_nonlinear_pixels
   if (arg_present(gbu)) then gbu = self.gbu
   if (arg_present(ok)) then ok = self.quality_bitmask eq 0
   if (arg_present(vcrosstalk_metric)) then vcrosstalk_metric = self.vcrosstalk_metric
@@ -852,132 +868,136 @@ pro ucomp_file__define
   compile_opt strictarr
 
   !null = {ucomp_file, inherits IDL_Object, $
-           raw_filename           : '', $
+           raw_filename            : '', $
 
-           run                    : obj_new(), $
+           run                     : obj_new(), $
 
-           demodulated            : 0B, $
-           rotated                : 0B, $
-           linearity_corrected    : 0B, $
-           wrote_l1               : 0B, $
-           wrote_dynamics         : 0B, $
-           wrote_polarization     : 0B, $
+           demodulated             : 0B, $
+           rotated                 : 0B, $
+           linearity_corrected     : 0B, $
+           wrote_l1                : 0B, $
+           wrote_dynamics          : 0B, $
+           wrote_polarization      : 0B, $
 
-           hst_date               : '', $
-           hst_time               : '', $
-           ut_date                : '', $
-           ut_time                : '', $
-           obsday_hours           : 0.0, $
-           date_obs               : '', $
-           date_begin             : '', $
-           date_end               : '', $
+           hst_date                : '', $
+           hst_time                : '', $
+           ut_date                 : '', $
+           ut_time                 : '', $
+           obsday_hours            : 0.0, $
+           date_obs                : '', $
+           date_begin              : '', $
+           date_end                : '', $
 
-           n_extensions           : 0L, $
-           n_repeats              : 0L, $
+           n_extensions            : 0L, $
+           n_repeats               : 0L, $
 
-           wave_region            : '', $
-           data_type              : '', $
-           obs_id                 : '', $
-           obs_plan               : '', $
-           exptime                : 0.0, $
-           gain_mode              : '', $
-           numsum                 : 0L, $
+           wave_region             : '', $
+           data_type               : '', $
+           obs_id                  : '', $
+           obs_plan                : '', $
+           exptime                 : 0.0, $
+           gain_mode               : '', $
+           numsum                  : 0L, $
 
-           focus                  : 0.0, $
-           o1focus                : 0.0, $
+           focus                   : 0.0, $
+           o1focus                 : 0.0, $
 
-           nd                     : 0L, $
-           occulter_in            : 0B, $
-           occultrid              : '', $
-           o1id                   : '', $
-           cover_in               : 0B, $
-           darkshutter_in         : 0B, $
-           opal_in                : 0B, $
-           caloptic_in            : 0B, $
-           polangle               : 0.0, $
-           retangle               : 0.0, $
+           nd                      : 0L, $
+           occulter_in             : 0B, $
+           occultrid               : '', $
+           o1id                    : '', $
+           cover_in                : 0B, $
+           darkshutter_in          : 0B, $
+           opal_in                 : 0B, $
+           caloptic_in             : 0B, $
+           polangle                : 0.0, $
+           retangle                : 0.0, $
 
-           dark_id                : '', $
-           rcamnuc                : '', $
-           tcamnuc                : '', $
+           dark_id                 : '', $
+           rcamnuc                 : '', $
+           tcamnuc                 : '', $
 
-           obsswid                : '', $
+           obsswid                 : '', $
 
-           median_background      : 0.0, $
+           median_background       : 0.0, $
 
            ; for flats only
-           tcam_roughness         : 0.0, $
-           rcam_roughness         : 0.0, $
+           tcam_roughness          : 0.0, $
+           rcam_roughness          : 0.0, $
 
            ; for darks, flats, cals only
-           rcam_median_continuum  : 0.0, $
-           rcam_median_linecenter : 0.0, $
-           tcam_median_continuum  : 0.0, $
-           tcam_median_linecenter : 0.0, $
+           rcam_median_continuum   : 0.0, $
+           rcam_median_linecenter  : 0.0, $
+           tcam_median_continuum   : 0.0, $
+           tcam_median_linecenter  : 0.0, $
 
            flat_rcam_median_linecenter : 0.0, $
            flat_rcam_median_continuum  : 0.0, $
            flat_tcam_median_linecenter : 0.0, $
            flat_tcam_median_continuum  : 0.0, $
 
-           occulter_x             : 0.0, $
-           occulter_y             : 0.0, $
-           rcam_geometry          : obj_new(), $
-           tcam_geometry          : obj_new(), $
+           occulter_x              : 0.0, $
+           occulter_y              : 0.0, $
+           rcam_geometry           : obj_new(), $
+           tcam_geometry           : obj_new(), $
 
-           image_scale            : 0.0, $
+           image_scale             : 0.0, $
 
-           t_base                 : 0.0, $
-           t_lcvr1                : 0.0, $
-           t_lcvr2                : 0.0, $
-           t_lcvr3                : 0.0, $
-           t_lnb1                 : 0.0, $
-           t_mod                  : 0.0, $
-           t_lnb2                 : 0.0, $
-           t_lcvr4                : 0.0, $
-           t_lcvr5                : 0.0, $
-           t_rack                 : 0.0, $
-           tu_base                : 0.0, $
-           tu_lcvr1               : 0.0, $
-           tu_lcvr2               : 0.0, $
-           tu_lcvr3               : 0.0, $
-           tu_lnb1                : 0.0, $
-           tu_mod                 : 0.0, $
-           tu_lnb2                : 0.0, $
-           tu_lcvr4               : 0.0, $
-           tu_lcvr5               : 0.0, $
-           tu_rack                : 0.0, $
-           t_c0arr                : 0.0, $
-           t_c0pcb                : 0.0, $
-           t_c1arr                : 0.0, $
-           t_c1pcb                : 0.0, $
+           t_base                  : 0.0, $
+           t_lcvr1                 : 0.0, $
+           t_lcvr2                 : 0.0, $
+           t_lcvr3                 : 0.0, $
+           t_lnb1                  : 0.0, $
+           t_mod                   : 0.0, $
+           t_lnb2                  : 0.0, $
+           t_lcvr4                 : 0.0, $
+           t_lcvr5                 : 0.0, $
+           t_rack                  : 0.0, $
+           tu_base                 : 0.0, $
+           tu_lcvr1                : 0.0, $
+           tu_lcvr2                : 0.0, $
+           tu_lcvr3                : 0.0, $
+           tu_lnb1                 : 0.0, $
+           tu_mod                  : 0.0, $
+           tu_lnb2                 : 0.0, $
+           tu_lcvr4                : 0.0, $
+           tu_lcvr5                : 0.0, $
+           tu_rack                 : 0.0, $
+           t_c0arr                 : 0.0, $
+           t_c0pcb                 : 0.0, $
+           t_c1arr                 : 0.0, $
+           t_c1pcb                 : 0.0, $
 
-           v_lcvr3                : ptr_new(), $
+           v_lcvr3                 : ptr_new(), $
 
-           wavelengths            : ptr_new(), $
-           onband_indices         : ptr_new(), $
+           wavelengths             : ptr_new(), $
+           onband_indices          : ptr_new(), $
 
-           sgs_dimv               : ptr_new(), $
-           sgs_dims               : ptr_new(), $
-           sgs_scint              : ptr_new(), $
-           sgs_sumv               : ptr_new(), $
-           sgs_sums               : ptr_new(), $
-           sgs_loop               : ptr_new(), $
-           sgs_rav                : ptr_new(), $
-           sgs_ras                : ptr_new(), $
-           sgs_razr               : ptr_new(), $
-           sgs_decv               : ptr_new(), $
-           sgs_decs               : ptr_new(), $
-           sgs_deczr              : ptr_new(), $
+           sgs_dimv                : ptr_new(), $
+           sgs_dims                : ptr_new(), $
+           sgs_scint               : ptr_new(), $
+           sgs_sumv                : ptr_new(), $
+           sgs_sums                : ptr_new(), $
+           sgs_loop                : ptr_new(), $
+           sgs_rav                 : ptr_new(), $
+           sgs_ras                 : ptr_new(), $
+           sgs_razr                : ptr_new(), $
+           sgs_decv                : ptr_new(), $
+           sgs_decs                : ptr_new(), $
+           sgs_deczr               : ptr_new(), $
 
-           quality_bitmask        : 0UL, $
-           gbu                    : 0UL, $
-           processed              : 0B, $
-           vcrosstalk_metric      : 0.0, $
-           wind_speed             : 0.0, $
-           wind_direction         : 0.0, $
+           quality_bitmask         : 0UL, $
+           n_rcam_saturated_pixels : 0UL, $
+           n_tcam_saturated_pixels : 0UL, $
+           n_rcam_nonlinear_pixels : 0UL, $
+           n_tcam_nonlinear_pixels : 0UL, $
+           gbu                     : 0UL, $
+           processed               : 0B, $
+           vcrosstalk_metric       : 0.0, $
+           wind_speed              : 0.0, $
+           wind_direction          : 0.0, $
 
-           all_zero               : 0B $
+           all_zero                : 0B $
           }
 end
 
