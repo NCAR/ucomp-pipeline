@@ -28,21 +28,39 @@ function ucomp_quality_saturated, file, $
   compile_opt strictarr
 
   n_dims = size(ext_data, /n_dimensions)
-  if (n_dims gt 4L) then maximums = max(ext_data, dimension=5)
-  maximums = max(maximums, dimension=3)
 
   saturated_threshold = 4094.0
   nonlinear_threshold = 3000.0
 
-  !null = where(maximums[*, *, 0] gt saturated_threshold, n_rcam_saturated_pixels)
-  !null = where(maximums[*, *, 1] gt saturated_threshold, n_tcam_saturated_pixels)
-  !null = where(maximums[*, *, 0] gt nonlinear_threshold, n_rcam_nonlinear_pixels)
-  !null = where(maximums[*, *, 1] gt nonlinear_threshold, n_tcam_nonlinear_pixels)
+  rcam_indices = where(file.onband_indices eq 0L, n_rcam_indices)
+  tcam_indices = where(file.onband_indices eq 1L, n_tcam_indices)
+print, n_dims, n_rcam_indices, n_tcam_indices
+  if (n_dims gt 4L and n_rcam_indices gt 0L) then begin
+    rcam_onband_maximums = max(ext_data[*, *, *, *, rcam_indices], dimension=5)
+    rcam_onband_maximums = max(rcam_onband_maximums, dimension=3)
+    !null = where(rcam_onband_maximums[*, *, 0] gt saturated_threshold, n_rcam_onband_saturated_pixels)
+    !null = where(rcam_onband_maximums[*, *, 1] gt saturated_threshold, n_tcam_bkg_saturated_pixels)
+    !null = where(rcam_onband_maximums[*, *, 0] gt nonlinear_threshold, n_rcam_onband_nonlinear_pixels)
+    !null = where(rcam_onband_maximums[*, *, 1] gt nonlinear_threshold, n_tcam_bkg_nonlinear_pixels)
+  endif
 
-  file.n_rcam_saturated_pixels = n_rcam_saturated_pixels
-  file.n_tcam_saturated_pixels = n_tcam_saturated_pixels
-  file.n_rcam_nonlinear_pixels = n_rcam_nonlinear_pixels
-  file.n_tcam_nonlinear_pixels = n_tcam_nonlinear_pixels
+  if (n_dims gt 4L and n_tcam_indices gt 0L) then begin
+    tcam_onband_maximums = max(ext_data[*, *, *, *, tcam_indices], dimension=5)
+    tcam_onband_maximums = max(tcam_onband_maximums, dimension=3)
+    !null = where(tcam_onband_maximums[*, *, 1] gt saturated_threshold, n_tcam_onband_saturated_pixels)
+    !null = where(tcam_onband_maximums[*, *, 0] gt saturated_threshold, n_rcam_bkg_saturated_pixels)
+    !null = where(tcam_onband_maximums[*, *, 1] gt nonlinear_threshold, n_tcam_onband_nonlinear_pixels)
+    !null = where(tcam_onband_maximums[*, *, 0] gt nonlinear_threshold, n_rcam_bkg_nonlinear_pixels)
+  endif
+
+  file.n_rcam_onband_saturated_pixels = n_rcam_onband_saturated_pixels
+  file.n_tcam_onband_saturated_pixels = n_tcam_onband_saturated_pixels
+  file.n_rcam_bkg_saturated_pixels    = n_rcam_bkg_saturated_pixels
+  file.n_tcam_bkg_saturated_pixels    = n_tcam_bkg_saturated_pixels
+  file.n_rcam_onband_nonlinear_pixels = n_rcam_onband_nonlinear_pixels
+  file.n_tcam_onband_nonlinear_pixels = n_tcam_onband_nonlinear_pixels
+  file.n_rcam_bkg_nonlinear_pixels    = n_rcam_bkg_nonlinear_pixels
+  file.n_tcam_bkg_nonlinear_pixels    = n_tcam_bkg_nonlinear_pixels
 
   ; TODO: always pass while we collect statistics
   return, 0UL
@@ -58,12 +76,13 @@ config_filename = filepath(config_basename, $
                            root=mg_src_root())
 run = ucomp_run(date, 'test', config_filename)
 
-raw_basename = '20210810.181351.97.ucomp.656.l0.fts'
+;raw_basename = '20210810.181351.97.ucomp.656.l0.fts'
+raw_basename = '20210810.184908.08.ucomp.1083.l0.fts'
 raw_filename = filepath(raw_basename, $
                         subdir=[date], $
                         root=run->config('raw/basedir'))
 file = ucomp_file(raw_filename, run=run)
-
+print, file.raw_filename
 ucomp_read_raw_data, file.raw_filename, $
                      primary_header=primary_header, $
                      ext_data=ext_data, $
@@ -75,8 +94,19 @@ success = ucomp_quality_saturated(file, $
                                   ext_data, $
                                   ext_headers, $
                                   run=run)
-print, file.n_saturated_pixels, file.n_nonlinear_pixels, $
-       format='# saturated pixels: %d, # pixels in non-linear region: %d'
+
+print, file.n_rcam_onband_saturated_pixels, $
+       file.n_tcam_onband_saturated_pixels, $
+       format='# RCAM onband saturated pixels: %d, # TCAM onband saturated pixels: %d'
+print, file.n_rcam_bkg_saturated_pixels, $
+       file.n_tcam_bkg_saturated_pixels, $
+       format='# RCAM bkg saturated pixels: %d, # TCAM bkg saturated pixels: %d'
+print, file.n_rcam_onband_nonlinear_pixels, $
+       file.n_tcam_onband_nonlinear_pixels, $
+       format='# RCAM onband nonlinear pixels: %d, # TCAM onband nonlinear pixels: %d'
+print, file.n_rcam_bkg_nonlinear_pixels, $
+       file.n_tcam_bkg_nonlinear_pixels, $
+       format='# RCAM bkg nonlinear pixels: %d, # TCAM bkg nonlinear pixels: %d'
 
 obj_destroy, file
 obj_destroy, run

@@ -121,6 +121,33 @@ pro ucomp_l1_promote_header, file, $
   ucomp_addpar, primary_header, 'MED_BKG', median_background, $
                 comment='[ppm] median of line center background annulus', $
                 format='(F0.3)', after=after
+
+  ucomp_addpar, primary_header, 'NUM_SAT0O', file.n_rcam_onband_saturated_pixels, $
+                comment='[pixels] number of saturated pixels in onband RCAM', $
+                format='(F0.3)', after=after
+  ucomp_addpar, primary_header, 'NUM_SAT1O', file.n_tcam_onband_saturated_pixels, $
+                comment='[pixels] number of saturated pixels in onband TCAM', $
+                format='(F0.3)', after=after
+  ucomp_addpar, primary_header, 'NUM_SAT0C', file.n_rcam_bkg_saturated_pixels, $
+                comment='[pixels] number of saturated pixels in bkg RCAM', $
+                format='(F0.3)', after=after
+  ucomp_addpar, primary_header, 'NUM_SAT0C', file.n_tcam_bkg_saturated_pixels, $
+                comment='[pixels] number of saturated pixels in bkg TCAM', $
+                format='(F0.3)', after=after
+
+  ucomp_addpar, primary_header, 'NUM_NL0O', file.n_rcam_onband_nonlinear_pixels, $
+                comment='[pixels] number of non-linear pixels in onband RCAM', $
+                format='(F0.3)', after=after
+  ucomp_addpar, primary_header, 'NUM_NL1O', file.n_tcam_onband_nonlinear_pixels, $
+                comment='[pixels] number of non-linear pixels in onband TCAM', $
+                format='(F0.3)', after=after
+  ucomp_addpar, primary_header, 'NUM_NL0C', file.n_rcam_bkg_nonlinear_pixels, $
+                comment='[pixels] number of non-linear pixels in bkg RCAM', $
+                format='(F0.3)', after=after
+  ucomp_addpar, primary_header, 'NUM_NL0C', file.n_tcam_bkg_nonlinear_pixels, $
+                comment='[pixels] number of non-linear pixels in bkg TCAM', $
+                format='(F0.3)', after=after
+
   ucomp_addpar, primary_header, 'COMMENT', 'Quality metrics', $
                 before='VCROSSTK', /title
 
