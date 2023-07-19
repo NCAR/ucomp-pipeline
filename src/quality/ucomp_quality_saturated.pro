@@ -34,7 +34,7 @@ function ucomp_quality_saturated, file, $
 
   rcam_indices = where(file.onband_indices eq 0L, n_rcam_indices)
   tcam_indices = where(file.onband_indices eq 1L, n_tcam_indices)
-print, n_dims, n_rcam_indices, n_tcam_indices
+
   if (n_dims gt 4L and n_rcam_indices gt 0L) then begin
     rcam_onband_maximums = max(ext_data[*, *, *, *, rcam_indices], dimension=5)
     rcam_onband_maximums = max(rcam_onband_maximums, dimension=3)
