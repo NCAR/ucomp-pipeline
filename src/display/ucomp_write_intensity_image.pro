@@ -107,13 +107,11 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
     endif
 
     dims = size(im, /dimensions)
-    if (run->config('display/mask_l1')) then begin
-      rcam = file.rcam_geometry
-      tcam = file.tcam_geometry
+    if (run->config('display/mask_l1') || run->line(file.wave_region, 'mask_l1')) then begin
       mask = ucomp_mask(dims[0:1], $
                         field_radius=run->epoch('field_radius'), $
                         occulter_radius=file.occulter_radius, $
-                        post_angle=(rcam.post_angle + tcam.post_angle) / 2.0, $
+                        post_angle=file.post_angle, $
                         p_angle=file.p_angle)
     endif else begin
       mask = bytarr(dims[0], dims[1]) + 1B
