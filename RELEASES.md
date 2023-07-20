@@ -351,3 +351,4 @@
   track saturated pixels and pixels in the non-linear region of the camera
   update engineering plot filenames to include "mission" if over entire mission
   option to create engineering difference images when combining cameras
+0.4.1
