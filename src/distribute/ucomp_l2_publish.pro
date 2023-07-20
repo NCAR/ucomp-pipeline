@@ -27,77 +27,109 @@ pro ucomp_l2_publish, wave_region, run=run
                      root=web_basedir)
   ucomp_mkdir, web_dir, logger_name=run.logger_name
 
-;   files = run->get_files(wave_region=wave_region, count=n_files)
-;   dynamics_basenames = strarr(n_files)
-;   dynamics_available = bytarr(n_files)
-;   polarization_basenames = strarr(n_files)
-;   polarization_available = bytarr(n_files)
-;   for f = 0L, n_files - 1L do begin
-;     file = files[f]
-;
-;     dynamics_basenames[f] = file.dynamics_basename
-;     dynamics_available[f] = file.wrote_dynamics
-;
-;     polarization_basenames[f] = file.polarization_basename
-;     polarization_available[f] = file.wrote_polarization
-;   endfor
-
   publish_type = strlowcase(run->config(wave_region + '/publish_type'))
+
+  ; publish dynamics/polarization files
+
   switch publish_type of
     'all': begin
-        ucomp_l2_tar_type, 'polarization', wave_region, $
+        ; 20220902.005109.ucomp.1074.l2.polarization.fts
+        ucomp_l2_tar_type, 'polarization', $
+                           wave_region, $
+                           string(wave_region, name, format='*.ucomp.%s.l2.polarization.fts'), $
                            tarfile=polarization_tarfile, $
                            tarlist=polarization_tarlist, $
+                           filenames=polarization_filenames, $
+                           n_files=n_polarization_files, $
                            run=run
-        file_copy, polarization_tarfile, web_dir, /overwrite
-        file_copy, polarization_tarlist, web_dir, /overwrite
+        if (n_polarization_files gt 0L) then begin
+          file_copy, polarization_tarfile, web_dir, /overwrite
+          file_copy, polarization_tarlist, web_dir, /overwrite
+          file_copy, polarization_filenames, web_dir, /overwrite
+          mg_log, 'copied %d %s nm polarization FITS files to web archive', $
+                  n_polarization_files, wave_region, $
+                  name=run.logger_name, /info
+        endif else begin
+          mg_log, 'no %s nm polarization FITS files to copy to web archive', $
+                  wave_region, $
+                  name=run.logger_name, /info
+        endelse
       end
     'dynamics': begin
-        ucomp_l2_tar_type, 'dynamics', wave_region, $
+        ; 20220902.005109.ucomp.1074.l2.dynamics.fts
+        ucomp_l2_tar_type, 'dynamics', $
+                           wave_region, $
+                           string(wave_region, name, format='*.ucomp.%s.l2.dynamics.fts'), $
                            tarfile=dynamics_tarfile, $
                            tarlist=dynamics_tarlist, $
+                           filenames=dynamics_filenames, $
+                           n_files=n_dynamics_files, $
                            run=run
-        file_copy, dynamics_tarfile, web_dir, /overwrite
-        file_copy, dynamics_tarlist, web_dir, /overwrite
+        if (n_dynamics_files gt 0L) then begin
+          file_copy, dynamics_tarfile, web_dir, /overwrite
+          file_copy, dynamics_tarlist, web_dir, /overwrite
+          file_copy, dynamics_filenames, web_dir, /overwrite
+          mg_log, 'copied %d %s nm dynamics FITS files to web archive', $
+                  n_dynamics_files, wave_region, $
+                  name=run.logger_name, /info
+        endif else begin
+          mg_log, 'no %s nm dynamics FITS files to copy to web archive', $
+                  wave_region, $
+                  name=run.logger_name, /info
+        endelse
       end
     else:
   endswitch
 
-  ; TODO: make other tarballs from issue #114
-  ; TODO: make sure the following is still correct
+  ; publish quick invert files
+  if (publish_type eq 'all') then begin
+    ; 20220901.ucomp.1074.l2.waves.median.quick_invert.fts
+    ucomp_l2_tar_type, 'quick_invert', $
+                       wave_region, $
+                       string(run.date, wave_region, format='%s.ucomp.%s.l2.*.{mean,median}.quick_invert.fts'), $
+                       tarfile=quickinvert_tarfile, $
+                       tarlist=quickinvert_tarlist, $
+                       filenames=quickinvert_filenames, $
+                       n_files=n_quickinvert_files, $
+                       run=run
+    if (n_quickinvert_files gt 0L) then begin
+      file_copy, quickinvert_tarfile, web_dir, /overwrite
+      file_copy, quickinvert_tarlist, web_dir, /overwrite
+      file_copy, quickinvert_filenames, web_dir, /overwrite
+      mg_log, 'copied %d %s nm quick invert FITS files to web archive', $
+              n_quickinvert_files, wave_region, $
+              name=run.logger_name, /info
+    endif else begin
+      mg_log, 'no %s nm quick invert FITS files to copy to web archive', $
+              wave_region, $
+              name=run.logger_name, /info
+    endelse
+  endif
 
-;   process_dir = filepath('', $
-;                          subdir=[run.date, 'level2'], $
-;                          root=run->config('processing/basedir'))
-;
-;   files = run->get_files(wave_region=wave_region, count=n_files)
-;
-;   for f = 0L, n_files - 1L do begin
-;     if (files[f].ok and files[f].wrote_l1 and (files[f].gbu eq 0L)) then begin
-;       ; grab the date/time, e.g., "20220829.205656"
-;       prefix = strmid(files[f].l1_basename, 0, 15)
-;
-;       fits_glob = string(prefix, wave_region, format='%s.ucomp.%s.l2.*.fts*')
-;       fits_files = file_search(filepath(fits_glob, root=process_dir), $
-;                                 count=n_fits_files)
-;
-;       if (n_fits_files gt 0L) then file_copy, fits_files, web_dir, /overwrite
-;
-;       mg_log, 'copied %d %s nm FITS files to web archive', $
-;               n_fits_files, wave_region, $
-;               name=run.logger_name, /info
-;     endif
-;   endfor
-
-  ; average_fits_glob = string(run.date, wave_region, format='%s.ucomp.%s.{mean,median}.*.fts*')
-  ; average_fits_files = file_search(filepath(average_fits_glob, root=process_dir), $
-  ;                           count=n_average_fits_files)
-  ; if (n_average_fits_files gt 0L) then begin
-  ;   file_copy, average_fits_files, web_dir, /overwrite
-  ;   mg_log, 'copied %d %s nm average FITS files to web archive', $
-  ;           n_average_fits_files, wave_region, $
-  ;           name=run.logger_name, /info
-  ; endif
+  ; publish mean/median files
+  if (publish_type ne 'none') then begin
+    ; 20220901.ucomp.1074.l2.waves.mean.fts
+    ucomp_l2_tar_type, 'average', $
+                       wave_region, $
+                       string(run.date, wave_region, format='%s.ucomp.%s.l2.*.{mean,median}.fts'), $
+                       tarfile=average_tarfile, $
+                       tarlist=average_tarlist, $
+                       filenames=average_filenames, $
+                       n_files=n_average_files, $
+                       run=run
+    if (n_average_files gt 0L) then begin
+      file_copy, average_tarfile, web_dir, /overwrite
+      file_copy, average_tarlist, web_dir, /overwrite
+      file_copy, average_filenames, web_dir, /overwrite
+      mg_log, 'copied %d %s nm mean/median FITS files to web archive', $
+              n_average_files, wave_region, $
+              name=run.logger_name, /info
+    endif else begin
+      mg_log, 'no %s nm mean/median FITS files to copy to web archive', $
+              wave_region, $
+              name=run.logger_name, /info
+    endelse
+  endif
 
   cleanup:
 end

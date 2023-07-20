@@ -352,3 +352,4 @@
   update engineering plot filenames to include "mission" if over entire mission
   option to create engineering difference images when combining cameras
 0.4.1
+  publish individual mean/median and quick invert FITS files along with tarballs

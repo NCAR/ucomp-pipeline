@@ -1,9 +1,35 @@
 ; docformat = 'rst'
 
-pro ucomp_l2_tar_type, name, wave_region, $
+;+
+; Make a tarball for a set of level 2 files.
+;
+; :Params:
+;   name : in, required, type=string
+;     name of type of files to add to the tarball
+;   wave_region : in, required, type=string
+;     wave region, i.e., '1074'
+;
+; :Keywords:
+;   tarfile : out, optional, type=string
+;     set to a named variable to retrieve the name of the created tarball
+;   tarlist : out, optional, type=string
+;     set to a named variable to retrieve the name of the created tarball list
+;   filenames : out, optional, type=strarr
+;     set to a named variable to retrieve the filenames of the files in the
+;     tarball
+;   n_files : out, optional, type=long
+;     set to a named variable to retrieve the number of filenames found
+;   run : in, required, type=object
+;     UCoMP run object
+;-
+pro ucomp_l2_tar_type, name, wave_region, glob, $
                        tarfile=tarfile, tarlist=tarlist, $
+                       filenames=filenames, $
+                       n_files=n_files, $
                        run=run
   compile_opt strictarr
+
+  n_files = 0L
 
   l2_dir = filepath('level2', subdir=run.date, $
                     root=run->config('processing/basedir'))
@@ -20,7 +46,6 @@ pro ucomp_l2_tar_type, name, wave_region, $
   tarfile = filepath(tarfile_basename, root=l2_dir)
   tarlist = filepath(tarlist_basename, root=l2_dir)
 
-  glob = string(wave_region, name, format='*.ucomp.%s.l2.%s.fts')
   filenames = file_search(glob, count=n_files)
 
   if (n_files eq 0L) then begin
