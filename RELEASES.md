@@ -337,9 +337,17 @@
   report correct quality in ucomp_raw database table
 0.3.3 [Jun 12, 2023]
   FITS header changes
-0.3.4
+0.4.0 [Jul 20, 2023]
   FITS header changes
+  change filenames to full words
   updated image annotations/display parameters
   remove threshold masking in enhanced intensity
   polarization/dynamics and quicklook distribution
+  mask 706 nm level 1 quicklook images
+  scale radial azimuth from -90 to 90 degrees with band on Van Vleck angle
+  create individual quicklook images from quick invert extensions
+  change Q, U, and V color table to linear black/white
+  option to do centering before the gain correction
   track saturated pixels and pixels in the non-linear region of the camera
+  update engineering plot filenames to include "mission" if over entire mission
+  option to create engineering difference images when combining cameras
