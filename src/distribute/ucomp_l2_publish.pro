@@ -36,7 +36,7 @@ pro ucomp_l2_publish, wave_region, run=run
         ; 20220902.005109.ucomp.1074.l2.polarization.fts
         ucomp_l2_tar_type, 'polarization', $
                            wave_region, $
-                           string(wave_region, name, format='*.ucomp.%s.l2.polarization.fts'), $
+                           string(wave_region, format='*.ucomp.%s.l2.polarization.fts'), $
                            tarfile=polarization_tarfile, $
                            tarlist=polarization_tarlist, $
                            filenames=polarization_filenames, $
@@ -59,7 +59,7 @@ pro ucomp_l2_publish, wave_region, run=run
         ; 20220902.005109.ucomp.1074.l2.dynamics.fts
         ucomp_l2_tar_type, 'dynamics', $
                            wave_region, $
-                           string(wave_region, name, format='*.ucomp.%s.l2.dynamics.fts'), $
+                           string(wave_region, format='*.ucomp.%s.l2.dynamics.fts'), $
                            tarfile=dynamics_tarfile, $
                            tarlist=dynamics_tarlist, $
                            filenames=dynamics_filenames, $
@@ -132,4 +132,23 @@ pro ucomp_l2_publish, wave_region, run=run
   endif
 
   cleanup:
+end
+
+
+; main-level example program
+
+date = '20220901'
+config_basename = 'ucomp.publish.cfg'
+config_filename = filepath(config_basename, $
+                           subdir=['..', '..', '..', 'ucomp-config'], $
+                           root=mg_src_root())
+run = ucomp_run(date, 'test', config_filename)
+
+wave_regions = run->config('options/wave_regions')
+for w = 0L, n_elements(wave_regions) - 1L do begin
+  ucomp_l2_publish, wave_regions[w], run=run
+endfor
+
+obj_destroy, run
+
 end
