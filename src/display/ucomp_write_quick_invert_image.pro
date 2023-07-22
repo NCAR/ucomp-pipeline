@@ -209,6 +209,28 @@ pro ucomp_write_quick_invert_image, output_filename, $
   write_png, linpol_filename, integrated_linpol_i_display
   mg_log, 'wrote linear polarization PNG', name=run.logger_name, /debug
 
+  doppler_shift_display = ucomp_display_image(wave_region, $
+                                              doppler_shift, $
+                                              type='doppler', $
+                                              name='LOS velocity', $
+                                              reduce_factor=1, $
+                                              datetime=run.date, $
+                                              run=run)
+  doppler_shift_filename = string(base_filename, format='%s.velocity.png')
+  write_png, doppler_shift_filename, doppler_shift_display
+  mg_log, 'wrote LOS velocity PNG', name=run.logger_name, /debug
+
+  line_width_display = ucomp_display_image(wave_region, $
+                                           line_width, $
+                                           type='line_width', $
+                                           name='Line width', $
+                                           reduce_factor=1, $
+                                           datetime=run.date, $
+                                           run=run)
+  line_width_filename = string(base_filename, format='%s.line_width.png')
+  write_png, line_width_filename, line_width_display
+  mg_log, 'wrote line width PNG', name=run.logger_name, /debug
+
   azimuth_display = ucomp_display_image(wave_region, $
                                         azimuth, $
                                         type='azimuth', $
