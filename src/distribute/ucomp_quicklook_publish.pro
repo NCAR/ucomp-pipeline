@@ -147,21 +147,21 @@ pro ucomp_quicklook_publish, run=run
 
   rgb = ['red', 'green', 'blue']
   all_temperature_maps = run->all_temperature_maps(count=n_temperature_maps)
-  wave_regions = strarr(3)
+  composite_wave_regions = strarr(n_elements(rgb))
   n_published_temperature_maps = 0L
   for m = 0L, n_temperature_maps - 1L do begin
-    publish = run->temperature_map_option(all_temperature_maps[m], 'publish')
+    publish = run->temperature_map_option(all_temperature_maps[m], 'publish') eq 'YES'
     if (publish) then begin
-      for w = 0L, n_elements(wave_regions) - 1L do begin
-        wave_regions[w] = run->temperature_map_option(all_temperature_maps[m], rgb[w])
+      for w = 0L, n_elements(rgb) - 1L do begin
+        composite_wave_regions[w] = run->temperature_map_option(all_temperature_maps[m], rgb[w])
       endfor
-      map_basename = string(run.date, wave_regions, $
+      map_basename = string(run.date, composite_wave_regions, $
                             format='%s.ucomp.%s-%s-%s.daily_temperature.png')
-      map_filename = filepath(output_basename, $
-                              subdir=[run.date, 'level2'], $
-                              root=run->config('processing/basedir'))
-      quicklook_files_list->add, map_filename
-      n_published_temperature_maps += 1L
+      map_filename = filepath(map_basename, root=l2_dir)
+      if (file_exist(map_filename, /regular)) then begin
+        quicklook_files_list->add, map_filename
+        n_published_temperature_maps += 1L
+      endif
     endif
   endfor
   if (n_published_temperature_maps gt 0L) then begin
@@ -207,8 +207,8 @@ config_filename = filepath(config_basename, $
 run = ucomp_run(date, 'test', config_filename)
 
 processing_basedir = run->config('processing/basedir')
-print, processing_basedir
-;ucomp_quicklook_publish, run=run
+
+ucomp_quicklook_publish, run=run
 
 obj_destroy, run
 
