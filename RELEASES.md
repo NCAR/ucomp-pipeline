@@ -354,3 +354,6 @@
 0.4.1
   publish individual mean/median and quick invert FITS files along with tarballs
   publish quick invert line width and velocity individual quicklook images
+  fix bugs in temperature map creation and publishing
+  change quality condition for non-dark corrected pixels in non-linear regime
+    to 3200 DN (normalized by NUMSUM)
