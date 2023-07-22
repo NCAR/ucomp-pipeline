@@ -42,7 +42,7 @@ pro ucomp_l2_temperature_maps, run=run
       program_filename = run->convert_program_name(program_names[p])
 
       mean_basename = string(run.date, wave_regions[w], program_filename, method, $
-                             format='(%"%s.ucomp.%s.%s.%s.fts")')
+                             format='(%"%s.ucomp.%s.l2.%s.%s.fts")')
       mean_filename = filepath(mean_basename, root=l2_dir)
       mean_filenames[w] = mean_filename
       mg_log, '%s [%s]: %s', rgb[w], wave_regions[w], file_basename(mean_filename), $
