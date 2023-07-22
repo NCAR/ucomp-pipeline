@@ -158,7 +158,7 @@ pro ucomp_quicklook_publish, run=run
       map_basename = string(run.date, composite_wave_regions, $
                             format='%s.ucomp.%s-%s-%s.daily_temperature.png')
       map_filename = filepath(map_basename, root=l2_dir)
-      if (file_exist(map_filename, /regular)) then begin
+      if (file_test(map_filename, /regular)) then begin
         quicklook_files_list->add, map_filename
         n_published_temperature_maps += 1L
       endif
