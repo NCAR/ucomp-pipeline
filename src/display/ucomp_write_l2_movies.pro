@@ -26,7 +26,7 @@ pro ucomp_write_l2_movies, wave_region, run=run
 
   types = ['peak_intensity', 'enhanced_peak_intensity', 'velocity', $
            'line_width', $   ; dynamics
-           'linear_polarization', 'radial_azimuth']   ; polarization
+           'linear_polarization', 'azimuth', 'radial_azimuth']   ; polarization
   for t = 0L, n_elements(types) - 1L do begin
     ucomp_write_l2_mp4, wave_region, types[t], run=run
   endfor
