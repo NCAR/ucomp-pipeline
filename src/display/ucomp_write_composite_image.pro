@@ -200,6 +200,12 @@ pro ucomp_write_composite_image, filenames, run=run
             strjoin(strtrim(channels[missing_indices], 2)), $
             n_elements(missing_indices) gt 2 ? 's' : '', $
             name=run.logger_name, /warn
+    for m = 0L, n_elements(missing_indices) - 1L do begin
+      mg_log, '%s: %s', $
+              channels[missing_indices[m]], $
+              file_basename(filenames[missing_indices[m]]), $
+              name=run.logger_name, /warn
+    endfor
     goto, done
   endif
 
