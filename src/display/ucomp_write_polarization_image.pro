@@ -158,6 +158,19 @@ pro ucomp_write_polarization_image, output_filename, $
   write_png, linpol_filename, integrated_linpol_i_display
   mg_log, 'wrote linear polarization PNG', name=run.logger_name, /debug
 
+  azimuth_display = ucomp_display_image(file.wave_region, azimuth, $
+                                        type='azimuth', $
+                                        name='Azimuth', $
+                                        reduce_factor=1, $
+                                        datetime=strmid(file_basename(file.raw_filename), 0, 15), $
+                                        run=run)
+  azimuth_basename = string(strmid(file.l1_basename, 0, 15), $
+                            file.wave_region, $
+                            format='(%"%s.ucomp.%s.l2.azimuth.png")')
+  azimuth_filename = filepath(azimuth_basename, root=l2_dir)
+  write_png, azimuth_filename, radial_azimuth_display
+  mg_log, 'wrote azimuth PNG', name=run.logger_name, /debug
+
   radial_azimuth_display = ucomp_display_image(file.wave_region, radial_azimuth, $
                                                type='radial_azimuth', $
                                                name='Radial azimuth', $
