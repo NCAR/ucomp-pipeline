@@ -30,7 +30,7 @@ function ucomp_quality_saturated, file, $
   n_dims = size(ext_data, /n_dimensions)
 
   saturated_threshold = 4094.0
-  nonlinear_threshold = 3000.0
+  nonlinear_threshold = 3200.0
 
   rcam_indices = where(file.onband_indices eq 0L, n_rcam_indices)
   tcam_indices = where(file.onband_indices eq 1L, n_tcam_indices)
