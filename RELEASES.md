@@ -357,3 +357,4 @@
   fix bugs in temperature map creation and publishing
   change quality condition for non-dark corrected pixels in non-linear regime
     to 3200 DN (normalized by NUMSUM)
+0.4.2
