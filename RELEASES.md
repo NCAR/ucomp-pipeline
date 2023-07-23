@@ -351,7 +351,7 @@
   track saturated pixels and pixels in the non-linear region of the camera
   update engineering plot filenames to include "mission" if over entire mission
   option to create engineering difference images when combining cameras
-0.4.1
+0.4.1 [Jul 22, 2023]
   publish individual mean/median and quick invert FITS files along with tarballs
   publish quick invert line width and velocity individual quicklook images
   fix bugs in temperature map creation and publishing
