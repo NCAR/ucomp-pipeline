@@ -359,3 +359,5 @@
     to 3200 DN (normalized by NUMSUM)
 0.4.2
   scale velocity images for all wave regions to -5 to 5
+  publish azimuth PNGs/mp4s from polarization files
+  update num_ucomp field in mlso_numfiles database
