@@ -358,3 +358,4 @@
   change quality condition for non-dark corrected pixels in non-linear regime
     to 3200 DN (normalized by NUMSUM)
 0.4.2
+  scale velocity images for all wave regions to -5 to 5
