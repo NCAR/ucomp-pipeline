@@ -36,8 +36,12 @@ function ucomp_quality_saturated, file, $
   tcam_indices = where(file.onband_indices eq 1L, n_tcam_indices)
 
   if (n_dims gt 4L and n_rcam_indices gt 0L) then begin
-    rcam_onband_maximums = max(ext_data[*, *, *, *, rcam_indices], dimension=5)
+    rcam_data = ext_data[*, *, *, *, rcam_indices]
+    if (size(rcam_data, /n_dimensions) gt 4) then begin
+      rcam_onband_maximums = max(rcam_data, dimension=5)
+    endif else rcam_onband_maximums = rcam_data
     rcam_onband_maximums = max(rcam_onband_maximums, dimension=3)
+
     !null = where(rcam_onband_maximums[*, *, 0] gt saturated_threshold, n_rcam_onband_saturated_pixels)
     !null = where(rcam_onband_maximums[*, *, 1] gt saturated_threshold, n_tcam_bkg_saturated_pixels)
     !null = where(rcam_onband_maximums[*, *, 0] gt nonlinear_threshold, n_rcam_onband_nonlinear_pixels)
@@ -45,8 +49,12 @@ function ucomp_quality_saturated, file, $
   endif
 
   if (n_dims gt 4L and n_tcam_indices gt 0L) then begin
-    tcam_onband_maximums = max(ext_data[*, *, *, *, tcam_indices], dimension=5)
+    tcam_data = ext_data[*, *, *, *, tcam_indices]
+    if (size(tcam_data, /n_dimensions) gt 4) then begin
+      tcam_onband_maximums = max(tcam_data, dimension=5)
+    endif else tcam_onband_maximums = tcam_data
     tcam_onband_maximums = max(tcam_onband_maximums, dimension=3)
+
     !null = where(tcam_onband_maximums[*, *, 1] gt saturated_threshold, n_tcam_onband_saturated_pixels)
     !null = where(tcam_onband_maximums[*, *, 0] gt saturated_threshold, n_rcam_bkg_saturated_pixels)
     !null = where(tcam_onband_maximums[*, *, 1] gt nonlinear_threshold, n_tcam_onband_nonlinear_pixels)
