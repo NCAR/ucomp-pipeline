@@ -22,7 +22,6 @@
 ;-
 function ucomp_write_composite_image_channel, filename, $
                                               wave_region=wave_region, $
-                                              radius=occulter_radius, $
                                               run=run
   compile_opt strictarr
 
@@ -54,15 +53,18 @@ function ucomp_write_composite_image_channel, filename, $
   prefix = keyword_set(enhanced) ? 'enhanced_' : ''
   display_min   = run->line(wave_region, prefix + 'intensity_display_min')
   display_max   = run->line(wave_region, prefix + 'intensity_display_max')
-  ; TODO: how to use gamma?
   display_gamma = run->line(wave_region, prefix + 'intensity_display_gamma')
   display_power = run->line(wave_region, prefix + 'intensity_display_power')
 
   field_mask = ucomp_field_mask(dims[0:1], run->epoch('field_radius'))
   scaled_intensity = bytscl((intensity * field_mask)^display_power, $
-                            min=display_min, $
-                            max=display_max, $
+                            min=display_min^display_power, $
+                            max=display_max^display_power, $
                             /nan)
+
+  ; apply gamma
+  gamma_indices = byte(256.0 * (findgen(256)/256.0)^display_gamma)
+  scaled_intensity = gamma_indices[scaled_intensity]
 
   mask = ucomp_mask(dims[0:1], $
                     occulter_radius=occulter_radius, $
@@ -96,7 +98,6 @@ end
 ;-
 function ucomp_write_composite_image_annotation, im, $
                                                  wave_regions=wave_regions, $
-                                                 radii=radii, $
                                                  run=run
   compile_opt strictarr
 
@@ -104,9 +105,16 @@ function ucomp_write_composite_image_annotation, im, $
   nx = dims[1]
   ny = dims[2]
 
-  max_radius = max(radii)
+  plate_scales = fltarr(n_elements(wave_regions))
   for w = 0L, n_elements(wave_regions) - 1L do begin
-    im[w, *, *] = rot(reform(im[w, *, *]), 0.0, max_radius / radii[w], $
+    plate_scales[w] = run->line(wave_regions[w], 'plate_scale')
+  endfor
+
+  min_plate_scale = min(plate_scales)
+  for w = 0L, n_elements(wave_regions) - 1L do begin
+    im[w, *, *] = rot(reform(im[w, *, *]), $
+                      0.0, $
+                      plate_scales[w] / min_plate_scale, $
                       /interp, cubic=-0.5, missing=0.0)
   endfor
 
@@ -214,24 +222,18 @@ pro ucomp_write_composite_image, filenames, run=run
 
   red = ucomp_write_composite_image_channel(filenames[0], $
                                             wave_region=wave_region, $
-                                            radius=radius, $
                                             run=run)
   wave_regions[0] = wave_region
-  radii[0] = radius
 
   green = ucomp_write_composite_image_channel(filenames[1], $
                                               wave_region=wave_region, $
-                                              radius=radius, $
                                               run=run)
   wave_regions[1] = wave_region
-  radii[1] = radius
 
   blue = ucomp_write_composite_image_channel(filenames[2], $
                                              wave_region=wave_region, $
-                                             radius=radius, $
                                              run=run)
   wave_regions[2] = wave_region
-  radii[2] = radius
 
   dims = size(red, /dimensions)
   im = bytarr(3, dims[0], dims[1])
@@ -241,7 +243,6 @@ pro ucomp_write_composite_image, filenames, run=run
 
   annotated_image = ucomp_write_composite_image_annotation(im, $
                                                            wave_regions=wave_regions, $
-                                                           radii=radii, $
                                                            run=run)
 
   output_basename = string(run.date, wave_regions, $
@@ -258,9 +259,10 @@ end
 
 ; main-level example program
 
-date = '20220325'
+;date = '20211003'
+date = '20220901'
 
-config_basename = 'ucomp.regression.cfg'
+config_basename = 'ucomp.publish.cfg'
 config_filename = filepath(config_basename, $
                            subdir=['..', '..', '..', 'ucomp-config'], $
                            root=mg_src_root())
@@ -270,18 +272,18 @@ enhanced = 0B
 nrgf = 0B
 
 wave_regions = ['1074', '789', '637']
-mean_basenames = date + '.ucomp.' + wave_regions + '.synoptic.mean.fts'
+mean_basenames = date + '.ucomp.' + wave_regions + '.l2.synoptic.mean.fts'
 mean_filenames = filepath(mean_basenames, $
                           subdir=[date, 'level2'], $
                           root=run->config('processing/basedir'))
-ucomp_write_composite_image, mean_filenames, enhanced=enhanced, run=run
+ucomp_write_composite_image, mean_filenames, run=run
 
 wave_regions = ['706', '1074', '789']
-mean_basenames = date + '.ucomp.' + wave_regions + '.synoptic.mean.fts'
+mean_basenames = date + '.ucomp.' + wave_regions + '.l2.synoptic.mean.fts'
 mean_filenames = filepath(mean_basenames, $
                           subdir=[date, 'level2'], $
                           root=run->config('processing/basedir'))
-ucomp_write_composite_image, mean_filenames, enhanced=enhanced, nrgf=nrgf, run=run
+ucomp_write_composite_image, mean_filenames, run=run
 
 obj_destroy, run
 
