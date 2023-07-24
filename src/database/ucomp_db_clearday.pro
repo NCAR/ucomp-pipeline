@@ -44,6 +44,10 @@ pro ucomp_db_clearday, run=run
                          logger_name=run.logger_name
   endfor
 
+  ; clear num_ucomp field of mlso_numfiles
+  sql_cmd = 'update mlso_numfiles set num_ucomp=0 where day_id=%d'
+  db->execute, sql_cmd, obsday_index
+
   done:
   if (arg_present(db)) then obj_destroy, db
   mg_log, 'done', name=run.logger_name, /info
