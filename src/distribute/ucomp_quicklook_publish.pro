@@ -72,7 +72,9 @@ pro ucomp_quicklook_publish, run=run
                     name=run.logger_name, /info
           endelse
 
-          l2_polarization_types = ['linear_polarization.png', $
+          l2_polarization_types = ['azimuth.png', $
+                                   'azimuth.mp4', $
+                                   'linear_polarization.png', $
                                    'linear_polarization.mp4', $
                                    'polarization.png', $
                                    '*.quick_invert.png', $
