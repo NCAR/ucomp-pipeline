@@ -365,3 +365,4 @@
   update num_ucomp field in mlso_numfiles database
   update display parameters for temperature maps
 0.4.3
+  fix azimuth image from polarization file

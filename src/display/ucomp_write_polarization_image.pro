@@ -168,7 +168,7 @@ pro ucomp_write_polarization_image, output_filename, $
                             file.wave_region, $
                             format='(%"%s.ucomp.%s.l2.azimuth.png")')
   azimuth_filename = filepath(azimuth_basename, root=l2_dir)
-  write_png, azimuth_filename, radial_azimuth_display
+  write_png, azimuth_filename, azimuth_display
   mg_log, 'wrote azimuth PNG', name=run.logger_name, /debug
 
   radial_azimuth_display = ucomp_display_image(file.wave_region, radial_azimuth, $
