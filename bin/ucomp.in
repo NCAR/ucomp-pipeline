@@ -144,7 +144,7 @@ def get_raw_basedir(date, flags, error):
 def get_control_dir(flags, error):
     ucomp_config = get_config(flags, error)
     try:
-        control_dir = ucomp_config.get("control", "dir")
+        control_dir = ucomp_config.get("control", "command_dir")
     except configparser.NoSectionError:
         control_dir = None
     except configparser.NoOptionError:
@@ -973,6 +973,8 @@ def parse_date_expr(date_expr):
 
 def check_for_control(args):
     control_dir = get_control_dir(args.flags, args.parser.error)
+    if control_dir is None:
+        return(False, "")
 
     stop = os.path.exists(os.path.join(control_dir, "stop"))
 
