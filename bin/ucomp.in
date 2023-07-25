@@ -141,6 +141,17 @@ def get_raw_basedir(date, flags, error):
     return(raw_basedir)
 
 
+def get_control_dir(flags, error):
+    ucomp_config = get_config(flags, error)
+    try:
+        control_dir = ucomp_config.get("control", "dir")
+    except configparser.NoSectionError:
+        control_dir = None
+    except configparser.NoOptionError:
+        control_dir = None
+    return(control_dir)
+
+
 # date handling helpers
 
 intervals = (
@@ -960,6 +971,21 @@ def parse_date_expr(date_expr):
     return dates
 
 
+def check_for_control(args):
+    control_dir = get_control_dir(args.flags, args.parser.error)
+
+    stop = os.path.exists(os.path.join(control_dir, "stop"))
+
+    try:
+        with open(os.path.join(control_dir, "version"), "r") as f:
+            version = f.readline().rstrip("\n")
+            version = f".v{version}"
+    except:
+        version = ""
+
+    return(stop, version)
+
+
 def process_eod(args):
     launch_processes(args, "ucomp_eod_wrapper")
     notify_completed(args, "end-of-day")
@@ -1005,8 +1031,17 @@ def launch_processes(args, routine):
     if len(dates) != 1 and routine == "ucomp_realtime_wrapper":
         args.parser.error("realtime mode is only valid for a single date")
 
+    stop = False
+    version = ""
     for d in dates:
-        cmd = [os.path.join(PIPELINE_DIR,
+        if routine == "ucomp_reprocess_wrapper":
+            stop, version = check_for_control(args)
+
+        if stop:
+            print("received stop command, stopping")
+            break
+
+        cmd = [os.path.join(f"{PIPELINE_DIR}{version}",
                             "bin",
                             "ucomp_script.sh"),
                routine,
