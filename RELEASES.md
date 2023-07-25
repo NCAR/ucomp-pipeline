@@ -366,3 +366,4 @@
   update display parameters for temperature maps
 0.4.3
   fix azimuth image from polarization file
+  put Q, U, L not Q/I, U/I, and L/I in quick invert FITS file
