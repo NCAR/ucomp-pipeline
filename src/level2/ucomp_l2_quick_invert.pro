@@ -94,11 +94,18 @@ pro ucomp_l2_quick_invert, wave_region, $
                                complement=bad_indices, /null)
 
         integrated_intensity[bad_indices] = !values.f_nan
+
+        integrated_q[bad_indices]         = !values.f_nan
+        integrated_u[bad_indices]         = !values.f_nan
+        integrated_linpol[bad_indices]    = !values.f_nan
+
         integrated_q_i[bad_indices]       = !values.f_nan
         integrated_u_i[bad_indices]       = !values.f_nan
         integrated_linpol_i[bad_indices]  = !values.f_nan
+
         azimuth[bad_indices]              = !values.f_nan
         radial_azimuth[bad_indices]       = !values.f_nan
+
         doppler_shift[bad_indices]        = !values.f_nan
         line_width[bad_indices]           = !values.f_nan
       endif
@@ -124,14 +131,14 @@ pro ucomp_l2_quick_invert, wave_region, $
 
       ucomp_addpar, ext_header, 'UNITS', 'fraction'
 
-      fits_write, fcb, integrated_q_i, ext_header, $
-                  extname='Integrated Q / I'
+      fits_write, fcb, integrated_q, ext_header, $
+                  extname='Integrated Q'
 
-      fits_write, fcb, integrated_u_i, ext_header, $
-                  extname='Integrated U / I'
+      fits_write, fcb, integrated_u, ext_header, $
+                  extname='Integrated U'
 
-      fits_write, fcb, integrated_linpol_i, ext_header, $
-                  extname='Integrated L / I'
+      fits_write, fcb, integrated_linpol, ext_header, $
+                  extname='Integrated linear polarization'
 
       ucomp_addpar, ext_header, 'UNITS', 'deg CCW from horizontal'
       fits_write, fcb, azimuth, ext_header, extname='Azimuth'
