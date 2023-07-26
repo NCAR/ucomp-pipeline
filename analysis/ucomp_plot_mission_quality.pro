@@ -69,6 +69,15 @@ pro ucomp_plot_mission_quality, db, wave_region, start_date, end_date
                        xtitle='Date', ytitle='# of files', $
                        xstyle=9, xrange=[start_jd, end_jd], xtickformat='label_date', $
                        ystyle=9, yrange=[0, 500]
+  mg_legend, item_name=['good', 'bad GBU', 'bad quality'], $
+             item_color=colors, $
+             item_psym=mg_usersym(/square, /fill), $
+             item_symsize=1.5, $
+             color='000000'x, $
+             charsize=1.0, $
+             gap=0.075, $
+             line_bump=0.0, $
+             position=[0.85, 0.8, 0.9575, 0.90]
 end
 
 
