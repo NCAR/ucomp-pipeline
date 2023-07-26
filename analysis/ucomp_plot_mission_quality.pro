@@ -31,15 +31,16 @@ pro ucomp_plot_mission_quality, db, wave_region, start_date, end_date
     query = 'select day_id from mlso_numfiles where obs_day = ''%s'''
     obsday_ids = db->query(query, date_string, $
                            count=n_dates, error=error, sql_statement=sql)
+    day_id = obsday_ids[0].day_id
 
     if (n_dates gt 0L) then begin
       query = 'select * from ucomp_raw where wave_region=''%s'' and obsday_id=%d order by date_obs'
-      data = db->query(query, wave_region, obsday_ids[0], $
-                       count=n_total_files, error=error, sql_statement=sql)
+      data = db->query(query, wave_region, day_id, $
+                       count=n_total_files, status=status, error=error, sql_statement=sql)
 
-      query = 'select  ucomp_raw.file_name, ucomp_raw.quality_bitmask, ucomp_file.gbu, ucomp_raw.obsday_id, ucomp_raw.wave_region from ucomp_raw inner join ucomp_file on ucomp_raw.file_name = ucomp_file.l0_file_name where ucomp_raw.wave_region="%s" and ucomp_file.producttype_id=%d and ucomp_raw.obsday_id=%d;'
-      data = db->query(query, wave_region, level1_producttype_id, obsday_ids[0], $
-                       count=n_ok_files, error=error, sql_statement=sql)
+      query = 'select ucomp_raw.file_name, ucomp_raw.quality_bitmask, ucomp_file.gbu, ucomp_raw.obsday_id, ucomp_raw.wave_region from ucomp_raw inner join ucomp_file on ucomp_raw.file_name = ucomp_file.l0_file_name where ucomp_raw.wave_region=''%s'' and ucomp_file.producttype_id=%d and ucomp_raw.obsday_id=%d;'
+      data = db->query(query, wave_region, level1_producttype_id, day_id, $
+                       count=n_ok_files, status=status, error=error, sql_statement=sql)
       if (n_ok_files gt 0L) then begin
         !null = where(data.gbu eq 0, n_good_files)
         n_quality_files[0, d] = n_good_files
@@ -89,9 +90,9 @@ db = ucomp_db_connect(run->config('database/config_filename'), $
                       log_statements=run->config('database/log_statements'), $
                       status=status)
 
-;wave_regions = ['530', '637', '656', '670', '691', '706', '761', '789', '802', $
+; wave_regions = ['530', '637', '656', '670', '691', '706', '761', '789', '802', $
 ;                '991', '1074', '1079', '1083']
-wave_regions = ['530']
+wave_regions = ['1074']
 for w = 0L, n_elements(wave_regions) - 1L do begin
   ucomp_plot_mission_quality, db, wave_regions[w], start_date, end_date
 endfor
