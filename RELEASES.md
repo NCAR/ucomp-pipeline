@@ -370,3 +370,4 @@
 0.4.4
   pipeline control command infrastructure
   ucomp versions reports days in progress
+  fix L / I annotation for quick invert quicklook
