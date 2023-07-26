@@ -368,3 +368,5 @@
   fix azimuth image from polarization file
   put Q, U, L not Q/I, U/I, and L/I in quick invert FITS file
 0.4.4
+  pipeline control command infrastructure
+  ucomp versions reports days in progress
