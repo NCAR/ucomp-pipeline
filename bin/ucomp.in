@@ -724,6 +724,12 @@ def versions(args):
                 break
     elif args.summary:
         f = [v for v in versions_list if v[1] is not None and v[1][0] != "-"]
+        no_version = [v for v in versions_list if v[1] is None or v[1][0] == "-"]
+        in_progress = [v for v in no_version if has_raw_data(v[0], args.flags, args.parser.error)]
+        n_in_progress = len(in_progress)
+        if n_in_progress > 0:
+            print(f"unprocessed/in progress: {n_in_progress}")
+
         s = sorted(f, key=lambda v: packaging.version.parse(v[1]))
         current_version = ''
         n_dates = 0
