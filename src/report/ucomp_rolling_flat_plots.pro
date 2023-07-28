@@ -116,7 +116,7 @@ pro ucomp_rolling_flat_plots, wave_region, db, run=run
   plots, [jds[0], jds[-1]], fltarr(2) + linecenter_range[0], linestyle=3, color=color
   plots, [jds[0], jds[-1]], fltarr(2) + linecenter_range[1], linestyle=3, color=color
 
-  plot, jds, rcam_median_continuum, /nodata, $
+  plot, [jds], [rcam_median_continuum], /nodata, $
         charsize=charsize, $
         title=string(wave_region, start_date, $
                      format='%s nm dark corrected flat continuum median counts vs. time since %s'), $
@@ -167,10 +167,10 @@ end
 
 ; main-level example program
 
-date = '20220831'
+date = '20221115'
 config_basename = 'ucomp.production.cfg'
 config_filename = filepath(config_basename, $
-                           subdir=['..', '..', 'config'], $
+                           subdir=['..', '..', '..', 'ucomp-config'], $
                            root=mg_src_root())
 
 run = ucomp_run(date, 'test', config_filename)
