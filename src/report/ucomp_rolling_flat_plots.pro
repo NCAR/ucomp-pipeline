@@ -85,7 +85,7 @@ pro ucomp_rolling_flat_plots, wave_region, db, run=run
   month_ticks = mg_tick_locator([jds[0], jds[-1]], /months)
   if (n_elements(month_ticks) gt 0L) then month_ticks = month_ticks[0:*:3]
 
-  plot, jds, rcam_median_linecenter, /nodata, $
+  plot, [jds], [rcam_median_linecenter], /nodata, $
         charsize=charsize, $
         title=string(wave_region, start_date, $
                      format='%s nm dark corrected flat line center median counts vs. time since %s'), $
