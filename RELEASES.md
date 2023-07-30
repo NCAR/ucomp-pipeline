@@ -373,3 +373,4 @@
   fix L / I annotation for quick invert quicklook
   fix for crash in rollling flat plot with exactly one day
 0.4.5
+  epoch file additions
