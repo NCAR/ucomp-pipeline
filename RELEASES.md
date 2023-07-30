@@ -374,3 +374,4 @@
   fix for crash in rollling flat plot with exactly one day
 0.4.5 [Jul 30, 2023]
   epoch file additions
+0.4.6
