@@ -367,7 +367,8 @@
 0.4.3 [Jul 25, 2023]
   fix azimuth image from polarization file
   put Q, U, L not Q/I, U/I, and L/I in quick invert FITS file
-0.4.4
+0.4.4 [Jul 30, 2023]
   pipeline control command infrastructure
   ucomp versions reports days in progress
   fix L / I annotation for quick invert quicklook
+  fix for crash in rollling flat plot with exactly one day
