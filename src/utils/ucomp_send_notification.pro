@@ -86,7 +86,7 @@ pro ucomp_send_notification, run=run
     body->add, ''
     body->add, mg_plural(n_files, 'total file')
 
-    quality = bytarr(n_files)
+    quality = ulonarr(n_files)
     gbu = ulonarr(n_files)
     for f = 0L, n_files - 1L do begin
       quality[f] = files[f].quality_bitmask
@@ -95,7 +95,6 @@ pro ucomp_send_notification, run=run
 
     !null = where(gbu eq 0UL and quality eq 0UL, n_good_files)
     body->add, mg_plural(n_good_files, 'good file')
-
     quality_indices = where(quality gt 0L, n_bad_quality)
     if (n_bad_quality gt 0L) then begin
       body->add, ''
