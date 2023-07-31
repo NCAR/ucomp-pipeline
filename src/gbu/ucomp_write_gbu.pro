@@ -34,12 +34,14 @@ pro ucomp_write_gbu, wave_region, run=run
           format='(%"%-38s %6s %10s %13s")'
 
   for f = 0L, n_files - 1L do begin
-    printf, lun, $
-            files[f].l1_basename, $
-            files[f].gbu, $
-            files[f].median_background, $
-            files[f].vcrosstalk_metric, $
-            format='(%"%-38s %6d %10.3f %13.6f")'
+    if (files[f].quality eq 0) then begin
+      printf, lun, $
+              files[f].l1_basename, $
+              files[f].gbu, $
+              files[f].median_background, $
+              files[f].vcrosstalk_metric, $
+              format='(%"%-38s %6d %10.3f %13.6f")'
+    endif
   endfor
 
   printf, lun
