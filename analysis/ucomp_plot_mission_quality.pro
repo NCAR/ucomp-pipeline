@@ -99,9 +99,9 @@ db = ucomp_db_connect(run->config('database/config_filename'), $
                       log_statements=run->config('database/log_statements'), $
                       status=status)
 
-; wave_regions = ['530', '637', '656', '670', '691', '706', '761', '789', '802', $
-;                '991', '1074', '1079', '1083']
-wave_regions = ['1074']
+wave_regions = ['530', '637', '656', '670', '691', '706', '761', '789', '802', $
+                '991', '1074', '1079', '1083']
+;wave_regions = ['1074']
 for w = 0L, n_elements(wave_regions) - 1L do begin
   ucomp_plot_mission_quality, db, wave_regions[w], start_date, end_date
 endfor
