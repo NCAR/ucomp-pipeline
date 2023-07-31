@@ -5,6 +5,7 @@ pro ucomp_plot_mission, db, wave_region, start_date, end_date
 
   ucomp_plot_mission_quality, db, wave_region, start_date, end_date
   ucomp_plot_fit_chisq, db, wave_region, start_date, end_date
+  ucomp_plot_saturated, db, wave_region, start_date, end_date
 end
 
 
