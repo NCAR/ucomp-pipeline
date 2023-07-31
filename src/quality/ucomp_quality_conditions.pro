@@ -46,7 +46,10 @@ function ucomp_quality_conditions, wave_region, run=run
      description: 'multiple O1FOCUS values in a file'}, $
     {mask: 0UL, $
      checker: 'ucomp_quality_saturated', $
-     description: 'checked for saturated and non-linear pixels in a file'}]
+     description: 'checked for saturated and non-linear pixels in a file'}, $
+    {mask: 0UL, $
+     checker: 'ucomp_quality_wave_region', $
+     description: 'ensure all wavelengths match wave region'}]
 
   quality_conditions.mask = 2UL ^ (ulindgen(n_elements(quality_conditions)))
 
