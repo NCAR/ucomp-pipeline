@@ -47,7 +47,12 @@ config_filename = filepath(config_basename, $
                            root=mg_src_root())
 run = ucomp_run(date, 'test', config_filename)
 
-raw_basename = '20220227.003322.77.ucomp.1074.l0.fts'
+; should not pass:
+; raw_basename = '20220227.003322.77.ucomp.1074.l0.fts'
+
+; should pass:
+raw_basename = '20220227.025043.18.ucomp.1074.l0.fts'
+
 raw_filename = filepath(raw_basename, $
                         subdir=[date], $
                         root=run->config('raw/basedir'))
