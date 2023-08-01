@@ -160,13 +160,11 @@ pro ucomp_write_iquv_image, data, l1_basename, wave_region, wavelengths, $
                 date_stamp, $
                 charsize=charsize, color=text_color
       endif
-      ; xyouts, (p mod 2 + 1.0 - xmargin) * dims[0] / reduce_dims_factor, $
-      ;         ((dims[2] - p - 1L) / 2 + 1.0 - ymargin) * dims[1] / reduce_dims_factor, $
-      ;         /device, $
-      ;         pol_states[p], charsize=charsize, color=text_color
       xyouts, 0.25 + (p mod 2) / 2.0, 0.75 - (p / 2) / 2.0 + 0.025, $
               /normal, $
-              pol_states[p], $
+              display_power eq 1.0 $
+                ? pol_states[p] $
+                : string(pol_states[p], display_power, format='%s!E%0.2f!N'), $
               charsize=title_charsize, alignment=0.5, color=text_color
       colorbar2, position=[0.25 + (p mod 2) / 2.0 - 0.075, 0.75 - (p / 2) / 2.0, $
                            0.25 + (p mod 2) / 2.0 + 0.075, 0.75 - (p / 2) / 2.0 + 0.01], $
