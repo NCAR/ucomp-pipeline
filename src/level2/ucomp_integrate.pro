@@ -14,10 +14,8 @@
 ;   center_index : in, optional, type=integer, default=n_wavelengths/2
 ;     index of center wavelength, if not present, assumed to be center index of
 ;     the dimension
-;   gaussian : in, optional, type=boolean
-;     set to use gaussian weighted wavelengths, i.e., 0.3-0.7-0.3
 ;-
-function ucomp_integrate, data, center_index=center_index, gaussian=gaussian
+function ucomp_integrate, data, center_index=center_index
   compile_opt strictarr
 
   if (n_elements(center_index) eq 0L) then begin
@@ -28,11 +26,7 @@ function ucomp_integrate, data, center_index=center_index, gaussian=gaussian
   endelse
 
   n_weights = 3L
-  if (keyword_set(gaussian)) then begin
-    weights = [0.3, 0.7, 0.3]
-  endif else begin
-    weights = (fltarr(n_weights) + 1.0)/ 2.0
-  endelse
+  weights = (fltarr(n_weights) + 1.0)/ 2.0
 
   weighted = data[*, *, _center_index - n_weights / 2:_center_index + n_weights / 2]
   for w = 0L, n_weights - 1L do weighted[*, *, w] *= weights[w]
