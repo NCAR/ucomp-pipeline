@@ -9,16 +9,16 @@
 ;     full path of output file to write
 ;   file : in, required, type=object
 ;     `ucomp_file` object to corresponding level 1 file
-;   integrated_intensity : in, required, type="fltarr(nx, ny)"
-;     integrated intensity image
+;   summed_intensity : in, required, type="fltarr(nx, ny)"
+;     summed intensity image
 ;   enhanced_intensity : in, required, type="fltarr(nx, ny)"
-;     enhanced integrated intensity image
-;   integrated_q : in, required, type="fltarr(nx, ny)"
-;     integrated Q image
-;   integrated_u : in, required, type="fltarr(nx, ny)"
-;     integrated U image
-;   integrated_linpol : in, required, type="fltarr(nx, ny)"
-;     integrated linear polarization image
+;     enhanced summed intensity image
+;   summed_q : in, required, type="fltarr(nx, ny)"
+;     summed Q image
+;   summed_u : in, required, type="fltarr(nx, ny)"
+;     summed U image
+;   summed_linpol : in, required, type="fltarr(nx, ny)"
+;     summed linear polarization image
 ;   azimuth : in, required, type="fltarr(nx, ny)"
 ;     azimuth image
 ;   radial_azimuth : in, required, type="fltarr(nx, ny)"
@@ -32,18 +32,18 @@
 ;-
 pro ucomp_write_polarization_image, output_filename, $
                                     file, $
-                                    integrated_intensity, $
+                                    summed_intensity, $
                                     enhanced_intensity, $
-                                    integrated_q, $
-                                    integrated_u, $
-                                    integrated_linpol, $
+                                    summed_q, $
+                                    summed_u, $
+                                    summed_linpol, $
                                     azimuth, $
                                     radial_azimuth, $
                                     reduce_factor=reduce_factor, $
                                     run=run
   compile_opt strictarr
 
-  dims = size(integrated_intensity, /dimensions)
+  dims = size(summed_intensity, /dimensions)
 
   if (run->config('display/mask_l2')) then begin
     ; mask outputs
@@ -57,20 +57,20 @@ pro ucomp_write_polarization_image, output_filename, $
 
     ; TODO: what should the threshold be?
     if (run->config('polarization/mask_noise')) then begin
-      intensity_threshold_mask = integrated_intensity gt 0.1
+      intensity_threshold_mask = summed_intensity gt 0.1
       mask and= intensity_threshold_mask
     endif
 
     outside_mask_indices = where(mask eq 0, n_outside_mask)
 
     if (n_outside_mask gt 0L) then begin
-      integrated_intensity[outside_mask_indices] = !values.f_nan
-      enhanced_intensity[outside_mask_indices]   = !values.f_nan
-      integrated_q[outside_mask_indices]         = !values.f_nan
-      integrated_u[outside_mask_indices]         = !values.f_nan
-      integrated_linpol[outside_mask_indices]    = !values.f_nan
-      azimuth[outside_mask_indices]              = !values.f_nan
-      radial_azimuth[outside_mask_indices]       = !values.f_nan
+      summed_intensity[outside_mask_indices]   = !values.f_nan
+      enhanced_intensity[outside_mask_indices] = !values.f_nan
+      summed_q[outside_mask_indices]           = !values.f_nan
+      summed_u[outside_mask_indices]           = !values.f_nan
+      summed_linpol[outside_mask_indices]      = !values.f_nan
+      azimuth[outside_mask_indices]            = !values.f_nan
+      radial_azimuth[outside_mask_indices]     = !values.f_nan
     endif
   endif
 
@@ -78,40 +78,40 @@ pro ucomp_write_polarization_image, output_filename, $
   nx = dims[0]
   ny = dims[1]
 
-  integrated_q_i = integrated_q / integrated_intensity
-  integrated_u_i = integrated_u / integrated_intensity
-  integrated_linpol_i = integrated_linpol / integrated_intensity
+  summed_q_i = summed_q / summed_intensity
+  summed_u_i = summed_u / summed_intensity
+  summed_linpol_i = summed_linpol / summed_intensity
 
-  integrated_intensity_display = ucomp_display_image(file.wave_region, integrated_intensity, $
-                                                     type='intensity', $
-                                                     name='Integrated intensity', $
-                                                     reduce_factor=reduce_factor, $
-                                                     datetime=strmid(file_basename(file.raw_filename), 0, 15), $
-                                                     run=run)
+  summed_intensity_display = ucomp_display_image(file.wave_region, summed_intensity, $
+                                                 type='intensity', $
+                                                 name='Summed intensity', $
+                                                 reduce_factor=reduce_factor, $
+                                                 datetime=strmid(file_basename(file.raw_filename), 0, 15), $
+                                                 run=run)
   enhanced_intensity_display = ucomp_display_image(file.wave_region, enhanced_intensity, $
                                                    type='enhanced_intensity', $
                                                    name='Enhanced intensity', $
                                                    reduce_factor=reduce_factor, $
                                                    /no_wave_region_annotation, $
                                                    run=run)
-  integrated_q_display = ucomp_display_image(file.wave_region, integrated_q_i, $
-                                             type='quv_i', $
-                                             name='Integrated Q / I', $
-                                             reduce_factor=reduce_factor, $
-                                             /no_wave_region_annotation, $
-                                             run=run)
-  integrated_u_display = ucomp_display_image(file.wave_region, integrated_u_i, $
-                                             type='quv_i', $
-                                             name='Integrated U / I', $
-                                             reduce_factor=reduce_factor, $
-                                             /no_wave_region_annotation, $
-                                             run=run)
-  integrated_linpol_display = ucomp_display_image(file.wave_region, integrated_linpol_i, $
-                                                  type='linpol', $
-                                                  name='Integrated log!I10!N(L / I)', $
-                                                  reduce_factor=reduce_factor, $
-                                                  /no_wave_region_annotation, $
-                                                  run=run)
+  summed_q_display = ucomp_display_image(file.wave_region, summed_q_i, $
+                                         type='quv_i', $
+                                         name='Summed Q / I', $
+                                         reduce_factor=reduce_factor, $
+                                         /no_wave_region_annotation, $
+                                         run=run)
+  summed_u_display = ucomp_display_image(file.wave_region, summed_u_i, $
+                                         type='quv_i', $
+                                         name='Summed U / I', $
+                                         reduce_factor=reduce_factor, $
+                                         /no_wave_region_annotation, $
+                                         run=run)
+  summed_linpol_display = ucomp_display_image(file.wave_region, summed_linpol_i, $
+                                              type='linpol', $
+                                              name='Summed log!I10!N(L / I)', $
+                                              reduce_factor=reduce_factor, $
+                                              /no_wave_region_annotation, $
+                                              run=run)
   azimuth_display = ucomp_display_image(file.wave_region, azimuth, $
                                         type='azimuth', $
                                         name='Azimuth', $
@@ -127,13 +127,13 @@ pro ucomp_write_polarization_image, output_filename, $
 
   display_image = bytarr(3, 3 * nx, 3 * ny)
 
-  display_image[0,      0, 2 * ny] = integrated_intensity_display
-  display_image[0,     nx, 2 * ny] = integrated_q_display
+  display_image[0,      0, 2 * ny] = summed_intensity_display
+  display_image[0,     nx, 2 * ny] = summed_q_display
   display_image[0, 2 * nx, 2 * ny] = azimuth_display
   display_image[0,      0,     ny] = enhanced_intensity_display
-  display_image[0,     nx,     ny] = integrated_u_display
+  display_image[0,     nx,     ny] = summed_u_display
   display_image[0, 2 * nx,     ny] = radial_azimuth_display
-  display_image[0,     nx,      0] = integrated_linpol_display
+  display_image[0,     nx,      0] = summed_linpol_display
 
   l2_dir = filepath('', $
                     subdir=[run.date, 'level2'], $
@@ -145,17 +145,17 @@ pro ucomp_write_polarization_image, output_filename, $
   write_png, output_filename, display_image
   mg_log, 'wrote polarization PNG', name=run.logger_name, /debug
 
-  integrated_linpol_i_display = ucomp_display_image(file.wave_region, integrated_linpol_i, $
-                                                    type='linpol', $
-                                                    name='Integrated log!I10!N(L)', $
-                                                    reduce_factor=1, $
-                                                    datetime=strmid(file_basename(file.raw_filename), 0, 15), $
-                                                    run=run)
+  summed_linpol_i_display = ucomp_display_image(file.wave_region, summed_linpol_i, $
+                                                type='linpol', $
+                                                name='Summed log!I10!N(L)', $
+                                                reduce_factor=1, $
+                                                datetime=strmid(file_basename(file.raw_filename), 0, 15), $
+                                                run=run)
   linpol_basename = string(strmid(file.l1_basename, 0, 15), $
                                  file.wave_region, $
                                  format='(%"%s.ucomp.%s.l2.linear_polarization.png")')
   linpol_filename = filepath(linpol_basename, root=l2_dir)
-  write_png, linpol_filename, integrated_linpol_i_display
+  write_png, linpol_filename, summed_linpol_i_display
   mg_log, 'wrote linear polarization PNG', name=run.logger_name, /debug
 
   azimuth_display = ucomp_display_image(file.wave_region, azimuth, $

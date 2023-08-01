@@ -1,7 +1,7 @@
 ; docformat = 'rst'
 
 ;+
-; Calculate an integrated value from level 1 data.
+; Calculate an summed value from level 1 data.
 ;
 ; :Returns:
 ;   `fltarr(nx, ny)`
@@ -36,7 +36,7 @@ function ucomp_integrate, data, center_index=center_index, gaussian=gaussian
 
   weighted = data[*, *, _center_index - n_weights / 2:_center_index + n_weights / 2]
   for w = 0L, n_weights - 1L do weighted[*, *, w] *= weights[w]
-  integrated = total(weighted, 3)
+  summed = total(weighted, 3)
 
-  return, integrated
+  return, summed
 end

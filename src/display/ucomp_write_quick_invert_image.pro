@@ -6,14 +6,14 @@
 ; :Params:
 ;   output_filename : in, required, type=string
 ;     full path of output file to write
-;   integrated_intensity : in, required, type="fltarr(nx, ny)"
-;     integrated intensity image
-;   integrated_q_i : in, required, type="fltarr(nx, ny)"
-;     integrated Q over I image
-;   integrated_u_i: in, required, type="fltarr(nx, ny)"
-;     integrated U over I image
-;   integrated_linpol_i : in, required, type="fltarr(nx, ny)"
-;     integrated linear polarization over I image
+;   summed_intensity : in, required, type="fltarr(nx, ny)"
+;     summed intensity image
+;   summed_q_i : in, required, type="fltarr(nx, ny)"
+;     summed Q over I image
+;   summed_u_i: in, required, type="fltarr(nx, ny)"
+;     summed U over I image
+;   summed_linpol_i : in, required, type="fltarr(nx, ny)"
+;     summed linear polarization over I image
 ;   azimuth : in, required, type="fltarr(nx, ny)"
 ;     azimuth image
 ;   radial_azimuth : in, required, type="fltarr(nx, ny)"
@@ -41,10 +41,10 @@
 ;     `ucomp_run` object
 ;-
 pro ucomp_write_quick_invert_image, output_filename, $
-                                    integrated_intensity, $
-                                    integrated_q_i, $
-                                    integrated_u_i, $
-                                    integrated_linpol_i, $
+                                    summed_intensity, $
+                                    summed_q_i, $
+                                    summed_u_i, $
+                                    summed_linpol_i, $
                                     azimuth, $
                                     radial_azimuth, $
                                     doppler_shift, $
@@ -57,7 +57,7 @@ pro ucomp_write_quick_invert_image, output_filename, $
                                     run=run
   compile_opt strictarr
 
-  dims = size(integrated_intensity, /dimensions)
+  dims = size(summed_intensity, /dimensions)
 
   if (run->config('display/mask_l2')) then begin
     ; mask outputs
@@ -70,14 +70,14 @@ pro ucomp_write_quick_invert_image, output_filename, $
     outside_mask_indices = where(mask eq 0, n_outside_mask)
 
     if (n_outside_mask gt 0L) then begin
-      integrated_intensity[outside_mask_indices] = !values.f_nan
-      integrated_q_i[outside_mask_indices]       = !values.f_nan
-      integrated_u_i[outside_mask_indices]       = !values.f_nan
-      integrated_linpol_i[outside_mask_indices]  = !values.f_nan
-      line_width[outside_mask_indices]           = !values.f_nan
-      doppler_shift[outside_mask_indices]        = !values.f_nan
-      azimuth[outside_mask_indices]              = !values.f_nan
-      radial_azimuth[outside_mask_indices]       = !values.f_nan
+      summed_intensity[outside_mask_indices] = !values.f_nan
+      summed_q_i[outside_mask_indices]       = !values.f_nan
+      summed_u_i[outside_mask_indices]       = !values.f_nan
+      summed_linpol_i[outside_mask_indices]  = !values.f_nan
+      line_width[outside_mask_indices]       = !values.f_nan
+      doppler_shift[outside_mask_indices]    = !values.f_nan
+      azimuth[outside_mask_indices]          = !values.f_nan
+      radial_azimuth[outside_mask_indices]   = !values.f_nan
     endif
   endif
 
@@ -85,30 +85,30 @@ pro ucomp_write_quick_invert_image, output_filename, $
   nx = dims[0]
   ny = dims[1]
 
-  integrated_intensity_display = ucomp_display_image(wave_region, integrated_intensity, $
+  summed_intensity_display = ucomp_display_image(wave_region, summed_intensity, $
                                                      type='intensity', $
-                                                     name='Integrated I', $
+                                                     name='Summed I', $
                                                      reduce_factor=reduce_factor, $
                                                      datetime=run.date, $
                                                      run=run)
 
-  integrated_q_display = ucomp_display_image(wave_region, integrated_q_i, $
+  summed_q_display = ucomp_display_image(wave_region, summed_q_i, $
                                              type='quv_i', $
-                                             name='Integrated Q / I', $
+                                             name='Summed Q / I', $
                                              reduce_factor=reduce_factor, $
                                              /no_wave_region_annotation, $
                                              run=run)
 
-  integrated_u_display = ucomp_display_image(wave_region, integrated_u_i, $
+  summed_u_display = ucomp_display_image(wave_region, summed_u_i, $
                                              type='quv_i', $
-                                             name='Integrated U / I', $
+                                             name='Summed U / I', $
                                              reduce_factor=reduce_factor, $
                                              /no_wave_region_annotation, $
                                              run=run)
 
-  integrated_linpol_display = ucomp_display_image(wave_region, integrated_linpol_i, $
+  summed_linpol_display = ucomp_display_image(wave_region, summed_linpol_i, $
                                                   type='linpol', $
-                                                  name='Integrated log!E10!N(L / I)', $
+                                                  name='Summed log!E10!N(L / I)', $
                                                   reduce_factor=reduce_factor, $
                                                   /no_wave_region_annotation, $
                                                   run=run)
@@ -143,10 +143,10 @@ pro ucomp_write_quick_invert_image, output_filename, $
 
   display_image = bytarr(3, 4 * nx, 2 * ny)
 
-  display_image[0,      0, ny] = integrated_intensity_display
-  display_image[0, 1 * nx, ny] = integrated_q_display
-  display_image[0, 2 * nx, ny] = integrated_u_display
-  display_image[0, 3 * nx, ny] = integrated_linpol_display
+  display_image[0,      0, ny] = summed_intensity_display
+  display_image[0, 1 * nx, ny] = summed_q_display
+  display_image[0, 2 * nx, ny] = summed_u_display
+  display_image[0, 3 * nx, ny] = summed_linpol_display
   display_image[0,      0,  0] = doppler_shift_display
   display_image[0, 1 * nx,  0] = line_width_display
   display_image[0, 2 * nx,  0] = azimuth_display
@@ -165,48 +165,48 @@ pro ucomp_write_quick_invert_image, output_filename, $
   basename = file_basename(output_filename, '.png')
   base_filename = filepath(basename, root=file_dirname(output_filename))
 
-  integrated_intensity_display = ucomp_display_image(wave_region, $
-                                                     integrated_intensity, $
-                                                     type='intensity', $
-                                                     name='Integrated I', $
-                                                     reduce_factor=1, $
-                                                     datetime=run.date, $
-                                                     run=run)
-  integrated_intensity_filename = string(base_filename, format='%s.intensity.png')
-  write_png, integrated_intensity_filename, integrated_intensity_display
-  mg_log, 'wrote integrated intensity PNG', name=run.logger_name, /debug
+  summed_intensity_display = ucomp_display_image(wave_region, $
+                                                 summed_intensity, $
+                                                 type='intensity', $
+                                                 name='Summed I', $
+                                                 reduce_factor=1, $
+                                                 datetime=run.date, $
+                                                 run=run)
+  summed_intensity_filename = string(base_filename, format='%s.intensity.png')
+  write_png, summed_intensity_filename, summed_intensity_display
+  mg_log, 'wrote summed intensity PNG', name=run.logger_name, /debug
 
-  integrated_q_i_display = ucomp_display_image(wave_region, $
-                                               integrated_q_i, $
-                                               type='quv_i', $
-                                               name='Integrated Q / I', $
-                                               reduce_factor=1, $
-                                               datetime=run.date, $
-                                               run=run)
-  integrated_q_i_filename = string(base_filename, format='%s.stokesq.png')
-  write_png, integrated_q_i_filename, integrated_q_i_display
-  mg_log, 'wrote integrated Q / I PNG', name=run.logger_name, /debug
+  summed_q_i_display = ucomp_display_image(wave_region, $
+                                           summed_q_i, $
+                                           type='quv_i', $
+                                           name='Summed Q / I', $
+                                           reduce_factor=1, $
+                                           datetime=run.date, $
+                                           run=run)
+  summed_q_i_filename = string(base_filename, format='%s.stokesq.png')
+  write_png, summed_q_i_filename, summed_q_i_display
+  mg_log, 'wrote summed Q / I PNG', name=run.logger_name, /debug
 
-  integrated_u_i_display = ucomp_display_image(wave_region, $
-                                               integrated_u_i, $
-                                               type='quv_i', $
-                                               name='Integrated U / I', $
-                                               reduce_factor=1, $
-                                               datetime=run.date, $
-                                               run=run)
-  integrated_u_i_filename = string(base_filename, format='%s.stokesu.png')
-  write_png, integrated_u_i_filename, integrated_u_i_display
-  mg_log, 'wrote integrated U / I PNG', name=run.logger_name, /debug
+  summed_u_i_display = ucomp_display_image(wave_region, $
+                                           summed_u_i, $
+                                           type='quv_i', $
+                                           name='Summed U / I', $
+                                           reduce_factor=1, $
+                                           datetime=run.date, $
+                                           run=run)
+  summed_u_i_filename = string(base_filename, format='%s.stokesu.png')
+  write_png, summed_u_i_filename, summed_u_i_display
+  mg_log, 'wrote summed U / I PNG', name=run.logger_name, /debug
 
-  integrated_linpol_i_display = ucomp_display_image(wave_region, $
-                                                    integrated_linpol_i, $
-                                                    type='linpol', $
-                                                    name='Integrated log!I10!N(L / I)', $
-                                                    reduce_factor=1, $
-                                                    datetime=run.date, $
-                                                    run=run)
+  summed_linpol_i_display = ucomp_display_image(wave_region, $
+                                                summed_linpol_i, $
+                                                type='linpol', $
+                                                name='Summed log!I10!N(L / I)', $
+                                                reduce_factor=1, $
+                                                datetime=run.date, $
+                                                run=run)
   linpol_filename = string(base_filename, format='%s.linear_polarization.png')
-  write_png, linpol_filename, integrated_linpol_i_display
+  write_png, linpol_filename, summed_linpol_i_display
   mg_log, 'wrote linear polarization PNG', name=run.logger_name, /debug
 
   doppler_shift_display = ucomp_display_image(wave_region, $
@@ -273,10 +273,10 @@ l2_dirname = filepath('', subdir=[date, 'level2'], root=run->config('processing/
 filename = filepath(basename, root=l2_dirname)
 fits_open, filename, fcb
 fits_read, fcb, primary_data, primary_header, exten_no=0
-fits_read, fcb, integrated_intensity, exten_no=1
-fits_read, fcb, integrated_q_i, exten_no=2
-fits_read, fcb, integrated_u_i, exten_no=3
-fits_read, fcb, integrated_linpol_i, exten_no=4
+fits_read, fcb, summed_intensity, exten_no=1
+fits_read, fcb, summed_q_i, exten_no=2
+fits_read, fcb, summed_u_i, exten_no=3
+fits_read, fcb, summed_linpol_i, exten_no=4
 fits_read, fcb, azimuth, exten_no=5
 fits_read, fcb, radial_azimuth, exten_no=6
 fits_read, fcb, doppler_shift, exten_no=7
@@ -290,10 +290,10 @@ image_filename = filepath(string(file_basename(basename, '.fts'), $
                                  format='%s.png'), root=l2_dirname)
 
 ucomp_write_quick_invert_image, image_filename, $
-                                integrated_intensity, $
-                                integrated_q_i, $
-                                integrated_u_i, $
-                                integrated_linpol_i, $
+                                summed_intensity, $
+                                summed_q_i, $
+                                summed_u_i, $
+                                summed_linpol_i, $
                                 azimuth, $
                                 radial_azimuth, $
                                 doppler_shift, $
