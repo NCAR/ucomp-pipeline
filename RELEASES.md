@@ -371,7 +371,8 @@
   pipeline control command infrastructure
   ucomp versions reports days in progress
   fix L / I annotation for quick invert quicklook
-  fix for crash in rollling flat plot with exactly one day
+  fix for crash in rolling flat plot with exactly one day
 0.4.5 [Jul 30, 2023]
   epoch file additions
 0.4.6
+  check that wavelengths in science file match the wave region of the file
