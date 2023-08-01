@@ -49,7 +49,7 @@ function ucomp_quality_conditions, wave_region, run=run
      description: 'checked for saturated and non-linear pixels in a file'}, $
     {mask: 0UL, $
      checker: 'ucomp_quality_wave_region', $
-     description: 'ensure all wavelengths match wave region'}]
+     description: 'some wavelengths that do not match wave region'}]
 
   quality_conditions.mask = 2UL ^ (ulindgen(n_elements(quality_conditions)))
 
