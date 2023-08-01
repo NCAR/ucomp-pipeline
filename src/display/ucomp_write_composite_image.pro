@@ -129,17 +129,26 @@ function ucomp_write_composite_image_annotation, im, $
 
   x_margin = 12
   y_margin = 12
-  charsize = 1.4
+  charsize = 1.3
+  title_charsize = 1.75
+  detail_charsize = 1.2
   line_height = 16 * charsize
   text_color = 'ffffff'x
 
-  xyouts, x_margin, ny - y_margin - line_height, /device, $
-          'MLSO UCoMP Daily Temperature Image', $
+  mlso_height = 0.62
+  date_height = 0.59
+  title_height = 0.54
+
+  xyouts, 0.5, mlso_height, /normal, alignment=0.5, $
+          'MLSO UCoMP', $
           charsize=charsize, color=text_color
-  xyouts, x_margin, ny - y_margin - 2 * line_height, /device, $
+  xyouts, 0.5, date_height, /normal, alignment=0.5, $
           string(ucomp_decompose_date(run.date), $
                  format='%s-%s-%s'), $
           charsize=charsize, color=text_color
+  xyouts, 0.5, title_height, /normal, alignment=0.5, $
+          'Daily Temperature Image', $
+          charsize=title_charsize, color=text_color
 
   rgb = ['Red', 'Green', 'Blue']
   legend = strarr(n_elements(wave_regions) + 1L)
@@ -157,23 +166,24 @@ function ucomp_write_composite_image_annotation, im, $
             y_margin + (n_elements(legend) - i - 1L) * line_height, $
             /device, $
             legend[i], $
-            charsize=charsize, color=text_color
+            charsize=detail_charsize, color=text_color
   endfor
 
+  note_height = 0.4 * ny
   if (wave_regions[0] eq '1074') then begin
-    xyouts, nx - x_margin, ny - y_margin - line_height, /device, $
-            alignment=1.0, $
+    xyouts, nx / 2, note_height, /device, $
+            alignment=0.5, $
             'Corona coolest in regions colored blue', $
-            charsize=charsize, color=text_color
+            charsize=detail_charsize, color=text_color
   endif else begin
-    xyouts, nx - x_margin, ny - y_margin - line_height, /device, $
-            alignment=1.0, $
+    xyouts, nx / 2, note_height, /device, $
+            alignment=0.5, $
             'Corona hottest in regions colored white or red', $
-            charsize=charsize, color=text_color
-    xyouts, nx - x_margin, ny - y_margin - 2 * line_height, /device, $
-            alignment=1.0, $
+            charsize=detail_charsize, color=text_color
+    xyouts, nx / 2, note_height - line_height, /device, $
+            alignment=0.5, $
             'Corona coolest in regions colored blue', $
-            charsize=charsize, color=text_color
+            charsize=detail_charsize, color=text_color
   endelse
 
   annotated_image = tvrd(true=1)
