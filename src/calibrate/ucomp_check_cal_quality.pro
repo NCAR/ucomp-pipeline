@@ -5,7 +5,8 @@
 ;
 ; :Params:
 ;   type : in, required, type=string
-;     type to check: dark", "flat", or "cal"
+;     type to check: "dark", "flat", or "cal"
+;
 ; :Keywords:
 ;   run : in, required, type=object
 ;     `ucomp_run` object
@@ -45,6 +46,8 @@ pro ucomp_check_cal_quality, type, run=run
 
       ; check cal data, set quality_bitmask
       quality_bitmasks[f] or= quality_conditions[q].mask * quality
+      mg_log, '%s quality: %d', file.raw_basename, quality_bitmasks[f], $
+              name=run.logger_name, /debug
     endfor
     file.quality_bitmask = quality_bitmasks[f]
   endfor
