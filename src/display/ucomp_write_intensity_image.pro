@@ -113,7 +113,7 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
                         occulter_radius=file.occulter_radius, $
                         post_angle=file.post_angle, $
                         p_angle=file.p_angle)
-    endif else if (run->config('display/mask_l1_occulter')) then begin
+    endif else if (run->line(file.wave_region, 'mask_l1_occulter')) then begin
       mask = ucomp_mask(dims[0:1], $
                         field_radius=run->epoch('field_radius'), $
                         occulter_radius=file.occulter_radius, $
