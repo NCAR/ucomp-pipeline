@@ -18,7 +18,7 @@ pro ucomp_l2_publish, wave_region, run=run
 
   web_basedir = run->config('results/web_basedir')
   if (n_elements(web_basedir) eq 0L) then begin
-    mg_log, 'results/web_basedir specified', name=run.logger, /warn
+    mg_log, 'results/web_basedir not specified', name=run.logger, /warn
     goto, cleanup
   endif
 
