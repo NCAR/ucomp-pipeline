@@ -3,10 +3,10 @@
 ;+
 ; Produce the quick invert images:
 ;
-; - integrated intensity
-; - integrated Q/I
-; - integrated U/I
-; - integrated L/I
+; - summed intensity
+; - summed Q/I
+; - summed U/I
+; - summed L/I
 ; - azimuth
 ; - radial azimuth
 ; - velocity
@@ -54,12 +54,12 @@ pro ucomp_l2_quick_invert, wave_region, $
       endfor
       center_index = n_wavelengths / 2L
 
-      integrated_intensity = ucomp_integrate(reform(ext_data[*, *, 0, *]), center_index=center_index)
-      integrated_q         = ucomp_integrate(reform(ext_data[*, *, 1, *]), center_index=center_index)
-      integrated_u         = ucomp_integrate(reform(ext_data[*, *, 2, *]), center_index=center_index)
-      integrated_linpol    = sqrt(integrated_q^2 + integrated_u^2)
+      summed_intensity = ucomp_integrate(reform(ext_data[*, *, 0, *]), center_index=center_index)
+      summed_q         = ucomp_integrate(reform(ext_data[*, *, 1, *]), center_index=center_index)
+      summed_u         = ucomp_integrate(reform(ext_data[*, *, 2, *]), center_index=center_index)
+      summed_linpol    = sqrt(summed_q^2 + summed_u^2)
 
-      azimuth = ucomp_azimuth(integrated_q, integrated_u, radial_azimuth=radial_azimuth)
+      azimuth = ucomp_azimuth(summed_q, summed_u, radial_azimuth=radial_azimuth)
 
       intensity_blue   = reform(ext_data[*, *, 0, center_index - 1])
       intensity_center = reform(ext_data[*, *, 0, center_index])
@@ -74,9 +74,9 @@ pro ucomp_l2_quick_invert, wave_region, $
                                 line_width=line_width, $
                                 peak_intensity=peak_intensity
 
-      integrated_q_i = integrated_q / integrated_intensity
-      integrated_u_i = integrated_u / integrated_intensity
-      integrated_linpol_i = integrated_linpol / integrated_intensity
+      summed_q_i = summed_q / summed_intensity
+      summed_u_i = summed_u / summed_intensity
+      summed_linpol_i = summed_linpol / summed_intensity
 
       c = 299792.458D
 
@@ -89,25 +89,25 @@ pro ucomp_l2_quick_invert, wave_region, $
       ; mask data on various thresholds
       ; TODO: constants should be retrieved from wave region config file
       if (run->config('quickinvert/mask_noise')) then begin
-        good_indices = where(integrated_intensity gt 0.25 $
-                               and integrated_intensity lt 120.0, $
+        good_indices = where(summed_intensity gt 0.25 $
+                               and summed_intensity lt 120.0, $
                                complement=bad_indices, /null)
 
-        integrated_intensity[bad_indices] = !values.f_nan
+        summed_intensity[bad_indices] = !values.f_nan
 
-        integrated_q[bad_indices]         = !values.f_nan
-        integrated_u[bad_indices]         = !values.f_nan
-        integrated_linpol[bad_indices]    = !values.f_nan
+        summed_q[bad_indices]         = !values.f_nan
+        summed_u[bad_indices]         = !values.f_nan
+        summed_linpol[bad_indices]    = !values.f_nan
 
-        integrated_q_i[bad_indices]       = !values.f_nan
-        integrated_u_i[bad_indices]       = !values.f_nan
-        integrated_linpol_i[bad_indices]  = !values.f_nan
+        summed_q_i[bad_indices]       = !values.f_nan
+        summed_u_i[bad_indices]       = !values.f_nan
+        summed_linpol_i[bad_indices]  = !values.f_nan
 
-        azimuth[bad_indices]              = !values.f_nan
-        radial_azimuth[bad_indices]       = !values.f_nan
+        azimuth[bad_indices]          = !values.f_nan
+        radial_azimuth[bad_indices]   = !values.f_nan
 
-        doppler_shift[bad_indices]        = !values.f_nan
-        line_width[bad_indices]           = !values.f_nan
+        doppler_shift[bad_indices]    = !values.f_nan
+        line_width[bad_indices]       = !values.f_nan
       endif
 
       doppler_shift -= median(doppler_shift) - 1.0
@@ -126,19 +126,19 @@ pro ucomp_l2_quick_invert, wave_region, $
       fits_write, fcb, 0.0, primary_header
 
       ucomp_addpar, ext_header, 'UNITS', 'ppm of solar disk', after='OBJECT'
-      fits_write, fcb, integrated_intensity, ext_header, $
-                  extname='Integrated intensity'
+      fits_write, fcb, summed_intensity, ext_header, $
+                  extname='Summed intensity'
 
       ucomp_addpar, ext_header, 'UNITS', 'fraction'
 
-      fits_write, fcb, integrated_q, ext_header, $
-                  extname='Integrated Q'
+      fits_write, fcb, summed_q, ext_header, $
+                  extname='Summed Q'
 
-      fits_write, fcb, integrated_u, ext_header, $
-                  extname='Integrated U'
+      fits_write, fcb, summed_u, ext_header, $
+                  extname='Summed U'
 
-      fits_write, fcb, integrated_linpol, ext_header, $
-                  extname='Integrated linear polarization'
+      fits_write, fcb, summed_linpol, ext_header, $
+                  extname='Summed linear polarization'
 
       ucomp_addpar, ext_header, 'UNITS', 'deg CCW from horizontal'
       fits_write, fcb, azimuth, ext_header, extname='Azimuth'
@@ -160,10 +160,10 @@ pro ucomp_l2_quick_invert, wave_region, $
       image_filename = filepath(string(file_basename(basename, '.fts'), $
                                        format='%s.png'), root=l2_dirname)
       ucomp_write_quick_invert_image, image_filename, $
-                                      integrated_intensity, $
-                                      integrated_q_i, $
-                                      integrated_u_i, $
-                                      integrated_linpol_i, $
+                                      summed_intensity, $
+                                      summed_q_i, $
+                                      summed_u_i, $
+                                      summed_linpol_i, $
                                       azimuth, $
                                       radial_azimuth, $
                                       doppler_shift, $

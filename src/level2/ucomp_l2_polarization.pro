@@ -3,11 +3,11 @@
 ;+
 ; Produce the polarization images:
 ;
-; - integrated intensity
-; - enhanced integrated intensity
-; - integrated Q
-; - integrated U
-; - integrated L
+; - summed intensity
+; - enhanced summed intensity
+; - summed Q
+; - summed U
+; - summed L
 ; - azimuth
 ; - radial azimuth
 ;
@@ -79,11 +79,11 @@ pro ucomp_l2_polarization, file, run=run
 
   center_intensity = reform(ext_data[*, *, 0, center_index - 1:center_index + 1])
 
-  integrated_intensity = ucomp_integrate(reform(ext_data[*, *, 0, *]), center_index=center_index)
-  integrated_q         = ucomp_integrate(reform(ext_data[*, *, 1, *]), center_index=center_index)
-  integrated_u         = ucomp_integrate(reform(ext_data[*, *, 2, *]), center_index=center_index)
+  summed_intensity = ucomp_integrate(reform(ext_data[*, *, 0, *]), center_index=center_index)
+  summed_q         = ucomp_integrate(reform(ext_data[*, *, 1, *]), center_index=center_index)
+  summed_u         = ucomp_integrate(reform(ext_data[*, *, 2, *]), center_index=center_index)
 
-  integrated_linpol = sqrt(integrated_q^2 + integrated_u^2)
+  summed_linpol = sqrt(summed_q^2 + summed_u^2)
 
   d_lambda = wavelengths[center_index] - wavelengths[center_index - 1]
   ucomp_analytic_gauss_fit, center_intensity[*, *, 0], $
@@ -94,7 +94,7 @@ pro ucomp_l2_polarization, file, run=run
                             line_width=line_width, $
                             peak_intensity=peak_intensity
 
-  enhanced_intensity = ucomp_enhanced_intensity(integrated_intensity, $
+  enhanced_intensity = ucomp_enhanced_intensity(summed_intensity, $
                                                 radius=run->line(file.wave_region, 'enhanced_intensity_radius'), $
                                                 amount=run->line(file.wave_region, 'enhanced_intensity_amount'), $
                                                 occulter_radius=file.occulter_radius, $
@@ -102,7 +102,7 @@ pro ucomp_l2_polarization, file, run=run
                                                 field_radius=run->epoch('field_radius'), $
                                                 mask=run->config('display/mask_l2'))
 
-  azimuth = ucomp_azimuth(integrated_q, integrated_u, radial_azimuth=radial_azimuth)
+  azimuth = ucomp_azimuth(summed_q, summed_u, radial_azimuth=radial_azimuth)
 
   l2_dir = filepath('', $
                     subdir=[run.date, 'level2'], $
@@ -124,28 +124,28 @@ pro ucomp_l2_polarization, file, run=run
   if (error_msg ne '') then message, error_msg
 
   ; write intensity
-  ucomp_fits_write, fcb, float(integrated_intensity), ext_headers[0], $
-                    extname='Integrated intensity', /no_abort, message=error_msg
+  ucomp_fits_write, fcb, float(summed_intensity), ext_headers[0], $
+                    extname='Summed intensity', /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
 
   ; write enhanced intensity
   ucomp_fits_write, fcb, float(enhanced_intensity), ext_headers[0], $
-                    extname='Enhanced integrated intensity', /no_abort, message=error_msg
+                    extname='Enhanced summed intensity', /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
 
   ; write Q
-  ucomp_fits_write, fcb, float(integrated_q), ext_headers[0], $
-                    extname='Integrated Q', /no_abort, message=error_msg
+  ucomp_fits_write, fcb, float(summed_q), ext_headers[0], $
+                    extname='Summed Q', /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
 
   ; write U
-  ucomp_fits_write, fcb, float(integrated_u), ext_headers[0], $
-                    extname='Integrated U', /no_abort, message=error_msg
+  ucomp_fits_write, fcb, float(summed_u), ext_headers[0], $
+                    extname='Summed U', /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
 
   ; write linear polarization
-  ucomp_fits_write, fcb, float(integrated_linpol), ext_headers[0], $
-                    extname='Integrated L', /no_abort, message=error_msg
+  ucomp_fits_write, fcb, float(summed_linpol), ext_headers[0], $
+                    extname='Summed linear polarization', /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
 
   ; write azimuth
@@ -167,11 +167,11 @@ pro ucomp_l2_polarization, file, run=run
 
   ucomp_write_polarization_image, polarization_filename, $
                                   file, $
-                                  integrated_intensity, $
+                                  summed_intensity, $
                                   enhanced_intensity, $
-                                  integrated_q, $
-                                  integrated_u, $
-                                  integrated_linpol, $
+                                  summed_q, $
+                                  summed_u, $
+                                  summed_linpol, $
                                   azimuth, $
                                   radial_azimuth, $
                                   reduce_factor=4L, $
