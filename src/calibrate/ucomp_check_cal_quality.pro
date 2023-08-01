@@ -46,12 +46,12 @@ pro ucomp_check_cal_quality, type, run=run
 
       ; check cal data, set quality_bitmask
       quality_bitmasks[f] or= quality_conditions[q].mask * quality
-      mg_log, '%s quality: %d', $
-              file_basename(file.raw_filename), $
-              quality_bitmasks[f], $
-              name=run.logger_name, /debug
     endfor
     file.quality_bitmask = quality_bitmasks[f]
+    mg_log, '%s quality: %d', $
+            file_basename(file.raw_filename), $
+            file.quality_bitmask, $
+            name=run.logger_name, /debug
   endfor
 
   !null = where(quality_bitmasks eq 0UL, n_ok_files)
