@@ -378,3 +378,4 @@
   check that wavelengths in science file match the wave region of the file
   fix in cal quality check for days where many flats don't pass quality
 0.4.7
+  fix for intensity FITS file extension names

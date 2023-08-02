@@ -69,6 +69,9 @@ pro ucomp_db_update, run=run
     ucomp_db_file_insert, sci_files, 'L1', 'IQUV', $
                           obsday_index, sw_index, db, $
                           logger_name=run.logger_name
+    ucomp_db_file_insert, sci_files, 'L1', 'intensity', $
+                          obsday_index, sw_index, db, $
+                          logger_name=run.logger_name
     ucomp_db_sci_insert, sci_files, wave_regions[w], $
                          obsday_index, sw_index, db, run=run
 
