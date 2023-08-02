@@ -377,3 +377,4 @@
 0.4.6 [Aug 2, 2023]
   check that wavelengths in science file match the wave region of the file
   fix in cal quality check for days where many flats don't pass quality
+0.4.7
