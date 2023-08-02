@@ -376,4 +376,4 @@
   epoch file additions
 0.4.6
   check that wavelengths in science file match the wave region of the file
-  fix for days where nearly all flats don't pass quality
+  fix in cal quality check for days where many flats don't pass quality
