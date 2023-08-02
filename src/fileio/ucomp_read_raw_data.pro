@@ -46,6 +46,8 @@ pro ucomp_read_raw_data, filename, $
   compile_opt strictarr
   on_error, 2
 
+  all_zero = 0B
+
   fits_open, filename, fcb, /no_abort, message=msg
   if (msg ne '') then message, msg
 
@@ -70,11 +72,13 @@ pro ucomp_read_raw_data, filename, $
       if (msg ne '') then message, msg
 
       if (arg_present(all_zero)) then begin
-        if (n_elements(all_zero) eq 0L) then begin
-          all_zero = array_equal(data, 0US)
-        endif else begin
-          all_zero or= array_equal(data, 0US)
-        endelse
+        ext_all_zero = array_equal(data, 0US)
+        if (ext_all_zero gt 0) then begin
+          mg_log, '%s ext %d all zero', $
+                  file_basename(filename), e, $
+                  name=logger, /warn
+        endif
+        all_zero or= ext_all_zero
       endif
 
       numsum = ucomp_getpar(header, 'NUMSUM')
@@ -147,11 +151,13 @@ end
 
 ; main-level example program
 
-;date = '20220302'
-date = '20220310'
-;raw_basename = '20220302.211521.32.ucomp.l0.fts'
-;raw_basename = '20220302.174547.40.ucomp.l0.fts'
-raw_basename = '20220310.180408.94.ucomp.1074.l0.fts'
+; date = '20220302'
+; date = '20220310'
+date = '20220219'
+; raw_basename = '20220302.211521.32.ucomp.l0.fts'
+; raw_basename = '20220302.174547.40.ucomp.l0.fts'
+; raw_basename = '20220310.180408.94.ucomp.1074.l0.fts'
+raw_basename = '20220219.212350.63.ucomp.637.l0.fts'
 
 config_basename = 'ucomp.latest.cfg'
 config_filename = filepath(config_basename, $
@@ -168,11 +174,11 @@ ucomp_read_raw_data, raw_filename, $
                      ext_data=ext_data, $
                      ext_headers=ext_headers, $
                      repair_routine=run->epoch('raw_data_repair_routine'), $
-                     ;badframes=run.badframes, $
+                     badframes=run.badframes, $
                      all_zero=all_zero
 print, raw_filename
 print, raw_basename, all_zero ? 'YES' : 'NO', format='%s all zero: %s'
 
-;obj_destroy, run
+obj_destroy, run
 
 end
