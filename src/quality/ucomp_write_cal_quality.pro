@@ -28,7 +28,7 @@ pro ucomp_write_cal_quality, run=run
   for f = 0L, n_dark_files - 1L do begin
     printf, lun, file_basename(dark_files[f].raw_filename), $
                  'dark', $
-                 dark_files[f].wave_region, $
+                 '----', $
                  dark_files[f].quality_bitmask, $
                  format=fmt
   endfor
