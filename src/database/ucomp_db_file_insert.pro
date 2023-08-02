@@ -63,6 +63,9 @@ pro ucomp_db_file_insert, files, level, product_type, $
     if (strlowcase(product_type) eq 'iquv') then begin
       if (~file.wrote_l1) then continue
       filename = file.l1_basename
+    endif else if (strlowcase(product_type) eq 'intensity') then begin
+      if (~file.wrote_l1) then continue
+      filename = file.l1_intensity_basename
     endif else if (strlowcase(product_type) eq 'dynamics') then begin
       if (~file.wrote_dynamics) then continue
       filename = file.dynamics_basename
