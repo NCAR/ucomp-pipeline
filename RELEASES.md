@@ -374,6 +374,6 @@
   fix for crash in rolling flat plot with exactly one day
 0.4.5 [Jul 30, 2023]
   epoch file additions
-0.4.6
+0.4.6 [Aug 2, 2023]
   check that wavelengths in science file match the wave region of the file
   fix in cal quality check for days where many flats don't pass quality
