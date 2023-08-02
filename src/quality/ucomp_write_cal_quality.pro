@@ -21,21 +21,28 @@ pro ucomp_write_cal_quality, run=run
   basename = string(run.date, format='(%"%s.ucomp.cal.quality.log")')
   filename = filepath(basename, root=l1_dir)
   openw, lun, filename, /get_lun
-  printf, lun, 'Filename', 'Reason', format='(%"%-40s %-6s")'
+  printf, lun, 'Filename', 'Type', 'Wave region', 'Reason', $
+               format='(%"%-40s %-6s %-12s %-6s")'
 
-  fmt = '(%"%-40s %6d")'
+  fmt = '(%"%-40s %-6s %-12s %6d")'
   for f = 0L, n_dark_files - 1L do begin
     printf, lun, file_basename(dark_files[f].raw_filename), $
+                 'dark', $
+                 dark_files[f].wave_region, $
                  dark_files[f].quality_bitmask, $
                  format=fmt
   endfor
   for f = 0L, n_flat_files - 1L do begin
     printf, lun, file_basename(flat_files[f].raw_filename), $
+                 'flat', $
+                 flat_files[f].wave_region, $
                  flat_files[f].quality_bitmask, $
                  format=fmt
   endfor
   for f = 0L, n_cal_files - 1L do begin
     printf, lun, file_basename(cal_files[f].raw_filename), $
+                 'cal', $
+                 cal_files[f].wave_region, $
                  cal_files[f].quality_bitmask, $
                  format=fmt
   endfor
