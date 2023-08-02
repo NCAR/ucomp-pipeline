@@ -997,7 +997,7 @@ def check_for_control(args):
     try:
         with open(os.path.join(control_dir, "version"), "r") as f:
             version = f.readline().rstrip("\n")
-            version = f".v{version}"
+            version = f".{version}"
     except:
         version = ""
 
