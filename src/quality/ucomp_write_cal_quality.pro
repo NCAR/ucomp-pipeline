@@ -22,9 +22,9 @@ pro ucomp_write_cal_quality, run=run
   filename = filepath(basename, root=l1_dir)
   openw, lun, filename, /get_lun
   printf, lun, 'Filename', 'Type', 'Wave region', 'Reason', $
-               format='(%"%-40s %-6s %-12s %-6s")'
+               format='(%"%-40s %-6s %12s %-6s")'
 
-  fmt = '(%"%-40s %-6s %-12s %6d")'
+  fmt = '(%"%-40s %-6s %12s %6d")'
   for f = 0L, n_dark_files - 1L do begin
     printf, lun, file_basename(dark_files[f].raw_filename), $
                  'dark', $
