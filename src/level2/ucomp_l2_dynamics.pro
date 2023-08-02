@@ -127,6 +127,7 @@ pro ucomp_l2_dynamics, file, run=run
     line_width[bad_indices]         = !values.f_nan
   endif
 
+  ; TODO: constants should be retrieved from wave region config file
   valid_indices = where(intensity_center gt 1.0 $
                           and intensity_center lt 100.0 $
                           and intensity_blue gt 0.1 $
