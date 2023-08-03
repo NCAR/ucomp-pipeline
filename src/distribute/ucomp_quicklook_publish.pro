@@ -141,13 +141,14 @@ pro ucomp_quicklook_publish, run=run
             endfor
 
             for d = 0L, n_elements(l1_dynamics_types) - 1L do begin
-              movie_filename = filepath(string(run.date, wave_region, l1_dynamics_types[d], $
+              movie_filename = filepath(string(run.date, wave_regions[w], l1_dynamics_types[d], $
                                                format='%s.ucomp.%s.l1.%s.mp4'), $
                                         root=l1_dir)
-            if (file_test(movie_filename, /regular)) then begin
-              quicklook_files_list->add, movie_filename
-              n_dynamics_files += 1L
-            endif
+              if (file_test(movie_filename, /regular)) then begin
+                quicklook_files_list->add, movie_filename
+                n_dynamics_files += 1L
+              endif
+            endfor
 
             mg_log, 'publishing %d %s nm level 1 dynamics quicklook files', $
                     n_dynamics_files, wave_regions[w], $
