@@ -4,6 +4,10 @@
 ; Package and distribute quicklook images and movies to the appropriate
 ; locations.
 ;
+; Note: all level 2 files are good to publish because they are only created from
+; good level 1 files. Level 1 files must be checked individually to see if they
+; passed GBU because we create level 1 files and then check them for GBU.
+;
 ; :Keywords:
 ;   run : in, required, type=object
 ;     `ucomp_run` object
@@ -35,10 +39,10 @@ pro ucomp_quicklook_publish, run=run
   ;   YYYYMMDD.HHMMSS.ucomp.WWWW.l1.N.intensity.gif (dynamics)
   ;   YYYYMMDD.HHMMSS.ucomp.WWWW.l1.N.iquv.all.png (polarization)
   ;   YYYYMMDD.HHMMSS.ucomp.WWWW.l1.N.iquv.png (polarization)
-  ; and two types of movie files:
-  ;   YYYYMMDD.ucomp.WWWW.l1.N.enhanced_intensity.mp4 (dynamics)
-  ;   YYYYMMDD.ucomp.WWWW.l1.N.intensity.mp4 (dynamics)
-  ;   YYYYMMDD.ucomp.WWWW.l1.N.iquv.mp4 (polarization)
+  ; and three types of movie files:
+  ;   YYYYMMDD.ucomp.WWWW.l1.enhanced_intensity.mp4 (dynamics)
+  ;   YYYYMMDD.ucomp.WWWW.l1.intensity.mp4 (dynamics)
+  ;   YYYYMMDD.ucomp.WWWW.l1.iquv.mp4 (polarization)
 
   ; populate quicklook_files_list
   wave_regions = run->config('options/wave_regions')
@@ -48,24 +52,42 @@ pro ucomp_quicklook_publish, run=run
     mg_log, 'publishing %s nm data: %s (%s)', $
             wave_regions[w], publish_l1 ? 'L1 and L2' : 'L2', publish_type, $
             name=run.logger_name, /info
+
+    wave_region_files = run->get_files(wave_region=wave_regions[w], $
+                                       data_type='sci', $
+                                       count=n_wave_region_files)
+
     switch strlowcase(publish_type) of
       'all': begin
           ; add polarization files
           if (publish_l1) then begin
-            l1_polarization_types = ['*.iquv.all.png', $
-                                     '*.iquv.png', $
-                                     'iquv.mp4']
-            for p = 0L, n_elements(l1_polarization_types) - 1L do begin
-              glob = string(wave_regions[w], l1_polarization_types[p], $
-                            format='*.ucomp.%s.l1.%s')
-              files = file_search(filepath(glob, root=l1_dir), count=n_files)
-              if (n_files gt 0L) then begin
-                mg_log, 'publishing %d %s nm %s files', $
-                        n_files, wave_regions[w], l1_polarization_types[p], $
-                        name=run.logger_name, /info
-                quicklook_files_list->add, files, /extract
-              endif
+            n_polarization_files = 0L
+            l1_polarization_types = ['iquv.all.png', $
+                                     'iquv.png']
+            for f = 0L, n_wave_region_files - 1L do begin
+              if (wave_region_files[f].ok ne 0UL $
+                    || wave_region_files[f].gbu ne 0UL) then continue
+              basename = file_basename(wave_region_files[f].l1_basename, '.fts')
+              for p = 0L, n_elements(l1_polarization_types) - 1L do begin
+                png_filename = filepath(string(basename, l1_polarization_types[p], $
+                                               format='%s.%s'), $
+                                        root=l1_dir)
+                if (file_test(png_filename, /regular)) then begin
+                  quicklook_files_list->add, png_filename
+                  n_polarization_files += 1L
+                endif
+              endfor
             endfor
+            movie_filename = filepath(string(run.date, wave_region, $
+                                             format='%s.ucomp.%s.l1.iquv.mp4'), $
+                                      root=l1_dir)
+            if (file_test(movie_filename, /regular)) then begin
+              quicklook_files_list->add, movie_filename
+              n_polarization_files += 1L
+            endif
+            mg_log, 'publishing %d %s nm level 1 polarization quicklook files', $
+                    n_polarization_files, wave_regions[w], $
+                    name=run.logger_name, /info
           endif else begin
             mg_log, 'skipping publishing %s nm level 1 polarization files', $
                     wave_regions[w], $
@@ -100,21 +122,36 @@ pro ucomp_quicklook_publish, run=run
       'dynamics': begin
           ; add dynamics files
           if (publish_l1) then begin
-            l1_dynamics_types = ['*.enhanced_intensity.gif', $
-                                 'enhanced_intensity.mp4', $
-                                 '*.intensity.gif', $
-                                 'intensity.mp4']
-            for d = 0L, n_elements(l1_dynamics_types) - 1L do begin
-              glob = string(wave_regions[w], l1_dynamics_types[d], $
-                            format='*.ucomp.%s.l1.%s')
-              files = file_search(filepath(glob, root=l1_dir), count=n_files)
-              if (n_files gt 0L) then begin
-                mg_log, 'publishing %d %s nm %s files', $
-                        n_files, wave_regions[w], l1_dynamics_types[d], $
-                        name=run.logger_name, /info
-                quicklook_files_list->add, files, /extract
-              endif
+            n_dynamics_files = 0L
+            l1_dynamics_types = ['enhanced_intensity', $
+                                 'intensity']
+            for f = 0L, n_wave_region_files - 1L do begin
+              if (wave_region_files[f].ok ne 0UL $
+                    || wave_region_files[f].gbu ne 0UL) then continue
+              basename = file_basename(wave_region_files[f].l1_basename, '.fts')
+              for d = 0L, n_elements(l1_dynamics_types) - 1L do begin
+                gif_filename = filepath(string(basename, l1_dynamics_types[d], $
+                                               format='%s.%s.gif'), $
+                                        root=l1_dir)
+                if (file_test(gif_filename, /regular)) then begin
+                  quicklook_files_list->add, gif_filename
+                  n_dynamics_files += 1L
+                endif
+              endfor
             endfor
+
+            for d = 0L, n_elements(l1_dynamics_types) - 1L do begin
+              movie_filename = filepath(string(run.date, wave_region, l1_dynamics_types[d], $
+                                               format='%s.ucomp.%s.l1.%s.mp4'), $
+                                        root=l1_dir)
+            if (file_test(movie_filename, /regular)) then begin
+              quicklook_files_list->add, movie_filename
+              n_dynamics_files += 1L
+            endif
+
+            mg_log, 'publishing %d %s nm level 1 dynamics quicklook files', $
+                    n_dynamics_files, wave_regions[w], $
+                    name=run.logger_name, /info
           endif else begin
             mg_log, 'skipping publishing %s nm level 1 dynamics files', $
                     wave_regions[w], $
