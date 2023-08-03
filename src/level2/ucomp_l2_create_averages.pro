@@ -53,16 +53,12 @@ pro ucomp_l2_create_averages, wave_region, method, $
       continue
     endif
 
-    mg_log, '%s averaging %d %s nm files in %s', $
-            method, n_files, wave_region, program_names[p], $
-            name=run.logger_name, /info
-
     ; filter out files with bad GBU
     ok = bytarr(n_files)
     for f = 0L, n_files - 1L do begin
       ok[f] = program_files[f].ok eq 0UL and program_files[f].gbu eq 0UL
     endfor
-    good_files_indices = where(ok[f] eq 1, n_good_files)
+    good_files_indices = where(ok eq 1, n_good_files)
     if (n_good_files eq 0L) then begin
       mg_log, 'no good %s nm files in %s', wave_region, program_names[p], $
               name=run.logger_name, /info
@@ -71,6 +67,10 @@ pro ucomp_l2_create_averages, wave_region, method, $
     endif else begin
       good_files = files[good_files_indices]
     endelse
+
+    mg_log, '%s averaging %d %s nm files in %s', $
+            method, n_good_files, wave_region, program_names[p], $
+            name=run.logger_name, /info
 
     average_basename = string(run.date, wave_region, program_filename, method, $
                               format='(%"%s.ucomp.%s.l2.%s.%s.fts")')
