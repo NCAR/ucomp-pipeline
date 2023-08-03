@@ -75,8 +75,8 @@ pro ucomp_l1_apply_gain, file, $
               name=run.logger_name, /error
       mg_log, 'request %0.2f HST, %0.2f ms, %s gain, %s, %0.2f nm', $
               obsday_hours, exptime, gain_mode, onband, wavelengths[e], $
-              name=run.logger_name, /warn
-      mg_log, 'error message: %s', error_msg, name=run.logger_name, /warn
+              name=run.logger_name, /debug
+      mg_log, 'error message: %s', error_msg, name=run.logger_name, /debug
       status = 1L
       continue
     endif
