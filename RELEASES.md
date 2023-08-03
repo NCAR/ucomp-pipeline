@@ -379,3 +379,6 @@
   fix in cal quality check for days where many flats don't pass quality
 0.4.7
   fix for intensity FITS file extension names
+  categorizing program names into synoptic, waves, and do-not-use
+  better program name construction
+  fix bugs in filtering bad level 1 files out of level 2
