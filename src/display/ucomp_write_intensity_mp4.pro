@@ -37,7 +37,7 @@ pro ucomp_write_intensity_mp4, wave_region, run=run, enhanced=enhanced
 
   use = bytarr(n_files)
   for f = 0L, n_files - 1L do begin
-    use[f] = files[f].ok and ~files[f].gbu and files[f].wrote_l1
+    use[f] = files[f].ok and (files[f].gbu eq 0UL) and files[f].wrote_l1
   endfor
 
   use_indices = where(use, n_use)
