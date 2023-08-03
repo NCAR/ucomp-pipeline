@@ -65,8 +65,7 @@ pro ucomp_quicklook_publish, run=run
             l1_polarization_types = ['iquv.all.png', $
                                      'iquv.png']
             for f = 0L, n_wave_region_files - 1L do begin
-              if (wave_region_files[f].ok ne 0UL $
-                    || wave_region_files[f].gbu ne 0UL) then continue
+              if (~wave_region_files[f].good) then continue
               basename = file_basename(wave_region_files[f].l1_basename, '.fts')
               for p = 0L, n_elements(l1_polarization_types) - 1L do begin
                 png_filename = filepath(string(basename, l1_polarization_types[p], $
@@ -78,7 +77,7 @@ pro ucomp_quicklook_publish, run=run
                 endif
               endfor
             endfor
-            movie_filename = filepath(string(run.date, wave_region, $
+            movie_filename = filepath(string(run.date, wave_regions[w], $
                                              format='%s.ucomp.%s.l1.iquv.mp4'), $
                                       root=l1_dir)
             if (file_test(movie_filename, /regular)) then begin
@@ -126,8 +125,7 @@ pro ucomp_quicklook_publish, run=run
             l1_dynamics_types = ['enhanced_intensity', $
                                  'intensity']
             for f = 0L, n_wave_region_files - 1L do begin
-              if (wave_region_files[f].ok ne 0UL $
-                    || wave_region_files[f].gbu ne 0UL) then continue
+              if (~wave_region_files[f].good) then continue
               basename = file_basename(wave_region_files[f].l1_basename, '.fts')
               for d = 0L, n_elements(l1_dynamics_types) - 1L do begin
                 gif_filename = filepath(string(basename, l1_dynamics_types[d], $
