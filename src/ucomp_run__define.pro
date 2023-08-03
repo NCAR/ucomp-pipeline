@@ -222,9 +222,17 @@ function ucomp_run::get_programs, wave_region, count=count
   program_names = strarr(n_files)
   for f = 0L, n_files - 1L do program_names[f] = files[f].program_name
 
+  ; remove empty program names
+  nonempty_program_indices = where(program_names ne '', n_nonempty_programs)
+  if (n_nonempty_programs eq 0L) then begin
+    count = 0L
+    return, !null
+  endif
+  program_names = program_names[nonempty_program_indices]
+
+  ; keep only unique program names
   unique_program_indices = uniq(program_names, sort(program_names))
   count = n_elements(unique_program_indices)
-
   return, program_names[unique_program_indices]
 end
 

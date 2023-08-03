@@ -11,7 +11,7 @@
 ;     method of averaging, either "mean" or "median"
 ;
 ; :Keywords:
-;   average_filenames : out, optional, type=starr
+;   average_filenames : out, optional, type=strarr
 ;     filenames of the average files produced
 ;   run : in, required, type=object
 ;     UCoMP run object
@@ -49,6 +49,7 @@ pro ucomp_l2_create_averages, wave_region, method, $
     if (n_files eq 0L) then begin
       mg_log, 'no %s nm files in %s', wave_region, program_names[p], $
               name=run.logger_name, /info
+      average_filenames[p] = ''
       continue
     endif
 
@@ -56,24 +57,39 @@ pro ucomp_l2_create_averages, wave_region, method, $
             method, n_files, wave_region, program_names[p], $
             name=run.logger_name, /info
 
-    ; convert "program" name to name to use in filename
-    program_filename = run->convert_program_name(program_names[p])
+    ; filter out files with bad GBU
+    ok = bytarr(n_files)
+    for f = 0L, n_files - 1L do begin
+      ok[f] = program_files[f].ok eq 0UL and program_files[f].gbu eq 0UL
+    endfor
+    good_files_indices = where(ok[f] eq 1, n_good_files)
+    if (n_good_files eq 0L) then begin
+      mg_log, 'no good %s nm files in %s', wave_region, program_names[p], $
+              name=run.logger_name, /info
+      average_filenames[p] = ''
+      continue
+    endif else begin
+      good_files = files[good_files_indices]
+    endelse
 
     average_basename = string(run.date, wave_region, program_filename, method, $
                               format='(%"%s.ucomp.%s.l2.%s.%s.fts")')
     average_filename = filepath(average_basename, root=l2_dir)
     average_filenames[p] = average_filename
 
-    n_digits = floor(alog10(n_files)) + 1L
-    for f = 0L, n_files - 1L do begin
+    n_digits = floor(alog10(n_good_files)) + 1L
+    for f = 0L, n_good_files - 1L do begin
       mg_log, mg_format('%*d/%d: %s', n_digits, /simple), $
-              f + 1L, n_files, $
-              file_basename(program_files[f].l1_basename), $
+              f + 1L, n_good_files, $
+              file_basename(good_files[f].l1_basename), $
               name=run.logger_name, /debug
     endfor
 
-    ucomp_average_l1_files, program_files, average_filename, method=method, run=run
+    ucomp_average_l1_files, good_files, average_filename, method=method, run=run
   endfor
+
+  ; cull average_filenames
+  average_filenames = average_filenames[where(average_filenames ne '', /null)]
 
   done:
 end
