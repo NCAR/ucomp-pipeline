@@ -38,8 +38,8 @@ pro ucomp_l2_create_averages, wave_region, method, $
     goto, done
   endif
 
-  mg_log, 'found %d programs for %s nm science files', $
-          n_programs, wave_region, $
+  mg_log, 'found %s for %s nm science files [%s]', $
+          mg_plural(n_programs, 'program'), wave_region, method, $
           name=run.logger_name, /info
   average_filenames = strarr(n_programs)
   for p = 0L, n_programs - 1L do begin
@@ -47,32 +47,32 @@ pro ucomp_l2_create_averages, wave_region, method, $
                                    program=program_names[p], $
                                    count=n_files)
     if (n_files eq 0L) then begin
-      mg_log, 'no %s nm files in %s', wave_region, program_names[p], $
+      mg_log, 'no %s nm files in %s [%s]', $
+              wave_region, program_names[p], method, $
               name=run.logger_name, /info
       average_filenames[p] = ''
       continue
     endif
 
     ; filter out files with bad GBU
-    ok = bytarr(n_files)
-    for f = 0L, n_files - 1L do begin
-      ok[f] = program_files[f].ok eq 0UL and program_files[f].gbu eq 0UL
-    endfor
-    good_files_indices = where(ok eq 1, n_good_files)
+    good = bytarr(n_files)
+    for f = 0L, n_files - 1L do good[f] = program_files[f].good
+    good_files_indices = where(good eq 1, n_good_files)
     if (n_good_files eq 0L) then begin
-      mg_log, 'no good %s nm files in %s', wave_region, program_names[p], $
+      mg_log, 'no good %s nm files in %s [%s]', $
+              wave_region, program_names[p], method, $
               name=run.logger_name, /info
       average_filenames[p] = ''
       continue
-    endif else begin
-      good_files = files[good_files_indices]
-    endelse
+    endif
+
+    good_files = program_files[good_files_indices]
 
     mg_log, '%s averaging %d %s nm files in %s', $
             method, n_good_files, wave_region, program_names[p], $
             name=run.logger_name, /info
 
-    average_basename = string(run.date, wave_region, program_filename, method, $
+    average_basename = string(run.date, wave_region, program_names[p], method, $
                               format='(%"%s.ucomp.%s.l2.%s.%s.fts")')
     average_filename = filepath(average_basename, root=l2_dir)
     average_filenames[p] = average_filename
