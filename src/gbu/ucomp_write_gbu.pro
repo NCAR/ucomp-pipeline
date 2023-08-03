@@ -26,15 +26,21 @@ pro ucomp_write_gbu, wave_region, run=run
 
   ; write the GBU log
   basename = string(run.date, wave_region, format='(%"%s.ucomp.%s.gbu.log")')
+  l1_dir = filepath('', $
+                    subdir=[run.date, 'level1'], $
+                    root=run->config('processing/basedir'))
   filename = filepath(basename, $
-                      subdir=[run.date, 'level1'], $
-                      root=run->config('processing/basedir'))
+                      root=l1_dir)
   openw, lun, filename, /get_lun
   printf, lun, 'Filename', 'Reason', 'Med Back', 'V Crosstalk', $
           format='(%"%-38s %6s %10s %13s")'
 
   for f = 0L, n_files - 1L do begin
-    if (files[f].quality eq 0) then begin
+    l1_filename = filepath(files[f].l1_basename, root=l1_dir)
+    ; need to check that the quality was good and that the file was actually
+    ; created in case processing failed for some other reason, e.g., there
+    ; was not a dark/flat to calibrate it
+    if (files[f].quality eq 0 && file_test(l1_filename, /regular)) then begin
       printf, lun, $
               files[f].l1_basename, $
               files[f].gbu, $
