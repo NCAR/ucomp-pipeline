@@ -391,7 +391,12 @@ pro ucomp_file::getProperty, run=run, $
 
   if (arg_present(obs_id)) then obs_id = self.obs_id
   if (arg_present(obs_plan)) then obs_plan = self.obs_plan
-  if (arg_present(program_name)) then program_name = file_basename(self.obs_plan, '.cbk')
+  if (arg_present(program_name)) then begin
+    ; remove either .cbk or .ckb
+    program_name = file_basename(self.obs_plan, '.cbk')
+    program_name = file_basename(program_name, '.ckb')
+    program_name = self.run->convert_program_name(program_name)
+  endif
 
   if (arg_present(exptime)) then exptime = self.exptime
   if (arg_present(gain_mode)) then gain_mode = self.gain_mode
