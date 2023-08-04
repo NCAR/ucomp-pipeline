@@ -1,7 +1,8 @@
 ; docformat = 'rst'
 
 ;+
-; Update the num_ucomp field of the mlso_numfiles database table.
+; Update the num_ucomp field of the mlso_numfiles database table with the
+; number of good level 1 files, of all wave regions.
 ;
 ; :Params:
 ;   obsday_index : in, required, type=integer
@@ -18,8 +19,13 @@ pro ucomp_db_update_mlso_numfiles, obsday_index, db, run=run
 
   files = run->get_files(data_type='sci', count=n_total_fits_files)
 
+  n_good_fits_files = 0L
+  for f = 0L, n_total_fits_files - 1L do begin
+    if (files[f].good) then n_good_fits_files += 1L
+  endfor
+
   sql_cmd = 'update mlso_numfiles set num_ucomp=%d where day_id=%d'
-  db->execute, sql_cmd, n_total_fits_files, obsday_index
+  db->execute, sql_cmd, n_good_fits_files, obsday_index
 
   done:
 end
