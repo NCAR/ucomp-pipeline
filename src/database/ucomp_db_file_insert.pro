@@ -60,17 +60,26 @@ pro ucomp_db_file_insert, files, level, product_type, $
   for f = 0L, n_files - 1L do begin
     file = files[f]
 
+    if (~file.wrote_l1) then begin
+      mg_log, 'skipping %s', file.l1_basename, name=logger_name, /debug
+      continue
+    endif
+
     if (strlowcase(product_type) eq 'iquv') then begin
-      if (~file.wrote_l1) then continue
       filename = file.l1_basename
     endif else if (strlowcase(product_type) eq 'intensity') then begin
-      if (~file.wrote_l1) then continue
       filename = file.l1_intensity_basename
     endif else if (strlowcase(product_type) eq 'dynamics') then begin
-      if (~file.wrote_dynamics) then continue
+      if (~file.wrote_dynamics) then begin
+        mg_log, 'skipping %s', file.dynamics_basename, name=logger_name, /debug
+        continue
+      endif
       filename = file.dynamics_basename
     endif else if (strlowcase(product_type) eq 'polarization') then begin
-      if (~file.wrote_polarization) then continue
+      if (~file.wrote_polarization) then begin
+        mg_log, 'skipping %s', file.polarization_basename, name=logger_name, /debug
+        continue
+      endif
       filename = file.polarization_basename
     endif else begin
       mg_log, 'unknown product_type: %s', product_type, name=logger_name, /warn
