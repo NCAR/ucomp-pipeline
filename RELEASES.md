@@ -384,3 +384,4 @@
   better program name construction
   fix bugs in filtering bad level 1 files out of level 2
   fixes for level 1 publishing only good files
+0.4.8
