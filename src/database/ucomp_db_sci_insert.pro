@@ -20,7 +20,7 @@ function ucomp_db_sci_insert_select, files, count=count
   n_files = n_elements(files)
   count = 1L
   for f = 0L, n_files - 1L do begin
-    if (files[f].wrote_l1) then return, files[f]
+    if (files[f].wrote_l1 and files[f].good) then return, files[f]
   endfor
 
   count = 0L
@@ -73,6 +73,7 @@ pro ucomp_db_sci_insert, files, wave_region, $
 
   for f = 0L, n_files - 1L do begin
     file = science_files[f]
+
 
     file->getProperty, ut_date=ut_date, ut_time=ut_time
     hrs = [1.0, 1.0 / 60.0, 1.0 / 60.0 / 60.0]
