@@ -379,6 +379,8 @@
   fix in cal quality check for days where many flats don't pass quality
 0.4.7
   fix for intensity FITS file extension names
+  add intensity FITS files to ucomp_file database table
   categorizing program names into synoptic, waves, and do-not-use
   better program name construction
   fix bugs in filtering bad level 1 files out of level 2
+  fixes for level 1 publishing only good files
