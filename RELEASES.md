@@ -386,3 +386,5 @@
   fixes for level 1 publishing only good files
 0.4.8
   put number of *good* level 1 FITS files in num_ucomp field of mlso_numfiles
+  put only written level 1 FITS files into ucomp_file database table
+  put only good level 1 FITS files into ucomp_sci database table
