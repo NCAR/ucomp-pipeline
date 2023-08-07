@@ -42,16 +42,18 @@ pro ucomp_plot_centering_info, filename, wave_region, run=run
   time_range = [16.0, 28.0]
 
   n_cameras = 2L
-  n_plots   = 3 * n_cameras   ; x, y, and radius
+  n_plots   = 4 * n_cameras   ; x, y, radius, chi-squared
   !p.multi  = [0, 2, n_plots / n_cameras, 0, 1]
 
-  hours  = fltarr(n_files) + !values.f_nan
-  rcam_x = fltarr(n_files) + !values.f_nan
-  rcam_y = fltarr(n_files) + !values.f_nan
-  rcam_r = fltarr(n_files) + !values.f_nan
-  tcam_x = fltarr(n_files) + !values.f_nan
-  tcam_y = fltarr(n_files) + !values.f_nan
-  tcam_r = fltarr(n_files) + !values.f_nan
+  hours      = fltarr(n_files) + !values.f_nan
+  rcam_x     = fltarr(n_files) + !values.f_nan
+  rcam_y     = fltarr(n_files) + !values.f_nan
+  rcam_r     = fltarr(n_files) + !values.f_nan
+  rcam_chisq = fltarr(n_files) + !values.f_nan
+  tcam_x     = fltarr(n_files) + !values.f_nan
+  tcam_y     = fltarr(n_files) + !values.f_nan
+  tcam_r     = fltarr(n_files) + !values.f_nan
+  tcam_chisq = fltarr(n_files) + !values.f_nan
 
   for f = 0L, n_files - 1L do begin
     hours[f] = files[f].obsday_hours + 10.0
@@ -59,15 +61,17 @@ pro ucomp_plot_centering_info, filename, wave_region, run=run
     if (files[f].ok) then begin
       rcam_geometry = files[f].rcam_geometry
       if (~obj_valid(rcam_geometry) || rcam_geometry.occulter_error ne 0) then continue
-      rcam_x[f] = rcam_geometry.occulter_center[0]
-      rcam_y[f] = rcam_geometry.occulter_center[1]
-      rcam_r[f] = rcam_geometry.occulter_radius
+      rcam_x[f]     = rcam_geometry.occulter_center[0]
+      rcam_y[f]     = rcam_geometry.occulter_center[1]
+      rcam_r[f]     = rcam_geometry.occulter_radius
+      rcam_chisq[f] = rcam_geometry.occulter_chisq
 
       tcam_geometry = files[f].tcam_geometry
       if (~obj_valid(tcam_geometry) || tcam_geometry.occulter_error ne 0) then continue
-      tcam_x[f] = tcam_geometry.occulter_center[0]
-      tcam_y[f] = tcam_geometry.occulter_center[1]
-      tcam_r[f] = tcam_geometry.occulter_radius
+      tcam_x[f]     = tcam_geometry.occulter_center[0]
+      tcam_y[f]     = tcam_geometry.occulter_center[1]
+      tcam_r[f]     = tcam_geometry.occulter_radius
+      tcam_chisq[f] = tcam_geometry.occulter_chisq
     endif
   endfor
 
@@ -100,6 +104,15 @@ pro ucomp_plot_centering_info, filename, wave_region, run=run
                    background=255, color=0, charsize=n_plots * charsize, $
                    clip_thick=2.0, psym=6, symsize=symsize
   endif
+  if (total(finite(rcam_r)) gt 0L) then begin
+    mg_range_plot, hours, rcam_chisq, $
+                   title=string(wave_region, pdate, format='%s nm RCAM occulter fit chi-squared for %s'), $
+                   xtitle='Hours [UT]', ytitle='radius [pixels]', $
+                   xstyle=1, xrange=time_range, xtickformat='ucomp_hours_format', $
+                   /ynozero, ystyle=1, yrange=r_range, $
+                   background=255, color=0, charsize=n_plots * charsize, $
+                   clip_thick=2.0, psym=6, symsize=symsize
+  endif
 
   if (total(finite(tcam_x)) gt 0L) then begin
     mg_range_plot, hours, tcam_x, $
@@ -122,6 +135,15 @@ pro ucomp_plot_centering_info, filename, wave_region, run=run
   if (total(finite(tcam_r)) gt 0L) then begin
     mg_range_plot, hours, tcam_r, $
                    title=string(wave_region, pdate, format='%s nm TCAM occulter of radius for %s'), $
+                   xtitle='Hours [UT]', ytitle='radius [pixels]', $
+                   xstyle=1, xrange=time_range, xtickformat='ucomp_hours_format', $
+                   /ynozero, ystyle=1, yrange=r_range, $
+                   background=255, color=0, charsize=n_plots * charsize, $
+                   clip_thick=2.0, psym=6, symsize=symsize
+  endif
+  if (total(finite(rcam_r)) gt 0L) then begin
+    mg_range_plot, hours, tcam_chisq, $
+                   title=string(wave_region, pdate, format='%s nm TCAM occulter fit chi-squared for %s'), $
                    xtitle='Hours [UT]', ytitle='radius [pixels]', $
                    xstyle=1, xrange=time_range, xtickformat='ucomp_hours_format', $
                    /ynozero, ystyle=1, yrange=r_range, $

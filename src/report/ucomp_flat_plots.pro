@@ -97,6 +97,8 @@ pro ucomp_flat_plots, wave_region, $
   start_time = 06   ; 24-hour time in observing day
   end_time   = 19   ; 24-hour time in observing day
   end_time  >= ceil(max(flat_times))
+  time_range = [16.0, 28.0]
+  xticks     = 12
 
   flat_range = run->line(wave_region, 'flat_value_display_range')
 
@@ -110,14 +112,15 @@ pro ucomp_flat_plots, wave_region, $
                         and (flat_onbands eq o), $
                       count)
       if (count eq 0L) then continue
-      plot, [flat_times], findgen(n_elements(flat_times)), /nodata, $
+      plot, [flat_times + 10.0], findgen(n_elements(flat_times)), /nodata, $
             charsize=charsize, $
             title=string(flat_wavelengths[unique_wavelength_indices[w]], $
                          o ? 'TCAM' : 'RCAM', $
                          format='(%"Dark corrected flat median counts (+/- 1 std dev) for %0.2f nm (%s onband)")'), $
             color=color, background=background_color, $
-            xtitle='Time [HST]', $
-            xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
+            xtitle='Time [UT]', $
+            xstyle=1, xrange=time_range, xticks=xticks, $
+            xtickformat='ucomp_hours_format', $
             ytitle='Counts [DN]', $
             ystyle=1, yrange=flat_range, ytickformat='ucomp_dn_format'
       if (~shown_legend) then begin
@@ -134,23 +137,23 @@ pro ucomp_flat_plots, wave_region, $
           flat_medians[f] = median(dark_corrected_flat_data[*, *, c, indices[f]])
           flat_stddevs[f] = stddev(dark_corrected_flat_data[*, *, c, indices[f]])
         endfor
-        mg_range_oplot, [flat_times[indices]], $
+        mg_range_oplot, [flat_times[indices] + 10.0], $
                         flat_range[0] > [flat_medians] < flat_range[1], $
                         psym=camera_psym[c], symsize=symsize, $
                         color=camera_color[c], $
                         clip_color=camera_color[c], clip_psym=7, clip_symsize=1.0
-        mg_range_oplot, [flat_times[indices]], $
+        mg_range_oplot, [flat_times[indices] + 10.0], $
                         flat_range[0] > [flat_medians - flat_stddevs] < flat_range[1], $
                         psym=8, symsize=0.5 * symsize, $
                         color=camera_color[c], $
                         clip_color=camera_color[c], clip_psym=7, clip_symsize=1.0
-        mg_range_oplot, [flat_times[indices]], $
+        mg_range_oplot, [flat_times[indices] + 10.0], $
                         flat_range[0] > [flat_medians + flat_stddevs] < flat_range[1], $
                         psym=8, symsize=0.5 * symsize, $
                         color=camera_color[c], $
                         clip_color=camera_color[c], clip_psym=7, clip_symsize=1.0
         for f = 0L, count - 1L do begin
-          plots, (flat_times[indices])[f] + fltarr(3), $
+          plots, (flat_times[indices])[f] + fltarr(3) + 10.0, $
                  flat_range[0] > (flat_medians[f] + [-1, 0, 1] * flat_stddevs[f]) < flat_range[1], $
                  linestyle=4, color=camera_color[c]
         endfor
@@ -159,7 +162,7 @@ pro ucomp_flat_plots, wave_region, $
   endfor
 
   ; save plots image file
-  output_filename = filepath(string(run.date, wave_region, format='(%"%s.ucomp.%s.flats.gif")'), $
+  output_filename = filepath(string(run.date, wave_region, format='(%"%s.ucomp.%s.daily.flats.gif")'), $
                              subdir=ucomp_decompose_date(run.date), $
                              root=run->config('engineering/basedir'))
   write_gif, output_filename, tvrd(), r, g, b
