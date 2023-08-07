@@ -109,7 +109,7 @@ pro ucomp_flat_plots, wave_region, $
       indices = where((flat_wavelengths eq flat_wavelengths[unique_wavelength_indices[w]]) $
                         and (flat_onbands eq o), $
                       count)
-      if (count eq 0L) then continue
+
       plot, [flat_times + 10.0], findgen(n_elements(flat_times)), /nodata, $
             charsize=charsize, $
             title=string(flat_wavelengths[unique_wavelength_indices[w]], $
@@ -121,6 +121,7 @@ pro ucomp_flat_plots, wave_region, $
             xtickformat='ucomp_hours_format', $
             ytitle='Counts [DN]', $
             ystyle=1, yrange=flat_range, ytickformat='ucomp_dn_format'
+
       if (~shown_legend) then begin
         shown_legend = 1B
         xyouts, 0.47, (n_unique_wavelengths - 0.20) / n_unique_wavelengths, /normal, $
@@ -128,6 +129,9 @@ pro ucomp_flat_plots, wave_region, $
         xyouts, 0.47, (n_unique_wavelengths - 0.25) / n_unique_wavelengths, /normal, $
                 'camera 1', alignment=1.0, color=camera_color[1]
       endif
+
+      if (count eq 0L) then continue
+
       for c = 0L, 1L do begin
         flat_medians = fltarr(count)
         flat_stddevs = fltarr(count)
