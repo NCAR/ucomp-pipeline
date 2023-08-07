@@ -56,7 +56,7 @@ pro ucomp_raw_plots, run=run
   tu_outlier_color      = 9
 
   times = fltarr(n_files)
-  for f = 0L, n_files - 1L do times[f] = files[f].obsday_hours
+  for f = 0L, n_files - 1L do times[f] = files[f].obsday_hours + 10.0
 
   t_base = fltarr(n_files)
   for f = 0L, n_files - 1L do t_base[f] = files[f].t_base
@@ -98,6 +98,9 @@ pro ucomp_raw_plots, run=run
   end_time   = 19   ; 24-hour time in observing day
   end_time  >= ceil(max(times))
 
+  time_range = [16.0, 28.0]
+  time_ticks = time_range[1] - time_range[0]
+
   charsize = 2.0
   symsize  = 0.25
 
@@ -109,7 +112,8 @@ pro ucomp_raw_plots, run=run
         title='Raw sensor array temperatures', charsize=charsize, $
         color=color, background=background_color, $
         xtitle='Time [HST]', $
-        xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
+        xstyle=1, xrange=time_range, xticks=time_ticks, $
+        xtickformat='ucomp_hours_format', $
         ytitle='Temperature [C]', $
         ystyle=1, yrange=run->epoch('array_temp_range', datetime=run.date)
   mg_range_oplot, times, t_c0arr, $
@@ -130,7 +134,8 @@ pro ucomp_raw_plots, run=run
         title='Raw PCB board temperatures', charsize=charsize, $
         color=color, background=background_color, $
         xtitle='Time [HST]', $
-        xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
+        xstyle=1, xrange=time_range, xticks=time_ticks, $
+        xtickformat='ucomp_hours_format', $
         ytitle='Temperature [C]', $
         ystyle=1, yrange=run->epoch('pcb_temp_range', datetime=run.date)
   mg_range_oplot, times, t_c0pcb, $
@@ -151,7 +156,8 @@ pro ucomp_raw_plots, run=run
         title='Raw base temperatures', charsize=charsize, $
         color=color, background=background_color, $
         xtitle='Time [HST]', $
-        xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
+        xstyle=1, xrange=time_range, xticks=time_ticks, $
+        xtickformat='ucomp_hours_format', $
         ytitle='Temperature [C]', $
         ystyle=1, yrange=run->epoch('base_temp_range', datetime=run.date)
   mg_range_oplot, times, t_base, $
@@ -167,7 +173,8 @@ pro ucomp_raw_plots, run=run
         linestyle=0, color=color, $
         title='LCVR1 temperature', charsize=charsize, $
         xtitle='Time [HST]', $
-        xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
+        xstyle=1, xrange=time_range, xticks=time_ticks, $
+        xtickformat='ucomp_hours_format', $
         ytitle='Temperature [C]', $
         ystyle=1, yrange=run->epoch('lcvr_temp_range', datetime=run.date)
   mg_range_oplot, times, t_lcvr1, $
@@ -182,7 +189,8 @@ pro ucomp_raw_plots, run=run
         linestyle=0, color=color, $
         title='LCVR2 temperature', charsize=charsize, $
         xtitle='Time [HST]', $
-        xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
+        xstyle=1, xrange=time_range, xticks=time_ticks, $
+        xtickformat='ucomp_hours_format', $
         ytitle='Temperature [C]', $
         ystyle=1, yrange=run->epoch('lcvr_temp_range', datetime=run.date)
   mg_range_oplot, times, t_lcvr2, $
@@ -197,7 +205,8 @@ pro ucomp_raw_plots, run=run
         linestyle=0, color=color, $
         title='LCVR3 temperature', charsize=charsize, $
         xtitle='Time [HST]', $
-        xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
+        xstyle=1, xrange=time_range, xticks=time_ticks, $
+        xtickformat='ucomp_hours_format', $
         ytitle='Temperature [C]', $
         ystyle=1, yrange=run->epoch('lcvr_temp_range', datetime=run.date)
   mg_range_oplot, times, t_lcvr3, $
@@ -213,7 +222,8 @@ pro ucomp_raw_plots, run=run
         linestyle=0, color=color, $
         title='LCVR4 temperature', charsize=charsize, $
         xtitle='Time [HST]', $
-        xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
+        xstyle=1, xrange=time_range, xticks=time_ticks, $
+        xtickformat='ucomp_hours_format', $
         ytitle='Temperature [C]', $
         ystyle=1, yrange=run->epoch('lcvr_temp_range', datetime=run.date)
   mg_range_oplot, times, t_lcvr4, $
@@ -229,7 +239,8 @@ pro ucomp_raw_plots, run=run
         linestyle=0, color=color, $
         title='LCVR5 temperature', charsize=charsize, $
         xtitle='Time [HST]', $
-        xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
+        xstyle=1, xrange=time_range, xticks=time_ticks, $
+        xtickformat='ucomp_hours_format', $
         ytitle='Temperature [C]', $
         ystyle=1, yrange=run->epoch('lcvr_temp_range', datetime=run.date)
   mg_range_oplot, times, t_lcvr5, $
@@ -246,7 +257,7 @@ pro ucomp_raw_plots, run=run
                      subdir=ucomp_decompose_date(run.date), $
                      root=run->config('engineering/basedir'))
   if (~file_test(eng_dir, /directory)) then ucomp_mkdir, eng_dir, logger_name=run.logger_name
-  output_filename = filepath(string(run.date, format='(%"%s.ucomp.raw.gif")'), $
+  output_filename = filepath(string(run.date, format='(%"%s.ucomp.daily.raw.gif")'), $
                              root=eng_dir)
   write_gif, output_filename, tvrd(), r, g, b
 

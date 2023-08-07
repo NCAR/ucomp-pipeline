@@ -47,12 +47,15 @@ pro ucomp_vcrosstalk_plots_wave_region, date, $
   tvlct, 255, 0, 0, 255
   tvlct, r, g, b, /get
 
+  time_range = [6.0, 18.0]
+  time_ticks = time_range[1] - time_range[0]
+
   mg_range_plot, times, vcrosstalk, $
                  title=title, $
                  psym=6, symsize=0.25, color=0, background=254, $
                  clip_psym=6, clip_color=255, $
                  xtitle='Time [UT]', $
-                 xstyle=1, xrange=[6.0, 18.0], xticks=12, $
+                 xstyle=1, xrange=time_range, xticks=time_ticks, $
                  xtickformat='ucomp_hours_format', $
                  ystyle=1, yrange=[0.0, _max_value], ytitle='V crosstalk'
 
