@@ -266,7 +266,7 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
           'camera 1', alignment=1.0, color=camera1_color
 
   ; save plots image file
-  output_filename = filepath(string(run.date, format='(%"%s.ucomp.darks.gif")'), $
+  output_filename = filepath(string(run.date, format='(%"%s.ucomp.daily.darks.gif")'), $
                              subdir=ucomp_decompose_date(run.date), $
                              root=run->config('engineering/basedir'))
   write_gif, output_filename, tvrd(), r, g, b

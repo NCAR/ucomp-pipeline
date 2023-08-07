@@ -33,7 +33,7 @@ pro ucomp_plot_centering_info, filename, wave_region, run=run
           set_colors=256, $
           z_buffering=0
 
-  charsize = 0.30
+  charsize = 0.4
   symsize  = 0.25
 
   x_range    = (1280.0 - 1.0) / 2.0 + [-40.0, 40.0]
@@ -45,8 +45,8 @@ pro ucomp_plot_centering_info, filename, wave_region, run=run
   time_ticks = time_range[1] - time_range[0]
 
   n_cameras = 2L
-  n_plots   = 4 * n_cameras   ; x, y, radius, chi-squared
-  !p.multi  = [0, 2, n_plots / n_cameras, 0, 1]
+  n_plots   = 4L   ; x, y, radius, chi-squared
+  !p.multi  = [0, n_cameras, n_plots, 0, 1]
 
   hours      = fltarr(n_files) + !values.f_nan
   rcam_x     = fltarr(n_files) + !values.f_nan
