@@ -27,10 +27,10 @@ pro ucomp_vcrosstalk_plots_wave_region, date, $
   _max_value = mg_default(max_value, max(vcrosstalk))
 
   if (n_elements(wave_region) eq 0L) then begin
-    basename = string(date, format='(%"%s.ucomp.vcrosstalk.gif")')
+    basename = string(date, format='(%"%s.ucomp.daily.vcrosstalk.gif")')
     title = string(date, format='(%"V crosstalk on %s")')
   endif else begin
-    basename = string(date, wave_region, format='(%"%s.ucomp.%s.vcrosstalk.gif")')
+    basename = string(date, wave_region, format='(%"%s.ucomp.%s.daily.vcrosstalk.gif")')
     title = string(wave_region, date, format='(%"V crosstalk for %s nm on %s")')
   endelse
   filename = filepath(basename, root=output_dir)
@@ -51,7 +51,9 @@ pro ucomp_vcrosstalk_plots_wave_region, date, $
                  title=title, $
                  psym=6, symsize=0.25, color=0, background=254, $
                  clip_psym=6, clip_color=255, $
-                 xstyle=1, xrange=[6.0, 18.0], xtitle='Hours into HST observing day', $
+                 xtitle='Time [UT]', $
+                 xstyle=1, xrange=[6.0, 18.0], xticks=12, $
+                 xtickformat='ucomp_hours_format', $
                  ystyle=1, yrange=[0.0, _max_value], ytitle='V crosstalk'
 
   write_gif, filename, tvrd(), r, g, b

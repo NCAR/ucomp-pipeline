@@ -98,7 +98,7 @@ pro ucomp_plot_eccentricity, wave_region, obsday_index, db, run=run
 
   ; save plots image file
   output_filename = filepath(string(run.date, wave_region, $
-                                    format='(%"%s.ucomp.%s.eccentricity.gif")'), $
+                                    format='(%"%s.ucomp.%s.daily.eccentricity.gif")'), $
                              subdir=ucomp_decompose_date(run.date), $
                              root=run->config('engineering/basedir'))
   write_gif, output_filename, tvrd(), r, g, b
