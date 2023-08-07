@@ -51,9 +51,8 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
   tarr_range = run->epoch('dark_arr_temp_range', datetime=run.date)
   tpcb_range = run->epoch('dark_pcb_temp_range', datetime=run.date)
 
-  start_time = 06   ; 24-hour time in observing day
-  end_time   = 19   ; 24-hour time in observing day
-  end_time  >= ceil(max(dark_info.times))
+  time_range = [16.0, 28.0]
+  time_ticks = time_range[1] - time_range[0]
 
   charsize = 2.0
 
@@ -64,11 +63,12 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
   p = 0
   !p.multi = [0, 1, n_plots]
 
-  plot, [dark_info.times], [dark_info.t_c0arr], /nodata, $
+  plot, [dark_info.times + 10.0], [dark_info.t_c0arr], /nodata, $
         title='Dark sensor array temperatures', charsize=charsize, $
         color=color, background=background_color, $
         xtitle='Time [HST]', $
-        xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
+        xstyle=1, xrange=time_range, xticks=12, $
+        xtickformat='ucomp_hours_format', $
         ytitle='Temperature [C]', $
         ystyle=1, yrange=tarr_range
   mg_range_oplot, [dark_info.times], [dark_info.t_c0arr], $
@@ -86,18 +86,19 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
           'camera 1', alignment=1.0, color=camera1_color
 
   p = 1
-  plot, [dark_info.times], [dark_info.t_c0pcb], /nodata, $
+  plot, [dark_info.times + 10.0], [dark_info.t_c0pcb], /nodata, $
         title='Dark PCB temperatures', charsize=charsize, $
         color=color, background=background_color, $
         xtitle='Time [HST]', $
-        xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
+        xstyle=1, xrange=time_range, xticks=time_ticks, $
+        xtickformat='ucomp_hours_format', $
         ytitle='Temperature [C]', $
         ystyle=1, yrange=tpcb_range
-  mg_range_oplot, [dark_info.times], [dark_info.t_c0pcb], $
+  mg_range_oplot, [dark_info.times + 10.0], [dark_info.t_c0pcb], $
                   psym=camera0_psym, symsize=symsize, $
                   linestyle=0, color=camera0_color, $
                   clip_color=camera0_color, clip_psym=7, clip_symsize=1.0
-  mg_range_oplot, [dark_info.times], [dark_info.t_c1pcb], $
+  mg_range_oplot, [dark_info.times + 10.0], [dark_info.t_c1pcb], $
                   psym=camera1_psym, symsize=symsize, $
                   linestyle=0, color=camera1_color, $
                   clip_color=camera1_color, clip_psym=7, clip_symsize=1.0
@@ -187,11 +188,12 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
   ; use a horizontal dash for quartile values
   usersym, 2.0 * [-1.0, 1.0], fltarr(2)
 
-  plot, [dark_info.times], [cam0_dark_means], /nodata, $
+  plot, [dark_info.times + 10.0], [cam0_dark_means], /nodata, $
         charsize=charsize, title='Dark mean counts vs. time', $
         color=color, background=background_color, $
         xtitle='Time [HST]', $
-        xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
+        xstyle=1, xrange=time_range, xticks=time_ticks, $
+        xtickformat='ucomp_hours_format', $
         ytitle='Counts [DN]/NUMSUM', $
         ystyle=1, $
         yrange=dark_range[0] + [0.0, 4.0 * (dark_range[1] - dark_range[0])], $
@@ -213,11 +215,12 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
 
   p = 4
 
-  plot, [dark_info.times], [cam0_dark_medians], /nodata, $
+  plot, [dark_info.times + 10.0], [cam0_dark_medians], /nodata, $
         charsize=charsize, title='Dark median counts vs. time', $
         color=color, background=background_color, $
         xtitle='Time [HST]', $
-        xstyle=1, xrange=[start_time, end_time], xticks=end_time - start_time, $
+        xstyle=1, xrange=time_range, xticks=time_ticks, $
+        xtickformat='ucomp_hours_format', $
         ytitle='Counts [DN]/NUMSUM', $
         ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
 

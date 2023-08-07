@@ -94,11 +94,8 @@ pro ucomp_flat_plots, wave_region, $
   ; use a horizontal dash for quartile values
   usersym, 2.0 * [-1.0, 1.0], fltarr(2)
 
-  start_time = 06   ; 24-hour time in observing day
-  end_time   = 19   ; 24-hour time in observing day
-  end_time  >= ceil(max(flat_times))
   time_range = [16.0, 28.0]
-  xticks     = 12
+  time_ticks = time_range[1] - time_range[0]
 
   flat_range = run->line(wave_region, 'flat_value_display_range')
 
@@ -119,7 +116,7 @@ pro ucomp_flat_plots, wave_region, $
                          format='(%"Dark corrected flat median counts (+/- 1 std dev) for %0.2f nm (%s onband)")'), $
             color=color, background=background_color, $
             xtitle='Time [UT]', $
-            xstyle=1, xrange=time_range, xticks=xticks, $
+            xstyle=1, xrange=time_range, xticks=time_ticks, $
             xtickformat='ucomp_hours_format', $
             ytitle='Counts [DN]', $
             ystyle=1, yrange=flat_range, ytickformat='ucomp_dn_format'
