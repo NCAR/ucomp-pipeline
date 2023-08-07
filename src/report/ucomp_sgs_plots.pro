@@ -72,7 +72,9 @@ pro ucomp_sgs_plots, engineering_dir, run=run
   sgs_deczr = sgs_deczr[sorted_indices]
 
   pdate = string(ucomp_decompose_date(run.date), format='(%"%s-%s-%s")')
-  time_range = [16.0, 28.0]
+  !null = ucomp_hours_format(/minutes)
+  time_range = [6.0, 18.0]
+  time_ticks = time_range[1] - time_range[0]
 
   ; set up graphics window & color table for sgs.eng.gif
   original_device = !d.name
@@ -94,7 +96,8 @@ pro ucomp_sgs_plots, engineering_dir, run=run
   mg_range_plot, hours, sgs_dimv, $
                  title=pdate + ' UCoMP Spar Guider System (SGS) DIMV Relative Sky Transmission Mean Signal', $
                  xtitle='Hours [UT]', ytitle='SGS DIMV Relative Sky Transmission [volts]', $
-                 xrange=time_range, $
+                 xstyle=1, xrange=time_range, xticks=time_ticks, $
+                 xtickformat='ucomp_hours_format', $
                  /ynozero, ystyle=1, yrange=run->epoch('sgsdimv_range'), $
                  background=255, color=0, charsize=n_plots * charsize, $
                  clip_thick=2.0, psym=square, symsize=0.5
@@ -102,7 +105,8 @@ pro ucomp_sgs_plots, engineering_dir, run=run
   mg_range_plot, hours, sgs_dims, $
                  title=pdate + ' UCoMP Spar Guider System (SGS) DIMS Relative Sky Transmission Std Deviation', $
                  xtitle='Hours [UT]', ytitle='SGS DIMS Relative Sky Transmission Std Deviation [volts]', $
-                 xrange=time_range, $
+                 xstyle=1, xrange=time_range, xticks=time_ticks, $
+                 xtickformat='ucomp_hours_format', $
                  /ynozero, ystyle=1, yrange=run->epoch('sgsdims_range'), $
                  background=255, color=0, charsize=n_plots * charsize, $
                  clip_thick=2.0, psym=square, symsize=0.5
@@ -110,12 +114,13 @@ pro ucomp_sgs_plots, engineering_dir, run=run
   mg_range_plot, hours, sgs_scint, $
                  title=pdate + ' UCoMP Spar Guider System (SGS) Scintillation (Atmospheric Seeing) Estimate', $
                  xtitle='Hours [UT]', ytitle='SGS Scintillation (Seeing) Est. [arcsec]', $
-                 xrange=time_range, $
+                 xstyle=1, xrange=time_range, xticks=time_ticks, $
+                 xtickformat='ucomp_hours_format', $
                  ystyle=1, yrange=run->epoch('sgsscint_range'), $
                  background=255, color=0, charsize=n_plots * charsize, $
                  clip_thick=2.0, psym=square, symsize=0.5
 
-  sgs_seeing_gif_filename = filepath(run.date + '.ucomp.sgs.sky_transmission_and_seeing.gif', $
+  sgs_seeing_gif_filename = filepath(run.date + '.ucomp.daily.sgs.sky_transmission_and_seeing.gif', $
                                      root=engineering_dir)
   mg_log, 'SGS seeing GIF: %s', file_basename(sgs_seeing_gif_filename), $
           name=run.logger_name, $
@@ -128,7 +133,8 @@ pro ucomp_sgs_plots, engineering_dir, run=run
   mg_range_plot, hours, sgs_sumv, $
                  title=pdate + ' UCoMP Spar Guider System (SGS) SUMV Mean Sum Signal (Low Pass Filter of DIMV)', $
                  xtitle='Hours [UT]', ytitle='SGS Mean Sum Signal [volts]', $
-                 xrange=time_range, $
+                 xstyle=1, xrange=time_range, xticks=time_ticks, $
+                 xtickformat='ucomp_hours_format', $
                  /ynozero, ystyle=1, yrange=run->epoch('sgssumv_range'), $
                  background=255, color=0, charsize=n_plots * charsize, $
                  clip_thick=2.0, psym=square, symsize=0.5
@@ -136,7 +142,8 @@ pro ucomp_sgs_plots, engineering_dir, run=run
   mg_range_plot, hours, sgs_sums, $
                  title=pdate + ' UCoMP Spar Guider System (SGS) SUMS Sum Signal Std. Deviation (Low Pass Filter of DIMS)', $
                  xtitle='Hours [UT]', ytitle='SGS Sum Signal Std Deviation [Volts]', $
-                 xrange=time_range, $
+                 xstyle=1, xrange=time_range, xticks=time_ticks, $
+                 xtickformat='ucomp_hours_format', $
                  /ynozero, ystyle=1, yrange=run->epoch('sgssums_range'), $
                  background=255, color=0, charsize=n_plots * charsize, $
                  clip_thick=2.0, psym=square, symsize=0.5
@@ -144,12 +151,13 @@ pro ucomp_sgs_plots, engineering_dir, run=run
   mg_range_plot, hours, sgs_loop, $
                  title=pdate + ' UCoMP Spar Guider System (SGS) LOOP: Closed Loop Fraction 1=solar tracking, 0=drift', $
                  xtitle='Hours [UT]', ytitle='SGS Closed Loop Fraction: 1 = solar tracking 0=drift', $
-                 xrange=time_range, $
+                 xstyle=1, xrange=time_range, xticks=time_ticks, $
+                 xtickformat='ucomp_hours_format', $
                  /ynozero, ystyle=1, yrange=run->epoch('sgsloop_range'), $
                  background=255, color=0, charsize=n_plots * charsize, $
                  clip_thick=2.0, psym=square, symsize=0.5
 
-  sgs_signal_gif_filename  = filepath(run.date + '.ucomp.sgs.signal.gif', $
+  sgs_signal_gif_filename  = filepath(run.date + '.ucomp.daily.sgs.signal.gif', $
                                       root=engineering_dir)
   mg_log, 'SGS signal GIF: %s', file_basename(sgs_signal_gif_filename), $
           name=run.logger_name, $
@@ -166,7 +174,8 @@ pro ucomp_sgs_plots, engineering_dir, run=run
   mg_range_plot, hours, sgs_rav, $
                  title=pdate + ' UCoMP Spar Guider System (SGS) RAV Right Ascension Error Signal', $
                  xtitle='Hours [UT]', ytitle='SGS RA Error Signal [volts]', $
-                 xrange=time_range, $
+                 xstyle=1, xrange=time_range, xticks=time_ticks, $
+                 xtickformat='ucomp_hours_format', $
                  /ynozero, ystyle=1, yrange=run->epoch('sgsrav_range'), $
                  background=255, color=0, charsize=n_plots * charsize, $
                  clip_thick=2.0, psym=square, symsize=0.5
@@ -174,7 +183,8 @@ pro ucomp_sgs_plots, engineering_dir, run=run
   mg_range_plot, hours, sgs_ras, $
                  title=pdate + ' UCoMP Spar Guider System (SGS) RAS Right Ascension Std Deviation', $
                  xtitle='Hours [UT]', ytitle='SGS RA Error Signal Std Dev [volts]', $
-                 xrange=time_range, $
+                 xstyle=1, xrange=time_range, xticks=time_ticks, $
+                 xtickformat='ucomp_hours_format', $
                  /ynozero, ystyle=1, yrange=run->epoch('sgsras_range'), $
                  background=255, color=0, charsize=n_plots * charsize, $
                  clip_thick=2.0, psym=square, symsize=0.5
@@ -182,12 +192,13 @@ pro ucomp_sgs_plots, engineering_dir, run=run
   mg_range_plot, hours, sgs_razr, $
                  title=pdate + ' UCoMP Spar Guider System (SGS) RAZR Right Ascension Zero Point Offset', $
                  xtitle='Hours [UT]', ytitle='SGS RAZR Zero Point Offset [arcsec]', $
-                 xrange=time_range, $
+                 xstyle=1, xrange=time_range, xticks=time_ticks, $
+                 xtickformat='ucomp_hours_format', $
                  ystyle=1, yrange=sgsrazr_range, $
                  background=255, color=0, charsize=n_plots * charsize, $
                  clip_thick=2.0, psym=square, symsize=0.5
 
-  sgs_ra_gif_filename  = filepath(run.date + '.ucomp.sgs.ra.gif', $
+  sgs_ra_gif_filename  = filepath(run.date + '.ucomp.daily.sgs.ra.gif', $
                                   root=engineering_dir)
   mg_log, 'SGS RA GIF: %s', file_basename(sgs_ra_gif_filename), $
           name=run.logger_name, $
@@ -204,7 +215,8 @@ pro ucomp_sgs_plots, engineering_dir, run=run
   mg_range_plot, hours, sgs_decv, $
                  title=pdate + ' UCoMP DECV: Spar Guider System (SGS) Declination Error Signal', $
                  xtitle='Hours [UT]', ytitle='SGS DEC Error Signal [volts]', $
-                 xrange=time_range, $
+                 xstyle=1, xrange=time_range, xticks=time_ticks, $
+                 xtickformat='ucomp_hours_format', $
                  /ynozero, ystyle=1, yrange=run->epoch('sgsdecv_range'), $
                  background=255, color=0, charsize=n_plots * charsize, $
                  clip_thick=2.0, psym=square, symsize=0.5
@@ -212,7 +224,8 @@ pro ucomp_sgs_plots, engineering_dir, run=run
   mg_range_plot, hours, sgs_decs, $
                  title=pdate + ' UCoMP DECS: Spar Guider System (SGS) Declination Std Deviation', $
                  xtitle='Hours [UT]', ytitle='SGS DEC Error Signal Std Dev [volts]', $
-                 xrange=time_range, $
+                 xstyle=1, xrange=time_range, xticks=time_ticks, $
+                 xtickformat='ucomp_hours_format', $
                  /ynozero, ystyle=1, yrange=run->epoch('sgsdecs_range'), $
                  background=255, color=0, charsize=n_plots * charsize, $
                  clip_thick=2.0, psym=square, symsize=0.5
@@ -220,12 +233,13 @@ pro ucomp_sgs_plots, engineering_dir, run=run
   mg_range_plot, hours, sgs_deczr, $
                  title=pdate + ' UCoMP DECZR: Spar Guider System (SGS) Declination Zero Point Offset', $
                  xtitle='Hours [UT]', ytitle='SGS DECZR Zero Point Offset [arcsec]', $
-                 xrange=time_range, $
+                 xstyle=1, xrange=time_range, xticks=time_ticks, $
+                 xtickformat='ucomp_hours_format', $
                  ystyle=1, yrange=sgsdeczr_range, $
                  background=255, color=0, charsize=n_plots * charsize, $
                  clip_thick=2.0, psym=square, symsize=0.5
 
-  sgs_dec_gif_filename  = filepath(run.date + '.ucomp.sgs.dec.gif', $
+  sgs_dec_gif_filename  = filepath(run.date + '.ucomp.daily.sgs.dec.gif', $
                                    root=engineering_dir)
   mg_log, 'SGS DEC GIF: %s', file_basename(sgs_dec_gif_filename), $
           name=run.logger_name, $

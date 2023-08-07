@@ -39,7 +39,7 @@ pro ucomp_vcrosstalk_plots_wave_region, date, $
   set_plot, 'Z'
   device, get_decomposed=original_decomposed
   tvlct, original_rgb, /get
-  device, set_resolution=[600, 300], $
+  device, set_resolution=[700, 300], $
           decomposed=0, $
           set_colors=256, $
           z_buffering=0
