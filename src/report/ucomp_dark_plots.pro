@@ -51,6 +51,7 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
   tarr_range = run->epoch('dark_arr_temp_range', datetime=run.date)
   tpcb_range = run->epoch('dark_pcb_temp_range', datetime=run.date)
 
+  !null = ucomp_hours_format(/minutes)
   time_range = [16.0, 28.0]
   time_ticks = time_range[1] - time_range[0]
 

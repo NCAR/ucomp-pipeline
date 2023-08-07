@@ -47,6 +47,7 @@ pro ucomp_vcrosstalk_plots_wave_region, date, $
   tvlct, 255, 0, 0, 255
   tvlct, r, g, b, /get
 
+  !null = ucomp_hours_format(/minutes)
   time_range = [6.0, 18.0]
   time_ticks = time_range[1] - time_range[0]
 

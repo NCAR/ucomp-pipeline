@@ -98,6 +98,7 @@ pro ucomp_raw_plots, run=run
   end_time   = 19   ; 24-hour time in observing day
   end_time  >= ceil(max(times))
 
+  !null = ucomp_hours_format(/minutes)
   time_range = [16.0, 28.0]
   time_ticks = time_range[1] - time_range[0]
 
