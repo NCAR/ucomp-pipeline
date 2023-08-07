@@ -94,6 +94,7 @@ pro ucomp_flat_plots, wave_region, $
   ; use a horizontal dash for quartile values
   usersym, 2.0 * [-1.0, 1.0], fltarr(2)
 
+  !null = ucomp_hours_format(/minutes)
   time_range = [16.0, 28.0]
   time_ticks = time_range[1] - time_range[0]
 
