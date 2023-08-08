@@ -20,13 +20,15 @@ pro ucomp_rolling_flat_plots, wave_region, db, run=run
   start_date = string(date_components[0] - 1, $
                       date_components[1], $
                       date_components[2], $
-                      format='%04d-%02d-%02dT00:00:00')
+                      format='%04d-%02d-%02d')
+  start_jd = julday(date_components[1], date_components[2], date_components[0] - 1, 0, 0, 0)
   end_date = string(date_components[0], $
                     date_components[1], $
                     date_components[2], $
-                    format='%04d-%02d-%02dT00:00:00')
+                    format='%04d-%02d-%02d')
+  end_jd = julday(date_components[1], date_components[2], date_components[0], 0, 0, 0)
 
-  query = 'select * from ucomp_eng where wave_region=''%s'' and date_obs > ''%s'' and date_obs < ''%s'' order by date_obs'
+  query = 'select * from ucomp_eng where wave_region=''%s'' and date_obs > ''%sT00:00:00'' and date_obs < ''%sT00:00:00'' order by date_obs'
   data = db->query(query, wave_region, start_date, end_date, $
                    count=n_flats, error=error, fields=fields, sql_statement=sql)
 
@@ -82,7 +84,7 @@ pro ucomp_rolling_flat_plots, wave_region, db, run=run
 
   !null = label_date(date_format='%Y-%N-%D')
 
-  month_ticks = mg_tick_locator([jds[0], jds[-1]], /months)
+  month_ticks = mg_tick_locator([start_jd, end_jd], /months)
   if (n_elements(month_ticks) gt 0L) then month_ticks = month_ticks[0:*:3]
 
   plot, [jds], [rcam_median_linecenter], /nodata, $
@@ -91,7 +93,7 @@ pro ucomp_rolling_flat_plots, wave_region, db, run=run
                      format='%s nm dark corrected flat line center median counts vs. time since %s'), $
         color=color, background=background_color, $
         xtitle='Date', $
-        xstyle=1, $
+        xstyle=1, xrange=[start_jd, end_jd], $
         xtickformat='label_date', $
         xtickv=month_ticks, $
         xticks=n_elements(month_ticks) gt 0L ? n_elements(month_ticks) - 1L : 5L, $
@@ -113,8 +115,8 @@ pro ucomp_rolling_flat_plots, wave_region, db, run=run
   xyouts, 0.95, 0.9, /normal, $
           'camera 1 (TCAM)', alignment=1.0, color=camera1_color
 
-  plots, [jds[0], jds[-1]], fltarr(2) + linecenter_range[0], linestyle=3, color=color
-  plots, [jds[0], jds[-1]], fltarr(2) + linecenter_range[1], linestyle=3, color=color
+  plots, [start_jd, end_jd], fltarr(2) + linecenter_range[0], linestyle=3, color=color
+  plots, [start_jd, end_jd], fltarr(2) + linecenter_range[1], linestyle=3, color=color
 
   plot, [jds], [rcam_median_continuum], /nodata, $
         charsize=charsize, $
@@ -122,7 +124,7 @@ pro ucomp_rolling_flat_plots, wave_region, db, run=run
                      format='%s nm dark corrected flat continuum median counts vs. time since %s'), $
         color=color, background=background_color, $
         xtitle='Time [HST]', $
-        xstyle=1, $
+        xstyle=1, xrange=[start_jd, end_jd], $
         xtickformat='label_date', $
         xtickv=month_ticks, $
         xticks=n_elements(month_ticks) gt 0L ? n_elements(month_ticks) - 1L : 5L, $
@@ -145,12 +147,12 @@ pro ucomp_rolling_flat_plots, wave_region, db, run=run
   xyouts, 0.95, 0.4, /normal, $
           'camera 1 (TCAM)', alignment=1.0, color=camera1_color
 
-  plots, [jds[0], jds[-1]], fltarr(2) + continuum_range[0], linestyle=3, color=color
-  plots, [jds[0], jds[-1]], fltarr(2) + continuum_range[1], linestyle=3, color=color
+  plots, [start_jd, end_jd], fltarr(2) + continuum_range[0], linestyle=3, color=color
+  plots, [start_jd, end_jd], fltarr(2) + continuum_range[1], linestyle=3, color=color
 
   ; save plots image file
   output_filename = filepath(string(run.date, wave_region, $
-                                    format='(%"%s.ucomp.%s.rolling.flats.gif")'), $
+                                    format='(%"%s.ucomp.%s.yearly.flats.gif")'), $
                              subdir=ucomp_decompose_date(run.date), $
                              root=run->config('engineering/basedir'))
   write_gif, output_filename, tvrd(), r, g, b
@@ -167,8 +169,8 @@ end
 
 ; main-level example program
 
-date = '20221115'
-config_basename = 'ucomp.production.cfg'
+date = '20210922'
+config_basename = 'ucomp.latest.cfg'
 config_filename = filepath(config_basename, $
                            subdir=['..', '..', '..', 'ucomp-config'], $
                            root=mg_src_root())

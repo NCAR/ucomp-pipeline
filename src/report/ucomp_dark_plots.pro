@@ -72,11 +72,11 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
         xtickformat='ucomp_hours_format', $
         ytitle='Temperature [C]', $
         ystyle=1, yrange=tarr_range
-  mg_range_oplot, [dark_info.times], [dark_info.t_c0arr], $
+  mg_range_oplot, [dark_info.times + 10.0], [dark_info.t_c0arr], $
                   psym=camera0_psym, symsize=symsize, $
                   linestyle=0, color=camera0_color, $
                   clip_color=camera0_color, clip_psym=7, clip_symsize=1.0
-  mg_range_oplot, [dark_info.times], [dark_info.t_c1arr], $
+  mg_range_oplot, [dark_info.times + 10.0], [dark_info.t_c1arr], $
                   psym=camera1_psym, symsize=symsize, $
                   linestyle=0, color=camera1_color, $
                   clip_color=camera1_color, clip_psym=7, clip_symsize=1.0
@@ -200,11 +200,11 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
         yrange=dark_range[0] + [0.0, 4.0 * (dark_range[1] - dark_range[0])], $
         ytickformat='ucomp_dn_format'
 
-  mg_range_oplot, [dark_info.times], [cam0_dark_means], $
+  mg_range_oplot, [dark_info.times + 10.0], [cam0_dark_means], $
                   psym=camera0_psym, symsize=symsize, $
                   linestyle=0, color=camera0_color, $
                   clip_color=camera0_color, clip_psym=7, clip_symsize=1.0
-  mg_range_oplot, [dark_info.times], [cam1_dark_means], $
+  mg_range_oplot, [dark_info.times + 10.0], [cam1_dark_means], $
                   psym=camera1_psym, symsize=symsize, $
                   linestyle=0, color=camera1_color, $
                   clip_color=camera1_color, clip_psym=7, clip_symsize=1.0
@@ -225,17 +225,17 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
         ytitle='Counts [DN]/NUMSUM', $
         ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
 
-  mg_range_oplot, [dark_info.times], $
+  mg_range_oplot, [dark_info.times + 10.0], $
                   dark_range[0] > [cam0_dark_medians] < dark_range[1], $
                   psym=camera0_psym, symsize=symsize, $
                   linestyle=0, color=camera0_color, $
                   clip_color=camera0_color, clip_psym=7, clip_symsize=1.0
-  mg_range_oplot, [dark_info.times], $
+  mg_range_oplot, [dark_info.times + 10.0], $
                   dark_range[0] > [cam0_dark_medians - cam0_dark_stddev] < dark_range[1], $
                   psym=8, symsize=0.5 * symsize, $
                   linestyle=1, color=camera0_color, $
                   clip_color=camera0_color, clip_psym=7, clip_symsize=1.0
-  mg_range_oplot, [dark_info.times], $
+  mg_range_oplot, [dark_info.times + 10.0], $
                   dark_range[0] > [cam0_dark_medians + cam0_dark_stddev] < dark_range[1], $
                   psym=8, symsize=0.5 * symsize, $
                   linestyle=1, color=camera0_color, $
@@ -244,17 +244,17 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
   ; offset camera 1 times so you can see them if they overlap with camera 0
   cam1_offset = 0.025
 
-  mg_range_oplot, [dark_info.times] + cam1_offset, $
+  mg_range_oplot, [dark_info.times + 10.0] + cam1_offset, $
          dark_range[0] > [cam1_dark_medians] < dark_range[1], $
          psym=camera0_psym, symsize=symsize, $
          linestyle=0, color=camera1_color, $
          clip_color=camera1_color, clip_psym=7, clip_symsize=1.0
-  mg_range_oplot, [dark_info.times] + cam1_offset, $
+  mg_range_oplot, [dark_info.times + 10.0] + cam1_offset, $
          dark_range[0] > [cam1_dark_medians - cam1_dark_stddev] < dark_range[1], $
          psym=8, symsize=0.5 * symsize, $
          linestyle=1, color=camera1_color, $
          clip_color=camera1_color, clip_psym=7, clip_symsize=1.0
-  mg_range_oplot, [dark_info.times] + cam1_offset, $
+  mg_range_oplot, [dark_info.times + 10.0] + cam1_offset, $
          dark_range[0] > [cam1_dark_medians + cam1_dark_stddev] < dark_range[1], $
          psym=8, symsize=0.5 * symsize, $
          linestyle=1, color=camera1_color, $
