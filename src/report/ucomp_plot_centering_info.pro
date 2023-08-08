@@ -104,7 +104,7 @@ pro ucomp_plot_centering_info, filename, wave_region, run=run
   if (total(finite(rcam_r)) gt 0L) then begin
     mg_range_plot, hours, rcam_r, $
                    title=string(wave_region, pdate, format='%s nm RCAM occulter of radius for %s'), $
-                   xtitle='Hours [UT]', ytitle='radius [pixels]', $
+                   xtitle='Hours [UT]', ytitle='Radius [pixels]', $
                    xstyle=1, xrange=time_range, xticks=time_ticks, $
                    xtickformat='ucomp_hours_format', $
                    /ynozero, ystyle=1, yrange=r_range, $
@@ -146,7 +146,7 @@ pro ucomp_plot_centering_info, filename, wave_region, run=run
   if (total(finite(tcam_r)) gt 0L) then begin
     mg_range_plot, hours, tcam_r, $
                    title=string(wave_region, pdate, format='%s nm TCAM occulter of radius for %s'), $
-                   xtitle='Hours [UT]', ytitle='radius [pixels]', $
+                   xtitle='Hours [UT]', ytitle='Radius [pixels]', $
                    xstyle=1, xrange=time_range, xticks=time_ticks, $
                    xtickformat='ucomp_hours_format', $
                    /ynozero, ystyle=1, yrange=r_range, $
