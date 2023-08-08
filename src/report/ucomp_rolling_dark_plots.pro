@@ -30,7 +30,6 @@ pro ucomp_rolling_dark_plots, db, run=run
   group_by_type = 0B
 
   if (group_by_type) then begin
-    ;query = 'select * from ucomp_cal where darkshutter=1 and rcamnuc=''%s'' and gain_mode=''%s'' and date_obs > ''2022-01-01'' order by date_obs'
     query = 'select * from ucomp_cal where darkshutter=1 and rcamnuc=''%s'' and gain_mode=''%s'' and date_obs > ''%sT00:00:00'' and date_obs < ''%sT00:00:00'' order by date_obs'
     gain_mode = ['high', 'low']
     m = 0
@@ -174,7 +173,7 @@ pro ucomp_rolling_dark_plots, db, run=run
 
   !p.multi = [2, 1, 4]
   jds = ucomp_dateobs2julday(data.date_obs)
-  month_ticks = mg_tick_locator([jds[0], jds[-1]], /months)
+  month_ticks = mg_tick_locator([start_jd, end_jd], /months)
   month_ticks = month_ticks[0:*:3]
 
   plot, jds, data.rcam_median_linecenter / data.t_c0arr, /nodata, $
@@ -242,8 +241,8 @@ end
 
 ; main-level example program
 
-date = '20220325'
-config_basename = 'ucomp.regression.cfg'
+date = '20210922'
+config_basename = 'ucomp.latest.cfg'
 config_filename = filepath(config_basename, $
                            subdir=['..', '..', '..', 'ucomp-config'], $
                            root=mg_src_root())

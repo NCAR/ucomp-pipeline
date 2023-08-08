@@ -22,11 +22,11 @@ pro ucomp_l1_engineering_plots, run=run
                              root=engineering_basedir)
 
   ucomp_wave_region_histogram, filepath(string(run.date, $
-                                               format='(%"%s.ucomp.wave_regions.png")'), $
+                                               format='(%"%s.ucomp.daily.wave_regions.png")'), $
                                       root=engineering_dir), $
                                run=run
   ucomp_data_type_histogram, filepath(string(run.date, $
-                                             format='(%"%s.ucomp.data_types.png")'), $
+                                             format='(%"%s.ucomp.daily.data_types.png")'), $
                                       root=engineering_dir), $
                              run=run
   ucomp_sgs_plots, engineering_dir, run=run
@@ -45,7 +45,7 @@ pro ucomp_l1_engineering_plots, run=run
                                wave_regions[w], $
                                run=run
     ucomp_plot_temp_vs_voltage, filepath(string(run.date, wave_regions[w], $
-                                                format='(%"%s.ucomp.%s.temp_vs_volt.gif")'), $
+                                                format='(%"%s.ucomp.%s.daily.temp_vs_volt.gif")'), $
                                          root=engineering_dir), $
                                 wave_regions[w], $
                                 run=run
