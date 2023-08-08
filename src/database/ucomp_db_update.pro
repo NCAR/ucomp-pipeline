@@ -95,6 +95,7 @@ pro ucomp_db_update, run=run
     ucomp_mission_image_scale_plot, wave_regions[w], db, run=run
     ucomp_mission_vcrosstalk_plot, wave_regions[w], db, run=run
     ucomp_mission_centering_plot, wave_regions[w], db, run=run
+    ucomp_mission_eccentricity_plot, wave_regions[w], db, run=run
 
     ucomp_rolling_synoptic_map, wave_regions[w], $
                                 'intensity', 'int', 'intensity', $
