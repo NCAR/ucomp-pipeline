@@ -44,6 +44,9 @@ pro ucomp_plot_centering_info, filename, wave_region, run=run
   time_range = [16.0, 28.0]
   time_ticks = time_range[1] - time_range[0]
 
+  chisq_max = run->line(wave_region, 'gbu_max_fit_chisq')
+  chisq_range = [0.0, 2.0 * chisq_max]
+
   n_cameras = 2L
   n_plots   = 4L   ; x, y, radius, chi-squared
   !p.multi  = [0, n_cameras, n_plots, 0, 1]
@@ -111,12 +114,13 @@ pro ucomp_plot_centering_info, filename, wave_region, run=run
   if (total(finite(rcam_r)) gt 0L) then begin
     mg_range_plot, hours, rcam_chisq, $
                    title=string(wave_region, pdate, format='%s nm RCAM occulter fit chi-squared for %s'), $
-                   xtitle='Hours [UT]', ytitle='radius [pixels]', $
+                   xtitle='Hours [UT]', ytitle='Chi-squared', $
                    xstyle=1, xrange=time_range, xticks=time_ticks, $
                    xtickformat='ucomp_hours_format', $
-                   /ynozero, ystyle=1, yrange=r_range, $
+                   /ynozero, ystyle=1, yrange=chisq_range, $
                    background=255, color=0, charsize=n_plots * charsize, $
                    clip_thick=2.0, psym=6, symsize=symsize
+    plots, time_range, fltarr(2) + chisq_max, linestyle=1, color=0
   endif
 
   if (total(finite(tcam_x)) gt 0L) then begin
@@ -152,12 +156,13 @@ pro ucomp_plot_centering_info, filename, wave_region, run=run
   if (total(finite(rcam_r)) gt 0L) then begin
     mg_range_plot, hours, tcam_chisq, $
                    title=string(wave_region, pdate, format='%s nm TCAM occulter fit chi-squared for %s'), $
-                   xtitle='Hours [UT]', ytitle='radius [pixels]', $
+                   xtitle='Hours [UT]', ytitle='Chi-squared', $
                    xstyle=1, xrange=time_range, xticks=time_ticks, $
                    xtickformat='ucomp_hours_format', $
-                   /ynozero, ystyle=1, yrange=r_range, $
+                   /ynozero, ystyle=1, yrange=chisq_range, $
                    background=255, color=0, charsize=n_plots * charsize, $
                    clip_thick=2.0, psym=6, symsize=symsize
+    plots, time_range, fltarr(2) + chisq_max, linestyle=1, color=0
   endif
 
   write_gif, filename, tvrd()

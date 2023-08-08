@@ -72,8 +72,9 @@ pro ucomp_sgs_plots, engineering_dir, run=run
   sgs_deczr = sgs_deczr[sorted_indices]
 
   pdate = string(ucomp_decompose_date(run.date), format='(%"%s-%s-%s")')
+
   !null = ucomp_hours_format(/minutes)
-  time_range = [6.0, 18.0]
+  time_range = [16.0, 28.0]
   time_ticks = time_range[1] - time_range[0]
 
   ; set up graphics window & color table for sgs.eng.gif

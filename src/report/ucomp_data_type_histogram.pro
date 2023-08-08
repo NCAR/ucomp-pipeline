@@ -23,7 +23,7 @@ pro ucomp_data_type_histogram, output_filename, $
   mg_log, 'producing data type histogram...', name=run.logger_name, /info
 
   start_time = 06   ; 24-hour time in observing day
-  end_time   = 19   ; 24-hour time in observing day
+  end_time   = 18   ; 24-hour time in observing day
 
   all_files = run->get_files()
   if (n_elements(all_files) eq 0L) then begin
