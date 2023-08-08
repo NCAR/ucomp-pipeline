@@ -1,7 +1,7 @@
 ; docformat = 'rst'
 
 ;+
-; Plot occulter fit chi-squared value over the mission.
+; Plot centering values over the mission.
 ;
 ; :Params:
 ;   wave_region : in, required, type=string
@@ -13,7 +13,7 @@
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-pro ucomp_mission_fit_chisq_plot, wave_region, db, run=run
+pro ucomp_mission_centering_plot, wave_region, db, run=run
   compile_opt strictarr
 
   query = 'select * from ucomp_eng where wave_region=''%s'' order by date_obs'
@@ -26,6 +26,9 @@ pro ucomp_mission_fit_chisq_plot, wave_region, db, run=run
   endif else begin
     mg_log, '%d %s nm files found', n_files, wave_region, name=run.logger_name, /info
   endelse
+
+  rcam_radius = data.rcam_radius
+  tcam_radius = data.tcam_radius
 
   rcam_occulter_chisq = data.rcam_occulter_chisq
   tcam_occulter_chisq = data.tcam_occulter_chisq
@@ -45,7 +48,7 @@ pro ucomp_mission_fit_chisq_plot, wave_region, db, run=run
   tvlct, original_rgb, /get
   device, decomposed=0, $
           set_pixel_depth=8, $
-          set_resolution=[900, 600]
+          set_resolution=[1280, 600]
 
   tvlct, 0, 0, 0, 0
   tvlct, 255, 255, 255, 1
@@ -58,10 +61,13 @@ pro ucomp_mission_fit_chisq_plot, wave_region, db, run=run
   background_color = 1
   clip_color       = 2
 
+  charsize         = 0.9
   psym             = 6
   symsize          = 0.25
 
+  r_range    = 335.0 + 50.0 * [-1.0, 1.0]
   time_range = [jds[0], jds[-1]]
+
   month_ticks = mg_tick_locator(time_range, /months)
   if (n_elements(month_ticks) eq 0L) then begin
     month_ticks = 1L
@@ -69,12 +75,44 @@ pro ucomp_mission_fit_chisq_plot, wave_region, db, run=run
     month_ticks = month_ticks[0:*:3]
   endelse
 
-  !p.multi = [0, 1, 2, 0, 0]
+  !p.multi = [0, 2, 2, 0, 0]
+
+  mg_range_plot, [jds], [rcam_radius], $
+                 charsize=charsize, $
+                 title=string(wave_region, $
+                              format='RCAM radius per %s nm file over the UCoMP mission'), $
+                 color=color, background=background_color, $
+                 psym=psym, symsize=symsize, $
+                 clip_color=2, clip_psym=7, clip_symsize=1.0, $
+                 xtitle='Date', $
+                 xstyle=1, range=time_range, $
+                 xtickformat='label_date', $
+                 xtickv=month_ticks, $
+                 xticks=n_elements(month_ticks) - 1L, $
+                 xminor=3, $
+                 ytitle='Radius [pixels]', $
+                 ystyle=1, yrange=r_range
+
+  mg_range_plot, [jds], [tcam_radius], $
+                  charsize=charsize, $
+                  title=string(wave_region, $
+                               format='TCAM radius per %s nm file over the UCoMP mission'), $
+                  color=color, background=background_color, $
+                  psym=psym, symsize=symsize, $
+                  clip_color=2, clip_psym=7, clip_symsize=1.0, $
+                  xtitle='Date', $
+                  xstyle=1, range=time_range, $
+                  xtickformat='label_date', $
+                  xtickv=month_ticks, $
+                  xticks=n_elements(month_ticks) - 1L, $
+                  xminor=3, $
+                  ytitle='Radius [pixels]', $
+                  ystyle=1, yrange=r_range
 
   mg_range_plot, [jds], [rcam_occulter_chisq], $
                  charsize=charsize, $
                  title=string(wave_region, $
-                              format='RCAM occulter fit chi-squared measured per %s nm file over the UCoMP mission'), $
+                              format='RCAM occulter fit chi-squared per %s nm file over the UCoMP mission'), $
                  color=color, background=background_color, $
                  psym=psym, symsize=symsize, $
                  clip_color=2, clip_psym=7, clip_symsize=1.0, $
@@ -92,7 +130,7 @@ pro ucomp_mission_fit_chisq_plot, wave_region, db, run=run
   mg_range_plot, [jds], [tcam_occulter_chisq], $
                  charsize=charsize, $
                  title=string(wave_region, $
-                              format='TCAM occulter fit chi-squared measured per %s nm file over the UCoMP mission'), $
+                              format='TCAM occulter fit chi-squared per %s nm file over the UCoMP mission'), $
                  color=color, background=background_color, $
                  psym=psym, symsize=symsize, $
                  clip_color=2, clip_psym=7, clip_symsize=1.0, $
@@ -111,7 +149,7 @@ pro ucomp_mission_fit_chisq_plot, wave_region, db, run=run
 
   ; save plots image file
   output_filename = filepath(string(run.date, wave_region, $
-                                    format='(%"%s.ucomp.%s.mission.fit_chisq.gif")'), $
+                                    format='(%"%s.ucomp.%s.mission.centering.gif")'), $
                              subdir=ucomp_decompose_date(run.date), $
                              root=run->config('engineering/basedir'))
   write_gif, output_filename, tvrd(), r, g, b
@@ -141,7 +179,7 @@ db = ucomp_db_connect(run->config('database/config_filename'), $
                       log_statements=run->config('database/log_statements'), $
                       status=status)
 
-ucomp_mission_fit_chisq_plot, '1074', db, run=run
+ucomp_mission_centering_plot, '1074', db, run=run
 
 obj_destroy, [db, run]
 

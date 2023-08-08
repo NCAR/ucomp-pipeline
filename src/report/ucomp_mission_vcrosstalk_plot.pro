@@ -57,6 +57,7 @@ pro ucomp_mission_vcrosstalk_plot, wave_region, db, run=run
   background_color = 1
   clip_color       = 2
 
+  charsize         = 0.9
   psym             = 6
   symsize          = 0.25
 
@@ -71,7 +72,7 @@ pro ucomp_mission_vcrosstalk_plot, wave_region, db, run=run
   mg_range_plot, [jds], [vcrosstalk_metric], $
                  charsize=charsize, $
                  title=string(wave_region, $
-                              format='V crosstalk metric measured per %s nm file over the UCoMP mission'), $
+                              format='V crosstalk metric per %s nm file over the UCoMP mission'), $
                  color=color, background=background_color, $
                  psym=psym, symsize=symsize, $
                  clip_color=2, clip_psym=7, clip_symsize=1.0, $

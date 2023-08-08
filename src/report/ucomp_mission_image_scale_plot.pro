@@ -80,7 +80,7 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
   mg_range_plot, [jds], [image_scale], $
                  charsize=charsize, $
                  title=string(wave_region, $
-                              format='Image scale measured per %s nm file over the UCoMP mission'), $
+                              format='Image scale per %s nm file over the UCoMP mission'), $
                  color=color, background=background_color, $
                  psym=psym, symsize=symsize, $
                  clip_color=2, clip_psym=7, clip_symsize=1.0, $
