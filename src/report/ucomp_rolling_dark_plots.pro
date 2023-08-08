@@ -18,18 +18,20 @@ pro ucomp_rolling_dark_plots, db, run=run
   start_date = string(date_components[0] - 1, $
                       date_components[1], $
                       date_components[2], $
-                      format='%04d-%02d-%02dT00:00:00')
+                      format='%04d-%02d-%02d')
+  start_jd = julday(date_components[1], date_components[2], date_components[0] - 1, 0, 0, 0)
   end_date = string(date_components[0], $
                     date_components[1], $
                     date_components[2], $
-                    format='%04d-%02d-%02dT00:00:00')
+                    format='%04d-%02d-%02d')
+  end_jd = julday(date_components[1], date_components[2], date_components[0], 0, 0, 0)
 
   ; group the darks by gain mode and NUC value
   group_by_type = 0B
 
   if (group_by_type) then begin
     ;query = 'select * from ucomp_cal where darkshutter=1 and rcamnuc=''%s'' and gain_mode=''%s'' and date_obs > ''2022-01-01'' order by date_obs'
-    query = 'select * from ucomp_cal where darkshutter=1 and rcamnuc=''%s'' and gain_mode=''%s'' and date_obs > ''%s'' and date_obs < ''%s'' order by date_obs'
+    query = 'select * from ucomp_cal where darkshutter=1 and rcamnuc=''%s'' and gain_mode=''%s'' and date_obs > ''%sT00:00:00'' and date_obs < ''%sT00:00:00'' order by date_obs'
     gain_mode = ['high', 'low']
     m = 0
     rcamnuc = ['normal', 'Offset + gain corrected']
@@ -37,7 +39,7 @@ pro ucomp_rolling_dark_plots, db, run=run
     data = db->query(query, rcamnuc[n], gain_mode[m], start_date, end_date, $
                      count=n_darks, error=error, fields=fields, sql_statement=sql)
   endif else begin
-    query = 'select * from ucomp_cal where darkshutter=1 and date_obs > ''%s'' and date_obs < ''%s'' order by date_obs'
+    query = 'select * from ucomp_cal where darkshutter=1 and date_obs > ''%sT00:00:00'' and date_obs < ''%sT00:00:00'' order by date_obs'
     data = db->query(query, start_date, end_date, $
                      count=n_darks, error=error, fields=fields, sql_statement=sql)
   endelse
@@ -92,7 +94,7 @@ pro ucomp_rolling_dark_plots, db, run=run
   endif else begin
     title = string(start_date, format='(%"Dark median counts vs. time since %s")')
   endelse
-  month_ticks = mg_tick_locator([jds[0], jds[-1]], /months)
+  month_ticks = mg_tick_locator([start_jd, end_jd], /months)
   month_ticks = month_ticks[0:*:3]
 
   !p.multi = [0, 1, 4]
@@ -102,7 +104,7 @@ pro ucomp_rolling_dark_plots, db, run=run
         title=title, $
         color=color, background=background_color, $
         xtitle='Date', $
-        xstyle=1, $
+        xstyle=1, xrange=[start_jd, end_jd], $
         xtickformat='label_date', $
         xtickv=month_ticks, $
         xticks=n_elements(month_ticks) - 1L, $
@@ -181,7 +183,7 @@ pro ucomp_rolling_dark_plots, db, run=run
         psym=camera0_psym, symsize=symsize, $
         color=color, background=background_color, $
         xtitle='Date', $
-        xstyle=1, $
+        xstyle=1, xrange=[start_jd, end_jd], $
         xtickformat='label_date', $
         xtickv=month_ticks, $
         xticks=n_elements(month_ticks) - 1L, $
@@ -204,7 +206,7 @@ pro ucomp_rolling_dark_plots, db, run=run
         psym=camera0_psym, symsize=symsize, $
         color=color, background=background_color, $
         xtitle='Date', $
-        xstyle=1, $
+        xstyle=1, xrange=[start_jd, end_jd], $
         xtickformat='label_date', $
         xtickv=month_ticks, $
         xticks=n_elements(month_ticks) - 1L, $
@@ -222,7 +224,7 @@ pro ucomp_rolling_dark_plots, db, run=run
                    clip_color=camera1_color, clip_psym=7, clip_symsize=3.0 * symsize
 
   ; save plots image file
-  output_filename = filepath(string(run.date, format='(%"%s.ucomp.rolling.darks.gif")'), $
+  output_filename = filepath(string(run.date, format='(%"%s.ucomp.yearly.darks.gif")'), $
                              subdir=ucomp_decompose_date(run.date), $
                              root=run->config('engineering/basedir'))
   write_gif, output_filename, tvrd(), r, g, b
