@@ -45,7 +45,7 @@ pro ucomp_mission_fit_chisq_plot, wave_region, db, run=run
   tvlct, original_rgb, /get
   device, decomposed=0, $
           set_pixel_depth=8, $
-          set_resolution=[900, 400]
+          set_resolution=[900, 600]
 
   tvlct, 0, 0, 0, 0
   tvlct, 255, 255, 255, 1
