@@ -388,3 +388,4 @@
   put number of *good* level 1 FITS files in num_ucomp field of mlso_numfiles
   put only written level 1 FITS files into ucomp_file database table
   put only good level 1 FITS files into ucomp_sci database table
+  make daily engineering plots more consistent
