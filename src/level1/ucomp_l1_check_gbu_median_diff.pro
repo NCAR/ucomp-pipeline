@@ -88,8 +88,6 @@ pro ucomp_l1_check_gbu_median_diff, wave_region, run=run
     mg_log, 'median data range: %0.2f - %0.2f', mg_range(median_data), name=run.logger_name, /debug
     mg_log, 'sigma data range: %0.2f - %0.2f', mg_range(sigma_data), name=run.logger_name, /debug
 
-    save, sigma_data, filename=filepath(string(wave_region, program_names[p], format='ucomp.%s.%s.sigma.sav'), root=l1_dir)
-
     ; for each good file, compute its number of standard deviations from the median
     for f = 0L, n_files - 1L do begin
       if (~program_files[f].wrote_l1) then continue
