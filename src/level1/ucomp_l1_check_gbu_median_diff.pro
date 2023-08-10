@@ -34,6 +34,11 @@ pro ucomp_l1_check_gbu_median_diff, wave_region, run=run
     goto, done
   endif
 
+  mg_log, 'found %s: %s', $
+          mg_plural(n_programs, 'program'), $
+          strjoin(program_names, ', '), $
+          name=run.logger_name, /info
+
   ; average good (so far) files by program
   for p = 0L, n_programs - 1L do begin
     program_files = run->get_files(wave_region=wave_region, $
@@ -52,7 +57,9 @@ pro ucomp_l1_check_gbu_median_diff, wave_region, run=run
 
     ; filter out files with bad (so far) GBU
     good = bytarr(n_files)
-    for f = 0L, n_files - 1L do good[f] = program_files[f].good && program_files[f].wrote_l1
+    for f = 0L, n_files - 1L do begin
+      good[f] = program_files[f].good && program_files[f].wrote_l1
+    endfor
     good_files_indices = where(good eq 1, n_good_files)
     if (n_good_files eq 0L) then begin
       mg_log, 'no good %s nm files in %s', $
@@ -83,7 +90,7 @@ pro ucomp_l1_check_gbu_median_diff, wave_region, run=run
     mask = ucomp_annulus(1.1 * median_radius, 1.5 * median_radius, dimensions=dims)
     mask *= ucomp_post_mask(dims, median_post_angle, post_width=60.0)
 
-    ; for each good file, compute its number of standard deviations from the median
+    ; for *every* file, compute its number of standard deviations from the median
     for f = 0L, n_files - 1L do begin
       if (~program_files[f].wrote_l1) then continue
 
