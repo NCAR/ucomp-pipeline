@@ -34,38 +34,8 @@ function ucomp_gbu_median_diff, file, $
                                 run=run
   compile_opt strictarr
 
-  ; TODO: remove when implemented
+  ; this is just a placeholder so that this condition is placed in the list of
+  ; conditions in the GBU file; the real work is done in the routine
+  ; ucomp_l1_check_gbu_median_diff
   return, 0UL
-
-  n_stokes = 4L
-  sigma = fltarr(file.n_extensions, n_stokes)
-
-  dt = string(file.ut_date, file.ut_time, format='%s.%s')
-  max_stddev = run->line(file.wave_region, 'gbu_max_stddev', datetime=dt)
-
-  data_median = median(ext_data[*, *, *, *], dimension=4,/even)
-  data_mean = mean(ext_data[*, *, *, *], dimension=4)
-
-  for e = 0L, file.n_extensions - 1L do begin
-    for p = 0L, n_stokes - 1L do begin
-    endfor
-  endfor
-
-  return, file.median_background gt max_background
 end
-
-;         sumsq = dblarr(nx,ny,nwave,nstokes)
-;         for i=0,nuse-1 do sumsq = sumsq+IQUV[*,*,*,*,use_files[i]]^2
-;         all_sigma = sqrt(sumsq/double(nuse)-data_mean^2)       ;sigma at each pixel, wavelength and\
-;  stokes computed over files
-;
-; for j=0,nwave-1 do begin
-;     for k=0,nstokes-1 do begin
-;         zer = where(all_sigma[*,*,j,k] eq 0. or mask eq 0.,complement=noz)
-;         diff = abs(IQUV[*,*,j,k,i] - data_median[*,*,j,k])/all_sigma[*,*,j,k]
-;         sigma[j,k] = median(diff[noz])
-;       endfor
-;     endfor
-; sigma = sigma < 999.
-;
-;  if max(sigma) gt sig_limit[ifilt] then good_file[i] = good_file[i] + 64

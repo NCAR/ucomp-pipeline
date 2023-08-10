@@ -32,8 +32,8 @@ pro ucomp_write_gbu, wave_region, run=run
   filename = filepath(basename, $
                       root=l1_dir)
   openw, lun, filename, /get_lun
-  printf, lun, 'Filename', 'Reason', 'Med Back', 'V Crosstalk', $
-          format='(%"%-38s %6s %10s %13s")'
+  printf, lun, 'Filename', 'Reason', 'Med Back', 'V Crosstalk', 'Max sigma', $
+          format='(%"%-38s %6s %10s %13s %9s")'
 
   for f = 0L, n_files - 1L do begin
     l1_filename = filepath(files[f].l1_basename, root=l1_dir)
@@ -46,7 +46,8 @@ pro ucomp_write_gbu, wave_region, run=run
               files[f].gbu, $
               files[f].median_background, $
               files[f].vcrosstalk_metric, $
-              format='(%"%-38s %6d %10.3f %13.6f")'
+              files[f].max_sigma, $
+              format='(%"%-38s %6d %10.3f %13.6f %9.2f")'
     endif
   endfor
 
