@@ -85,7 +85,7 @@ pro ucomp_average_l1_files, files, $
   for f = 0L, n_ok_files - 1L do begin
     mg_log, 'listing %d/%d %s', $
             f + 1L, n_ok_files, ok_files[f].l1_basename, $
-            name=run.logger_name, /info
+            name=run.logger_name, /debug
 
     ucomp_read_l1_data, filepath(ok_files[f].l1_basename, root=l1_dir), $
                         primary_header=primary_header, $
