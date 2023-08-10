@@ -32,8 +32,9 @@ pro ucomp_write_gbu, wave_region, run=run
   filename = filepath(basename, $
                       root=l1_dir)
   openw, lun, filename, /get_lun
-  printf, lun, 'Filename', 'Reason', 'Med back', 'V crosstalk', 'Max sigma', $
-          format='(%"%-38s %6s %10s %13s %11s")'
+  printf, lun, 'Filename', 'Reason', 'Bkg', 'V', $
+               'RCAM', 'TCAM', 'Sigma', $
+          format='(%"%-38s %6s %6s %7s %7s %7s %7s")'
 
   for f = 0L, n_files - 1L do begin
     l1_filename = filepath(files[f].l1_basename, root=l1_dir)
@@ -41,13 +42,17 @@ pro ucomp_write_gbu, wave_region, run=run
     ; created in case processing failed for some other reason, e.g., there
     ; was not a dark/flat to calibrate it
     if (files[f].quality eq 0 && file_test(l1_filename, /regular)) then begin
+      rcam = files[f].rcam_geometry
+      tcam = files[f].tcam_geometry
       printf, lun, $
               files[f].l1_basename, $
               files[f].gbu, $
               files[f].median_background, $
               files[f].vcrosstalk_metric, $
+              rcam.occulter_chisq, $
+              tcam.occulter_chisq, $
               files[f].max_sigma, $
-              format='(%"%-38s %6d %10.3f %13.6f %11.2f")'
+              format='(%"%-38s %6d %6.1f %7.2f %7.1f %7.1f %7.2f")'
     endif
   endfor
 
