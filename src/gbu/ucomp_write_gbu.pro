@@ -34,7 +34,7 @@ pro ucomp_write_gbu, wave_region, run=run
   openw, lun, filename, /get_lun
   printf, lun, 'Filename', 'Reason', 'Bkg', 'V', $
                'RCAM', 'TCAM', 'Sigma', $
-          format='(%"%-38s %6s %6s %7s %7s %7s %7s")'
+          format='(%"%-38s %6s %7s %9s %9s %9s %7s")'
 
   for f = 0L, n_files - 1L do begin
     l1_filename = filepath(files[f].l1_basename, root=l1_dir)
@@ -52,7 +52,7 @@ pro ucomp_write_gbu, wave_region, run=run
               rcam.occulter_chisq, $
               tcam.occulter_chisq, $
               files[f].max_sigma, $
-              format='(%"%-38s %6d %6.1f %7.2f %7.1f %7.1f %7.2f")'
+              format='(%"%-38s %6d %7.1f %9.2f %9.1f %9.1f %7.2f")'
     endif
   endfor
 
