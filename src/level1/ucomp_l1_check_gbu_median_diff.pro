@@ -40,12 +40,15 @@ pro ucomp_l1_check_gbu_median_diff, wave_region, run=run
                                    program=program_names[p], $
                                    count=n_files)
     if (n_files eq 0L) then begin
-      mg_log, 'no %s nm files in %s [%s]', $
-              wave_region, program_names[p], method, $
+      mg_log, 'no %s nm files in %s', $
+              wave_region, program_names[p], $
               name=run.logger_name, /info
-      average_filenames[p] = ''
       continue
-    endif
+    endif else begin
+      mg_log, 'checking %d files in %s', $
+              n_files, program_names[p], $
+              name=run.logger_name, /info
+    endelse
 
     ; filter out files with bad (so far) GBU
     good = bytarr(n_files)
@@ -72,9 +75,6 @@ pro ucomp_l1_check_gbu_median_diff, wave_region, run=run
     median_radius = median(radius)
     median_post_angle = median(post_angle)
 
-    mg_log, 'median radius: %0.1f', median_radius, name=run.logger_name, /debug
-    mg_log, 'median post angle: %0.1f', median_post_angle, name=run.logger_name, /debug
-
     ucomp_average_l1_files, good_files, method='mean', averaged_data=mean_data, run=run
     ucomp_average_l1_files, good_files, method='median', averaged_data=median_data, run=run
     ucomp_average_l1_files, good_files, method='sigma', averaged_data=sigma_data, run=run
@@ -82,11 +82,6 @@ pro ucomp_l1_check_gbu_median_diff, wave_region, run=run
     dims = size(mean_data, /dimensions)
     mask = ucomp_annulus(1.1 * median_radius, 1.5 * median_radius, dimensions=dims)
     mask *= ucomp_post_mask(dims, median_post_angle, post_width=60.0)
-    !null = where(mask ne 0, n_zero_mask)
-    mg_log, 'n_zero_mask: %d', n_zero_mask, name=run.logger_name, /debug
-    mg_log, 'mean data range: %0.2f - %0.2f', mg_range(mean_data), name=run.logger_name, /debug
-    mg_log, 'median data range: %0.2f - %0.2f', mg_range(median_data), name=run.logger_name, /debug
-    mg_log, 'sigma data range: %0.2f - %0.2f', mg_range(sigma_data), name=run.logger_name, /debug
 
     ; for each good file, compute its number of standard deviations from the median
     for f = 0L, n_files - 1L do begin
@@ -109,7 +104,6 @@ pro ucomp_l1_check_gbu_median_diff, wave_region, run=run
         for w = 0L, dims[3] - 1L do begin
           !null = where((sigma_data[*, *, p, w] eq 0.0) or (mask eq 0), $
                         complement=nonzero_indices, ncomplement=n_nonzero)
-          mg_log, 'n_nonzero: %d', n_nonzero, name=run.logger_name, /debug
           if (n_nonzero gt 0L) then begin
             diff = abs(ext_data[*, *, p, w] - median_data[*, *, p, w]) / sigma_data[*, *, p, w]
             sigma[p, w] = median(diff[nonzero_indices])
