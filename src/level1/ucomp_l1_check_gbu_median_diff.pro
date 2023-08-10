@@ -40,18 +40,18 @@ pro ucomp_l1_check_gbu_median_diff, wave_region, run=run
           name=run.logger_name, /info
 
   ; average good (so far) files by program
-  for p = 0L, n_programs - 1L do begin
+  for program_number = 0L, n_programs - 1L do begin
     program_files = run->get_files(wave_region=wave_region, $
-                                   program=program_names[p], $
+                                   program=program_names[program_number], $
                                    count=n_files)
     if (n_files eq 0L) then begin
       mg_log, 'no %s nm files in %s', $
-              wave_region, program_names[p], $
+              wave_region, program_names[program_number], $
               name=run.logger_name, /info
       continue
     endif else begin
-      mg_log, 'checking %d files in %s', $
-              n_files, program_names[p], $
+      mg_log, 'checking %d %s nm files in %s', $
+              n_files, wave_region, program_names[program_number], $
               name=run.logger_name, /info
     endelse
 
@@ -63,7 +63,7 @@ pro ucomp_l1_check_gbu_median_diff, wave_region, run=run
     good_files_indices = where(good eq 1, n_good_files)
     if (n_good_files eq 0L) then begin
       mg_log, 'no good %s nm files in %s', $
-              wave_region, program_names[p], $
+              wave_region, program_names[program_number], $
               name=run.logger_name, /info
       continue
     endif
