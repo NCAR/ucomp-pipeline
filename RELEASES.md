@@ -389,3 +389,5 @@
   put only written level 1 FITS files into ucomp_file database table
   put only good level 1 FITS files into ucomp_sci database table
   make daily engineering plots more consistent
+  create new mission length engineering plots
+  implement median difference GBU check

@@ -99,6 +99,7 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
                              n_tcam_bkg_nonlinear_pixels=n_tcam_bkg_nonlinear_pixels, $
                              gbu=gbu, $
                              vcrosstalk_metric=vcrosstalk_metric, $
+                             max_sigma=max_sigma, $
                              n_extensions=n_extensions, $
                              wavelengths=wavelengths, $
                              onband_indices=onband_indices, $
@@ -147,6 +148,7 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
 
   if (n_elements(gbu) gt 0L) then self.gbu or= gbu
   if (n_elements(vcrosstalk_metric) gt 0L) then self.vcrosstalk_metric = vcrosstalk_metric
+  if (n_elements(max_sigma) gt 0L) then self.max_sigma = max_sigma
 
   if (n_elements(n_extensions) gt 0L) then self.n_extensions = n_extensions
   if (n_elements(wavelengths) gt 0L) then *self.wavelengths = wavelengths
@@ -234,6 +236,7 @@ pro ucomp_file::getProperty, run=run, $
                              ok=ok, $
                              good=good, $
                              vcrosstalk_metric=vcrosstalk_metric, $
+                             max_sigma=max_sigma, $
                              wind_speed=wind_speed, $
                              wind_direction=wind_direction, $
                              occulter_in=occulter_in, $
@@ -430,6 +433,7 @@ pro ucomp_file::getProperty, run=run, $
   if (arg_present(ok)) then ok = self.quality_bitmask eq 0UL
   if (arg_present(good)) then good = (self.quality_bitmask eq 0UL) && (self.gbu eq 0UL)
   if (arg_present(vcrosstalk_metric)) then vcrosstalk_metric = self.vcrosstalk_metric
+  if (arg_present(max_sigma)) then max_sigma = self.max_sigma
   if (arg_present(wind_speed)) then wind_speed = self.wind_speed
   if (arg_present(wind_direction)) then wind_direction = self.wind_direction
 
@@ -850,6 +854,7 @@ function ucomp_file::init, raw_filename, run=run
 
   self.median_background = !values.f_nan
   self.vcrosstalk_metric = !values.f_nan
+  self.max_sigma         = !values.f_nan
 
   self.rcam_roughness = !values.f_nan
   self.tcam_roughness = !values.f_nan
@@ -1025,6 +1030,7 @@ pro ucomp_file__define
            gbu                     : 0UL, $
            processed               : 0B, $
            vcrosstalk_metric       : 0.0, $
+           max_sigma               : 0.0, $
            wind_speed              : 0.0, $
            wind_direction          : 0.0, $
 
