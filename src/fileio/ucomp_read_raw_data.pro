@@ -143,9 +143,9 @@ pro ucomp_read_raw_data, filename, $
   endif
 
   ; repair data
-  if (n_elements(repair_routine) gt 0L) then begin
-    call_procedure, repair_routine, primary_header, ext_data, ext_headers
-  endif
+  for r = 0L, n_elements(repair_routine) - 1L do begin
+    call_procedure, repair_routine[r], primary_header, ext_data, ext_headers
+  endfor
 end
 
 
