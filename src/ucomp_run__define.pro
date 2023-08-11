@@ -1287,3 +1287,19 @@ pro ucomp_run__define
            times                   : obj_new(), $
            memory_logger_name      : ''}
 end
+
+
+; main-level example program
+
+date = '20210726'
+config_basename = 'ucomp.latest.cfg'
+config_filename = filepath(config_basename, $
+                           subdir=['..', '..', 'ucomp-config'], $
+                           root=mg_src_root())
+run = ucomp_run(date, 'test', config_filename)
+repair_routine = run->epoch('raw_data_repair_routine')
+help, repair_routine
+print, repair_routine
+obj_destroy, run
+
+end

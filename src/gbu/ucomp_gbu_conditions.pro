@@ -8,6 +8,14 @@
 ;
 ;     {mask: 0UL, checker: '', description: '', values: ''}
 ;
+;   where mask is a bitmask set to a power of two which can be OR-ed with other
+;   masks, checker is the  name of the condition's checking routine, description
+;   is a text description of the condition, and values is a string of the
+;   variable to insert into the description (prefixed by either E, for epoch
+;   file, or W, for wave region, on where to lookup the value). This is used in
+;   `UCOMP_GBU_WRITE` to print the condition along with its threshold on the
+;   given day.
+;
 ; :Params:
 ;   wave_region : in, required, type=string
 ;     wave region to retrieve the GBU conditions for
