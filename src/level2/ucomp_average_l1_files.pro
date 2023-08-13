@@ -251,8 +251,10 @@ pro ucomp_average_l1_files, files, $
     endif else begin
       averaged_data[*, *, *, w] = mean_wavelength_data
       averaged_background[*, *, w] = mean_background_data
-      sum2_data[*, *, *, w] = sum2_wavelength_data
-      sum2_background[*, *, w] = sum2_background_data
+      if (_method eq 'sigma') then begin
+        sum2_data[*, *, *, w] = sum2_wavelength_data
+        sum2_background[*, *, w] = sum2_background_data
+      endif
     endelse
   endfor
 
