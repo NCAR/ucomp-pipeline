@@ -80,9 +80,10 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
 
   tvlct, r, g, b, /get
 
-  title_charsize = 1.75
-  type_charsize = 1.75
-  charsize = 1.2
+  mlso_charsize = 1.25
+  ionization_charsize = 1.75
+  title_charsize = 2.5
+  date_charsize = 1.9
   detail_charsize = 1.25
 
   n_divisions = 4L
@@ -149,18 +150,21 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
         xyouts, dims[0] - 5.0, dims[1] - 3.0 * line_height, /device, alignment=1.0, $
                 'inflection points', charsize=detail_charsize, color=inflection_color
     endif else begin
-      xyouts, 0.5, 0.62, /normal, alignment=0.5, $
+      xyouts, 0.5, 0.71, /normal, alignment=0.5, $
+              'MLSO UCoMP', $
+              charsize=mlso_charsize, color=text_color
+      xyouts, 0.5, 0.67, /normal, alignment=0.5, $
               string(run->line(file.wave_region, 'ionization'), $
-                     file.wave_region, $
-                     format='(%"MLSO UCoMP %s %s nm")'), $
-              charsize=title_charsize, color=text_color
-      xyouts, 0.5, 0.59, /normal, alignment=0.5, $
-              string(date_stamp, wavelengths[e - 1], format='(%"%s %0.2f nm")'), $
-              charsize=charsize, color=text_color
+                     wavelengths[e - 1], $
+                     format='%s %0.2f nm'), $
+              charsize=ionization_charsize, color=text_color
+      xyouts, 0.5, 0.605, /normal, alignment=0.5, $
+              date_stamp, $
+              charsize=date_charsize, color=text_color
 
       xyouts, 0.5, 0.54, /normal, alignment=0.5, $
               string(title, display_power, format='(%"%s!E%0.2f!N")'), $
-              charsize=type_charsize, color=text_color
+              charsize=title_charsize, color=text_color
       colorbar2, position=[0.35, 0.5, 0.65, 0.52], $
                  charsize=detail_charsize, $
                  color=text_color, $
@@ -168,11 +172,14 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
                  range=mg_signed_power([display_min, display_max], display_power), $
                  divisions=n_divisions, $
                  format='(F0.1)'
+      scaling_text = string(display_min, display_power, $
+                            display_max, display_power, $
+                            format='min/max: %0.3g!E%0.3g!N - %0.2g!E%0.3g!N')
+      if (display_gamma ne 1.0) then begin
+        scaling_text += string(display_gamma, format=', gamma: %0.2g')
+      endif
       xyouts, 0.5, 0.45, /normal, alignment=0.5, $
-              string(display_min, display_power, $
-                     display_max, display_power, $
-                     display_gamma, $
-                     format='(%"min/max: %0.2f!E%0.2f!N - %0.1f!E%0.2f!N, gamma: %0.1f")'), $
+              scaling_text, $
               charsize=detail_charsize, color=text_color
     endelse
 
@@ -197,19 +204,19 @@ end
 
 date = '20220901'
 
-config_basename = 'ucomp.latest.cfg'
+config_basename = 'ucomp.publish.cfg'
 config_filename = filepath(config_basename, $
                            subdir=['..', '..', '..', 'ucomp-config'], $
                            root=mg_src_root())
 run = ucomp_run(date, 'test', config_filename)
 
-l0_basename = '20220901.180411.02.ucomp.637.l0.fts'
+l0_basename = '20220902.032356.48.ucomp.1074.l0.fts'
 l0_filename = filepath(l0_basename, $
                        subdir=date, $
                        root=run->config('raw/basedir'))
 file = ucomp_file(l0_filename, run=run)
 
-l1_basename = '20220901.180411.ucomp.637.l1.3.fts'
+l1_basename = '20220902.032356.ucomp.1074.l1.3.fts'
 l1_filename = filepath(l1_basename, $
                        subdir=[date, 'level1'], $
                        root=run->config('processing/basedir'))
