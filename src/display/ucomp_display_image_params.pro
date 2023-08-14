@@ -24,15 +24,15 @@ function ucomp_display_image_params, display_min, $
 
   if (display_power eq 1.0) then begin
     result = string(display_min, display_max, $
-                   format='min/max: %0.2f to %0.2f')
+                   format='min/max: %0.3g to %0.3g')
   endif else begin
     result = string(display_min, display_power, $
                    display_max, display_power, $
-                   format='min/max: %0.2f!E%0.2f!N to %0.1f!E%0.2f!N')
+                   format='min/max: %0.3g!E%0.3g!N to %0.3g!E%0.3g!N')
   endelse
 
-  if (n_elements(display_gamma) gt 0L) then begin
-    result = string(result, display_gamma, format='%s, gamma: %0.1f')
+  if ((n_elements(display_gamma) gt 0L) && (display_gamma ne 1.0)) then begin
+    result = string(result, display_gamma, format='%s, gamma: %0.3g')
   endif
 
   return, result

@@ -206,15 +206,15 @@ end
 
 ; main-level example program
 
-date = '20220310'
+date = '20220901'
 
-config_basename = 'ucomp.latest.cfg'
+config_basename = 'ucomp.publish.cfg'
 config_filename = filepath(config_basename, $
                            subdir=['..', '..', '..', 'ucomp-config'], $
                            root=mg_src_root())
 run = ucomp_run(date, 'test', config_filename)
 
-l0_basename = '20220310.203407.47.ucomp.1074.l0.fts'
+l0_basename = '20220902.032356.48.ucomp.1074.l0.fts'
 l0_filename = filepath(l0_basename, subdir=[date], root=run->config('raw/basedir'))
 
 file = ucomp_file(l0_filename, run=run)
