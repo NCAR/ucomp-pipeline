@@ -33,17 +33,19 @@ pro ucomp_l2_process, wave_region, run=run
     mg_log, mg_format('%*d/%d: %s', n_digits, /simple), $
             f + 1L, n_files, files[f].l1_basename, $
             name=run.logger_name, /info
-    ucomp_l2_dynamics, files[f], run=run
-    ucomp_l2_polarization, files[f], run=run
+    ucomp_l2_file_step, 'ucomp_l2_dynamics', files[f], run=run
+    ucomp_l2_file_step, 'ucomp_l2_polarization', files[f], run=run
   endfor
 
   methods = ['mean', 'median']
   for m = 0L, n_elements(methods) - 1L do begin
+    ; TODO: make this a pipeline step and remove methods[m] argument to do all
+    ; methods at the same time
     ucomp_l2_create_averages, wave_region, methods[m], $
                               average_filenames=average_filenames, $
                               run=run
-    ucomp_l2_quick_invert, wave_region, $
-                           average_filenames=average_filenames, $
-                           run=run
+    ucomp_pipeline_step, 'ucomp_l2_quick_invert', wave_region, $
+                         average_filenames=average_filenames, $
+                         run=run
   endfor
 end
