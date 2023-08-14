@@ -103,10 +103,6 @@ function ucomp_display_image, wave_region, im, $
         display_max   = run->line(wave_region, 'radial_azimuth_display_max')
         display_gamma = run->line(wave_region, 'radial_azimuth_display_gamma')
         display_power = run->line(wave_region, 'radial_azimuth_display_power')
-        van_vleck_angle = atan(sqrt(2)) * !radeg  ; 54.7356
-        band_location = (n_colors - 1L) / (display_max - display_min) * (van_vleck_angle - display_min)
-        band_color = [255B, 255B, 0B]
-        band_width = 3L
     end
     type eq 'doppler': begin
         colortable_name = 'doppler'
@@ -132,10 +128,7 @@ function ucomp_display_image, wave_region, im, $
           set_pixel_depth=24, $
           set_resolution=dims
 
-  ucomp_loadct, colortable_name, n_colors=n_colors, $
-                band_location=band_location, $
-                band_color=band_color, $
-                band_width=band_width
+  ucomp_loadct, colortable_name, n_colors=n_colors
   mg_gamma_ct, display_gamma, /current, n_colors=n_colors
 
   background_color = 251
@@ -155,36 +148,44 @@ function ucomp_display_image, wave_region, im, $
 
   case _reduce_factor of
     1: begin
-        charsize = 1.3
-        title_charsize = 1.75
-        detail_charsize = 1.2
+        mlso_charsize = 1.3
+        charsize = 1.6
+        title_charsize = 2.5
+        date_charsize = 1.75
+        detail_charsize = 1.25
         n_divisions = 4L
         small = 0B
-        ionization_height = 0.62
-        date_height = 0.59
+        mlso_height = 0.70
+        ionization_height = 0.67
+        date_height = 0.62
         title_height = 0.54
         display_params_height = 0.45
       end
     2: begin
+        mlso_charsize = 0.9
         charsize = 0.9
-        title_charsize = 1.3
-        detail_charsize = 0.9
+        title_charsize = 1.65
+        date_charsize = 1.0
+        detail_charsize = 1.0
         n_divisions = 2L
         small = 0B
-        ionization_height = 0.635
-        date_height = 0.60
+        mlso_height = 0.71
+        ionization_height = 0.675
+        date_height = 0.62
         title_height = 0.54
         display_params_height = 0.42
       end
     else: begin
-        charsize = 0.8
+        mlso_charsize = 0.75
+        charsize = 0.85
         title_charsize = 1.05
-        detail_charsize = 0.8
+        date_charsize = 0.85
+        detail_charsize = 0.85
         n_divisions = 2L
         small = 1B
-        mlso_height = 0.675
-        ionization_height = 0.62
-        date_height = 0.375
+        mlso_height = 0.71
+        ionization_height = 0.65
+        date_height = 0.35
         title_height = 0.55
         display_params_height = 0.40
       end
@@ -201,22 +202,14 @@ function ucomp_display_image, wave_region, im, $
   tv, scaled_im
 
   if (~keyword_set(no_wave_region_annotation)) then begin
-    if (keyword_set(small)) then begin
-      xyouts, 0.5, mlso_height, /normal, alignment=0.5, $
-              'MLSO UCoMP', $
-              charsize=charsize, color=text_color
-      xyouts, 0.5, ionization_height, /normal, alignment=0.5, $
-              string(run->line(wave_region, 'ionization'), $
-                     wave_region, $
-                     format='%s %s nm'), $
-              charsize=charsize, color=text_color
-    endif else begin
-      xyouts, 0.5, ionization_height, /normal, alignment=0.5, $
-              string(run->line(wave_region, 'ionization'), $
-                     wave_region, $
-                     format='MLSO UCoMP %s %s nm'), $
-              charsize=charsize, color=text_color
-    endelse
+    xyouts, 0.5, mlso_height, /normal, alignment=0.5, $
+            'MLSO UCoMP', $
+            charsize=mlso_charsize, color=text_color
+    xyouts, 0.5, ionization_height, /normal, alignment=0.5, $
+            string(run->line(wave_region, 'ionization'), $
+                   wave_region, $
+                   format='%s %s nm'), $
+            charsize=charsize, color=text_color
   endif
 
   if (n_elements(datetime) gt 0L) then begin
@@ -227,7 +220,7 @@ function ucomp_display_image, wave_region, im, $
     endcase
     xyouts, 0.5, date_height, /normal, alignment=0.5, $
             string(date_stamp, format='(%"%s")'), $
-            charsize=detail_charsize, color=text_color
+            charsize=date_charsize, color=text_color
   endif
 
   if (n_elements(name) gt 0L) then begin

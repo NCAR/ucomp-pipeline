@@ -114,13 +114,13 @@ pro ucomp_write_polarization_image, output_filename, $
                                               run=run)
   azimuth_display = ucomp_display_image(file.wave_region, azimuth, $
                                         type='azimuth', $
-                                        name='Azimuth', $
+                                        name='Azimuth [deg]', $
                                         reduce_factor=reduce_factor, $
                                         /no_wave_region_annotation, $
                                         run=run)
   radial_azimuth_display = ucomp_display_image(file.wave_region, radial_azimuth, $
                                                type='radial_azimuth', $
-                                               name='Radial azimuth', $
+                                               name='Radial azimuth [deg]', $
                                                reduce_factor=reduce_factor, $
                                                /no_wave_region_annotation, $
                                                run=run)
@@ -160,7 +160,7 @@ pro ucomp_write_polarization_image, output_filename, $
 
   azimuth_display = ucomp_display_image(file.wave_region, azimuth, $
                                         type='azimuth', $
-                                        name='Azimuth', $
+                                        name='Azimuth [deg]', $
                                         reduce_factor=1, $
                                         datetime=strmid(file_basename(file.raw_filename), 0, 15), $
                                         run=run)
@@ -173,7 +173,7 @@ pro ucomp_write_polarization_image, output_filename, $
 
   radial_azimuth_display = ucomp_display_image(file.wave_region, radial_azimuth, $
                                                type='radial_azimuth', $
-                                               name='Radial azimuth', $
+                                               name='Radial azimuth [deg]', $
                                                reduce_factor=1, $
                                                datetime=strmid(file_basename(file.raw_filename), 0, 15), $
                                                run=run)

@@ -78,13 +78,13 @@ pro ucomp_write_dynamics_image, output_filename, $
                                                         run=run)
   doppler_display = ucomp_display_image(file.wave_region, doppler_shift, $
                                         type='doppler', $
-                                        name='Doppler velocity', $
+                                        name='Doppler velocity [km/s]', $
                                         reduce_factor=reduce_factor, $
                                         /no_wave_region_annotation, $
                                         run=run)
   line_width_display = ucomp_display_image(file.wave_region, line_width, $
                                            type='line_width', $
-                                           name='Line width', $
+                                           name='Line width [km/s]', $
                                            reduce_factor=reduce_factor, $
                                            /no_wave_region_annotation, $
                                            run=run)
@@ -134,7 +134,7 @@ pro ucomp_write_dynamics_image, output_filename, $
 
   doppler_image = ucomp_display_image(file.wave_region, doppler_shift, $
                                       type='doppler', $
-                                      name='Doppler velocity', $
+                                      name='Doppler velocity [km/s]', $
                                       reduce_factor=1, $
                                       datetime=strmid(file_basename(file.raw_filename), 0, 15), $
                                       run=run)
@@ -147,7 +147,7 @@ pro ucomp_write_dynamics_image, output_filename, $
 
   line_width_image = ucomp_display_image(file.wave_region, line_width, $
                                          type='line_width', $
-                                         name='Line width', $
+                                         name='Line width [km/s]', $
                                          reduce_factor=1, $
                                          datetime=strmid(file_basename(file.raw_filename), 0, 15), $
                                          run=run)

@@ -108,35 +108,35 @@ pro ucomp_write_quick_invert_image, output_filename, $
 
   summed_linpol_display = ucomp_display_image(wave_region, summed_linpol_i, $
                                                   type='linpol', $
-                                                  name='Summed log!E10!N(L / I)', $
+                                                  name='Summed log!I10!N(L / I)', $
                                                   reduce_factor=reduce_factor, $
                                                   /no_wave_region_annotation, $
                                                   run=run)
 
   doppler_shift_display = ucomp_display_image(wave_region, doppler_shift, $
                                               type='doppler', $
-                                              name='LOS velocity', $
+                                              name='LOS velocity [km/s]', $
                                               reduce_factor=reduce_factor, $
                                               /no_wave_region_annotation, $
                                               run=run)
 
   line_width_display = ucomp_display_image(wave_region, line_width, $
                                            type='line_width', $
-                                           name='Line width', $
+                                           name='Line width [km/s]', $
                                            reduce_factor=reduce_factor, $
                                            /no_wave_region_annotation, $
                                            run=run)
 
   azimuth_display = ucomp_display_image(wave_region, azimuth, $
                                         type='azimuth', $
-                                        name='Azimuth', $
+                                        name='Azimuth [deg]', $
                                         reduce_factor=reduce_factor, $
                                         /no_wave_region_annotation, $
                                         run=run)
 
   radial_azimuth_display = ucomp_display_image(wave_region, radial_azimuth, $
                                                type='radial_azimuth', $
-                                               name='Radial azimuth', $
+                                               name='Radial azimuth [deg]', $
                                                reduce_factor=reduce_factor, $
                                                /no_wave_region_annotation, $
                                                run=run)
@@ -212,7 +212,7 @@ pro ucomp_write_quick_invert_image, output_filename, $
   doppler_shift_display = ucomp_display_image(wave_region, $
                                               doppler_shift, $
                                               type='doppler', $
-                                              name='LOS velocity', $
+                                              name='LOS velocity [km/s]', $
                                               reduce_factor=1, $
                                               datetime=run.date, $
                                               run=run)
@@ -223,7 +223,7 @@ pro ucomp_write_quick_invert_image, output_filename, $
   line_width_display = ucomp_display_image(wave_region, $
                                            line_width, $
                                            type='line_width', $
-                                           name='Line width', $
+                                           name='Line width [km/s]', $
                                            reduce_factor=1, $
                                            datetime=run.date, $
                                            run=run)
@@ -234,7 +234,7 @@ pro ucomp_write_quick_invert_image, output_filename, $
   azimuth_display = ucomp_display_image(wave_region, $
                                         azimuth, $
                                         type='azimuth', $
-                                        name='Azimuth', $
+                                        name='Azimuth [deg]', $
                                         reduce_factor=1, $
                                         datetime=run.date, $
                                         run=run)
@@ -245,7 +245,7 @@ pro ucomp_write_quick_invert_image, output_filename, $
   radial_azimuth_display = ucomp_display_image(wave_region, $
                                                radial_azimuth, $
                                                type='radial_azimuth', $
-                                               name='Radial azimuth', $
+                                               name='Radial azimuth [deg]', $
                                                reduce_factor=1, $
                                                datetime=run.date, $
                                                run=run)
