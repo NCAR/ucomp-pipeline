@@ -240,10 +240,10 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
                  file.occultrid, $
                  file.o1id, $
 
-                 file.flat_rcam_median_linecenter, $
-                 file.flat_rcam_median_continuum, $
-                 file.flat_tcam_median_linecenter, $
-                 file.flat_tcam_median_continuum, $
+                 ucomp_db_float(file.flat_rcam_median_linecenter), $
+                 ucomp_db_float(file.flat_rcam_median_continuum), $
+                 ucomp_db_float(file.flat_tcam_median_linecenter), $
+                 ucomp_db_float(file.flat_tcam_median_continuum), $
 
                  dmodswid, $
                  distortion, $
