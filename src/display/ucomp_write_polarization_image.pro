@@ -147,7 +147,7 @@ pro ucomp_write_polarization_image, output_filename, $
 
   summed_linpol_i_display = ucomp_display_image(file.wave_region, summed_linpol_i, $
                                                 type='linpol', $
-                                                name='Summed log!I10!N(L)', $
+                                                name='Summed log!I10!N(L / I)', $
                                                 reduce_factor=1, $
                                                 datetime=strmid(file_basename(file.raw_filename), 0, 15), $
                                                 run=run)
