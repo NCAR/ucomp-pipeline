@@ -144,6 +144,8 @@ function ucomp_display_image, wave_region, im, $
 
   tvlct, r, g, b, /get
 
+  font = -1
+
   nan_indices = where(finite(_im) eq 0, n_nan)
 
   case _reduce_factor of
@@ -204,12 +206,12 @@ function ucomp_display_image, wave_region, im, $
   if (~keyword_set(no_wave_region_annotation)) then begin
     xyouts, 0.5, mlso_height, /normal, alignment=0.5, $
             'MLSO UCoMP', $
-            charsize=mlso_charsize, color=text_color
+            charsize=mlso_charsize, color=text_color, font=font
     xyouts, 0.5, ionization_height, /normal, alignment=0.5, $
             string(run->line(wave_region, 'ionization'), $
                    wave_region, $
                    format='%s %s nm'), $
-            charsize=charsize, color=text_color
+            charsize=charsize, color=text_color, font=font
   endif
 
   if (n_elements(datetime) gt 0L) then begin
@@ -220,7 +222,7 @@ function ucomp_display_image, wave_region, im, $
     endcase
     xyouts, 0.5, date_height, /normal, alignment=0.5, $
             string(date_stamp, format='(%"%s")'), $
-            charsize=date_charsize, color=text_color
+            charsize=date_charsize, color=text_color, font=font
   endif
 
   if (n_elements(name) gt 0L) then begin
@@ -228,7 +230,7 @@ function ucomp_display_image, wave_region, im, $
             display_power eq 1.0 $
               ? string(name, format='%s') $
               : string(name, display_power, format='(%"%s!E%0.2f!N")'), $
-            charsize=title_charsize, color=text_color
+            charsize=title_charsize, color=text_color, font=font
   endif
   colorbar2, position=[0.35, 0.5, 0.65, 0.52], $
              charsize=detail_charsize, $
@@ -236,14 +238,14 @@ function ucomp_display_image, wave_region, im, $
              ncolors=n_colors, $
              range=mg_signed_power([display_min, display_max], display_power), $
              divisions=n_divisions, $
-             format='(F0.1)'
+             format='(F0.1)', font=font
   if (~keyword_set(small)) then begin
     xyouts, 0.5, display_params_height, /normal, alignment=0.5, $
             ucomp_display_image_params(display_min, $
                                        display_max, $
                                        display_power, $
                                        display_gamma), $
-            charsize=detail_charsize, color=text_color
+            charsize=detail_charsize, color=text_color, font=font
   endif
 
   display_im = tvrd(true=1)
