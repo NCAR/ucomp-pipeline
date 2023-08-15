@@ -106,6 +106,8 @@ pro ucomp_read_raw_data, filename, $
     file_indices = where(badframes.filename eq file_basename(filename), n_file_badframes)
     if (n_file_badframes ne 0L) then begin
       file_badframes = badframes[file_indices]
+
+      ; warn about invalid bad frame specifications
       invalid_frames_indices = where((file_badframes.polstate ge 4) $
                                        or (file_badframes.camera ge 2) $
                                        or (file_badframes.extension gt n_extensions), $
@@ -124,7 +126,17 @@ pro ucomp_read_raw_data, filename, $
                   name=logger, /warn
         endfor
       endif
+
       if (n_invalid_frames eq 0L) then begin
+        ; log bad frames removed
+        for f = 0L, n_file_badframes - 1L do begin
+          mg_log, '%s: removing pol state %d, camera %d, ext %d', $
+                  file_basename(filename), $
+                  (file_badframes.polstate)[f], $
+                  (file_badframes.camera)[f], $
+                  (file_badframes.extension)[f], $
+                  name=logger, /debug
+        endfor
         ext_data[*, *, file_badframes.polstate, file_badframes.camera, file_badframes.extension - 1] = !values.f_nan
       endif
     endif
