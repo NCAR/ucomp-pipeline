@@ -86,9 +86,12 @@ pro ucomp_l2_polarization, file, run=run
   summed_linpol = sqrt(summed_q^2 + summed_u^2)
 
   d_lambda = wavelengths[center_index] - wavelengths[center_index - 1]
-  ucomp_analytic_gauss_fit, center_intensity[*, *, 0], $
-                            center_intensity[*, *, 1], $
-                            center_intensity[*, *, 2], $
+  intensity_blue   = center_intensity[*, *, 0]
+  intensity_center = center_intensity[*, *, 1]
+  intensity_red    = center_intensity[*, *, 2]
+  ucomp_analytic_gauss_fit, intensity_blue, $
+                            intensity_center, $
+                            intensity_red, $
                             d_lambda, $
                             doppler_shift=doppler_shift, $
                             line_width=line_width, $
@@ -103,6 +106,26 @@ pro ucomp_l2_polarization, file, run=run
                                                 mask=run->config('display/mask_l2'))
 
   azimuth = ucomp_azimuth(summed_q, summed_u, radial_azimuth=radial_azimuth)
+
+  ; mask data on various thresholds
+  ; TODO: constants should be retrieved from wave region config file
+  if (run->config('polarization/mask_noise')) then begin
+    !null = where(intensity_center gt 0.1 $
+                    and intensity_center lt 120.0 $
+                    and intensity_blue gt 0.0 $
+                    and intensity_red gt 0.0 $
+                    and line_width gt 15.0 $
+                    and line_width lt 60.0, $
+                  complement=bad_indices, /null)
+
+    summed_intensity[bad_indices]   = !values.f_nan
+    enhanced_intensity[bad_indices] = !values.f_nan
+    summed_q[bad_indices]           = !values.f_nan
+    summed_u[bad_indices]           = !values.f_nan
+    summed_linpol[bad_indices]      = !values.f_nan
+    azimuth[bad_indices]            = !values.f_nan
+    radial_azimuth[bad_indices]     = !values.f_nan
+  endif
 
   l2_dir = filepath('', $
                     subdir=[run.date, 'level2'], $

@@ -111,12 +111,12 @@ pro ucomp_l2_dynamics, file, run=run
   ; mask data on various thresholds
   ; TODO: constants should be retrieved from wave region config file
   if (run->config('dynamics/mask_noise')) then begin
-    !null = where(intensity_center gt 0.4 $
+    !null = where(intensity_center gt 0.35 $
                     and intensity_center lt 100.0 $
                     and intensity_blue gt 0.1 $
                     and intensity_red gt 0.1 $
                     and line_width gt 15.0 $
-                    and line_width lt 60.0 $
+                    and line_width lt 50.0 $
                     and abs(doppler_shift) lt 30.0 $
                     and doppler_shift ne 0.0, $
                   complement=bad_indices, /null)
@@ -128,13 +128,13 @@ pro ucomp_l2_dynamics, file, run=run
   endif
 
   ; TODO: constants should be retrieved from wave region config file
-  valid_indices = where(intensity_center gt 1.0 $
+  valid_indices = where(intensity_center gt 0.9 $
                           and intensity_center lt 100.0 $
                           and intensity_blue gt 0.1 $
                           and intensity_red gt 0.1 $
                           and line_width gt 15.0 $
-                          and line_width lt 60.0 $
-                          and abs(doppler_shift) lt 30.0 $
+                          and line_width lt 40.0 $
+                          and abs(doppler_shift) lt 5.0 $
                           and doppler_shift ne 0.0, $
                         n_valid_indices)
   if (n_valid_indices gt 0L) then begin
