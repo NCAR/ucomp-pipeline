@@ -304,7 +304,16 @@ pro ucomp_l1_promote_header, file, $
   ucomp_addpar, primary_header, 'COMMENT', 'SGS info', $
                 before='SGSSCINT', /title
 
-  after = 'MED-BKG'
+
+  after = 'LCVRELX'
+  ucomp_addpar, primary_header, 'FILTFWHM', run->line(file.wave_region, 'fwhm'), $
+                format='(F0.3)', comment='[nm] Lyot FWHM', $
+                after=after
+  ucomp_addpar, primary_header, 'CONTOFF', run->line(file.wave_region, 'continuum_offset'), $
+                format='(F0.5)', comment='[nm] continuum offset', $
+                after=after
+
+  after = 'MED_BKG'
   wind_speed = ucomp_getpar(primary_header, 'WNDSPD', found=wind_speed_found)
   if (wind_speed_found) then begin
     ucomp_addpar, primary_header, 'WNDSPD', wind_speed, $
@@ -320,6 +329,10 @@ pro ucomp_l1_promote_header, file, $
                   comment='[deg] wind direction', $
                   format='(F0.3)', $
                   after=after
+    if (~wind_speed_found) then begin
+      ucomp_addpar, primary_header, 'COMMENT', 'Weather info', $
+                    before='WNDDIR', /title
+    endif
   endif
 
   ; add HISTORY of processing of the file
