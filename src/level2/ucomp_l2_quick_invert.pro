@@ -90,7 +90,7 @@ pro ucomp_l2_quick_invert, wave_region, $
       ; TODO: constants should be retrieved from wave region config file
       if (run->config('quickinvert/mask_noise')) then begin
         good_indices = where(summed_intensity gt 0.2 $
-                               and summed_intensity lt 120.0
+                               and summed_intensity lt 120.0 $
                                and line_width gt 15.0 $
                                and line_width lt 50.0 $
                                and abs(doppler_shift) lt 40.0 $
