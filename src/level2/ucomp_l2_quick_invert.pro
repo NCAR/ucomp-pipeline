@@ -89,8 +89,12 @@ pro ucomp_l2_quick_invert, wave_region, $
       ; mask data on various thresholds
       ; TODO: constants should be retrieved from wave region config file
       if (run->config('quickinvert/mask_noise')) then begin
-        good_indices = where(summed_intensity gt 0.25 $
-                               and summed_intensity lt 120.0, $
+        good_indices = where(summed_intensity gt 0.2 $
+                               and summed_intensity lt 120.0
+                               and line_width gt 15.0 $
+                               and line_width lt 50.0 $
+                               and abs(doppler_shift) lt 40.0 $
+                               and doppler_shift ne 0.0, $
                                complement=bad_indices, /null)
 
         summed_intensity[bad_indices] = !values.f_nan
@@ -110,7 +114,7 @@ pro ucomp_l2_quick_invert, wave_region, $
         line_width[bad_indices]       = !values.f_nan
       endif
 
-      doppler_shift -= median(doppler_shift) - 1.0
+      doppler_shift -= median(doppler_shift)
 
       l2_dirname = filepath('', $
                             subdir=[run.date, 'level2'], $
