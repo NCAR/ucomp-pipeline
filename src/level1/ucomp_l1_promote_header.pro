@@ -236,7 +236,7 @@ pro ucomp_l1_promote_header, file, $
     ucomp_movepar, primary_header, hardware_keywords[k], before='FLCVNEG'
   endfor
 
-  continuum_comment = 'Continuum can be "red", "blue", or "both": "both" gives equal weight to red and blue sides, "red" measures the continuum on the red side of the WAVELNG by CONTOFF, "blue" measures the continuum on the blue side of the WAVELNG by CONTOFF'
+  continuum_comment = 'Continuum can be "red", "blue", or "both": "both" gives equal weight to red and blue sides, "red" samples 90% red contimuum and 10% blue, "blue" samples 90% blue continuum and 10% red; the continuum position is offset from line center by the value of CONTOFF'
   continuum_comment = mg_strwrap(continuum_comment, width=72)
 
   continuum_offset = run->line(file.wave_region, 'continuum_offset')
