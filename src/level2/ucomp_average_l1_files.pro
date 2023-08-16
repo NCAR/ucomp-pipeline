@@ -225,7 +225,7 @@ pro ucomp_average_l1_files, files, $
 
     ucomp_addpar, primary_header, 'DATE-OBS', ok_files[0].date_obs
     ucomp_addpar, primary_header, 'DATE-END', ok_files[-1].date_obs, $
-                  comment='UTC Date time when obs ended', $
+                  comment='[UT] date/time when obs started', $
                   after='DATE-OBS'
     ucomp_addpar, primary_header, 'NUM_WAVE', n_unique_wavelengths
     ucomp_addpar, primary_header, 'NUMFILES', n_ok_files
