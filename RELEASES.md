@@ -391,3 +391,4 @@
   make daily engineering plots more consistent
   create new mission length engineering plots
   implement median difference GBU check
+  update all level 1 and 2 image annotations
