@@ -253,7 +253,7 @@ pro ucomp_l1_find_alignment, file, $
   ucomp_addpar, primary_header, 'SOLAR_P0', p_angle, $
                 comment='[deg] solar P angle applied (image has N up)', $
                 format='(f9.3)', after=after
-  ucomp_addpar, primary_header, 'SOLAR_B', b0, $
+  ucomp_addpar, primary_header, 'SOLAR_B0', b0, $
                 comment='[deg] solar B-Angle', $
                 format='(f9.3)', after=after
 
