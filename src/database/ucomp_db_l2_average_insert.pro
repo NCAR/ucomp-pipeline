@@ -94,7 +94,7 @@ pro ucomp_db_l2_average_insert, wave_region, obsday_index, sw_index, db, run=run
       fits_close, fcb
 
       date_obs = ucomp_getpar(primary_header, 'DATE-OBS')
-      n_wavelengths = ucomp_getpar(primary_header, 'NUM_WAVE')
+      n_wavelengths = ucomp_getpar(primary_header, 'NUMWAVE')
       carrington_rotation = ucomp_getpar(primary_header, 'CAR_ROT')
       obs_plan = ucomp_getpar(primary_header, 'OBS_PLAN')
       obs_id = ucomp_getpar(primary_header, 'OBS_ID')

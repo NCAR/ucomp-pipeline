@@ -84,21 +84,21 @@ pro ucomp_l1_promote_header, file, $
                 before='LEVEL', /title
 
   after = 'REMFRAME'
-  ucomp_addpar, primary_header, 'NUM_WAVE', n_elements(headers), $
+  ucomp_addpar, primary_header, 'NUMWAVE', n_elements(headers), $
                 comment='number of wavelengths', after=after
   ucomp_addpar, primary_header, 'NUMSUM', file.numsum, $
                 comment='number of camera reads summed in an image frame', $
                 after=after
   ucomp_addpar, primary_header, 'NREPEAT', file.n_repeats, $
                 comment='number of repeats of wavelength scans', after=after
-  ucomp_addpar, primary_header, 'NUM_BEAM', 2, $
+  ucomp_addpar, primary_header, 'NUMBEAM', 2, $
                 comment='number of beams', after=after
   ucomp_addpar, primary_header, 'COMMENT', $
-                '  NFRAME = NUM_WAVE * NREPEAT * NUM_BEAM * 2(Cameras) * 4(Polarizations)', $
-                after='NUM_BEAM'
+                '  NFRAME = NUMWAVE * NREPEAT * NUMBEAM * 2(Cameras) * 4(Polarizations)', $
+                after='NUMBEAM'
   ucomp_addpar, primary_header, 'COMMENT', $
                 'Total camera reads in this file = NFRAME * NUMSUM where', $
-                after='NUM_BEAM'
+                after='NUMBEAM'
 
   solar_radius = file.semidiameter / run->line(file.wave_region, 'plate_scale')
   center_wavelength_indices = file->get_center_wavelength_indices()
