@@ -130,30 +130,30 @@ pro ucomp_l2_quick_invert, wave_region, $
       fits_write, fcb, 0.0, primary_header
 
       ucomp_addpar, ext_header, 'UNITS', 'ppm of solar disk', after='OBJECT'
-      fits_write, fcb, summed_intensity, ext_header, $
+      fits_write, fcb, float(summed_intensity), ext_header, $
                   extname='Summed intensity'
 
       ucomp_addpar, ext_header, 'UNITS', 'fraction'
 
-      fits_write, fcb, summed_q, ext_header, $
+      fits_write, fcb, float(summed_q), ext_header, $
                   extname='Summed Q'
 
-      fits_write, fcb, summed_u, ext_header, $
+      fits_write, fcb, float(summed_u), ext_header, $
                   extname='Summed U'
 
-      fits_write, fcb, summed_linpol, ext_header, $
+      fits_write, fcb, float(summed_linpol), ext_header, $
                   extname='Summed linear polarization'
 
       ucomp_addpar, ext_header, 'UNITS', 'deg CCW from horizontal'
-      fits_write, fcb, azimuth, ext_header, extname='Azimuth'
+      fits_write, fcb, float(azimuth), ext_header, extname='Azimuth'
 
       ucomp_addpar, ext_header, 'UNITS', 'deg CCW from radial'
-      fits_write, fcb, radial_azimuth, ext_header, extname='Radial azimuth'
+      fits_write, fcb, float(radial_azimuth), ext_header, extname='Radial azimuth'
 
       ucomp_addpar, ext_header, 'UNITS', 'km/s'
-      fits_write, fcb, doppler_shift, ext_header, extname='Doppler velocity'
+      fits_write, fcb, float(doppler_shift), ext_header, extname='Doppler velocity'
 
-      fits_write, fcb, line_width, ext_header, extname='Line width'
+      fits_write, fcb, float(line_width), ext_header, extname='Line width'
 
       fits_close, fcb
 
