@@ -75,9 +75,11 @@ pro ucomp_l2_polarization, file, run=run
   center_index = center_indices[0]
   wavelengths = file.wavelengths
 
-  center_indices = [center_index - 1, center_index, center_index + 1]
+  intensity_blue   = reform(ext_data[*, *, 0, center_index - 1])
+  intensity_center = reform(ext_data[*, *, 0, center_index])
+  intensity_red    = reform(ext_data[*, *, 0, center_index + 1])
 
-  center_intensity = reform(ext_data[*, *, 0, center_index - 1:center_index + 1])
+  center_indices = [center_index - 1, center_index, center_index + 1]
 
   summed_intensity = ucomp_integrate(reform(ext_data[*, *, 0, *]), center_index=center_index)
   summed_q         = ucomp_integrate(reform(ext_data[*, *, 1, *]), center_index=center_index)
@@ -86,9 +88,7 @@ pro ucomp_l2_polarization, file, run=run
   summed_linpol = sqrt(summed_q^2 + summed_u^2)
 
   d_lambda = wavelengths[center_index] - wavelengths[center_index - 1]
-  intensity_blue   = center_intensity[*, *, 0]
-  intensity_center = center_intensity[*, *, 1]
-  intensity_red    = center_intensity[*, *, 2]
+
   ucomp_analytic_gauss_fit, intensity_blue, $
                             intensity_center, $
                             intensity_red, $
@@ -96,6 +96,14 @@ pro ucomp_l2_polarization, file, run=run
                             doppler_shift=doppler_shift, $
                             line_width=line_width, $
                             peak_intensity=peak_intensity
+
+  c = 299792.458D
+
+  ; convert Doppler shift to velocity [km/s]
+  doppler_shift *= c / mean(wavelengths)
+
+  ; convert line width to velocity [km/s]
+  line_width *= c / mean(wavelengths)
 
   enhanced_intensity = ucomp_enhanced_intensity(summed_intensity, $
                                                 radius=run->line(file.wave_region, 'enhanced_intensity_radius'), $
@@ -209,13 +217,13 @@ end
 
 date = '20220901'
 
-config_basename = 'ucomp.publish.cfg'
+config_basename = 'ucomp.latest.cfg'
 config_filename = filepath(config_basename, $
                            subdir=['..', '..', '..', 'ucomp-config'], $
                            root=mg_src_root())
 run = ucomp_run(date, 'test', config_filename)
 
-l0_basename = '20220902.032356.48.ucomp.1074.l0.fts'
+l0_basename = '20220901.182014.02.ucomp.1074.l0.fts'
 l0_filename = filepath(l0_basename, subdir=[date], root=run->config('raw/basedir'))
 
 file = ucomp_file(l0_filename, run=run)
