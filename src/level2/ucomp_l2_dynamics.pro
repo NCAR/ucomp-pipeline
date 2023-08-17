@@ -120,7 +120,7 @@ pro ucomp_l2_dynamics, file, run=run
   ; convert Doppler shift to velocity [km/s]
   doppler_shift *= c / mean(wavelengths)
 
-  ; convert line width to velocity (km/s)
+  ; convert line width to velocity [km/s]
   line_width *= c / mean(wavelengths)
 
   ; mask data on various thresholds
