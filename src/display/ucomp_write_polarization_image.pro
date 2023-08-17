@@ -55,12 +55,6 @@ pro ucomp_write_polarization_image, output_filename, $
                       post_angle=(rcam.post_angle + tcam.post_angle) / 2.0, $
                       p_angle=file.p_angle)
 
-    ; TODO: what should the threshold be?
-    if (run->config('polarization/mask_noise')) then begin
-      intensity_threshold_mask = summed_intensity gt 0.1
-      mask and= intensity_threshold_mask
-    endif
-
     outside_mask_indices = where(mask eq 0, n_outside_mask)
 
     if (n_outside_mask gt 0L) then begin

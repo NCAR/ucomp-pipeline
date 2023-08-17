@@ -46,10 +46,6 @@ pro ucomp_write_dynamics_image, output_filename, $
                       post_angle=(rcam.post_angle + tcam.post_angle) / 2.0, $
                       p_angle=file.p_angle)
 
-    ; TODO: should we do this intensity mask? what should the threshold be?
-    intensity_threshold_mask = peak_intensity gt 0.1
-    mask and= intensity_threshold_mask
-
     outside_mask_indices = where(mask eq 0, n_outside_mask)
 
     if (n_outside_mask gt 0L) then begin
