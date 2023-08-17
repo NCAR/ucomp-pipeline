@@ -25,11 +25,18 @@ function ucomp_write_composite_image_channel, filename, $
                                               run=run
   compile_opt strictarr
 
+  use_peak_intensity = 1B
+
   fits_open, filename, fcb
   n_extensions = fcb.nextend
   n_wavelengths = n_extensions / 2L
   fits_read, fcb, !null, primary_header, exten_no=0
-  fits_read, fcb, data, header, exten_no=n_wavelengths / 2 + 1
+  center_line_index = n_wavelengths / 2 + 1
+  fits_read, fcb, center_line, center_line_header, exten_no=center_line_index
+  if (keyword_set(use_peak_intensity)) then begin
+    fits_read, fcb, blue, blue_header, exten_no=center_line_index - 1L
+    fits_read, fcb, red, red_header, exten_no=center_line_index + 1L
+  endif
   fits_close, fcb
 
   wave_region = ucomp_getpar(primary_header, 'FILTER')
@@ -37,8 +44,23 @@ function ucomp_write_composite_image_channel, filename, $
   post_angle = ucomp_getpar(primary_header, 'POST_ANG')
   p_angle = ucomp_getpar(primary_header, 'SOLAR_P0')
 
-  dims = size(data, /dimensions)
-  intensity = reform(data[*, *, 0])
+  dims = size(center_line, /dimensions)
+  intensity_center = reform(center_line[*, *, 0])
+  if (keyword_set(use_peak_intensity)) then begin
+    intensity_blue = reform(blue[*, *, 0])
+    intensity_red = reform(red[*, *, 0])
+
+    blue_wavelength = ucomp_getpar(blue_header, 'WAVELNG')
+    center_wavelength = ucomp_getpar(center_line_header, 'WAVELNG')
+    d_lambda = center_wavelength - blue_wavelength
+
+    ucomp_analytic_gauss_fit, intensity_blue, $
+                              intensity_center, $
+                              intensity_red, $
+                              d_lambda, $
+                              peak_intensity=intensity
+  endif else intensity = intensity_center
+
   enhanced = run->line(wave_region, 'temperature_enhancement')
   if (keyword_set(enhanced)) then begin
     intensity = ucomp_enhanced_intensity(intensity, $
@@ -272,14 +294,11 @@ end
 ;date = '20211003'
 date = '20220901'
 
-config_basename = 'ucomp.publish.cfg'
+config_basename = 'ucomp.latest.cfg'
 config_filename = filepath(config_basename, $
                            subdir=['..', '..', '..', 'ucomp-config'], $
                            root=mg_src_root())
 run = ucomp_run(date, 'test', config_filename)
-
-enhanced = 0B
-nrgf = 0B
 
 wave_regions = ['1074', '789', '637']
 mean_basenames = date + '.ucomp.' + wave_regions + '.l2.synoptic.mean.fts'
