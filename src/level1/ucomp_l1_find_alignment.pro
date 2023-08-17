@@ -227,7 +227,8 @@ pro ucomp_l1_find_alignment, file, $
 
   after = 'OBJECT'
   ucomp_addpar, primary_header, 'WCSNAME', 'helioprojective-cartesian', $
-                comment='World Coordinate System (WCS) name'
+                comment='World Coordinate System (WCS) name', $
+                after=after
   ucomp_addpar, primary_header, $
                 'CDELT1', $
                 run->line(file.wave_region, 'plate_scale'), $
