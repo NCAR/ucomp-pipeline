@@ -100,6 +100,21 @@ pro ucomp_l2_dynamics, file, run=run
                                                 field_radius=run->epoch('field_radius'), $
                                                 mask=run->config('display/mask_l2'))
 
+  ; To fix the black square artifacts in the enhanced intensity calculated from
+  ; an intensity that has been thresholded, replace the negative pixels with an
+  ; pixels from an enhanced intensity computed from a non-thresholded intensity.
+  ; This still ends up having blotchy spots in the outer field, but not as
+  ; noticeable as the black squares.
+  enhanced_intensity_center = ucomp_enhanced_intensity(intensity_center, $
+                                                       radius=run->line(file.wave_region, 'enhanced_intensity_radius'), $
+                                                       amount=run->line(file.wave_region, 'enhanced_intensity_amount'), $
+                                                       occulter_radius=file.occulter_radius, $
+                                                       post_angle=file.post_angle, $
+                                                       field_radius=run->epoch('field_radius'), $
+                                                       mask=run->config('display/mask_l2'))
+  negative_indices = where(enhanced_intensity le 0.0, n_negative_indices, /null)
+  enhanced_intensity[negative_indices] = enhanced_intensity_center[negative_indices]
+
   c = 299792.458D
 
   ; convert Doppler shift to velocity [km/s]
@@ -208,13 +223,13 @@ end
 
 date = '20220901'
 
-config_basename = 'ucomp.publish.cfg'
+config_basename = 'ucomp.latest.cfg'
 config_filename = filepath(config_basename, $
                            subdir=['..', '..', '..', 'ucomp-config'], $
                            root=mg_src_root())
 run = ucomp_run(date, 'test', config_filename)
 
-l0_basename = '20220902.032356.48.ucomp.1074.l0.fts'
+l0_basename = '20220901.182014.02.ucomp.1074.l0.fts'
 l0_filename = filepath(l0_basename, subdir=[date], root=run->config('raw/basedir'))
 
 file = ucomp_file(l0_filename, run=run)
