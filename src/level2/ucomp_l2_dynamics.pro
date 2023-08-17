@@ -113,7 +113,8 @@ pro ucomp_l2_dynamics, file, run=run
                                                        field_radius=run->epoch('field_radius'), $
                                                        mask=run->config('display/mask_l2'))
   negative_indices = where(enhanced_intensity le 0.0, n_negative_indices, /null)
-  enhanced_intensity[negative_indices] = enhanced_intensity_center[negative_indices]
+  display_enhanced_intensity = enhanced_intensity
+  display_enhanced_intensity[negative_indices] = enhanced_intensity_center[negative_indices]
 
   c = 299792.458D
 
@@ -207,7 +208,7 @@ pro ucomp_l2_dynamics, file, run=run
   ucomp_write_dynamics_image, dynamics_filename, $
                               file, $
                               peak_intensity, $
-                              enhanced_intensity, $
+                              display_enhanced_intensity, $
                               doppler_shift, $
                               line_width, $
                               reduce_factor=2L, $
