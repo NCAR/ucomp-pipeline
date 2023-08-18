@@ -114,7 +114,6 @@ pro ucomp_l2_dynamics, file, run=run
                                                        mask=run->config('display/mask_l2'))
   negative_mask = enhanced_intensity le 0.0
   negative_mask = morph_close(negative_mask, bytarr(3, 3) + 1B, /preserve_type)
-  mg_image, bytscl(negative_mask, 0.0, 1.0)
   negative_indices = where(negative_mask, n_negative_indices, /null)
   display_enhanced_intensity = enhanced_intensity
   display_enhanced_intensity[negative_indices] = enhanced_intensity_center[negative_indices]
