@@ -141,6 +141,24 @@ def get_raw_basedir(date, flags, error):
     return(raw_basedir)
 
 
+def get_processing_basedir(date, flags, error):
+    ucomp_config = get_config(flags, error)
+
+    try:
+        raw_basedir = ucomp_config.get("processing", "basedir")
+    except configparser.NoSectionError:
+        error("no processing section in config file")
+    except configparser.NoOptionError:
+        routing_filename = ucomp_config.get("processing", "routing_file")
+        routing_config = configparser.ConfigParser()
+        routing_config.read(routing_filename)
+        date_locations = routing_config.options("ucomp-process")
+        for date_expr in date_locations:
+            if fnmatch.fnmatch(date, date_expr):
+                return(routing_config.get("ucomp-process", date_expr))
+    return(raw_basedir)
+
+
 def get_control_dir(flags, error):
     ucomp_config = get_config(flags, error)
     try:
@@ -682,13 +700,20 @@ def missing(args):
                 else:
                     print(cf)
 
+
 def has_raw_data(date, flags, error):
-    # TODO: could also check machine log
     raw_basedir = get_raw_basedir(date, flags, error)
     raw_dir = os.path.join(raw_basedir, date)
     fits_glob = os.path.join(raw_dir, '*.fts*')
     fits_files = glob.glob(fits_glob)
     return(len(fits_files) > 0)
+
+
+def processed_locked(date, flags, error):
+    processing_basedir = get_processing_basedir(date, flags, error)
+    processing_dir = os.path.join(processing_basedir, date)
+    lock_filename = os.path.join(processing_dir, ".lock")
+    return(os.path.exists(lock_filename))
 
 
 # versions sub-command
@@ -727,18 +752,23 @@ def versions(args):
         no_version = [v for v in versions_list if v[1] is None or v[1][0] == "-"]
         in_progress = [v for v in no_version if has_raw_data(v[0], args.flags, args.parser.error)]
         for d, v, r in in_progress:
-            #if v is not None and filter(v):
+            attribute = "L" if processed_locked(d, args.flags, args.parser.error) else "+"
             v = v if v is not None else 12 * "-"
             r = r if r is not None else 12 * "-"
-            print(f"{d}: + {v:12s} {r:8s}")
+            print(f"{d}: {attribute} {v:12s} {r:8s}")
     elif args.summary:
         f = [v for v in versions_list if v[1] is not None and v[1][0] != "-"]
         no_version = [v for v in versions_list if v[1] is None or v[1][0] == "-"]
-        in_progress = [v for v in no_version if has_raw_data(v[0], args.flags, args.parser.error)]
+        in_progress = [v for v in no_version if has_raw_data(v[0], args.flags, args.parser.error) and processed_locked(v[0], args.flags, args.parser.error)]
         n_in_progress = len(in_progress)
         if n_in_progress > 0:
             plural = "s" if n_in_progress > 1 else ""
-            print(f"-----: {n_in_progress} day{plural}")
+            print(f"--L--: {n_in_progress} day{plural}")
+        not_processed = [v for v in no_version if has_raw_data(v[0], args.flags, args.parser.error) and not processed_locked(v[0], args.flags, args.parser.error)]
+        n_not_processed = len(not_processed)
+        if n_not_processed > 0:
+            plural = "s" if n_not_processed > 1 else ""
+            print(f"-----: {n_not_processed} day{plural}")
 
         s = sorted(f, key=lambda v: packaging.version.parse(v[1]))
         current_version = ''
@@ -758,12 +788,18 @@ def versions(args):
                 print(f"{current_version}: {n_dates} day{plural}")
     else:
         for d, v, r in versions_list:
-            raw_data = "+" if has_raw_data(d, args.flags, args.parser.error) else "-"
-            #if v is not None and filter(v):
+            if has_raw_data(d, args.flags, args.parser.error):
+                if processed_locked(d, args.flags, args.parser.error):
+                    attribute = "L"
+                else:
+                    attribute = "+"
+            else:
+                attribute = "-"
+
             if filter(v):
                 v = v if v is not None else 12 * "-"
                 r = r if r is not None else 12 * "-"
-                print(f"{d}: {raw_data} {v:12s} {r:8s}")
+                print(f"{d}: {attribute} {v:12s} {r:8s}")
 
 
 def make_version_filter(filter_expression):
