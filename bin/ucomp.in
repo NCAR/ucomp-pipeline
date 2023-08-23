@@ -1,6 +1,7 @@
 #!@Python3_EXECUTABLE@
 
 import argparse
+import collections
 import datetime
 from email.mime.text import MIMEText
 import fnmatch
@@ -566,7 +567,7 @@ def prune_logfiles(files, max_version):
                     os.remove(file_to_delete)
 
 
-def filter_file(logfile, level_index, follow):
+def filter_file(logfile, level_index, follow, tail=None):
     loglevel_filter = "|".join(LEVELS[level_index:])
     loglevel_prog = re.compile(".*(%s):.*" % loglevel_filter)
     logstart_prog = re.compile("(\[\d+\] )?\d{8}.\d{6}")
@@ -574,6 +575,9 @@ def filter_file(logfile, level_index, follow):
     matched_last_line = False
 
     line = "not empty"
+
+    if tail is not None:
+        queue = collections.deque(maxlen=tail)
 
     try:
         with open(logfile, "r") as f:
@@ -590,7 +594,10 @@ def filter_file(logfile, level_index, follow):
                     if loglevel_prog.match(line):
                         matched_last_line = True
                         try:
-                            print(line.rstrip())
+                            if tail is None:
+                                print(line.rstrip())
+                            else:
+                                queue.append(line.rstrip())
                         except IOError:
                             return
                     else:
@@ -599,7 +606,10 @@ def filter_file(logfile, level_index, follow):
                                 matched_last_line = False
                             else:
                                 try:
-                                    print(line.rstrip())
+                                    if tail is None:
+                                        print(line.rstrip())
+                                    else:
+                                        queue.append(line.rstrip())
                                 except IOError:
                                     return
             except KeyboardInterrupt:
@@ -607,6 +617,10 @@ def filter_file(logfile, level_index, follow):
                 return
     except IOError:
         print("Problem reading %s" % logfile)
+
+    if tail is not None:
+        for line in queue:
+            print(line)
 
 
 def filter_log(args):
@@ -629,9 +643,13 @@ def filter_log(args):
             logfiles.append(f)
 
     follow = args.follow
+    tail = args.tail
     if follow and len(logfiles) > 1:
-        print("cannot follow multiple files")
+        args.parser.error("cannot follow multiple files")
         return
+
+    if follow and tail:
+        args.parser.error("cannot follow and tail a file")
 
     if args.prune is not None:
         prune_logfiles(logfiles, int(args.prune))
@@ -663,7 +681,7 @@ def filter_log(args):
             if i != 0: print("")
             print(f)
             print("-" * len(f))
-        filter_file(f, level_index, follow)
+        filter_file(f, level_index, follow, tail=10 if tail else None)
 
 
 # missing sub-command
@@ -1284,15 +1302,16 @@ if __name__ == "__main__":
     log_parser.add_argument("logfiles", nargs="+",
         help="UCoMP log filename or date",
         metavar="logfile")
-    level_help = "filter level: DEBUG INFO WARN ERROR CRITICAL (default DEBUG)"
     log_parser.add_argument("-l", "--level",
-        help=level_help)
-    prune_help = "delete rotated logs with versions higher than MAX_VERSION"
+        help="filter level: DEBUG INFO WARN ERROR CRITICAL (default DEBUG)")
     log_parser.add_argument("-p", "--prune",
-        help=prune_help,
+        help="delete rotated logs with versions higher than MAX_VERSION",
         metavar="MAX_VERSION")
     log_parser.add_argument("-f", "--follow",
         help="output appended data as file grows",
+        action="store_true")
+    log_parser.add_argument("-t", "--tail",
+        help="show the last 10 lines of the log at the otherwise given level",
         action="store_true")
     log_parser.add_argument("-d", "--debug",
         help="DEBUG filter level",
