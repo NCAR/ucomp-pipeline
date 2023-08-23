@@ -396,3 +396,4 @@
   change line width display min/max
   updated method to compute enhanced peak intensity
 0.5.1
+  added --tail option to log sub-command
