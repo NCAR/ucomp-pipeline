@@ -1,63 +1,68 @@
 #!@Python3_EXECUTABLE@
 
-import argparse
-import collections
-import datetime
-from email.mime.text import MIMEText
-import fnmatch
-import glob
-import os
-import re
-import smtplib
-import socket
-import subprocess
 import sys
-import time
-import warnings
-
-# import shtab
-
-PY3 = sys.version_info[0] == 3
-
-if PY3:
-    import configparser
-else:
-    import ConfigParser as configparser
 
 try:
-    import psutil
-    ps_requirements = True
-except ModuleNotFoundError as e:
-    ps_requirements = False
+    import argparse
+    import collections
+    import datetime
+    from email.mime.text import MIMEText
+    import fnmatch
+    import glob
+    import os
+    import re
+    import smtplib
+    import socket
+    import subprocess
+    import time
+    import warnings
 
-try:
-    from astropy.io import fits
-    from astropy.utils.exceptions import AstropyUserWarning
-    ls_requirements = True
-except ModuleNotFoundError as e:
-    ls_requirements = False
+    # import shtab
 
-try:
-    import mysql
-    import mysql.connector
-    database_requirements = True
-except ModuleNotFoundError as e:
-    database_requirements = False
+    PY3 = sys.version_info[0] == 3
 
-try:
-    import packaging.specifiers
-    import packaging.version
-    versions_requirements = True
-except ModuleNotFoundError as e:
-    versions_requirements = False
+    if PY3:
+        import configparser
+    else:
+        import ConfigParser as configparser
 
-try:
-    import watchfiles
-    watch_requirements = True
-except ModuleNotFoundError as e:
-    watch_requirements = False
-except ImportError as e:
-    watch_requirments = False
+    try:
+        import psutil
+        ps_requirements = True
+    except ModuleNotFoundError as e:
+        ps_requirements = False
+
+    try:
+        from astropy.io import fits
+        from astropy.utils.exceptions import AstropyUserWarning
+        ls_requirements = True
+    except ModuleNotFoundError as e:
+        ls_requirements = False
+
+    try:
+        import mysql
+        import mysql.connector
+        database_requirements = True
+    except ModuleNotFoundError as e:
+        database_requirements = False
+
+    try:
+        import packaging.specifiers
+        import packaging.version
+        versions_requirements = True
+    except ModuleNotFoundError as e:
+        versions_requirements = False
+
+    try:
+        import watchfiles
+        watch_requirements = True
+    except ModuleNotFoundError as e:
+        watch_requirements = False
+    except ImportError as e:
+        watch_requirments = False
+except KeyboardInterrupt:
+    print
+    sys.exit(1)
 
 
 POLL_SECS = 0.1
@@ -1503,6 +1508,9 @@ if __name__ == "__main__":
     # parse args and call appropriate sub-command
     args = parser.parse_args()
     if parser.get_default("func"):
-        args.func(args)
+        try:
+            args.func(args)
+        except KeyboardInterrupt:
+            print
     else:
         parser.print_help()
