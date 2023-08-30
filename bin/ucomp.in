@@ -358,12 +358,28 @@ def list_fits_file(f, columns):
 
 
 def list_files(files, columns=None):
+    line_character = "\u23AF"
+    endpt_character = "\u279B"
+
+    max_files = 1400
+    files_per_hash = 25
+    width = max_files // files_per_hash
+
     for f in files:
         basename = os.path.basename(f)
         if os.path.isdir(f):
             n_subfiles = len(glob.glob(os.path.join(f, "*")))
+            n_fits_files = len(glob.glob(os.path.join(f, "**/*.fts*"), recursive=True))
             name = f"{basename}/"
-            print(f"{name:38s}  {n_subfiles} files")
+            if n_fits_files > 0:
+                length = n_fits_files // files_per_hash
+                if length > width:
+                    bar = (width - 1) * line_character + endpt_character
+                else:
+                    bar = length * line_character
+                print(f"{name:20s} {bar:{width}s} {n_fits_files:4d} FITS files")
+            else:
+                print(f"{name:20s} {n_subfiles} files")
         elif os.path.isfile(f):
             filename, file_extension = os.path.splitext(f)
             if file_extension == ".tgz":
