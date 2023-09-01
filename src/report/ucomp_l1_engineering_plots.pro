@@ -42,6 +42,9 @@ pro ucomp_l1_engineering_plots, run=run
     ucomp_plot_centering_info, filepath(string(run.date, wave_regions[w], $
                                                format='(%"%s.ucomp.%s.daily.centering.gif")'), $
                                         root=engineering_dir), $
+                               filepath(string(run.date, wave_regions[w], $
+                                               format='(%"%s.ucomp.%s.daily.radius-diff.gif")'), $
+                                        root=engineering_dir), $
                                wave_regions[w], $
                                run=run
     ucomp_plot_temp_vs_voltage, filepath(string(run.date, wave_regions[w], $
