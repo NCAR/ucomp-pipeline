@@ -228,7 +228,7 @@ pro ucomp_average_l1_files, files, $
                   comment='[UT] date/time when obs started', $
                   after='DATE-OBS'
     ucomp_addpar, primary_header, 'NUMWAVE', n_unique_wavelengths
-    ucomp_addpar, primary_header, 'NUMFILES', n_ok_files
+    ucomp_addpar, primary_header, 'NUMFILES', n_ok_files, after='NUMBEAM'
 
     if (size(mean_wavelength_data, /n_dimensions) gt 3L) then begin
       case _method of
