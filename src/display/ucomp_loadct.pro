@@ -76,6 +76,7 @@ pro ucomp_loadct, name, n_colors=n_colors, rgb_table=rgb_table, $
     'quv': begin
         ; rgb_table = mg_makect(cyan, black, pink, ncolors=n_colors)
         loadct, 0, /silent, ncolors=n_colors, rgb_table=rgb_table
+        ;loadct, 73, /silent, ncolors=n_colors, rgb_table=rgb_table
       end
     'linpol': begin
         loadct, 0, /silent, ncolors=n_colors, rgb_table=rgb_table
@@ -96,7 +97,12 @@ pro ucomp_loadct, name, n_colors=n_colors, rgb_table=rgb_table, $
         rgb_table = mg_makect(blue, white, red, ncolors=n_colors)
       end
     'line_width': begin
-        loadct, 4, /silent, ncolors=n_colors, rgb_table=rgb_table
+        ; loadct, 4, /silent, ncolors=n_colors, rgb_table=rgb_table
+        ; jet colortable
+        mpl_filename = filepath('mpl.tbl', $
+                                subdir=['..', '..', 'resource', 'colortables'], $
+                                root=mg_src_root())
+        mg_loadct, 12, file=mpl_filename, rgb_table=rgb_table, ncolors=n_colors
       end
     'difference': begin
         rgb_table = mg_makect(cyan, black, pink, ncolors=n_colors)
