@@ -45,6 +45,17 @@ pro ucomp_write_polarization_image, output_filename, $
 
   dims = size(summed_intensity, /dimensions)
 
+  summed_q_i = summed_q / summed_intensity
+  summed_u_i = summed_u / summed_intensity
+  summed_linpol_i = summed_linpol / summed_intensity
+
+  ; replace NaNs from threshold masking with 0.0 for display of Q, U, and L
+  nan_indices = where(~finite(summed_q), n_nan_indices, /null)
+  summed_q_i[nan_indices] = 0.0
+  summed_u_i[nan_indices] = 0.0
+  ; TODO: maybe fill with something better than the median?
+  summed_linpol_i[nan_indices] = median(summed_linpol_i)
+
   if (run->config('display/mask_l2')) then begin
     ; mask outputs
     rcam = file.rcam_geometry
@@ -65,16 +76,16 @@ pro ucomp_write_polarization_image, output_filename, $
       summed_linpol[outside_mask_indices]      = !values.f_nan
       azimuth[outside_mask_indices]            = !values.f_nan
       radial_azimuth[outside_mask_indices]     = !values.f_nan
+
+      summed_q_i[outside_mask_indices]           = !values.f_nan
+      summed_u_i[outside_mask_indices]           = !values.f_nan
+      summed_linpol_i[outside_mask_indices]      = !values.f_nan
     endif
   endif
 
   if (n_elements(reduce_factor) gt 0L) then dims /= reduce_factor
   nx = dims[0]
   ny = dims[1]
-
-  summed_q_i = summed_q / summed_intensity
-  summed_u_i = summed_u / summed_intensity
-  summed_linpol_i = summed_linpol / summed_intensity
 
   summed_intensity_display = ucomp_display_image(file.wave_region, summed_intensity, $
                                                  type='intensity', $
