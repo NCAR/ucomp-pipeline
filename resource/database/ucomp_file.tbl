@@ -8,6 +8,7 @@ create table ucomp_file (
   l0_file_name             char (70),
   date_obs                 datetime not null,
   obsday_id                mediumint (5) not null,
+  obsday_hours             float(8, 4),   -- hours into the observing day
   carrington_rotation      mediumint (5),
 
   level_id                 tinyint (2) not null,
