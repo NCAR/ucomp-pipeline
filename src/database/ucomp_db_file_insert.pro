@@ -91,6 +91,7 @@ pro ucomp_db_file_insert, files, level, product_type, $
               {name: 'l0_file_name', type: '''%s'''}, $
               {name: 'date_obs', type: '''%s'''}, $
               {name: 'obsday_id', type: '%d'}, $
+              {name: 'obsday_hours', type: '%f'}, $
               {name: 'carrington_rotation', type: '%d'}, $
 
               {name: 'level_id', type: '%d'}, $
@@ -129,6 +130,7 @@ pro ucomp_db_file_insert, files, level, product_type, $
                  file_basename(file.raw_filename), $
                  file.date_obs,$
                  obsday_index, $
+                 file.obsday_hours, $
                  long(file.carrington_rotation), $
                  level_index, $
                  producttype_index, $

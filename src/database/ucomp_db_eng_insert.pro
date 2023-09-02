@@ -38,6 +38,7 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
   fields = [{name: 'file_name', type: '''%s'''}, $
             {name: 'date_obs', type: '''%s'''}, $
             {name: 'obsday_id', type: '%d'}, $
+            {name: 'obsday_hours', type: '%f'}, $
             {name: 'level_id', type: '%d'}, $
 
             {name: 'focus', type: '%f'}, $
@@ -169,6 +170,7 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
                  file_basename(file.raw_filename), $
                  file.date_obs, $
                  obsday_index, $
+                 file.obsday_hours, $
                  level_index, $
 
                  file.focus, $
