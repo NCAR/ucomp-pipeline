@@ -171,7 +171,7 @@ pro ucomp_mission_centering_plot, wave_region, db, run=run
                  xminor=3, $
                  ytitle='RCAM - TCAM radius difference [pixels]', $
                  ystyle=1, yrange=[-2.0, 2.0]
-  plots, [jds[0], jds[-1]], fltarr(2), linestyle=3, color=color
+  plots, time_range, fltarr(2), linestyle=3, color=color
 
   output_filename = filepath(string(run.date, wave_region, $
                                     format='(%"%s.ucomp.%s.mission.radius-diff.gif")'), $

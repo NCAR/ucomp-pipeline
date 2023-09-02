@@ -171,7 +171,7 @@ pro ucomp_plot_centering_info, filename, radiusdiff_filename, wave_region, run=r
 
   !p.multi = 0
 
-  if ((total(finite(tcam_r)) gt 0L) && (total(finite(tcam_r)) gt 0L)) then begin
+  if ((total(finite(rcam_r)) gt 0L) && (total(finite(tcam_r)) gt 0L)) then begin
     device, set_resolution=[1280, 768]
     mg_range_plot, hours, rcam_r - tcam_r, $
                    title=string(wave_region, pdate, $
@@ -182,7 +182,7 @@ pro ucomp_plot_centering_info, filename, radiusdiff_filename, wave_region, run=r
                    /ynozero, ystyle=1, yrange=[-2.0, 2.0], $
                    background=255, color=0, charsize=1.0, $
                    clip_thick=2.0, psym=6, symsize=symsize
-    plots, [hours[0], hours[-1]], fltarr(2), linestyle=3, color=0
+    plots, time_range, fltarr(2), linestyle=3, color=0
     write_gif, radiusdiff_filename, tvrd()
   endif
 
