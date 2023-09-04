@@ -158,6 +158,10 @@ pro ucomp_l1_continuum_subtraction, file, $
                             + ucomp_getpar(ext_headers_array[*, match_indices[m]], 'FLATDN')) / 2.0
     ucomp_addpar, header, 'FLATDN', average_flat_median, format='(F0.2)'
 
+    average_sky_transmission = (ucomp_getpar(ext_headers_array[*, m], 'SKYTRANS') $
+                            + ucomp_getpar(ext_headers_array[*, match_indices[m]], 'SKYTRANS')) / 2.0
+    ucomp_addpar, header, 'SKYTRANS', average_sky_transmission, format='(F0.5)'
+
     ext_headers->add, header
     background_headers->add, header
 

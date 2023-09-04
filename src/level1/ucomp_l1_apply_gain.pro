@@ -69,7 +69,8 @@ pro ucomp_l1_apply_gain, file, $
                                         master_extensions=master_flat_extensions, $
                                         raw_extensions=raw_flat_extensions, $
                                         raw_filenames=flat_raw_files, $
-                                        coefficient=flat_coefficients)
+                                        coefficient=flat_coefficients, $
+                                        sgsdimv=flat_sgsdimv)
     if (~flat_found) then begin
       mg_log, 'flat, or dark for flat, not found for ext %d, skipping', e + 1, $
               name=run.logger_name, /error
@@ -130,8 +131,14 @@ pro ucomp_l1_apply_gain, file, $
 
     ucomp_addpar, h, 'FLATDN', flat_median, $
                   comment='median DN value of the dark-corrected flat used', $
-                  format='(F0.2)'
+                  format='(F0.2)', $
                   after='BUNIT'
+    ; temporarily store the flat SGSDIMV in SKYTRANS
+    ucomp_addpar, h, 'SKYTRANS', flat_sgsdimv, $
+                  comment='sky transmission correction normalized to gain image', $
+                  format='(F0.5)', $
+                  after='FLATDN'
+
     headers[e] = h
   endfor
 

@@ -34,6 +34,7 @@ pro ucomp_average_flatfile, primary_header, ext_data, ext_headers, $
                             exptime=averaged_exptime, $
                             gain_mode=averaged_gain_mode, $
                             onband=averaged_onband, $
+                            sgsdimv=averaged_sgsdimv, $
                             wavelength=averaged_wavelength
   compile_opt strictarr
 
@@ -42,6 +43,7 @@ pro ucomp_average_flatfile, primary_header, ext_data, ext_headers, $
   exptime    = fltarr(n_extensions)
   gain_mode  = bytarr(n_extensions) + (ucomp_getpar(primary_header, 'GAIN') eq 'high')
   onband     = bytarr(n_extensions)
+  sgsdimv    = fltarr(n_extensions)
   wavelength = fltarr(n_extensions)
 
   ; group by EXPTIME, ONBAND, WAVELNG
@@ -49,6 +51,7 @@ pro ucomp_average_flatfile, primary_header, ext_data, ext_headers, $
     exptime[e]    = ucomp_getpar(ext_headers[e], 'EXPTIME')
     onband[e]     = ucomp_getpar(ext_headers[e], 'ONBAND') eq 'tcam'
     wavelength[e] = ucomp_getpar(ext_headers[e], 'WAVELNG')
+    sgsdimv[e]    = ucomp_getpar(ext_headers[e], 'SGSDIMV')
   endfor
 
   ext_ids = string(exptime, format='(%"%0.1f")') $
@@ -70,6 +73,7 @@ pro ucomp_average_flatfile, primary_header, ext_data, ext_headers, $
   averaged_exptime    = fltarr(n_groups)
   averaged_gain_mode  = bytarr(n_groups)
   averaged_onband     = bytarr(n_groups)
+  averaged_sgsdimv    = fltarr(n_groups)
   averaged_wavelength = fltarr(n_groups)
   extensions          = strarr(n_groups)
 
@@ -92,6 +96,7 @@ pro ucomp_average_flatfile, primary_header, ext_data, ext_headers, $
     ucomp_addpar, averaged_header, 'RAWFILE', '', comment='raw flat file'
     ucomp_addpar, averaged_header, 'RAWEXTS', extensions[g], after='RAWFILE', $
                   comment='extension(s) used from RAWFILE'
+    averaged_sgsdimv[g] = ucomp_getpar(averaged_header, 'SGSDIMV')
     ext_headers->add, averaged_header
   endfor
 
