@@ -255,6 +255,7 @@ pro ucomp_calibration::cache_flats, filenames, $
                                     wavelengths=wavelengths, $
                                     gain_modes=gain_modes, $
                                     onbands=onbands, $
+                                    sgsdimv=sgsdimv, $
                                     raw_files=raw_files, $
                                     extensions=extensions
   compile_opt strictarr
@@ -287,6 +288,7 @@ pro ucomp_calibration::cache_flats, filenames, $
     wavelengths = fltarr(n_flats)
     gain_modes  = lonarr(n_flats)
     onbands     = lonarr(n_flats)
+    sgsdimv     = fltarr(n_flats)
     extensions  = strarr(n_flats)
     raw_files   = strarr(n_flats)
 
@@ -299,6 +301,7 @@ pro ucomp_calibration::cache_flats, filenames, $
         flats[0, 0, 0, i + e - 1L] = flat_image
         raw_files[e - 1L] = ucomp_getpar(flat_header, 'RAWFILE')
         extensions[e - 1L] = ucomp_getpar(flat_header, 'RAWEXT')
+        sgsdimv[e - 1L] = ucomp_getpar(flat_header, 'SGSDIMV')
       endfor
 
       ; read index extensions
@@ -329,6 +332,7 @@ pro ucomp_calibration::cache_flats, filenames, $
     *self.flat_wavelengths = wavelengths
     *self.flat_gain_modes = gain_modes
     *self.flat_onbands = onbands
+    *self.flat_sgsdimv = sgsdimv
     *self.flat_extensions = extensions
     *self.flat_raw_files = raw_files
     if (n_elements(n_flats_per_file) eq 0L) then begin
@@ -354,6 +358,7 @@ pro ucomp_calibration::cache_flats, filenames, $
     *self.flat_wavelengths = [*self.flat_wavelengths, wavelengths]
     *self.flat_gain_modes = [*self.flat_gain_modes, gain_modes]
     *self.flat_onbands = [*self.flat_onbands, onbands]
+    *self.flat_sgsdimv = [*self.flat_sgsdimv, sgsdimv]
     *self.flat_extensions = [*self.flat_extensions, extensions]
     *self.flat_raw_files = [*self.flat_raw_files, raw_files]
     *self.flat_wave_region_offsets = [*self.flat_wave_region_offsets, n_elements(times)]
@@ -472,7 +477,8 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
                                       master_extensions=master_extensions, $
                                       raw_extensions=raw_extensions, $
                                       raw_filenames=raw_filenames, $
-                                      coefficients=coefficients
+                                      coefficients=coefficients, $
+                                      sgsdimv=sgsdimv
   compile_opt strictarr
 
   interpolate = self.run->config('calibration/interpolate_flats')
@@ -516,6 +522,7 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
   valid_flats = (*self.flats)[*, *, *, valid_indices]
   valid_times = (*self.flat_times)[valid_indices]
   if (obsday_hours lt valid_times[0]) then begin
+    sgsdimv = (*self.flat_sgsdimv)[valid_indices[0]]
     interpolated_flat = float(valid_flats[*, *, *, 0])
 
     exptime_found = (*self.flat_exptimes)[valid_indices[0]]
@@ -536,6 +543,7 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
     raw_filenames = strtrim((*self.flat_raw_files)[valid_indices[0]], 2)
     coefficients = 1.0
   endif else if (obsday_hours gt valid_times[n_valid_flats - 1]) then begin
+    sgsdimv = (*self.flat_sgsdimv)[valid_indices[n_valid_flats - 1]]
     interpolated_flat = float(valid_flats[*, *, *, n_valid_flats - 1])
 
     exptime_found = (*self.flat_exptimes)[valid_indices[n_valid_flats - 1]]
@@ -597,9 +605,13 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
       raw_extensions = (*self.flat_extensions)[valid_indices[[index1, index2]]]
       raw_filenames = strtrim((*self.flat_raw_files)[valid_indices[[index1, index2]]], 2)
 
+      sgsdimv = a1 * (*self.flat_sgsdimv)[valid_indices[index1]] + a2 * (*self.flat_sgsdimv)[valid_indices[index2]]
+
       coefficients = [a1, a2]
     endif else begin
       index = value_locate(valid_times, obsday_hours)
+
+      sgsdimv = (*self.flat_sgsdimv)[valid_indices[index]]
 
       interpolated_flat = valid_flats[*, *, *, index]
 
@@ -636,8 +648,8 @@ pro ucomp_calibration::cleanup
   ptr_free, self.darks, self.dark_times, self.dark_exptimes, $
             self.dark_gain_modes, self.dark_raw_files
   ptr_free, self.flats, self.flat_times, self.flat_exptimes, $
-            self.flat_wavelengths, self.flat_gain_modes, self.flat_onbands, $$
-            self.flat_extensions, self.flat_raw_files, $
+            self.flat_wavelengths, self.flat_gain_modes, self.flat_onbands, $
+            self.flat_sgsdimv, self.flat_extensions, self.flat_raw_files, $
             self.flat_wave_region_offsets
 
 end
@@ -672,6 +684,7 @@ function ucomp_calibration::init, run=run
   self.flat_wavelengths = ptr_new(/allocate_heap)
   self.flat_gain_modes  = ptr_new(/allocate_heap)
   self.flat_onbands     = ptr_new(/allocate_heap)
+  self.flat_sgsdimv     = ptr_new(/allocate_heap)
   self.flat_extensions  = ptr_new(/allocate_heap)
   self.flat_raw_files   = ptr_new(/allocate_heap)
   self.flat_wave_region_offsets = ptr_new(/allocate_heap)
@@ -704,6 +717,7 @@ pro ucomp_calibration__define
            flat_wavelengths: ptr_new(), $  ; [nm] wavelengths
            flat_gain_modes: ptr_new(), $   ; 'low' or 'high'
            flat_onbands: ptr_new(), $      ; 'tcam' or 'rcam'
+           flat_sgsdimv: ptr_new(), $      ; SGSDIMV values
            flat_extensions: ptr_new(), $   ; extension into flat file
            flat_raw_files: ptr_new(), $    ; basename of raw file containing flat
            flat_wave_region_offsets: ptr_new() $ ; offset

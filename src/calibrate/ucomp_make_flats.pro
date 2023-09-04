@@ -53,6 +53,7 @@ pro ucomp_make_flats, wave_region, run=run
   flat_wavelengths    = list()
   flat_gain_modes     = list()
   flat_onbands        = list()
+  flat_sgsdimv        = list()
 
   flat_raw_files      = list()
 
@@ -101,6 +102,7 @@ pro ucomp_make_flats, wave_region, run=run
                             exptime=averaged_exptime, $
                             gain_mode=averaged_gain_mode, $
                             onband=averaged_onband, $
+                            sgsdimv=averaged_sgsdimv, $
                             wavelength=averaged_wavelength
     mg_log, 'averaging %d to %d flat exts', n_extensions, n_averaged_extensions, $
             name=run.logger_name, /debug
@@ -134,6 +136,7 @@ pro ucomp_make_flats, wave_region, run=run
     flat_wavelengths->add, averaged_wavelength, /extract
     flat_gain_modes->add, averaged_gain_mode, /extract
     flat_onbands->add, averaged_onband, /extract
+    flat_sgsdimv->add, averaged_sgsdimv, /extract
 
     for e = 0L, n_averaged_extensions - 1L do begin
       flat_image = reform(ext_data[*, *, *, *, e])
@@ -202,12 +205,14 @@ pro ucomp_make_flats, wave_region, run=run
   flat_wavelengths_array = flat_wavelengths->toArray()
   flat_gain_modes_array  = flat_gain_modes->toArray()
   flat_onbands_array     = flat_onbands->toArray()
+  flat_sgsdimv_array     = flat_sgsdimv->toArray()
   flat_raw_files_array   = flat_raw_files->toArray()
   obj_destroy, [flat_times, $
                 flat_exposures, $
                 flat_wavelengths, $
                 flat_gain_modes, $
                 flat_onbands, $
+                flat_sgsdimv, $
                 flat_raw_files]
 
   ; write master flat FITS file in the process_dir/level1
@@ -253,6 +258,7 @@ pro ucomp_make_flats, wave_region, run=run
                     wavelengths=flat_wavelengths_array, $
                     gain_modes=flat_gain_modes_array, $
                     onbands=flat_onbands_array, $
+                    sgsdimv=flat_sgsdimv_array, $
                     raw_files=flat_raw_files_array, $
                     extensions=flat_raw_extensions
 
