@@ -34,6 +34,7 @@ pro ucomp_l1_sky_transmission, file, $
 
   for e = 0L, n_elements(headers) - 1L do begin
     h = headers[e]
+    background_h = background_headers[e]
 
     ; retrieve SKYTRANS, which temporarily has flat_sgsdimv in it
     flat_sgsdimv = ucomp_getpar(h, 'SKYTRANS')
@@ -41,9 +42,13 @@ pro ucomp_l1_sky_transmission, file, $
 
     sky_transmission = flat_sgsdimv / sci_sgsdimv
     data[*, *, *, e]  *= sky_transmission
+    backgrounds[*, *, e]  *= sky_transmission
+
     ucomp_addpar, h, 'SKYTRANS', sky_transmission, format='(F0.3)'
+    ucomp_addpar, background_h, 'SKYTRANS', sky_transmission, format='(F0.3)'
 
     headers[e] = h
+    background_headers[e] = background_h
   endfor
 
 
