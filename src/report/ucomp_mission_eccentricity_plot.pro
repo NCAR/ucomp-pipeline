@@ -29,6 +29,8 @@ pro ucomp_mission_eccentricity_plot, wave_region, db, run=run
 
   rcam_eccentricity = data.rcam_eccentricity
   tcam_eccentricity = data.tcam_eccentricity
+  rcam_ellipse_angle = data.rcam_ellipse_angle
+  tcam_ellipse_angle = data.tcam_ellipse_angle
 
   jds = ucomp_dateobs2julday(data.date_obs)
   !null = label_date(date_format='%Y-%N-%D')
@@ -42,7 +44,7 @@ pro ucomp_mission_eccentricity_plot, wave_region, db, run=run
   tvlct, original_rgb, /get
   device, decomposed=0, $
           set_pixel_depth=8, $
-          set_resolution=[800, 600]
+          set_resolution=[1400, 800]
 
   tvlct, 0, 0, 0, 0
   tvlct, 255, 255, 255, 1
@@ -56,11 +58,12 @@ pro ucomp_mission_eccentricity_plot, wave_region, db, run=run
   clip_color       = 2
 
   charsize         = 0.9
-  psym             = 6
-  symsize          = 0.25
+  psym             = 3;6
+  symsize          = 0.2
 
   eccentricity_range = [0.0, 1.0]
   time_range = [jds[0], jds[-1]]
+  angle_range = [0.0, 180.0]
 
   month_ticks = mg_tick_locator(time_range, /months)
   if (n_elements(month_ticks) eq 0L) then begin
@@ -69,7 +72,7 @@ pro ucomp_mission_eccentricity_plot, wave_region, db, run=run
     month_ticks = month_ticks[0:*:3]
   endelse
 
-  !p.multi = [0, 1, 2, 0, 0]
+  !p.multi = [0, 2, 2, 0, 0]
 
   mg_range_plot, [jds], [rcam_eccentricity], $
                  charsize=charsize, $
@@ -79,7 +82,7 @@ pro ucomp_mission_eccentricity_plot, wave_region, db, run=run
                  psym=psym, symsize=symsize, $
                  clip_color=2, clip_psym=7, clip_symsize=1.0, $
                  xtitle='Date', $
-                 xstyle=1, range=time_range, $
+                 xstyle=1, xrange=time_range, $
                  xtickformat='label_date', $
                  xtickv=month_ticks, $
                  xticks=n_elements(month_ticks) - 1L, $
@@ -95,13 +98,43 @@ pro ucomp_mission_eccentricity_plot, wave_region, db, run=run
                  psym=psym, symsize=symsize, $
                  clip_color=2, clip_psym=7, clip_symsize=1.0, $
                  xtitle='Date', $
-                 xstyle=1, range=time_range, $
+                 xstyle=1, xrange=time_range, $
                  xtickformat='label_date', $
                  xtickv=month_ticks, $
                  xticks=n_elements(month_ticks) - 1L, $
                  xminor=3, $
                  ytitle='Eccentricity', $
                  ystyle=1, yrange=eccentricity_range
+
+  mg_range_plot, [jds], [rcam_ellipse_angle], $
+                 charsize=charsize, $
+                 title=string(wave_region, format='RCAM ellipse angle of occulter center per %s nm file over the UCoMP mission'), $
+                 color=color, background=background_color, $
+                 psym=psym, symsize=symsize, $
+                 clip_color=2, clip_psym=7, clip_symsize=1.0, $
+                 xtitle='Date', $
+                 xstyle=1, xrange=time_range, $
+                 xtickformat='label_date', $
+                 xtickv=month_ticks, $
+                 xticks=n_elements(month_ticks) - 1L, $
+                 xminor=4, $
+                 ytitle='Ellipse angle [degrees]', $
+                 ystyle=1, yrange=angle_range, yticks=4
+
+  mg_range_plot, [jds], [tcam_ellipse_angle], $
+                  charsize=charsize, $
+                  title=string(wave_region, format='TCAM ellipse angle of occulter center per %s nm file over the UCoMP mission'), $
+                  color=color, background=background_color, $
+                  psym=psym, symsize=symsize, $
+                  clip_color=2, clip_psym=7, clip_symsize=1.0, $
+                  xtitle='Date', $
+                  xstyle=1, xrange=time_range, $
+                  xtickformat='label_date', $
+                  xtickv=month_ticks, $
+                  xticks=n_elements(month_ticks) - 1L, $
+                  xminor=4, $
+                  ytitle='Ellipse angle [degrees]', $
+                  ystyle=1, yrange=angle_range, yticks=4
 
   !p.multi = 0
 
@@ -123,8 +156,8 @@ end
 
 ; main-level example program
 
-date = '20210922'
-config_basename = 'ucomp.latest.cfg'
+date = '20220901'
+config_basename = 'ucomp.production.cfg'
 config_filename = filepath(config_basename, $
                            subdir=['..', '..', '..', 'ucomp-config'], $
                            root=mg_src_root())
