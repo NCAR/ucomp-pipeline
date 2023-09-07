@@ -1538,7 +1538,6 @@ if __name__ == "__main__":
     if parser.get_default("func"):
         try:
             args.func(args)
-            print("parser function complete")
         except KeyboardInterrupt:
             print()
     else:
