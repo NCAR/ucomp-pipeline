@@ -47,7 +47,7 @@ pro ucomp_plot_centering_info, filename, radiusdiff_filename, wave_region, run=r
   time_ticks = time_range[1] - time_range[0]
 
   chisq_max = run->line(wave_region, 'gbu_max_fit_chisq')
-  chisq_range = [0.0, 2.0 * chisq_max]
+  chisq_range = [1.0e-2, 10.0 * chisq_max]
 
   n_cameras = 2L
   n_plots   = 4L   ; x, y, radius, chi-squared
@@ -119,7 +119,7 @@ pro ucomp_plot_centering_info, filename, radiusdiff_filename, wave_region, run=r
                    xtitle='Hours [UT]', ytitle='Chi-squared', $
                    xstyle=1, xrange=time_range, xticks=time_ticks, $
                    xtickformat='ucomp_hours_format', $
-                   /ynozero, ystyle=1, yrange=chisq_range, $
+                   /ynozero, /ylog, ystyle=1, yrange=chisq_range, $
                    background=255, color=0, charsize=n_plots * charsize, $
                    clip_thick=2.0, psym=6, symsize=symsize
     plots, time_range, fltarr(2) + chisq_max, linestyle=1, color=0
@@ -161,7 +161,7 @@ pro ucomp_plot_centering_info, filename, radiusdiff_filename, wave_region, run=r
                    xtitle='Hours [UT]', ytitle='Chi-squared', $
                    xstyle=1, xrange=time_range, xticks=time_ticks, $
                    xtickformat='ucomp_hours_format', $
-                   /ynozero, ystyle=1, yrange=chisq_range, $
+                   /ynozero, /ylog, ystyle=1, yrange=chisq_range, $
                    background=255, color=0, charsize=n_plots * charsize, $
                    clip_thick=2.0, psym=6, symsize=symsize
     plots, time_range, fltarr(2) + chisq_max, linestyle=1, color=0
