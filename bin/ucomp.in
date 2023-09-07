@@ -61,7 +61,7 @@ try:
     except ImportError as e:
         watch_requirments = False
 except KeyboardInterrupt:
-    print
+    print()
     sys.exit(1)
 
 
@@ -237,8 +237,20 @@ def notify_completed(args, task):
         msg["To"] = notification_email
 
         s = smtplib.SMTP("localhost")
-        s.send_message(msg)
-        s.quit()
+        try:
+            refused_recipients = s.send_message(msg)
+            for r in refused_recipients:
+                print(r)
+        except smtplib.SMTPRecipientsRefused as e:
+            print(e)
+        except smtplib.SMTPHeloError as e:
+            print(e)
+        except smtplib.SMTPSenderRefused as e:
+            print(e)
+        except smtplib.SMTPDataError as e:
+            print(e)
+
+        exit_code, exit_message = s.quit()
 
 
 # list sub-command
@@ -1526,7 +1538,8 @@ if __name__ == "__main__":
     if parser.get_default("func"):
         try:
             args.func(args)
+            print("parser function complete")
         except KeyboardInterrupt:
-            print
+            print()
     else:
         parser.print_help()
