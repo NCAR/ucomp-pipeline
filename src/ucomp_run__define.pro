@@ -550,7 +550,7 @@ pro ucomp_run::load_badframes
   compile_opt strictarr
 
   badframes_dir = self->config('averaging/badframes_dir')
-  if (n_elements(badframes_dir) ne 0L) then begin
+  if (n_elements(badframes_dir) ne 0L && (badframes_dir ne '')) then begin
     basename = string(self.date, format='%s.ucomp.badframes.csv')
     filename = filepath(basename, root=badframes_dir)
     if (file_test(filename, /regular)) then begin
