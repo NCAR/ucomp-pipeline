@@ -91,7 +91,7 @@ if (NOT IDL_FOUND)
   # find IDL based on version numbers, if you want a specific one, set
   # it prior to running configure
   if (NOT DEFINED IDL_FIND_VERSION)
-    set(_IDL_KNOWN_VERSIONS "87" "86" "85" "84" "83" "82" "81" "80" "71" "706")
+    set(_IDL_KNOWN_VERSIONS "89" "88" "87" "86" "85" "84" "83" "82" "81" "80" "71" "706")
     # IDL 8.0 is in a different location than other versions on Windows (extra
     # IDL directory in path)
     foreach (_IDL_COMPANY ${_IDL_KNOWN_COMPANIES})
