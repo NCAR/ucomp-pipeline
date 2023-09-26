@@ -102,7 +102,7 @@ pro ucomp_loadct, name, n_colors=n_colors, rgb_table=rgb_table, $
         mpl_filename = filepath('mpl.tbl', $
                                 subdir=['..', '..', 'resource', 'colortables'], $
                                 root=mg_src_root())
-        mg_loadct, 12, file=mpl_filename, rgb_table=rgb_table, ncolors=n_colors
+        loadct, 12, file=mpl_filename, rgb_table=rgb_table, ncolors=n_colors
       end
     'difference': begin
         rgb_table = mg_makect(cyan, black, pink, ncolors=n_colors)
