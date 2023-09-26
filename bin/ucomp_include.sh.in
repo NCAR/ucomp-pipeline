@@ -9,6 +9,8 @@ unset IDL_DIR
 MYSQL_LIBRARY=@MYSQL_LIBRARY@
 export LD_LIBRARY_PATH=$(dirname ${MYSQL_LIBRARY})
 
+export PATH=/usr/bin
+
 # setup IDL paths
 SSW_DIR=${PIPE_DIR}/ssw
 GEN_DIR=${PIPE_DIR}/gen
