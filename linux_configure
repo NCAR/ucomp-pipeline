@@ -12,6 +12,7 @@ cd build
 
 #IDL_ROOT_DIR=/opt/share/idl8.6/idl86
 IDL_ROOT_DIR=/opt/share/idl8.7.3/idl87
+#IDL_ROOT_DIR=/opt/share/idl8.9/idl89
 PYTHON_ROOT_DIR=/home/mgalloy/anaconda3
 
 /home/mgalloy/software/bin/cmake \
