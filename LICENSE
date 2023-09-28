@@ -39,11 +39,8 @@ this software without specific prior written permission.
 notification, citation, co-authorship are expected. You should acknowledge the
 use of our software in your scientific research published in journal articles
 or web sites in the following form: "This research has made use of the
-NCAR/MLSO UCOMP-PIPELINE software (1074 nm data
-https://doi.org/10.5065/D6R78C8B, 1079 nm data
-https://doi.org/10.5065/D6MG7MJM, 1083 nm data
-https://doi.org/10.5065/D6GQ6VSF), an open-source and free data processing and
-analysis package."
+NCAR/MLSO UCOMP-PIPELINE software (https://doi.org/10.26024/g8p7-wy42), an
+open-source and free data processing and analysis package."
 
 5. Proprietary Rights. Title, ownership rights, and intellectual property
 rights in the Software shall remain in UCAR. You acknowledge such ownership and
