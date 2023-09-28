@@ -61,7 +61,7 @@ pro ucomp_mission_eccentricity_plot, wave_region, db, run=run
   psym             = 3;6
   symsize          = 0.2
 
-  eccentricity_range = [0.0, 1.0]
+  eccentricity_range = [0.0, 0.25]
   time_range = [jds[0], jds[-1]]
   angle_range = [0.0, 180.0]
 

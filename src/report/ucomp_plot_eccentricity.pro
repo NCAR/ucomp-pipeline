@@ -63,7 +63,7 @@ pro ucomp_plot_eccentricity, wave_region, obsday_index, db, run=run
   time_range = [16.0, 28.0]
   !null = ucomp_hours_format(/minutes)
 
-  eccentricity_range = [0.0, 0.1]
+  eccentricity_range = [0.0, 0.25]
   angle_range = [0.0, 180.0]
 
   mg_range_plot, [hours], [data.rcam_eccentricity], $
