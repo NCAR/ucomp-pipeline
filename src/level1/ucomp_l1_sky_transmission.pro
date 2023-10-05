@@ -40,7 +40,7 @@ pro ucomp_l1_sky_transmission, file, $
     flat_sgsdimv = ucomp_getpar(h, 'SKYTRANS')
     sci_sgsdimv = ucomp_getpar(h, 'SGSDIMV')
 
-    ; TODO: correct SGSDIMV readings for wavelength
+    ; TODO: correct SGSDIMV readings for wave region for #35
 
     sky_transmission = flat_sgsdimv / sci_sgsdimv
     data[*, *, *, e]  *= sky_transmission
