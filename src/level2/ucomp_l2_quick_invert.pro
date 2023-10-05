@@ -120,11 +120,16 @@ pro ucomp_l2_quick_invert, wave_region, $
                             subdir=[run.date, 'level2'], $
                             root=run->config('processing/basedir'))
       ucomp_mkdir, l2_dirname, logger_name=run.logger_name
-      basename = string(file_basename(average_filenames[f], '.fts'), format='%s.quick_invert.fts')
+      basename = string(file_basename(average_filenames[f], '.fts'), $
+                        format='%s.quick_invert.fts')
       filename = filepath(basename, root=l2_dirname)
 
       ext_header = ext_headers[0]
       sxdelpar, ext_header, 'WAVELNG'
+
+      ucomp_addpar, primary_header, 'D_LAMBDA', d_lambda, $
+                    comment='wavelength spacing for gaussian fit', $
+                    after='CONTOFF', format='(F0.4)'
 
       fits_open, filename, fcb, /write
       fits_write, fcb, 0.0, primary_header

@@ -173,6 +173,10 @@ pro ucomp_l2_dynamics, file, run=run
 
   mg_log, 'writing %s', file.dynamics_basename, name=run.logger_name, /debug
 
+  ucomp_addpar, primary_header, 'D_LAMBDA', d_lambda, $
+                comment='wavelength spacing for gaussian fit', $
+                after='CONTOFF', format='(F0.4)'
+
   ; promote header
   ucomp_addpar, primary_header, 'LEVEL', 'L2', comment='level 2 calibrated'
 
