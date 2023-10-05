@@ -128,7 +128,7 @@ pro ucomp_l2_quick_invert, wave_region, $
       sxdelpar, ext_header, 'WAVELNG'
 
       ucomp_addpar, primary_header, 'D_LAMBDA', d_lambda, $
-                    comment='wavelength spacing for gaussian fit', $
+                    comment='wavelength spacing for Gaussian fit', $
                     after='CONTOFF', format='(F0.4)'
 
       fits_open, filename, fcb, /write
