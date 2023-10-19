@@ -115,6 +115,7 @@
 pro ucomp_fits_write, file_or_fcb,data, $
                       header_in, $
                       extname=extname, $
+                      ext_comment=ext_comment, $
                       extver=extver, $
                       xtension=xtension, $
                       extlevel=extlevel, $
@@ -215,6 +216,12 @@ pro ucomp_fits_write, file_or_fcb,data, $
     if (N_Aextname EQ 0) then Aextname = ''
   endelse
 
+  if (n_elements(ext_comment) gt 0L) then begin
+    _ext_comment = ' ' + ext_comment
+  endif else begin
+    _ext_comment = ''
+  endelse
+
   if (n_elements(extver) gt 0) then begin
     Aextver = extver
   endif else Aextver = sxpar(header, 'extver')
@@ -291,7 +298,7 @@ pro ucomp_fits_write, file_or_fcb,data, $
       tfields = sxpar(header,'TFIELDS') > 0
       sxaddpar, h, 'TFIELDS', tfields
     endif
-    if (Aextname ne '') then sxaddpar,h,'EXTNAME',Aextname
+    if (Aextname ne '') then sxaddpar,h,'EXTNAME',Aextname, _ext_comment
     if (Aextver gt 0) then sxaddpar, h, 'EXTVER', Aextver
     if (Aextlevel gt 0) then sxaddpar, h, 'EXTLEVEL', Aextlevel
   endelse

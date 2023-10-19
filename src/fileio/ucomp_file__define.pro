@@ -72,8 +72,7 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
                              rotated=rotated, $
                              linearity_corrected=linearity_corrected, $
                              wrote_l1=wrote_l1, $
-                             wrote_dynamics=wrote_dynamics, $
-                             wrote_polarization=wrote_polarization, $
+                             wrote_l2=wrote_l2, $
                              rcam_geometry=rcam_geometry, $
                              tcam_geometry=tcam_geometry, $
                              rcam_roughness=rcam_roughness, $
@@ -110,8 +109,7 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
   if (n_elements(rotated)) then self.rotated = rotated
   if (n_elements(linearity_corrected)) then self.linearity_corrected = linearity_corrected
   if (n_elements(wrote_l1) gt 0L) then self.wrote_l1 = wrote_l1
-  if (n_elements(wrote_dynamics)) then self.wrote_dynamics = wrote_dynamics
-  if (n_elements(wrote_polarization)) then self.wrote_polarization = wrote_polarization
+  if (n_elements(wrote_l2)) then self.wrote_l2 = wrote_l2
 
   if (n_elements(rcam_geometry)) then self.rcam_geometry = rcam_geometry
   if (n_elements(tcam_geometry)) then self.tcam_geometry = tcam_geometry
@@ -180,16 +178,15 @@ end
 pro ucomp_file::getProperty, run=run, $
                              raw_filename=raw_filename, $
                              l1_basename=l1_basename, $
+                             l1_filename=l1_filename, $
                              l1_intensity_basename=l1_intensity_basename, $
                              intermediate_name=intermediate_name, $
-                             dynamics_basename=dynamics_basename, $
-                             polarization_basename=polarization_basename, $
+                             l2_basename=l2_basename, $
                              demodulated=demodulated, $
                              rotated=rotated, $
                              linearity_corrected=linearity_corrected, $
                              wrote_l1=wrote_l1, $
-                             wrote_dynamics=wrote_dynamics, $
-                             wrote_polarization=wrote_polarization, $
+                             wrote_l2=wrote_l2, $
                              hst_date=hst_date, $
                              hst_time=hst_time, $
                              ut_date=ut_date, $
@@ -324,33 +321,33 @@ pro ucomp_file::getProperty, run=run, $
                          self.wave_region, $
                          name, $
                          n_unique_wavelengths, $
-                         format='(%"%s.%s.ucomp.%s.%s.%d.fts")')
+                         format='(%"%s.%s.ucomp.%s.%s.p%d.fts")')
     l1_intensity_basename = string(self.ut_date, $
                                    self.ut_time, $
                                    self.wave_region, $
                                    name, $
                                    n_unique_wavelengths, $
-                                   format='(%"%s.%s.ucomp.%s.%s.%d.intensity.fts")')
+                                   format='(%"%s.%s.ucomp.%s.%s.p%d.intensity.fts")')
   endif
-  if (arg_present(dynamics_basename)) then begin
-    dynamics_basename = string(self.ut_date, $
-                               self.ut_time, $
-                               self.wave_region, $
-                               format='(%"%s.%s.ucomp.%s.l2.dynamics.fts")')
+  if (arg_present(l1_filename)) then begin
+    self->getProperty, l1_basename=l1_basename
+    run = self.run
+    l1_filename = filepath(l1_basename, $
+                           subdir=[run.date, 'level1'], $
+                           root=run->config('processing/basedir'))
   endif
-  if (arg_present(polarization_basename)) then begin
-    polarization_basename = string(self.ut_date, $
-                                   self.ut_time, $
-                                   self.wave_region, $
-                                   format='(%"%s.%s.ucomp.%s.l2.polarization.fts")')
+  if (arg_present(l2_basename)) then begin
+    l2_basename = string(self.ut_date, $
+                         self.ut_time, $
+                         self.wave_region, $
+                         format='(%"%s.%s.ucomp.%s.l2.fts")')
   endif
 
   if (arg_present(demodulated)) then demodulated = self.demodulated
   if (arg_present(rotated)) then rotated = self.rotated
   if (arg_present(linearity_corrected)) then linearity_corrected = self.linearity_corrected
   if (arg_present(wrote_l1)) then wrote_l1 = self.wrote_l1
-  if (arg_present(wrote_dynamics)) then wrote_dynamics = self.wrote_dynamics
-  if (arg_present(wrote_polarization)) then wrote_polarization = self.wrote_polarization
+  if (arg_present(wrote_l2)) then wrote_l2 = self.wrote_l2
 
   if (arg_present(n_extensions)) then n_extensions = self.n_extensions
 
@@ -627,16 +624,14 @@ end
 ;
 ; :Params:
 ;   type : in, required, type=string
-;     type of file to update the file object to: "level1", "dynamics", or
-;     "polarization"
+;     type of file to update the file object to: "level1" or "level2"
 ;-
 pro ucomp_file::update, type
   compile_opt strictarr
 
   case strlowcase(type) of
     'level1': self->_update_to_level1
-    'dynamics':
-    'polarization':
+    'level2':
   endcase
 end
 
@@ -906,8 +901,7 @@ pro ucomp_file__define
            rotated                 : 0B, $
            linearity_corrected     : 0B, $
            wrote_l1                : 0B, $
-           wrote_dynamics          : 0B, $
-           wrote_polarization      : 0B, $
+           wrote_l2                : 0B, $
 
            hst_date                : '', $
            hst_time                : '', $
