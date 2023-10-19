@@ -1,8 +1,8 @@
 ; docformat = 'rst'
 
 ;+
-; Create a level 2 mp4 for a given wave region and type, e.g., radazi,
-; linewidth, etc.
+; Create a level 2 mp4 for a given wave region and type, e.g., radial_azimuth,
+; line_width, etc.
 ;
 ; :Params:
 ;   wave_region : in, required, type=string

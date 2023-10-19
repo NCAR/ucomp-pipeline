@@ -30,11 +30,20 @@ pro ucomp_l2_process, wave_region, run=run
   ; level 2 individual file processing
   n_digits = floor(alog10(n_files)) + 1L
   for f = 0L, n_files - 1L do begin
+    file = files[f]
+
     mg_log, mg_format('%*d/%d: %s', n_digits, /simple), $
-            f + 1L, n_files, files[f].l1_basename, $
+            f + 1L, n_files, file.l1_basename, $
             name=run.logger_name, /info
-    ucomp_l2_file_step, 'ucomp_l2_dynamics', files[f], run=run
-    ucomp_l2_file_step, 'ucomp_l2_polarization', files[f], run=run
+
+    if (~file.ok || file.gbu ne 0L) then begin
+      mg_log, 'poor quality for %s', file.l1_basename, $
+              name=run.logger_name, /warn
+      continue
+    endif
+
+    ucomp_l2_file_step, 'ucomp_l2_file', file.l1_filename, run=run
+    file.wrote_l2 = 1B
   endfor
 
   methods = ['mean', 'median']
@@ -44,8 +53,8 @@ pro ucomp_l2_process, wave_region, run=run
     ucomp_l2_create_averages, wave_region, methods[m], $
                               average_filenames=average_filenames, $
                               run=run
-    ucomp_pipeline_step, 'ucomp_l2_quick_invert', wave_region, $
-                         average_filenames=average_filenames, $
-                         run=run
+    for f = 0L, n_elements(average_filenames) - 1L do begin
+      ucomp_l2_file_step, 'ucomp_l2_file', average_filenames[f], run=run
+    endfor
   endfor
 end
