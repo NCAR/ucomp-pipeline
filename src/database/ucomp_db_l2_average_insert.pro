@@ -22,10 +22,13 @@ pro ucomp_db_l2_average_insert, wave_region, obsday_index, sw_index, db, run=run
   compile_opt strictarr
 
   ; get index for level 1 data files
-  q = 'select * from ucomp_level where level=''%s'''
-  level_results = db->query(q, 'L2', status=status)
+  level_results = db->query('select * from ucomp_level', status=status)
   if (status ne 0L) then goto, done
-  level_index = level_results.level_id
+
+  level1_indices = where(level_results.level eq 'L1', n_l1)
+  level1_index = level_results[level1_indices[0]].level_id
+  level2_indices = where(level_results.level eq 'L2', n_l2)
+  level2_index = level_results[level2_indices[0]].level_id
 
   ; get index for FITS files
   q = 'select * from mlso_filetype where filetype=''fits'''
@@ -64,14 +67,17 @@ pro ucomp_db_l2_average_insert, wave_region, obsday_index, sw_index, db, run=run
                         root=run->config('processing/basedir'))
 
   types = [{product_type: 'mean', $
+            level_index: level1_index, $
             product_description: 'UCoMP mean', $
-            glob_basename: '*.ucomp.%s.*.mean.fts'}, $
+            glob_basename: '*.ucomp.%s.l1.*.mean.fts'}, $
            {product_type: 'median', $
+            level_index: level1_index, $
             product_description: 'UCoMP median', $
-            glob_basename: '*.ucomp.%s.*.median.fts'}, $
-           {product_type: 'quick-invert', $
-            product_description: 'UCoMP level 2 quick invert', $
-            glob_basename: '*.ucomp.%s.*.quick_invert.fts'}]
+            glob_basename: '*.ucomp.%s.l1.*.median.fts'}, $
+           {product_type: 'L2 average', $    ; old quick inverts
+            level_index: level2_index, $
+            product_description: 'UCoMP level 2 average file', $
+            glob_basename: '*.ucomp.%s.l2.*.fts'}]
 
   for t = 0L, n_elements(types) - 1L do begin
     q = 'select * from mlso_producttype where producttype=''%s'' and description like ''%s'''
@@ -104,7 +110,7 @@ pro ucomp_db_l2_average_insert, wave_region, obsday_index, sw_index, db, run=run
                    date_obs,$
                    obsday_index, $
                    carrington_rotation, $
-                   level_index, $
+                   types[t].level_index, $
                    producttype_index, $
                    filetype_index, $
                    obs_plan, $

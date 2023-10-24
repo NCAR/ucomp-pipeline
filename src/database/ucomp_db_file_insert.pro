@@ -1,7 +1,7 @@
 ; docformat = 'rst'
 
 ;+
-; Insert an array of L1 FITS files into the ucomp_file database table.
+; Insert an array of L1 or L2 FITS files into the ucomp_file database table.
 ;
 ; :Params:
 ;   files : in, required, type=objarr
@@ -9,8 +9,7 @@
 ;   level : in, required, type=string
 ;     level, e.g., 'L1' or 'L2'
 ;   product_type : in, required, type=string
-;     product type, e.g., 'IQUV', 'dynamics', 'polarization', 'quick-invert',
-;     'mean', 'median'
+;     product type, e.g., 'IQUV', 'dynamics', 'L2 file', 'mean', 'median'
 ;   obsday_index : in, required, type=integer
 ;     index into mlso_numfiles database table
 ;   sw_index : in, required, type=integer
@@ -69,18 +68,12 @@ pro ucomp_db_file_insert, files, level, product_type, $
       filename = file.l1_basename
     endif else if (strlowcase(product_type) eq 'intensity') then begin
       filename = file.l1_intensity_basename
-    endif else if (strlowcase(product_type) eq 'dynamics') then begin
-      if (~file.wrote_dynamics) then begin
-        mg_log, 'skipping %s', file.dynamics_basename, name=logger_name, /debug
+    endif else if (strlowcase(product_type) eq 'l2 file') then begin
+      if (~file.wrote_l2) then begin
+        mg_log, 'skipping %s', file.l2_basename, name=logger_name, /debug
         continue
       endif
-      filename = file.dynamics_basename
-    endif else if (strlowcase(product_type) eq 'polarization') then begin
-      if (~file.wrote_polarization) then begin
-        mg_log, 'skipping %s', file.polarization_basename, name=logger_name, /debug
-        continue
-      endif
-      filename = file.polarization_basename
+      filename = file.l2_basename
     endif else begin
       mg_log, 'unknown product_type: %s', product_type, name=logger_name, /warn
       continue
