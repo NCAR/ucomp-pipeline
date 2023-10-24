@@ -76,10 +76,7 @@ pro ucomp_db_update, run=run
                          obsday_index, sw_index, db, run=run
 
     ; level 2 files
-    ucomp_db_file_insert, sci_files, 'L2', 'dynamics', $
-                          obsday_index, sw_index, db, $
-                          logger_name=run.logger_name
-    ucomp_db_file_insert, sci_files, 'L2', 'polarization', $
+    ucomp_db_file_insert, sci_files, 'L2', 'L2 file', $
                           obsday_index, sw_index, db, $
                           logger_name=run.logger_name
 
