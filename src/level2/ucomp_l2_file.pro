@@ -142,14 +142,13 @@ pro ucomp_l2_file, filename, run=run
     radial_azimuth[bad_indices]            = !values.f_nan
   endif
 
-  ; TODO: constants should be retrieved from wave region config file
-  valid_indices = where(intensity_center gt 0.9 $
-                          and intensity_center lt 100.0 $
-                          and intensity_blue gt 0.1 $
-                          and intensity_red gt 0.1 $
-                          and line_width gt 15.0 $
-                          and line_width lt 40.0 $
-                          and abs(doppler_shift) lt 5.0 $
+  valid_indices = where(intensity_center gt run->line(wave_region, 'intensity_center_min') $
+                          and intensity_center lt run->line(wave_region, 'intensity_center_max') $
+                          and intensity_blue gt run->line(wave_region, 'intensity_blue_min') $
+                          and intensity_red gt run->line(wave_region, 'intensity_red_min') $
+                          and line_width gt run->line(wave_region, 'line_width_min') $
+                          and line_width lt run->line(wave_region, 'line_width_max') $
+                          and abs(doppler_shift) lt run->line(wave_region, 'velocity_threshold') $
                           and doppler_shift ne 0.0, $
                         n_valid_indices)
   if (n_valid_indices gt 0L) then begin
