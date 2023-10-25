@@ -398,3 +398,4 @@
 0.5.1
   added --tail option to log sub-command
   fix for mysterious hang when process finished
+  new level 2 file format and filenames
