@@ -145,7 +145,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
 
   line_width_dashboard = ucomp_display_image(wave_region, line_width, $
                                              type='line_width', $
-                                             name='Line width [km/s]', $
+                                             name='Line width (FWHM) [km/s]', $
                                              reduce_factor=reduce_factor, $
                                              /no_wave_region_annotation, $
                                              run=run)

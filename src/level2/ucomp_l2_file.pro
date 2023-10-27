@@ -228,11 +228,13 @@ pro ucomp_l2_file, filename, run=run
                     /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
 
+  line_width_fwhm = float(line_width) * run->epoch('fwhm_factor')
+
   ; write line width
   ucomp_fits_write, fcb, $
-                    float(line_width), $
+                    line_width_fwhm, $
                     header, $
-                    extname='Line Width', $
+                    extname='Line Width (FWHM)', $
                     ext_comment='FWHM from Gaussian fit', $
                     /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
@@ -306,7 +308,7 @@ pro ucomp_l2_file, filename, run=run
                          enhanced_intensity_center, $
                          peak_intensity, $
                          doppler_shift, $
-                         line_width, $
+                         line_width_fwhm, $
 
                          ; polarization images
                          summed_intensity, $
