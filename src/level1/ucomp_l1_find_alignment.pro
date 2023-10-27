@@ -33,12 +33,12 @@ pro ucomp_l1_find_alignment, file, $
 
   status = 0L
 
-  ; center images on occulter center
+  datetime = strmid(file_basename(file.raw_filename), 0, 15)
 
+  ; center images on occulter center
   dims = size(data, /dimensions)
   n_pol_states = dims[2]
   if (run->config('centering/step_order') eq 'pre-gaincorrection') then begin
-    datetime = strmid(file_basename(file.raw_filename), 0, 15)
     run->get_distortion, datetime=datetime, $
                          dx0_c=dx0_c, $
                          dy0_c=dy0_c, $
@@ -124,6 +124,24 @@ pro ucomp_l1_find_alignment, file, $
 
   rcam = file.rcam_geometry
   tcam = file.tcam_geometry
+
+  offset_dir = run->config('centering/offset_dir')
+  if (n_elements(offset_dir) gt 0L) then begin
+    offset_basename = string(run.date, format='%s_shifts.json')
+    offset_filename = filepath(offset_basename, root=offset_dir)
+    if (file_test(offset_filename, /regular)) then begin
+      offsets = json_parse(offset_filename, /toarray, /tostruct)
+      offset_matching_indices = where(strmid(offsets.file, 0, 15) eq datetime, $
+                                      n_offset_matching_indices)
+      if (n_offset_matching_indices gt 0L) then begin
+        match = offsets[offset_matching_indices[0]]
+        rcam_center = [match.xoffset0, match.yoffset0] + ([rcam.xsize, rcam.ysize] - 1.0) / 2.0
+        rcam.occulter_center = rcam_center
+        tcam_center = [match.xoffset1, match.yoffset1] + ([rcam.xsize, rcam.ysize] - 1.0) / 2.0
+        tcam.occulter_center = tcam_center
+      endif
+    endif
+  endif
 
   after = 'WNDDIR'
 
