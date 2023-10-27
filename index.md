@@ -28,4 +28,4 @@ The UCoMP instrument is part of the Mauna Loa Solar Observatory (MLSO). Go the [
 
 Report issues on the [GitHub issues] for the project. Please be as specific as possible when describing a problem.
 
-[GitHub isses]: https://github.com/NCAR/ucomp-pipeline/issues "ucomp-pipeline issues"
+[GitHub issues]: https://github.com/NCAR/ucomp-pipeline/issues "ucomp-pipeline issues"
