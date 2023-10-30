@@ -174,21 +174,21 @@ pro ucomp_write_l2_images, quicklook_filename, $
 
     summed_linpol_i_dashboard = ucomp_display_image(wave_region, summed_linpol_i, $
                                                     type='linpol', $
-                                                    name='Summed log!I10!N(L / I)', $
+                                                    name='Weighted average log!I10!N(L / I)', $
                                                     reduce_factor=reduce_factor, $
                                                     /no_wave_region_annotation, $
                                                     run=run)
 
     azimuth_dashboard = ucomp_display_image(wave_region, azimuth, $
                                             type='azimuth', $
-                                            name='Azimuth [deg]', $
+                                            name='Weight average azimuth [deg]', $
                                             reduce_factor=reduce_factor, $
                                             /no_wave_region_annotation, $
                                             run=run)
 
     radial_azimuth_dashboard = ucomp_display_image(wave_region, radial_azimuth, $
                                                    type='radial_azimuth', $
-                                                   name='Radial azimuth [deg]', $
+                                                   name='Weighted average radial azimuth [deg]', $
                                                    reduce_factor=reduce_factor, $
                                                    /no_wave_region_annotation, $
                                                    run=run)
@@ -231,11 +231,11 @@ pro ucomp_write_l2_images, quicklook_filename, $
     ucomp_mkdir, l2_dir, logger_name=run.logger_name
   endif
 
-  write_png, quicklook_filename, dashboard_image
-  mg_log, 'wrote quick invert PNG', name=run.logger_name, /debug
-
   basename = file_basename(quicklook_filename, '.png')
   base_filename = filepath(basename, root=file_dirname(quicklook_filename))
+
+  write_png, base_filename + '.all.png', dashboard_image
+  mg_log, 'wrote dashboard PNG', name=run.logger_name, /debug
 
   intensity_center_display = ucomp_display_image(wave_region, intensity_center, $
                                                  type='intensity', $
@@ -243,7 +243,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                                  reduce_factor=1, $
                                                  datetime=datetime, $
                                                  run=run)
-  intensity_center_filename = string(base_filename, format='%s.intensity.png')
+  intensity_center_filename = string(base_filename, format='%s.center_intensity.png')
   write_png, intensity_center_filename, intensity_center_display
   mg_log, 'wrote center wavelength I PNG', name=run.logger_name, /debug
 
@@ -274,7 +274,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                               reduce_factor=1, $
                                               datetime=datetime, $
                                               run=run)
-  doppler_shift_filename = string(base_filename, format='%s.velocity.png')
+  doppler_shift_filename = string(base_filename, format='%s.los_velocity.png')
   write_png, doppler_shift_filename, doppler_shift_display
   mg_log, 'wrote LOS velocity PNG', name=run.logger_name, /debug
 
@@ -297,7 +297,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                                    reduce_factor=1, $
                                                    datetime=datetime, $
                                                    run=run)
-    summed_intensity_filename = string(base_filename, format='%s.wt_intensity.png')
+    summed_intensity_filename = string(base_filename, format='%s.weighted_average_intensity.png')
     write_png, summed_intensity_filename, summed_intensity_display
     mg_log, 'wrote weighted average I PNG', name=run.logger_name, /debug
 
@@ -308,7 +308,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                              reduce_factor=1, $
                                              datetime=datetime, $
                                              run=run)
-    summed_q_i_filename = string(base_filename, format='%s.wt_q.png')
+    summed_q_i_filename = string(base_filename, format='%s.weighted_average_q.png')
     write_png, summed_q_i_filename, summed_q_i_display
     mg_log, 'wrote weighted average Q / I PNG', name=run.logger_name, /debug
 
@@ -319,7 +319,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                              reduce_factor=1, $
                                              datetime=datetime, $
                                              run=run)
-    summed_u_i_filename = string(base_filename, format='%s.wt_u.png')
+    summed_u_i_filename = string(base_filename, format='%s.weighted_average_u.png')
     write_png, summed_u_i_filename, summed_u_i_display
     mg_log, 'wrote weighted average U / I PNG', name=run.logger_name, /debug
 
@@ -330,7 +330,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                                   reduce_factor=1, $
                                                   datetime=datetime, $
                                                   run=run)
-    summed_linpol_i_filename = string(base_filename, format='%s.wt_linear_polarization.png')
+    summed_linpol_i_filename = string(base_filename, format='%s.weighted_average_linear_polarization.png')
     write_png, summed_linpol_i_filename, summed_linpol_i_display
     mg_log, 'wrote weighted average L / I PNG', name=run.logger_name, /debug
 
@@ -340,7 +340,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                           reduce_factor=1, $
                                           datetime=datetime, $
                                           run=run)
-    azimuth_filename = string(base_filename, format='%s.azimuth.png')
+    azimuth_filename = string(base_filename, format='%s.weighted_average_azimuth.png')
     write_png, azimuth_filename, azimuth_display
     mg_log, 'wrote azimuth PNG', name=run.logger_name, /debug
 
@@ -350,7 +350,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                                  reduce_factor=1, $
                                                  datetime=datetime, $
                                                  run=run)
-    radial_azimuth_filename = string(base_filename, format='%s.radial_azimuthl.png')
+    radial_azimuth_filename = string(base_filename, format='%s.weighted_average_radial_azimuth.png')
     write_png, radial_azimuth_filename, radial_azimuth_display
     mg_log, 'wrote radial azimuth PNG', name=run.logger_name, /debug
 

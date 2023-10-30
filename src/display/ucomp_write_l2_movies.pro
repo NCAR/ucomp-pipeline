@@ -24,10 +24,12 @@ pro ucomp_write_l2_movies, wave_region, run=run
   mg_log, 'creating level 2 mp4s for %s nm', wave_region, $
           name=run.logger_name, /info
 
-  types = ['intensity', 'enhanced_intensity', 'peak_intensity', $
-           'velocity', 'line_width', $
-           'wt_intensity', 'wt_q', 'wt_u', 'wt_linear_polarization', $
-           'azimuth', 'radial_azimuth']
+  types = ['center_intensity', 'enhanced_intensity', 'peak_intensity', $
+           'los_velocity', 'line_width', $
+           'weighted_average_intensity', $
+           'weighted_average_q', 'weighted_average_u', $
+           'weighted_average_linear_polarization', $
+           'weighted_average_azimuth', 'weighted_average_radial_azimuth']
   for t = 0L, n_elements(types) - 1L do begin
     ucomp_write_l2_mp4, wave_region, types[t], run=run
   endfor
