@@ -223,7 +223,7 @@ pro ucomp_l2_file, filename, run=run
   ucomp_fits_write, fcb, $
                     float(doppler_shift), $
                     header, $
-                    extname='LOS Velocity', $
+                    extname='LOS velocity', $
                     ext_comment='Doppler velocity from Gaussian fit', $
                     /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
@@ -234,7 +234,7 @@ pro ucomp_l2_file, filename, run=run
   ucomp_fits_write, fcb, $
                     line_width_fwhm, $
                     header, $
-                    extname='Line Width (FWHM)', $
+                    extname='Line width (FWHM)', $
                     ext_comment='FWHM from Gaussian fit', $
                     /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
