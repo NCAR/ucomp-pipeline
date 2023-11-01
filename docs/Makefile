@@ -1,4 +1,4 @@
-MYST=myst-docutils-demo
+MYST=myst-docutils-latex
 LATEX=pdflatex
 
 all: build
