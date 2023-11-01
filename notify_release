@@ -29,9 +29,9 @@ def main():
         release_notes = f.read()
 
     # find release notes of current release
-    v = re.compile('^\d+.*$', re.MULTILINE)
+    v = re.compile('^## (\d+.*)$', re.MULTILINE)
     for m in v.finditer(release_notes): pass
-    version = release_notes[slice(*m.span())]
+    version = m.group(1)  #release_notes[slice(*m.span())]
     release_notes = release_notes[m.span()[0]:]
     release_notes = template % (version, release_notes)
 
