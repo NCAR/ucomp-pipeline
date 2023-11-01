@@ -31,7 +31,7 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
   tvlct, original_rgb, /get
   device, decomposed=0, $
           set_pixel_depth=8, $
-          set_resolution=[800, 5 * 300]
+          set_resolution=[600, 1000]
 
   tvlct, 0, 0, 0, 0
   tvlct, 255, 255, 255, 1
@@ -55,7 +55,7 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
   time_range = [16.0, 28.0]
   time_ticks = time_range[1] - time_range[0]
 
-  charsize = 2.0
+  charsize = 1.3
 
   n_plots = 5
 
