@@ -12,6 +12,9 @@
 /docs/_build
 /docs/exports
 /docs/ucomp-product-guide.tex
+/docs/ucomp-product-guide.aux
+/docs/ucomp-product-guide.log
+/docs/ucomp-product-guide.pdf
 
 # temporary file used to find the SolarSoft dependencies
 /ssw/ROUTINES
