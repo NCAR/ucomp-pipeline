@@ -152,10 +152,11 @@ pro ucomp_l2_file, filename, run=run
                           and doppler_shift ne 0.0, $
                         n_valid_indices)
   if (n_valid_indices gt 0L) then begin
-    doppler_shift -= median(doppler_shift[valid_indices])
+    rest_wavelength = median(doppler_shift[valid_indices])
   endif else begin
-    doppler_shift -= median(doppler_shift)
+    rest_wavelength = median(doppler_shift)
   endelse
+  doppler_shift -= rest_wavelength
 
   l2_dir = filepath('', $
                     subdir=[run.date, 'level2'], $
@@ -184,6 +185,10 @@ pro ucomp_l2_file, filename, run=run
 
   ; promote header
   ucomp_addpar, primary_header, 'LEVEL', 'L2', comment='level 2 calibrated'
+
+  ucomp_addpar, primary_header, 'D_LAMBDA', d_lambda, $
+                comment='[nm] wavelength spacing', $
+                after='CONTOFF', format='(F0.4)'
 
   fits_open, l2_filename, fcb, /write
   ucomp_fits_write, fcb, 0.0, primary_header, /no_abort, message=error_msg
@@ -220,6 +225,10 @@ pro ucomp_l2_file, filename, run=run
   if (error_msg ne '') then message, error_msg
 
   ; write LOS velocity
+  ucomp_addpar, header, 'RSTWVL', rest_wavelength, $
+                comment=' [km/s] median rest wavelength', $
+                format='(F0.3)', $
+                before='SKYTRANS'
   ucomp_fits_write, fcb, $
                     float(doppler_shift), $
                     header, $
@@ -227,10 +236,10 @@ pro ucomp_l2_file, filename, run=run
                     ext_comment='Doppler velocity from Gaussian fit', $
                     /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
-
-  line_width_fwhm = float(line_width) * run->epoch('fwhm_factor')
+  sxdelpar, header, 'RSTWVL'
 
   ; write line width
+  line_width_fwhm = float(line_width) * run->epoch('fwhm_factor')
   ucomp_fits_write, fcb, $
                     line_width_fwhm, $
                     header, $
