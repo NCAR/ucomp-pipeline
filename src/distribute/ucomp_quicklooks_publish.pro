@@ -12,7 +12,7 @@
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-pro ucomp_quicklook_publish, run=run
+pro ucomp_quicklooks_publish, run=run
   compile_opt strictarr
 
   fullres_basedir = run->config('results/fullres_basedir')
@@ -93,19 +93,12 @@ pro ucomp_quicklook_publish, run=run
                     name=run.logger_name, /info
           endelse
 
-          l2_polarization_types = ['azimuth.png', $
-                                   'azimuth.mp4', $
-                                   'linear_polarization.png', $
-                                   'linear_polarization.mp4', $
-                                   'polarization.png', $
-                                   '*.quick_invert.png', $
-                                   '*.quick_invert.stokesq.png', $
-                                   '*.quick_invert.stokesu.png', $
-                                   '*.quick_invert.linear_polarization.png', $
-                                   '*.quick_invert.azimuth.png', $
-                                   '*.quick_invert.radial_azimuth.png', $
-                                   'radial_azimuth.png', $
-                                   'radial_azimuth.mp4']
+          l2_polarization_types = ['weighted_average_linear_polarization.png', $
+                                   'weighted_average_linear_polarization.mp4', $
+                                   'weighted_average_q.png', $
+                                   'weighted_average_q.mp4', $
+                                   'weighted_average_u.png', $
+                                   'weighted_average_u.mp4']
           for p = 0L, n_elements(l2_polarization_types) - 1L do begin
             glob = string(wave_regions[w], l2_polarization_types[p], $
                           format='*.ucomp.%s.l2.%s')
@@ -157,14 +150,23 @@ pro ucomp_quicklook_publish, run=run
                     name=run.logger_name, /info
           endelse
 
-          l2_dynamics_types = ['dynamics.png', $
+          l2_dynamics_types = ['all.png', $
+                               'center_intensity.png', $
+                               'center_intensity.png', $
+                               'enhanced_intensity.png', $
+                               'enhanced_intensity.png', $
+                               'peak_intensity.png', $
+                               'peak_intensity.png', $
                                'line_width.png', $
                                'line_width.mp4', $
-                               '*.quick_invert.intensity.png', $
-                               '*.quick_invert.line_width.png', $
-                               '*.quick_invert.velocity.png', $
-                               'velocity.png', $
-                               'velocity.mp4']
+                               'los_velocity.png', $
+                               'los_velocity.mp4', $
+                               'weighted_average_azimuth.png', $
+                               'weighted_average_azimuth.mp4', $
+                               'weighted_average_intensity.png', $
+                               'weighted_average_intensity.mp4', $
+                               'weighted_average_radial_azimuth.png', $
+                               'weighted_average_radial_azimuth.mp4']
           for d = 0L, n_elements(l2_dynamics_types) - 1L do begin
             glob = string(wave_regions[w], l2_dynamics_types[d], $
                           format='*.ucomp.%s.l2.%s')
@@ -207,6 +209,39 @@ pro ucomp_quicklook_publish, run=run
             name=run.logger_name, /info
   endif
 
+  ; add catalog, GBU, quality files and user guide
+
+  citation_filename = filepath('CITATION.txt', $
+                               subdir='docs', $
+                               root=run.resource_root)
+  quicklook_files_list->add, citation_filename
+
+  userguide_filename = filepath('ucomp-user-guide.v1.0.pdf', $
+                                subdir='docs', $
+                                root=run.resource_root)
+  quicklook_files_list->add, userguide_filename
+
+  catalog_filename = filepath(string(run.date, format='%s.ucomp.catalog.txt'), $
+                              root=processing_dir)
+  quicklook_files_list->add, catalog_filename
+
+  for w = 0L, n_elements(wave_regions) - 1L do begin
+    wave_region_catalog_filename = filepath(string(run.date, wave_regions[w], $
+                                                   format='%s.ucomp.%s.files.txt'), $
+                                            root=processing_dir)
+    quicklook_files_list->add, wave_region_catalog_filename
+
+    gbu_filename = filepath(string(run.date, wave_regions[w], $
+                                   format='%s.ucomp.%s.gbu.log'), $
+                            root=l1_dir)
+    quicklook_files_list->add, gbu_filename
+
+    quality_filename = filepath(string(run.date, wave_regions[w], $
+                                       format='%s.ucomp.%s.quality.log'), $
+                                root=l1_dir)
+    quicklook_files_list->add, quality_filename
+  endfor
+
   n_quicklook_files = quicklook_files_list->count()
   quicklook_files = quicklook_files_list->toArray()
   obj_destroy, quicklook_files_list
@@ -221,15 +256,21 @@ pro ucomp_quicklook_publish, run=run
 
   ; create gzip file
   gzip_basename = string(run.date, format='%s.ucomp.quicklooks.zip')
-  gzip_filename = filepath(gzip_basename, $
-                           root=processing_dir)
+  gzip_filename = filepath(gzip_basename, root=processing_dir)
   mg_log, '%d files in %s', $
           n_quicklook_files, gzip_basename, $
           name=run.logger_name, /info
   file_zip, quicklook_files, gzip_filename
 
+  gziplist_basename = string(run.date, format='%s.ucomp.quicklooks.txt')
+  gziplist_filename = filepath(gziplist_basename, root=processing_dir)
+  openw, lun, gziplist_filename, /get_lun
+  printf, lun, transpose(file_basename(quicklook_files))
+  free_lun, lun
+
   ; copy gzip file to fullres directory
   file_copy, gzip_filename, fullres_dir, /overwrite
+  file_copy, gziplist_filename, fullres_dir, /overwrite
 
   cleanup:
 end
@@ -246,7 +287,7 @@ run = ucomp_run(date, 'test', config_filename)
 
 processing_basedir = run->config('processing/basedir')
 
-ucomp_quicklook_publish, run=run
+ucomp_quicklooks_publish, run=run
 
 obj_destroy, run
 

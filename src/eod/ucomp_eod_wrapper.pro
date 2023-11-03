@@ -120,7 +120,8 @@ pro ucomp_eod_wrapper, date, config_filename
     ucomp_pipeline_step, 'ucomp_l2_publish', wave_regions[w], run=run
   endfor
 
-  ucomp_pipeline_step, 'ucomp_quicklook_publish', run=run
+  ucomp_pipeline_step, 'ucomp_quicklooks_publish', run=run
+  ucomp_pipeline_step, 'ucomp_catalogs_publish', run=run
 
   ucomp_pipeline_step, 'ucomp_send_notification', run=run
 
