@@ -1,0 +1,9 @@
+UCoMP Team. (2021). Upgraded Coronal Multi-channel Polarimeter (UCoMP) Data [Data set]. UCAR/NCAR - HAO/Mauna Loa Solar Observatory. https://doi.org/10.26024/G8P7-WY42
+
+The user is granted the right to use Mauna Loa Solar observations for
+non-commercial, non-profit research, or educational purposes only, without any
+fee or cost. The user is responsible to meet the Terms of Use and Copyright
+Issues furnished on the UCAR web site. Please credit all use of Mauna Loa data
+as: 'Courtesy Mauna Loa Solar Observatory, operated by the High Altitude
+Observatory, National Center for Atmospheric Research (NCAR), and supported by
+the National Science Foundation.'
