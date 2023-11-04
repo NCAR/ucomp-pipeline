@@ -1,7 +1,7 @@
 ; docformat = 'rst'
 
 ;+
-; Archive L1 files for given wave type on the HPSS.
+; Archive L1 files for given wave type on the archival system.
 ;
 ; :Params:
 ;   wave_region : in, required, type=string

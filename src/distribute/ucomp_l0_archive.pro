@@ -1,7 +1,7 @@
 ; docformat = 'rst'
 
 ;+
-; Archive L0 files on the HPSS.
+; Archive L0 files on the archival system.
 ;
 ; :Keywords:
 ;   run : in, required, type=object

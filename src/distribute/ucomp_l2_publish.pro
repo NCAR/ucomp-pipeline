@@ -2,17 +2,17 @@
 
 ;+
 ; Package and distribute level 2 FITS files to the appropriate locations.
-;
-; :Params:
-;   wave_region : in, required, type=string
-;     wavelength type to distribute, i.e., '1074'
+; Create YYYYMMDD.ucomp.l2.tar.gz and its list file. Copy them to the web
+; archive directory.
 ;
 ; :Keywords:
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-pro ucomp_l2_publish, wave_region, run=run
+pro ucomp_l2_publish, run=run
   compile_opt strictarr
+
+  return
 
   ; copy L2 data into archive, etc. directories
 
@@ -29,60 +29,39 @@ pro ucomp_l2_publish, wave_region, run=run
 
   publish_type = strlowcase(run->config(wave_region + '/publish_type'))
 
-  ; publish dynamics/polarization files
+  ; publish level 2 files
 
-  switch publish_type of
-    'all': begin
-        ; 20220902.005109.ucomp.1074.l2.polarization.fts
-        ucomp_l2_tar_type, 'polarization', $
+  case publish_type of
+    'none':
+    else: begin
+        ucomp_l2_tar_type, 'l2', $
                            wave_region, $
-                           string(wave_region, format='*.ucomp.%s.l2.polarization.fts'), $
-                           tarfile=polarization_tarfile, $
-                           tarlist=polarization_tarlist, $
-                           filenames=polarization_filenames, $
-                           n_files=n_polarization_files, $
+                           string(wave_region, format='*.ucomp.%s.l2.fts'), $
+                           tarfile=l2_tarfile, $
+                           tarlist=l2_tarlist, $
+                           filenames=l2_filenames, $
+                           n_files=n_l2_files, $
                            run=run
-        if (n_polarization_files gt 0L) then begin
-          file_copy, polarization_tarfile, web_dir, /overwrite
-          file_copy, polarization_tarlist, web_dir, /overwrite
-          file_copy, polarization_filenames, web_dir, /overwrite
-          mg_log, 'copied %d %s nm polarization FITS files to web archive', $
+        if (n_l2_files gt 0L) then begin
+          file_copy, l2_tarfile, web_dir, /overwrite
+          file_copy, l2_tarlist, web_dir, /overwrite
+
+          ; TODO: don't copy individual files yet
+          ;file_copy, l2_filenames, web_dir, /overwrite
+
+          mg_log, 'copied %d %s nm level 2 FITS files to web archive', $
                   n_polarization_files, wave_region, $
                   name=run.logger_name, /info
         endif else begin
-          mg_log, 'no %s nm polarization FITS files to copy to web archive', $
+          mg_log, 'no %s nm level 2 FITS files to copy to web archive', $
                   wave_region, $
                   name=run.logger_name, /info
         endelse
       end
-    'dynamics': begin
-        ; 20220902.005109.ucomp.1074.l2.dynamics.fts
-        ucomp_l2_tar_type, 'dynamics', $
-                           wave_region, $
-                           string(wave_region, format='*.ucomp.%s.l2.dynamics.fts'), $
-                           tarfile=dynamics_tarfile, $
-                           tarlist=dynamics_tarlist, $
-                           filenames=dynamics_filenames, $
-                           n_files=n_dynamics_files, $
-                           run=run
-        if (n_dynamics_files gt 0L) then begin
-          file_copy, dynamics_tarfile, web_dir, /overwrite
-          file_copy, dynamics_tarlist, web_dir, /overwrite
-          file_copy, dynamics_filenames, web_dir, /overwrite
-          mg_log, 'copied %d %s nm dynamics FITS files to web archive', $
-                  n_dynamics_files, wave_region, $
-                  name=run.logger_name, /info
-        endif else begin
-          mg_log, 'no %s nm dynamics FITS files to copy to web archive', $
-                  wave_region, $
-                  name=run.logger_name, /info
-        endelse
-      end
-    else:
-  endswitch
+  endcase
 
-  ; publish quick invert files
-  if (publish_type eq 'all') then begin
+  ; publish l2 average files
+  if (publish_type ne 'none') then begin
     ; 20220901.ucomp.1074.l2.waves.median.quick_invert.fts
     ucomp_l2_tar_type, 'quick_invert', $
                        wave_region, $
@@ -106,7 +85,7 @@ pro ucomp_l2_publish, wave_region, run=run
     endelse
   endif
 
-  ; publish mean/median files
+  ; publish l1 average files
   if (publish_type ne 'none') then begin
     ; 20220901.ucomp.1074.l2.waves.mean.fts
     ucomp_l2_tar_type, 'average', $
