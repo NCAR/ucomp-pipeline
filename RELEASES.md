@@ -632,3 +632,4 @@
 - new level 2 file format and filenames
 - change to FWHM for line width
 - better averaging criteria (30 min gaps)
+- new tarball/zip file organization for distribution to website

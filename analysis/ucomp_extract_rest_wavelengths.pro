@@ -6,6 +6,7 @@ pro ucomp_extract_rest_wavelengths, output_basename_format, $
                                     run=run
   compile_opt strictarr
 
+  ; TODO: lower to 3.0? change for other wave_regions
   threshold = 4.0
   wave_region = '1074'
   nx = 1280L
@@ -44,7 +45,8 @@ pro ucomp_extract_rest_wavelengths, output_basename_format, $
           if (~found) then goto, next
 
           ; store number of pixels above intensity threshold
-          !null = where(ext_data gt threshold, count)
+          ; TODO: also have a max intensity
+          !null = where(ext_data[*, *, 0] gt threshold, count)
           n_above[w] = count
         endfor
         !null = max(n_above, max_index)
@@ -61,6 +63,7 @@ pro ucomp_extract_rest_wavelengths, output_basename_format, $
             d = intensity[*, *, w]
             y[w] = (median(d[east]) + median(d[west])) / 2.0
           endfor
+          ; TODO: always use 3 central lines analytic fit
           if (n_wavelengths gt 3) then begin
             result = gaussfit(wavelengths, y, a, nterms=3)
             center_intensity = a[0]

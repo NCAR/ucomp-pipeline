@@ -29,6 +29,10 @@ pro ucomp_plot_rest_wavelengths, filename
 
   title = string(program, format='Rest wavelength for 1074 nm (%s)')
 
+  ; TODO: use Steve's plotting parameters
+  ;   - date in decimal years (from 2000)
+  ;   - overplot synoptic and waves
+
   !null = label_date(date_format='%Y-%N-%D')
   window, xsize=900, ysize=300, title=title, /free
   plot, dates, rest_wavelengths, $

@@ -40,9 +40,9 @@ pro ucomp_l2_tar_type, name, wave_region, glob, $
   cd, l2_dir
 
   tarfile_basename = string(run.date, wave_region, name, $
-                            format='(%"%s.ucomp.%s.l2.%s.tgz")')
+                            format='(%"%s.ucomp.%s.%s.tgz")')
   tarlist_basename = string(run.date, wave_region, name, $
-                            format='(%"%s.ucomp.%s.l2.%s.tarlist")')
+                            format='(%"%s.ucomp.%s.%s.tarlist")')
   tarfile = filepath(tarfile_basename, root=l2_dir)
   tarlist = filepath(tarlist_basename, root=l2_dir)
 
@@ -55,7 +55,7 @@ pro ucomp_l2_tar_type, name, wave_region, glob, $
   endif
 
   ; make tarball
-  tar_cmd = string(tarfile, glob, format='(%"tar cfz %s %s")')
+  tar_cmd = string(tarfile, glob, format='tar cfz %s %s')
   mg_log, 'creating %s...', file_basename(tarfile), $
           name=run.logger_name, /info
   spawn, tar_cmd, result, error_result, exit_status=status
@@ -68,7 +68,7 @@ pro ucomp_l2_tar_type, name, wave_region, glob, $
   ucomp_fix_permissions, tarfile, logger_name=run.logger_name
 
   ; make tarlist
-  tarlist_cmd = string(tarfile, tarlist, format='(%"tar tfv %s > %s")')
+  tarlist_cmd = string(tarfile, tarlist, format='tar tfv %s > %s')
   mg_log, 'creating %s...', file_basename(tarlist), name=run.logger_name, /info
   spawn, tarlist_cmd, result, error_result, exit_status=status
   if (status ne 0L) then begin
