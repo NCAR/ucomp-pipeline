@@ -84,12 +84,14 @@ pro ucomp_catalogs_publish, run=run
           n_catalog_files, gzip_basename, $
           name=run.logger_name, /info
   file_zip, catalog_files, gzip_filename
+  ucomp_fix_permissions, gzip_filename, logger=run.logger_name
 
   gziplist_basename = string(run.date, format='%s.ucomp.catalogs.txt')
   gziplist_filename = filepath(gziplist_basename, root=processing_dir)
   openw, lun, gziplist_filename, /get_lun
   printf, lun, transpose(file_basename(catalog_files))
   free_lun, lun
+  ucomp_fix_permissions, gziplist_filename, logger=run.logger_name
 
   ; copy gzip file to fullres directory
   file_copy, gzip_filename, fullres_dir, /overwrite
