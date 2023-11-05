@@ -18,7 +18,7 @@
 pro ucomp_clearday, date, basedir, name, logger_name=logger_name
   compile_opt strictarr
 
-  files_glob = filepath('*ucomp*', $
+  files_glob = filepath('*{ucomp,UCOMP}*', $
                         subdir=ucomp_decompose_date(date), $
                         root=basedir)
 
