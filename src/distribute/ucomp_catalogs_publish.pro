@@ -52,17 +52,23 @@ pro ucomp_catalogs_publish, run=run
     wave_region_catalog_filename = filepath(string(run.date, wave_regions[w], $
                                                    format='%s.ucomp.%s.files.txt'), $
                                             root=processing_dir)
-    catalog_files_list->add, wave_region_catalog_filename
+    if (file_test(wave_region_catalog_filename, /regular)) then begin
+      catalog_files_list->add, wave_region_catalog_filename
+    endif
 
     gbu_filename = filepath(string(run.date, wave_regions[w], $
                                    format='%s.ucomp.%s.gbu.log'), $
                             root=l1_dir)
-    catalog_files_list->add, gbu_filename
+    if (file_test(gbu_filename, /regular)) then begin
+      catalog_files_list->add, gbu_filename
+    endif
 
     quality_filename = filepath(string(run.date, wave_regions[w], $
                                        format='%s.ucomp.%s.quality.log'), $
                                 root=l1_dir)
-    catalog_files_list->add, quality_filename
+    if (file_test(quality_filename, /regular)) then begin
+      catalog_files_list->add, quality_filename
+    endif
   endfor
 
   n_catalog_files = catalog_files_list->count()
