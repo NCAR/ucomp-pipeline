@@ -109,7 +109,7 @@ pro ucomp_reprocess_wrapper, date, config_filename
 
   ucomp_pipeline_step, 'ucomp_l1_publish', run=run
   ucomp_pipeline_step, 'ucomp_l2_publish', run=run
-
+  ucomp_pipeline_step, 'ucomp_averages_publish', run=run
   ucomp_pipeline_step, 'ucomp_quicklooks_publish', run=run
   ucomp_pipeline_step, 'ucomp_catalogs_publish', run=run
 

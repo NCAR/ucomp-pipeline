@@ -1,18 +1,16 @@
 ; docformat = 'rst'
 
 ;+
-; Package and distribute level 2 FITS files to the appropriate locations.
-; Create YYYYMMDD.ucomp.l2.tar.gz and its list file. Copy them to the web
-; archive directory.
+; Package and distribute level 1 and 2 daily average FITS files to the
+; appropriate locations. Create YYYYMMDD.ucomp.daily_averages.tar.gz and its
+; list file. Copy them to the web archive directory.
 ;
 ; :Keywords:
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-pro ucomp_l2_publish, run=run
+pro ucomp_averages_publish, run=run
   compile_opt strictarr
-
-  ; copy L2 data into archive, etc. directories
 
   web_basedir = run->config('results/web_basedir')
   distribute_fits = n_elements(web_basedir) gt 0L
@@ -22,11 +20,12 @@ pro ucomp_l2_publish, run=run
                        root=web_basedir)
     ucomp_mkdir, web_dir, logger_name=run.logger_name
   endif else begin
-    mg_log, 'skipping publishing L2 data', name=run.logger, /info
+    mg_log, 'skipping publishing daily averages', name=run.logger, /info
     goto, cleanup
   endelse
 
   processing_dir = filepath(run.date, root=run->config('processing/basedir'))
+  l1_dir = filepath('', subdir='level1', root=processing_dir)
   l2_dir = filepath('', subdir='level2', root=processing_dir)
 
   files_list = list()
@@ -34,32 +33,35 @@ pro ucomp_l2_publish, run=run
   for w = 0L, n_elements(wave_regions) - 1L do begin
     publish_type = strlowcase(run->config(wave_regions[w] + '/publish_type'))
     if (publish_type eq 'none') then begin
-      mg_log, 'skipping publishing %s nm L2 data', wave_regions[w], $
+      mg_log, 'skipping publishing %s nm daily averages', wave_regions[w], $
               name=run.logger, /info
       continue
     endif else begin
-      mg_log, 'publishing %s nm L2 data (%s)', wave_regions[w], publish_type, $
+      mg_log, 'publishing %s nm L2 daily averages (%s)', $
+              wave_regions[w], publish_type, $
               name=run.logger, /info
     endelse
 
-    ; The types of level 2 FITS files:
-    ;   level2/YYYYMMDD.HHMMSS.ucomp.WWWW.l2.fts
+    ; The types of daily average FITS files:
+    ;   level1/YYYYMMDD.HHMMSS.ucomp.WWWW.l1.{synoptic,waves}.{mean,median}.fts
     ;   level2/YYYYMMDD.HHMMSS.ucomp.WWWW.l2.{synoptic,waves}.{mean,median}.fts
 
-    files = run->get_files(wave_region=wave_regions[w], count=n_files)
-    for f = 0L, n_files - 1L do begin
-      if (files[f].wrote_l2) then begin
-        files_list->add, filepath(files[f].l2_basename, root=l2_dir)
-      endif
-    endfor
+    average_l1_format = '%s.ucomp.%s.l1.{synoptic,waves}.{mean,median}.fts'
+    average_l1_filenames = file_search(filepath(string(run.date, wave_regions[w], $
+                                                       format=average_l1_format), $
+                                                root=l1_dir), $
+                                       count=n_average_l1_files)
+    if (n_average_l1_files gt 0L) then begin
+      files_list->add, average_l1_filenames, /extract
+    endif
 
-    average_format = '%s.ucomp.%s.l2.{synoptic,waves}.{mean,median}.fts'
-    average_filenames = file_search(filepath(string(run.date, wave_regions[w], $
-                                                    format=average_format), $
-                                             root=l2_dir), $
-                                    count=n_average_files)
-    if (n_average_files gt 0L) then begin
-      files_list->add, average_filenames, /extract
+    average_l2_format = '%s.ucomp.%s.l2.{synoptic,waves}.{mean,median}.fts'
+    average_l1_filenames = file_search(filepath(string(run.date, wave_regions[w], $
+                                                       format=average_l2_format), $
+                                                root=l1_dir), $
+                                       count=n_average_l2_files)
+    if (n_average_l2_files gt 0L) then begin
+      files_list->add, average_l2_filenames, /extract
     endif
   endfor
 
@@ -101,7 +103,8 @@ pro ucomp_l2_publish, run=run
   obj_destroy, files_list
 
   if (n_files eq 0L) then begin
-    mg_log, 'no level 2 files to distribute', name=run.logger_name, /info
+    mg_log, 'no daily average files to distribute', $
+            name=run.logger_name, /info
     goto, cleanup
   endif
 
@@ -109,14 +112,14 @@ pro ucomp_l2_publish, run=run
   file_copy, files, web_dir, /overwrite
 
   ; create tarball/listing file
-  tar_basename = string(run.date, format='%s.ucomp.l2.tar.gz')
+  tar_basename = string(run.date, format='%s.ucomp.daily_averages.tar.gz')
   tar_filename = filepath(tar_basename, root=processing_dir)
   mg_log, 'adding %d files to %s', n_files, tar_basename, $
           name=run.logger_name, /info
   file_tar, files, tar_filename, /gzip
   ucomp_fix_permissions, tar_filename, logger=run.logger_name
 
-  tarlist_basename = string(run.date, format='%s.ucomp.l2.txt')
+  tarlist_basename = string(run.date, format='%s.ucomp.daily_averages.txt')
   tarlist_filename = filepath(tarlist_basename, root=processing_dir)
   openw, lun, tarlist_filename, /get_lun
   printf, lun, transpose(file_basename(files))
