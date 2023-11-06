@@ -109,6 +109,16 @@ pro ucomp_quicklooks_publish, run=run
                       name=run.logger_name, /info
               quicklook_files_list->add, files, /extract
             endif
+
+            glob = string(wave_regions[w], l2_polarization_types[p], $
+                          format='*.ucomp.%s.l2.{synoptic,waves}.{mean,median}.%s')
+            files = file_search(filepath(glob, root=l2_dir), count=n_files)
+            if (n_files gt 0L) then begin
+              mg_log, 'publishing %d %s nm average %s files', $
+                      n_files, wave_regions[w], l2_polarization_types[p], $
+                      name=run.logger_name, /info
+              quicklook_files_list->add, files, /extract
+            endif
           endfor
         end
       'dynamics': begin
@@ -177,7 +187,17 @@ pro ucomp_quicklooks_publish, run=run
                       name=run.logger_name, /info
               quicklook_files_list->add, files, /extract
             endif
-          endfor
+
+            glob = string(wave_regions[w], l2_dynamics_types[d], $
+                          format='*.ucomp.%s.l2.{synoptic,waves}.{mean,median}.%s')
+            files = file_search(filepath(glob, root=l2_dir), count=n_files)
+            if (n_files gt 0L) then begin
+              mg_log, 'publishing %d %s nm average %s files', $
+                      n_files, wave_regions[w], l2_dynamics_types[d], $
+                      name=run.logger_name, /info
+              quicklook_files_list->add, files, /extract
+            endif
+         endfor
         end
       else:
     endswitch

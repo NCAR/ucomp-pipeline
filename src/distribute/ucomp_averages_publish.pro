@@ -52,15 +52,19 @@ pro ucomp_averages_publish, run=run
                                                 root=l2_dir), $
                                        count=n_average_l1_files)
     if (n_average_l1_files gt 0L) then begin
+      mg_log, 'adding %d L1 average files', n_average_files, $
+              name=run.logger_name, /info
       files_list->add, average_l1_filenames, /extract
     endif
 
     average_l2_format = '%s.ucomp.%s.l2.{synoptic,waves}.{mean,median}.fts'
-    average_l1_filenames = file_search(filepath(string(run.date, wave_regions[w], $
+    average_l2_filenames = file_search(filepath(string(run.date, wave_regions[w], $
                                                        format=average_l2_format), $
                                                 root=l2_dir), $
                                        count=n_average_l2_files)
     if (n_average_l2_files gt 0L) then begin
+      mg_log, 'adding %d L2 average files', n_average_files, $
+              name=run.logger_name, /info
       files_list->add, average_l2_filenames, /extract
     endif
   endfor
