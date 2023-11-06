@@ -32,6 +32,11 @@ pro ucomp_l1_process_file, file, run=run
       endelse
       mg_log, 'skipping rest of level 1 processing for file', $
               name=run.logger_name, /warn
+
+      ; retroactively have this file fail quality
+      quality_conditions = ucomp_quality_conditions(run=run)
+      condition_indices = where(quality_conditions.checker eq 'ucomp_quality_processing')
+      file.quality_bitmask = quality_conditions[condition_indices[0]].mask
     endif else begin
       catch, /cancel
       message, /reissue_last
