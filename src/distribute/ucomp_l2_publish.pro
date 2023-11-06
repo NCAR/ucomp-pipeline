@@ -59,6 +59,8 @@ pro ucomp_l2_publish, run=run
                                              root=l2_dir), $
                                     count=n_average_files)
     if (n_average_files gt 0L) then begin
+      mg_log, 'adding %d L2 average files', n_average_files, $
+              name=run.logger_name, /info
       files_list->add, average_filenames, /extract
     endif
   endfor
