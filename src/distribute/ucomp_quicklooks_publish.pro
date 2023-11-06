@@ -152,11 +152,11 @@ pro ucomp_quicklooks_publish, run=run
 
           l2_dynamics_types = ['all.png', $
                                'center_intensity.png', $
-                               'center_intensity.png', $
+                               'center_intensity.mp4', $
                                'enhanced_intensity.png', $
-                               'enhanced_intensity.png', $
+                               'enhanced_intensity.mp4', $
                                'peak_intensity.png', $
-                               'peak_intensity.png', $
+                               'peak_intensity.mp4', $
                                'line_width.png', $
                                'line_width.mp4', $
                                'los_velocity.png', $
