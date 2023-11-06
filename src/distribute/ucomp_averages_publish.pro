@@ -49,7 +49,7 @@ pro ucomp_averages_publish, run=run
     average_l1_format = '%s.ucomp.%s.l1.{synoptic,waves}.{mean,median}.fts'
     average_l1_filenames = file_search(filepath(string(run.date, wave_regions[w], $
                                                        format=average_l1_format), $
-                                                root=l1_dir), $
+                                                root=l2_dir), $
                                        count=n_average_l1_files)
     if (n_average_l1_files gt 0L) then begin
       files_list->add, average_l1_filenames, /extract
@@ -58,7 +58,7 @@ pro ucomp_averages_publish, run=run
     average_l2_format = '%s.ucomp.%s.l2.{synoptic,waves}.{mean,median}.fts'
     average_l1_filenames = file_search(filepath(string(run.date, wave_regions[w], $
                                                        format=average_l2_format), $
-                                                root=l1_dir), $
+                                                root=l2_dir), $
                                        count=n_average_l2_files)
     if (n_average_l2_files gt 0L) then begin
       files_list->add, average_l2_filenames, /extract
