@@ -117,7 +117,7 @@ pro ucomp_l1_publish, run=run
   file_tar, files, tar_filename, /gzip
   ucomp_fix_permissions, tar_filename, logger=run.logger_name
 
-  tarlist_basename = string(run.date, format='%s.ucomp.l1.txt')
+  tarlist_basename = string(run.date, format='%s.ucomp.l1.tarlist.txt')
   tarlist_filename = filepath(tarlist_basename, root=processing_dir)
   openw, lun, tarlist_filename, /get_lun
   printf, lun, transpose(file_basename(files))
