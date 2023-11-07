@@ -289,7 +289,7 @@ pro ucomp_quicklooks_publish, run=run
   file_zip, quicklook_files, gzip_filename
   ucomp_fix_permissions, gzip_filename, logger=run.logger_name
 
-  gziplist_basename = string(run.date, format='%s.ucomp.quicklooks.txt')
+  gziplist_basename = string(run.date, format='%s.ucomp.quicklooks.ziplist.txt')
   gziplist_filename = filepath(gziplist_basename, root=processing_dir)
   openw, lun, gziplist_filename, /get_lun
   printf, lun, transpose(file_basename(quicklook_files))
