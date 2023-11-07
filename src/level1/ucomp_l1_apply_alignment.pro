@@ -72,7 +72,9 @@ pro ucomp_l1_apply_alignment, file, $
   ucomp_addpar, primary_header, 'CRVAL1', 0.0, $
                 comment='[arcsec] occulter X sun center', $
                 format='(F0.2)', after=after
-  ucomp_addpar, primary_header, 'CRUNIT1', 'arcsec', $
+  ucomp_addpar, primary_header, 'CTYPE1', 'HPLN-TAN', $
+                comment='', before=after
+  ucomp_addpar, primary_header, 'CUNIT1', 'arcsec', $
                 comment='unit of CRVAL1', after=after
 
   ucomp_addpar, primary_header, 'CRPIX2', (dims[1] - 1.0) / 2.0 + 1.0, $
@@ -81,7 +83,9 @@ pro ucomp_l1_apply_alignment, file, $
   ucomp_addpar, primary_header, 'CRVAL2', 0.0, $
                 comment='[arcsec] occulter Y sun center', $
                 format='(F0.2)', after=after
-  ucomp_addpar, primary_header, 'CRUNIT2', 'arcsec', $
+  ucomp_addpar, primary_header, 'CTYPE2', 'HPLT-TAN', $
+                comment='', before=after
+  ucomp_addpar, primary_header, 'CUNIT2', 'arcsec', $
                 comment='unit of CRVAL2', after=after
 
   done:
