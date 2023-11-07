@@ -18,14 +18,23 @@ pro ucomp_db_update_mlso_numfiles, obsday_index, db, run=run
   compile_opt strictarr
 
   files = run->get_files(data_type='sci', count=n_total_fits_files)
+  mg_log, 'checking %d total FITS files', n_total_fits_files, $
+          name=run.logger_name, /info
 
   n_good_fits_files = 0L
   for f = 0L, n_total_fits_files - 1L do begin
-    if (files[f].good) then n_good_fits_files += 1L
+    if (files[f].good) then begin
+      n_good_fits_files += 1L
+      mg_log, '%d. %s', n_good_fits_files, files[f].l1_basename, $
+              name=run.logger_name, /debug
+    endif
   endfor
 
   sql_cmd = 'update mlso_numfiles set num_ucomp=%d where day_id=%d'
   db->execute, sql_cmd, n_good_fits_files, obsday_index
+
+  mg_log, 'adding %d good FITS files', n_good_fits_files, $
+          name=run.logger_name, /info
 
   done:
 end

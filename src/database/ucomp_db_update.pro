@@ -59,6 +59,8 @@ pro ucomp_db_update, run=run
                        obsday_index, sw_index, db, $
                        logger_name=run.logger_name
 
+  ucomp_db_update_mlso_numfiles, obsday_index, db, run=run
+
   ucomp_rolling_dark_plots, db, run=run
 
   wave_regions = run->config('options/wave_regions')
@@ -80,9 +82,8 @@ pro ucomp_db_update, run=run
                           obsday_index, sw_index, db, $
                           logger_name=run.logger_name
 
-    ucomp_db_l2_average_insert, wave_regions[w], obsday_index, sw_index, db, run=run
-
-    ucomp_db_update_mlso_numfiles, obsday_index, db, run=run
+    ucomp_db_l2_average_insert, wave_regions[w], obsday_index, sw_index, db, $
+                                run=run
 
     ; make images/plots from database data
 
