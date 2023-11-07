@@ -23,11 +23,7 @@ pro ucomp_db_update_mlso_numfiles, obsday_index, db, run=run
 
   n_good_fits_files = 0L
   for f = 0L, n_total_fits_files - 1L do begin
-    if (files[f].good) then begin
-      n_good_fits_files += 1L
-      mg_log, '%d. %s', n_good_fits_files, files[f].l1_basename, $
-              name=run.logger_name, /debug
-    endif
+    if (files[f].good) then n_good_fits_files += 1L
   endfor
 
   sql_cmd = 'update mlso_numfiles set num_ucomp=%d where day_id=%d'
