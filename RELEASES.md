@@ -631,5 +631,5 @@
 - fix for mysterious hang when process finished
 - new level 2 file format and filenames
 - change to FWHM for line width
-- better averaging criteria (30 min gaps)
+- better averaging criteria (no gap larger than 30 min)
 - new tarball/zip file organization for distribution to website
