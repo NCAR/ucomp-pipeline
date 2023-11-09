@@ -147,6 +147,5 @@ pro ucomp_l1_apply_gain, file, $
                 after='LIN_CRCT'
   ucomp_addpar, primary_header, 'BUNIT', '1.0E-06 B/Bsun', $
                 comment='brightness with respect to solar disk', $
-                after='BOPAL'
-
+                after='OBJECT'
 end
