@@ -56,9 +56,6 @@ pro ucomp_l1_promote_header, file, $
   ucomp_movepar, primary_header, 'PC2_1', after='PC1_2'
   ucomp_movepar, primary_header, 'PC2_2', after='PC2_1'
 
-  ucomp_movepar, primary_header, 'BUNIT', after='OBJECT'
-  ucomp_movepar, primary_header, 'LEVEL', after='BUNIT'
-
   after = 'DATE-OBS'
   ucomp_addpar, primary_header, 'DATE-OBS', ucomp_getpar(primary_header, 'DATE-OBS'), $
                 comment='[UT] date/time when obs started'
@@ -70,10 +67,13 @@ pro ucomp_l1_promote_header, file, $
                 comment='[nm] prefilter wavelength region identifier'
   ucomp_addpar, primary_header, 'OBJECT', 'SUN', comment=' '
 
-  after = 'R_SUN'
+  after = 'OBJECT'
   sxdelpar, primary_header, 'LEVEL'
   ucomp_addpar, primary_header, 'LEVEL', 'L1', comment='level 1 calibrated', $
                 after=after
+  ucomp_movepar, primary_header, 'BUNIT', after='OBJECT'
+
+  after = 'R_SUN'
   ucomp_addpar, primary_header, 'DOI', run->line(file.wave_region, 'doi'), $
                 comment='Digital Object Identifier', $
                 after=after
@@ -92,7 +92,7 @@ pro ucomp_l1_promote_header, file, $
                        format='(%"L1 processing software (%s) [%s]")'), $
                 after=after
   ucomp_addpar, primary_header, 'COMMENT', 'Level 1 processing info', $
-                before='LEVEL', /title
+                before='DOI', /title
 
   after = 'REMFRAME'
   ucomp_addpar, primary_header, 'NUMWAVE', n_elements(headers), $
