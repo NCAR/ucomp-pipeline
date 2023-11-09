@@ -186,9 +186,26 @@ pro ucomp_l2_file, filename, run=run
   ; promote header
   ucomp_addpar, primary_header, 'LEVEL', 'L2', comment='level 2 calibrated'
 
+  after = 'BOPAL'
+  current_time = systime(/utc)
+  date_dp = string(bin_date(current_time), $
+                   format='(%"%04d-%02d-%02dT%02d:%02d:%02d")')
+  ucomp_addpar, primary_header, 'DATE_DP2', date_dp, $
+                comment='[UT] L2 processing date/time', $
+                after=after
+  version = ucomp_version(revision=revision, branch=branch, date=code_date)
+  ucomp_addpar, primary_header, 'DPSWID2',  $
+                string(version, revision, $
+                       format='(%"%s [%s]")'), $
+                comment=string(code_date, branch, $
+                       format='(%"L2 processing software (%s) [%s]")'), $
+                after=after
   ucomp_addpar, primary_header, 'D_LAMBDA', d_lambda, $
                 comment='[nm] wavelength spacing', $
-                after='CONTOFF', format='(F0.4)'
+                after=after, format='(F0.4)'
+  ucomp_addpar, primary_header, 'COMMENT', 'Level 2 processing info', $
+                before='DATE_DP2', /title
+
 
   fits_open, l2_filename, fcb, /write
   ucomp_fits_write, fcb, 0.0, primary_header, /no_abort, message=error_msg
