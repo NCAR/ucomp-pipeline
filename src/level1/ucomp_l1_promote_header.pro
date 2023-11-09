@@ -48,6 +48,17 @@ pro ucomp_l1_promote_header, file, $
                 ucomp_getpar(primary_header, 'OBSSWID'), $
                 comment='data collection software ID'
 
+  ucomp_movepar, primary_header, 'DSUN_OBS', after='CUNIT2'
+  ucomp_movepar, primary_header, 'HGLN_OBS', after='DSUN_OBS'
+  ucomp_movepar, primary_header, 'HGLT_OBS', after='HGLN_OBS'
+  ucomp_movepar, primary_header, 'PC1_1', after='HGLT_OBS'
+  ucomp_movepar, primary_header, 'PC1_2', after='PC1_1'
+  ucomp_movepar, primary_header, 'PC2_1', after='PC1_2'
+  ucomp_movepar, primary_header, 'PC2_2', after='PC2_1'
+
+  ucomp_movepar, primary_header, 'BUNIT', after='OBJECT'
+  ucomp_movepar, primary_header, 'LEVEL', after='BUNIT'
+
   after = 'DATE-OBS'
   ucomp_addpar, primary_header, 'DATE-OBS', ucomp_getpar(primary_header, 'DATE-OBS'), $
                 comment='[UT] date/time when obs started'
@@ -108,7 +119,7 @@ pro ucomp_l1_promote_header, file, $
   endif
 
   ; quality metrics
-  after = 'BUNIT'
+  after = 'BOPAL'
   ucomp_addpar, primary_header, 'VCROSSTK', file.vcrosstalk_metric, $
                 comment='Stokes V crosstalk metric', after=after
 
