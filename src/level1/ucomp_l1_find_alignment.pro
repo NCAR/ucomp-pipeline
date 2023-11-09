@@ -240,16 +240,48 @@ pro ucomp_l1_find_alignment, file, $
                 comment='[arcsec/pixel] image Y increment = platescale', $
                 format='(f9.3)', after=after
 
-  ucomp_addpar, primary_header, 'COMMENT', $
-                'World Coordinate System (WCS) info', $
-                before='WCSNAME', /title
-
-  after = 'CDELT2'
 
   file->getProperty, semidiameter=semidiameter, $
                      distance_au=distance_au, $
                      p_angle=p_angle, $
                      b0=b0
+
+  ucomp_addpar, primary_header, $
+                'DSUN_OBS', $
+                distance_au * run->epoch('au_to_meters'), $
+                comment='[m] distance to the Sun from observer', $
+                format='(f0.1)', $
+                after=after
+  ucomp_addpar, primary_header, $
+                'HGLN_OBS', $
+                0.0, $
+                comment='[deg] Stonyhurst heliographic longitude', $
+                format='(f0.3)', $
+                after=after
+  ucomp_addpar, primary_header, $
+                'HGLT_OBS', $
+                b0, $
+                comment='[deg] Stonyhurst heliographic latitude', $
+                format='(f0.3)', $
+                after=after
+  ucomp_addpar, primary_header, 'PC1_1', 1.0, $
+                comment='coord transform matrix element (1, 1) WCS std.', $
+                format='(F0.3)', after=after
+  ucomp_addpar, primary_header, 'PC1_2', 0.0, $
+                comment='coord transform matrix element (1, 2) WCS std.', $
+                format='(F0.3)', after=after
+  ucomp_addpar, primary_header, 'PC2_1', 0.0, $
+                comment='coord transform matrix element (2, 1) WCS std.', $
+                format='(F0.3)', after=after
+  ucomp_addpar, primary_header, 'PC2_2', 1.0, $
+                comment='coord transform matrix element (2, 2) WCS std.', $
+                format='(F0.3)', after=after
+
+  ucomp_addpar, primary_header, 'COMMENT', $
+                'World Coordinate System (WCS) info', $
+                before='WCSNAME', /title
+
+  after = 'CDELT2'
 
   ucomp_addpar, primary_header, 'SOLAR_P0', p_angle, $
                 comment='[deg] solar P angle applied (image has N up)', $
