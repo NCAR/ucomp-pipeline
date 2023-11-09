@@ -73,7 +73,7 @@ pro ucomp_l1_apply_alignment, file, $
                 comment='[arcsec] occulter X sun center', $
                 format='(F0.2)', after=after
   ucomp_addpar, primary_header, 'CTYPE1', 'HPLN-TAN', $
-                comment='', before=after
+                comment='helioprojective west angle: solar X', before=after
   ucomp_addpar, primary_header, 'CUNIT1', 'arcsec', $
                 comment='unit of CRVAL1', after=after
 
@@ -84,7 +84,7 @@ pro ucomp_l1_apply_alignment, file, $
                 comment='[arcsec] occulter Y sun center', $
                 format='(F0.2)', after=after
   ucomp_addpar, primary_header, 'CTYPE2', 'HPLT-TAN', $
-                comment='', before=after
+                comment='helioprojective north angle: solar Y', before=after
   ucomp_addpar, primary_header, 'CUNIT2', 'arcsec', $
                 comment='unit of CRVAL2', after=after
 
