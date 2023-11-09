@@ -206,7 +206,6 @@ pro ucomp_l2_file, filename, run=run
   ucomp_addpar, primary_header, 'COMMENT', 'Level 2 processing info', $
                 before='DATE_DP2', /title
 
-
   fits_open, l2_filename, fcb, /write
   ucomp_fits_write, fcb, 0.0, primary_header, /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
