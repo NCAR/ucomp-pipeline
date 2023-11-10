@@ -119,14 +119,17 @@ pro ucomp_db_update, run=run
                                 'radial azimith', 'radazi', 'radial_azimuth', $
                                 1.3, 'r13radazi', $
                                 db, run=run
-    ucomp_rolling_synoptic_map, wave_regions[w], $
-                                'doppler velocity', 'doppler', 'doppler', $
-                                1.08, 'r108doppler', $
-                                db, run=run
-    ucomp_rolling_synoptic_map, wave_regions[w], $
-                                'doppler velocity', 'doppler', 'doppler', $
-                                1.3, 'r13doppler', $
-                                db, run=run
+
+    ; doppler is not populated because of #33
+    ;
+    ; ucomp_rolling_synoptic_map, wave_regions[w], $
+    ;                             'doppler velocity', 'doppler', 'doppler', $
+    ;                             1.08, 'r108doppler', $
+    ;                             db, run=run
+    ; ucomp_rolling_synoptic_map, wave_regions[w], $
+    ;                             'doppler velocity', 'doppler', 'doppler', $
+    ;                             1.3, 'r13doppler', $
+    ;                             db, run=run
 
     ucomp_plot_eccentricity, wave_regions[w], obsday_index, db, run=run
   endfor

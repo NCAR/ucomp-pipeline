@@ -159,6 +159,7 @@ pro ucomp_db_sci_insert, files, wave_region, $
               {name: 'r13l', type: '''%s'''}, $
               {name: 'r108radazi', type: '''%s'''}, $
               {name: 'r13radazi', type: '''%s'''}, $
+              ; doppler is not populated because of #33
               ; {name: 'r108doppler', type: velocity_type}, $
               ; {name: 'r13doppler', type: velocity_type}, $
               {name: 'ucomp_sw_id', type: '%d'}]

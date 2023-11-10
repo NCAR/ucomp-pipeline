@@ -72,7 +72,7 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
     endif
 
     date = dates[r]
-    date_index = ucomp_dateobs2julday(date) - start_date_jd - 10.0/24.0
+    date_index = ucomp_dateobs2julday(date) - start_date_jd - 10.0 / 24.0
     date_index = floor(date_index)
 
     if (ptr_valid(product_data[r]) && n_elements(*product_data[r]) gt 0L) then begin
@@ -94,16 +94,18 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
   device, get_decomposed=original_decomposed
   device, decomposed=0
 
-  n_colors = 253
+  n_colors = 252
   ucomp_loadct, option_prefix, n_colors=n_colors
 
   display_gamma = run->line(wave_region, option_prefix + '_display_gamma')
   mg_gamma_ct, display_gamma, /current, n_colors=n_colors
 
   display_min   = run->line(wave_region, option_prefix + '_display_min')
-  display_max   = run->line(wave_region, option_prefix + '_display_max') * exp(8 * (1.08 - height))
+  display_max   = run->line(wave_region, option_prefix + '_display_max')
   display_power = run->line(wave_region, option_prefix + '_display_power')
 
+  missing_color = 252
+  tvlct, 0, 0, 0, missing_color
   background_color = 253
   tvlct, 255, 255, 255, background_color
   text_color = 254
@@ -113,20 +115,18 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
 
   tvlct, rgb, /get
 
-  if (name eq 'linpol') then map = alog10(map)
+  if (option_prefix eq 'linpol') then map = alog10(map)
 
   nan_indices = where(finite(map) eq 0, n_nan)
-
+stop
   map = bytscl(map^display_power, $
                min=display_min^display_power, $
                max=display_max^display_power, $
                top=n_colors - 1L, $
                /nan)
 
-  if (n_nan gt 0L) then map[nan_indices] = 0
-
-  map = float(map)
-
+  if (n_nan gt 0L) then map[nan_indices] = missing_color
+stop
   north_up_map = shift(map, 0, -180)
   east_limb = reverse(north_up_map[*, 0:359], 2)
   west_limb = north_up_map[*, 360:*]
@@ -208,7 +208,7 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
                                   100.0 * height, $
                                   format='(%"%s.ucomp.%s.28day.synoptic.%s.r%03d.fts")'), $
                            root=eng_dir)
-  writefits, fits_filename, map, primary_header
+  writefits, fits_filename, float(map), primary_header
 
   ; clean up
   done:
@@ -227,10 +227,10 @@ end
 
 ; main-level example program
 
-date = '20220930'
-config_basename = 'ucomp.production.cfg'
+date = '20220901'
+config_basename = 'ucomp.latest.cfg'
 config_filename = filepath(config_basename, $
-                           subdir=['..', '..', 'config'], $
+                           subdir=['..', '..', '..', 'ucomp-config'], $
                            root=mg_src_root())
 run = ucomp_run(date, 'test', config_filename)
 db = ucomp_db_connect(run->config('database/config_filename'), $
@@ -239,35 +239,35 @@ db = ucomp_db_connect(run->config('database/config_filename'), $
                       log_statements=run->config('database/log_statements'), $
                       status=status)
 
-; ucomp_rolling_synoptic_map, '1074', 'linear polarization', 'linpol', 'linpol', 1.30, 'r13l', $
-;                             db, run=run
-
-wave_regions = ['530', '637', '706', '789', '1074', '1079']
+; wave_regions = ['530', '637', '706', '789', '1074', '1079']
 wave_regions = ['1074']
 for w = 0L, n_elements(wave_regions) - 1L do begin
-  ucomp_rolling_synoptic_map, wave_regions[w], 'intensity', 'int', 'intensity', 1.08, 'r108i', $
-                              db, run=run
-  ; ucomp_rolling_synoptic_map, wave_regions[w], 'intensity', 'int', 'intensity', 1.30, 'r13i', $
-  ;                             db, run=run
+  ucomp_rolling_synoptic_map, wave_regions[w], 'intensity', 'int', 'intensity', $
+                              1.08, 'r108i', db, run=run
+  ucomp_rolling_synoptic_map, wave_regions[w], 'intensity', 'int', 'intensity', $
+                              1.30, 'r13i', db, run=run
+
+  ucomp_rolling_synoptic_map, '1074', 'linear polarization', 'linpol', 'linpol', $
+                              1.08, 'r108l', db, run=run
+  ucomp_rolling_synoptic_map, '1074', 'linear polarization', 'linpol', 'linpol', $
+                              1.30, 'r13l', db, run=run
+
+  ucomp_rolling_synoptic_map, wave_regions[w], 'radial azimuth', 'radazi', $
+                              'radial_azimuth', 1.08, 'r108radazi', db, $
+                              run=run
+  ucomp_rolling_synoptic_map, wave_regions[w], 'radial azimuth', 'radazi', $
+                              'radial_azimuth', 1.30, 'r13radazi', db, $
+                              run=run
+
+  ; doppler is not populated because of #33
+  ; ucomp_rolling_synoptic_map, wave_regions[w], 'doppler velocity', 'doppler', $
+  ;                             'doppler', 1.08, 'r108doppler', db, $
+  ;                             run=run
+  ; ucomp_rolling_synoptic_map, wave_regions[w], 'doppler velocity', 'doppler', $
+  ;                             'doppler', 1.30, 'r13doppler', db, $
+  ;                             run=run
 endfor
 
-; ucomp_rolling_synoptic_map, '1074', 'radial azimuth', $
-;                             'radazi', $
-;                             'radial_azimuth', $
-;                             1.08, $
-;                             'r108radazi', $
-;                             db, $
-;                             run=run
-; ucomp_rolling_synoptic_map, '1074', 'doppler velocity', $
-;                             'doppler', $
-;                             'doppler', $
-;                             1.08, $
-;                             'r108doppler', $
-;                             db, $
-;                             run=run
-; window, xsize=(30 * n_days + 50) < 1200, ysize=800, /free
-; device, decomposed=0
-; erase, 255
 obj_destroy, db
 obj_destroy, run
 
