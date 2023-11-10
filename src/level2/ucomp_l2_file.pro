@@ -202,7 +202,7 @@ pro ucomp_l2_file, filename, run=run
                 after=after
   ucomp_addpar, primary_header, 'D_LAMBDA', d_lambda, $
                 comment='[nm] wavelength spacing', $
-                after=after, format='(F0.4)'
+                after=after, format='(F0.3)'
   ucomp_addpar, primary_header, 'COMMENT', 'Level 2 processing info', $
                 before='DATE_DP2', /title
 
