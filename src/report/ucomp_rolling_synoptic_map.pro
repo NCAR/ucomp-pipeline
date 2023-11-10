@@ -118,7 +118,7 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
   if (option_prefix eq 'linpol') then map = alog10(map)
 
   nan_indices = where(finite(map) eq 0, n_nan)
-stop
+
   map = bytscl(map^display_power, $
                min=display_min^display_power, $
                max=display_max^display_power, $
@@ -126,7 +126,7 @@ stop
                /nan)
 
   if (n_nan gt 0L) then map[nan_indices] = missing_color
-stop
+
   north_up_map = shift(map, 0, -180)
   east_limb = reverse(north_up_map[*, 0:359], 2)
   west_limb = north_up_map[*, 360:*]
@@ -239,18 +239,17 @@ db = ucomp_db_connect(run->config('database/config_filename'), $
                       log_statements=run->config('database/log_statements'), $
                       status=status)
 
-; wave_regions = ['530', '637', '706', '789', '1074', '1079']
-wave_regions = ['1074']
+wave_regions = ['530', '637', '706', '789', '1074', '1079']
 for w = 0L, n_elements(wave_regions) - 1L do begin
   ucomp_rolling_synoptic_map, wave_regions[w], 'intensity', 'int', 'intensity', $
                               1.08, 'r108i', db, run=run
   ucomp_rolling_synoptic_map, wave_regions[w], 'intensity', 'int', 'intensity', $
                               1.30, 'r13i', db, run=run
 
-  ucomp_rolling_synoptic_map, '1074', 'linear polarization', 'linpol', 'linpol', $
-                              1.08, 'r108l', db, run=run
-  ucomp_rolling_synoptic_map, '1074', 'linear polarization', 'linpol', 'linpol', $
-                              1.30, 'r13l', db, run=run
+  ucomp_rolling_synoptic_map, wave_regions[w], 'linear polarization', 'linpol', $
+                              'linpol', 1.08, 'r108l', db, run=run
+  ucomp_rolling_synoptic_map, wave_regions[w], 'linear polarization', 'linpol', $
+                              'linpol', 1.30, 'r13l', db, run=run
 
   ucomp_rolling_synoptic_map, wave_regions[w], 'radial azimuth', 'radazi', $
                               'radial_azimuth', 1.08, 'r108radazi', db, $
