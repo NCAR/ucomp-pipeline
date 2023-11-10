@@ -16,10 +16,23 @@
 pro ucomp_write_all_iquv_image, file, data, run=run
   compile_opt strictarr
 
+  l1_basename = file.l1_basename
+  raw_filename = file.raw_filename
+  wave_region = file.wave_region
+
+  dims = size(data, /dimensions)
+  n_wavelengths = dims[3]
+
+  wavelengths = file.wavelengths
+
+  p_angle = file.p_angle
+  post_angle = file.post_angle
+  occulter_radius = file.occulter_radius
+
   case 1 of
-    file.n_unique_wavelengths le 5: reduce_dims_factor = 4L
-    file.n_unique_wavelengths gt 5: reduce_dims_factor = 8L
-    file.n_unique_wavelengths gt 11: reduce_dims_factor = 16L
+    n_wavelengths le 5: reduce_dims_factor = 4L
+    n_wavelengths gt 5: reduce_dims_factor = 8L
+    n_wavelengths gt 11: reduce_dims_factor = 16L
   endcase
 
   l1_dirname = filepath('', $
@@ -27,7 +40,7 @@ pro ucomp_write_all_iquv_image, file, data, run=run
                         root=run->config('processing/basedir'))
   ucomp_mkdir, l1_dirname, logger_name=run.logger_name
 
-  iquv_basename_format = file_basename(file.l1_basename, '.fts')
+  iquv_basename_format = file_basename(l1_basename, '.fts')
   if (run->config('centering/perform')) then begin
     iquv_basename_format += '.iquv.all.png'
   endif else begin
@@ -35,22 +48,22 @@ pro ucomp_write_all_iquv_image, file, data, run=run
   endelse
   iquv_filename_format = filepath(iquv_basename_format, root=l1_dirname)
 
-  intensity_display_min   = run->line(file.wave_region, 'intensity_display_min')
-  intensity_display_max   = run->line(file.wave_region, 'intensity_display_max')
-  intensity_display_gamma = run->line(file.wave_region, 'intensity_display_gamma')
-  intensity_display_power = run->line(file.wave_region, 'intensity_display_power')
+  intensity_display_min   = run->line(wave_region, 'intensity_display_min')
+  intensity_display_max   = run->line(wave_region, 'intensity_display_max')
+  intensity_display_gamma = run->line(wave_region, 'intensity_display_gamma')
+  intensity_display_power = run->line(wave_region, 'intensity_display_power')
 
-  qu_display_min   = run->line(file.wave_region, 'qu_display_min')
-  qu_display_max   = run->line(file.wave_region, 'qu_display_max')
-  qu_display_gamma = run->line(file.wave_region, 'qu_display_gamma')
-  qu_display_power = run->line(file.wave_region, 'qu_display_power')
+  qu_display_min   = run->line(wave_region, 'qu_display_min')
+  qu_display_max   = run->line(wave_region, 'qu_display_max')
+  qu_display_gamma = run->line(wave_region, 'qu_display_gamma')
+  qu_display_power = run->line(wave_region, 'qu_display_power')
 
-  v_display_min   = run->line(file.wave_region, 'v_display_min')
-  v_display_max   = run->line(file.wave_region, 'v_display_max')
-  v_display_gamma = run->line(file.wave_region, 'v_display_gamma')
-  v_display_power = run->line(file.wave_region, 'v_display_power')
+  v_display_min   = run->line(wave_region, 'v_display_min')
+  v_display_max   = run->line(wave_region, 'v_display_max')
+  v_display_gamma = run->line(wave_region, 'v_display_gamma')
+  v_display_power = run->line(wave_region, 'v_display_power')
 
-  datetime = strmid(file_basename(file.raw_filename), 0, 15)
+  datetime = strmid(file_basename(raw_filename), 0, 15)
   date_stamp = ucomp_dt2stamp(datetime)
   nx = run->epoch('nx', datetime=datetime)
   ny = run->epoch('ny', datetime=datetime)
@@ -61,7 +74,7 @@ pro ucomp_write_all_iquv_image, file, data, run=run
   tvlct, original_rgb, /get
   device, decomposed=0, $
           set_pixel_depth=24, $
-          set_resolution=[file.n_unique_wavelengths * nx, 4L * ny] / reduce_dims_factor
+          set_resolution=[n_wavelengths * nx, 4L * ny] / reduce_dims_factor
 
   n_colors = 252
 
@@ -83,7 +96,7 @@ pro ucomp_write_all_iquv_image, file, data, run=run
   detail_charsize = 0.9
 
   pol_states = ['I', 'Q', 'U', 'V']
-  for e = 1L, file.n_extensions do begin
+  for e = 1L, n_wavelengths do begin
     ext_data = reform(data[*, *, *, e - 1L])
 
     dims = size(ext_data, /dimensions)
@@ -116,17 +129,17 @@ pro ucomp_write_all_iquv_image, file, data, run=run
                  dims[0] / reduce_dims_factor, $
                  dims[1] / reduce_dims_factor)
 
-      if (run->config('display/mask_l1') || run->line(file.wave_region, 'mask_l1')) then begin
+      if (run->config('display/mask_l1') || run->line(wave_region, 'mask_l1')) then begin
         mask = ucomp_mask(dims[0:1] / reduce_dims_factor, $
                           field_radius=run->epoch('field_radius') / reduce_dims_factor, $
-                          occulter_radius=file.occulter_radius / reduce_dims_factor, $
-                          post_angle=file.post_angle, $
-                          p_angle=file.p_angle)
-      endif else if (run->line(file.wave_region, 'mask_l1_occulter')) then begin
+                          occulter_radius=occulter_radius / reduce_dims_factor, $
+                          post_angle=post_angle, $
+                          p_angle=p_angle)
+      endif else if (run->line(wave_region, 'mask_l1_occulter')) then begin
         mask = ucomp_mask(dims[0:1], $
                           field_radius=run->epoch('field_radius') / reduce_dims_factor, $
-                          occulter_radius=file.occulter_radius / reduce_dims_factor, $
-                          p_angle=file.p_angle)
+                          occulter_radius=occulter_radius / reduce_dims_factor, $
+                          p_angle=p_angle)
       endif else begin
         mask = bytarr(dims[0] / reduce_dims_factor, dims[1] / reduce_dims_factor) + 1B
       endelse
@@ -137,14 +150,14 @@ pro ucomp_write_all_iquv_image, file, data, run=run
                          top=n_colors - 1L, $
                          /nan)
 
-      tv, scaled_im, p * file.n_unique_wavelengths + e - 1L
+      tv, scaled_im, p * n_wavelengths + e - 1L
 
       if (p eq 0L and e eq 1L) then begin
         xyouts, xmargin * dims[0] / reduce_dims_factor, $
                 (dims[2] - 2.5 * ymargin) * dims[1] / reduce_dims_factor, $
                 /device, $
-                string(run->line(file.wave_region, 'ionization'), $
-                       file.wave_region, $
+                string(run->line(wave_region, 'ionization'), $
+                       wave_region, $
                        format='(%"%s!C%s nm")'), $
                 charsize=charsize, color=text_color
         xyouts, xmargin * dims[0] / reduce_dims_factor, $
@@ -154,15 +167,15 @@ pro ucomp_write_all_iquv_image, file, data, run=run
                 charsize=charsize, color=text_color
       endif
 
-      w = (e - 1L) mod file.n_unique_wavelength
+      w = (e - 1L) mod n_wavelengths
       if (p eq 0L) then begin
         xyouts, (w + 0.5) * dims[0] / reduce_dims_factor, $
                 (dims[2] - 3.0 * ymargin) * dims[1] / reduce_dims_factor, $
                 /device, alignment=0.5, $
-                string(file.wavelengths[w], format='(%"%0.2f nm")'), $
+                string(wavelengths[w], format='(%"%0.2f nm")'), $
                 charsize=charsize, color=text_color
       endif
-      if (w eq file.n_unique_wavelength - 1L) then begin
+      if (w eq n_wavelengths - 1L) then begin
         xyouts, xmargin * dims[0] / reduce_dims_factor, $
                 (dims[2] - p - 0.5 - 0.5 * ymargin) * dims[1] / reduce_dims_factor, $, $
                 /device, $
