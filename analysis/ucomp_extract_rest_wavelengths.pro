@@ -2,17 +2,18 @@
 
 pro ucomp_extract_rest_wavelengths, output_basename_format, $
                                     program, $
-                                    start_date, end_date, $
+                                    start_date, end_date, threshold, $
                                     run=run
   compile_opt strictarr
 
   ; TODO: lower to 3.0? change for other wave_regions
-  threshold = 4.0
+  ;threshold = 4.0
   wave_region = '1074'
   nx = 1280L
   ny = 1024L
 
-  output_filename = string(program, format=output_basename_format)
+  output_filename = string(long(threshold * 10), program, $
+                           format=output_basename_format)
   openw, lun, output_filename, /get_lun
 
   date = start_date
@@ -32,6 +33,7 @@ pro ucomp_extract_rest_wavelengths, output_basename_format, $
         fits_read, fcb, !null, primary_header, exten_no=0
 
         n_wavelengths = ucomp_getpar(primary_header, 'NUMWAVE')
+        wave_offset = ucomp_getpar(primary_header, 'WAVOFF')
 
         wavelengths = fltarr(n_wavelengths)
         intensity = fltarr(nx, ny, n_wavelengths)
@@ -45,8 +47,8 @@ pro ucomp_extract_rest_wavelengths, output_basename_format, $
           if (~found) then goto, next
 
           ; store number of pixels above intensity threshold
-          ; TODO: also have a max intensity
-          !null = where(ext_data[*, *, 0] gt threshold, count)
+          ext_int = ext_data[*, *, 0]
+          !null = where(ext_int gt threshold and ext_int lt 100.0, count)
           n_above[w] = count
         endfor
         !null = max(n_above, max_index)
@@ -82,8 +84,8 @@ pro ucomp_extract_rest_wavelengths, output_basename_format, $
           line_width = !values.f_nan
         endelse
 
-        print, date, center_intensity, center_wavelength, line_width
-        printf, lun, date, center_intensity, center_wavelength, line_width
+        print, date, center_intensity, center_wavelength, line_width, wave_offset
+        printf, lun, date, center_intensity, center_wavelength, line_width, wave_offset
       endif
     endif
 
@@ -106,11 +108,13 @@ config_filename = filepath(config_basename, $
                            subdir=['..', '..', 'ucomp-config'], $
                            root=mg_src_root())
 run = ucomp_run('20210526', 'analysis', config_filename)
-output_basename_format = 'ucomp.rstwvl.median.%s.txt'
+output_basename_format = 'ucomp.rstwvl.wavoff.thresh%02d.median.%s.txt'
+; threshold = 4.0
+threshold = 1.0
 ucomp_extract_rest_wavelengths, output_basename_format, 'synoptic', $
-                                start_date, end_date, run=run
+                                start_date, end_date, threshold, run=run
 ucomp_extract_rest_wavelengths, output_basename_format, 'waves', $
-                                start_date, end_date, run=run
+                                start_date, end_date, threshold, run=run
 obj_destroy, run
 
 end
