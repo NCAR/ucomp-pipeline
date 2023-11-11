@@ -21,7 +21,10 @@
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-pro ucomp_write_iquv_image, data, l1_basename, wave_region, wavelengths, $
+pro ucomp_write_iquv_image, data, $
+                            l1_basename, $
+                            wave_region, $
+                            wavelengths, $
                             occulter_radius=occulter_radius, $
                             daily=daily, $
                             run=run
