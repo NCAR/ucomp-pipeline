@@ -1,33 +1,43 @@
 ; docformat = 'rst'
 
 ;+
-; Produce a plot of all the images in a UCoMP science file.
+; Produce a plot of all the images in a UCoMP level 1 science file.
 ;
 ; :Params:
-;   file : in, required, type=object
-;     `ucomp_file` object
 ;   data : in, required, type="fltarr(nx, ny, nstokes, nexts)"
 ;     extension data
+;   l1_basename : in, required, type=string
+;     basename of corresponding level 1 file
+;   wave_region : in, required, type=string
+;     wave region, e.g., "1074"
+;   wavelengths : in, required, type=fltarr
+;     wavelengths corresponding to the images in the `nexts` dimension of the
+;     data
+;   occulter_radius : in, required, type=float
+;     radius of occulter
+;   post_angle : in, required, type=float
+;     angle of the post in degrees
+;   p_angle : in, required, type=float
+;     solar p0 angle in degrees
 ;
 ; :Keywords:
+;   daily : in, optional, type=boolean
+;     set to produce an iquv.all.png image for an average file
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-pro ucomp_write_all_iquv_image, file, data, run=run
+pro ucomp_write_all_iquv_image, data, $
+                                l1_basename, $
+                                wave_region, $
+                                wavelengths, $
+                                occulter_radius, $
+                                post_angle, $
+                                p_angle, $
+                                daily=daily, $
+                                run=run
   compile_opt strictarr
 
-  l1_basename = file.l1_basename
-  raw_filename = file.raw_filename
-  wave_region = file.wave_region
-
-  dims = size(data, /dimensions)
-  n_wavelengths = dims[3]
-
-  wavelengths = file.wavelengths
-
-  p_angle = file.p_angle
-  post_angle = file.post_angle
-  occulter_radius = file.occulter_radius
+  n_wavelengths = n_elements(wavelengths)
 
   case 1 of
     n_wavelengths le 5: reduce_dims_factor = 4L
@@ -35,10 +45,10 @@ pro ucomp_write_all_iquv_image, file, data, run=run
     n_wavelengths gt 11: reduce_dims_factor = 16L
   endcase
 
-  l1_dirname = filepath('', $
-                        subdir=[run.date, 'level1'], $
+  output_dirname = filepath('', $
+                        subdir=[run.date, keyword_set(daily) ? 'level2' : 'level1'], $
                         root=run->config('processing/basedir'))
-  ucomp_mkdir, l1_dirname, logger_name=run.logger_name
+  ucomp_mkdir, output_dirname, logger_name=run.logger_name
 
   iquv_basename_format = file_basename(l1_basename, '.fts')
   if (run->config('centering/perform')) then begin
@@ -46,7 +56,7 @@ pro ucomp_write_all_iquv_image, file, data, run=run
   endif else begin
     iquv_basename_format += '.iquv.all.cam%d.png'
   endelse
-  iquv_filename_format = filepath(iquv_basename_format, root=l1_dirname)
+  iquv_filename_format = filepath(iquv_basename_format, root=output_dirname)
 
   intensity_display_min   = run->line(wave_region, 'intensity_display_min')
   intensity_display_max   = run->line(wave_region, 'intensity_display_max')
@@ -63,7 +73,7 @@ pro ucomp_write_all_iquv_image, file, data, run=run
   v_display_gamma = run->line(wave_region, 'v_display_gamma')
   v_display_power = run->line(wave_region, 'v_display_power')
 
-  datetime = strmid(file_basename(raw_filename), 0, 15)
+  datetime = strmid(l1_basename, 0, keyword_set(daily) ? 8 : 15)
   date_stamp = ucomp_dt2stamp(datetime)
   nx = run->epoch('nx', datetime=datetime)
   ny = run->epoch('ny', datetime=datetime)

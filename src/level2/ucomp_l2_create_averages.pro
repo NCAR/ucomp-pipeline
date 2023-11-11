@@ -91,6 +91,7 @@ pro ucomp_l2_create_averages, wave_region, method, $
               name=run.logger_name, /debug
     endfor
 
+    ; create the average
     ucomp_average_l1_files, good_files, average_filename, method=method, run=run
   endfor
 

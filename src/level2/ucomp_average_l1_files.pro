@@ -279,6 +279,18 @@ pro ucomp_average_l1_files, files, $
                             occulter_radius=occulter_radius, $
                             /daily, $
                             run=run
+
+    post_angle = ucomp_getpar(primary_header, 'POST_ANG')
+    p_angle = ucomp_getpar(primary_header, 'SOLAR_P0')
+    ucomp_write_all_iquv_image, averaged_data, $
+                                file_basename(output_filename), $
+                                ok_files[0].wave_region, $
+                                float(all_wavelengths), $
+                                occulter_radius, $
+                                post_angle, $
+                                p_angle, $
+                                /daily, $
+                                run=run
   endif
 
   obj_destroy, [averaged_headers, averaged_background_headers]
