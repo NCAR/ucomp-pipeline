@@ -83,6 +83,10 @@ pro ucomp_averages_publish, run=run
 
   catalog_filename = filepath(string(run.date, format='%s.ucomp.catalog.txt'), $
                               root=processing_dir)
+  if (~file_test(catalog_filename, /regular)) then begin
+    mg_log, 'no catalog file, skipping averages publishing'
+    goto, cleanup
+  endif
   files_list->add, catalog_filename
 
   for w = 0L, n_elements(wave_regions) - 1L do begin
@@ -110,7 +114,6 @@ pro ucomp_averages_publish, run=run
 
   n_files = files_list->count()
   files = files_list->toArray()
-  obj_destroy, files_list
 
   if (n_files eq 0L) then begin
     mg_log, 'no daily average files to distribute', $
@@ -141,6 +144,7 @@ pro ucomp_averages_publish, run=run
   file_copy, tarlist_filename, web_dir, /overwrite
 
   cleanup:
+  if (obj_valid(files_list)) then obj_destroy, files_list
 end
 
 
