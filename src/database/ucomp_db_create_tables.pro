@@ -43,7 +43,8 @@ pro ucomp_db_create_tables, config_filename
   tables = 'ucomp_' + ['mission', $
                        'quality', 'level', $
                        'sw', $
-                       'raw', 'eng', 'cal', 'file', 'sci']
+                       'raw', 'eng', 'cal', 'file', $
+                       'sci_dynamics', 'sci_polarization']
 
   ; delete existing tables (in reverse order), if they exist
   for t = n_elements(tables) - 1L, 0L, - 1L do begin

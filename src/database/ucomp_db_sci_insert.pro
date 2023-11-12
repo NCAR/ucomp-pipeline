@@ -74,7 +74,6 @@ pro ucomp_db_sci_insert, files, wave_region, $
   for f = 0L, n_files - 1L do begin
     file = science_files[f]
 
-
     file->getProperty, ut_date=ut_date, ut_time=ut_time
     hrs = [1.0, 1.0 / 60.0, 1.0 / 60.0 / 60.0]
     ut_date_parts = ucomp_decompose_date(ut_date)
@@ -145,27 +144,18 @@ pro ucomp_db_sci_insert, files, wave_region, $
               {name: 'obsday_id', type: '%d'}, $
               {name: 'wave_region', type: '''%s'''}, $
               {name: 'totali', type: '%s'}, $
-              {name: 'totalq', type: '%s'}, $
-              {name: 'totalu', type: '%s'}, $
               {name: 'intensity', type: '''%s'''}, $
               {name: 'intensity_stddev', type: '''%s'''}, $
-              {name: 'q', type: '''%s'''}, $
-              {name: 'q_stddev', type: '''%s'''}, $
-              {name: 'u', type: '''%s'''}, $
-              {name: 'u_stddev', type: '''%s'''}, $
               {name: 'r108i', type: '''%s'''}, $
               {name: 'r13i', type: '''%s'''}, $
-              {name: 'r108l', type: '''%s'''}, $
-              {name: 'r13l', type: '''%s'''}, $
               {name: 'r108radazi', type: '''%s'''}, $
               {name: 'r13radazi', type: '''%s'''}, $
-              ; doppler is not populated because of #33
-              ; {name: 'r108doppler', type: velocity_type}, $
-              ; {name: 'r13doppler', type: velocity_type}, $
+              {name: 'r108doppler', type: velocity_type}, $
+              {name: 'r13doppler', type: velocity_type}, $
               {name: 'ucomp_sw_id', type: '%d'}]
     sql_cmd = string(strjoin(fields.name, ', '), $
                      strjoin(fields.type, ', '), $
-                     format='(%"insert into ucomp_sci (%s) values (%s)")')
+                     format='(%"insert into ucomp_sci_dynamics (%s) values (%s)")')
     db->execute, sql_cmd, $
                  file.l1_basename, $
                  file.date_obs, $
@@ -173,25 +163,53 @@ pro ucomp_db_sci_insert, files, wave_region, $
                  file.wave_region, $
 
                  ucomp_db_float(total_i, format=float_fmt), $
-                 ucomp_db_float(total_q, format=float_fmt), $
-                 ucomp_db_float(total_u, format=float_fmt), $
 
                  db->escape_string(i_profile), $
                  db->escape_string(i_profile_stddev), $
+
+                 db->escape_string(intensity108), $
+                 db->escape_string(intensity13), $
+                 db->escape_string(radial_azimuth108), $
+                 db->escape_string(radial_azimuth13), $
+                 db->escape_string(velocity108), $
+                 db->escape_string(velocity13), $
+
+                 sw_index, $
+
+                 status=status
+
+    fields = [{name: 'file_name', type: '''%s'''}, $
+              {name: 'date_obs', type: '''%s'''}, $
+              {name: 'obsday_id', type: '%d'}, $
+              {name: 'wave_region', type: '''%s'''}, $
+              {name: 'totalq', type: '%s'}, $
+              {name: 'totalu', type: '%s'}, $
+              {name: 'q', type: '''%s'''}, $
+              {name: 'q_stddev', type: '''%s'''}, $
+              {name: 'u', type: '''%s'''}, $
+              {name: 'u_stddev', type: '''%s'''}, $
+              {name: 'r108l', type: '''%s'''}, $
+              {name: 'r13l', type: '''%s'''}, $
+              {name: 'ucomp_sw_id', type: '%d'}]
+    sql_cmd = string(strjoin(fields.name, ', '), $
+                     strjoin(fields.type, ', '), $
+                     format='(%"insert into ucomp_sci_polarization (%s) values (%s)")')
+    db->execute, sql_cmd, $
+                 file.l1_basename, $
+                 file.date_obs, $
+                 obsday_index, $
+                 file.wave_region, $
+
+                 ucomp_db_float(total_q, format=float_fmt), $
+                 ucomp_db_float(total_u, format=float_fmt), $
+
                  db->escape_string(q_profile), $
                  db->escape_string(q_profile_stddev), $
                  db->escape_string(u_profile), $
                  db->escape_string(u_profile_stddev), $
 
-                 db->escape_string(intensity108), $
-                 db->escape_string(intensity13), $
                  db->escape_string(linearpol108), $
                  db->escape_string(linearpol13), $
-                 db->escape_string(radial_azimuth108), $
-                 db->escape_string(radial_azimuth13), $
-                 ; TODO: add once we upgrade database
-                 ; db->escape_string(velocity108), $
-                 ; db->escape_string(velocity13), $
 
                  sw_index, $
 
