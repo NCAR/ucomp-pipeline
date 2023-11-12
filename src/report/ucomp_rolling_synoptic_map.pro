@@ -16,7 +16,7 @@
 ;   height : in, required, type=float
 ;     height of annulus +/- 0.02 Rsun [Rsun]
 ;   field : in, required, type=string
-;     field in ucomp_sci database table to retrieve data from
+;     field in ucomp_sci_{dynamics,polarization} table to retrieve data from
 ;   db : in, required, type=object
 ;     database connection
 ;
@@ -45,8 +45,15 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
   start_date = string(start_date_jd, $
                       format='(C(CYI4.4, "-", CMoI2.2, "-", CDI2.2))')
 
-  query = 'select ucomp_sci.date_obs, ucomp_sci.%s from ucomp_sci, mlso_numfiles where ucomp_sci.wave_region=\"%s\" and ucomp_sci.obsday_id=mlso_numfiles.day_id and mlso_numfiles.obs_day between ''%s'' and ''%s'''
-  raw_data = db->query(query, field, wave_region, start_date, end_date, $
+  case option_prefix of
+    'intensity': table = 'ucomp_sci_dynamics'
+    'linpol': table = 'ucomp_sci_polarization'
+    'radial_azimuth': table = 'ucomp_sci_dynamics'
+    'doppler': table = 'ucomp_sci_dynamics'
+  endcase
+
+  query = 'select %s.date_obs, %s.%s from %s, mlso_numfiles where %s.wave_region=\"%s\" and %s.obsday_id=mlso_numfiles.day_id and mlso_numfiles.obs_day between ''%s'' and ''%s'''
+  raw_data = db->query(query, table, table, field, table, table, wave_region, %s.start_date, end_date, $
                        count=n_rows, error=error, fields=fields, sql_statement=sql)
   if (n_rows gt 0L) then begin
     mg_log, '%d dates between %s and %s', n_rows, start_date, end_date, $
