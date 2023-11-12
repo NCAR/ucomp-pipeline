@@ -633,3 +633,4 @@
 - change to FWHM for line width
 - better averaging criteria (no gap larger than 30 min)
 - new tarball/zip file organization for distribution to website
+- split ucomp_sci into dynamics and polarization tables
