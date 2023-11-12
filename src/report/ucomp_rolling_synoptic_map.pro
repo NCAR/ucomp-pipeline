@@ -53,7 +53,7 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
   endcase
 
   query = 'select %s.date_obs, %s.%s from %s, mlso_numfiles where %s.wave_region=\"%s\" and %s.obsday_id=mlso_numfiles.day_id and mlso_numfiles.obs_day between ''%s'' and ''%s'''
-  raw_data = db->query(query, table, table, field, table, table, wave_region, start_date, end_date, $
+  raw_data = db->query(query, table, table, field, table, table, wave_region, table, start_date, end_date, $
                        count=n_rows, error=error, fields=fields, sql_statement=sql)
   if (n_rows gt 0L) then begin
     mg_log, '%d dates between %s and %s', n_rows, start_date, end_date, $
