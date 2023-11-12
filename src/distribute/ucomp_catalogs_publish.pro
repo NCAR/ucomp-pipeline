@@ -47,7 +47,8 @@ pro ucomp_catalogs_publish, run=run
   catalog_filename = filepath(string(run.date, format='%s.ucomp.catalog.txt'), $
                               root=processing_dir)
   if (~file_test(catalog_filename, /regular)) then begin
-    mg_log, 'no catalog file, skipping catalogs publishing'
+    mg_log, 'no catalog file, skipping catalogs publishing', $
+            name=run.logger, /info
     goto, cleanup
   endif
   catalog_files_list->add, catalog_filename
