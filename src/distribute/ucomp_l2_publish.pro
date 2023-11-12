@@ -80,7 +80,8 @@ pro ucomp_l2_publish, run=run
   catalog_filename = filepath(string(run.date, format='%s.ucomp.catalog.txt'), $
                               root=processing_dir)
   if (~file_test(catalog_filename, /regular)) then begin
-    mg_log, 'no catalog file, skipping L2 publishing'
+    mg_log, 'no catalog file, skipping L2 publishing', $
+            name=run.logger, /info
     goto, cleanup
   endif
   files_list->add, catalog_filename
