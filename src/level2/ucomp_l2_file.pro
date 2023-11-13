@@ -158,6 +158,16 @@ pro ucomp_l2_file, filename, run=run
   endelse
   doppler_shift -= rest_wavelength
 
+  model_rest_wavelength = ucomp_rest_wavelength(run.date, $
+                                                run->line(wave_region, $
+                                                          'rest_wavelength_fit'))
+  center_wavelength = run->line(wave_region, 'center_wavelength')
+  model_rest_wavelength -= center_wavelength
+  model_rest_wavelength *= c / center_wavelength
+  mg_log, 'rest wavelength from data: %0.2f km/s, from model: %0.2f km/s', $
+          rest_wavelength, model_rest_wavelength, $
+          name=run.logger_name, /debug
+
   l2_dir = filepath('', $
                     subdir=[run.date, 'level2'], $
                     root=run->config('processing/basedir'))
