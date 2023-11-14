@@ -18,6 +18,9 @@
 ;   daily : in, optional, type=boolean
 ;     set to indicate that the image corresponds to a daily average in the
 ;     level 2 directory
+;   sigma : in, optional, type=boolean
+;     set to indicate that the image corresponds to the standard deviation of
+;     IQUV data
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
@@ -27,6 +30,7 @@ pro ucomp_write_iquv_image, data, $
                             wavelengths, $
                             occulter_radius=occulter_radius, $
                             daily=daily, $
+                            sigma=sigma, $
                             run=run
   compile_opt strictarr
 
@@ -61,6 +65,17 @@ pro ucomp_write_iquv_image, data, $
   v_display_max   = run->line(wave_region, 'v_display_max')
   v_display_gamma = run->line(wave_region, 'v_display_gamma')
   v_display_power = run->line(wave_region, 'v_display_power')
+
+  if (keyword_set(sigma)) then begin
+    i_sigma_level = 0.02
+    quv_sigma_level = 0.20
+    intensity_display_min *= i_sigma_level
+    intensity_display_max *= i_sigma_level
+    qu_display_min *= quv_sigma_level
+    qu_display_max *= quv_sigma_level
+    v_display_min *= quv_sigma_level
+    v_display_max *= quv_sigma_level
+  endif
 
   datetime = strmid(l1_basename, 0, keyword_set(daily) ? 8 : 15)
   date_stamp = ucomp_dt2stamp(datetime)

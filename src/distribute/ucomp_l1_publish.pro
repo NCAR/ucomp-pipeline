@@ -51,7 +51,7 @@ pro ucomp_l1_publish, run=run
       endif
     endfor
 
-    average_format = '%s.ucomp.%s.l1.{synoptic,waves}.{mean,median}.fts'
+    average_format = '%s.ucomp.%s.l1.{synoptic,waves}.{mean,median,sigma}.fts'
     average_filenames = file_search(filepath(string(run.date, wave_regions[w], $
                                                     format=average_format), $
                                              root=l2_dir), $

@@ -189,7 +189,7 @@ pro ucomp_quicklooks_publish, run=run
             endif
 
             glob = string(wave_regions[w], l2_dynamics_types[d], $
-                          format='*.ucomp.%s.l2.{synoptic,waves}.{mean,median}.%s')
+                          format='*.ucomp.%s.l2.{synoptic,waves}.{mean,median,sigma}.%s')
             files = file_search(filepath(glob, root=l2_dir), count=n_files)
             if (n_files gt 0L) then begin
               mg_log, 'publishing %d %s nm average %s files', $

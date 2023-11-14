@@ -46,7 +46,7 @@ pro ucomp_averages_publish, run=run
     ;   level1/YYYYMMDD.HHMMSS.ucomp.WWWW.l1.{synoptic,waves}.{mean,median}.fts
     ;   level2/YYYYMMDD.HHMMSS.ucomp.WWWW.l2.{synoptic,waves}.{mean,median}.fts
 
-    average_l1_format = '%s.ucomp.%s.l1.{synoptic,waves}.{mean,median}.fts'
+    average_l1_format = '%s.ucomp.%s.l1.{synoptic,waves}.{mean,median,sigma}.fts'
     average_l1_filenames = file_search(filepath(string(run.date, wave_regions[w], $
                                                        format=average_l1_format), $
                                                 root=l2_dir), $

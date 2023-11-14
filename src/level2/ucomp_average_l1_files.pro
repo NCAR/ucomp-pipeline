@@ -277,7 +277,7 @@ pro ucomp_average_l1_files, files, $
                             ok_files[0].wave_region, $
                             float(all_wavelengths), $
                             occulter_radius=occulter_radius, $
-                            /daily, $
+                            /daily, sigma=method eq 'sigma', $
                             run=run
 
     post_angle = ucomp_getpar(primary_header, 'POST_ANG')
@@ -289,7 +289,7 @@ pro ucomp_average_l1_files, files, $
                                 occulter_radius, $
                                 post_angle, $
                                 p_angle, $
-                                /daily, $
+                                /daily, sigma=method eq 'sigma', $
                                 run=run
   endif
 

@@ -8,7 +8,7 @@
 ;   wave_region : in, required, type=string
 ;     wave region to create average files for
 ;   method : in, required, type=string
-;     method of averaging, either "mean" or "median"
+;     method of averaging, either "mean", "median", or "sigma"
 ;
 ; :Keywords:
 ;   average_filenames : out, optional, type=strarr
