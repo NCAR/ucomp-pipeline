@@ -38,7 +38,8 @@ pro ucomp_db_clearday, run=run
                                         logger_name=run.logger_name)
   if (status ne 0L) then goto, done
 
-  tables = 'ucomp_' + ['raw', 'file', 'eng', 'sci', 'cal']
+  tables = 'ucomp_' + ['raw', 'file', 'eng', 'cal', $
+             'sci_dynamics', 'sci_polarization']
   for t = 0L, n_elements(tables) - 1L do begin
     ucomp_db_cleartable, obsday_index, tables[t], db, $
                          logger_name=run.logger_name
