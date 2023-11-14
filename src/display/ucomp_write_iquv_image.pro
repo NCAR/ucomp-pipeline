@@ -71,9 +71,9 @@ pro ucomp_write_iquv_image, data, $
     quv_sigma_level = 0.20
     intensity_display_min *= i_sigma_level
     intensity_display_max *= i_sigma_level
-    qu_display_min *= quv_sigma_level
+    qu_display_min = 0.0
     qu_display_max *= quv_sigma_level
-    v_display_min *= quv_sigma_level
+    v_display_min = 0.0
     v_display_max *= quv_sigma_level
   endif
 
