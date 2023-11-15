@@ -61,8 +61,22 @@ pro ucomp_l1_promote_header, file, $
                 comment='[UT] date/time when obs started'
   ucomp_addpar, primary_header, 'DATE-END', file.date_end, $
                 comment='[UT] date/time when obs ended', after=after
+
+  date_obs = ucomp_getpar(primary_header, 'DATE-OBS')
+  ucomp_addpar, primary_header, 'MJD-OBS', $
+                ucomp_dateobs2julday(date_obs) - 2400000.5D, $
+                comment='[days] modified Julian date', $
+                format='F0.9', $
+                after=after
+  date_end = ucomp_getpar(primary_header, 'DATE-END')
+  ucomp_addpar, primary_header, 'MJD-END', $
+                ucomp_dateobs2julday(date_end) - 2400000.5D, $
+                comment='[days] modified Julian date', $
+                format='F0.9', $
+                after=after
+
   ucomp_movepar, primary_header, 'FILTER', $
-                 after='DATE-END'
+                 after='MJD-END'
   ucomp_addpar, primary_header, 'FILTER', ucomp_getpar(primary_header, 'FILTER'), $
                 comment='[nm] prefilter wavelength region identifier'
   ucomp_addpar, primary_header, 'OBJECT', 'SUN', comment=' '
@@ -269,6 +283,10 @@ pro ucomp_l1_promote_header, file, $
   for e = 0L, n_elements(headers) - 1L do begin
     h = headers[e]
     b = background_headers[e]
+
+    ucomp_addpar, h, 'INHERIT', boolean(1B), $
+                  comment='inherit primary header', $
+                  after='EXTNAME'
 
     ucomp_addpar, h, 'DATATYPE', 'science', $
                   comment='[sci/cal/dark/flat] science or calibration'
