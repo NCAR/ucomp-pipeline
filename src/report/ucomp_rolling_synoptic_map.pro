@@ -204,10 +204,10 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
                 format='(F0.2)', after='DATE-OBS'
   ucomp_addpar, primary_header, 'PRODUCT', name, $
                 comment='name of product', $
-                after='DATE-END'
+                after='MJD-END'
   ucomp_addpar, primary_header, 'HEIGHT', height, $
                 comment='[Rsun] height of annulus +/- 0.02 Rsun', $
-                format='(F0.2)', after='DATE-END'
+                format='(F0.2)', after='MJD-END'
 
   fits_filename = filepath(string(run.date, $
                                   wave_region, $
