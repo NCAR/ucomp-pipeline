@@ -9,6 +9,9 @@
 /config/ucomp.*.cfg
 /config/ucompd.*.cfg
 
+# Python products
+.ipynb_checkpoints
+
 /docs/_build
 /docs/exports
 /docs/ucomp-product-guide.tex
