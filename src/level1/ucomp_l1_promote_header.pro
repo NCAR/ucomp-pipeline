@@ -286,7 +286,10 @@ pro ucomp_l1_promote_header, file, $
 
     ucomp_addpar, h, 'INHERIT', boolean(1B), $
                   comment='inherit primary header', $
-                  after='EXTNAME'
+                  after='NAXIS3'
+    ucomp_addpar, b, 'INHERIT', boolean(1B), $
+                  comment='inherit primary header', $
+                  after='NAXIS2'
 
     ucomp_addpar, h, 'DATATYPE', 'science', $
                   comment='[sci/cal/dark/flat] science or calibration'
