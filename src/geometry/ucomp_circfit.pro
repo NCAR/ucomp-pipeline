@@ -15,7 +15,7 @@ function ucomp_circ, p
   common fit, x, y, radius
 
   yf = p[0] * cos(x) + p[1] * sin(x) + p[2]
-  return, total((yf - y)^2, /nan)
+  return, total((yf - y)^2, /nan, /preserve_type)
 end
 
 
