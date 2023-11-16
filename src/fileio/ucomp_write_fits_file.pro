@@ -55,7 +55,7 @@ pro ucomp_write_fits_file, filename, $
     endcase
 
     ucomp_fits_write, fcb, $
-                      reform(data), $
+                      float(reform(data)), $
                       ext_headers[e - 1], $
                       extname=extname, /no_abort, message=error_msg
     if (error_msg ne '') then message, error_msg
@@ -78,7 +78,7 @@ pro ucomp_write_fits_file, filename, $
       endcase
 
       ucomp_fits_write, fcb, $
-                        reform(data), $
+                        float(reform(data)), $
                         background_headers[e - 1], $
                         extname=extname, /no_abort, message=error_msg
       if (error_msg ne '') then message, error_msg
