@@ -19,8 +19,14 @@ rest_wavelength = ucomp_rest_wavelength('20220901', coeffs)
 print, rest_wavelength, format='%0.2f nm'
 
 c = 299792.458D
+
 nominal_wavelength = 1074.7
-print, (rest_wavelength - nominal_wavelength) * c / nominal_wavelength, $
+print, (rest_wavelength - 1074.7) * c / nominal_wavelength, $
+       format='%0.2f km/s'
+
+nominal_wavelength = 1079.8
+wave_offset = 2.040
+print, (rest_wavelength - 1074.7 - 1.89 + wave_offset) * c / nominal_wavelength, $
        format='%0.2f km/s'
 
 end
