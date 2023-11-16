@@ -118,55 +118,71 @@ pro ucomp_l2_file, filename, run=run
   azimuth = ucomp_azimuth(summed_q, summed_u, radial_azimuth=radial_azimuth)
 
   ; mask data on various thresholds
-  ; TODO: constants should be retrieved from wave region config file
   if (run->config('l2/mask_noise')) then begin
-    !null = where(intensity_center gt 0.1 $
-                    and intensity_center lt 120.0 $
-                    and intensity_blue gt 0.0 $
-                    and intensity_red gt 0.0 $
-                    and line_width gt 15.0 $
-                    and line_width lt 60.0, $
-                  complement=bad_indices, /null)
+    !null = where(intensity_center gt run->line(wave_region, 'noise_intensity_center_min') $
+                    and intensity_center lt run->line(wave_region, 'noise_intensity_center_max') $
+                    and intensity_blue gt run->line(wave_region, 'noise_intensity_blue_min') $
+                    and intensity_red gt run->line(wave_region, 'noise_intensity_red_min') $
+                    and line_width gt run->line(wave_region, 'noise_line_width_min') $  ; correct units?
+                    and line_width lt run->line(wave_region, 'noise_line_width_max'), $
+                  complement=noisy_indices, /null)
 
-    intensity_center[bad_indices]          = !values.f_nan
-    enhanced_intensity_center[bad_indices] = !values.f_nan
-    peak_intensity[bad_indices]            = !values.f_nan
-    doppler_shift[bad_indices]             = !values.f_nan
-    line_width[bad_indices]                = !values.f_nan
+    intensity_center[noisy_indices]          = !values.f_nan
+    enhanced_intensity_center[noisy_indices] = !values.f_nan
+    peak_intensity[noisy_indices]            = !values.f_nan
+    doppler_shift[noisy_indices]             = !values.f_nan
+    line_width[noisy_indices]                = !values.f_nan
 
-    summed_intensity[bad_indices]          = !values.f_nan
-    summed_q[bad_indices]                  = !values.f_nan
-    summed_u[bad_indices]                  = !values.f_nan
-    summed_linpol[bad_indices]             = !values.f_nan
-    azimuth[bad_indices]                   = !values.f_nan
-    radial_azimuth[bad_indices]            = !values.f_nan
+    summed_intensity[noisy_indices]          = !values.f_nan
+    summed_q[noisy_indices]                  = !values.f_nan
+    summed_u[noisy_indices]                  = !values.f_nan
+    summed_linpol[noisy_indices]             = !values.f_nan
+    azimuth[noisy_indices]                   = !values.f_nan
+    radial_azimuth[noisy_indices]            = !values.f_nan
   endif
 
-  valid_indices = where(intensity_center gt run->line(wave_region, 'intensity_center_min') $
-                          and intensity_center lt run->line(wave_region, 'intensity_center_max') $
-                          and intensity_blue gt run->line(wave_region, 'intensity_blue_min') $
-                          and intensity_red gt run->line(wave_region, 'intensity_red_min') $
-                          and line_width gt run->line(wave_region, 'line_width_min') $
-                          and line_width lt run->line(wave_region, 'line_width_max') $
-                          and abs(doppler_shift) lt run->line(wave_region, 'velocity_threshold') $
-                          and doppler_shift ne 0.0, $
-                        n_valid_indices)
-  if (n_valid_indices gt 0L) then begin
-    rest_wavelength = median(doppler_shift[valid_indices])
-  endif else begin
-    rest_wavelength = median(doppler_shift)
-  endelse
-  doppler_shift -= rest_wavelength
+  ; find rest wavelength
+  rstwvl_method = run->line(wave_region, 'rstwvl_method')
+  case strlowcase(rstwvl_method) of
+    'data': begin
+        valid_indices = where(intensity_center gt run->line(wave_region, 'rstwvl_intensity_center_min') $
+                                and intensity_center lt run->line(wave_region, 'rstwvl_intensity_center_max') $
+                                and intensity_blue gt run->line(wave_region, 'rstwvl_intensity_blue_min') $
+                                and intensity_red gt run->line(wave_region, 'rstwvl_intensity_red_min') $
+                                and line_width gt run->line(wave_region, 'rstwvl_line_width_min') $
+                                and line_width lt run->line(wave_region, 'rstwvl_line_width_max') $
+                                and abs(doppler_shift) lt run->line(wave_region, 'rstwvl_velocity_threshold') $
+                                and doppler_shift ne 0.0, $
+                              n_valid_indices)
+        if (n_valid_indices gt 0L) then begin
+          rest_wavelength = median(doppler_shift[valid_indices])
+        endif else begin
+          rest_wavelength = median(doppler_shift)
+        endelse
+        mg_log, 'rest wavelength from data: %0.2f km/s', rest_wavelength, $
+                name=run.logger_name, /debug
+      end
+    'model' begin
+        coeffs = run->line(wave_region, 'rest_wavelength_fit')
+        rest_wavelength = ucomp_rest_wavelength(run.date, coeffs)
 
-  model_rest_wavelength = ucomp_rest_wavelength(run.date, $
-                                                run->line(wave_region, $
-                                                          'rest_wavelength_fit'))
-  center_wavelength = run->line(wave_region, 'center_wavelength')
-  model_rest_wavelength -= center_wavelength
-  model_rest_wavelength *= c / center_wavelength
-  mg_log, 'rest wavelength from data: %0.2f km/s, from model: %0.2f km/s', $
-          rest_wavelength, model_rest_wavelength, $
-          name=run.logger_name, /debug
+        wave_offset = ucomp_getpar(primary_header, 'WAVOFF')
+        wave_region_offset = run->line(wave_region, 'rest_wavelength_offset')
+        center_wavelength = run->line(wave_region, 'center_wavelength')
+
+        rest_wavelength -= center_wavelength + wave_region_offset - wave_offset
+        rest_wavelength *= c / center_wavelength
+
+        mg_log, 'rest wavelength from model: %0.2f km/s', $
+                model_rest_wavelength, $
+                name=run.logger_name, /debug
+      end
+    else: begin
+      end
+  endcase
+
+  ; apply rest wavelength
+  doppler_shift -= rest_wavelength
 
   l2_dir = filepath('', $
                     subdir=[run.date, 'level2'], $
@@ -267,7 +283,7 @@ pro ucomp_l2_file, filename, run=run
   ; write line width
   line_width_fwhm = float(line_width) * run->epoch('fwhm_factor')
   ucomp_fits_write, fcb, $
-                    line_width_fwhm, $
+                    float(line_width_fwhm), $
                     header, $
                     extname='Line width (FWHM)', $
                     ext_comment='FWHM from Gaussian fit', $
