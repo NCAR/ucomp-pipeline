@@ -58,7 +58,7 @@ pro ucomp_read_l1_data, filename, $
     if (arg_present(background_headers)) then background_headers = list()
 
     for e = 1L, n_wavelengths do begin
-      fits_read, fcb, data, header, exten_no=e, /no_abort, message=msg
+      fits_read, fcb, data, header, exten_no=e, /no_abort, /no_pdu, message=msg
       if (msg ne '') then message, msg
 
       ; need to setup arrays the first time
@@ -73,7 +73,7 @@ pro ucomp_read_l1_data, filename, $
       if (arg_present(ext_headers)) then ext_headers->add, header
     endfor
     for e = n_wavelengths + 1L, n_extensions do begin
-      fits_read, fcb, data, header, exten_no=e, /no_abort, message=msg
+      fits_read, fcb, data, header, exten_no=e, /no_abort, /no_pdu, message=msg
       if (msg ne '') then message, msg
 
       ; need to setup arrays the first time
