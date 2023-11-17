@@ -14,8 +14,8 @@
 pro ucomp_data_lcvrelx, primary_header, ext_data, ext_headers
   compile_opt strictarr
 
-  comment = '[s] Delay after LCVR turning before data'
+  comment = '[s] delay after LCVR turning before data'
 
   lcvrelx_value = ucomp_getpar(primary_header, 'LCVRELX')
-  ucomp_addpar, primary_header, 'LCVRELX', comment=comment
+  ucomp_addpar, primary_header, 'LCVRELX', lcvrelx_value, comment=comment
 end
