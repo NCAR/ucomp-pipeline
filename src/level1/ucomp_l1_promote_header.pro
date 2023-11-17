@@ -264,7 +264,6 @@ pro ucomp_l1_promote_header, file, $
   continuum_comment = 'Continuum can be "red", "blue", or "both": "both" gives equal weight to red and blue sides, "red" samples 90% red contimuum and 10% blue, "blue" samples 90% blue continuum and 10% red; the continuum position is offset from line center by the value of CONTOFF'
   continuum_comment = mg_strwrap(continuum_comment, width=72)
 
-  continuum_offset = run->line(file.wave_region, 'continuum_offset')
   for e = 0L, n_elements(headers) - 1L do begin
     h = headers[e]
     ucomp_addpar, h, 'CONTIN', ucomp_getpar(h, 'CONTIN'), $
@@ -272,10 +271,6 @@ pro ucomp_l1_promote_header, file, $
     for i = n_elements(continuum_comment) - 1L, 0L, -1L do begin
       ucomp_addpar, h, 'COMMENT', continuum_comment[i], after='CONTIN'
     endfor
-    ucomp_addpar, h, 'CONTOFF', continuum_offset, $
-                  format='(F0.5)', $
-                  comment='[nm] distance from WAVELNG for continuum', $
-                  after='CONTIN'
     headers[e] = h
   endfor
 
@@ -338,10 +333,12 @@ pro ucomp_l1_promote_header, file, $
 
 
   after = 'LCVRELX'
-  ucomp_addpar, primary_header, 'FILTFWHM', run->line(file.wave_region, 'fwhm'), $
+  ucomp_addpar, primary_header, 'FILTFWHM', $
+                run->line(file.wave_region, 'fwhm'), $
                 format='(F0.3)', comment='[nm] Lyot FWHM', $
                 after=after
-  ucomp_addpar, primary_header, 'CONTOFF', run->line(file.wave_region, 'continuum_offset'), $
+  ucomp_addpar, primary_header, 'CONTOFF', $
+                run->line(file.wave_region, 'continuum_offset'), $
                 format='(F0.5)', comment='[nm] continuum offset', $
                 after=after
 
