@@ -261,19 +261,6 @@ pro ucomp_l1_promote_header, file, $
     ucomp_movepar, primary_header, hardware_keywords[k], before='FLCVNEG'
   endfor
 
-  continuum_comment = 'Continuum can be "red", "blue", or "both": "both" gives equal weight to red and blue sides, "red" samples 90% red contimuum and 10% blue, "blue" samples 90% blue continuum and 10% red; the continuum position is offset from line center by the value of CONTOFF'
-  continuum_comment = mg_strwrap(continuum_comment, width=72)
-
-  for e = 0L, n_elements(headers) - 1L do begin
-    h = headers[e]
-    ucomp_addpar, h, 'CONTIN', ucomp_getpar(h, 'CONTIN'), $
-                  comment='[both/blue/red] location of continuum'
-    for i = n_elements(continuum_comment) - 1L, 0L, -1L do begin
-      ucomp_addpar, h, 'COMMENT', continuum_comment[i], after='CONTIN'
-    endfor
-    headers[e] = h
-  endfor
-
   ; update DATATYPE and OBJECT keywords
   for e = 0L, n_elements(headers) - 1L do begin
     h = headers[e]
@@ -341,6 +328,25 @@ pro ucomp_l1_promote_header, file, $
                 run->line(file.wave_region, 'continuum_offset'), $
                 format='(F0.5)', comment='[nm] continuum offset', $
                 after=after
+
+  ; promote CONTIN to primary header and add a long description of its value
+
+  continuum_comment = 'Continuum can be "red", "blue", or "both": "both" gives equal weight to red and blue sides, "red" samples 90% red contimuum and 10% blue, "blue" samples 90% blue continuum and 10% red; the continuum position is offset from line center by the value of CONTOFF'
+  continuum_comment = mg_strwrap(continuum_comment, width=72)
+
+  ucomp_addpar, primary_header, 'CONTIN', ucomp_getpar(headers[0], 'CONTIN'), $
+                comment='[both/blue/red] location of continuum', $
+                after='CONTOFF'
+  for i = 0L, n_elements(continuum_comment) - 1L do begin
+    ucomp_addpar, primary_header, 'COMMENT', continuum_comment[i], $
+                  before='CONTIN'
+  endfor
+
+  for e = 0L, n_elements(headers) - 1L do begin
+    h = headers[e]
+    sxdelpar, h, 'CONTIN'
+    headers[e] = h
+  endfor
 
   after = 'MED_BKG'
   wind_speed = ucomp_getpar(primary_header, 'WNDSPD', found=wind_speed_found)
