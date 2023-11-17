@@ -76,6 +76,12 @@ pro ucomp_write_l2_images, quicklook_filename, $
                            run=run
   compile_opt strictarr
 
+  fill_linpol_images = 1B
+  if (fill_linpol_images) then begin
+    linpol_nan_indices = where(~finite(summed_linpol_i), /null)
+    summed_linpol_i[linpol_nan_indices] = median(summed_linpol_i)
+  endif
+
   dims = size(intensity_center, /dimensions)
 
   if (run->config('display/mask_l2')) then begin
