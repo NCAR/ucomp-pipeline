@@ -280,6 +280,9 @@ pro ucomp_l1_find_alignment, file, $
   ucomp_addpar, primary_header, 'COMMENT', $
                 'World Coordinate System (WCS) info', $
                 before='WCSNAME', /title
+  ucomp_addpar, primary_header, 'COMMENT', $
+                'Ephemeris calculations done by sun.pro', $
+                before='WCSNAME'
 
   after = 'CDELT2'
 
@@ -316,7 +319,8 @@ pro ucomp_l1_find_alignment, file, $
 
   ucomp_addpar, primary_header, 'COMMENT', 'Ephemeris info', $
                 before='SOLAR_P0', /title
-  ucomp_addpar, primary_header, 'COMMENT', 'Ephemeris calculations done by sun.pro', $
+  ucomp_addpar, primary_header, 'COMMENT', $
+                'Ephemeris calculations done by sun.pro', $
                 before='SOLAR_P0'
 
   file.rcam_geometry.p_angle = p_angle
