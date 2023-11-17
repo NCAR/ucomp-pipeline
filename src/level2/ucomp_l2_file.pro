@@ -162,7 +162,7 @@ pro ucomp_l2_file, filename, run=run
         mg_log, 'rest wavelength from data: %0.2f km/s', rest_wavelength, $
                 name=run.logger_name, /debug
       end
-    'model' begin
+    'model': begin
         coeffs = run->line(wave_region, 'rest_wavelength_fit')
         rest_wavelength = ucomp_rest_wavelength(run.date, coeffs)
 
@@ -174,7 +174,7 @@ pro ucomp_l2_file, filename, run=run
         rest_wavelength *= c / center_wavelength
 
         mg_log, 'rest wavelength from model: %0.2f km/s', $
-                model_rest_wavelength, $
+                rest_wavelength, $
                 name=run.logger_name, /debug
       end
     else: begin
