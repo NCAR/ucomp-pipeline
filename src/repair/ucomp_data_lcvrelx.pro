@@ -17,5 +17,7 @@ pro ucomp_data_lcvrelx, primary_header, ext_data, ext_headers
   comment = '[s] delay after LCVR turning before data'
 
   lcvrelx_value = ucomp_getpar(primary_header, 'LCVRELX')
-  ucomp_addpar, primary_header, 'LCVRELX', lcvrelx_value, comment=comment
+  ucomp_addpar, primary_header, 'LCVRELX', lcvrelx_value, $
+                format='(F0.3)', $
+                comment=comment
 end
