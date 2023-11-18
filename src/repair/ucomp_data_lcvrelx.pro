@@ -3,7 +3,7 @@
 ;+
 ; Change units on LCVRELX comment from "[ms]" to "[s]". This will create
 ; a null value keyword if LCVRELX is not present, which it wasn't early in the
-; mission.
+; mission (introduced on 20220715).
 ;
 ; :Params:
 ;   primary_header : in, out, required, type=strarr(n_keywords)
