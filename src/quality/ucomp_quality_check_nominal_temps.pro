@@ -45,7 +45,7 @@ function ucomp_quality_check_nominal_temps, file, $
     result = result || (finite(temp) eq 0L) || (temp lt min_temp) || (temp gt max_temp)
   endfor
 
-  temp_keywords = ['T_C0ARR', 'T_C0PCB', 'T_C1ARR', 'T_C1PCB']
+  temp_keywords = ['TU_C0ARR', 'TU_C0PCB', 'TU_C1ARR', 'TU_C1PCB']
   for t = 0L, n_elements(temp_keywords) - 1L do begin
     temp = ucomp_getpar(primary_header, temp_keywords[t], /float, found=found)
     result = result || (finite(temp) eq 0L) || (temp lt min_temp) || (temp gt max_temp)

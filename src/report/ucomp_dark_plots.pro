@@ -64,7 +64,7 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
   p = 0
   !p.multi = [0, 1, n_plots]
 
-  plot, [dark_info.times + 10.0], [dark_info.t_c0arr], /nodata, $
+  plot, [dark_info.times + 10.0], [dark_info.tu_c0arr], /nodata, $
         title='Dark sensor array temperatures', charsize=charsize, $
         color=color, background=background_color, $
         xtitle='Time [HST]', $
@@ -72,11 +72,11 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
         xtickformat='ucomp_hours_format', $
         ytitle='Temperature [C]', $
         ystyle=1, yrange=tarr_range
-  mg_range_oplot, [dark_info.times + 10.0], [dark_info.t_c0arr], $
+  mg_range_oplot, [dark_info.times + 10.0], [dark_info.tu_c0arr], $
                   psym=camera0_psym, symsize=symsize, $
                   linestyle=0, color=camera0_color, $
                   clip_color=camera0_color, clip_psym=7, clip_symsize=1.0
-  mg_range_oplot, [dark_info.times + 10.0], [dark_info.t_c1arr], $
+  mg_range_oplot, [dark_info.times + 10.0], [dark_info.tu_c1arr], $
                   psym=camera1_psym, symsize=symsize, $
                   linestyle=0, color=camera1_color, $
                   clip_color=camera1_color, clip_psym=7, clip_symsize=1.0
@@ -87,7 +87,7 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
           'camera 1', alignment=1.0, color=camera1_color
 
   p = 1
-  plot, [dark_info.times + 10.0], [dark_info.t_c0pcb], /nodata, $
+  plot, [dark_info.times + 10.0], [dark_info.tu_c0pcb], /nodata, $
         title='Dark PCB temperatures', charsize=charsize, $
         color=color, background=background_color, $
         xtitle='Time [HST]', $
@@ -95,11 +95,11 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
         xtickformat='ucomp_hours_format', $
         ytitle='Temperature [C]', $
         ystyle=1, yrange=tpcb_range
-  mg_range_oplot, [dark_info.times + 10.0], [dark_info.t_c0pcb], $
+  mg_range_oplot, [dark_info.times + 10.0], [dark_info.tu_c0pcb], $
                   psym=camera0_psym, symsize=symsize, $
                   linestyle=0, color=camera0_color, $
                   clip_color=camera0_color, clip_psym=7, clip_symsize=1.0
-  mg_range_oplot, [dark_info.times + 10.0], [dark_info.t_c1pcb], $
+  mg_range_oplot, [dark_info.times + 10.0], [dark_info.tu_c1pcb], $
                   psym=camera1_psym, symsize=symsize, $
                   linestyle=0, color=camera1_color, $
                   clip_color=camera1_color, clip_psym=7, clip_symsize=1.0
@@ -147,7 +147,7 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
   p = 2
   !p.multi = [(n_plots - p) * 2, 2, n_plots]
 
-  plot, [dark_info.t_c0arr], [cam0_dark_medians], /nodata, $
+  plot, [dark_info.tu_c0arr], [cam0_dark_medians], /nodata, $
         charsize=charsize, title='Dark sensor temperature vs. median counts', $
         psym=camera0_psym, symsize=symsize, $
         color=color, background=background_color, $
@@ -155,16 +155,16 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
         xstyle=1, xrange=tarr_range, $
         ytitle='Counts [DN]/NUMSUM', $
         ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
-  mg_range_oplot, [dark_info.t_c0arr], [cam0_dark_medians], $
+  mg_range_oplot, [dark_info.tu_c0arr], [cam0_dark_medians], $
                   psym=camera0_psym, symsize=symsize, $
                   color=camera0_color, $
                   clip_color=camera0_color, clip_psym=7, clip_symsize=1.0
-  mg_range_oplot, [dark_info.t_c1arr], [cam1_dark_medians], $
+  mg_range_oplot, [dark_info.tu_c1arr], [cam1_dark_medians], $
                   psym=camera1_psym, symsize=symsize, $
                   color=camera1_color, $
                   clip_color=camera1_color, clip_psym=7, clip_symsize=1.0
 
-  plot, [dark_info.t_c1pcb], [cam1_dark_medians], /nodata, $
+  plot, [dark_info.tu_c1pcb], [cam1_dark_medians], /nodata, $
         charsize=charsize, title='Dark PCB temperature vs. median counts', $
         psym=camera0_psym, symsize=symsize, $
         color=color, background=background_color, $
@@ -172,11 +172,11 @@ pro ucomp_dark_plots, dark_info, dark_images, run=run
         xstyle=1, xrange=tpcb_range, $
         ytitle='Counts [DN]/NUMSUM', $
         ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
-  mg_range_oplot, [dark_info.t_c0pcb], [cam0_dark_medians], $
+  mg_range_oplot, [dark_info.tu_c0pcb], [cam0_dark_medians], $
                   psym=camera0_psym, symsize=symsize, $
                   color=camera0_color, $
                   clip_color=camera0_color, clip_psym=7, clip_symsize=1.0
-  mg_range_oplot, [dark_info.t_c1pcb], [cam1_dark_medians], $
+  mg_range_oplot, [dark_info.tu_c1pcb], [cam1_dark_medians], $
                   psym=camera1_psym, symsize=symsize, $
                   color=camera1_color, $
                   clip_color=camera1_color, clip_psym=7, clip_symsize=1.0

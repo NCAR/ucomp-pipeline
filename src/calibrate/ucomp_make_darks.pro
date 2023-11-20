@@ -65,7 +65,7 @@ pro ucomp_make_darks, run=run
 
   ; the keywords that need to be moved from the primary header in the raw files
   ; to the extensions in the master dark file
-  demoted_keywords = ['T_C0ARR', 'T_C0PCB', 'T_C1ARR', 'T_C1PCB', $
+  demoted_keywords = ['TU_C0ARR', 'TU_C0PCB', 'TU_C1ARR', 'TU_C1PCB', $
                       'GAIN', 'FILTER', 'OCCLTR-X', 'OCCLTR-Y', 'O1FOCUSE']
 
   for d = 0L, n_dark_files - 1L do begin
@@ -161,15 +161,15 @@ pro ucomp_make_darks, run=run
     dark_file.rcam_median_linecenter = median(rcam_image[field_mask_indices])
     dark_file.tcam_median_linecenter = median(tcam_image[field_mask_indices])
 
-    t_c0arr = ucomp_getpar(primary_header, 'T_C0ARR', /float)
-    t_c0pcb = ucomp_getpar(primary_header, 'T_C0PCB', /float)
-    t_c1arr = ucomp_getpar(primary_header, 'T_C1ARR', /float)
-    t_c1pcb = ucomp_getpar(primary_header, 'T_C1PCB', /float)
+    tu_c0arr = ucomp_getpar(primary_header, 'TU_C0ARR', /float)
+    tu_c0pcb = ucomp_getpar(primary_header, 'TU_C0PCB', /float)
+    tu_c1arr = ucomp_getpar(primary_header, 'TU_C1ARR', /float)
+    tu_c1pcb = ucomp_getpar(primary_header, 'TU_C1PCB', /float)
     dark_info->add, {times: ucomp_dateobs2hours(ucomp_getpar(primary_header, 'DATE-OBS')), $
-                     t_c0arr: float(t_c0arr), $
-                     t_c0pcb: float(t_c0pcb), $
-                     t_c1arr: float(t_c1arr), $
-                     t_c1pcb: float(t_c1pcb)}
+                     tu_c0arr: float(tu_c0arr), $
+                     tu_c0pcb: float(tu_c0pcb), $
+                     tu_c1arr: float(tu_c1arr), $
+                     tu_c1pcb: float(tu_c1pcb)}
   endfor
 
   ; remove keywords that were moved from the primary header to the extension

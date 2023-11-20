@@ -135,7 +135,7 @@ pro ucomp_rolling_dark_plots, db, run=run
   data = db->query(query, start_date, $
                    count=n_darks, error=error, fields=fields, sql_statement=sql)
 
-  plot, data.t_c0arr, data.rcam_median_linecenter, /nodata, $
+  plot, data.tu_c0arr, data.rcam_median_linecenter, /nodata, $
         charsize=charsize, $
         title='Dark sensor temperature vs. median counts', $
         psym=camera0_psym, symsize=symsize, $
@@ -144,16 +144,16 @@ pro ucomp_rolling_dark_plots, db, run=run
         xstyle=1, xrange=tarr_range, $
         ytitle='Counts [DN]/NUMSUM', $
         ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
-   mg_range_oplot, data.t_c0arr, data.rcam_median_linecenter, $
+   mg_range_oplot, data.tu_c0arr, data.rcam_median_linecenter, $
                    psym=camera0_psym, symsize=symsize, $
                    color=camera0_color, $
                    clip_color=camera0_color, clip_psym=7, clip_symsize=3.0 * symsize
-   mg_range_oplot, data.t_c1arr, data.tcam_median_linecenter, $
+   mg_range_oplot, data.tu_c1arr, data.tcam_median_linecenter, $
                    psym=camera1_psym, symsize=symsize, $
                    color=camera1_color, $
                    clip_color=camera1_color, clip_psym=7, clip_symsize=3.0 * symsize
 
-   plot, data.t_c0pcb, data.rcam_median_linecenter, /nodata, $
+   plot, data.tu_c0pcb, data.rcam_median_linecenter, /nodata, $
          charsize=charsize, $
          title='Dark PCB temperature vs. median counts', $
          psym=camera0_psym, symsize=symsize, $
@@ -162,11 +162,11 @@ pro ucomp_rolling_dark_plots, db, run=run
          xstyle=1, xrange=tpcb_range, $
          ytitle='Counts [DN]/NUMSUM', $
          ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
-   mg_range_oplot, data.t_c0pcb, data.rcam_median_linecenter, $
+   mg_range_oplot, data.tu_c0pcb, data.rcam_median_linecenter, $
                    psym=camera0_psym, symsize=symsize, $
                    color=camera0_color, $
                    clip_color=camera0_color, clip_psym=7, clip_symsize=3.0 * symsize
-   mg_range_oplot, data.t_c1pcb, data.tcam_median_linecenter, $
+   mg_range_oplot, data.tu_c1pcb, data.tcam_median_linecenter, $
                    psym=camera1_psym, symsize=symsize, $
                    color=camera1_color, $
                    clip_color=camera1_color, clip_psym=7, clip_symsize=3.0 * symsize
@@ -176,7 +176,7 @@ pro ucomp_rolling_dark_plots, db, run=run
   month_ticks = mg_tick_locator([start_jd, end_jd], /months)
   month_ticks = month_ticks[0:*:3]
 
-  plot, jds, data.rcam_median_linecenter / data.t_c0arr, /nodata, $
+  plot, jds, data.rcam_median_linecenter / data.tu_c0arr, /nodata, $
         charsize=charsize, $
         title='Dark median counts / sensor temperature', $
         psym=camera0_psym, symsize=symsize, $
@@ -190,16 +190,16 @@ pro ucomp_rolling_dark_plots, db, run=run
         ytitle='Counts [DN]/sensor temperature [C]', $
         ystyle=1, $
         yrange=dark_range / reverse(tarr_range)
-   mg_range_oplot, jds, data.rcam_median_linecenter / data.t_c0arr, $
+   mg_range_oplot, jds, data.rcam_median_linecenter / data.tu_c0arr, $
                    psym=camera0_psym, symsize=symsize, $
                    color=camera0_color, $
                    clip_color=camera0_color, clip_psym=7, clip_symsize=3.0 * symsize
-   mg_range_oplot, jds, data.tcam_median_linecenter / data.t_c1arr, $
+   mg_range_oplot, jds, data.tcam_median_linecenter / data.tu_c1arr, $
                    psym=camera1_psym, symsize=symsize, $
                    color=camera1_color, $
                    clip_color=camera1_color, clip_psym=7, clip_symsize=3.0 * symsize
 
-  plot, jds, data.rcam_median_linecenter / data.t_c0pcb, /nodata, $
+  plot, jds, data.rcam_median_linecenter / data.tu_c0pcb, /nodata, $
         charsize=charsize, $
         title='Dark median counts / PCB temperature', $
         psym=camera0_psym, symsize=symsize, $
@@ -213,11 +213,11 @@ pro ucomp_rolling_dark_plots, db, run=run
         ytitle='Counts [DN]/PCB temperature [C]', $
         ystyle=1, $
         yrange=dark_range / reverse(tpcb_range)
-   mg_range_oplot, jds, data.rcam_median_linecenter / data.t_c0pcb, $
+   mg_range_oplot, jds, data.rcam_median_linecenter / data.tu_c0pcb, $
                    psym=camera0_psym, symsize=symsize, $
                    color=camera0_color, $
                    clip_color=camera0_color, clip_psym=7, clip_symsize=3.0 * symsize
-   mg_range_oplot, jds, data.tcam_median_linecenter / data.t_c1pcb, $
+   mg_range_oplot, jds, data.tcam_median_linecenter / data.tu_c1pcb, $
                    psym=camera1_psym, symsize=symsize, $
                    color=camera1_color, $
                    clip_color=camera1_color, clip_psym=7, clip_symsize=3.0 * symsize

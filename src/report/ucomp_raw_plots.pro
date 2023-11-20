@@ -63,14 +63,14 @@ pro ucomp_raw_plots, run=run
   tu_base = fltarr(n_files)
   for f = 0L, n_files - 1L do tu_base[f] = files[f].tu_base
 
-  t_c0arr = fltarr(n_files)
-  for f = 0L, n_files - 1L do t_c0arr[f] = files[f].t_c0arr
-  t_c0pcb = fltarr(n_files)
-  for f = 0L, n_files - 1L do t_c0pcb[f] = files[f].t_c0pcb
-  t_c1arr = fltarr(n_files)
-  for f = 0L, n_files - 1L do t_c1arr[f] = files[f].t_c1arr
-  t_c1pcb = fltarr(n_files)
-  for f = 0L, n_files - 1L do t_c1pcb[f] = files[f].t_c1pcb
+  tu_c0arr = fltarr(n_files)
+  for f = 0L, n_files - 1L do tu_c0arr[f] = files[f].tu_c0arr
+  tu_c0pcb = fltarr(n_files)
+  for f = 0L, n_files - 1L do tu_c0pcb[f] = files[f].tu_c0pcb
+  tu_c1arr = fltarr(n_files)
+  for f = 0L, n_files - 1L do tu_c1arr[f] = files[f].tu_c1arr
+  tu_c1pcb = fltarr(n_files)
+  for f = 0L, n_files - 1L do tu_c1pcb[f] = files[f].tu_c1pcb
 
   t_lcvr1 = fltarr(n_files)
   for f = 0L, n_files - 1L do t_lcvr1[f] = files[f].t_lcvr1
@@ -109,7 +109,7 @@ pro ucomp_raw_plots, run=run
 
   !p.multi = [0, 1, n_plots]
 
-  plot, times, t_c0arr, /nodata, $
+  plot, times, tu_c0arr, /nodata, $
         title='Raw sensor array temperatures', charsize=charsize, $
         color=color, background=background_color, $
         xtitle='Time [HST]', $
@@ -117,11 +117,11 @@ pro ucomp_raw_plots, run=run
         xtickformat='ucomp_hours_format', $
         ytitle='Temperature [C]', $
         ystyle=1, yrange=run->epoch('array_temp_range', datetime=run.date)
-  mg_range_oplot, times, t_c0arr, $
+  mg_range_oplot, times, tu_c0arr, $
                   psym=6, symsize=symsize, clip_psym=5, clip_symsize=symsize, $
                   linestyle=0, $
                   color=camera0_color, clip_color=camera0_outlier_color
-  mg_range_oplot, times, t_c1arr, $
+  mg_range_oplot, times, tu_c1arr, $
                   psym=6, symsize=symsize, clip_psym=5, clip_symsize=symsize, $
                   linestyle=0, $
                   color=camera1_color, clip_color=camera1_outlier_color
@@ -131,7 +131,7 @@ pro ucomp_raw_plots, run=run
   xyouts, 0.95, 7.0 / n_plots + 0.72 * (1.0 / n_plots), /normal, $
           'camera 1', alignment=1.0, color=camera1_color
 
-  plot, times, t_c0pcb, /nodata, $
+  plot, times, tu_c0pcb, /nodata, $
         title='Raw PCB board temperatures', charsize=charsize, $
         color=color, background=background_color, $
         xtitle='Time [HST]', $
@@ -139,11 +139,11 @@ pro ucomp_raw_plots, run=run
         xtickformat='ucomp_hours_format', $
         ytitle='Temperature [C]', $
         ystyle=1, yrange=run->epoch('pcb_temp_range', datetime=run.date)
-  mg_range_oplot, times, t_c0pcb, $
+  mg_range_oplot, times, tu_c0pcb, $
                   psym=6, symsize=symsize, clip_psym=5, clip_symsize=symsize, $
                   linestyle=0, $
                   color=camera0_color, clip_color=camera0_outlier_color
-  mg_range_oplot, times, t_c1pcb, $
+  mg_range_oplot, times, tu_c1pcb, $
                   psym=6, symsize=symsize, clip_psym=5, clip_symsize=symsize, $
                   linestyle=0, $
                   color=camera1_color, clip_color=camera1_outlier_color

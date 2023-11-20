@@ -102,10 +102,10 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
             {name: 'tu_lcvr4', type: '%s'}, $
             {name: 'tu_lcvr5', type: '%s'}, $
             {name: 'tu_rack', type: '%s'}, $
-            {name: 't_c0arr', type: '%s'}, $
-            {name: 't_c0pcb', type: '%s'}, $
-            {name: 't_c1arr', type: '%s'}, $
-            {name: 't_c1pcb', type: '%s'}, $
+            {name: 'tu_c0arr', type: '%s'}, $
+            {name: 'tu_c0pcb', type: '%s'}, $
+            {name: 'tu_c1arr', type: '%s'}, $
+            {name: 'tu_c1pcb', type: '%s'}, $
 
             {name: 'occltrid', type: '''%s'''}, $
             {name: 'o1id', type: '''%s'''}, $
@@ -234,10 +234,10 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
                  ucomp_db_float(file.tu_lcvr4, valid_range=[-20.0, 100.0]), $
                  ucomp_db_float(file.tu_lcvr5, valid_range=[-20.0, 100.0]), $
                  ucomp_db_float(file.tu_rack, valid_range=[-20.0, 100.0]), $
-                 ucomp_db_float(file.t_c0arr, valid_range=[-20.0, 100.0]), $
-                 ucomp_db_float(file.t_c0pcb, valid_range=[-20.0, 100.0]), $
-                 ucomp_db_float(file.t_c1arr, valid_range=[-20.0, 100.0]), $
-                 ucomp_db_float(file.t_c1pcb, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.tu_c0arr, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.tu_c0pcb, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.tu_c1arr, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.tu_c1pcb, valid_range=[-20.0, 100.0]), $
 
                  file.occultrid, $
                  file.o1id, $
