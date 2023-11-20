@@ -144,43 +144,45 @@ pro ucomp_l2_file, filename, run=run
     radial_azimuth[noisy_indices]            = !values.f_nan
   endif
 
+  valid_indices = where(intensity_center gt run->line(wave_region, 'rstwvl_intensity_center_min') $
+                          and intensity_center lt run->line(wave_region, 'rstwvl_intensity_center_max') $
+                          and intensity_blue gt run->line(wave_region, 'rstwvl_intensity_blue_min') $
+                          and intensity_red gt run->line(wave_region, 'rstwvl_intensity_red_min') $
+                          and line_width gt run->line(wave_region, 'rstwvl_line_width_min') $
+                          and line_width lt run->line(wave_region, 'rstwvl_line_width_max') $
+                          and abs(doppler_shift) lt run->line(wave_region, 'rstwvl_velocity_threshold') $
+                          and doppler_shift ne 0.0, $
+                        n_valid_indices)
+  if (n_valid_indices gt 0L) then begin
+    file_rest_wavelength = median(doppler_shift[valid_indices])
+  endif else begin
+    file_rest_wavelength = median(doppler_shift)
+  endelse
+  mg_log, 'rest wavelength from data: %0.2f km/s', file_rest_wavelength, $
+          name=run.logger_name, /debug
+
+  coeffs = run->line(wave_region, 'rest_wavelength_fit')
+  rest_wavelength = ucomp_rest_wavelength(run.date, coeffs)
+
+  wave_offset = ucomp_getpar(primary_header, 'WAVOFF')
+  wave_region_offset = run->line(wave_region, 'rest_wavelength_offset')
+  center_wavelength = run->line(wave_region, 'center_wavelength')
+
+  model_rest_wavelength -= center_wavelength - wave_region_offset + wave_offset
+  model_rest_wavelength *= c / center_wavelength
+
+  mg_log, 'rest wavelength from model: %0.2f km/s', $
+          model_rest_wavelength, $
+          name=run.logger_name, /debug
+
   ; find rest wavelength
   rstwvl_method = run->line(wave_region, 'rstwvl_method')
   case strlowcase(rstwvl_method) of
-    'data': begin
-        valid_indices = where(intensity_center gt run->line(wave_region, 'rstwvl_intensity_center_min') $
-                                and intensity_center lt run->line(wave_region, 'rstwvl_intensity_center_max') $
-                                and intensity_blue gt run->line(wave_region, 'rstwvl_intensity_blue_min') $
-                                and intensity_red gt run->line(wave_region, 'rstwvl_intensity_red_min') $
-                                and line_width gt run->line(wave_region, 'rstwvl_line_width_min') $
-                                and line_width lt run->line(wave_region, 'rstwvl_line_width_max') $
-                                and abs(doppler_shift) lt run->line(wave_region, 'rstwvl_velocity_threshold') $
-                                and doppler_shift ne 0.0, $
-                              n_valid_indices)
-        if (n_valid_indices gt 0L) then begin
-          rest_wavelength = median(doppler_shift[valid_indices])
-        endif else begin
-          rest_wavelength = median(doppler_shift)
-        endelse
-        mg_log, 'rest wavelength from data: %0.2f km/s', rest_wavelength, $
-                name=run.logger_name, /debug
-      end
-    'model': begin
-        coeffs = run->line(wave_region, 'rest_wavelength_fit')
-        rest_wavelength = ucomp_rest_wavelength(run.date, coeffs)
-
-        wave_offset = ucomp_getpar(primary_header, 'WAVOFF')
-        wave_region_offset = run->line(wave_region, 'rest_wavelength_offset')
-        center_wavelength = run->line(wave_region, 'center_wavelength')
-
-        rest_wavelength -= center_wavelength + wave_region_offset - wave_offset
-        rest_wavelength *= c / center_wavelength
-
-        mg_log, 'rest wavelength from model: %0.2f km/s', $
-                rest_wavelength, $
-                name=run.logger_name, /debug
-      end
+    'data': rest_wavelength = file_rest_wavelength
+    'model': rest_wavelength = model_rest_wavelength
     else: begin
+        fmt = 'unknown rest wavelength calculation method: %s'
+        message, string(rstwvl_method, format=fmt)
       end
   endcase
 
@@ -259,6 +261,14 @@ pro ucomp_l2_file, filename, run=run
 
   header = ext_headers[0]
   sxdelpar, header, 'WAVELNG'
+
+  delete_keywords = ['RAWEXTS', $
+                     'RAWDARK1', 'DARKEXT1', 'RAWDARK2', 'DARKEXT2', $
+                     'FLTFILE1', 'FLTEXTS1', 'MFLTEXT1', $
+                     'FLTFILE2', 'FLTEXTS2', 'MFLTEXT2']
+  for k = 0L, n_elements(delete_keywords) - 1L do begin
+    sxdelpar, header, delete_keywords[k]
+  endfor
 
   ; write peak intensity
   ucomp_fits_write, fcb, $
