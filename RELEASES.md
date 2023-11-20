@@ -634,3 +634,5 @@
 - better averaging criteria (no gap larger than 30 min)
 - new tarball/zip file organization for distribution to website
 - split ucomp_sci into dynamics and polarization tables
+- rest wavelength model for 1074 nm data
+- complete set of WCS FITS keywords specifying location
