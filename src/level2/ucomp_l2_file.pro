@@ -162,7 +162,7 @@ pro ucomp_l2_file, filename, run=run
           name=run.logger_name, /debug
 
   coeffs = run->line(wave_region, 'rest_wavelength_fit')
-  rest_wavelength = ucomp_rest_wavelength(run.date, coeffs)
+  model_rest_wavelength = ucomp_rest_wavelength(run.date, coeffs)
 
   wave_offset = ucomp_getpar(primary_header, 'WAVOFF')
   wave_region_offset = run->line(wave_region, 'rest_wavelength_offset')
