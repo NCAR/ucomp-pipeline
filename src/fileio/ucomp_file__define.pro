@@ -286,10 +286,10 @@ pro ucomp_file::getProperty, run=run, $
                              tu_lcvr4=tu_lcvr4, $
                              tu_lcvr5=tu_lcvr5, $
                              tu_rack=tu_rack, $
-                             t_c0arr=t_c0arr, $
-                             t_c0pcb=t_c0pcb, $
-                             t_c1arr=t_c1arr, $
-                             t_c1pcb=t_c1pcb, $
+                             tu_c0arr=tu_c0arr, $
+                             tu_c0pcb=tu_c0pcb, $
+                             tu_c1arr=tu_c1arr, $
+                             tu_c1pcb=tu_c1pcb, $
                              numsum=numsum, $
                              n_repeats=n_repeats, $
                              v_lcvr3=v_lcvr3, $
@@ -515,10 +515,10 @@ pro ucomp_file::getProperty, run=run, $
   if (arg_present(tu_lcvr4)) then tu_lcvr4 = self.tu_lcvr4
   if (arg_present(tu_lcvr5)) then tu_lcvr5 = self.tu_lcvr5
   if (arg_present(tu_rack)) then tu_rack = self.tu_rack
-  if (arg_present(t_c0arr)) then t_c0arr = self.t_c0arr
-  if (arg_present(t_c0pcb)) then t_c0pcb = self.t_c0pcb
-  if (arg_present(t_c1arr)) then t_c1arr = self.t_c1arr
-  if (arg_present(t_c1pcb)) then t_c1pcb = self.t_c1pcb
+  if (arg_present(tu_c0arr)) then tu_c0arr = self.tu_c0arr
+  if (arg_present(tu_c0pcb)) then tu_c0pcb = self.tu_c0pcb
+  if (arg_present(tu_c1arr)) then tu_c1arr = self.tu_c1arr
+  if (arg_present(tu_c1pcb)) then tu_c1pcb = self.tu_c1pcb
 
   ; by extension
   if (arg_present(wavelengths)) then wavelengths = *self.wavelengths
@@ -733,10 +733,10 @@ pro ucomp_file::_inventory
   self.tu_lcvr4 = ucomp_getpar(primary_header, 'TU_LCVR4', /float, found=found)
   self.tu_lcvr5 = ucomp_getpar(primary_header, 'TU_LCVR5', /float, found=found)
   self.tu_rack  = ucomp_getpar(primary_header, 'TU_RACK', /float, found=found)
-  self.t_c0arr  = ucomp_getpar(primary_header, 'T_C0ARR', /float, found=found)
-  self.t_c0pcb  = ucomp_getpar(primary_header, 'T_C0PCB', /float, found=found)
-  self.t_c1arr  = ucomp_getpar(primary_header, 'T_C1ARR', /float, found=found)
-  self.t_c1pcb  = ucomp_getpar(primary_header, 'T_C1PCB', /float, found=found)
+  self.tu_c0arr = ucomp_getpar(primary_header, 'TU_C0ARR', /float, found=found)
+  self.tu_c0pcb = ucomp_getpar(primary_header, 'TU_C0PCB', /float, found=found)
+  self.tu_c1arr = ucomp_getpar(primary_header, 'TU_C1ARR', /float, found=found)
+  self.tu_c1pcb = ucomp_getpar(primary_header, 'TU_C1PCB', /float, found=found)
 
   self.wind_speed     = ucomp_getpar(primary_header, 'WNDSPD', /float, found=found)
   self.wind_direction = ucomp_getpar(primary_header, 'WNDDIR', /float, found=found)
@@ -987,10 +987,10 @@ pro ucomp_file__define
            tu_lcvr4                : 0.0, $
            tu_lcvr5                : 0.0, $
            tu_rack                 : 0.0, $
-           t_c0arr                 : 0.0, $
-           t_c0pcb                 : 0.0, $
-           t_c1arr                 : 0.0, $
-           t_c1pcb                 : 0.0, $
+           tu_c0arr                : 0.0, $
+           tu_c0pcb                : 0.0, $
+           tu_c1arr                : 0.0, $
+           tu_c1pcb                : 0.0, $
 
            v_lcvr3                 : ptr_new(), $
 

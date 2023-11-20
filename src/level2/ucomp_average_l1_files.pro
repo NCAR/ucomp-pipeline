@@ -72,10 +72,10 @@ pro ucomp_average_l1_files, files, $
                 'LCVR4', 'LCVR5', 'BASE']
   temp_keywords = ['T_' + temp_bases, $
                    'TU_' + temp_bases, $
-                   'T_C0ARR', $
-                   'T_C0PCB', $
-                   'T_C1ARR', $
-                   'T_C1PCB']
+                   'TU_C0ARR', $
+                   'TU_C0PCB', $
+                   'TU_C1ARR', $
+                   'TU_C1PCB']
   n_temp_keywords = n_elements(temp_keywords)
   temp_values = fltarr(n_temp_keywords) + !values.f_nan
   temp_counts = lonarr(n_temp_keywords)

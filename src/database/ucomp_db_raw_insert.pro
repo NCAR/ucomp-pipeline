@@ -77,10 +77,10 @@ pro ucomp_db_raw_insert, l0_files, obsday_index, db, logger_name=logger_name
               {name: 'tu_lcvr4', type: '%s'}, $
               {name: 'tu_lcvr5', type: '%s'}, $
               {name: 'tu_base', type: '%s'}, $
-              {name: 't_c0arr', type: '%s'}, $
-              {name: 't_c0pcb', type: '%s'}, $
-              {name: 't_c1arr', type: '%s'}, $
-              {name: 't_c1pcb', type: '%s'}]
+              {name: 'tu_c0arr', type: '%s'}, $
+              {name: 'tu_c0pcb', type: '%s'}, $
+              {name: 'tu_c1arr', type: '%s'}, $
+              {name: 'tu_c1pcb', type: '%s'}]
     sql_cmd = string(strjoin(fields.name, ', '), $
                      strjoin(fields.type, ', '), $
                      format='(%"insert into ucomp_raw (%s) values (%s)")')
@@ -118,10 +118,10 @@ pro ucomp_db_raw_insert, l0_files, obsday_index, db, logger_name=logger_name
                  ucomp_db_float(file.tu_lcvr4, valid_range=[-20.0, 100.0]), $
                  ucomp_db_float(file.tu_lcvr5, valid_range=[-20.0, 100.0]), $
                  ucomp_db_float(file.tu_base, valid_range=[-20.0, 100.0]), $
-                 ucomp_db_float(file.t_c0arr, valid_range=[-20.0, 100.0]), $
-                 ucomp_db_float(file.t_c0pcb, valid_range=[-20.0, 100.0]), $
-                 ucomp_db_float(file.t_c1arr, valid_range=[-20.0, 100.0]), $
-                 ucomp_db_float(file.t_c1pcb, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.tu_c0arr, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.tu_c0pcb, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.tu_c1arr, valid_range=[-20.0, 100.0]), $
+                 ucomp_db_float(file.tu_c1pcb, valid_range=[-20.0, 100.0]), $
 
                  status=status
     if (status ne 0L) then goto, done
