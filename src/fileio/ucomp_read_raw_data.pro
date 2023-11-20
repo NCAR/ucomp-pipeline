@@ -44,7 +44,7 @@ pro ucomp_read_raw_data, filename, $
                          all_zero=all_zero, $
                          logger=logger
   compile_opt strictarr
-  on_error, 2
+  ;on_error, 2
 
   all_zero = 0B
 
@@ -143,8 +143,12 @@ pro ucomp_read_raw_data, filename, $
   endif
 
   if (arg_present(primary_header)) then begin
-    dims = size(ext_data, /dimensions)
-    n_total_frames = product(dims[2:*], /preserve_type)
+    if (n_elements(ext_data) eq 0L) then begin
+      n_total_frames = !null
+    endif else begin
+      dims = size(ext_data, /dimensions)
+      n_total_frames = product(dims[2:*], /preserve_type)
+    endelse
     ucomp_addpar, primary_header, 'NFRAME', n_total_frames, $
                   comment='total number of image frames in file', $
                   after='RCAMNUC'
