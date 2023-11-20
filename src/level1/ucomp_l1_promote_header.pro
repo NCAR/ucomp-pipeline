@@ -44,6 +44,15 @@ pro ucomp_l1_promote_header, file, $
   ucomp_addpar, primary_header, 'COMMENT', 'Temperatures', $
                 before='T_RACK', /title
 
+  ; comment about unfiltered temperatures
+  tu_comment = 'Temperatures used in the Lyot filter calibrations are low-pass filtered and reported in keywords that start with T_. The raw, unfiltered temperature values for recorded temperatures are recorded in keywords that begin with TU_.'
+  tu_comments = mg_strwrap(tu_comment, width=70)
+  for c = 0L, n_elements(tu_comments) - 1L do begin
+    ucomp_addpar, primary_header, 'COMMENT', $
+                  tu_comments[c], $
+                  before='T_RACK'
+  endfor
+
   ucomp_addpar, primary_header, 'OBSSWID', $
                 ucomp_getpar(primary_header, 'OBSSWID'), $
                 comment='data collection software ID'
