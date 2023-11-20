@@ -35,10 +35,10 @@ create table ucomp_raw (
   tu_lcvr4         float(8, 3),
   tu_lcvr5         float(8, 3),
   tu_base          float(8, 3),
-  t_c0arr          float(8, 3),
-  t_c0pcb          float(8, 3),
-  t_c1arr          float(8, 3),
-  t_c1pcb          float(8, 3),
+  tu_c0arr         float(8, 3),
+  tu_c0pcb         float(8, 3),
+  tu_c1arr         float(8, 3),
+  tu_c1pcb         float(8, 3),
 
   unique(file_name),
 

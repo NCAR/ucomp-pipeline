@@ -247,10 +247,20 @@ pro ucomp_l2_file, filename, run=run
   ucomp_fits_write, fcb, 0.0, primary_header, /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
 
+  center_header = ext_headers[center_index]
+
+  delete_keywords = ['RAWEXTS', $
+                     'RAWDARK1', 'DARKEXT1', 'RAWDARK2', 'DARKEXT2', $
+                     'FLTFILE1', 'FLTEXTS1', 'MFLTEXT1', $
+                     'FLTFILE2', 'FLTEXTS2', 'MFLTEXT2']
+  for k = 0L, n_elements(delete_keywords) - 1L do begin
+    sxdelpar, center_header, delete_keywords[k]
+  endfor
+
   ; write center line intensity
   ucomp_fits_write, fcb, $
                     float(intensity_center), $
-                    ext_headers[center_index], $
+                    center_header, $
                     extname='Center wavelength intensity', $
                     ext_comment='intensity at center tuning wavelength', $
                     /no_abort, message=error_msg
@@ -259,7 +269,7 @@ pro ucomp_l2_file, filename, run=run
   ; write enhanced center line intensity
   ucomp_fits_write, fcb, $
                     float(enhanced_intensity_center), $
-                    ext_headers[center_index], $
+                    center_header, $
                     extname='Enhanced intensity', $
                     ext_comment='unsharp mask of center wavelength intensity', $
                     /no_abort, message=error_msg
@@ -296,6 +306,7 @@ pro ucomp_l2_file, filename, run=run
   ucomp_addpar, header, 'WAVOFF2', $
                 rstwvl_method_keyword eq 'model fit' ? wave_region_offset : !null, $
                 comment='[nm] offset for center wavelength', $
+                format='(F0.3)', $
                 after='RSTMTHD'
   ucomp_fits_write, fcb, $
                     float(doppler_shift), $
