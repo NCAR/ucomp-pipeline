@@ -117,16 +117,19 @@ pro ucomp_l2_file, filename, run=run
 
   azimuth = ucomp_azimuth(summed_q, summed_u, radial_azimuth=radial_azimuth)
 
+  !null = where(intensity_center gt run->line(wave_region, 'noise_intensity_center_min') $
+                  and intensity_center lt run->line(wave_region, 'noise_intensity_center_max') $
+                  and intensity_blue gt run->line(wave_region, 'noise_intensity_blue_min') $
+                  and intensity_red gt run->line(wave_region, 'noise_intensity_red_min') $
+                  and line_width gt run->line(wave_region, 'noise_line_width_min') $  ; correct units?
+                  and line_width lt run->line(wave_region, 'noise_line_width_max'), $
+                complement=noisy_indices, /null)
+
+  noise_mask = intensity_center * 0.0 + 1.0
+  noise_mask[noisy_indices] = 0.0
+
   ; mask data on various thresholds
   if (run->config('l2/mask_noise')) then begin
-    !null = where(intensity_center gt run->line(wave_region, 'noise_intensity_center_min') $
-                    and intensity_center lt run->line(wave_region, 'noise_intensity_center_max') $
-                    and intensity_blue gt run->line(wave_region, 'noise_intensity_blue_min') $
-                    and intensity_red gt run->line(wave_region, 'noise_intensity_red_min') $
-                    and line_width gt run->line(wave_region, 'noise_line_width_min') $  ; correct units?
-                    and line_width lt run->line(wave_region, 'noise_line_width_max'), $
-                  complement=noisy_indices, /null)
-
     intensity_center[noisy_indices]          = !values.f_nan
     enhanced_intensity_center[noisy_indices] = !values.f_nan
     peak_intensity[noisy_indices]            = !values.f_nan
@@ -289,6 +292,16 @@ pro ucomp_l2_file, filename, run=run
                     ext_comment='FWHM from Gaussian fit', $
                     /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
+
+  if (~run->config('l2/mask_noise')) then begin
+    ucomp_fits_write, fcb, $
+                      float(noise_mask), $
+                      header, $
+                      extname='Noise mask', $
+                      ext_comment='mask low signal data', $
+                      /no_abort, message=error_msg
+    if (error_msg ne '') then message, error_msg
+  endif
 
   write_polarization = run->config(wave_region + '/publish_type') eq 'all'
   if (write_polarization) then begin
