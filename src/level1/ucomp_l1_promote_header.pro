@@ -318,7 +318,7 @@ pro ucomp_l1_promote_header, file, $
   endfor
   sgs_values = mean(sgs_values, dimension=2)
 
-  after = 'T_C1PCB'
+  after = 'TU_C1PCB'
   for s = 0L, n_elements(sgs_keywords) - 1L do begin
     ucomp_addpar, primary_header, sgs_keywords[s], sgs_values[s], $
                   format='(F0.5)', comment=sgs_comments[s], $
