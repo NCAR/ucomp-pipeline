@@ -178,8 +178,14 @@ pro ucomp_l2_file, filename, run=run
   ; find rest wavelength
   rstwvl_method = run->line(wave_region, 'rstwvl_method')
   case strlowcase(rstwvl_method) of
-    'data': rest_wavelength = file_rest_wavelength
-    'model': rest_wavelength = model_rest_wavelength
+    'data': begin
+        rest_wavelength = file_rest_wavelength
+        rstwvl_method_keyword = 'image'
+      end
+    'model': begin
+        rest_wavelength = model_rest_wavelength
+        rstwvl_method_keyword = 'model fit'
+      end
     else: begin
         fmt = 'unknown rest wavelength calculation method: %s'
         message, string(rstwvl_method, format=fmt)
@@ -284,6 +290,13 @@ pro ucomp_l2_file, filename, run=run
                 comment=' [km/s] median rest wavelength', $
                 format='(F0.3)', $
                 before='SKYTRANS'
+  ucomp_addpar, header, 'RSTMTHD', rstwvl_method_keyword, $
+                comment='rest wavelength computation method', $
+                after='RSTWVL'
+  ucomp_addpar, header, 'WAVOFF2', $
+                rstwvl_method_keyword eq 'model fit' ? wave_region_offset : !null, $
+                comment='[nm] offset for center wavelength', $
+                after='RSTMTHD'
   ucomp_fits_write, fcb, $
                     float(doppler_shift), $
                     header, $
@@ -292,6 +305,8 @@ pro ucomp_l2_file, filename, run=run
                     /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
   sxdelpar, header, 'RSTWVL'
+  sxdelpar, header, 'RSTMTHD'
+  sxdelpar, header, 'WAVOFF2'
 
   ; write line width
   line_width_fwhm = float(line_width) * run->epoch('fwhm_factor')
