@@ -144,6 +144,8 @@ pro ucomp_l2_file, filename, run=run
     radial_azimuth[noisy_indices]            = !values.f_nan
   endif
 
+  center_wavelength = run->line(wave_region, 'center_wavelength')
+
   valid_indices = where(intensity_center gt run->line(wave_region, 'rstwvl_intensity_center_min') $
                           and intensity_center lt run->line(wave_region, 'rstwvl_intensity_center_max') $
                           and intensity_blue gt run->line(wave_region, 'rstwvl_intensity_blue_min') $
@@ -158,6 +160,7 @@ pro ucomp_l2_file, filename, run=run
   endif else begin
     file_rest_wavelength = median(doppler_shift)
   endelse
+  file_rest_wavelength *= c / center_wavelength
   mg_log, 'rest wavelength from data: %0.2f km/s', file_rest_wavelength, $
           name=run.logger_name, /debug
 
@@ -166,9 +169,8 @@ pro ucomp_l2_file, filename, run=run
 
   wave_offset = ucomp_getpar(primary_header, 'WAVOFF')
   wave_region_offset = run->line(wave_region, 'rest_wavelength_offset')
-  center_wavelength = run->line(wave_region, 'center_wavelength')
 
-  model_rest_wavelength -= center_wavelength - wave_region_offset + wave_offset
+  model_rest_wavelength -= center_wavelength + wave_region_offset - wave_offset
   model_rest_wavelength *= c / center_wavelength
 
   mg_log, 'rest wavelength from model: %0.2f km/s', $
