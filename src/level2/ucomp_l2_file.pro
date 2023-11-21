@@ -144,6 +144,33 @@ pro ucomp_l2_file, filename, run=run
     radial_azimuth[noisy_indices]            = !values.f_nan
   endif
 
+  if (run->config('l2/mask_geometry')) then begin
+    ; mask outputs
+    dims = size(intensity_center, /dimensions)
+    mask = ucomp_mask(dims[0:1], $
+                      field_radius=run->epoch('field_radius'), $
+                      occulter_radius=occulter_radius, $
+                      post_angle=post_angle, $
+                      p_angle=p_angle)
+
+    outside_mask_indices = where(mask eq 0, n_outside_mask)
+
+    if (n_outside_mask gt 0L) then begin
+      intensity_center[outside_mask_indices]          = !values.f_nan
+      enhanced_intensity_center[outside_mask_indices] = !values.f_nan
+      peak_intensity[outside_mask_indices]            = !values.f_nan
+      line_width[outside_mask_indices]                = !values.f_nan
+      doppler_shift[outside_mask_indices]             = !values.f_nan
+
+      summed_intensity[outside_mask_indices]          = !values.f_nan
+      summed_q_i[outside_mask_indices]                = !values.f_nan
+      summed_u_i[outside_mask_indices]                = !values.f_nan
+      summed_linpol_i[outside_mask_indices]           = !values.f_nan
+      azimuth[outside_mask_indices]                   = !values.f_nan
+      radial_azimuth[outside_mask_indices]            = !values.f_nan
+    endif
+  endif
+
   center_wavelength = run->line(wave_region, 'center_wavelength')
 
   valid_indices = where(intensity_center gt run->line(wave_region, 'rstwvl_intensity_center_min') $
@@ -399,6 +426,21 @@ pro ucomp_l2_file, filename, run=run
   endif
 
   fits_close, fcb
+
+  if (run->config('display/mask_l2_noise')) then begin
+    intensity_center[noisy_indices]          = !values.f_nan
+    enhanced_intensity_center[noisy_indices] = !values.f_nan
+    peak_intensity[noisy_indices]            = !values.f_nan
+    doppler_shift[noisy_indices]             = !values.f_nan
+    line_width[noisy_indices]                = !values.f_nan
+
+    summed_intensity[noisy_indices]          = !values.f_nan
+    summed_q[noisy_indices]                  = !values.f_nan
+    summed_u[noisy_indices]                  = !values.f_nan
+    summed_linpol[noisy_indices]             = !values.f_nan
+    azimuth[noisy_indices]                   = !values.f_nan
+    radial_azimuth[noisy_indices]            = !values.f_nan
+  endif
 
   quicklook_basename = file_basename(l2_basename, '.fts') + '.png'
   quicklook_filename = filepath(quicklook_basename, root=l2_dir)
