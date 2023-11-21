@@ -75,10 +75,10 @@ create table ucomp_eng (
   tu_lcvr4            float (9, 6),  -- Lyot LCVR4 temp unfiltered
   tu_lcvr5            float (9, 6),  -- Lyot LCVR5 temp unfiltered
   tu_rack             float (9, 6),  -- computer Rack temp unfiltered
-  t_c0arr             float (9, 6),  -- camera 0 Sensor array temp
-  t_c0pcb             float (9, 6),  -- camera 0 PCB board temp
-  t_c1arr             float (9, 6),  -- camera 1 Sensor array temp
-  t_c1pcb             float (9, 6),  -- camera 1 PCB board temp
+  tu_c0arr            float (9, 6),  -- camera 0 Sensor array temp
+  tu_c0pcb            float (9, 6),  -- camera 0 PCB board temp
+  tu_c1arr            float (9, 6),  -- camera 1 Sensor array temp
+  tu_c1pcb            float (9, 6),  -- camera 1 PCB board temp
 
   occltrid            char (10),     -- occulter ID
   o1id                char (10),     -- O1 ID
