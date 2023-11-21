@@ -164,11 +164,11 @@ pro ucomp_l2_file, filename, run=run
   mg_log, 'rest wavelength from data: %0.2f km/s', file_rest_wavelength, $
           name=run.logger_name, /debug
 
-  coeffs = run->line(wave_region, 'rest_wavelength_fit')
+  coeffs = run->line(wave_region, 'rstwvl_fit')
   model_rest_wavelength = ucomp_rest_wavelength(run.date, coeffs)
 
   wave_offset = ucomp_getpar(primary_header, 'WAVOFF')
-  wave_region_offset = run->line(wave_region, 'rest_wavelength_offset')
+  wave_region_offset = run->line(wave_region, 'rstwvl_offset')
 
   model_rest_wavelength -= center_wavelength + wave_region_offset - wave_offset
   model_rest_wavelength *= c / center_wavelength
