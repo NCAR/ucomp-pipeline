@@ -189,8 +189,8 @@ pro ucomp_l2_file, filename, run=run
   west_indices = where(rstwvl_mask and x gt 0.0, n_west_indices)
 
   if (n_east_indices gt 0L && n_west_indices gt 0L) then begin
-    east_rest_wavelength = median(doppler_shift[n_east_indices])
-    west_rest_wavelength = median(doppler_shift[n_west_indices])
+    east_rest_wavelength = median([doppler_shift[n_east_indices]])
+    west_rest_wavelength = median([doppler_shift[n_west_indices]])
     file_rest_wavelength = (east_rest_wavelength + west_rest_wavelength) / 2.0
   endif else begin
     file_rest_wavelength = median(doppler_shift)
