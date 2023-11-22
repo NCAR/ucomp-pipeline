@@ -144,9 +144,10 @@ pro ucomp_l2_file, filename, run=run
     radial_azimuth[noisy_indices]            = !values.f_nan
   endif
 
+  dims = size(intensity_center, /dimensions)
+
   if (run->config('l2/mask_geometry')) then begin
     ; mask outputs
-    dims = size(intensity_center, /dimensions)
     mask = ucomp_mask(dims[0:1], $
                       field_radius=run->epoch('field_radius'), $
                       occulter_radius=occulter_radius, $
@@ -163,9 +164,9 @@ pro ucomp_l2_file, filename, run=run
       doppler_shift[outside_mask_indices]             = !values.f_nan
 
       summed_intensity[outside_mask_indices]          = !values.f_nan
-      summed_q[outside_mask_indices]                = !values.f_nan
-      summed_u[outside_mask_indices]                = !values.f_nan
-      summed_linpol[outside_mask_indices]           = !values.f_nan
+      summed_q[outside_mask_indices]                  = !values.f_nan
+      summed_u[outside_mask_indices]                  = !values.f_nan
+      summed_linpol[outside_mask_indices]             = !values.f_nan
       azimuth[outside_mask_indices]                   = !values.f_nan
       radial_azimuth[outside_mask_indices]            = !values.f_nan
     endif
@@ -173,17 +174,24 @@ pro ucomp_l2_file, filename, run=run
 
   center_wavelength = run->line(wave_region, 'center_wavelength')
 
-  valid_indices = where(intensity_center gt run->line(wave_region, 'rstwvl_intensity_center_min') $
-                          and intensity_center lt run->line(wave_region, 'rstwvl_intensity_center_max') $
-                          and intensity_blue gt run->line(wave_region, 'rstwvl_intensity_blue_min') $
-                          and intensity_red gt run->line(wave_region, 'rstwvl_intensity_red_min') $
-                          and line_width gt run->line(wave_region, 'rstwvl_line_width_min') $
-                          and line_width lt run->line(wave_region, 'rstwvl_line_width_max') $
-                          and abs(doppler_shift) lt run->line(wave_region, 'rstwvl_velocity_threshold') $
-                          and doppler_shift ne 0.0, $
-                        n_valid_indices)
-  if (n_valid_indices gt 0L) then begin
-    file_rest_wavelength = median(doppler_shift[valid_indices])
+  x = rebin(reform(findgen(dims[0]) - (dims[0] - 1.0) / 2.0, dims[0], 1), dims[0], dims[1])
+
+  rstwvl_mask = intensity_center gt run->line(wave_region, 'rstwvl_intensity_center_min') $
+    and intensity_center lt run->line(wave_region, 'rstwvl_intensity_center_max') $
+    and intensity_blue gt run->line(wave_region, 'rstwvl_intensity_blue_min') $
+    and intensity_red gt run->line(wave_region, 'rstwvl_intensity_red_min') $
+    and line_width gt run->line(wave_region, 'rstwvl_line_width_min') $
+    and line_width lt run->line(wave_region, 'rstwvl_line_width_max') $
+    and abs(doppler_shift) lt run->line(wave_region, 'rstwvl_velocity_threshold') $
+    and doppler_shift ne 0.0
+
+  east_indices = where(rstwvl_mask and x lt 0.0, n_east_indices)
+  west_indices = where(rstwvl_mask and x gt 0.0, n_west_indices)
+
+  if (n_east_indices gt 0L && n_west_indices gt 0L) then begin
+    east_rest_wavelength = median(doppler_shift[n_east_indices])
+    west_rest_wavelength = median(doppler_shift[n_west_indices])
+    file_rest_wavelength = (east_rest_wavelength + west_rest_wavelength) / 2.0
   endif else begin
     file_rest_wavelength = median(doppler_shift)
   endelse
