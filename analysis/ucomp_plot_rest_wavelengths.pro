@@ -60,11 +60,12 @@ pro ucomp_plot_rest_wavelengths, filename
 
   good_indices = where(finite(rest_wavelengths), /null, ncomplement=n_bad_points)
 
+  dates = dates[good_indices]
   years = years[good_indices]
   rest_wavelengths = rest_wavelengths[good_indices]
   print, n_bad_points, format='removed %d bad points'
 
-  degree = 1L
+  degree = 2L
 
   coeffs = poly_fit(years, rest_wavelengths, degree, chisq=best_chisqr)
   print, strjoin(string(coeffs, format='(F0.6)'), ', '), best_chisqr, $
@@ -85,11 +86,14 @@ pro ucomp_plot_rest_wavelengths, filename
 
     oplot, [years[bad_indices]], [rest_wavelengths[bad_indices]], $
            psym=4, symsize=0.75, color='0000ff'x
-    if (n_bad_points gt 0L) then begin
-      print, strjoin(string(differences[bad_indices], format='(F0.3)'), ', '), $
-             format='differences removed: %s'
-    endif
+    for p = 0L, n_bad_points - 1L do begin
+      caldat, dates[bad_indices[p]], month, day, year
+      print, year, month, day, differences[bad_indices[p]], $
+             format='%04d%02d%02d [difference: %0.3f]'
 
+    endfor
+
+    dates = dates[good_indices]
     years = years[good_indices]
     rest_wavelengths = rest_wavelengths[good_indices]
     print, n_bad_points, format='removed %d bad points'
