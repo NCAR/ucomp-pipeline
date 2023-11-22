@@ -80,6 +80,12 @@ pro ucomp_write_l2_images, quicklook_filename, $
   if (fill_linpol_images) then begin
     linpol_nan_indices = where(~finite(summed_linpol_i), /null)
     summed_linpol_i[linpol_nan_indices] = median(summed_linpol_i)
+
+    q_nan_indices = where(~finite(summed_q_i), /null)
+    summed_q_i[q_nan_indices] = median(summed_q_i)
+
+    u_nan_indices = where(~finite(summed_u_i), /null)
+    summed_u_i[u_nan_indices] = median(summed_u_i)
   endif
 
   dims = size(intensity_center, /dimensions)
