@@ -30,7 +30,6 @@ wave_offset = 2.070
 
 ;coeffs_1 = [1080.12, -0.248584]
 coeffs_1 = [1079.808594, -0.234617]
-;coeffs_2 = [1100.070, -2.049, 0.041]
 coeffs_2 = double([1100.069946, -2.048975, 0.040610])
 
 rest_wavelength_1 = ucomp_rest_wavelength(date, coeffs_1)
