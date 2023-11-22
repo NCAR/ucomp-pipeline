@@ -380,7 +380,7 @@ pro ucomp_l1_promote_header, file, $
   endif
 
   ; add HISTORY of processing of the file
-  ; TODO: update when continuum correction and sky transmission are performed
+  ; TODO: update when continuum correction is performed
   history = [{text: '', include: 1B}, $
              {text: 'Level 1 calibration and processing steps:', include: 1B}, $
              {text: '  - quality check to determine if the file should be processed', include: 1B}, $
@@ -402,7 +402,7 @@ pro ucomp_l1_promote_header, file, $
               include: 1B}, $
              {text: '  - combine the cameras', include: 1B}, $
              {text: '  - polarimetric correction', include: 1B}, $
-             ;{text: '  - correct for sky transmission', include: 1B}, $
+             {text: '  - correct for sky transmission', include: 1B}, $
              {text: '  - update FITS keywords', include: 1B}]
   for h = 0L, n_elements(history) - 1L do begin
     if (history[h].include) then begin
