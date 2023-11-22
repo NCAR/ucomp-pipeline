@@ -637,3 +637,5 @@
 - rest wavelength model for 1074 nm data
 - complete set of WCS FITS keywords specifying location
 - user documentation
+
+#### 1.0.1
