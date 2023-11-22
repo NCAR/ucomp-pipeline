@@ -284,9 +284,9 @@ pro ucomp_l1_promote_header, file, $
 
     ucomp_addpar, h, 'DATATYPE', 'science', $
                   comment='[sci/cal/dark/flat] science or calibration'
-
     ucomp_addpar, b, 'DATATYPE', 'science', $
                   comment='[sci/cal/dark/flat] science or calibration'
+
     ucomp_addpar, b, 'OBJECT', ucomp_getpar(b, 'OBJECT'), $
                   comment='continuum emission'
 
