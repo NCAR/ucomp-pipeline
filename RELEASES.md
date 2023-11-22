@@ -625,7 +625,7 @@
 - change line width display min/max
 - updated method to compute enhanced peak intensity
 
-#### 1.0.0
+#### 1.0.0 [Nov 22, 2023]
 
 - added `--tail` option to log sub-command
 - fix for mysterious hang when process finished
