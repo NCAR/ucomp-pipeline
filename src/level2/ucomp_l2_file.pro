@@ -187,7 +187,6 @@ pro ucomp_l2_file, filename, run=run
   endif else begin
     file_rest_wavelength = median(doppler_shift)
   endelse
-  file_rest_wavelength *= c / center_wavelength
   mg_log, 'rest wavelength from data: %0.2f km/s', file_rest_wavelength, $
           name=run.logger_name, /debug
 
