@@ -163,9 +163,9 @@ pro ucomp_l2_file, filename, run=run
       doppler_shift[outside_mask_indices]             = !values.f_nan
 
       summed_intensity[outside_mask_indices]          = !values.f_nan
-      summed_q_i[outside_mask_indices]                = !values.f_nan
-      summed_u_i[outside_mask_indices]                = !values.f_nan
-      summed_linpol_i[outside_mask_indices]           = !values.f_nan
+      summed_q[outside_mask_indices]                = !values.f_nan
+      summed_u[outside_mask_indices]                = !values.f_nan
+      summed_linpol[outside_mask_indices]           = !values.f_nan
       azimuth[outside_mask_indices]                   = !values.f_nan
       radial_azimuth[outside_mask_indices]            = !values.f_nan
     endif
