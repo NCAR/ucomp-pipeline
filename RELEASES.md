@@ -639,3 +639,5 @@
 - user documentation
 
 #### 1.0.1
+
+- fixed bug in "image" rest wavelength calculation method
