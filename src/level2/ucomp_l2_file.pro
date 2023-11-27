@@ -65,6 +65,7 @@ pro ucomp_l2_file, filename, run=run
     goto, done
   endif
 
+  date_obs = ucomp_getpar(primary_header, 'DATE-OBS')
   wave_region = ucomp_getpar(primary_header, 'FILTER')
 
   ; find center wavelength
@@ -120,7 +121,9 @@ pro ucomp_l2_file, filename, run=run
   !null = where(intensity_center gt run->line(wave_region, 'noise_intensity_center_min') $
                   and intensity_center lt run->line(wave_region, 'noise_intensity_center_max') $
                   and intensity_blue gt run->line(wave_region, 'noise_intensity_blue_min') $
+                  and intensity_blue lt run->line(wave_region, 'noise_intensity_blue_max') $
                   and intensity_red gt run->line(wave_region, 'noise_intensity_red_min') $
+                  and intensity_red lt run->line(wave_region, 'noise_intensity_red_max') $
                   and line_width gt run->line(wave_region, 'noise_line_width_min') $  ; correct units?
                   and line_width lt run->line(wave_region, 'noise_line_width_max'), $
                 complement=noisy_indices, /null)
@@ -150,7 +153,7 @@ pro ucomp_l2_file, filename, run=run
     ; mask outputs
     mask = ucomp_mask(dims[0:1], $
                       field_radius=run->epoch('field_radius'), $
-                      occulter_radius=occulter_radius, $
+                      occulter_radius=occulter_radius + run->epoch('over_masking'), $
                       post_angle=post_angle, $
                       p_angle=p_angle)
 
@@ -176,21 +179,36 @@ pro ucomp_l2_file, filename, run=run
 
   x = rebin(reform(findgen(dims[0]) - (dims[0] - 1.0) / 2.0, dims[0], 1), dims[0], dims[1])
 
+  year   = long(strmid(date_obs, 0, 4))
+  month  = long(strmid(date_obs, 5, 2))
+  day    = long(strmid(date_obs, 8, 2))
+  hours  = long(strmid(date_obs, 11, 2))
+  mins   = long(strmid(date_obs, 14, 2))
+  secs   = long(strmid(date_obs, 17, 2))
+  fhours = hours + mins / 60.0 + secs / 60.0 / 60.0
+
+  sun, year, month, day, fhours, sd=rsun
+  sun_pixels = rsun / run->line(wave_region, 'plate_scale')
+
   rstwvl_mask = intensity_center gt run->line(wave_region, 'rstwvl_intensity_center_min') $
     and intensity_center lt run->line(wave_region, 'rstwvl_intensity_center_max') $
     and intensity_blue gt run->line(wave_region, 'rstwvl_intensity_blue_min') $
+    and intensity_blue lt run->line(wave_region, 'rstwvl_intensity_blue_max') $
     and intensity_red gt run->line(wave_region, 'rstwvl_intensity_red_min') $
+    and intensity_red lt run->line(wave_region, 'rstwvl_intensity_red_max') $
     and line_width gt run->line(wave_region, 'rstwvl_line_width_min') $
     and line_width lt run->line(wave_region, 'rstwvl_line_width_max') $
     and abs(doppler_shift) lt run->line(wave_region, 'rstwvl_velocity_threshold') $
-    and doppler_shift ne 0.0
+    and doppler_shift ne 0.0 $
+    and finite(doppler_shift) $
+    and ucomp_annulus(0.0, 1.25 * sun_pixels, dimensions=dims)
 
   east_indices = where(rstwvl_mask and x lt 0.0, n_east_indices)
   west_indices = where(rstwvl_mask and x gt 0.0, n_west_indices)
 
   if (n_east_indices gt 0L && n_west_indices gt 0L) then begin
-    east_rest_wavelength = median([doppler_shift[n_east_indices]])
-    west_rest_wavelength = median([doppler_shift[n_west_indices]])
+    east_rest_wavelength = median([doppler_shift[east_indices]])
+    west_rest_wavelength = median([doppler_shift[west_indices]])
     file_rest_wavelength = (east_rest_wavelength + west_rest_wavelength) / 2.0
   endif else begin
     file_rest_wavelength = median(doppler_shift)
