@@ -124,8 +124,8 @@ pro ucomp_l2_file, filename, run=run
                   and intensity_blue lt run->line(wave_region, 'noise_intensity_blue_max') $
                   and intensity_red gt run->line(wave_region, 'noise_intensity_red_min') $
                   and intensity_red lt run->line(wave_region, 'noise_intensity_red_max') $
-                  and line_width gt run->line(wave_region, 'noise_line_width_min') $  ; correct units?
-                  and line_width lt run->line(wave_region, 'noise_line_width_max'), $
+                  and line_width gt run->line(wave_region, 'noise_line_width_min'), $
+                  ; and line_width lt run->line(wave_region, 'noise_line_width_max'), $
                 complement=noisy_indices, /null)
 
   noise_mask = intensity_center * 0.0 + 1.0
@@ -453,13 +453,13 @@ pro ucomp_l2_file, filename, run=run
   fits_close, fcb
 
   if (run->config('display/mask_l2_noise')) then begin
-    intensity_center[noisy_indices]          = !values.f_nan
-    enhanced_intensity_center[noisy_indices] = !values.f_nan
-    peak_intensity[noisy_indices]            = !values.f_nan
+    ; intensity_center[noisy_indices]          = !values.f_nan
+    ; enhanced_intensity_center[noisy_indices] = !values.f_nan
+    ; peak_intensity[noisy_indices]            = !values.f_nan
     doppler_shift[noisy_indices]             = !values.f_nan
     line_width[noisy_indices]                = !values.f_nan
 
-    summed_intensity[noisy_indices]          = !values.f_nan
+    ; summed_intensity[noisy_indices]          = !values.f_nan
     summed_q[noisy_indices]                  = !values.f_nan
     summed_u[noisy_indices]                  = !values.f_nan
     summed_linpol[noisy_indices]             = !values.f_nan
