@@ -80,7 +80,7 @@ pro ucomp_averages_publish, run=run
   userguide_basename = string(userguide_version, $
                               format='ucomp-user-guide.v%s.pdf')
   userguide_filename = filepath(userguide_basename, $
-                                root=run->config('documenation/docs_dir'))
+                                root=run->config('documentation/docs_dir'))
   files_list->add, userguide_filename
 
   catalog_filename = filepath(string(run.date, format='%s.ucomp.catalog.txt'), $
