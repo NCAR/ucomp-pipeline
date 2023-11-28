@@ -641,3 +641,7 @@
 #### 1.0.1
 
 - fixed bug in "image" rest wavelength calculation method
+- use "image" rest wavelength calculation method for 1074 nm files
+- fix display for 789 nm enhanced intensity quicklook images
+- over mask occulter for pixels used in rest wavelength calculation
+- fix script updating database plots that removed UCoMP entry in mlso_numfiles
