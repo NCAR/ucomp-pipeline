@@ -201,7 +201,9 @@ pro ucomp_l2_file, filename, run=run
     and abs(doppler_shift) lt run->line(wave_region, 'rstwvl_velocity_threshold') $
     and doppler_shift ne 0.0 $
     and finite(doppler_shift) $
-    and ucomp_annulus(0.0, 1.25 * sun_pixels, dimensions=dims)
+    and ucomp_annulus(occulter_radius + run->line(wave_region, 'rstwvl_over_masking'), $
+                      1.25 * sun_pixels, $
+                      dimensions=dims)
 
   east_indices = where(rstwvl_mask and x lt 0.0, n_east_indices)
   west_indices = where(rstwvl_mask and x gt 0.0, n_west_indices)
@@ -456,13 +458,15 @@ pro ucomp_l2_file, filename, run=run
     ; intensity_center[noisy_indices]          = !values.f_nan
     ; enhanced_intensity_center[noisy_indices] = !values.f_nan
     ; peak_intensity[noisy_indices]            = !values.f_nan
+
     doppler_shift[noisy_indices]             = !values.f_nan
-    line_width[noisy_indices]                = !values.f_nan
+    line_width_fwhm[noisy_indices]           = !values.f_nan
 
     ; summed_intensity[noisy_indices]          = !values.f_nan
     summed_q[noisy_indices]                  = !values.f_nan
     summed_u[noisy_indices]                  = !values.f_nan
     summed_linpol[noisy_indices]             = !values.f_nan
+
     azimuth[noisy_indices]                   = !values.f_nan
     radial_azimuth[noisy_indices]            = !values.f_nan
   endif

@@ -88,8 +88,6 @@ pro ucomp_db_update_wrapper, date, config_filename
                                 status=status, $
                                 logger_name=run.logger_name)
 
-  ucomp_db_update_mlso_numfiles, obsday_index, db, run=run
-
   ucomp_rolling_dark_plots, db, run=run
 
   wave_regions = run->config('options/wave_regions')
