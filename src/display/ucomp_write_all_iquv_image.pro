@@ -161,7 +161,7 @@ pro ucomp_write_all_iquv_image, data, $
                           post_angle=post_angle, $
                           p_angle=p_angle)
       endif else if (run->line(wave_region, 'mask_l1_occulter')) then begin
-        mask = ucomp_mask(dims[0:1], $
+        mask = ucomp_mask(dims[0:1] / reduce_dims_factor, $
                           field_radius=run->epoch('field_radius') / reduce_dims_factor, $
                           occulter_radius=occulter_radius / reduce_dims_factor, $
                           p_angle=p_angle)
