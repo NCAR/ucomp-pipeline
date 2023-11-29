@@ -638,7 +638,7 @@
 - complete set of WCS FITS keywords specifying location
 - user documentation
 
-#### 1.0.1
+#### 1.0.1 [Nov 29, 2023]
 
 - fixed bug in "image" rest wavelength calculation method
 - use "image" rest wavelength calculation method for 1074 nm files
