@@ -646,3 +646,5 @@
 - over mask occulter for pixels used in rest wavelength calculation
 - fix script updating database plots that removed UCoMP entry in mlso_numfiles
 - fix display of 706 nm IQUV (all wavelengths) quicklook images
+
+#### 1.0.2
