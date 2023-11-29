@@ -72,12 +72,7 @@ pro ucomp_l2_publish, run=run
                                root=run.resource_root)
   files_list->add, citation_filename
 
-  userguide_version = run->epoch('doc_version')
-  userguide_basename = string(userguide_version, $
-                              format='ucomp-user-guide.v%s.pdf')
-  userguide_filename = filepath(userguide_basename, $
-                                root=run->config('documentation/docs_dir'))
-  files_list->add, userguide_filename
+  ucomp_add_userguide, files_list, run=run
 
   catalog_filename = filepath(string(run.date, format='%s.ucomp.catalog.txt'), $
                               root=processing_dir)
