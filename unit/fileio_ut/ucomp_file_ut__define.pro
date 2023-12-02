@@ -78,10 +78,10 @@ function ucomp_file_ut::test_basic
                        tu_lcvr4=tu_lcvr4, $
                        tu_lcvr5=tu_lcvr5, $
                        tu_rack=tu_rack, $
-                       t_c0arr=t_c0arr, $
-                       t_c0pcb=t_c0pcb, $
-                       t_c1arr=t_c1arr, $
-                       t_c1pcb=t_c1pcb
+                       tu_c0arr=tu_c0arr, $
+                       tu_c0pcb=tu_c0pcb, $
+                       tu_c1arr=tu_c1arr, $
+                       tu_c1pcb=tu_c1pcb
                   compile_opt strictarr
 
     obj_destroy, file
@@ -169,10 +169,10 @@ function ucomp_file_ut::test_dark
                      tu_lcvr4=tu_lcvr4, $
                      tu_lcvr5=tu_lcvr5, $
                      tu_rack=tu_rack, $
-                     t_c0arr=t_c0arr, $
-                     t_c0pcb=t_c0pcb, $
-                     t_c1arr=t_c1arr, $
-                     t_c1pcb=t_c1pcb
+                     tu_c0arr=tu_c0arr, $
+                     tu_c0pcb=tu_c0pcb, $
+                     tu_c1arr=tu_c1arr, $
+                     tu_c1pcb=tu_c1pcb
 compile_opt strictarr
 
   obj_destroy, file
