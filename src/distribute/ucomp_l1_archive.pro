@@ -30,8 +30,12 @@ pro ucomp_l1_archive, wave_region, run=run
   endif
   cd, l1_dir
 
-  tarfile_basename = string(run.date, wave_region, format='(%"%s.ucomp.%s.l1.tar")')
-  tarlist_basename = string(run.date, wave_region, format='(%"%s.ucomp.%s.l1.tarlist")')
+  version = ucomp_version()
+
+  tarfile_basename = string(run.date, wave_region, version, $
+                            format='(%"%s.ucomp.%s.l1.v%s.tar.gz")')
+  tarlist_basename = string(run.date, wave_region, $
+                            format='(%"%s.ucomp.%s.l1.v%s.tarlist")')
   tarfile = filepath(tarfile_basename, root=l1_dir)
   tarlist = filepath(tarlist_basename, root=l1_dir)
 
@@ -76,7 +80,7 @@ pro ucomp_l1_archive, wave_region, run=run
   ; make tarball
   tar_cmd = string(tarfile, $
                    glob, $
-                   format='(%"tar cf %s %s")')
+                   format='(%"tar cfz %s %s")')
   mg_log, 'creating tarfile %s...', file_basename(tarfile), $
           name=run.logger_name, /info
   spawn, tar_cmd, result, error_result, exit_status=status
