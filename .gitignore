@@ -21,3 +21,8 @@
 
 # temporary file used to find the SolarSoft dependencies
 /ssw/ROUTINES
+
+# ignore temporary data files from analysis
+/analysis/*.csv
+/analysis/*.txt
+/analysis/*.lst
