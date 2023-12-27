@@ -34,7 +34,8 @@ function ucomp_compute_platescale, radius, occulter_id, wave_region, run=run
   focal_length = run->line(wave_region, 'focal_length')
 
   ; image scale in [arcsec/pixel]
-  platescale = 206265.0 * 0.01 / magnification / focal_length
+  ; 206264.8062471 = 360 * 60 * 60 / (2 * pi)
+  platescale = 206264.8 * 0.01 / magnification / focal_length
 
   return, platescale
 end
