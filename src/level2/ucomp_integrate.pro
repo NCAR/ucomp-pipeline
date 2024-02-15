@@ -26,7 +26,7 @@ function ucomp_integrate, data, center_index=center_index
   endelse
 
   n_weights = 3L
-  weights = (fltarr(n_weights) + 1.0)/ 2.0
+  weights = (fltarr(n_weights) + 1.0) / 2.0
 
   weighted = data[*, *, _center_index - n_weights / 2:_center_index + n_weights / 2]
   for w = 0L, n_weights - 1L do weighted[*, *, w] *= weights[w]
