@@ -54,6 +54,6 @@ pro ucomp_l1_camera_correction, file, $
   endfor
 
   done:
-  ucomp_addpar, primary_header, 'HOTPIXC', boolean(apply_distortion), $
+  ucomp_addpar, primary_header, 'HOTPIXC', boolean(fix_hot_pixels), $
                 comment='hot pixels corrected', after='LIN_CRCT'
 end
