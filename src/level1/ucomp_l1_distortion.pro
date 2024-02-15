@@ -56,6 +56,6 @@ pro ucomp_l1_distortion, file, $
   endfor
 
   done:
-  ucomp_addpar, primary_header, 'HOTPIXC', boolean(apply_distortion), $
-                comment='distortion corrected', after='LIN_CRCT'
+  ucomp_addpar, primary_header, 'DISTORTC', boolean(apply_distortion), $
+                comment='hot pixels corrected', after='DEMODV'
 end
