@@ -57,5 +57,5 @@ pro ucomp_l1_distortion, file, $
 
   done:
   ucomp_addpar, primary_header, 'DISTORTC', boolean(apply_distortion), $
-                comment='hot pixels corrected', after='DEMODV'
+                comment='whether distortion corrected', after='DEMODV'
 end
