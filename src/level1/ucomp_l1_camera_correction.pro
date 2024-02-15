@@ -55,5 +55,5 @@ pro ucomp_l1_camera_correction, file, $
 
   done:
   ucomp_addpar, primary_header, 'HOTPIXC', boolean(fix_hot_pixels), $
-                comment='hot pixels corrected', after='BOPAL'
+                comment='whether hot pixels were corrected', after='BOPAL'
 end

@@ -142,7 +142,7 @@ pro ucomp_l1_promote_header, file, $
   endif
 
   ; quality metrics
-  after = 'BOPAL'
+  after = 'CAMERAS'
   ucomp_addpar, primary_header, 'VCROSSTK', file.vcrosstalk_metric, $
                 comment='Stokes V crosstalk metric', after=after
 
@@ -442,8 +442,8 @@ ucomp_read_raw_data, file.raw_filename, $
 data = reform(data[*, *, *, 0, *])
 backgrounds = reform(data[*, *, 0, *])
 
-ucomp_addpar, primary_header, 'LIN_CRCT', boolean(file.linearity_corrected), $
-              comment='camera linearity corrected', after='OBJECT'
+; ucomp_addpar, primary_header, 'LIN_CRCT', boolean(file.linearity_corrected), $
+;               comment='camera linearity corrected', after='OBJECT'
 
 datetime = strmid(file_basename(file.raw_filename), 0, 15)
 dmatrix_coefficients = run->get_dmatrix_coefficients(datetime=datetime, info=demod_info)
@@ -451,13 +451,13 @@ demod_basename = run->epoch('demodulation_coeffs_basename', datetime=datetime)
 ucomp_addpar, primary_header, 'DEMOD_C', demod_basename, $
               comment=string(ucomp_idlsave2dateobs(demod_info.date), $
                              format='demod coeffs created %s'), $
-              after='LIN_CRCT'
+              after='DEMODV'
 
-cameras = 'both'
-ucomp_addpar, primary_header, 'CAMERAS', cameras, $
-            comment=string(cameras eq 'both' ? 's' : '', $
-                           format='(%"camera%s used in processing")'), $
-            after='DEMOD_C'
+; cameras = 'both'
+; ucomp_addpar, primary_header, 'CAMERAS', cameras, $
+;               comment=string(cameras eq 'both' ? 's' : '', $
+;                              format='(%"camera%s used in processing")'), $
+;               after='DEMOD_C'
 
 ucomp_addpar, primary_header, 'RADIUS', $
               333.195, $
