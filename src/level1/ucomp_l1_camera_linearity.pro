@@ -32,7 +32,7 @@ pro ucomp_l1_camera_linearity, file, $
 
   status = 0L
 
-  if (~run->config('cameras/linearity')) then begin
+  if (~run->config('cameras/apply_linearity')) then begin
     mg_log, 'skipping camera linearity correction', name=run.logger_name, /debug
     goto, done
   endif

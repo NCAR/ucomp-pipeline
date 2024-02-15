@@ -32,6 +32,12 @@ pro ucomp_l1_distortion, file, $
 
   status = 0L
 
+  apply_distortion = run->config('cameras/apply_distortion')
+  if (~apply_distortion) then begin
+    mg_log, 'skipping distortion correction', name=run.logger_name, /warn
+    goto, done
+  endif
+
   datetime = strmid(file_basename(file.raw_filename), 0, 15)
   run->get_distortion, datetime=datetime, $
                        dx0_c=dx0_c, $
@@ -48,4 +54,8 @@ pro ucomp_l1_distortion, file, $
                                                            dx1_c, dy1_c), 2)
     endfor
   endfor
+
+  done:
+  ucomp_addpar, primary_header, 'HOTPIXC', boolean(apply_distortion), $
+                comment='distortion corrected', after='LIN_CRCT'
 end
