@@ -31,6 +31,13 @@ pro ucomp_l1_camera_correction, file, $
   compile_opt strictarr
 
   status = 0L
+
+  fix_hot_pixels = run->config('cameras/fix_hot_pixels')
+  if (~fix_hot_pixels) then begin
+    mg_log, 'skipping hot pixel correction', name=run.logger_name, /warn
+    goto, done
+  endif
+
   dims = size(data, /dimensions)
   n_polstates = dims[2]
   n_cameras = dims[3]
@@ -45,4 +52,8 @@ pro ucomp_l1_camera_correction, file, $
       endfor
     endfor
   endfor
+
+  done:
+  ucomp_addpar, primary_header, 'HOTPIXC', boolean(apply_distortion), $
+                comment='hot pixels corrected', after='LIN_CRCT'
 end
