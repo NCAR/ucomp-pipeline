@@ -173,7 +173,7 @@ pro ucomp_l1_continuum_subtraction, file, $
 
   ucomp_addpar, primary_header, 'CONTSUB', boolean(subtract_continuum), $
                 comment='whether the continuum was subtracted', $
-                after='DEMODV'
+                after='DISTORTC'
 
   file.n_extensions = n_elements(ext_headers)
   file.wavelengths = keep_wavelengths
