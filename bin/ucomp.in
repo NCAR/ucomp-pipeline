@@ -317,7 +317,7 @@ def list_fits_file_default(f):
     try:
         with fits.open(f) as fits_file:
             primary_header = fits_file[0].header
-            header_1 = fits_file[1].header
+            header_1 = [] if len(fits_file) == 1 else fits_file[1].header
             s = "s" if len(fits_file) != 2 else ""
             n_exts = f"{len(fits_file) - 1} ext{s}"
             if "FILTER" in primary_header:
@@ -357,7 +357,7 @@ def list_fits_file(f, columns):
     try:
         with fits.open(f) as fits_file:
             primary_header = fits_file[0].header
-            header_1 = fits_file[1].header
+            header_1 = [] if len(fits_file) == 1 else fits_file[1].header
             for c in columns:
                 v = primary_header[c] if c in primary_header else None
                 if v is None:
