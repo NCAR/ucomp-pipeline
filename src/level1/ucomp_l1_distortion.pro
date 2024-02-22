@@ -35,7 +35,6 @@ pro ucomp_l1_distortion, file, $
   apply_distortion = run->config('cameras/apply_distortion')
   if (~apply_distortion) then begin
     mg_log, 'skipping distortion correction', name=run.logger_name, /warn
-    goto, done
   endif
 
   datetime = strmid(file_basename(file.raw_filename), 0, 15)
@@ -48,10 +47,16 @@ pro ucomp_l1_distortion, file, $
   for p = 0, 3 do begin
     for e = 0L, file.n_extensions - 1L do begin
       ; we do a reverse here for camera 0 to deal with the image flip
-      data[*, *, p, 0, e] = reverse(ucomp_apply_distortion(reverse(data[*, *, p, 0, e], 1), $
-                                                           dx0_c, dy0_c), 2)
-      data[*, *, p, 1, e] = reverse(ucomp_apply_distortion(data[*, *, p, 1, e], $
-                                                           dx1_c, dy1_c), 2)
+      cam0 = reverse(data[*, *, p, 0, e], 1)
+      cam1 = data[*, *, p, 1, e]
+
+      if (apply_distortion) then begin
+        cam0 = ucomp_apply_distortion(cam0, dx0_c, dy0_c)
+        cam1 = ucomp_apply_distortion(cam1, dx1_c, dy1_c)
+      endif
+
+      data[*, *, p, 0, e] = reverse(cam0, 2)
+      data[*, *, p, 1, e] = reverse(cam1, 2)
     endfor
   endfor
 
