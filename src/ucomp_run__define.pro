@@ -677,10 +677,16 @@ pro ucomp_run::get_distortion, datetime=datetime, $
     dx1_c = coeffs.dx1_c
     dy1_c = coeffs.dy1_c
   endif else begin
-    self->getProperty, resource_root=resource_root
+    distortion_dir = self->config('cameras/distortion_dir')
+    ; look in the repo if the distortion_dir option is not found; new
+    ; distortion files are too large to place in the repo
+    if (n_elements(distortion_dir) eq 0L) then begin
+      self->getProperty, resource_root=resource_root
+      distortion_dir = filepath('', subdir='distortion', root=resource_root)
+    endif
+
     distortion_filename = filepath(distortion_basename, $
-                                      subdir='distortion', $
-                                      root=resource_root)
+                                   root=distortion_dir)
     restore, filename=distortion_filename
     self.distortion_basename = distortion_basename
 
