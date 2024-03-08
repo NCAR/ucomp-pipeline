@@ -24,7 +24,23 @@ function ucomp_fix_hot, data, hot=hot, adjacent=adjacent
   compile_opt strictarr
 
   fixed = data
-  fixed[hot] = median(data[adjacent], dimension=2, /even)
+
+  if (n_elements(adjacent) eq 0L) then begin
+    kernel = fltarr(3, 3) + 1.0
+    kernel[1, 1] = 0.0
+    kernel = kernel / total(kernel, /preserve_type)
+
+    data[hot] = 0.0
+
+    ; compute smoothed image, excluding zero values
+    data_fill = convol(data, kernel, $
+                       /edge_truncate, /normalize, invalid=0.0, missing=0.0)
+
+    ; replace hot pixels with smoothed values
+    data[hot] = data_fill[hot]
+  endif else begin
+    fixed[hot] = median(data[adjacent], dimension=2, /even)
+  endelse
 
   return, fixed
 end
