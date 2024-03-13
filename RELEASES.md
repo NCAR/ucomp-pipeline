@@ -648,3 +648,8 @@
 - fix display of 706 nm IQUV (all wavelengths) quicklook images
 
 #### 1.0.2
+
+- improved hot pixel list and more generic application
+- move distortion files to directory specified by config file
+- improved ordering of level 1 FITS keywords
+- config file options to turn off distortion/hot pixel corrections
