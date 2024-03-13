@@ -97,7 +97,6 @@ pro ucomp_loadct, name, n_colors=n_colors, rgb_table=rgb_table, $
         rgb_table = mg_makect(blue, white, red, ncolors=n_colors)
       end
     'line_width': begin
-        ; loadct, 4, /silent, ncolors=n_colors, rgb_table=rgb_table
         ; jet colortable
         mpl_filename = filepath('mpl.tbl', $
                                 subdir=['..', '..', 'resource', 'colortables'], $
