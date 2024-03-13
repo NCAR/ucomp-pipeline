@@ -587,8 +587,9 @@ pro ucomp_run::get_hot_pixels, gain_mode, camera_index, $
   endelse
 
   if (n_elements(*self.hot_pixels[gain_index, camera_index]) eq 0L) then begin
-    hot_pixels_basename = string((['low', 'high'])[gain_index], $
-                                 format='(%"ucomp_hot_%s.sav")')
+    hot_pixels_option_name = string((['low', 'high'])[gain_index], $
+                                    format='%s_hot_pixel_basename')
+    hot_pixels_basename = self->epoch(hot_pixels_option_name)
     hot_pixels_filename = filepath(hot_pixels_basename, $
                                    subdir='cameras', $
                                    root=self.resource_root)
@@ -596,8 +597,8 @@ pro ucomp_run::get_hot_pixels, gain_mode, camera_index, $
 
     *self.hot_pixels[gain_index, 0] = hot_0
     *self.hot_pixels[gain_index, 1] = hot_1
-    *self.adjacent_pixels[gain_index, 0] = adjacent_0
-    *self.adjacent_pixels[gain_index, 1] = adjacent_1
+    *self.adjacent_pixels[gain_index, 0] = n_elements(adjacent_0) eq 0L ? !null : adjacent_0
+    *self.adjacent_pixels[gain_index, 1] = n_elements(adjacent_1) eq 0L ? !null : adjacent_1
   endif
 
   hot      = *self.hot_pixels[gain_index, camera_index]

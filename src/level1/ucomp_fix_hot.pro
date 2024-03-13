@@ -30,14 +30,14 @@ function ucomp_fix_hot, data, hot=hot, adjacent=adjacent
     kernel[1, 1] = 0.0
     kernel = kernel / total(kernel, /preserve_type)
 
-    data[hot] = 0.0
+    fixed[hot] = 0.0
 
     ; compute smoothed image, excluding zero values
-    data_fill = convol(data, kernel, $
+    data_fill = convol(fixed, kernel, $
                        /edge_truncate, /normalize, invalid=0.0, missing=0.0)
 
     ; replace hot pixels with smoothed values
-    data[hot] = data_fill[hot]
+    fixed[hot] = data_fill[hot]
   endif else begin
     fixed[hot] = median(data[adjacent], dimension=2, /even)
   endelse
