@@ -32,11 +32,11 @@ pro ucomp_data_t2tu, primary_header, ext_data, ext_headers
                          comment=comment, $
                          found=found)
     if (found) then begin
-        ucomp_addpar, primary_header, 'TU_' + names[n], value, $
-                      comment=string(comment, format='%s Unfiltered'), $
-                      format='(F0.3)', $
-                      after='T_' + names[n]
-        sxdelpar, primary_header, 'T_' + names[n]
+      ucomp_addpar, primary_header, 'TU_' + names[n], value, $
+                    comment=string(comment, format='%s Unfiltered'), $
+                    format='(F0.3)', $
+                    after='T_' + names[n]
+      sxdelpar, primary_header, 'T_' + names[n]
     endif
   endfor
 end
