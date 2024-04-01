@@ -43,13 +43,16 @@ pro ucomp_l1_sky_transmission, file, $
     ; TODO: correct SGSDIMV readings for wave region for #35
 
     if (flat_sgsdimv eq 0.0 || sci_sgsdimv eq 0.0) then begin
+      ; TODO: develop a model for sky transmission that we could use here to
+      ; generate SGSDIMV values based on date/times of flat and science images,
+      ; instead of using a constant ratio of 1.0
       sky_transmission = 1.0
     endif else begin
       sky_transmission = flat_sgsdimv / sci_sgsdimv
     endelse
 
-    data[*, *, *, e]  *= sky_transmission
-    backgrounds[*, *, e]  *= sky_transmission
+    data[*, *, *, e] *= sky_transmission
+    backgrounds[*, *, e] *= sky_transmission
 
     ucomp_addpar, h, 'SKYTRANS', sky_transmission, format='(F0.3)'
     ucomp_addpar, background_h, 'SKYTRANS', sky_transmission, format='(F0.3)'
