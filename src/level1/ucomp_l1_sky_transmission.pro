@@ -42,7 +42,12 @@ pro ucomp_l1_sky_transmission, file, $
 
     ; TODO: correct SGSDIMV readings for wave region for #35
 
-    sky_transmission = flat_sgsdimv / sci_sgsdimv
+    if (flat_sgsdimv eq 0.0 || sci_sgsdimv eq 0.0) then begin
+      sky_transmission = 1.0
+    endif else begin
+      sky_transmission = flat_sgsdimv / sci_sgsdimv
+    endelse
+
     data[*, *, *, e]  *= sky_transmission
     backgrounds[*, *, e]  *= sky_transmission
 
