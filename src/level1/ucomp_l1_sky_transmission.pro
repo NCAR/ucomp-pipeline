@@ -57,6 +57,4 @@ pro ucomp_l1_sky_transmission, file, $
     headers[e] = h
     background_headers[e] = background_h
   endfor
-
-
 end
