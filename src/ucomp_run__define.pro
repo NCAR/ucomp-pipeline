@@ -599,6 +599,15 @@ pro ucomp_run::get_hot_pixels, gain_mode, camera_index, $
     *self.hot_pixels[gain_index, 1] = hot_1
     *self.adjacent_pixels[gain_index, 0] = n_elements(adjacent_0) eq 0L ? !null : adjacent_0
     *self.adjacent_pixels[gain_index, 1] = n_elements(adjacent_1) eq 0L ? !null : adjacent_1
+
+    self->getProperty, logger_name=logger_name
+    mg_log, 'loading hot pixels for %s gain', $
+            gain_mode, $
+            name=logger_name, /debug
+    mg_log, '   adjacent 0 %s, 1 %s', $
+            n_elements(adjacent_0) eq 0L ? 'not present' : 'present', $
+            n_elements(adjacent_1) eq 0L ? 'not present' : 'present', $
+            name=logger_name, /debug
   endif
 
   hot      = *self.hot_pixels[gain_index, camera_index]
@@ -691,7 +700,7 @@ pro ucomp_run::get_distortion, datetime=datetime, $
     restore, filename=distortion_filename
     self.distortion_basename = distortion_basename
 
-    if (n_elements(dx0_c) eq 16L) then begin
+    if (n_elements(dx0_c) lt 1310720L) then begin
       nx = self->epoch('nx', datetime=datetime)
       ny = self->epoch('ny', datetime=datetime)
 
