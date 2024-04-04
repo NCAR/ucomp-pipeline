@@ -25,23 +25,26 @@ function ucomp_fix_hot, data, hot=hot, adjacent=adjacent
 
   fixed_data = data
 
-;TODO verify the function is never called by mistake with adjacent = 0 
- if (n_elements(adjacent) eq 0L) then begin
-;define kernel     
+  ; TODO verify the function is never called by mistake with adjacent = 0
+  if (n_elements(adjacent) eq 0L) then begin
+  ; define kernel
     kernel = fltarr(3, 3) + 1.0
     kernel[1, 1] = 0.0
     kernel = kernel / total(kernel, /preserve_type)
-;set to zero NaN and hot pixels
+
+    ; set to zero NaN and hot pixels
     bad = where(~finite(fixed_data), nbad)
-    if nbad gt 0 then fixed_data[bad]=0.0
-    fixed_data[hot]=0.0
-;compute median to use in case of large clusters of hot pixels
+    if (nbad gt 0) then fixed_data[bad] = 0.0
+    fixed_data[hot] = 0.0
+
+    ; compute median to use in case of large clusters of hot pixels
     pos = where(fixed_data gt 0)
-    med=median(fixed_data[pos])
-;compute array for filling hot pixels, excluding zeros
-    data_fill = convol(fixed_data, kernel, /edge_truncate, /normalize, invalid=0.0, missing=med)
-; replace hot pixels 
-    fixed_data[hot] = data_fill[hot]    
+    med = median(fixed_data[pos])
+    ; compute array for filling hot pixels, excluding zeros
+    data_fill = convol(fixed_data, kernel, /edge_truncate, /normalize, $
+                       invalid=0.0, missing=med)
+    ; replace hot pixels
+    fixed_data[hot] = data_fill[hot]
   endif else begin
     fixed_data[hot] = median(data[adjacent], dimension=2, /even)
   endelse
