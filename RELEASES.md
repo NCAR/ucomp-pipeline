@@ -649,7 +649,10 @@
 
 #### 1.0.2
 
+- hot pixel list for new camera
 - improved hot pixel list and more generic application
+- distortion for new camera
 - move distortion files to directory specified by config file
 - improved ordering of level 1 FITS keywords
 - config file options to turn off distortion/hot pixel corrections
+- handle SGSDIMV value of 0.0
