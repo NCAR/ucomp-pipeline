@@ -656,3 +656,5 @@
 - improved ordering of level 1 FITS keywords
 - config file options to turn off distortion/hot pixel corrections
 - handle SGSDIMV value of 0.0
+
+#### 1.0.3
