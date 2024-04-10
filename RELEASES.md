@@ -647,7 +647,7 @@
 - fix script updating database plots that removed UCoMP entry in mlso_numfiles
 - fix display of 706 nm IQUV (all wavelengths) quicklook images
 
-#### 1.0.2
+#### 1.0.2 [Apr 10, 2024]
 
 - hot pixel list for new camera
 - improved hot pixel list and more generic application
