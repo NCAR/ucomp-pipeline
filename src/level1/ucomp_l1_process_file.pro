@@ -158,10 +158,14 @@ pro ucomp_l1_process_file, file, run=run
                  backgrounds, background_headers, $
                  step_number=step_number, run=run
 
-  ucomp_l1_step, 'ucomp_l1_check_gbu', $
-                 file, primary_header, data, headers, $
-                 backgrounds, background_headers, $
-                 run=run
+  if (run->config('gbu/perform_check') && run->epoch('perform_gbu_check')) then begin
+    ucomp_l1_step, 'ucomp_l1_check_gbu', $
+                   file, primary_header, data, headers, $
+                   backgrounds, background_headers, $
+                   run=run
+  endif else begin
+    mg_log, 'skipping GBU check', name=run.logger_name, /debug
+  endelse
 
   l1_filename = filepath(file.l1_basename, root=l1_dirname)
   ucomp_write_fits_file, l1_filename, $
