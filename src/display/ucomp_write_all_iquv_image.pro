@@ -197,7 +197,7 @@ pro ucomp_write_all_iquv_image, data, $
         xyouts, (w + 0.5) * dims[0] / reduce_dims_factor, $
                 (dims[2] - 3.0 * ymargin) * dims[1] / reduce_dims_factor, $
                 /device, alignment=0.5, $
-                string(wavelengths[w], format='(%"%0.2f nm")'), $
+                string(wavelengths[w], format='(%"%0.3f nm")'), $
                 charsize=charsize, color=text_color
       endif
       if (w eq n_wavelengths - 1L) then begin
