@@ -661,4 +661,6 @@
 
 - display 3 decimal points for wavelengths in IQUV all images
 
-#### 1.0.4
+#### 1.0.4 [Apr 11, 2024]
+
+- fix for hot pixel correction
