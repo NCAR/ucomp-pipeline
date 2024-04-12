@@ -664,3 +664,5 @@
 #### 1.0.4 [Apr 11, 2024]
 
 - fix for hot pixel correction
+
+#### 1.0.5
