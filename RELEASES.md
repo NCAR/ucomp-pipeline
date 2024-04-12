@@ -657,4 +657,6 @@
 - config file options to turn off distortion/hot pixel corrections
 - handle SGSDIMV value of 0.0
 
-#### 1.0.3
+#### 1.0.3 [Apr 11, 2024]
+
+- display 3 decimal points for wavelengths in IQUV all images
