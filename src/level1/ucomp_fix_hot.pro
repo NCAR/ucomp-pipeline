@@ -38,8 +38,12 @@ function ucomp_fix_hot, data, hot=hot, adjacent=adjacent
     fixed_data[hot] = 0.0
 
     ; compute median to use in case of large clusters of hot pixels
-    pos = where(fixed_data gt 0)
-    med = median(fixed_data[pos])
+    pos = where(fixed_data gt 0, count)
+    case count of
+      0: med = 0.0   ; TODO: not sure what is correct here
+      1: med = fixed_data[pos]
+      else: med = median(fixed_data[pos])
+    endcase
     ; compute array for filling hot pixels, excluding zeros
     data_fill = convol(fixed_data, kernel, /edge_truncate, /normalize, $
                        invalid=0.0, missing=med)
