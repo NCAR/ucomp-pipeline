@@ -665,4 +665,7 @@
 
 - fix for hot pixel correction
 
-#### 1.0.5
+#### 1.0.5 [Apr 15, 2024]
+
+- more epoch updates for the eclipse data
+- new program synonym names
