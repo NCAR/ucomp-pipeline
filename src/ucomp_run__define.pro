@@ -28,6 +28,8 @@
 ;     the given files
 ;   numsum : out, optional, type=lonarr
 ;     set to a named variable to retrieve the NUMSUM for the given files
+;   no_skip : in, optional, type=boolean
+;     set to not skip any files, even if marked do-not-process
 ;-
 pro ucomp_run::make_raw_inventory, raw_files, $
                                    n_extensions=n_extensions, $
@@ -36,7 +38,8 @@ pro ucomp_run::make_raw_inventory, raw_files, $
                                    gain_modes=gain_modes, $
                                    wave_regions=wave_regions, $
                                    n_points=n_points, $
-                                   numsum=numsum
+                                   numsum=numsum, $
+                                   no_skip=no_skip
   compile_opt strictarr
 
   self->getProperty, logger_name=logger_name
@@ -65,7 +68,7 @@ pro ucomp_run::make_raw_inventory, raw_files, $
   for f = 0L, n_raw_files - 1L do begin
     basename = file_basename(_raw_files[f])
     dt = strmid(basename, 0, 15)
-    if (~self->epoch('process', datetime=dt)) then begin
+    if (~keyword_set(no_skip) && ~self->epoch('process', datetime=dt)) then begin
       mg_log, 'skipping %s', dt, name=logger_name, /debug
       continue
     endif

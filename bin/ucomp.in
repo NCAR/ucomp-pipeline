@@ -1118,6 +1118,11 @@ def clearday(args):
     notify_completed(args, "clear day")
 
 
+def distort(args):
+    launch_processes(args, "ucomp_distort_wrapper")
+    notify_completed(args, "distort")
+
+
 def regression(args):
     launch_processes(args, "ucomp_regression_wrapper")
     notify_completed(args, "regression")
@@ -1467,7 +1472,19 @@ if __name__ == "__main__":
     rt_parser.set_defaults(func=process_rt, parser=rt_parser)
     cal_parser.set_defaults(func=process_cal, parser=cal_parser)
     reprocess_parser.set_defaults(func=reprocess, parser=reprocess_parser)
-    clearday_parser.set_defaults(func=clearday, parser=reprocess_parser)
+    clearday_parser.set_defaults(func=clearday, parser=clearday_parser)
+
+    distort_parser = subparsers.add_parser("distort",
+        help="apply distortion to files")
+    distort_parser.add_argument("-f", "--flags", type=str, help=flags_help,
+        default="latest")
+    distort_parser.add_argument("--no-wait", action="store_true",
+        help=nowait_help)
+    distort_parser.add_argument("--verbose", action="store_true",
+        help="set to show more information on launch")
+    distort_parser.add_argument("dates", type=str, nargs="*", help=date_help,
+        metavar="date-expr")
+    distort_parser.set_defaults(func=distort, parser=distort_parser)
 
     # archive sub-command
     archive_parser = subparsers.add_parser("archive",

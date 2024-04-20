@@ -6,8 +6,10 @@
 ; :Keywords:
 ;   run : in, required, type=object
 ;     KCor run object
+;   no_skip : in, optional, type=boolean
+;     set to not skip any files, even if marked do-not-process
 ;-
-pro ucomp_make_raw_inventory, run=run
+pro ucomp_make_raw_inventory, run=run, no_skip=no_skip
   compile_opt strictarr
 
   process_dir = filepath(run.date, $
@@ -21,7 +23,8 @@ pro ucomp_make_raw_inventory, run=run
                            gain_modes=gain_modes, $
                            wave_regions=wave_regions, $
                            n_points=n_points, $
-                           numsum=numsum
+                           numsum=numsum, $
+                           no_skip=no_skip
 
   ; make a new catalog file
   catalog_filename = filepath(string(run.date, format='(%"%s.ucomp.catalog.txt")'), $
