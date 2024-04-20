@@ -68,9 +68,6 @@ pro ucomp_l2_file, filename, run=run
   date_obs = ucomp_getpar(primary_header, 'DATE-OBS')
   wave_region = ucomp_getpar(primary_header, 'FILTER')
 
-  ; find center wavelength
-  center_index = n_wavelengths / 2L
-
   wavelengths = fltarr(n_wavelengths)
   for w = 0L, n_wavelengths - 1L do begin
     wavelengths[w] = ucomp_getpar(ext_headers[w], 'WAVELNG')
@@ -80,9 +77,29 @@ pro ucomp_l2_file, filename, run=run
   p_angle         = ucomp_getpar(primary_header, 'SOLAR_P0')
   occulter_radius = ucomp_getpar(primary_header, 'RADIUS')
 
-  intensity_blue   = reform(ext_data[*, *, 0, center_index - 1])
+  ; TODO: need to specify wave region dependent wavelengths to find the closest
+  ; band to instead of choosing the band on either side of the center; we
+  ; already specify center_wavelength for each wave_region, need wing_offset
+  ; as well, then the three bands to find would be:
+  ;
+  ;   1. center_wavelength - wing_offset
+  ;   2. center_wavelength
+  ;   3. center_wavelength + wing_offset
+
+  center_wavelength = run->line(wave_region, 'center_wavelength')
+  wing_offset = run->line(wave_region, 'wing_offset')
+
+  !null = min(abs(wavelengths - (center_wavelength - wing_offset)), blue_index)
+  !null = min(abs(wavelengths - center_wavelength), center_index)
+  !null = min(abs(wavelengths - (center_wavelength + wing_offset)), red_index)
+
+  mg_log, 'indices in %d wavelengths, blue: %d, center: %d, red: %d', $
+          n_wavelengths, blue_index, center_index, red_index, $
+          name=run.logger_name, /debug
+
+  intensity_blue   = reform(ext_data[*, *, 0, blue_index])
   intensity_center = reform(ext_data[*, *, 0, center_index])
-  intensity_red    = reform(ext_data[*, *, 0, center_index + 1])
+  intensity_red    = reform(ext_data[*, *, 0, red_index])
 
   summed_intensity = ucomp_integrate(reform(ext_data[*, *, 0, *]))
   summed_q         = ucomp_integrate(reform(ext_data[*, *, 1, *]))
@@ -92,6 +109,8 @@ pro ucomp_l2_file, filename, run=run
 
   d_lambda = wavelengths[center_index] - wavelengths[center_index - 1]
 
+  save_fit = 0B
+
   ucomp_analytic_gauss_fit, intensity_blue, $
                             intensity_center, $
                             intensity_red, $
@@ -99,6 +118,25 @@ pro ucomp_l2_file, filename, run=run
                             doppler_shift=doppler_shift, $
                             line_width=line_width, $
                             peak_intensity=peak_intensity
+
+  perform_gauss_fit = (n_wavelengths gt 3L) && run->line(wave_region, 'gauss_fit')
+  mg_log, 'perform Guassian fit: %s, n_wavelengths: %d, gauss_fit: %s', $
+          perform_gauss_fit ? 'YES' : 'NO', $
+          n_wavelengths, $
+          run->line(wave_region, 'gauss_fit') ? 'YES' : 'NO', $
+          name=run.logger_name, /debug
+  if (perform_gauss_fit) then begin
+    all_intensities = reform(ext_data[*, *, 0, *])
+    save_fit = 1B
+    ucomp_gauss_fit, all_intensities, $
+                     wavelengths, $
+                     center_wavelength, $
+                     doppler_shift=fit_doppler_shift, $
+                     line_width=fit_line_width, $
+                     peak_intensity=fit_peak_intensity, $
+                     coefficients=fit_coefficients, $
+                     chisq=fit_chisq
+  endif
 
   c = 299792.458D
 
@@ -174,8 +212,6 @@ pro ucomp_l2_file, filename, run=run
       radial_azimuth[outside_mask_indices]            = !values.f_nan
     endif
   endif
-
-  center_wavelength = run->line(wave_region, 'center_wavelength')
 
   x = rebin(reform(findgen(dims[0]) - (dims[0] - 1.0) / 2.0, dims[0], 1), dims[0], dims[1])
 
@@ -450,6 +486,56 @@ pro ucomp_l2_file, filename, run=run
                       ext_comment='azimuth with respect to radial direction', $
                       /no_abort, message=error_msg
     if (error_msg ne '') then message, error_msg
+  endif
+
+  if (save_fit) then begin
+    ucomp_fits_write, fcb, $
+                      float(fit_peak_intensity), $
+                      header, $
+                      extname='Fit peak intensity', $
+                      ext_comment='Fit peak intensity', $
+                      /no_abort, message=error_msg
+    if (error_msg ne '') then message, error_msg
+
+    ; convert Doppler shift to velocity [km/s]
+    fit_doppler_shift *= c / mean(wavelengths)
+
+    ucomp_fits_write, fcb, $
+                      float(fit_doppler_shift), $
+                      header, $
+                      extname='Fit LOS velocity', $
+                      ext_comment='Doppler velocity from Gaussian fit', $
+                      /no_abort, message=error_msg
+    if (error_msg ne '') then message, error_msg
+
+    ; convert line width to velocity [km/s]
+    ; TODO: I don't think I need the FWHM factor here
+    fit_line_width *= c / mean(wavelengths) ;* run->epoch('fwhm_factor')
+
+    ucomp_fits_write, fcb, $
+                      float(fit_line_width), $
+                      header, $
+                      extname='Fit line width (FWHM)', $
+                      ext_comment='FWHM from Gaussian fit', $
+                      /no_abort, message=error_msg
+    if (error_msg ne '') then message, error_msg
+
+    ucomp_fits_write, fcb, $
+                      float(fit_coefficients), $
+                      header, $
+                      extname='Fit coefficients', $
+                      ext_comment='Coefficients of Gaussian fit by pixel', $
+                      /no_abort, message=error_msg
+    if (error_msg ne '') then message, error_msg
+
+    ucomp_fits_write, fcb, $
+                      float(fit_chisq), $
+                      header, $
+                      extname='Fit chi-squared', $
+                      ext_comment='Chi-squared of Gaussian fit by pixel', $
+                      /no_abort, message=error_msg
+    if (error_msg ne '') then message, error_msg
+
   endif
 
   fits_close, fcb

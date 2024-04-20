@@ -671,3 +671,5 @@
 - new program synonym names
 
 #### 1.0.6
+
+- more epoch updates for the eclipse data
