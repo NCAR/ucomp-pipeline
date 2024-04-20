@@ -565,6 +565,8 @@ def report_header_differences(header_differences):
 
 
 def report_data_differences(data_differences):
+    if data_differences is None:
+        return(True, "")
     is_same = data_differences.identical
     diffs = data_differences.report(indent=1)
     return(is_same, diffs)
