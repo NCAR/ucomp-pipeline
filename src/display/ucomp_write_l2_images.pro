@@ -46,6 +46,8 @@
 ;   occulter_radius : in, optional, type=float
 ;     occulter radius in pixels; if present, mask the occulter in the output
 ;     image
+;   thumbnail : in, optional, type=boolean
+;     set to produce the thumbnail images for the website
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
@@ -73,6 +75,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                            p_angle=p_angle, $
                            occulter_radius=occulter_radius, $
 
+                           thumbnail=thumbnail, $
                            run=run
   compile_opt strictarr
 
@@ -139,6 +142,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                                             name='Enhanced intensity', $
                                                             reduce_factor=reduce_factor, $
                                                             /no_wave_region_annotation, $
+                                                            /no_mlso_annotation, $
                                                             run=run)
 
   peak_intensity_dashboard = ucomp_display_image(wave_region, intensity_center, $
@@ -146,6 +150,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                                  name='Peak Intensity', $
                                                  reduce_factor=reduce_factor, $
                                                  /no_wave_region_annotation, $
+                                                 /no_mlso_annotation, $
                                                  run=run)
 
   doppler_shift_dashboard = ucomp_display_image(wave_region, doppler_shift, $
@@ -153,6 +158,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                                 name='LOS velocity [km/s]', $
                                                 reduce_factor=reduce_factor, $
                                                 /no_wave_region_annotation, $
+                                                /no_mlso_annotation, $
                                                 run=run)
 
   line_width_dashboard = ucomp_display_image(wave_region, line_width, $
@@ -160,6 +166,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                              name='Line width (FWHM) [km/s]', $
                                              reduce_factor=reduce_factor, $
                                              /no_wave_region_annotation, $
+                                             /no_mlso_annotation, $
                                              run=run)
 
   if (keyword_set(write_polarization)) then begin
@@ -168,6 +175,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                                      name='Weighted average I', $
                                                      reduce_factor=reduce_factor, $
                                                      /no_wave_region_annotation, $
+                                                     /no_mlso_annotation, $
                                                      run=run)
 
     summed_q_i_dashboard = ucomp_display_image(wave_region, summed_q_i, $
@@ -175,6 +183,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                                name='Weighted average Q / I', $
                                                reduce_factor=reduce_factor, $
                                                /no_wave_region_annotation, $
+                                               /no_mlso_annotation, $
                                                run=run)
 
     summed_u_i_dashboard = ucomp_display_image(wave_region, summed_u_i, $
@@ -182,6 +191,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                                name='Weighted average U / I', $
                                                reduce_factor=reduce_factor, $
                                                /no_wave_region_annotation, $
+                                               /no_mlso_annotation, $
                                                run=run)
 
     summed_linpol_i_dashboard = ucomp_display_image(wave_region, summed_linpol_i, $
@@ -189,6 +199,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                                     name='Weighted average log!I10!N(L / I)', $
                                                     reduce_factor=reduce_factor, $
                                                     /no_wave_region_annotation, $
+                                                    /no_mlso_annotation, $
                                                     run=run)
 
     azimuth_dashboard = ucomp_display_image(wave_region, azimuth, $
@@ -196,6 +207,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                             name='Weight average azimuth [deg]', $
                                             reduce_factor=reduce_factor, $
                                             /no_wave_region_annotation, $
+                                            /no_mlso_annotation, $
                                             run=run)
 
     radial_azimuth_dashboard = ucomp_display_image(wave_region, radial_azimuth, $
@@ -203,6 +215,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                                    name='Weighted average radial azimuth [deg]', $
                                                    reduce_factor=reduce_factor, $
                                                    /no_wave_region_annotation, $
+                                                   /no_mlso_annotation, $
                                                    run=run)
   end
 
@@ -246,16 +259,26 @@ pro ucomp_write_l2_images, quicklook_filename, $
   basename = file_basename(quicklook_filename, '.png')
   base_filename = filepath(basename, root=file_dirname(quicklook_filename))
 
-  write_png, base_filename + '.all.png', dashboard_image
-  mg_log, 'wrote dashboard PNG', name=run.logger_name, /debug
+  if (~keyword_set(thumbnail)) then begin
+    write_png, base_filename + '.all.png', dashboard_image
+    mg_log, 'wrote dashboard PNG', name=run.logger_name, /debug
+  endif
+
+  reduce_factor = keyword_set(thumbnail) ? 2L : 1L
+  suffix = keyword_set(thumbnail) ? '_cropped.png' : '.png'
+  if (keyword_set(thumbnail)) then datetime = !null
 
   intensity_center_display = ucomp_display_image(wave_region, intensity_center, $
                                                  type='intensity', $
                                                  name='Center wavelength intensity', $
-                                                 reduce_factor=1, $
+                                                 reduce_factor=reduce_factor, $
+                                                 no_wave_region_annotation=keyword_set(thumbnail), $
+                                                 no_mlso_annotation=keyword_set(thumbnail), $
+                                                 no_displayparams_annotation=keyword_set(thumbnail), $
                                                  datetime=datetime, $
                                                  run=run)
-  intensity_center_filename = string(base_filename, format='%s.center_intensity.png')
+  intensity_center_filename = string(base_filename, suffix, $
+                                     format='%s.center_intensity%s')
   write_png, intensity_center_filename, intensity_center_display
   mg_log, 'wrote center wavelength I PNG', name=run.logger_name, /debug
 
@@ -263,40 +286,56 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                                           enhanced_intensity_center, $
                                                           type='intensity', $
                                                           name='Enhanced intensity', $
-                                                          reduce_factor=1, $
+                                                          reduce_factor=reduce_factor, $
+                                                          no_wave_region_annotation=keyword_set(thumbnail), $
+                                                          no_mlso_annotation=keyword_set(thumbnail), $
+                                                          no_displayparams_annotation=keyword_set(thumbnail), $
                                                           datetime=datetime, $
                                                           run=run)
-  enhanced_intensity_filename = string(base_filename, format='%s.enhanced_intensity.png')
+  enhanced_intensity_filename = string(base_filename, suffix, $
+                                       format='%s.enhanced_intensity%s')
   write_png, enhanced_intensity_filename, enhanced_intensity_center_display
   mg_log, 'wrote enhanced intensity PNG', name=run.logger_name, /debug
 
   peak_intensity_display = ucomp_display_image(wave_region, intensity_center, $
                                                type='intensity', $
                                                name='Peak Intensity', $
-                                               reduce_factor=1, $
+                                               reduce_factor=reduce_factor, $
+                                               no_wave_region_annotation=keyword_set(thumbnail), $
+                                               no_mlso_annotation=keyword_set(thumbnail), $
+                                               no_displayparams_annotation=keyword_set(thumbnail), $
                                                datetime=datetime, $
                                                run=run)
-  peak_intensity_filename = string(base_filename, format='%s.peak_intensity.png')
+  peak_intensity_filename = string(base_filename, suffix, $
+                                   format='%s.peak_intensity%s')
   write_png, peak_intensity_filename, peak_intensity_display
   mg_log, 'wrote peak intensity PNG', name=run.logger_name, /debug
 
   doppler_shift_display = ucomp_display_image(wave_region, doppler_shift, $
                                               type='doppler', $
                                               name='LOS velocity [km/s]', $
-                                              reduce_factor=1, $
+                                              reduce_factor=reduce_factor, $
+                                              no_wave_region_annotation=keyword_set(thumbnail), $
+                                              no_mlso_annotation=keyword_set(thumbnail), $
+                                              no_displayparams_annotation=keyword_set(thumbnail), $
                                               datetime=datetime, $
                                               run=run)
-  doppler_shift_filename = string(base_filename, format='%s.los_velocity.png')
+  doppler_shift_filename = string(base_filename, suffix, $
+                                  format='%s.los_velocity%s')
   write_png, doppler_shift_filename, doppler_shift_display
   mg_log, 'wrote LOS velocity PNG', name=run.logger_name, /debug
 
   line_width_display = ucomp_display_image(wave_region, line_width, $
                                            type='line_width', $
                                            name='Line width (FWHM) [km/s]', $
-                                           reduce_factor=1, $
+                                           reduce_factor=reduce_factor, $
+                                           no_wave_region_annotation=keyword_set(thumbnail), $
+                                           no_mlso_annotation=keyword_set(thumbnail), $
+                                           no_displayparams_annotation=keyword_set(thumbnail), $
                                            datetime=datetime, $
                                            run=run)
-  line_width_filename = string(base_filename, format='%s.line_width.png')
+  line_width_filename = string(base_filename, suffix, $
+                               format='%s.line_width%s')
   write_png, line_width_filename, line_width_display
   mg_log, 'wrote line width PNG', name=run.logger_name, /debug
 
@@ -306,10 +345,14 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                                    summed_intensity, $
                                                    type='intensity', $
                                                    name='Weighted average I', $
-                                                   reduce_factor=1, $
+                                                   reduce_factor=reduce_factor, $
+                                                   no_wave_region_annotation=keyword_set(thumbnail), $
+                                                   no_mlso_annotation=keyword_set(thumbnail), $
+                                                   no_displayparams_annotation=keyword_set(thumbnail), $
                                                    datetime=datetime, $
                                                    run=run)
-    summed_intensity_filename = string(base_filename, format='%s.weighted_average_intensity.png')
+    summed_intensity_filename = string(base_filename, suffix, $
+                                       format='%s.weighted_average_intensity%s')
     write_png, summed_intensity_filename, summed_intensity_display
     mg_log, 'wrote weighted average I PNG', name=run.logger_name, /debug
 
@@ -317,10 +360,14 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                              summed_q_i, $
                                              type='quv_i', $
                                              name='Weighted average Q / I', $
-                                             reduce_factor=1, $
+                                             reduce_factor=reduce_factor, $
+                                             no_wave_region_annotation=keyword_set(thumbnail), $
+                                             no_mlso_annotation=keyword_set(thumbnail), $
+                                             no_displayparams_annotation=keyword_set(thumbnail), $
                                              datetime=datetime, $
                                              run=run)
-    summed_q_i_filename = string(base_filename, format='%s.weighted_average_q.png')
+    summed_q_i_filename = string(base_filename, suffix, $
+                                 format='%s.weighted_average_q%s')
     write_png, summed_q_i_filename, summed_q_i_display
     mg_log, 'wrote weighted average Q / I PNG', name=run.logger_name, /debug
 
@@ -328,10 +375,14 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                              summed_u_i, $
                                              type='quv_i', $
                                              name='Weighted average U / I', $
-                                             reduce_factor=1, $
+                                             reduce_factor=reduce_factor, $
+                                             no_wave_region_annotation=keyword_set(thumbnail), $
+                                             no_mlso_annotation=keyword_set(thumbnail), $
+                                             no_displayparams_annotation=keyword_set(thumbnail), $
                                              datetime=datetime, $
                                              run=run)
-    summed_u_i_filename = string(base_filename, format='%s.weighted_average_u.png')
+    summed_u_i_filename = string(base_filename, suffix, $
+                                 format='%s.weighted_average_u%s')
     write_png, summed_u_i_filename, summed_u_i_display
     mg_log, 'wrote weighted average U / I PNG', name=run.logger_name, /debug
 
@@ -339,32 +390,43 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                                   summed_linpol_i, $
                                                   type='linpol', $
                                                   name='Weighted average log!I10!N(L / I)', $
-                                                  reduce_factor=1, $
+                                                  reduce_factor=reduce_factor, $
+                                                  no_wave_region_annotation=keyword_set(thumbnail), $
+                                                  no_mlso_annotation=keyword_set(thumbnail), $
+                                                  no_displayparams_annotation=keyword_set(thumbnail), $
                                                   datetime=datetime, $
                                                   run=run)
-    summed_linpol_i_filename = string(base_filename, format='%s.weighted_average_linear_polarization.png')
+    summed_linpol_i_filename = string(base_filename, suffix, $
+                                      format='%s.weighted_average_linear_polarization%s')
     write_png, summed_linpol_i_filename, summed_linpol_i_display
     mg_log, 'wrote weighted average L / I PNG', name=run.logger_name, /debug
 
     azimuth_display = ucomp_display_image(wave_region, azimuth, $
                                           type='azimuth', $
                                           name='Azimuth [deg]', $
-                                          reduce_factor=1, $
+                                          reduce_factor=reduce_factor, $
+                                          no_wave_region_annotation=keyword_set(thumbnail), $
+                                          no_mlso_annotation=keyword_set(thumbnail), $
+                                          no_displayparams_annotation=keyword_set(thumbnail), $
                                           datetime=datetime, $
                                           run=run)
-    azimuth_filename = string(base_filename, format='%s.weighted_average_azimuth.png')
+    azimuth_filename = string(base_filename, suffix, $
+                              format='%s.weighted_average_azimuth%s')
     write_png, azimuth_filename, azimuth_display
     mg_log, 'wrote azimuth PNG', name=run.logger_name, /debug
 
     radial_azimuth_display = ucomp_display_image(wave_region, radial_azimuth, $
                                                  type='radial_azimuth', $
                                                  name='Radial azimuth [deg]', $
-                                                 reduce_factor=1, $
+                                                 reduce_factor=reduce_factor, $
+                                                 no_wave_region_annotation=keyword_set(thumbnail), $
+                                                 no_mlso_annotation=keyword_set(thumbnail), $
+                                                 no_displayparams_annotation=keyword_set(thumbnail), $
                                                  datetime=datetime, $
                                                  run=run)
-    radial_azimuth_filename = string(base_filename, format='%s.weighted_average_radial_azimuth.png')
+    radial_azimuth_filename = string(base_filename, suffix, $
+                                     format='%s.weighted_average_radial_azimuth%s')
     write_png, radial_azimuth_filename, radial_azimuth_display
     mg_log, 'wrote radial azimuth PNG', name=run.logger_name, /debug
-
   endif
 end
