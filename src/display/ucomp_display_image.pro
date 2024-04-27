@@ -33,6 +33,8 @@ function ucomp_display_image, wave_region, im, $
                               reduce_factor=reduce_factor, $
                               datetime=datetime, $
                               no_wave_region_annotation=no_wave_region_annotation, $
+                              no_mlso_annotation=no_mlso_annotation, $
+                              no_displayparams_annotation=no_displayparams_annotation, $
                               run=run
   compile_opt strictarr
 
@@ -203,10 +205,20 @@ function ucomp_display_image, wave_region, im, $
 
   tv, scaled_im
 
-  if (~keyword_set(no_wave_region_annotation)) then begin
+  if (n_elements(datetime) eq 0L) then begin
+    title_charsize *= 1.25
+  endif
+
+  if (keyword_set(no_displayparams_annotation)) then begin
+    detail_charsize *= 1.25
+  endif
+
+  if (~keyword_set(no_mlso_annotation)) then begin
     xyouts, 0.5, mlso_height, /normal, alignment=0.5, $
             'MLSO UCoMP', $
             charsize=mlso_charsize, color=text_color, font=font
+  endif
+  if (~keyword_set(no_wave_region_annotation)) then begin
     xyouts, 0.5, ionization_height, /normal, alignment=0.5, $
             string(run->line(wave_region, 'ionization'), $
                    wave_region, $
@@ -239,7 +251,7 @@ function ucomp_display_image, wave_region, im, $
              range=mg_signed_power([display_min, display_max], display_power), $
              divisions=n_divisions, $
              format='(F0.1)', font=font
-  if (~keyword_set(small)) then begin
+  if (~keyword_set(small) && ~keyword_set(no_displayparams_annotation)) then begin
     xyouts, 0.5, display_params_height, /normal, alignment=0.5, $
             ucomp_display_image_params(display_min, $
                                        display_max, $
