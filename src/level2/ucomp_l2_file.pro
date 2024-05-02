@@ -32,10 +32,12 @@
 ;     level 1 file)
 ;
 ; :Keywords:
+;   thumbnail : in optional, type=boolean
+;     set to produce thumbnails as well
 ;   run : in, required, type=object
 ;     UCoMP run object
 ;-
-pro ucomp_l2_file, filename, run=run
+pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   compile_opt strictarr
 
   basename = file_basename(filename)
@@ -586,32 +588,34 @@ pro ucomp_l2_file, filename, run=run
 
                          run=run
 
-  ucomp_write_l2_images, quicklook_filename, $
+  if (keyword_set(thumbnail)) then begin
+    ucomp_write_l2_images, quicklook_filename, $
 
-                         ; dynamics images
-                         intensity_center, $
-                         enhanced_intensity_center, $
-                         peak_intensity, $
-                         doppler_shift, $
-                         line_width_fwhm, $
+                           ; dynamics images
+                           intensity_center, $
+                           enhanced_intensity_center, $
+                           peak_intensity, $
+                           doppler_shift, $
+                           line_width_fwhm, $
 
-                         ; polarization images
-                         summed_intensity, $
-                         summed_q / summed_intensity, $
-                         summed_u / summed_intensity, $
-                         summed_linpol / summed_intensity, $
-                         azimuth, $
-                         radial_azimuth, $
+                           ; polarization images
+                           summed_intensity, $
+                           summed_q / summed_intensity, $
+                           summed_u / summed_intensity, $
+                           summed_linpol / summed_intensity, $
+                           azimuth, $
+                           radial_azimuth, $
 
-                         write_polarization=write_polarization, $
-                         reduce_factor=4L, $
-                         wave_region=wave_region, $
-                         post_angle=post_angle, $
-                         p_angle=p_angle, $
-                         occulter_radius=occulter_radius, $
+                           write_polarization=write_polarization, $
+                           reduce_factor=4L, $
+                           wave_region=wave_region, $
+                           post_angle=post_angle, $
+                           p_angle=p_angle, $
+                           occulter_radius=occulter_radius, $
 
-                         /thumbnail, $
-                         run=run
+                           /thumbnail, $
+                           run=run
+  endif
 
   done:
 end

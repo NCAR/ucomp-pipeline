@@ -265,7 +265,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
   endif
 
   reduce_factor = keyword_set(thumbnail) ? 2L : 1L
-  suffix = keyword_set(thumbnail) ? '_cropped.png' : '.png'
+  suffix = keyword_set(thumbnail) ? '_thumb.png' : '.png'
   if (keyword_set(thumbnail)) then datetime = !null
 
   intensity_center_display = ucomp_display_image(wave_region, intensity_center, $

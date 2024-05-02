@@ -123,6 +123,8 @@ end
 ;     input composite image
 ;
 ; :Keywords:
+;   thumbnail : in, optional, type=boolean
+;     set to use thumbnail annotations, not the full set
 ;   wave_regions : in, required, type=strarr(3)
 ;     array of wave regions corresponding to the channels of the input
 ;     composite image
@@ -133,6 +135,7 @@ end
 ;     `ucomp_run` object
 ;-
 function ucomp_write_composite_image_annotation, im, $
+                                                 thumbnail=thumbnail, $
                                                  wave_regions=wave_regions, $
                                                  run=run
   compile_opt strictarr
@@ -169,57 +172,67 @@ function ucomp_write_composite_image_annotation, im, $
   title_charsize = 1.75
   detail_charsize = 1.2
   line_height = 16 * charsize
-  text_color = 'ffffff'x
 
   mlso_height = 0.62
   date_height = 0.59
   title_height = 0.54
 
-  xyouts, 0.5, mlso_height, /normal, alignment=0.5, $
-          'MLSO UCoMP', $
-          charsize=charsize, color=text_color
-  xyouts, 0.5, date_height, /normal, alignment=0.5, $
-          string(ucomp_decompose_date(run.date), $
-                 format='%s-%s-%s'), $
-          charsize=charsize, color=text_color
+  small_legend_height = 0.475
+  text_color = 'ffffff'x
+
+  if (~keyword_set(thumbnail)) then begin
+    xyouts, 0.5, mlso_height, /normal, alignment=0.5, $
+            'MLSO UCoMP', $
+            charsize=charsize, color=text_color
+    xyouts, 0.5, date_height, /normal, alignment=0.5, $
+            string(ucomp_decompose_date(run.date), $
+                   format='%s-%s-%s'), $
+            charsize=charsize, color=text_color
+  endif
   xyouts, 0.5, title_height, /normal, alignment=0.5, $
           'Daily Temperature Image', $
           charsize=title_charsize, color=text_color
 
-  rgb = ['Red', 'Green', 'Blue']
-  legend = strarr(n_elements(wave_regions) + 1L)
-  for w = 0L, n_elements(wave_regions) - 1L do begin
-    log_temperature_range = run->line(wave_regions[w], 'log_temperature_range')
-    ionization = run->line(wave_regions[w], 'ionization')
-
-    legend[w] = string(rgb[w], wave_regions[w], ionization, log_temperature_range, $
-                       format='%s: %s nm %s, log(Teff) = %0.2f-%0.2f')
-  endfor
-  legend[-1] = 'Teff=effective temperature'
-
-  for i = 0L, n_elements(legend) - 1L do begin
-    xyouts, x_margin, $
-            y_margin + (n_elements(legend) - i - 1L) * line_height, $
-            /device, $
-            legend[i], $
-            charsize=detail_charsize, color=text_color
-  endfor
-
-  note_height = 0.4 * ny
-  if (wave_regions[0] eq '1074') then begin
-    xyouts, nx / 2, note_height, /device, $
-            alignment=0.5, $
-            'Corona coolest in regions colored blue', $
-            charsize=detail_charsize, color=text_color
+  if (keyword_set(thumbnail)) then begin
+    xyouts, 0.5, small_legend_height, /normal, alignment=0.5, $
+            string(wave_regions, format='R: %s nm, G: %s nm, B: %s nm'), $
+            charsize=charsize, color=text_color
   endif else begin
-    xyouts, nx / 2, note_height, /device, $
-            alignment=0.5, $
-            'Corona hottest in regions colored white or red', $
-            charsize=detail_charsize, color=text_color
-    xyouts, nx / 2, note_height - line_height, /device, $
-            alignment=0.5, $
-            'Corona coolest in regions colored blue', $
-            charsize=detail_charsize, color=text_color
+    rgb = ['Red', 'Green', 'Blue']
+    legend = strarr(n_elements(wave_regions) + 1L)
+    for w = 0L, n_elements(wave_regions) - 1L do begin
+      log_temperature_range = run->line(wave_regions[w], 'log_temperature_range')
+      ionization = run->line(wave_regions[w], 'ionization')
+
+      legend[w] = string(rgb[w], wave_regions[w], ionization, log_temperature_range, $
+                         format='%s: %s nm %s, log(Teff) = %0.2f-%0.2f')
+    endfor
+    legend[-1] = 'Teff=effective temperature'
+
+    for i = 0L, n_elements(legend) - 1L do begin
+      xyouts, x_margin, $
+              y_margin + (n_elements(legend) - i - 1L) * line_height, $
+              /device, $
+              legend[i], $
+              charsize=detail_charsize, color=text_color
+    endfor
+
+    note_height = 0.4 * ny
+    if (wave_regions[0] eq '1074') then begin
+      xyouts, nx / 2, note_height, /device, $
+              alignment=0.5, $
+              'Corona coolest in regions colored blue', $
+              charsize=detail_charsize, color=text_color
+    endif else begin
+      xyouts, nx / 2, note_height, /device, $
+              alignment=0.5, $
+              'Corona hottest in regions colored white or red', $
+              charsize=detail_charsize, color=text_color
+      xyouts, nx / 2, note_height - line_height, /device, $
+              alignment=0.5, $
+              'Corona coolest in regions colored blue', $
+              charsize=detail_charsize, color=text_color
+    endelse
   endelse
 
   annotated_image = tvrd(true=1)
@@ -240,10 +253,12 @@ end
 ;     three level 1 filenames
 ;
 ; :Keywords:
+;   thumbnail : in, optional, type=boolean
+;     set to indicate to create a thumbnail image
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-pro ucomp_write_composite_image, filenames, run=run
+pro ucomp_write_composite_image, filenames, thumbnail=thumbnail, run=run
   compile_opt strictarr
 
   channels = ['R', 'G', 'B']
@@ -287,12 +302,23 @@ pro ucomp_write_composite_image, filenames, run=run
   im[1, *, *] = green
   im[2, *, *] = blue
 
+  if (keyword_set(thumbnail)) then begin
+    im = rebin(im, 3, dims[0] / 2L, dims[1] / 2L)
+  endif
+
   annotated_image = ucomp_write_composite_image_annotation(im, $
+                                                           thumbnail=thumbnail, $
                                                            wave_regions=wave_regions, $
                                                            run=run)
 
-  output_basename = string(run.date, wave_regions, $
-                           format='%s.ucomp.%s-%s-%s.daily_temperature.png')
+  if (keyword_set(thumbnail)) then begin
+    output_basename = string(run.date, wave_regions, $
+                             format='%s.ucomp.%s-%s-%s.daily_temperature_thumb.png')
+  endif else begin
+    output_basename = string(run.date, wave_regions, $
+                             format='%s.ucomp.%s-%s-%s.daily_temperature.png')
+  endelse
+
   output_filename = filepath(output_basename, $
                              subdir=[run.date, 'level2'], $
                              root=run->config('processing/basedir'))
@@ -306,7 +332,7 @@ end
 ; main-level example program
 
 ;date = '20211003'
-date = '20220901'
+date = '20240409'
 
 config_basename = 'ucomp.latest.cfg'
 config_filename = filepath(config_basename, $
@@ -319,14 +345,14 @@ mean_basenames = date + '.ucomp.' + wave_regions + '.l1.synoptic.mean.fts'
 mean_filenames = filepath(mean_basenames, $
                           subdir=[date, 'level2'], $
                           root=run->config('processing/basedir'))
-ucomp_write_composite_image, mean_filenames, run=run
+ucomp_write_composite_image, mean_filenames, /thumbnail, run=run
 
-wave_regions = ['706', '1074', '789']
-mean_basenames = date + '.ucomp.' + wave_regions + '.l1.synoptic.mean.fts'
-mean_filenames = filepath(mean_basenames, $
-                          subdir=[date, 'level2'], $
-                          root=run->config('processing/basedir'))
-ucomp_write_composite_image, mean_filenames, run=run
+; wave_regions = ['706', '1074', '789']
+; mean_basenames = date + '.ucomp.' + wave_regions + '.l1.synoptic.mean.fts'
+; mean_filenames = filepath(mean_basenames, $
+;                           subdir=[date, 'level2'], $
+;                           root=run->config('processing/basedir'))
+; ucomp_write_composite_image, mean_filenames, run=run
 
 obj_destroy, run
 
