@@ -160,23 +160,18 @@ pro ucomp_quicklooks_publish, run=run
                     name=run.logger_name, /info
           endelse
 
+          l2_dynamics_products = ['center_intensity', $
+                                  'enhanced_intensity', $
+                                  'peak_intensity', $
+                                  'line_width', $
+                                  'los_velocity', $
+                                  'weighted_average_azimuth', $
+                                  'weighted_average_intensity', $
+                                  'weighted_average_radial_azimuth']
           l2_dynamics_types = ['all.png', $
-                               'center_intensity.png', $
-                               'center_intensity.mp4', $
-                               'enhanced_intensity.png', $
-                               'enhanced_intensity.mp4', $
-                               'peak_intensity.png', $
-                               'peak_intensity.mp4', $
-                               'line_width.png', $
-                               'line_width.mp4', $
-                               'los_velocity.png', $
-                               'los_velocity.mp4', $
-                               'weighted_average_azimuth.png', $
-                               'weighted_average_azimuth.mp4', $
-                               'weighted_average_intensity.png', $
-                               'weighted_average_intensity.mp4', $
-                               'weighted_average_radial_azimuth.png', $
-                               'weighted_average_radial_azimuth.mp4']
+                               l2_dynamics_products + '.png', $
+                               l2_dynamics_products + '_thumb.png', $
+                               l2_dynamics_products + '.mp4']
           for d = 0L, n_elements(l2_dynamics_types) - 1L do begin
             glob = string(wave_regions[w], l2_dynamics_types[d], $
                           format='*.ucomp.%s.l2.%s')
@@ -222,6 +217,14 @@ pro ucomp_quicklooks_publish, run=run
         quicklook_files_list->add, map_filename
         n_published_temperature_maps += 1L
       endif
+
+      map_thumb_basename = string(run.date, composite_wave_regions, $
+                                  format='%s.ucomp.%s-%s-%s.daily_temperature_thumb.png')
+      map_thumb_filename = filepath(map_thumb_basename, root=l2_dir)
+      if (file_test(map_thumb_filename, /regular)) then begin
+        quicklook_files_list->add, map_thumb_filename
+      endif
+
     endif
   endfor
   if (n_published_temperature_maps gt 0L) then begin
@@ -280,6 +283,12 @@ pro ucomp_quicklooks_publish, run=run
 
   ; copy individual files to fullres directory
   file_copy, quicklook_files, fullres_dir, /overwrite
+
+  ; remove thumbnail files, they only go in the fullres, not the zip file
+  !null = where(strmatch(quicklook_files, '*_thumb.png'), /null, $
+                complement=nonthumbnail_indices, ncomplement=n_nonthumbnail)
+  n_quicklook_files = n_nonthumbnail
+  quicklook_files = quicklook_files[nonthumbnail_indices]
 
   ; create gzip file
   gzip_basename = string(run.date, format='%s.ucomp.quicklooks.zip')
