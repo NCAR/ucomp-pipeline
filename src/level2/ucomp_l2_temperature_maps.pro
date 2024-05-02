@@ -52,5 +52,6 @@ pro ucomp_l2_temperature_maps, run=run
     if (~valid_map) then continue
 
     ucomp_write_composite_image, mean_filenames, run=run
+    ucomp_write_composite_image, mean_filenames, /thumbnail, run=run
   endfor
 end

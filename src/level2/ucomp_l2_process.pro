@@ -56,7 +56,8 @@ pro ucomp_l2_process, wave_region, run=run
 
     if (methods[m] eq 'sigma') then continue
     for f = 0L, n_elements(average_filenames) - 1L do begin
-      ucomp_l2_file_step, 'ucomp_l2_file', average_filenames[f], run=run
+      ucomp_l2_file_step, 'ucomp_l2_file', average_filenames[f], $
+                          /thumbnail, run=run
     endfor
   endfor
 end
