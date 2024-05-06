@@ -79,28 +79,47 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   p_angle         = ucomp_getpar(primary_header, 'SOLAR_P0')
   occulter_radius = ucomp_getpar(primary_header, 'RADIUS')
 
-  ; TODO: need to specify wave region dependent wavelengths to find the closest
+  ; We have specified wave region dependent wavelengths to find the closest
   ; band to instead of choosing the band on either side of the center; we
-  ; already specify center_wavelength for each wave_region, need wing_offset
-  ; as well, then the three bands to find would be:
+  ; already specify center_wavelength for each wave_region, use wing_offset
+  ; to specify the three bands:
   ;
-  ;   1. center_wavelength - wing_offset
-  ;   2. center_wavelength
-  ;   3. center_wavelength + wing_offset
+  ;   1. blue: closest to center_wavelength - wing_offset
+  ;   2. center: closest to center_wavelength
+  ;   3. red: closest to center_wavelength + wing_offset
+  ;
+  ; If no wing_offset specified for a wave region, just use the center three
+  ; wavelengths. Discussed in #263.
 
   center_wavelength = run->line(wave_region, 'center_wavelength')
   wing_offset = run->line(wave_region, 'wing_offset')
 
-  !null = min(abs(wavelengths - (center_wavelength - wing_offset)), blue_index)
-  !null = min(abs(wavelengths - center_wavelength), center_index)
-  !null = min(abs(wavelengths - (center_wavelength + wing_offset)), red_index)
+  if (n_elements(wing_offset) gt 0L) then begin
+    ; NOTE: this is naive and assuming that there are not two equally distant
+    ; wavelengths to the preferred spot, for example, if center wavelength is
+    ; 1074.7 with 0.11 wing_offset, and the observed wavelengths were:
+    ;
+    ;   1074.535, 1074.645, 1074.7, 1074.755, 1074.865
+    ;
+    ; Then we might get a tie that is broken arbitrarily that results in
+    ; selecting blue=1074.535 and red=1074.755, depending on floating point
+    ; round off, or always rounding down, or some other arbitrary process.
+
+    !null = min(abs(wavelengths - (center_wavelength - wing_offset)), blue_index)
+    !null = min(abs(wavelengths - center_wavelength), center_index)
+    !null = min(abs(wavelengths - (center_wavelength + wing_offset)), red_index)
+  endif else begin
+    blue_index = n_wavelengths / 2L - 1L
+    center_index = n_wavelengths / 2L
+    red_index = n_wavelengths / 2L + 1L
+  endelse
 
   mg_log, 'indices in %d wavelengths, blue: %d, center: %d, red: %d', $
           n_wavelengths, blue_index, center_index, red_index, $
           name=run.logger_name, /debug
 
-  intensity_blue   = reform(ext_data[*, *, 0, blue_index])
   intensity_center = reform(ext_data[*, *, 0, center_index])
+  intensity_blue   = reform(ext_data[*, *, 0, blue_index])
   intensity_red    = reform(ext_data[*, *, 0, red_index])
 
   summed_intensity = ucomp_integrate(reform(ext_data[*, *, 0, *]))
