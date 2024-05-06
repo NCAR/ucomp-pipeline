@@ -674,3 +674,5 @@
 
 - more epoch updates for the eclipse data
 - thumbnails for the website
+
+#### 1.0.7
