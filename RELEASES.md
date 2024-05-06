@@ -675,4 +675,6 @@
 - more epoch updates for the eclipse data
 - thumbnails for the website
 
-#### 1.0.7
+#### 1.0.7 [May 6, 2024]
+
+- update display min for 637 nm enhanced intensity
