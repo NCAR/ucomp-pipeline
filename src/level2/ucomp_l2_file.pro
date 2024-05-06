@@ -94,7 +94,9 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   center_wavelength = run->line(wave_region, 'center_wavelength')
   wing_offset = run->line(wave_region, 'wing_offset')
 
-  if (n_elements(wing_offset) gt 0L) then begin
+  if (wing_offset gt 0.0) then begin
+    mg_log, 'using %0.2f nm wing offset for analytical Guassian', $
+            wing_offset, name=run.logger_name, /debug
     ; NOTE: this is naive and assuming that there are not two equally distant
     ; wavelengths to the preferred spot, for example, if center wavelength is
     ; 1074.7 with 0.11 wing_offset, and the observed wavelengths were:
@@ -109,6 +111,9 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
     !null = min(abs(wavelengths - center_wavelength), center_index)
     !null = min(abs(wavelengths - (center_wavelength + wing_offset)), red_index)
   endif else begin
+    mg_log, 'using center 3 wavelengths for analytical Guassian', $
+            name=run.logger_name, /debug
+
     blue_index = n_wavelengths / 2L - 1L
     center_index = n_wavelengths / 2L
     red_index = n_wavelengths / 2L + 1L
