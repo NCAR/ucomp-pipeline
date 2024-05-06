@@ -678,3 +678,5 @@
 #### 1.0.7 [May 6, 2024]
 
 - update display min for 637 nm enhanced intensity
+
+#### 1.0.8
