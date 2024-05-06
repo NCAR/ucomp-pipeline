@@ -670,7 +670,7 @@
 - more epoch updates for the eclipse data
 - new program synonym names
 
-#### 1.0.6
+#### 1.0.6 [May 6, 2024]
 
 - more epoch updates for the eclipse data
 - thumbnails for the website
