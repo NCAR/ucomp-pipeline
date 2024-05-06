@@ -1216,6 +1216,8 @@ function ucomp_run::init, date, mode, config_filename, $
                                    subdir=['wave_regions'], $
                                    root=self.resource_root)
     wave_region_options = mgffepochparser(lines_filename, lines_spec_filename)
+    mg_log, 'checking wave region options file: %s', file_basename(lines_filename), $
+            name=logger_name, /debug
     lines_valid = wave_region_options->is_valid(error_msg=error_msg)
     if (~lines_valid) then begin
       mg_log, 'invalid wave region options file: %s', file_basename(lines_filename), $
