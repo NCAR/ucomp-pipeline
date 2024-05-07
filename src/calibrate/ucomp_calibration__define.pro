@@ -293,7 +293,7 @@ pro ucomp_calibration::cache_flats, filenames, $
     raw_files   = strarr(n_flats)
 
     i = 0L
-    for f = 0L, n_elemens(filenames) - 1L do begin
+    for f = 0L, n_elements(filenames) - 1L do begin
       fits_open, filenames[f], fcb
 
       for e = 1L, fcb.nextend - n_index_exts do begin   ; not including the index extensions
