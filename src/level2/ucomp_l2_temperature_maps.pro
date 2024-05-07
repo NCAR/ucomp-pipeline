@@ -38,7 +38,10 @@ pro ucomp_l2_temperature_maps, run=run
         break
       endif
 
+      ; TODO: this chooses the first program, but really should prefer synoptic
+      ; or waves, then the next available
       p = 0L
+
       program_filename = run->convert_program_name(program_names[p])
 
       mean_basename = string(run.date, wave_regions[w], program_filename, method, $

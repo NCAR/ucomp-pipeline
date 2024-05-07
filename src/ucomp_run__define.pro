@@ -223,7 +223,9 @@ function ucomp_run::get_programs, wave_region, count=count
   if (n_files eq 0L) then return, !null
 
   program_names = strarr(n_files)
-  for f = 0L, n_files - 1L do program_names[f] = files[f].program_name
+  for f = 0L, n_files - 1L do begin
+    program_names[f] = files[f].ok ? files[f].program_name : ''
+  endfor
 
   ; remove empty program names
   nonempty_program_indices = where(program_names ne '', n_nonempty_programs)
