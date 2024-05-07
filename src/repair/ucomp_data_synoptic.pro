@@ -15,6 +15,4 @@ pro ucomp_data_synoptic, primary_header, ext_data, ext_headers
   compile_opt strictarr
 
   ucomp_addpar, primary_header, 'OBS_PLAN', 'oldLineFineScan.cbk'
-  date = ucomp_getpar(primary_header, 'DATE-OBS')
-  mg_log, 'changing OBS_PLAN for %s', date, name='ucomp/eod', /debug
 end

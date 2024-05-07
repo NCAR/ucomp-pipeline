@@ -683,4 +683,6 @@
 
 - change OBS_PLAN to a synoptic program for a 20240330 1074 nm file
 
-#### 1.0.9
+#### 1.0.9 [May 7, 2024]
+
+- fix for creating temperature map on 20240330

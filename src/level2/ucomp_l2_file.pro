@@ -107,9 +107,12 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
     ; selecting blue=1074.535 and red=1074.755, depending on floating point
     ; round off, or always rounding down, or some other arbitrary process.
 
-    !null = min(abs(wavelengths - (center_wavelength - wing_offset)), blue_index)
-    !null = min(abs(wavelengths - center_wavelength), center_index)
-    !null = min(abs(wavelengths - (center_wavelength + wing_offset)), red_index)
+    ucomp_find_fit_wavelengths, center_wavelength, $
+                                wing_offset, $
+                                wavelengths, $
+                                blue_index=blue_index, $
+                                center_index=center_index, $
+                                red_index=red_index
   endif else begin
     mg_log, 'using center 3 wavelengths for analytical Guassian', $
             name=run.logger_name, /debug
