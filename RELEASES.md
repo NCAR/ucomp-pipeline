@@ -679,4 +679,6 @@
 
 - update display min for 637 nm enhanced intensity
 
-#### 1.0.8
+#### 1.0.8 [May 7, 2024]
+
+- change OBS_PLAN to a synoptic program for a 20240330 1074 nm file
