@@ -644,21 +644,18 @@ pro ucomp_file::_inventory
   on_error, 2
 
   self.run->setProperty, datetime=strmid(file_basename(self.raw_filename), 0, 15)
+  self.run->getProperty, logger_name=logger_name
 
-  fits_open, self.raw_filename, fcb, /no_abort, message=msg
-  if (msg ne '') then message, msg
+  ucomp_read_raw_data, self.raw_filename, $
+                       primary_header=primary_header, $
+                       ext_headers=ext_headers, $
+                       n_extensions=n_extensions, $
+                       repair_routine=self.run->epoch('raw_data_repair_routine'), $
+                       logger=logger_name
 
-  self.n_extensions = fcb.nextend
+  self.n_extensions = n_extensions
 
-  fits_read, fcb, primary_data, primary_header, exten_no=0, /no_abort, message=msg
-  if (msg ne '') then message, msg
-
-  if (self.n_extensions gt 0L) then begin
-    ; read a representative, test extension header
-    fits_read, fcb, extension_data, extension_header, exten_no=1, $
-               /header_only, /no_abort, message=msg
-    if (msg ne '') then message, msg
-  endif
+  extension_header = ext_headers[0]
 
   filter = ucomp_getpar(primary_header, 'FILTER', found=found)
   if (n_elements(filter) gt 0L && filter ne '') then begin
@@ -772,9 +769,7 @@ pro ucomp_file::_inventory
   endif
 
   for e = 1L, self.n_extensions do begin
-    fits_read, fcb, data, extension_header, exten_no=e, /header_only, $
-               /no_abort, message=error_msg
-    if (error_msg ne '') then message, error_msg
+    extension_header = ext_headers[e - 1L]
 
     if (e eq 1) then self.date_begin = ucomp_getpar(extension_header, 'DATE-BEG')
     if (e eq self.n_extensions) then self.date_end = ucomp_getpar(extension_header, 'DATE-BEG')
@@ -804,7 +799,7 @@ pro ucomp_file::_inventory
     self.n_repeats = self.n_extensions / n_unique_wavelengths / n_cameras
   endif
 
-  fits_close, fcb
+  obj_destroy, ext_headers
 end
 
 
