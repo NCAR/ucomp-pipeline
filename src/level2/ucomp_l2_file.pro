@@ -97,8 +97,11 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
 
   perform_analytic_fit = (red_reference_wavelength gt 0.0) && (blue_reference_wavelength gt 0.0)
   if (perform_analytic_fit) then begin
-    mg_log, 'using %0.2f nm wing offset for analytical Guassian', $
-            wing_offset, name=run.logger_name, /debug
+    mg_log, 'using %0.3f nm-%0.3f nm-%0.3f nm for analytical Guassian', $
+            blue_reference_wavelength, $
+            center_wavelength, $
+            red_reference_wavelength, $
+            name=run.logger_name, /debug
     ; NOTE: this is naive and assuming that there are not two equally distant
     ; wavelengths to the preferred spot, for example, if center wavelength is
     ; 1074.7 with 0.11 wing_offset, and the observed wavelengths were:
