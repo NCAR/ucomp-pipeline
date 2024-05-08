@@ -91,10 +91,12 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   ; If no wing_offset specified for a wave region, just use the center three
   ; wavelengths. Discussed in #263.
 
-  center_wavelength = run->line(wave_region, 'center_wavelength')
-  wing_offset = run->line(wave_region, 'wing_offset')
+  blue_reference_wavelength = run->line(wave_region, 'blue_reference_wavelength')
+  center_wavelength         = run->line(wave_region, 'center_wavelength')
+  red_reference_wavelength  = run->line(wave_region, 'red_reference_wavelength')
 
-  if (wing_offset gt 0.0) then begin
+  perform_analytic_fit = (red_reference_wavelength gt 0.0) && (blue_reference_wavelength gt 0.0)
+  if (perform_analytic_fit) then begin
     mg_log, 'using %0.2f nm wing offset for analytical Guassian', $
             wing_offset, name=run.logger_name, /debug
     ; NOTE: this is naive and assuming that there are not two equally distant
@@ -107,8 +109,9 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
     ; selecting blue=1074.535 and red=1074.755, depending on floating point
     ; round off, or always rounding down, or some other arbitrary process.
 
-    ucomp_find_fit_wavelengths, center_wavelength, $
-                                wing_offset, $
+    ucomp_find_fit_wavelengths, blue_reference_wavelength, $
+                                center_wavelength, $
+                                red_reference_wavelength, $
                                 wavelengths, $
                                 blue_index=blue_index, $
                                 center_index=center_index, $
@@ -155,6 +158,8 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
           run->line(wave_region, 'gauss_fit') ? 'YES' : 'NO', $
           name=run.logger_name, /debug
   if (perform_gauss_fit) then begin
+    ; TODO: make sure to geometric mask and intensity threshold mask before
+    ; doing this
     all_intensities = reform(ext_data[*, *, 0, *])
     save_fit = 1B
     ucomp_gauss_fit, all_intensities, $
@@ -185,6 +190,8 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
 
   azimuth = ucomp_azimuth(summed_q, summed_u, radial_azimuth=radial_azimuth)
 
+  ; TODO: use the intensity checks below above to mask the Gaussian fit
+  ; calculations
   !null = where(intensity_center gt run->line(wave_region, 'noise_intensity_center_min') $
                   and intensity_center lt run->line(wave_region, 'noise_intensity_center_max') $
                   and intensity_blue gt run->line(wave_region, 'noise_intensity_blue_min') $
