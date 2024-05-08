@@ -65,12 +65,12 @@ pro ucomp_l1_continuum_subtraction, file, $
   ; ID for each extension
   ext_ids = string(exptime, format='(%"%0.1f")') $
               + '-' + strtrim(fix(onband), 2) $
-              + '-' + string(wavelength, format='(%"%0.2f")')
+              + '-' + string(wavelength, format='(%"%0.3f")')
 
   ; ID for match
   match_ids = string(exptime, format='(%"%0.1f")') $
                 + '-' + strtrim(fix(onband eq 0), 2) $   ; opposite ONBAND
-                + '-' + string(wavelength, format='(%"%0.2f")')
+                + '-' + string(wavelength, format='(%"%0.3f")')
 
   n_matches = mg_match(ext_ids, match_ids, b_matches=match_indices)
   if (n_matches ne n_extensions) then begin

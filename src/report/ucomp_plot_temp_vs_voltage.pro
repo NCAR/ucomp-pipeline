@@ -58,7 +58,7 @@ pro ucomp_plot_temp_vs_voltage, filename, wave_region, run=run
         || total(finite(v_lcvr3), /integer) gt 0L) then begin
     mg_range_plot, t_lcvr3, v_lcvr3, $
                    title=string(center_wavelength, pdate, $
-                                format='%0.2f nm temperature vs. voltage for LCVR3 for %s'), $
+                                format='%0.3f nm temperature vs. voltage for LCVR3 for %s'), $
                    xtitle='LCVR3 temperature [C]', ytitle='LCVR3 voltage [V]', $
                    xstyle=1, xrange=temperature_range, $
                    /ynozero, ystyle=1, yrange=voltage_range, $

@@ -91,7 +91,7 @@ pro ucomp_average_l1_files, files, $
                         primary_header=primary_header, $
                         ext_headers=ext_headers
     for e = 0L, n_elements(ext_headers) - 1L do begin
-      wavelength = string(ucomp_getpar(ext_headers[e], 'WAVELNG'), format='(F0.2)')
+      wavelength = string(ucomp_getpar(ext_headers[e], 'WAVELNG'), format='(F0.3)')
       all_wavelengths->add, wavelength
     endfor
     for t = 0L, n_temp_keywords - 1L do begin
@@ -144,7 +144,7 @@ pro ucomp_average_l1_files, files, $
   ; second pass of files: compute total and number of extensions for each
   ; wavelength
   for w = 0L, n_unique_wavelengths - 1L do begin
-    mg_log, 'averaging %d/%d: %0.2f nm', $
+    mg_log, 'averaging %d/%d: %0.3f nm', $
             w + 1L, $
             n_unique_wavelengths, $
             all_wavelengths[w], $
@@ -175,7 +175,7 @@ pro ucomp_average_l1_files, files, $
       file_wavelengths = strarr(n_wavelengths)
       for e = 0L, n_wavelengths - 1L do begin
         file_wavelengths[e] = string(ucomp_getpar(ext_headers[e], 'WAVELNG'), $
-                                     format='(F0.2)')
+                                     format='(F0.3)')
       endfor
 
       matching_indices = where(file_wavelengths eq all_wavelengths[w], n_matches)

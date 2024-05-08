@@ -119,7 +119,7 @@ pro ucomp_l1_check_gbu_median_diff, wave_region, run=run
       endfor
 
       for w = 0L, dims[3] - 1L do begin
-        mg_log, 'sigma @ %0.2f nm: %s', $
+        mg_log, 'sigma @ %0.3f nm: %s', $
                 unique_wavelengths[w], $
                 strjoin(string(sigma[*, w], format='%0.2f'), ', '), $
                 name=run.logger_name, /debug

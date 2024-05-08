@@ -371,7 +371,7 @@ pro ucomp_calibration::cache_flats, filenames, $
   ;   offset = n_elements(offsets) gt 1 ? offsets[-2] : 0L
   ;   mg_log, 'offset: %d', offset, name=logger_name, /debug
   ;   for f = offset, n_elements(*self.flat_times) - 1L do begin
-  ;     mg_log, '[index: %d] %0.2f, %0.3f ms, %0.2f nm, %d, %d, %s, %s', $
+  ;     mg_log, '[index: %d] %0.2f, %0.3f ms, %0.3f nm, %d, %d, %s, %s', $
   ;             f, $
   ;             (*self.flat_times)[f], $
   ;             (*self.flat_exptimes)[f], $

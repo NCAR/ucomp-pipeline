@@ -63,7 +63,7 @@ pro ucomp_make_raw_inventory, run=run, no_skip=no_skip
               file_basename(files[f].raw_filename), $
               files[f].n_extensions, $
               files[f].data_type, $
-              strjoin(string(files[f].unique_wavelengths, format='(F0.2)'), ', '), $
+              strjoin(string(files[f].unique_wavelengths, format='(F0.3)'), ', '), $
               format='(%"%-40s %4d exts %6s  %s")'
     endfor
     free_lun, lun
@@ -85,7 +85,7 @@ pro ucomp_make_raw_inventory, run=run, no_skip=no_skip
               file_basename(files[f].raw_filename), $
               files[f].n_extensions, $
               show_wavelengths[t] $
-                ? strjoin(string(files[f].unique_wavelengths, format='(F0.2)'), ', ') $
+                ? strjoin(string(files[f].unique_wavelengths, format='(F0.3)'), ', ') $
                 : '', $
               format='(%"%-40s %4d exts  %s")'
     endfor

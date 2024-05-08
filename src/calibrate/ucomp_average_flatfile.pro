@@ -56,7 +56,7 @@ pro ucomp_average_flatfile, primary_header, ext_data, ext_headers, $
 
   ext_ids = string(exptime, format='(%"%0.1f")') $
               + '-' + strtrim(fix(onband), 2) $
-              + '-' + string(wavelength, format='(%"%0.2f")')
+              + '-' + string(wavelength, format='(%"%0.3f")')
   group_indices = mg_groupby(ext_ids, $
                              n_groups=n_groups, $
                              group_starts=group_starts)
