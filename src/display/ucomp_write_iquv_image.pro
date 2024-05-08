@@ -170,7 +170,7 @@ pro ucomp_write_iquv_image, data, $
                 /device, $
                 string(run->line(wave_region, 'ionization'), $
                        run->line(wave_region, 'center_wavelength'), $
-                       format='(%"%s %0.2f nm")'), $
+                       format='(%"%s %0.3f nm")'), $
                 charsize=charsize, color=text_color
         xyouts, xmargin * dims[0] / reduce_dims_factor, $
                 (1.0 + ymargin) * dims[1] / reduce_dims_factor, $

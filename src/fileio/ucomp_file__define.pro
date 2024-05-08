@@ -48,7 +48,7 @@ function ucomp_file::_overloadPrint
                      n_unique_wavelengths, $
                      format='(%"UCoMP file: %s nm [%s] - %d exts (%d pts)")')
   for e = 1L, self.n_extensions do begin
-    output[e] = string(e, (*self.wavelengths)[e - 1], format='(%"%d: %0.2f nm")')
+    output[e] = string(e, (*self.wavelengths)[e - 1], format='(%"%d: %0.3f nm")')
   endfor
 
   return, transpose(output)
@@ -643,7 +643,8 @@ pro ucomp_file::_inventory
   compile_opt strictarr
   on_error, 2
 
-  self.run->setProperty, datetime=strmid(file_basename(self.raw_filename), 0, 15)
+  datetime = strmid(file_basename(self.raw_filename), 0, 15)
+  self.run->setProperty, datetime=datetime
   self.run->getProperty, logger_name=logger_name
 
   ucomp_read_raw_data, self.raw_filename, $

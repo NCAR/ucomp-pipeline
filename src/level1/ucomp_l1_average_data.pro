@@ -51,7 +51,7 @@ pro ucomp_l1_average_data, file, $
   ext_ids = string(exptime, format='(%"%0.1f")') $
               + '-' + strtrim(fix(onband), 2) $
               + '-' + strtrim(continuum, 2) $
-              + '-' + string(wavelengths, format='(%"%0.2f")')
+              + '-' + string(wavelengths, format='(%"%0.3f")')
 
   group_indices = mg_groupby(ext_ids, $
                              n_groups=n_groups, $

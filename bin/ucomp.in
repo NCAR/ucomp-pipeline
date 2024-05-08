@@ -473,7 +473,7 @@ def cat_keywords(args):
                         "flat": ["EXTNAME", "DATATYPE", "DATE-BEG", "WAVELNG", "ONBAND"],
                         "unknown": ["EXTNAME"]}
     default_formats = {"EXTNAME": ":25s", "DATATYPE": ":7s", "DATE-BEG": ":22s",
-                       "WAVELNG": ":7.2f", "ONBAND": "!s:5s", "POLANGLE": ":5.1f",
+                       "WAVELNG": ":8.3f", "ONBAND": "!s:5s", "POLANGLE": ":5.1f",
                        "RETANGLE": ":5.1f"}
     # TODO: add defaults for L1 and master flat/dark files
     try:

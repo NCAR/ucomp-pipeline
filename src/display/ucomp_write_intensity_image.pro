@@ -156,7 +156,7 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
       xyouts, 0.5, 0.67, /normal, alignment=0.5, $
               string(run->line(file.wave_region, 'ionization'), $
                      wavelengths[e - 1], $
-                     format='%s %0.2f nm'), $
+                     format='%s %0.3f nm'), $
               charsize=ionization_charsize, color=text_color
       xyouts, 0.5, 0.605, /normal, alignment=0.5, $
               date_stamp, $

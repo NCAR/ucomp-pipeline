@@ -42,7 +42,7 @@ pro ucomp_write_fits_file, filename, $
     ; define extension name
     pol_states = keyword_set(intensity) ? 'I' : 'IQUV'
     wavelength = ucomp_getpar(ext_headers[e - 1], 'WAVELNG')
-    extname = string(pol_states, wavelength, format='(%"Corona Stokes %s [%0.2f nm]")')
+    extname = string(pol_states, wavelength, format='(%"Corona Stokes %s [%0.3f nm]")')
 
     case n_dims of
       3: data = keyword_set(intensity) ? ext_data[*, *, 0] : ext_data
@@ -65,7 +65,7 @@ pro ucomp_write_fits_file, filename, $
     for e = 1L, n_extensions do begin
       ; define extension name
       wavelength = ucomp_getpar(ext_headers[e - 1], 'WAVELNG')
-      extname = string(wavelength, format='(%"Background I [%0.2f nm]")')
+      extname = string(wavelength, format='(%"Background I [%0.3f nm]")')
 
       case n_background_dims of
         2: data = backgrounds

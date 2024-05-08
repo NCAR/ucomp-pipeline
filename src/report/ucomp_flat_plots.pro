@@ -114,7 +114,7 @@ pro ucomp_flat_plots, wave_region, $
             charsize=charsize, $
             title=string(flat_wavelengths[unique_wavelength_indices[w]], $
                          o ? 'TCAM' : 'RCAM', $
-                         format='(%"Dark corrected flat median counts (+/- 1 std dev) for %0.2f nm (%s onband)")'), $
+                         format='(%"Dark corrected flat median counts (+/- 1 std dev) for %0.3f nm (%s onband)")'), $
             color=color, background=background_color, $
             xtitle='Time [UT]', $
             xstyle=1, xrange=time_range, xticks=time_ticks, $

@@ -147,7 +147,7 @@ pro ucomp_make_flats, wave_region, run=run
 
       flat_extnames->add, string(averaged_wavelength[e], $
                                  averaged_onband[e] ? 'tcam' : 'rcam', $
-                                 format='(%"%0.2f nm [%s]")')
+                                 format='(%"%0.3f nm [%s]")')
 
       is_center_wavelength = abs(averaged_wavelength[e] - run->line(wave_region, 'center_wavelength')) lt 0.001
       if (is_center_wavelength) then begin
