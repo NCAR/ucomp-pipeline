@@ -836,6 +836,12 @@ end
 function ucomp_file::init, raw_filename, run=run
   compile_opt strictarr
 
+  catch, error
+  if (error ne 0L) then begin
+    catch, /cancel
+    return, 0
+  endif
+
   self.raw_filename = raw_filename
   self.run = run
 

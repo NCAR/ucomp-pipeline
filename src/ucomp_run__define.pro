@@ -75,14 +75,23 @@ pro ucomp_run::make_raw_inventory, raw_files, $
 
     file = ucomp_file(_raw_files[f], run=self)
 
-    mg_log, '%s/%d: %s.%s [%s] %s', $
-            string(f + 1L, format=mg_format('%*d', n_digits)), $
-            n_raw_files, $
-            file.ut_date, $
-            file.ut_time, $
-            file.wave_region eq '' ? '-------' : string(file.wave_region, format='(%"%4s nm")'), $
-            file.data_type, $
-            name=logger_name, /debug
+    if (obj_valid(file)) then begin
+      mg_log, '%s/%d: %s.%s [%s] %s', $
+              string(f + 1L, format=mg_format('%*d', n_digits)), $
+              n_raw_files, $
+              file.ut_date, $
+              file.ut_time, $
+              file.wave_region eq '' ? '-------' : string(file.wave_region, format='(%"%4s nm")'), $
+              file.data_type, $
+              name=logger_name, /debug
+    endif else begin
+      mg_log, '%s/%d: %s -- skipping --', $
+              string(f + 1L, format=mg_format('%*d', n_digits)), $
+              n_raw_files, $
+              strmid(file_basename(_raw_files[f]), 0, 15), $
+              name=logger_name, /debug
+      continue
+    endelse
 
     n_extensions[f] = file.n_extensions
     data_types[f] = file.data_type
