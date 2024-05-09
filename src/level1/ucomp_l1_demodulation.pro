@@ -77,7 +77,7 @@ pro ucomp_l1_demodulation, file, $
   ucomp_addpar, primary_header, 'DEMODV', demod_version, $
                 comment=string(ucomp_idlsave2dateobs(demod_info.date), $
                                format='demod coeffs version [%s]'), $
-                after='HOTPIXC'
+                after='HOTPIXF'
 
 
   file.demodulated = 1B

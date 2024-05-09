@@ -591,7 +591,9 @@ end
 ;-
 pro ucomp_run::get_hot_pixels, gain_mode, camera_index, $
                                hot=hot, $
-                               adjacent=adjacent
+                               adjacent=adjacent, $
+                               basename=hot_pixels_basename, $
+                               date=hot_pixels_date
   compile_opt strictarr
 
   if (size(gain_mode, /type) eq 7) then begin
@@ -603,11 +605,18 @@ pro ucomp_run::get_hot_pixels, gain_mode, camera_index, $
   if (n_elements(*self.hot_pixels[gain_index, camera_index]) eq 0L) then begin
     hot_pixels_option_name = string((['low', 'high'])[gain_index], $
                                     format='%s_hot_pixel_basename')
+
     hot_pixels_basename = self->epoch(hot_pixels_option_name)
+    self.hot_pixels_basename[gain_index] = hot_pixels_basename
     hot_pixels_filename = filepath(hot_pixels_basename, $
                                    subdir='cameras', $
                                    root=self.resource_root)
     restore, filename=hot_pixels_filename
+
+    hot_pixels_savfile = idl_savefile(hot_pixels_filename)
+    hot_pixels_date = (hot_pixels_savfile.contents()).date
+    self.hot_pixels_date[gain_index] = hot_pixels_date
+    obj_destroy, hot_pixels_savfile
 
     *self.hot_pixels[gain_index, 0] = hot_0
     *self.hot_pixels[gain_index, 1] = hot_1
@@ -623,6 +632,9 @@ pro ucomp_run::get_hot_pixels, gain_mode, camera_index, $
             n_elements(adjacent_1) eq 0L ? 'not present' : 'present', $
             name=logger_name, /debug
   endif
+
+  hot_pixels_basename = self.hot_pixels_basename[gain_index]
+  hot_pixels_date = self.hot_pixels_date[gain_index]
 
   hot      = *self.hot_pixels[gain_index, camera_index]
   adjacent = *self.adjacent_pixels[gain_index, camera_index]
@@ -690,7 +702,9 @@ pro ucomp_run::get_distortion, datetime=datetime, $
                                dx0_c=dx0_c, $
                                dy0_c=dy0_c, $
                                dx1_c=dx1_c, $
-                               dy1_c=dy1_c
+                               dy1_c=dy1_c, $
+                               distortion_basename=distortion_basename
+                               distortion_date=distortion_date
   compile_opt strictarr
 
   distortion_basename = self->epoch('distortion_basename', datetime=datetime)
@@ -700,6 +714,7 @@ pro ucomp_run::get_distortion, datetime=datetime, $
     dy0_c = coeffs.dy0_c
     dx1_c = coeffs.dx1_c
     dy1_c = coeffs.dy1_c
+    distortion_date = self.distortion_date
   endif else begin
     distortion_dir = self->config('cameras/distortion_dir')
     ; look in the repo if the distortion_dir option is not found; new
@@ -713,6 +728,11 @@ pro ucomp_run::get_distortion, datetime=datetime, $
                                    root=distortion_dir)
     restore, filename=distortion_filename
     self.distortion_basename = distortion_basename
+
+    distortion_savfile = idl_savefile(distortion_filename)
+    distortion_date = (distortion_savfile.contents()).date
+    self.distortion_date = distortion_date
+    obj_destroy, distortion_savfile
 
     if (n_elements(dx0_c) lt 1310720L) then begin
       nx = self->epoch('nx', datetime=datetime)
@@ -1298,6 +1318,8 @@ pro ucomp_run__define
 
            badframes               : ptr_new(), $
 
+           hot_pixels_basename     : strarr(2), $
+           hot_pixels_date         : strarr(2), $
            hot_pixels              : ptrarr(2, 2), $   ; gain, camera
            adjacent_pixels         : ptrarr(2, 2), $   ; gain, camera
 
@@ -1305,6 +1327,7 @@ pro ucomp_run__define
            demod_info              : ptr_new(), $
 
            distortion_basename     : '', $
+           distortion_date         : '', $
            distortion_coefficients : ptr_new(), $
 
 
