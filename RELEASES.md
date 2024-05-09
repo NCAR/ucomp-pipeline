@@ -690,3 +690,4 @@
 #### 1.0.10
 
 - added angle grid on quicklooks
+- adding DISTORTF and HOTPIXF FITS keywords
