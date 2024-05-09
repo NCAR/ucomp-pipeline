@@ -45,7 +45,8 @@ pro ucomp_l1_camera_correction, file, $
   mg_log, 'n_cameras: %d', n_cameras, name=run.logger_name, /debug
   for e = 0, n_elements(headers) - 1L do begin
     for c = 0L, n_cameras - 1L do begin
-      run->get_hot_pixels, file.gain_mode, c, hot=hot, adjacent=adjacent
+      run->get_hot_pixels, file.gain_mode, c, hot=hot, adjacent=adjacent, $
+                           basename=hot_pixels_basename, date=hot_pixels_date
       mg_log, 'hot pixels %s gain %s: ADJACENT %s', $
               file.gain_mode, c eq 0L ? 'RCAM' : 'TCAM', $
               n_elements(adjacent) eq 0L ? 'not present' : 'present', $
@@ -61,4 +62,7 @@ pro ucomp_l1_camera_correction, file, $
   done:
   ucomp_addpar, primary_header, 'HOTPIXC', boolean(fix_hot_pixels), $
                 comment='whether hot pixels were corrected', after='BOPAL'
+  ucomp_addpar, primary_header, 'HOTPIXF', hot_pixels_basename, $
+                comment=string(hot_pixels_date, format='created %s'), $
+                after='HOTPIXC'
 end

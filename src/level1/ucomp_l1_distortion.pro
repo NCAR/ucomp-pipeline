@@ -42,7 +42,9 @@ pro ucomp_l1_distortion, file, $
                        dx0_c=dx0_c, $
                        dy0_c=dy0_c, $
                        dx1_c=dx1_c, $
-                       dy1_c=dy1_c
+                       dy1_c=dy1_c, $
+                       distortion_basename=distortion_basename, $
+                       distortion_date=distortion_date
 
   for p = 0, 3 do begin
     for e = 0L, file.n_extensions - 1L do begin
@@ -63,4 +65,7 @@ pro ucomp_l1_distortion, file, $
   done:
   ucomp_addpar, primary_header, 'DISTORTC', boolean(apply_distortion), $
                 comment='whether distortion corrected', after='DEMODV'
+  ucomp_addpar, primary_header, 'DISTORTF', distortion_basename, $
+                comment=string(distortion_date, format='created %s'), $
+                after='DISTORTC'
 end
