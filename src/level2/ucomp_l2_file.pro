@@ -95,8 +95,8 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   center_wavelength         = run->line(wave_region, 'center_wavelength')
   red_reference_wavelength  = run->line(wave_region, 'red_reference_wavelength')
 
-  perform_analytic_fit = (red_reference_wavelength gt 0.0) && (blue_reference_wavelength gt 0.0)
-  if (perform_analytic_fit) then begin
+  use_ref_wavelengths = (red_reference_wavelength gt 0.0) && (blue_reference_wavelength gt 0.0)
+  if (use_ref_wavelengths) then begin
     mg_log, 'using %0.3f nm-%0.3f nm-%0.3f nm for analytical Guassian', $
             blue_reference_wavelength, $
             center_wavelength, $
@@ -128,6 +128,12 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
     red_index = n_wavelengths / 2L + 1L
   endelse
 
+  mg_log, 'using %0.3f nm-%0.3f nm-%0.3f nm for analytical Guassian', $
+          wavelengths[blue_index], $
+          wavelengths[center_index], $
+          wavelengths[red_index], $
+          name=run.logger_name, /debug
+
   mg_log, 'indices in %d wavelengths, blue: %d, center: %d, red: %d', $
           n_wavelengths, blue_index, center_index, red_index, $
           name=run.logger_name, /debug
@@ -142,14 +148,24 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
 
   summed_linpol = sqrt(summed_q^2 + summed_u^2)
 
-  d_lambda = wavelengths[center_index] - wavelengths[center_index - 1]
+  d_lambda_blue = wavelengths[center_index] - wavelengths[blue_index]
+  d_lambda_red = wavelengths[red_index] - wavelengths[center_index]
+  if (abs(d_lambda_blue - d_lambda_red) gt 0.001) then begin
+    mg_log, 'unequal wavelength spacing for analytic Gaussian fit', $
+            name=run.logger_name, /error
+  endif
+
+  if ((center_index - blue_index) ne (red_index - center_index)) then begin
+    mg_log, 'unequal indices for analytic Gaussian fit', $
+            name=run.logger_name, /error
+  endif
 
   save_fit = 0B
 
   ucomp_analytic_gauss_fit, intensity_blue, $
                             intensity_center, $
                             intensity_red, $
-                            d_lambda, $
+                            d_lambda_blue, $
                             doppler_shift=doppler_shift, $
                             line_width=line_width, $
                             peak_intensity=peak_intensity
@@ -368,7 +384,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                 comment=string(code_date, branch, $
                        format='(%"L2 processing software (%s) [%s]")'), $
                 after=after
-  ucomp_addpar, primary_header, 'D_LAMBDA', d_lambda, $
+  ucomp_addpar, primary_header, 'D_LAMBDA', d_lambda_blue, $
                 comment='[nm] wavelength spacing', $
                 after=after, format='(F0.3)'
   ucomp_addpar, primary_header, 'COMMENT', 'Level 2 processing info', $
@@ -599,6 +615,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   quicklook_basename = file_basename(l2_basename, '.fts') + '.png'
   quicklook_filename = filepath(quicklook_basename, root=l2_dir)
 
+  rsun = ucomp_getpar(primary_header, 'R_SUN')
   ucomp_write_l2_images, quicklook_filename, $
 
                          ; dynamics images
@@ -622,6 +639,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                          post_angle=post_angle, $
                          p_angle=p_angle, $
                          occulter_radius=occulter_radius, $
+                         rsun=rsun, $
 
                          run=run
 

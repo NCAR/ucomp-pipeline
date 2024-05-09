@@ -46,6 +46,8 @@
 ;   occulter_radius : in, optional, type=float
 ;     occulter radius in pixels; if present, mask the occulter in the output
 ;     image
+;   rsun : in, optional, type=float
+;     Rsun in pixels
 ;   thumbnail : in, optional, type=boolean
 ;     set to produce the thumbnail images for the website
 ;   run : in, required, type=object
@@ -74,6 +76,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                            post_angle=post_angle, $
                            p_angle=p_angle, $
                            occulter_radius=occulter_radius, $
+                           rsun=rsun, $
 
                            thumbnail=thumbnail, $
                            run=run
@@ -275,6 +278,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                                  no_wave_region_annotation=keyword_set(thumbnail), $
                                                  no_mlso_annotation=keyword_set(thumbnail), $
                                                  no_displayparams_annotation=keyword_set(thumbnail), $
+                                                 rsun=rsun, grid=~keyword_set(thumbnail), $
                                                  datetime=datetime, $
                                                  run=run)
   intensity_center_filename = string(base_filename, suffix, $
@@ -290,6 +294,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                                           no_wave_region_annotation=keyword_set(thumbnail), $
                                                           no_mlso_annotation=keyword_set(thumbnail), $
                                                           no_displayparams_annotation=keyword_set(thumbnail), $
+                                                          rsun=rsun, grid=~keyword_set(thumbnail), $
                                                           datetime=datetime, $
                                                           run=run)
   enhanced_intensity_filename = string(base_filename, suffix, $
@@ -304,6 +309,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                                no_wave_region_annotation=keyword_set(thumbnail), $
                                                no_mlso_annotation=keyword_set(thumbnail), $
                                                no_displayparams_annotation=keyword_set(thumbnail), $
+                                               rsun=rsun, grid=~keyword_set(thumbnail), $
                                                datetime=datetime, $
                                                run=run)
   peak_intensity_filename = string(base_filename, suffix, $
@@ -318,6 +324,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                               no_wave_region_annotation=keyword_set(thumbnail), $
                                               no_mlso_annotation=keyword_set(thumbnail), $
                                               no_displayparams_annotation=keyword_set(thumbnail), $
+                                              rsun=rsun, grid=~keyword_set(thumbnail), $
                                               datetime=datetime, $
                                               run=run)
   doppler_shift_filename = string(base_filename, suffix, $
@@ -332,6 +339,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                            no_wave_region_annotation=keyword_set(thumbnail), $
                                            no_mlso_annotation=keyword_set(thumbnail), $
                                            no_displayparams_annotation=keyword_set(thumbnail), $
+                                           rsun=rsun, grid=~keyword_set(thumbnail), $
                                            datetime=datetime, $
                                            run=run)
   line_width_filename = string(base_filename, suffix, $
@@ -349,6 +357,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                                    no_wave_region_annotation=keyword_set(thumbnail), $
                                                    no_mlso_annotation=keyword_set(thumbnail), $
                                                    no_displayparams_annotation=keyword_set(thumbnail), $
+                                                   rsun=rsun, grid=~keyword_set(thumbnail), $
                                                    datetime=datetime, $
                                                    run=run)
     summed_intensity_filename = string(base_filename, suffix, $
@@ -364,6 +373,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                              no_wave_region_annotation=keyword_set(thumbnail), $
                                              no_mlso_annotation=keyword_set(thumbnail), $
                                              no_displayparams_annotation=keyword_set(thumbnail), $
+                                             rsun=rsun, grid=~keyword_set(thumbnail), $
                                              datetime=datetime, $
                                              run=run)
     summed_q_i_filename = string(base_filename, suffix, $
@@ -379,6 +389,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                              no_wave_region_annotation=keyword_set(thumbnail), $
                                              no_mlso_annotation=keyword_set(thumbnail), $
                                              no_displayparams_annotation=keyword_set(thumbnail), $
+                                             rsun=rsun, grid=~keyword_set(thumbnail), $
                                              datetime=datetime, $
                                              run=run)
     summed_u_i_filename = string(base_filename, suffix, $
@@ -394,6 +405,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                                   no_wave_region_annotation=keyword_set(thumbnail), $
                                                   no_mlso_annotation=keyword_set(thumbnail), $
                                                   no_displayparams_annotation=keyword_set(thumbnail), $
+                                                  rsun=rsun, grid=~keyword_set(thumbnail), $
                                                   datetime=datetime, $
                                                   run=run)
     summed_linpol_i_filename = string(base_filename, suffix, $
@@ -408,6 +420,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                           no_wave_region_annotation=keyword_set(thumbnail), $
                                           no_mlso_annotation=keyword_set(thumbnail), $
                                           no_displayparams_annotation=keyword_set(thumbnail), $
+                                          rsun=rsun, grid=~keyword_set(thumbnail), $
                                           datetime=datetime, $
                                           run=run)
     azimuth_filename = string(base_filename, suffix, $
@@ -422,6 +435,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                                  no_wave_region_annotation=keyword_set(thumbnail), $
                                                  no_mlso_annotation=keyword_set(thumbnail), $
                                                  no_displayparams_annotation=keyword_set(thumbnail), $
+                                                 rsun=rsun, grid=~keyword_set(thumbnail), $
                                                  datetime=datetime, $
                                                  run=run)
     radial_azimuth_filename = string(base_filename, suffix, $

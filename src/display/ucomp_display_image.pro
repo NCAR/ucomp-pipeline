@@ -24,6 +24,10 @@
 ;     "YYYYMMDD" or "YYYYMMDD.HHMMSS"
 ;   no_wave_region_annotation : in, optional, type=boolean
 ;     set to not annotate the displayed image with the wave region information
+;   rsun : in, optional, type=float
+;     used if `GRID` is set, Rsun [pixels]
+;   grid : in, optional, type=boolean
+;     set to place a grid on the image
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
@@ -35,6 +39,8 @@ function ucomp_display_image, wave_region, im, $
                               no_wave_region_annotation=no_wave_region_annotation, $
                               no_mlso_annotation=no_mlso_annotation, $
                               no_displayparams_annotation=no_displayparams_annotation, $
+                              rsun=rsun, $
+                              grid=grid, $
                               run=run
   compile_opt strictarr
 
@@ -258,6 +264,13 @@ function ucomp_display_image, wave_region, im, $
                                        display_power, $
                                        display_gamma), $
             charsize=detail_charsize, color=text_color, font=font
+  endif
+
+  if (keyword_set(grid)) then begin
+      ucomp_grid, rsun, $
+                  run->epoch('field_radius'), $
+                  (dims[0:1] - 1.0) / 2.0, $
+                  color=text_color
   endif
 
   display_im = tvrd(true=1)

@@ -14,11 +14,14 @@
 ; :Keywords:
 ;   enhanced : in, optional, type=boolean
 ;     set to produce an enhanced intensity image
+;   grid : in, optional, type=boolean
+;     set to display a grid on the image
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
 pro ucomp_write_intensity_image, file, data, primary_header, $
-                                 enhanced=enhanced, run=run
+                                 enhanced=enhanced, grid=grid, $
+                                 run=run
   compile_opt strictarr
 
   occulter_annotation = run->config('centering/annotated_gifs')
@@ -183,6 +186,14 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
               charsize=detail_charsize, color=text_color
     endelse
 
+    if (keyword_set(grid)) then begin
+      rsun = file.semidiameter / run->line(file.wave_region, 'plate_scale')
+      ucomp_grid, rsun, $
+                  run->epoch('field_radius'), $
+                  (dims[0:1] - 1.0) / 2.0, $
+                  color=text_color
+    endif
+
     if (center_wavelength_only) then begin
       intensity_filename = intensity_filename_format
     endif else begin
@@ -202,21 +213,21 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
 end
 
 
-date = '20220901'
+date = '20240409'
 
-config_basename = 'ucomp.publish.cfg'
+config_basename = 'ucomp.latest.cfg'
 config_filename = filepath(config_basename, $
                            subdir=['..', '..', '..', 'ucomp-config'], $
                            root=mg_src_root())
 run = ucomp_run(date, 'test', config_filename)
 
-l0_basename = '20220902.032356.48.ucomp.1074.l0.fts'
+l0_basename = '20240409.214658.17.ucomp.1074.l0.fts'
 l0_filename = filepath(l0_basename, $
                        subdir=date, $
                        root=run->config('raw/basedir'))
 file = ucomp_file(l0_filename, run=run)
 
-l1_basename = '20220902.032356.ucomp.1074.l1.3.fts'
+l1_basename = '20240409.214658.ucomp.1074.l1.p5.fts'
 l1_filename = filepath(l1_basename, $
                        subdir=[date, 'level1'], $
                        root=run->config('processing/basedir'))
@@ -227,7 +238,12 @@ ucomp_read_l1_data, l1_filename, $
                     n_wavelengths=n_wavelengths
 file.n_extensions = n_wavelengths
 
-ucomp_write_intensity_image, file, data, primary_header, /enhanced, run=run
+file.rcam_geometry = ucomp_geometry(occulter_radius=ucomp_getpar(primary_header, 'RADIUS0'), $
+                                    post_angle=ucomp_getpar(primary_header, 'POST_ANG'))
+file.tcam_geometry = ucomp_geometry(occulter_radius=ucomp_getpar(primary_header, 'RADIUS1'), $
+                                    post_angle=ucomp_getpar(primary_header, 'POST_ANG'))
+
+ucomp_write_intensity_image, file, data, primary_header, /enhanced, /grid, run=run
 
 obj_destroy, file
 obj_destroy, run

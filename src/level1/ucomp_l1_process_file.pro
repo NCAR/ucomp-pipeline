@@ -181,8 +181,9 @@ pro ucomp_l1_process_file, file, run=run
                          /intensity
   file.wrote_l1 = 1B
 
-  ucomp_write_intensity_image, file, data, primary_header, run=run
-  ucomp_write_intensity_image, file, data, primary_header, run=run, /enhanced
+  ucomp_write_intensity_image, file, data, primary_header, /grid, run=run
+  ucomp_write_intensity_image, file, data, primary_header, /enhanced, /grid, $
+                               run=run
 
   ucomp_write_iquv_image, data, $
                           file.l1_basename, $

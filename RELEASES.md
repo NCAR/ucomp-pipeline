@@ -688,3 +688,5 @@
 - fix for creating temperature map on 20240330
 
 #### 1.0.10
+
+- added angle grid on quicklooks
