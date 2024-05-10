@@ -22,6 +22,7 @@
 ;-
 function ucomp_write_composite_image_channel, filename, $
                                               wave_region=wave_region, $
+                                              rsun=rsun, $
                                               run=run
   compile_opt strictarr
 
@@ -43,6 +44,7 @@ function ucomp_write_composite_image_channel, filename, $
   occulter_radius = ucomp_getpar(primary_header, 'RADIUS')
   post_angle = ucomp_getpar(primary_header, 'POST_ANG')
   p_angle = ucomp_getpar(primary_header, 'SOLAR_P0')
+  rsun = ucomp_getpar(primary_header, 'R_SUN')
 
   dims = size(center_line, /dimensions)
   intensity_center = reform(center_line[*, *, 0])
@@ -137,6 +139,7 @@ end
 function ucomp_write_composite_image_annotation, im, $
                                                  thumbnail=thumbnail, $
                                                  wave_regions=wave_regions, $
+                                                 rsun=rsun, $
                                                  run=run
   compile_opt strictarr
 
@@ -235,6 +238,13 @@ function ucomp_write_composite_image_annotation, im, $
     endelse
   endelse
 
+  if (~keyword_set(thumbnail)) then begin
+    ucomp_grid, rsun, $
+                run->epoch('field_radius'), $
+                (dims[1:2] - 1.0) / 2.0, $
+                color='ffffff'x
+  endif
+
   annotated_image = tvrd(true=1)
 
   done:
@@ -283,6 +293,7 @@ pro ucomp_write_composite_image, filenames, thumbnail=thumbnail, run=run
 
   red = ucomp_write_composite_image_channel(filenames[0], $
                                             wave_region=wave_region, $
+                                            rsun=rsun, $
                                             run=run)
   wave_regions[0] = wave_region
 
@@ -309,6 +320,7 @@ pro ucomp_write_composite_image, filenames, thumbnail=thumbnail, run=run
   annotated_image = ucomp_write_composite_image_annotation(im, $
                                                            thumbnail=thumbnail, $
                                                            wave_regions=wave_regions, $
+                                                           rsun=rsun, $
                                                            run=run)
 
   if (keyword_set(thumbnail)) then begin
@@ -345,6 +357,7 @@ mean_basenames = date + '.ucomp.' + wave_regions + '.l1.synoptic.mean.fts'
 mean_filenames = filepath(mean_basenames, $
                           subdir=[date, 'level2'], $
                           root=run->config('processing/basedir'))
+ucomp_write_composite_image, mean_filenames, run=run
 ucomp_write_composite_image, mean_filenames, /thumbnail, run=run
 
 ; wave_regions = ['706', '1074', '789']
