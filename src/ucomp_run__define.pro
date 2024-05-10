@@ -703,7 +703,7 @@ pro ucomp_run::get_distortion, datetime=datetime, $
                                dy0_c=dy0_c, $
                                dx1_c=dx1_c, $
                                dy1_c=dy1_c, $
-                               distortion_basename=distortion_basename
+                               distortion_basename=distortion_basename, $
                                distortion_date=distortion_date
   compile_opt strictarr
 
