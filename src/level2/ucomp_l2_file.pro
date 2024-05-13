@@ -80,16 +80,9 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   occulter_radius = ucomp_getpar(primary_header, 'RADIUS')
 
   ; We have specified wave region dependent wavelengths to find the closest
-  ; band to instead of choosing the band on either side of the center; we
-  ; already specify center_wavelength for each wave_region, use wing_offset
-  ; to specify the three bands:
-  ;
-  ;   1. blue: closest to center_wavelength - wing_offset
-  ;   2. center: closest to center_wavelength
-  ;   3. red: closest to center_wavelength + wing_offset
-  ;
-  ; If no wing_offset specified for a wave region, just use the center three
-  ; wavelengths. Discussed in #263.
+  ; band to the reference wavelengths instead of just choosing the band on
+  ; either side of the center. If no reference wavelengths are  specified for a
+  ; wave region, just use the center three wavelengths. Discussed in #263.
 
   blue_reference_wavelength = run->line(wave_region, 'blue_reference_wavelength')
   center_wavelength         = run->line(wave_region, 'center_wavelength')
