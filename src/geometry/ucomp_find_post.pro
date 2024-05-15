@@ -39,8 +39,10 @@
 ;-
 function ucomp_find_post, im, occulter_center, occulter_radius, $
                           angle_guess=angle_guess, $
-                          angle_tolerance=angle_tolerance, $
-                          error=error, err_msg=err_msg
+                          angle_width=angle_width, $
+                          error=error, err_msg=err_msg, $
+                          fit_coefficients=fit_coefficients, $
+                          fit_estimates=estimates
   compile_opt strictarr
 
   dims = size(im, /dimensions)
@@ -48,7 +50,7 @@ function ucomp_find_post, im, occulter_center, occulter_radius, $
   ny = dims[1]
 
   _angle_guess = mg_default(angle_guess, 180.0)
-  _angle_tolerance = mg_default(angle_tolerance, 30.0)
+  _angle_width = mg_default(angle_width, 5.0)
 
   n_theta = 4 * 360     ; sampling in theta direction
   n_radius = 60         ; sampling in radius direction
@@ -74,14 +76,15 @@ function ucomp_find_post, im, occulter_center, occulter_radius, $
   ; average over y
   theta_scan = mean(new_im, dimension=2, /nan)
 
-  ; fit the inverted intensity with a gaussian, use the location of maximum as
+  ; fit the inverted intensity with a Gaussian, use the location of maximum as
   ; a guess for the post position
   y = median(theta_scan) - theta_scan
   x = findgen(n_theta) / (float(n_theta) - 1.0) * 360.0
 
-  max_value = max(y, max_pixel)
-  estimates = [max(y), x[max_pixel], 15.0, 0.0, 0.0]
-  yfit = mlso_gaussfit(x, y, coeff, $
+  ; convert angle guess from a top of image origin to a mathematical angle
+  ; coordinate system with 0 to the right by adding 90.0
+  estimates = [max(y), _angle_guess + 90.0, _angle_width, 0.0, 0.0]
+  yfit = mlso_gaussfit(x, y, fit_coefficients, $
                        nterms=5, $
                        status=error, $
                        iter=n_iterations, $
@@ -99,7 +102,7 @@ function ucomp_find_post, im, occulter_center, occulter_radius, $
   ; namely from the top of the image (north) instead of the mathematical polar
   ; coordinate system, where theta=0 is on the right. This angle is measured
   ; CCW from North.
-  post_angle = coeff[1] - 90.0
+  post_angle = fit_coefficients[1] - 90.0
 
   return, post_angle
 end
