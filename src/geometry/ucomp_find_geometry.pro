@@ -31,6 +31,8 @@
 ;     ellipse found when `ELLIPTICAL` is set
 ;   post_angle_guess : in, optional, type=float, default=180.0
 ;     initial guess angle in degrees from north for the location of the post
+;   post_angle_width : in, optional, type=float, default=5.0
+;     initial guess for width of Gaussian fit
 ;   post_angle_tolerance : in, optional, type=float, default=30.0
 ;     amount added and subtracted to `post_angle_guess` to search for post in
 ;   error : out, optional, type=long
@@ -50,6 +52,7 @@ function ucomp_find_geometry, data, $
                               eccentricity=eccentricity, $
                               ellipse_angle=ellipse_angle, $
                               post_angle_guess=post_angle_guess, $
+                              post_angle_width=post_angle_width, $
                               post_angle_tolerance=post_angle_tolerance, $
                               error=error, $
                               post_err_msg=post_err_msg
@@ -74,10 +77,24 @@ function ucomp_find_geometry, data, $
                                occulter[0:1], $
                                occulter[2], $
                                angle_guess=post_angle_guess, $
-                               angle_tolerance=post_angle_tolerance, $
+                               angle_width=post_angle_width, $
                                error=post_error, $
-                               err_msg=post_err_msg)
+                               err_msg=post_err_msg, $
+                               fit_coefficients=fit_coefficients, $
+                               fit_estimates=fit_estimates)
   error or= 2L * post_error
+
+  ; mg_log, 'post fit params: %s', $
+  ;         strjoin(string(fit_coefficients, format='(F0.2)'), ', '), $
+  ;         name='ucomp/eod', /debug
+  ; mg_log, 'post fit estimates: %s', $
+  ;         strjoin(string(fit_estimates, format='(F0.2)'), ', '), $
+  ;         name='ucomp/eod', /debug
+
+  ; TODO: remove this or move it up to the calling routine
+  if (abs(post_angle - post_angle_guess) gt post_angle_tolerance) then begin
+    mg_log, 'bad post angle: %0.1f', post_angle, name='ucomp/eod', /error
+  endif
 
   geometry = ucomp_geometry(xsize=xsize, $
                             ysize=ysize, $
