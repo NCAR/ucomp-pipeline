@@ -52,48 +52,24 @@ pro ucomp_grid, rsun, field_radius, center, color=color
     x = rsun * cos(major_angles * !dtor) + center[0]
     y = rsun * sin(major_angles * !dtor) + center[1]
     plots, x, y, /device, color=color, psym=major_psym, symsize=major_symsize
-    ; x_inner = (rsun - major_length) * cos(major_angles * !dtor) + center[0]
-    ; y_inner = (rsun - major_length) * sin(major_angles * !dtor) + center[1]
-    ; x_outer = rsun * cos(major_angles * !dtor) + center[0]
-    ; y_outer = rsun * sin(major_angles * !dtor) + center[1]
-    ; for a = 0L, n_elements(major_angles) - 1L do begin
-    ;   plots, [x_inner[a], x_outer[a]], [y_inner[a], y_outer[a]], $
-    ;          /device, color=color, thick=major_thickness
-    ; endfor
 
     ; internal fudicial angle marks on Rsun
     x = rsun * cos(fudicial_angles * !dtor) + center[0]
     y = rsun * sin(fudicial_angles * !dtor) + center[1]
     plots, x, y, /device, color=color, psym=fudicial_psym, symsize=fudicial_symsize
-    ; x_inner = (rsun - fudicial_length) * cos(fudicial_angles * !dtor) + center[0]
-    ; y_inner = (rsun - fudicial_length) * sin(fudicial_angles * !dtor) + center[1]
-    ; x_outer = rsun * cos(fudicial_angles * !dtor) + center[0]
-    ; y_outer = rsun * sin(fudicial_angles * !dtor) + center[1]
-    ; for a = 0L, n_elements(fudicial_angles) - 1L do begin
-    ;   plots, [x_inner[a], x_outer[a]], [y_inner[a], y_outer[a]], $
-    ;          /device, color=color, thick=fudicial_thick
-    ; endfor
   endif
 
-  if (n_elements(field_radius) gt 0L) then begin
-    ; external minor angle marks on field radius
-    x = field_radius * cos(minor_angles * !dtor) + center[0]
-    y = field_radius * sin(minor_angles * !dtor) + center[1]
-    plots, x, y, /device, color=color, psym=3
-
-    ; external major angle marks on Rsun
-    x = field_radius * cos(major_angles * !dtor) + center[0]
-    y = field_radius * sin(major_angles * !dtor) + center[1]
-    plots, x, y, /device, color=color, psym=major_psym, symsize=major_symsize
-    ; x_inner = field_radius * cos(major_angles * !dtor) + center[0]
-    ; y_inner = field_radius * sin(major_angles * !dtor) + center[1]
-    ; x_outer = (field_radius + major_length) * cos(major_angles * !dtor) + center[0]
-    ; y_outer = (field_radius + major_length) * sin(major_angles * !dtor) + center[1]
-    ; for a = 0L, n_elements(major_angles) - 1L do begin
-    ;   plots, [x_inner[a], x_outer[a]], [y_inner[a], y_outer[a]], $
-    ;          /device, color=color, thick=major_thickness
-    ; endfor
-  endif
+;   if (n_elements(field_radius) gt 0L) then begin
+;     ; external minor angle marks on field radius
+;     x = field_radius * cos(minor_angles * !dtor) + center[0]
+;     y = field_radius * sin(minor_angles * !dtor) + center[1]
+;     plots, x, y, /device, color=color, psym=3
+;
+;     ; external major angle marks on Rsun
+;     x = field_radius * cos(major_angles * !dtor) + center[0]
+;     y = field_radius * sin(major_angles * !dtor) + center[1]
+;     plots, x, y, /device, color=color, psym=major_psym, symsize=major_symsize
+;   endif
 end
 
 
