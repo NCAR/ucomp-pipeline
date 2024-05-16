@@ -84,7 +84,8 @@ pro ucomp_l1_find_alignment, file, $
                                            post_angle_guess=post_angle_guess, $
                                            post_angle_tolerance=post_angle_tolerance, $
                                            error=rcam_error, $
-                                           post_err_msg=rcam_post_err_msg)
+                                           post_err_msg=rcam_post_err_msg, $
+                                           logger_name=run.logger_name)
   mg_log, 'RCAM geometry error: %d', rcam_error, name=run.logger_name, /debug
   if (strlen(rcam_post_err_msg) gt 0L) then begin
     mg_log, 'RCAM post error message: %s', rcam_post_err_msg, name=run.logger_name, /warn
@@ -116,7 +117,8 @@ pro ucomp_l1_find_alignment, file, $
                                            post_angle_guess=post_angle_guess, $
                                            post_angle_tolerance=post_angle_tolerance, $
                                            error=tcam_error, $
-                                           post_err_msg=tcam_post_err_msg)
+                                           post_err_msg=tcam_post_err_msg, $
+                                           logger_name=run.logger_name)
   mg_log, 'TCAM geometry error: %d', tcam_error, name=run.logger_name, /debug
   if (strlen(tcam_post_err_msg) gt 0L) then begin
     mg_log, 'TCAM post error message: %s', tcam_post_err_msg, name=run.logger_name, /warn
@@ -192,7 +194,8 @@ pro ucomp_l1_find_alignment, file, $
                                                  post_angle_tolerance=post_angle_tolerance, $
                                                  /elliptical, $
                                                  eccentricity=rcam_eccentricity, $
-                                                 ellipse_angle=rcam_ellipse_angle)
+                                                 ellipse_angle=rcam_ellipse_angle, $
+                                                 logger_name=run.logger_name)
   rcam.eccentricity = rcam_eccentricity
   rcam.ellipse_angle = rcam_ellipse_angle
   obj_destroy, rcam_elliptical_geometry
@@ -207,7 +210,8 @@ pro ucomp_l1_find_alignment, file, $
                                                  post_angle_tolerance=post_angle_tolerance, $
                                                  /elliptical, $
                                                  eccentricity=tcam_eccentricity, $
-                                                 ellipse_angle=tcam_ellipse_angle)
+                                                 ellipse_angle=tcam_ellipse_angle, $
+                                                 logger_name=run.logger_name)
   tcam.eccentricity = tcam_eccentricity
   tcam.ellipse_angle = tcam_ellipse_angle
   obj_destroy, tcam_elliptical_geometry
