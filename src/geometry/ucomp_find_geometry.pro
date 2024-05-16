@@ -53,9 +53,11 @@ function ucomp_find_geometry, data, $
                               ellipse_angle=ellipse_angle, $
                               post_angle_guess=post_angle_guess, $
                               post_angle_width=post_angle_width, $
+                              post_angle_search_tolerance=post_angle_search_tolerance, $
                               post_angle_tolerance=post_angle_tolerance, $
                               error=error, $
-                              post_err_msg=post_err_msg
+                              post_err_msg=post_err_msg, $
+                              logger_name=logger_name
   compile_opt strictarr
 
   error = 0L
@@ -78,22 +80,16 @@ function ucomp_find_geometry, data, $
                                occulter[2], $
                                angle_guess=post_angle_guess, $
                                angle_width=post_angle_width, $
+                               angle_search_tolerance=post_angle_search_tolerance, $
                                error=post_error, $
                                err_msg=post_err_msg, $
                                fit_coefficients=fit_coefficients, $
                                fit_estimates=fit_estimates)
   error or= 2L * post_error
 
-  ; mg_log, 'post fit params: %s', $
-  ;         strjoin(string(fit_coefficients, format='(F0.2)'), ', '), $
-  ;         name='ucomp/eod', /debug
-  ; mg_log, 'post fit estimates: %s', $
-  ;         strjoin(string(fit_estimates, format='(F0.2)'), ', '), $
-  ;         name='ucomp/eod', /debug
-
-  ; TODO: remove this or move it up to the calling routine
   if (abs(post_angle - post_angle_guess) gt post_angle_tolerance) then begin
-    mg_log, 'bad post angle: %0.1f', post_angle, name='ucomp/eod', /error
+    mg_log, 'bad post angle found: %0.1f', post_angle, name=logger_name, /error
+    post_angle = post_angle_guess
   endif
 
   geometry = ucomp_geometry(xsize=xsize, $
