@@ -115,7 +115,7 @@ end
 ;   estimates : in, optional, type=fltarr(nterms)
 ;     optional starting estimates for the parameters of the equation; should
 ;     contain `nterms` (6 if `nterms` is not provided) elements
-;   measure_errors :
+;   measure_errors : in, optional, type=fltarr(n)
 ;     set this keyword to a vector containing standard measurement errors for
 ;     each point `y[i]`; this vector must be the same length as `x` and `y`
 ;
