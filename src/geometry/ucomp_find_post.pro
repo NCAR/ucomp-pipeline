@@ -40,6 +40,7 @@
 function ucomp_find_post, im, occulter_center, occulter_radius, $
                           angle_guess=angle_guess, $
                           angle_width=angle_width, $
+                          angle_search_tolerance=angle_search_tolerance, $
                           error=error, err_msg=err_msg, $
                           fit_coefficients=fit_coefficients, $
                           fit_estimates=estimates
@@ -51,6 +52,7 @@ function ucomp_find_post, im, occulter_center, occulter_radius, $
 
   _angle_guess = mg_default(angle_guess, 180.0)
   _angle_width = mg_default(angle_width, 5.0)
+  _angle_search_tolerance = mg_default(angle_search_tolerance, 30.0)
 
   n_theta = 4 * 360     ; sampling in theta direction
   n_radius = 60         ; sampling in radius direction
@@ -78,13 +80,19 @@ function ucomp_find_post, im, occulter_center, occulter_radius, $
 
   ; fit the inverted intensity with a Gaussian, use the location of maximum as
   ; a guess for the post position
-  y = median(theta_scan) - theta_scan
-  x = findgen(n_theta) / (float(n_theta) - 1.0) * 360.0
+  profile = median(theta_scan) - theta_scan
+  angles = findgen(n_theta) / (float(n_theta) - 1.0) * 360.0
+  ; x = t
+
+  search_indices = where(abs(angles - _angle_guess - 90.0) lt _angle_search_tolerance, /null)
+  angles = angles[search_indices]
+  profile = profile[search_indices]
 
   ; convert angle guess from a top of image origin to a mathematical angle
   ; coordinate system with 0 to the right by adding 90.0
-  estimates = [max(y), _angle_guess + 90.0, _angle_width, 0.0, 0.0]
-  yfit = mlso_gaussfit(x, y, fit_coefficients, $
+  ; estimates = [max(y), _angle_guess + 90.0, _angle_width, 0.0, 0.0]
+  estimates = [3.0, _angle_guess + 90.0, _angle_width, 0.0, 0.0]
+  yfit = mlso_gaussfit(angles, profile, fit_coefficients, $
                        nterms=5, $
                        status=error, $
                        iter=n_iterations, $
