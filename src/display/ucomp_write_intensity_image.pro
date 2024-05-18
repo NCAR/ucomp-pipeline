@@ -243,7 +243,7 @@ file.rcam_geometry = ucomp_geometry(occulter_radius=ucomp_getpar(primary_header,
 file.tcam_geometry = ucomp_geometry(occulter_radius=ucomp_getpar(primary_header, 'RADIUS1'), $
                                     post_angle=ucomp_getpar(primary_header, 'POST_ANG'))
 
-ucomp_write_intensity_image, file, data, primary_header, /enhanced, /grid, run=run
+ucomp_write_intensity_image, file, data, primary_header, /grid, run=run
 
 obj_destroy, file
 obj_destroy, run
