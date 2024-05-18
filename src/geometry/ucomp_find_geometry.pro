@@ -147,6 +147,7 @@ radius_guess = ucomp_radius_guess(occulter_id, sxpar(primary_header, 'FILTER'), 
 
 post_angle_guess = run->epoch('post_angle_guess')
 post_angle_tolerance = run->epoch('post_angle_tolerance')
+post_angle_search_tolerance = run->epoch('post_angle_search_tolerance')
 
 rcam_center_guess = ucomp_occulter_guess(0, date, occulter_x, occulter_y, run=run)
 tcam_center_guess = ucomp_occulter_guess(1, date, occulter_x, occulter_y, run=run)
@@ -167,9 +168,12 @@ rcam_geometry = ucomp_find_geometry(rcam_background, $
                                     dradius=dradius, $
                                     post_angle_guess=post_angle_guess, $
                                     post_angle_tolerance=post_angle_tolerance, $
+                                    post_angle_search_tolerance=post_angle_search_tolerance, $
                                     error=rcam_error, $
                                     post_err_msg=rcam_post_err_msg, $
                                     logger_name=run.logger_name)
+
+print, rcam_geometry.post_angle, format='RCAM post angle: %0.2f degrees'
 
 tcam_background = mean(reform(data[*, *, *, 1, tcam_offband_indices]), dimension=4, /nan)
 while (size(tcam_background, /n_dimensions) gt 3L) do tcam_background = mean(tcam_background, dimension=4, /nan)
@@ -184,9 +188,12 @@ tcam_geometry = ucomp_find_geometry(tcam_background, $
                                     dradius=dradius, $
                                     post_angle_guess=post_angle_guess, $
                                     post_angle_tolerance=post_angle_tolerance, $
+                                    post_angle_search_tolerance=post_angle_search_tolerance, $
                                     error=tcam_error, $
                                     post_err_msg=tcam_post_err_msg, $
                                     logger_name=run.logger_name)
+
+print, tcam_geometry.post_angle, format='TCAM post angle: %0.2f degrees'
 
 obj_destroy, run
 
