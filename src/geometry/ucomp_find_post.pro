@@ -82,7 +82,6 @@ function ucomp_find_post, im, occulter_center, occulter_radius, $
   ; a guess for the post position
   profile = median(theta_scan) - theta_scan
   angles = findgen(n_theta) / (float(n_theta) - 1.0) * 360.0
-  ; x = t
 
   search_indices = where(abs(angles - _angle_guess - 90.0) lt _angle_search_tolerance, /null)
   angles = angles[search_indices]
@@ -90,8 +89,7 @@ function ucomp_find_post, im, occulter_center, occulter_radius, $
 
   ; convert angle guess from a top of image origin to a mathematical angle
   ; coordinate system with 0 to the right by adding 90.0
-  ; estimates = [max(y), _angle_guess + 90.0, _angle_width, 0.0, 0.0]
-  estimates = [3.0, _angle_guess + 90.0, _angle_width, 0.0, 0.0]
+  estimates = [max(y), _angle_guess + 90.0, _angle_width, 0.0, 0.0]
   yfit = mlso_gaussfit(angles, profile, fit_coefficients, $
                        nterms=5, $
                        status=error, $
