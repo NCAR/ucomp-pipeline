@@ -692,3 +692,4 @@
 - added angle grid on quicklooks
 - adding DISTORTF and HOTPIXF FITS keywords
 - improved post finding
+- improved quality check for too many missing frames
