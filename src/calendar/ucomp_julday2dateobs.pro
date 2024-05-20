@@ -18,10 +18,3 @@ function ucomp_julday2dateobs, jd
   return, string(year, month, day, hours, minutes, seconds, $
                  format='%04d-%02d-%02dT%02d:%02d:%02dZ')
 end
-
-; main-level example program
-
-f = 'ucomp_hst2ut.pro'
-print, ucomp_julday2dateobs(systime(elapsed=file_modtime(f), /julian))
-
-end

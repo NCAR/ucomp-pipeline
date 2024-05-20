@@ -18,11 +18,3 @@ function ucomp_idlsave2dateobs, d
   return, string(s.year, s.month, s.day, s.hour, s.minute, s.second, $
                  format='%04d-%02d-%02dT%02d:%02d:%02dZ')
 end
-
-
-; main-level example
-
-d = 'Tue Nov 15 14:05:53 2022'
-print, d, ucomp_idlsave2dateobs(d), format='%s -> %s'
-
-end
