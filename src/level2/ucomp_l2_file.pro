@@ -163,7 +163,10 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                             line_width=line_width, $
                             peak_intensity=peak_intensity
 
-  perform_gauss_fit = (n_wavelengths gt 3L) && run->line(wave_region, 'gauss_fit')
+  gaussian_fit_method = run->config('l2/gaussian_fit_method')
+  perform_gauss_fit = (n_wavelengths gt 3L) $
+                        && run->line(wave_region, 'gauss_fit') $
+                        && (gaussian_fit_method ne 'analytic')
   mg_log, 'perform Guassian fit: %s, n_wavelengths: %d, gauss_fit: %s', $
           perform_gauss_fit ? 'YES' : 'NO', $
           n_wavelengths, $
@@ -174,14 +177,29 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
     ; doing this
     all_intensities = reform(ext_data[*, *, 0, *])
     save_fit = 1B
+    case gaussian_fit_method of
+      '3-term': n_terms = 3L
+      '4-term': n_terms = 4L
+      'analytic': message, 'invalid fit method: analytic'
+      else: message, string(gaussian_fit_method, format='unknown fit method: %s')
+    endcase
     ucomp_gauss_fit, all_intensities, $
                      wavelengths, $
                      center_wavelength, $
+                     n_terms=n_terms, $
                      doppler_shift=fit_doppler_shift, $
                      line_width=fit_line_width, $
                      peak_intensity=fit_peak_intensity, $
                      coefficients=fit_coefficients, $
-                     chisq=fit_chisq
+                     chisq=fit_chisq, $
+                     sigma=fit_sigma
+
+    ; TODO: compare/mask fit_{doppler_shift,line_width,peak_intensity} to their
+    ; analytic counterparts
+
+    dopper_shift = fit_doppler_shift
+    line_width = fit_line_width
+    peak_intensity = fit_peak_intensity
   endif
 
   c = 299792.458D
@@ -205,14 +223,14 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   ; TODO: use the intensity checks below above to mask the Gaussian fit
   ; calculations
   !null = where(intensity_center gt run->line(wave_region, 'noise_intensity_center_min') $
-                  and intensity_center lt run->line(wave_region, 'noise_intensity_center_max') $
-                  and intensity_blue gt run->line(wave_region, 'noise_intensity_blue_min') $
-                  and intensity_blue lt run->line(wave_region, 'noise_intensity_blue_max') $
-                  and intensity_red gt run->line(wave_region, 'noise_intensity_red_min') $
-                  and intensity_red lt run->line(wave_region, 'noise_intensity_red_max') $
-                  and line_width gt run->line(wave_region, 'noise_line_width_min'), $
-                  ; and line_width lt run->line(wave_region, 'noise_line_width_max'), $
-                complement=noisy_indices, /null)
+      and intensity_center lt run->line(wave_region, 'noise_intensity_center_max') $
+      and intensity_blue gt run->line(wave_region, 'noise_intensity_blue_min') $
+      and intensity_blue lt run->line(wave_region, 'noise_intensity_blue_max') $
+      and intensity_red gt run->line(wave_region, 'noise_intensity_red_min') $
+      and intensity_red lt run->line(wave_region, 'noise_intensity_red_max') $
+      and line_width gt run->line(wave_region, 'noise_line_width_min'), $
+      ; and line_width lt run->line(wave_region, 'noise_line_width_max'), $
+    complement=noisy_indices, /null)
 
   noise_mask = intensity_center * 0.0 + 1.0
   noise_mask[noisy_indices] = 0.0
@@ -427,6 +445,9 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   endfor
 
   ; write peak intensity
+  ucomp_addpar, header, 'FITMETHD', gaussian_fit_method, $
+                comment=' Gaussian fit method', $
+                before='SKYTRANS'
   ucomp_fits_write, fcb, $
                     float(peak_intensity), $
                     header, $
@@ -468,6 +489,8 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                     ext_comment='FWHM from Gaussian fit', $
                     /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
+
+  sxdelpar, header, 'FITMETHD'
 
   if (~run->config('l2/mask_noise')) then begin
     ucomp_fits_write, fcb, $
@@ -538,41 +561,10 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
 
   if (save_fit) then begin
     ucomp_fits_write, fcb, $
-                      float(fit_peak_intensity), $
-                      header, $
-                      extname='Fit peak intensity', $
-                      ext_comment='Fit peak intensity', $
-                      /no_abort, message=error_msg
-    if (error_msg ne '') then message, error_msg
-
-    ; convert Doppler shift to velocity [km/s]
-    fit_doppler_shift *= c / mean(wavelengths)
-
-    ucomp_fits_write, fcb, $
-                      float(fit_doppler_shift), $
-                      header, $
-                      extname='Fit LOS velocity', $
-                      ext_comment='Doppler velocity from Gaussian fit', $
-                      /no_abort, message=error_msg
-    if (error_msg ne '') then message, error_msg
-
-    ; convert line width to velocity [km/s]
-    ; TODO: I don't think I need the FWHM factor here
-    fit_line_width *= c / mean(wavelengths) ;* run->epoch('fwhm_factor')
-
-    ucomp_fits_write, fcb, $
-                      float(fit_line_width), $
-                      header, $
-                      extname='Fit line width (FWHM)', $
-                      ext_comment='FWHM from Gaussian fit', $
-                      /no_abort, message=error_msg
-    if (error_msg ne '') then message, error_msg
-
-    ucomp_fits_write, fcb, $
                       float(fit_coefficients), $
                       header, $
                       extname='Fit coefficients', $
-                      ext_comment='Coefficients of Gaussian fit by pixel', $
+                      ext_comment='Coefficients of fit', $
                       /no_abort, message=error_msg
     if (error_msg ne '') then message, error_msg
 
@@ -580,10 +572,17 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                       float(fit_chisq), $
                       header, $
                       extname='Fit chi-squared', $
-                      ext_comment='Chi-squared of Gaussian fit by pixel', $
+                      ext_comment='Chi-squared of fit', $
                       /no_abort, message=error_msg
     if (error_msg ne '') then message, error_msg
 
+    ucomp_fits_write, fcb, $
+                      float(fit_sigma), $
+                      header, $
+                      extname='Fit sigma', $
+                      ext_comment='1-sigma error estimates of fit', $
+                      /no_abort, message=error_msg
+    if (error_msg ne '') then message, error_msg
   endif
 
   fits_close, fcb
@@ -666,35 +665,4 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   endif
 
   done:
-end
-
-
-; main-level example program
-
-date = '20220901'
-
-config_basename = 'ucomp.latest.cfg'
-config_filename = filepath(config_basename, $
-                           subdir=['..', '..', '..', 'ucomp-config'], $
-                           root=mg_src_root())
-run = ucomp_run(date, 'test', config_filename)
-
-l0_basename = '20220901.182014.02.ucomp.1074.l0.fts'
-l0_filename = filepath(l0_basename, $
-                       subdir=[date], $
-                       root=run->config('raw/basedir'))
-
-file = ucomp_file(l0_filename, run=run)
-file->update, 'level1'
-
-ucomp_l2_file, file.l1_filename, run=run
-
-average_basename = '20220901.ucomp.1074.l1.synoptic.mean.fts'
-average_filename = filepath(average_basename, $
-                            subdir=[date, 'level2'], $
-                            root=run->config('processing/basedir'))
-ucomp_l2_file, average_filename, run=run
-
-obj_destroy, run
-
 end
