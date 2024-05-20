@@ -12,7 +12,7 @@
 pro ucomp_calibration_wrapper, date, config_filename
   compile_opt strictarr
 
-; initialize performance metrics
+  ; initialize performance metrics
   t0 = systime(/seconds)
   start_memory = memory(/current)
 

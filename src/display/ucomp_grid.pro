@@ -58,45 +58,4 @@ pro ucomp_grid, rsun, field_radius, center, color=color
     y = rsun * sin(fudicial_angles * !dtor) + center[1]
     plots, x, y, /device, color=color, psym=fudicial_psym, symsize=fudicial_symsize
   endif
-
-;   if (n_elements(field_radius) gt 0L) then begin
-;     ; external minor angle marks on field radius
-;     x = field_radius * cos(minor_angles * !dtor) + center[0]
-;     y = field_radius * sin(minor_angles * !dtor) + center[1]
-;     plots, x, y, /device, color=color, psym=3
-;
-;     ; external major angle marks on Rsun
-;     x = field_radius * cos(major_angles * !dtor) + center[0]
-;     y = field_radius * sin(major_angles * !dtor) + center[1]
-;     plots, x, y, /device, color=color, psym=major_psym, symsize=major_symsize
-;   endif
-end
-
-
-; main-level program
-
-date = '20221125'
-config_basename = 'ucomp.latest.cfg'
-config_filename = filepath(config_basename, $
-                           subdir=['..', '..', '..', 'ucomp-config'], $
-                           root=mg_src_root())
-run = ucomp_run(date, 'test', config_filename)
-
-basename = '20221126.004426.ucomp.1074.l1.p3.intensity.gif'
-processing_basedir = run->config('processing/basedir')
-filename = filepath(basename, subdir=[date, 'level1'], root=processing_basedir)
-
-read_gif, filename, im, r, g, b
-
-device, decomposed=0
-tvlct, r, g, b
-mg_image, im, /new, title=basename
-
-dims = size(im, /dimensions)
-rsun = 325.37
-field_radius = run->epoch('field_radius')
-ucomp_grid, rsun, field_radius, (dims[0:1] - 1.0) / 2.0, color=250
-
-obj_destroy, run
-
 end
