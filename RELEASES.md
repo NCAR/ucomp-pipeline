@@ -691,3 +691,4 @@
 
 - added angle grid on quicklooks
 - adding DISTORTF and HOTPIXF FITS keywords
+- improved post finding
