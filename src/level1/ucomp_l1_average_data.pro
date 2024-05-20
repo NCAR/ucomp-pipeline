@@ -106,4 +106,50 @@ pro ucomp_l1_average_data, file, $
   file.onband_indices = averaged_onband
 
   ext_data = reform(averaged_ext_data, averaged_dims)
+
+  for p = 0L, averaged_dims[2] - 1L do begin
+    for c = 0L, averaged_dims[3] - 1L do begin
+      for e = 0L, n_groups - 1L do begin
+        !null = where(finite(ext_data[*, *, p, c, e]) eq 1, n_non_nan)
+        if (n_non_nan eq 0L) then begin
+          status = 1L
+          mg_log, 'polstate %d, camera %d, ext %d all NaNs', p, c, e, $
+                  name=run.logger_name, /warn
+        endif
+      endfor
+    endfor
+  endfor
+end
+
+
+; main-level example program
+
+date = '20240409'
+config_basename = 'ucomp.latest.cfg'
+config_filename = filepath(config_basename, $
+                           subdir=['..', '..', '..', 'ucomp-config'], $
+                           root=mg_src_root())
+run = ucomp_run(date, 'test', config_filename)
+
+raw_basename = '20240409.195647.32.ucomp.1074.l0.fts'
+raw_filename = filepath(raw_basename, $
+                        subdir=date, $
+                        root=run->config('raw/basedir'))
+ucomp_read_raw_data, raw_filename, $
+                     primary_header=primary_header, $
+                     ext_data=data, $
+                     ext_headers=headers, $
+                     repair_routine=run->epoch('raw_data_repair_routine'), $
+                     badframes=run.badframes, $
+                     all_zero=all_zero, $
+                     logger=run.logger_name
+
+file = ucomp_file(raw_filename, run=run)
+
+step_number = 1L
+ucomp_l1_step, 'ucomp_l1_average_data', $
+               file, primary_header, data, headers, step_number=step_number, run=run
+
+obj_destroy, [file, run]
+
 end
