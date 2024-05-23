@@ -52,6 +52,14 @@ pro ucomp_average_l1_files, files, $
     goto, done
   endif
 
+  min_average_files = run->config('min_average_files')
+  if (n_ok_files lt min_average_files) then begin
+    mg_log, 'not enough OK files to average (%d < %d)', $
+            n_ok_files, min_average_files, $
+            name=run.logger_name, /warn
+    goto, done
+  endif
+
   sgs_keywords = ['SGSSCINT', $
                   'SGSDIMV', $
                   'SGSDIMS', $
@@ -225,10 +233,12 @@ pro ucomp_average_l1_files, files, $
 
     ucomp_addpar, primary_header, 'DATE-OBS', ok_files[0].date_obs
     ucomp_addpar, primary_header, 'DATE-END', ok_files[-1].date_obs, $
-                  comment='[UT] date/time when obs started', $
+                  comment='[UT] date/time when obs ended', $
                   after='DATE-OBS'
     ucomp_addpar, primary_header, 'NUMWAVE', n_unique_wavelengths
-    ucomp_addpar, primary_header, 'NUMFILES', n_ok_files, after='NUMBEAM'
+    ucomp_addpar, primary_header, 'NUMFILES', n_ok_files, $
+                  comment='number of files in average', $
+                  after='NUMBEAM'
 
     if (size(mean_wavelength_data, /n_dimensions) gt 3L) then begin
       case _method of
