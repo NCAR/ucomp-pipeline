@@ -183,16 +183,40 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
       'analytic': message, 'invalid fit method: analytic'
       else: message, string(gaussian_fit_method, format='unknown fit method: %s')
     endcase
+
+    dims = size(intensity_center, /dimensions)
+    geometry_mask = ucomp_mask(dims[0:1], $
+      field_radius=run->epoch('field_radius'), $
+      occulter_radius=occulter_radius + run->epoch('over_masking'), $
+      post_angle=post_angle, $
+      p_angle=p_angle)
+
+    ; basic mask to eliminate pixels
+    fit_mask = total((all_intensities gt run->line(wave_region, 'noise_intensity_min')) $
+        and (all_intensities lt run->line(wave_region, 'noise_intensity_max')), $
+      3, /integer) gt (n_terms + 1L)
+
+    xpeak = run->line(wave_region, 'center_wavelength') + doppler_shift
     ucomp_gauss_fit, all_intensities, $
                      wavelengths, $
                      center_wavelength, $
                      n_terms=n_terms, $
+                     estimates_peak_intensity=peak_intensity, $
+                     estimates_xpeak=xpeak, $
+                     estimates_line_width=line_width * sqrt(2.0), $
+                     mask=geometry_mask and fit_mask, $
+                     min_threshold=run->line(wave_region, 'noise_intensity_min'), $
+                     max_threshold=run->line(wave_region, 'noise_intensity_max'), $
+                     n_fits=n_fits, $
                      doppler_shift=fit_doppler_shift, $
                      line_width=fit_line_width, $
                      peak_intensity=fit_peak_intensity, $
                      coefficients=fit_coefficients, $
                      chisq=fit_chisq, $
                      sigma=fit_sigma
+
+    mg_log, '%d Gaussian fits (%d term) performed', n_fits, n_terms, $
+      name=run.logger_name, /debug
 
     ; TODO: compare/mask fit_{doppler_shift,line_width,peak_intensity} to their
     ; analytic counterparts
@@ -220,16 +244,13 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
 
   azimuth = ucomp_azimuth(summed_q, summed_u, radial_azimuth=radial_azimuth)
 
-  ; TODO: use the intensity checks below above to mask the Gaussian fit
-  ; calculations
-  !null = where(intensity_center gt run->line(wave_region, 'noise_intensity_center_min') $
-      and intensity_center lt run->line(wave_region, 'noise_intensity_center_max') $
-      and intensity_blue gt run->line(wave_region, 'noise_intensity_blue_min') $
-      and intensity_blue lt run->line(wave_region, 'noise_intensity_blue_max') $
-      and intensity_red gt run->line(wave_region, 'noise_intensity_red_min') $
-      and intensity_red lt run->line(wave_region, 'noise_intensity_red_max') $
+  !null = where(intensity_center gt run->line(wave_region, 'noise_intensity_min') $
+      and intensity_center lt run->line(wave_region, 'noise_intensity_max') $
+      and intensity_blue gt run->line(wave_region, 'noise_intensity_min') $
+      and intensity_blue lt run->line(wave_region, 'noise_intensity_max') $
+      and intensity_red gt run->line(wave_region, 'noise_intensity_min') $
+      and intensity_red lt run->line(wave_region, 'noise_intensity_max') $
       and line_width gt run->line(wave_region, 'noise_line_width_min'), $
-      ; and line_width lt run->line(wave_region, 'noise_line_width_max'), $
     complement=noisy_indices, /null)
 
   noise_mask = intensity_center * 0.0 + 1.0
@@ -255,13 +276,13 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
 
   if (run->config('l2/mask_geometry')) then begin
     ; mask outputs
-    mask = ucomp_mask(dims[0:1], $
-                      field_radius=run->epoch('field_radius'), $
-                      occulter_radius=occulter_radius + run->epoch('over_masking'), $
-                      post_angle=post_angle, $
-                      p_angle=p_angle)
+    geometric_mask = ucomp_mask(dims[0:1], $
+      field_radius=run->epoch('field_radius'), $
+      occulter_radius=occulter_radius + run->epoch('over_masking'), $
+      post_angle=post_angle, $
+      p_angle=p_angle)
 
-    outside_mask_indices = where(mask eq 0, n_outside_mask)
+    outside_mask_indices = where(geometric_mask eq 0, n_outside_mask)
 
     if (n_outside_mask gt 0L) then begin
       intensity_center[outside_mask_indices]          = !values.f_nan
@@ -445,9 +466,10 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   endfor
 
   ; write peak intensity
-  ucomp_addpar, header, 'FITMETHD', gaussian_fit_method, $
+  ucomp_addpar, header, 'FITMETHD', perform_gauss_fit ? gaussian_fit_method : 'analytic', $
                 comment=' Gaussian fit method', $
                 before='SKYTRANS'
+
   ucomp_fits_write, fcb, $
                     float(peak_intensity), $
                     header, $
@@ -469,6 +491,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                 comment='[nm] offset for center wavelength', $
                 format='(F0.3)', $
                 after='RSTMTHD'
+
   ucomp_fits_write, fcb, $
                     float(doppler_shift), $
                     header, $
@@ -476,6 +499,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                     ext_comment='Doppler velocity from Gaussian fit', $
                     /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
+
   sxdelpar, header, 'RSTWVL'
   sxdelpar, header, 'RSTMTHD'
   sxdelpar, header, 'WAVOFF2'
@@ -561,14 +585,6 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
 
   if (save_fit) then begin
     ucomp_fits_write, fcb, $
-                      float(fit_coefficients), $
-                      header, $
-                      extname='Fit coefficients', $
-                      ext_comment='Coefficients of fit', $
-                      /no_abort, message=error_msg
-    if (error_msg ne '') then message, error_msg
-
-    ucomp_fits_write, fcb, $
                       float(fit_chisq), $
                       header, $
                       extname='Fit chi-squared', $
@@ -581,6 +597,14 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                       header, $
                       extname='Fit sigma', $
                       ext_comment='1-sigma error estimates of fit', $
+                      /no_abort, message=error_msg
+    if (error_msg ne '') then message, error_msg
+
+    ucomp_fits_write, fcb, $
+                      float(fit_coefficients), $
+                      header, $
+                      extname='Fit coefficients', $
+                      ext_comment='Coefficients of fit', $
                       /no_abort, message=error_msg
     if (error_msg ne '') then message, error_msg
   endif
