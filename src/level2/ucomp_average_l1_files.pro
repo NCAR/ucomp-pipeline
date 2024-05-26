@@ -52,7 +52,7 @@ pro ucomp_average_l1_files, files, $
     goto, done
   endif
 
-  min_average_files = run->config('min_average_files')
+  min_average_files = run->config('averaging/min_average_files')
   if (n_ok_files lt min_average_files) then begin
     mg_log, 'not enough OK files to average (%d < %d)', $
             n_ok_files, min_average_files, $

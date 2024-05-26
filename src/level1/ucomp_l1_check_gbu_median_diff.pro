@@ -86,6 +86,13 @@ pro ucomp_l1_check_gbu_median_diff, wave_region, run=run
     ucomp_average_l1_files, good_files, method='median', averaged_data=median_data, run=run
     ucomp_average_l1_files, good_files, method='sigma', averaged_data=sigma_data, run=run
 
+    if (n_elements(mean_data) eq 0L) then begin
+      mg_log, 'no average produced in %s nm files in %s', $
+              wave_region, program_names[program_number], $
+              name=run.logger_name, /info
+      continue
+    endif
+
     dims = size(mean_data, /dimensions)
     mask = ucomp_annulus(1.1 * median_radius, 1.5 * median_radius, dimensions=dims)
     mask *= ucomp_post_mask(dims, median_post_angle, post_width=60.0)
