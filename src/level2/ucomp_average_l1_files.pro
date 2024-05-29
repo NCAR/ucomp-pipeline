@@ -237,7 +237,7 @@ pro ucomp_average_l1_files, files, $
                   after='DATE-OBS'
     ucomp_addpar, primary_header, 'NUMWAVE', n_unique_wavelengths
     ucomp_addpar, primary_header, 'NUMFILES', n_ok_files, $
-                  comment='number of files in average', $
+                  comment='number of level 1 files averaged', $
                   after='NUMBEAM'
 
     if (size(mean_wavelength_data, /n_dimensions) gt 3L) then begin
