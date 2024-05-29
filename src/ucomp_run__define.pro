@@ -841,6 +841,36 @@ end
 
 
 ;+
+; Return whether the current configuration file is valid.
+;
+; :Returns:
+;   boolean whether the current config file is valid
+;-
+function ucomp_run::validate_config
+  compile_opt strictarr
+
+  self->getProperty, logger_name=logger_name
+
+  config_valid = self.options->is_valid(error_msg=error_msg)
+  if (~config_valid) then begin
+    mg_log, 'invalid configuration file', name=logger_name, /critical
+    mg_log, '%s', error_msg, name=logger_name, /critical
+    return, 0
+  endif
+
+  produce_l1 = self->config('steps/level1')
+  produce_l2 = self->config('steps/level2')
+
+  if (produce_l2 && ~produce_l1) then begin
+    mg_log, 'invalid pipeline steps', name=logger_name, /critical
+    return, 0
+  endif
+
+  return, 1
+end
+
+
+;+
 ; Query whether a given alert should be send. Alerts are a type of notification
 ; send *during* the running of the near-realtime pipeline to warn the observers
 ; about some non-optimal functioning of the instrument.
@@ -1213,12 +1243,9 @@ function ucomp_run::init, date, mode, config_filename, $
 
   self.config_filename = config_filename
   self.options = ucomp_read_config(self.config_filename, spec=config_spec_filename)
-  config_valid = self.options->is_valid(error_msg=error_msg)
-  if (~config_valid) then begin
-    mg_log, 'invalid configuration file', name=logger_name, /critical
-    mg_log, '%s', error_msg, name=logger_name, /critical
-    return, 0
-  endif
+
+  valid_config = self->validate_config()
+  if (~valid_config) then return, 0
 
   if (~keyword_set(no_log)) then self->_setup_logger, reprocess=reprocess
 
