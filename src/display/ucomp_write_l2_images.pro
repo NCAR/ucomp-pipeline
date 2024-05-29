@@ -183,7 +183,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
 
     summed_q_i_dashboard = ucomp_display_image(wave_region, summed_q_i, $
                                                type='quv_i', $
-                                               name='Weighted average Q / I', $
+                                               name='Weighted average Q/I', $
                                                reduce_factor=reduce_factor, $
                                                /no_wave_region_annotation, $
                                                /no_mlso_annotation, $
@@ -191,7 +191,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
 
     summed_u_i_dashboard = ucomp_display_image(wave_region, summed_u_i, $
                                                type='quv_i', $
-                                               name='Weighted average U / I', $
+                                               name='Weighted average U/I', $
                                                reduce_factor=reduce_factor, $
                                                /no_wave_region_annotation, $
                                                /no_mlso_annotation, $
@@ -199,7 +199,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
 
     summed_linpol_i_dashboard = ucomp_display_image(wave_region, summed_linpol_i, $
                                                     type='linpol', $
-                                                    name='Weighted average log!I10!N(L / I)', $
+                                                    name='Weighted average log!I10!N(L/I)', $
                                                     reduce_factor=reduce_factor, $
                                                     /no_wave_region_annotation, $
                                                     /no_mlso_annotation, $
@@ -368,7 +368,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
     summed_q_i_display = ucomp_display_image(wave_region, $
                                              summed_q_i, $
                                              type='quv_i', $
-                                             name='Weighted average Q / I', $
+                                             name='Weighted average Q/I', $
                                              reduce_factor=reduce_factor, $
                                              no_wave_region_annotation=keyword_set(thumbnail), $
                                              no_mlso_annotation=keyword_set(thumbnail), $
@@ -384,7 +384,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
     summed_u_i_display = ucomp_display_image(wave_region, $
                                              summed_u_i, $
                                              type='quv_i', $
-                                             name='Weighted average U / I', $
+                                             name='Weighted average U/I', $
                                              reduce_factor=reduce_factor, $
                                              no_wave_region_annotation=keyword_set(thumbnail), $
                                              no_mlso_annotation=keyword_set(thumbnail), $
@@ -400,7 +400,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
     summed_linpol_i_display = ucomp_display_image(wave_region, $
                                                   summed_linpol_i, $
                                                   type='linpol', $
-                                                  name='Weighted average log!I10!N(L / I)', $
+                                                  name='Weighted average log!I10!N(L/I)', $
                                                   reduce_factor=reduce_factor, $
                                                   no_wave_region_annotation=keyword_set(thumbnail), $
                                                   no_mlso_annotation=keyword_set(thumbnail), $
