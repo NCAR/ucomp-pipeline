@@ -244,11 +244,30 @@ function ucomp_display_image, wave_region, im, $
   endif
 
   if (n_elements(name) gt 0L) then begin
-    xyouts, 0.5, title_height, /normal, alignment=0.5, $
-            display_power eq 1.0 $
+    max_title_length = 18L
+    title = display_power eq 1.0 $
               ? string(name, format='%s') $
-              : string(name, display_power, format='(%"%s!E%0.2f!N")'), $
-            charsize=title_charsize, color=text_color, font=font
+              : string(name, display_power, format='(%"%s!E%0.2f!N")')
+    if (keyword_set(no_mlso_annotation) $
+          && keyword_set(no_wave_region_annotation) $
+          && strlen(title) gt max_title_length) then begin
+      title_array = mg_strwrap(title, width=max_title_length)
+      n_lines = n_elements(title_array)
+      title_gap = 13.0 * title_charsize
+      normal_coords = convert_coord(fltarr(n_lines), $
+                                    title_gap * reverse(findgen(n_lines)), $
+                                    /device, /to_normal)
+      for i = 0L, n_lines - 1L do begin
+        xyouts, 0.5, normal_coords[1, i] + title_height, /normal, alignment=0.5, $
+                title_array[i], $
+                charsize=title_charsize, color=text_color, font=font
+      endfor
+
+    endif else begin
+      xyouts, 0.5, title_height, /normal, alignment=0.5, $
+              title, $
+              charsize=title_charsize, color=text_color, font=font
+    endelse
   endif
   colorbar2, position=[0.35, 0.5, 0.65, 0.52], $
              charsize=detail_charsize, $
