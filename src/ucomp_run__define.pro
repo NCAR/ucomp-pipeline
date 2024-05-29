@@ -841,7 +841,9 @@ end
 
 
 ;+
-; Return whether the current configuration file is valid.
+; Return whether the current configuration file is valid, syntactically as well
+; as logically. For example, test the consistency of the `steps` section
+; options.
 ;
 ; :Returns:
 ;   boolean whether the current config file is valid

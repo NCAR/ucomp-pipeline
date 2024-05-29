@@ -102,16 +102,23 @@ pro ucomp_reprocess_wrapper, date, config_filename
 
   ucomp_pipeline_step, 'ucomp_get_observerlog', run=run
 
-  for w = 0L, n_elements(wave_regions) - 1L do begin
-    ucomp_pipeline_step, 'ucomp_l1_archive', wave_regions[w], run=run
-    ucomp_pipeline_step, 'ucomp_l2_archive', wave_regions[w], run=run
-  endfor
+  if (run->config('steps/level1')) then begin
+    for w = 0L, n_elements(wave_regions) - 1L do begin
+      ucomp_pipeline_step, 'ucomp_l1_archive', wave_regions[w], run=run
+    endfor
+    ucomp_pipeline_step, 'ucomp_l1_publish', run=run
+  endif
 
-  ucomp_pipeline_step, 'ucomp_l1_publish', run=run
-  ucomp_pipeline_step, 'ucomp_l2_publish', run=run
-  ucomp_pipeline_step, 'ucomp_averages_publish', run=run
-  ucomp_pipeline_step, 'ucomp_quicklooks_publish', run=run
-  ucomp_pipeline_step, 'ucomp_catalogs_publish', run=run
+  if (run->config('steps/level2')) then begin
+    for w = 0L, n_elements(wave_regions) - 1L do begin
+      ucomp_pipeline_step, 'ucomp_l2_archive', wave_regions[w], run=run
+    endfor
+
+    ucomp_pipeline_step, 'ucomp_l2_publish', run=run
+    ucomp_pipeline_step, 'ucomp_averages_publish', run=run
+    ucomp_pipeline_step, 'ucomp_quicklooks_publish', run=run
+    ucomp_pipeline_step, 'ucomp_catalogs_publish', run=run
+  endif
 
   ucomp_pipeline_step, 'ucomp_send_notification', run=run
 
