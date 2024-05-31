@@ -281,6 +281,9 @@ pro ucomp_calibration::cache_flats, filenames, $
     endfor
     n_flats = total(n_flats_per_file, /integer)
 
+    nx = self.run->epoch('nx')
+    ny = self.run->epoch('ny')
+
     n_cameras   = 2L
     flats       = fltarr(nx, ny, n_cameras, n_flats)
     times       = fltarr(n_flats)
@@ -300,7 +303,7 @@ pro ucomp_calibration::cache_flats, filenames, $
         fits_read, fcb, flat_image, flat_header, exten_no=e
         flats[0, 0, 0, i + e - 1L] = flat_image
         raw_files[e - 1L] = ucomp_getpar(flat_header, 'RAWFILE')
-        extensions[e - 1L] = ucomp_getpar(flat_header, 'RAWEXT')
+        extensions[e - 1L] = ucomp_getpar(flat_header, 'RAWEXTS')
         sgsdimv[e - 1L] = ucomp_getpar(flat_header, 'SGSDIMV')
       endfor
 
