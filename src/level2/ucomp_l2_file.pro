@@ -469,6 +469,12 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   ucomp_addpar, header, 'FITMETHD', perform_gauss_fit ? gaussian_fit_method : 'analytic', $
                 comment=' Gaussian fit method', $
                 before='SKYTRANS'
+  if (perform_gauss_fit && (gaussian_fit_method eq 'analytic')) then begin
+    ucomp_addpar, header, 'BLUE_REF', blue_reference_wavelength, $
+                  comment='[nm] blue reference wavelength', format='F0.3'
+    ucomp_addpar, header, 'RED_REF', red_reference_wavelength, $
+                  comment='[nm] red reference wavelength', format='F0.3'
+  endif
 
   ucomp_fits_write, fcb, $
                     float(peak_intensity), $
@@ -503,6 +509,10 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   sxdelpar, header, 'RSTWVL'
   sxdelpar, header, 'RSTMTHD'
   sxdelpar, header, 'WAVOFF2'
+  if (perform_gauss_fit && (gaussian_fit_method eq 'analytic')) then begin
+    sxdelpar, header, 'BLUE_REF'
+    sxdelpar, header, 'RED_REF'
+  endif
 
   ; write line width
   line_width_fwhm = float(line_width) * run->epoch('fwhm_factor')
