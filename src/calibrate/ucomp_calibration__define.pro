@@ -45,20 +45,19 @@ pro ucomp_calibration::cache_darks, filename, $
     fits_read, fcb, dark_image, dark_header, exten_no=1
 
     dims = size(dark_image, /dimensions)
-    dark_size = n_elements(dark_image)
 
     darks = make_array(dimension=[dims, fcb.nextend - 3L], $
                        type=size(dark_image, /type))
     raw_files = strarr(fcb.nextend - 3L)
 
-    darks[0] = dark_image
+    darks[*, *, *, 0] = dark_image
     raw_files[0] = ucomp_getpar(dark_header, 'RAWFILE')
 
     ; read the rest of the dark images
     for e = 2L, fcb.nextend - 3L do begin   ; there are 3 "index" extensions at end of file
       fits_read, fcb, dark_image, dark_header, exten_no=e
       raw_files[e - 1L] = ucomp_getpar(dark_header, 'RAWFILE')
-      darks[(e - 1) * dark_size] = dark_image
+      darks[*, *, *, e - 1L] = dark_image
     endfor
 
     ; read the times and exposure times
