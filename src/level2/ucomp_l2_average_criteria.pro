@@ -17,10 +17,12 @@
 ; :Keywords:
 ;   count : out, optional, type=long
 ;     set to a named variable to retrieve the number of files returned
-;   max_gap : in, required, type=float
-;     maximum gap allowed between files [secs]
+;   max_length : in, required, type=float
+;     maximum length of time between first and last file [secs]
 ;-
-function ucomp_l2_average_criteria, program_files, count=count, max_gap=max_gap
+function ucomp_l2_average_criteria, program_files, $
+                                    count=count, $
+                                    max_length=max_length
   compile_opt strictarr
 
   n_files = n_elements(program_files)
@@ -38,11 +40,8 @@ function ucomp_l2_average_criteria, program_files, count=count, max_gap=max_gap
   ; convert from hours to seconds
   times *= 60.0 * 60.0
 
-  ; find gaps
-  gaps = times[1:*] - times[0:-2]
-  gap_indices = where(gaps gt max_gap, n_gaps)
+  lengths = times - times[0]
+  average_indices = where(lengths le max_length, count, /null)
 
-  ; use first cluster of files
-  count = n_gaps eq 0L ? n_files : gap_indices[0] + 1L
-  return, program_files[0:count - 1L]
+  return, program_files[average_indices]
 end
