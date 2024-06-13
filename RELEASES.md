@@ -693,3 +693,5 @@
 - adding DISTORTF and HOTPIXF FITS keywords
 - improved post finding
 - improved quality check for too many missing frames
+- Gaussian fit to calculate peak intensity, LOS velocity, and line width
+- use reference wavelengths for 3-point analytic Gaussian calculation
