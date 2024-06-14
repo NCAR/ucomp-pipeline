@@ -36,6 +36,11 @@ function ucomp_l2_average_criteria, program_files, $
     return, program_files
   endif
 
+  ; waves uses entire program right now
+  if (program_name eq 'waves') then begin
+    return, program_files
+  endif
+
   ; find times of the files
   times = fltarr(n_files)
   for f = 0L, n_files - 1L do times[f] = program_files[f].obsday_hours
