@@ -13,6 +13,8 @@
 ; :Params:
 ;   program_files : in, required, type=objarr
 ;     UCoMP files in the program that could potentially be averaged
+;   program_name : in, required, type=string
+;     program name, different programs might have differing averaging criteria
 ;
 ; :Keywords:
 ;   count : out, optional, type=long
@@ -21,6 +23,7 @@
 ;     maximum length of time between first and last file [secs]
 ;-
 function ucomp_l2_average_criteria, program_files, $
+                                    program_name, $
                                     count=count, $
                                     max_length=max_length
   compile_opt strictarr
