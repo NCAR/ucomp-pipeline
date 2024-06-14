@@ -69,7 +69,7 @@ pro ucomp_l2_create_averages, wave_region, method, $
     good_files = program_files[good_files_indices]
 
     max_length = run->config('averaging/max_length')
-    mg_log, 'max gap: %0.1f secs', max_gap, name=run.logger_name, /debug
+    mg_log, 'max length: %0.1f secs', max_length, name=run.logger_name, /debug
     good_files = ucomp_l2_average_criteria(good_files, $
                                            count=n_good_files, $
                                            max_length=max_length)
