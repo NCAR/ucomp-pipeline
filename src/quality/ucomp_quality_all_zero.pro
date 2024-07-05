@@ -4,7 +4,7 @@
 ; Check whether any extensions have a datatype that does not match the others.
 ;
 ; :Returns:
-;   1B if any extensions don't have a matching datatype
+;   1B if the file is zeros
 ;
 ; :Params:
 ;   file : in, required, type=object
