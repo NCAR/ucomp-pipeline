@@ -56,8 +56,8 @@ pro ucomp_l1_sky_transmission, file, $
     data[*, *, *, e] *= sky_transmission
     backgrounds[*, *, e] *= sky_transmission
 
-    ucomp_addpar, h, 'SKYTRANS', sky_transmission, format='(F0.3)'
-    ucomp_addpar, background_h, 'SKYTRANS', sky_transmission, format='(F0.3)'
+    ucomp_addpar, h, 'SKYTRANS', sky_transmission, format='(F0.5)'
+    ucomp_addpar, background_h, 'SKYTRANS', sky_transmission, format='(F0.5)'
 
     headers[e] = h
     background_headers[e] = background_h
