@@ -1,6 +1,42 @@
 ; docformat = 'rst'
 
 ;+
+; Helper function to check a mean value against the nominal range for that
+; value for a particular camera and onband state.
+;
+; :Returns:
+;   1B if value outside range
+;
+; :Params:
+;   mean : in, required, type=float
+;     mean value
+;   nominal_range : in required, type=fltarr(2)
+;     range of good values
+;   camera : in, required, type=string
+;     camera name for log messages
+;   onband : in, required, type=string
+;     "onband" or "offband"
+;
+; :Keywords:
+;   run : in, required, type=object
+;     `ucomp_run` object
+;-
+function ucomp_quality_flat_thresholds_check, mean, nominal_range, $
+                                              camera, onband, run=run
+  compile_opt strictarr
+
+  if (mean lt nominal_range[0] || mean gt nominal_range[1]) then begin
+    mg_log, '%s %s: mean %0.1f not in nominal range [%0.1f, %0.1f]', $
+            camera, onband, mean, nominal_range, $
+            name=run.logger_name, /warn
+    return, 1B
+  endif else begin
+    return, 0B
+  endelse
+end
+
+
+;+
 ; Check flat median is in nominal range.
 ;
 ; :Returns:
@@ -70,15 +106,15 @@ function ucomp_quality_flat_thresholds, file, $
 
     onband = strtrim(ucomp_getpar(ext_headers[f]), 2)
     if (strlowcase(onband) eq 'rcam') then begin
-      if (means[0] lt rcam_onband_flat_range[0]) then return, 1UL
-      if (means[0] gt rcam_onband_flat_range[1]) then return, 1UL
-      if (means[1] lt tcam_offband_flat_range[0]) then return, 1UL
-      if (means[1] gt tcam_offband_flat_range[1]) then return, 1UL
+      if (ucomp_quality_flat_thresholds_check(means[0], rcam_onband_flat_range, $
+        'rcam', 'onband', run=run)) then return, 1UL
+      if (ucomp_quality_flat_thresholds_check(means[1], tcam_offband_flat_range, $
+        'tcam', 'offband', run=run)) then return, 1UL
     endif else begin
-      if (means[0] lt rcam_offband_flat_range[0]) then return, 1UL
-      if (means[0] gt rcam_offband_flat_range[1]) then return, 1UL
-      if (means[1] lt tcam_onband_flat_range[0]) then return, 1UL
-      if (means[1] gt tcam_onband_flat_range[1]) then return, 1UL
+      if (ucomp_quality_flat_thresholds_check(means[0], rcam_offband_flat_range, $
+        'rcam', 'offband', run=run)) then return, 1UL
+      if (ucomp_quality_flat_thresholds_check(means[1], tcam_onband_flat_range, $
+        'tcam', 'onband', run=run)) then return, 1UL
     endelse
   endfor
 
