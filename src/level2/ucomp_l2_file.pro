@@ -502,7 +502,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                     float(doppler_shift), $
                     header, $
                     extname='LOS velocity', $
-                    ext_comment='Doppler velocity from Gaussian fit', $
+                    ext_comment='[km/s] Doppler velocity from Gaussian fit', $
                     /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
 
@@ -520,7 +520,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                     float(line_width_fwhm), $
                     header, $
                     extname='Line width (FWHM)', $
-                    ext_comment='FWHM from Gaussian fit', $
+                    ext_comment='[km/s] FWHM from Gaussian fit', $
                     /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
 
@@ -579,7 +579,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                       float(azimuth), $
                       header, $
                       extname='Azimuth', $
-                      ext_comment='0.5 * atan(weighted U / weighted Q)', $
+                      ext_comment='[deg] 0.5 * atan(weighted U / weighted Q)', $
                       /no_abort, message=error_msg
     if (error_msg ne '') then message, error_msg
 
@@ -588,7 +588,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                       float(radial_azimuth), $
                       header, $
                       extname='Radial azimuth', $
-                      ext_comment='azimuth with respect to radial direction', $
+                      ext_comment='[deg] azimuth with respect to radial direction', $
                       /no_abort, message=error_msg
     if (error_msg ne '') then message, error_msg
   endif
