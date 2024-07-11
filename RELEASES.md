@@ -696,3 +696,5 @@
 - Gaussian fit to calculate peak intensity, LOS velocity, and line width
 - use reference wavelengths for 3-point analytic Gaussian calculation
 - added quality thresholds for flats
+- updated distortion and hot pixels
+- changes for new wave regions
