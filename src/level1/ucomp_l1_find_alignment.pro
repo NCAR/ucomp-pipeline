@@ -181,7 +181,7 @@ pro ucomp_l1_find_alignment, file, $
   file.image_scale = image_scale
   ucomp_addpar, primary_header, 'IMAGESCL', image_scale, $
                 comment='[arcsec/pixels] image scale for this file', $
-                format='(F0.6)', after=after
+                format='(F0.4)', after=after
 
   ; determine eccentricity of cameras
   rcam_elliptical_geometry = ucomp_find_geometry(rcam_background, $
