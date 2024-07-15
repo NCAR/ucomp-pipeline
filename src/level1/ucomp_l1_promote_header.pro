@@ -94,7 +94,16 @@ pro ucomp_l1_promote_header, file, $
   sxdelpar, primary_header, 'LEVEL'
   ucomp_addpar, primary_header, 'LEVEL', 'L1', comment='level 1 calibrated', $
                 after=after
+  ucomp_addpar, primary_header, 'PRODUCT', 'image', comment='', $
+                after=after
+
   ucomp_movepar, primary_header, 'BUNIT', after='OBJECT'
+  ucomp_addpar, primary_header, 'BZERO', 0, $
+                comment='offset for data', $
+                after='BUNIT'
+  ucomp_addpar, primary_header, 'BSCALE', 1.0, $
+                comment='physical = data * BSCALE + BZERO', $
+                after='BZERO'
 
   after = 'R_SUN'
   ucomp_addpar, primary_header, 'DOI', run->line(file.wave_region, 'doi'), $
