@@ -84,12 +84,13 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   ; either side of the center. If no reference wavelengths are  specified for a
   ; wave region, just use the center three wavelengths. Discussed in #263.
 
-  blue_reference_wavelength = run->line(wave_region, 'blue_reference_wavelength')
+  blue_reference_wavelength = run->line(wave_region, 'blue_reference_wavelength', $
+                                        found=blue_reference_found)
   center_wavelength         = run->line(wave_region, 'center_wavelength')
-  red_reference_wavelength  = run->line(wave_region, 'red_reference_wavelength')
+  red_reference_wavelength  = run->line(wave_region, 'red_reference_wavelength', $
+                                        found=red_reference_found)
 
-  use_ref_wavelengths = (red_reference_wavelength gt 0.0) && (blue_reference_wavelength gt 0.0)
-  if (use_ref_wavelengths) then begin
+  if (red_reference_found && blue_reference_found) then begin
     mg_log, 'using %0.3f nm-%0.3f nm-%0.3f nm for analytical Guassian', $
             blue_reference_wavelength, $
             center_wavelength, $
