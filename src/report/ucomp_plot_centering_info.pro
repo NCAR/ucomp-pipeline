@@ -40,7 +40,7 @@ pro ucomp_plot_centering_info, filename, radiusdiff_filename, wave_region, run=r
 
   x_range    = (1280.0 - 1.0) / 2.0 + [-40.0, 40.0]
   y_range    = (1024.0 - 1.0) / 2.0 + [-40.0, 40.0]
-  r_range    = 335.0 + [-20.0, 20.0]
+  r_range    = 340.0 + [-20.0, 20.0]
 
   !null = ucomp_hours_format(/minutes)
   time_range = [16.0, 28.0]
