@@ -36,6 +36,8 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
     plate_scale[f] = run->line(wave_region, 'plate_scale', datetime=datetime)
     plate_scale_tolerance[f] = run->line(wave_region, 'plate_scale_tolerance', $
                                          datetime=datetime)
+    occulter_diameter[f] = run->epoch('OC-' + (data.occltrid)[f] + '-mm', $
+                                      datetime=datetime)
   endfor
 
   jds = ucomp_dateobs2julday(data.date_obs)
@@ -123,6 +125,30 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
                              subdir=ucomp_decompose_date(run.date), $
                              root=run->config('engineering/basedir'))
   write_gif, output_filename, tvrd(), r, g, b
+
+  output_filename = filepath(string(run.date, wave_region, $
+                                    format='(%"%s.ucomp.%s.mission.image_scale.csv")'), $
+                             subdir=ucomp_decompose_date(run.date), $
+                             root=run->config('engineering/basedir'))
+  openw, lun, output_filename, /get_lun
+; date/time, image scale, plate scale, occulter ID, occulter diameter [mm]
+  printf, lun, ['date/time', $
+                'image scale', $
+                'plate scale', $
+                'occulter ID', $
+                'occulter diameter [mm]'], $
+               format='%s\t%s\t%s\t%s\t%s\t%s'
+  for f = 0L, n_files - 1L do begin
+    printf, lun, $
+            (data.date_obs)[f], $
+            jds[f], $
+            image_scale[f], $
+            plate_scale[f], $
+            (data.occltrid)[f], $
+            occulter_diameter[f], $
+            format='%s\t%0.9f\t%0.5f\t%0.5f\t%s\t%0.3f'
+  endfor
+  free_lun, lun
 
   done:
   if (n_elements(original_rgb) gt 0L) then tvlct, original_rgb
