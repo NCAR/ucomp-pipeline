@@ -65,7 +65,7 @@ pro ucomp_mission_centering_plot, wave_region, db, run=run
   psym             = 6
   symsize          = 0.25
 
-  r_range    = 335.0 + 50.0 * [-1.0, 1.0]
+  r_range    = 340.0 + 20.0 * [-1.0, 1.0]
   time_range = [jds[0], jds[-1]]
 
   month_ticks = mg_tick_locator(time_range, /months)
