@@ -133,20 +133,25 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
   openw, lun, output_filename, /get_lun
 ; date/time, image scale, plate scale, occulter ID, occulter diameter [mm]
   printf, lun, ['date/time', $
+                'Julian date', $
+                'RCAM radius', $
+                'TCAM radius', $
                 'image scale', $
                 'plate scale', $
                 'occulter ID', $
                 'occulter diameter [mm]'], $
-               format='%s\t%s\t%s\t%s\t%s\t%s'
+               format='%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s'
   for f = 0L, n_files - 1L do begin
     printf, lun, $
             (data.date_obs)[f], $
             jds[f], $
+            (data.rcam_radius)[f], $
+            (data.tcam_radius)[f], $
             image_scale[f], $
             plate_scale[f], $
             (data.occltrid)[f], $
             occulter_diameter[f], $
-            format='%s\t%0.9f\t%0.5f\t%0.5f\t%s\t%0.3f'
+            format='%s\t%0.9f\t%0.3f\t%0.3f\t%0.5f\t%0.5f\t%s\t%0.3f'
   endfor
   free_lun, lun
 
