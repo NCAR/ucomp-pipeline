@@ -698,3 +698,5 @@
 - added quality thresholds for flats
 - updated distortion and hot pixels
 - changes for new wave regions
+
+#### 1.0.11
