@@ -12,7 +12,6 @@ pro ucomp_db_update, run=run
 
   mg_log, 'updating database...', name=run.logger_name, /info
 
-  ; get the files for the given wave_region
   all_files = run->get_files(count=n_all_files)
   if (n_all_files eq 0L) then begin
     mg_log, 'no files to insert', name=run.logger_name, /info
