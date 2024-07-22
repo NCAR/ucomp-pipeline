@@ -687,7 +687,7 @@
 
 - fix for creating temperature map on 20240330
 
-#### 1.0.10
+#### 1.0.10 [July 22, 2024]
 
 - added angle grid on quicklooks
 - adding DISTORTF and HOTPIXF FITS keywords
