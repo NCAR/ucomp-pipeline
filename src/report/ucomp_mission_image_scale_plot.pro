@@ -24,7 +24,8 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
     mg_log, 'no %s nm files found', wave_region, name=run.logger_name, /warn
     goto, done
   endif else begin
-    mg_log, '%d %s nm files found', n_files, wave_region, name=run.logger_name, /info
+    mg_log, '%d %s nm files found', n_files, wave_region, $
+            name=run.logger_name, /info
   endelse
 
   image_scale = data.image_scale
@@ -37,8 +38,9 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
     plate_scale[f] = run->line(wave_region, 'plate_scale', datetime=datetime)
     plate_scale_tolerance[f] = run->line(wave_region, 'plate_scale_tolerance', $
                                          datetime=datetime)
-    occulter_diameter[f] = run->epoch('OC-' + (data.occltrid)[f] + '-mm', $
-                                      datetime=datetime)
+    odiam = run->epoch('OC-' + (data.occltrid)[f] + '-mm', $
+                       datetime=datetime, found=occulter_diameter_found)
+    occulter_diameter[f] = occulter_diameter_found ? odiam : !values.f_nan
   endfor
 
   jds = ucomp_dateobs2julday(data.date_obs)
