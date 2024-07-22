@@ -30,8 +30,13 @@ function ucomp_db_connect, filename, section, $
   db = ucompdbmysql(logger_name=logger_name, log_statements=log_statements)
   db->connect, config_filename=filename, $
                config_section=section, $
-               status=status
-  if (status ne 0L) then return, !null
+               status=status, $
+               error_message=error_message
+  if (status ne 0L) then begin
+    mg_log, 'problem connecting to database', name=logger_name, /error
+    mg_log, '%s', error_message, name=logger_name, /error
+    return, !null
+  endif
 
   db->getProperty, host_name=host, $
                    client_version=client_version, $
