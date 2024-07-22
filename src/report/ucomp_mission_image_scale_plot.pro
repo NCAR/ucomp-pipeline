@@ -30,6 +30,7 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
   image_scale = data.image_scale
   plate_scale = 0.0 * image_scale
   plate_scale_tolerance = 0.0 * image_scale
+  occulter_diameter = 0.0 * image_scale
 
   for f = 0L, n_files - 1L do begin
     datetime = ucomp_dateobs2datetime((data.date_obs)[f])
