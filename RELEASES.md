@@ -703,3 +703,5 @@
 #### 1.0.11 [July 22, 2024]
 
 - fix for crash in creating mission image scale plot
+
+#### 1.0.12
