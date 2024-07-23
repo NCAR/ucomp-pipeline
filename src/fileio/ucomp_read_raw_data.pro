@@ -53,7 +53,8 @@ pro ucomp_read_raw_data, filename, $
 
   n_extensions = fcb.nextend
   if (n_extensions lt 1) then begin
-    message, string(filename, $
+    fits_close, fcb
+    message, string(file_basename(filename), $
                     format='(%"%s contains no extensions")')
   endif
 
