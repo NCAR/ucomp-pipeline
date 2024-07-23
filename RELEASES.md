@@ -713,3 +713,5 @@
 - update documentation
 - fix for days with unprocessed, ambiguous wave region level 0 files
 - log messages about files that fail inventory
+
+#### 1.0.14
