@@ -23,7 +23,7 @@ pro ucomp_db_update_mlso_numfiles, obsday_index, db, run=run
 
   n_good_fits_files = 0L
   for f = 0L, n_total_fits_files - 1L do begin
-    if (files[f].good) then n_good_fits_files += 1L
+    if (files[f].good and files[f].wrote_l1) then n_good_fits_files += 1L
   endfor
 
   sql_cmd = 'update mlso_numfiles set num_ucomp=%d where day_id=%d'
