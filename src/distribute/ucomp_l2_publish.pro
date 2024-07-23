@@ -14,6 +14,8 @@ pro ucomp_l2_publish, run=run
 
   ; copy L2 data into archive, etc. directories
 
+  n_nondatafiles = 0L
+
   web_basedir = run->config('results/web_basedir')
   distribute_fits = n_elements(web_basedir) gt 0L
   if (distribute_fits) then begin
@@ -71,8 +73,10 @@ pro ucomp_l2_publish, run=run
                                subdir='docs', $
                                root=run.resource_root)
   files_list->add, citation_filename
+  n_nondatafiles += 1L
 
   ucomp_add_userguide, files_list, run=run
+  n_nondatafiles += 1L
 
   catalog_filename = filepath(string(run.date, format='%s.ucomp.catalog.txt'), $
                               root=processing_dir)
@@ -82,6 +86,7 @@ pro ucomp_l2_publish, run=run
     goto, cleanup
   endif
   files_list->add, catalog_filename
+  n_nondatafiles += 1L
 
   for w = 0L, n_elements(wave_regions) - 1L do begin
     wave_region_catalog_filename = filepath(string(run.date, wave_regions[w], $
@@ -109,7 +114,7 @@ pro ucomp_l2_publish, run=run
   n_files = files_list->count()
   files = files_list->toArray()
 
-  if (n_files eq 0L) then begin
+  if (n_files - n_nondatafiles le 0L) then begin
     mg_log, 'no level 2 files to distribute', name=run.logger_name, /info
     goto, cleanup
   endif
