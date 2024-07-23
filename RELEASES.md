@@ -708,7 +708,7 @@
 
 - fix for crash in creating mission image scale plot
 
-#### 1.0.13
+#### 1.0.13 [July 23, 2024]
 
 - update documentation
 - fix for days with unprocessed, ambiguous wave region level 0 files
