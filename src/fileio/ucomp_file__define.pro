@@ -839,6 +839,8 @@ function ucomp_file::init, raw_filename, run=run
   catch, error
   if (error ne 0L) then begin
     catch, /cancel
+    msg = strtrim(strmid(!error_state.msg, strpos(!error_state.msg, ':') + 1), 2)
+    mg_log, '%s', msg, name=run.logger_name, /error
     return, 0
   endif
 
