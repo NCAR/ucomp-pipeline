@@ -715,3 +715,5 @@
 - log messages about files that fail inventory
 
 #### 1.0.14
+
+- check if wave region is published for number of good files for a day

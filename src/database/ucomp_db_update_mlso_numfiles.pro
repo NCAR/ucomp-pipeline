@@ -23,7 +23,13 @@ pro ucomp_db_update_mlso_numfiles, obsday_index, db, run=run
 
   n_good_fits_files = 0L
   for f = 0L, n_total_fits_files - 1L do begin
-    if (files[f].good and files[f].wrote_l1) then n_good_fits_files += 1L
+    if (files[f].good and files[f].wrote_l1) then begin
+      published = run->config(files[f].wave_region + '/publish_l1', found=found)
+      if (~found) then published = 0B
+      if (published) then begin
+        n_good_fits_files += 1L
+      endif
+    endif
   endfor
 
   sql_cmd = 'update mlso_numfiles set num_ucomp=%d where day_id=%d'
