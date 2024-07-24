@@ -134,7 +134,6 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
                              subdir=ucomp_decompose_date(run.date), $
                              root=run->config('engineering/basedir'))
   openw, lun, output_filename, /get_lun
-; date/time, image scale, plate scale, occulter ID, occulter diameter [mm]
   printf, lun, ['date/time', $
                 'Julian date', $
                 'RCAM radius', $
@@ -143,7 +142,7 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
                 'plate scale', $
                 'occulter ID', $
                 'occulter diameter [mm]'], $
-               format='%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s'
+               format='%s, %s, %s, %s, %s, %s, %s, %s'
   for f = 0L, n_files - 1L do begin
     printf, lun, $
             (data.date_obs)[f], $
@@ -154,7 +153,7 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
             plate_scale[f], $
             (data.occltrid)[f], $
             occulter_diameter[f], $
-            format='%s\t%0.9f\t%0.3f\t%0.3f\t%0.5f\t%0.5f\t%s\t%0.3f'
+            format='%s, %0.9f, %0.3f, %0.3f, %0.5f, %0.5f, %s, %0.3f'
   endfor
   free_lun, lun
 
