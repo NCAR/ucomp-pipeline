@@ -718,4 +718,6 @@
 
 - check if wave region is published for number of good files for a day
 
-#### 1.0.15
+#### 1.0.15 [July 24, 2024]
+
+- fix for unknown wave region of file

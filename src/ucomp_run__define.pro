@@ -818,7 +818,7 @@ end
 ;   name : in, required, type=string
 ;     section and option name in the form "section/option"
 ;-
-function ucomp_run::config, name
+function ucomp_run::config, name, found=found
   compile_opt strictarr
   on_error, 2
 
@@ -828,12 +828,12 @@ function ucomp_run::config, name
   value = self.options->get(tokens[1], section=tokens[0], found=found)
   if (name eq 'raw/basedir' && n_elements(value) eq 0L) then begin
     routing_file = self.options->get('routing_file', section='raw')
-    value = ucomp_get_route(routing_file, self.date, 'raw')
+    value = ucomp_get_route(routing_file, self.date, 'raw', found=found)
   endif
 
   if (name eq 'processing/basedir' && n_elements(value) eq 0L) then begin
     routing_file = self.options->get('routing_file', section='processing')
-    value = ucomp_get_route(routing_file, self.date, 'process')
+    value = ucomp_get_route(routing_file, self.date, 'process', found=found)
   endif
 
   return, value
