@@ -74,7 +74,7 @@ pro ucomp_l1_find_alignment, file, $
                                                      dx0_c, dy0_c), $
                               2)
   endif
-  rcam_background = smooth(rcam_background, 2, /nan)
+  rcam_background = smooth(rcam_background, 3, /nan)
   file.rcam_geometry = ucomp_find_geometry(rcam_background, $
                                            xsize=run->epoch('nx'), $
                                            ysize=run->epoch('ny'), $
@@ -107,7 +107,7 @@ pro ucomp_l1_find_alignment, file, $
                                                      dx1_c, dy1_c), $
                               2)
   endif
-  tcam_background = smooth(tcam_background, 2, /nan)
+  tcam_background = smooth(tcam_background, 3, /nan)
   file.tcam_geometry = ucomp_find_geometry(tcam_background, $
                                            xsize=run->epoch('nx'), $
                                            ysize=run->epoch('ny'), $
