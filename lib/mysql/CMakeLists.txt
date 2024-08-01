@@ -4,6 +4,8 @@ set(DLM_NAME mg_${DIRNAME})
 find_package(MySQL)
 
 if (MYSQL_INCLUDE_DIR AND MYSQL_LIBRARY)
+  message(STATUS "MYSQL_INCLUDE_DIR = ${MYSQL_INCLUDE_DIR}")
+  message(STATUS "MYSQL_LIBRARY = ${MYSQL_LIBRARY}")
   if (EXISTS ${MYSQL_INCLUDE_DIR} AND EXISTS ${MYSQL_LIBRARY})
     include_directories(${MYSQL_INCLUDE_DIR})
 
@@ -33,4 +35,6 @@ if (MYSQL_INCLUDE_DIR AND MYSQL_LIBRARY)
 
   file(GLOB PRO_FILES "*.pro")
   install(FILES ${PRO_FILES} DESTINATION lib/${DIRNAME})
+else ()
+  message(STATUS "MySQL not found")
 endif ()
