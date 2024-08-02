@@ -92,6 +92,7 @@ pro ucomp_averages_publish, run=run
   files_list->add, catalog_filename
   n_nondatafiles += 1L
 
+  ; TODO: only published wave regions?
   for w = 0L, n_elements(wave_regions) - 1L do begin
     wave_region_catalog_filename = filepath(string(run.date, wave_regions[w], $
                                                    format='%s.ucomp.%s.files.txt'), $
