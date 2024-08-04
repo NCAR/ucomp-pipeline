@@ -16,7 +16,7 @@
 pro ucomp_mission_image_scale_plot, wave_region, db, run=run
   compile_opt strictarr
 
-  query = 'select ucomp_eng.date_obs, ucomp_eng.occltrid, ucomp_eng.image_scale from ucomp_eng inner join ucomp_file on ucomp_eng.file_name=ucomp_file.l0_file_name where ucomp_eng.wave_region = ''%s'' and ucomp_file.quality = 0 and ucomp_file.gbu = 0 order by ucomp_eng.date_obs'
+  query = 'select ucomp_eng.date_obs, ucomp_eng.occltrid, ucomp_eng.image_scale, ucomp_eng.rcam_radius, ucomp_eng.tcam_radius from ucomp_eng inner join ucomp_file on ucomp_eng.file_name=ucomp_file.l0_file_name where ucomp_eng.wave_region = ''%s'' and ucomp_file.quality = 0 and ucomp_file.gbu = 0 order by ucomp_eng.date_obs'
   ;query = 'select * from ucomp_eng where wave_region=''%s'' order by date_obs'
   data = db->query(query, wave_region, $
                    count=n_files, error=error, fields=fields, sql_statement=sql)
