@@ -87,12 +87,14 @@ pro ucomp_db_update, run=run
     ; make images/plots from database data
 
     ucomp_rolling_flat_plots, wave_regions[w], db, run=run
+    ucomp_rolling_o1focus_plot, wave_regions[w], db, n_days=28, run=run
 
     ucomp_mission_background_plot, wave_regions[w], db, run=run
     ucomp_mission_image_scale_plot, wave_regions[w], db, run=run
     ucomp_mission_vcrosstalk_plot, wave_regions[w], db, run=run
     ucomp_mission_centering_plot, wave_regions[w], db, run=run
     ucomp_mission_eccentricity_plot, wave_regions[w], db, run=run
+    ucomp_rolling_o1focus_plot, wave_regions[w], db, /mission, run=run
 
     ucomp_rolling_synoptic_map, wave_regions[w], $
                                 'intensity', 'int', 'intensity', $
@@ -128,8 +130,10 @@ pro ucomp_db_update, run=run
                                 1.3, 'r13doppler', $
                                 db, run=run
 
+    ucomp_daily_o1focus_plot, wave_regions[w], obsday_index, db, run=run
     ucomp_plot_eccentricity, wave_regions[w], obsday_index, db, run=run
   endfor
+
 
   done:
   if (obj_valid(db)) then obj_destroy, db
