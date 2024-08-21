@@ -29,7 +29,7 @@ pro ucomp_l1_engineering_plots, run=run
                                              format='(%"%s.ucomp.daily.data_types.png")'), $
                                       root=engineering_dir), $
                              run=run
-  ucomp_sgs_plots, engineering_dir, run=run
+  ucomp_daily_sgs_plots, engineering_dir, run=run
   ucomp_vcrosstalk_plots, engineering_dir, run=run
 
   ucomp_log_centering_info, filepath(string(run.date, $

@@ -11,7 +11,7 @@
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-pro ucomp_sgs_plots, engineering_dir, run=run
+pro ucomp_daily_sgs_plots, engineering_dir, run=run
   compile_opt strictarr
 
   files = run->get_files(count=n_files)

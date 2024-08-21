@@ -85,9 +85,11 @@ pro ucomp_db_update, run=run
                                 run=run
 
     ; make images/plots from database data
+    n_rolling_days = 28L
 
     ucomp_rolling_flat_plots, wave_regions[w], db, run=run
-    ucomp_rolling_o1focus_plot, wave_regions[w], db, n_days=28, run=run
+    ucomp_rolling_o1focus_plot, wave_regions[w], db, $
+                                n_days=n_rolling_days, run=run
 
     ucomp_mission_background_plot, wave_regions[w], db, run=run
     ucomp_mission_image_scale_plot, wave_regions[w], db, run=run
@@ -99,41 +101,48 @@ pro ucomp_db_update, run=run
     ucomp_rolling_synoptic_map, wave_regions[w], $
                                 'intensity', 'int', 'intensity', $
                                 1.08, 'r108i', $
-                                db, run=run
+                                db, $
+                                n_days=n_rolling_days, run=run
     ucomp_rolling_synoptic_map, wave_regions[w], $
                                 'intensity', 'int', 'intensity', $
                                 1.3, 'r13i', $
-                                db, run=run
+                                db,
+                                n_days=n_rolling_days, run=run
     ucomp_rolling_synoptic_map, wave_regions[w], $
                                 'linear polarization', 'linpol', 'linpol', $
                                 1.08, 'r108l', $
-                                db, run=run
+                                db, $
+                                n_days=n_rolling_days, run=run
     ucomp_rolling_synoptic_map, wave_regions[w], $
                                 'linear polarization', 'linpol', 'linpol', $
                                 1.3, 'r13l', $
-                                db, run=run
+                                db, $
+                                n_days=n_rolling_days, run=run
     ucomp_rolling_synoptic_map, wave_regions[w], $
                                 'radial azimuth', 'radazi', 'radial_azimuth', $
                                 1.08, 'r108radazi', $
-                                db, run=run
+                                db, $
+                                n_days=n_rolling_days, run=run
     ucomp_rolling_synoptic_map, wave_regions[w], $
                                 'radial azimith', 'radazi', 'radial_azimuth', $
                                 1.3, 'r13radazi', $
-                                db, run=run
+                                db, $
+                                n_days=n_rolling_days, run=run
 
     ucomp_rolling_synoptic_map, wave_regions[w], $
                                 'doppler velocity', 'doppler', 'doppler', $
                                 1.08, 'r108doppler', $
-                                db, run=run
+                                db, $
+                                n_days=n_rolling_days, run=run
     ucomp_rolling_synoptic_map, wave_regions[w], $
                                 'doppler velocity', 'doppler', 'doppler', $
                                 1.3, 'r13doppler', $
-                                db, run=run
+                                db, $
+                                n_days=n_rolling_days, run=run
 
     ucomp_daily_o1focus_plot, wave_regions[w], obsday_index, db, run=run
-    ucomp_plot_eccentricity, wave_regions[w], obsday_index, db, run=run
+    ucomp_daily_eccentricity_plot, wave_regions[w], obsday_index, db, run=run
   endfor
-
 
   done:
   if (obj_valid(db)) then obj_destroy, db
