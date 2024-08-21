@@ -26,10 +26,10 @@
 ;-
 pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
                                 height, field, db, $
-                                run=run
+                                n_days=n_days, run=run
   compile_opt strictarr
 
-  n_days = 28   ; number of days to include in the plot
+  _n_days = mg_default(n_days, 28L)   ; number of days to include in the plot
 
   mg_log, 'producing %d day %s synoptic plot', n_days, name, $
           name=run.logger_name, /info
@@ -188,9 +188,10 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
 
   gif_filename = filepath(string(run.date, $
                                  wave_region, $
+                                 _n_days, $
                                  flag, $
                                  100.0 * height, $
-                                 format='(%"%s.ucomp.%s.28day.synoptic.%s.r%03d.gif")'), $
+                                 format='(%"%s.ucomp.%s.%dday.synoptic.%s.r%03d.gif")'), $
                           root=eng_dir)
   write_gif, gif_filename, im, rgb[*, 0], rgb[*, 1], rgb[*, 2]
 
@@ -211,9 +212,10 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
 
   fits_filename = filepath(string(run.date, $
                                   wave_region, $
+                                  _n_days, $
                                   flag, $
                                   100.0 * height, $
-                                  format='(%"%s.ucomp.%s.28day.synoptic.%s.r%03d.fts")'), $
+                                  format='(%"%s.ucomp.%s.%dday.synoptic.%s.r%03d.fts")'), $
                            root=eng_dir)
   writefits, fits_filename, float(map), primary_header
 

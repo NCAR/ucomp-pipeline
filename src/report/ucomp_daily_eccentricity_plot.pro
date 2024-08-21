@@ -15,7 +15,7 @@
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-pro ucomp_plot_eccentricity, wave_region, obsday_index, db, run=run
+pro ucomp_daily_eccentricity_plot, wave_region, obsday_index, db, run=run
   compile_opt strictarr
 
   mg_log, 'plotting eccentricity info...', name=run.logger_name, /info
