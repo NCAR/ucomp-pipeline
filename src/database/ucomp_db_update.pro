@@ -106,7 +106,7 @@ pro ucomp_db_update, run=run
     ucomp_rolling_synoptic_map, wave_regions[w], $
                                 'intensity', 'int', 'intensity', $
                                 1.3, 'r13i', $
-                                db,
+                                db, $
                                 n_days=n_rolling_days, run=run
     ucomp_rolling_synoptic_map, wave_regions[w], $
                                 'linear polarization', 'linpol', 'linpol', $
