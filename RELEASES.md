@@ -725,3 +725,5 @@
 #### 1.0.16 [Aug 27, 2024]
 
 - fix for weekly verification
+
+#### 1.0.17
