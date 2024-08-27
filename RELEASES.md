@@ -722,4 +722,6 @@
 
 - fix for unknown wave region of file
 
-#### 1.0.16
+#### 1.0.16 [Aug 27, 2024]
+
+- fix for weekly verification
