@@ -40,7 +40,7 @@ end
 ;     set to a named variable to retrieve the status of check, `0L` for no
 ;     errors, `1L` for errors
 ;-
-pro ucomp_verify_check_files, run=run, status=status
+pro ucomp_verify_check_files, run=run, status=status, n_files=n_files
   compile_opt strictarr
 
   status = 0L
@@ -246,7 +246,9 @@ end
 ;   n_raw_files : out, optional, type=integer
 ;     set to a named variable to retrieve the number of raw files
 ;-
-pro ucomp_verify_check_logs, run=run, status=status, n_raw_files=n_raw_files
+pro ucomp_verify_check_logs, run=run, status=status, $
+                             n_raw_files=n_raw_files, $
+                             machine_log_present=machine_log_present
   compile_opt strictarr
 
   n_raw_files = 0L
@@ -259,8 +261,9 @@ pro ucomp_verify_check_logs, run=run, status=status, n_raw_files=n_raw_files
   machine_log_filename = filepath(string(run.date, format='(%"%s.ucomp.machine.log")'), $
                                   root=raw_dir)
 
-  if (~file_test(machine_log_filename, /regular)) then begin
-    mg_log, 'machine log not present', name=run.logger_name, /error
+  machine_log_present = file_test(machine_log_filename, /regular)
+  if (~machine_log_present) then begin
+    mg_log, 'machine log not present', name=run.logger_name, /warn
     status = 1L
     return
   endif
@@ -287,7 +290,7 @@ pro ucomp_verify_check_logs, run=run, status=status, n_raw_files=n_raw_files
     collection_server = run->config('verification/collection_server')
     collection_basedir = run->config('verification/collection_basedir')
     if (n_elements(collection_server) eq 0L || n_elements(collection_basedir) eq 0L) then begin
-      mg_log, 'cannot check collection server', name=run.logger_name, /error
+      mg_log, 'cannot check collection server', name=run.logger_name, /warn
       status = 1L
       return
     endif
@@ -408,14 +411,14 @@ pro ucomp_verify_check_collection_server, run=run, status=status
 
   collection_server = run->config('verification/collection_server')
   if (n_elements(collection_server) eq 0L) then begin
-    mg_log, 'no collection server specified', name=run.logger_name, /error
+    mg_log, 'no collection server specified', name=run.logger_name, /warn
     status = 1UL
     goto, done
   endif
 
   collection_basedir = run->config('verification/collection_basedir')
   if (n_elements(collection_basedir) eq 0L) then begin
-    mg_log, 'no collection basedir specified', name=run.logger_name, /error
+    mg_log, 'no collection basedir specified', name=run.logger_name, /warn
     status = 1UL
     goto, done
   endif
@@ -449,7 +452,7 @@ pro ucomp_verify_check_collection_server, run=run, status=status
                                   root=raw_dir)
   if (~file_test(machine_log_filename, /regular)) then begin
     status or= 1UL
-    mg_log, 'no machine log to check against', name=run.logger_name, /error
+    mg_log, 'no machine log to check against', name=run.logger_name, /warn
     goto, done
   endif
 
@@ -502,14 +505,14 @@ pro ucomp_verify_check_archive_server, run=run, status=status
 
   archive_server = run->config('verification/archive_server')
   if (n_elements(archive_server) eq 0L) then begin
-    mg_log, 'no archive server specified', name=run.logger_name, /error
+    mg_log, 'no archive server specified', name=run.logger_name, /warn
     status = 1L
     goto, done
   endif
 
   archive_basedir = run->config('verification/archive_basedir')
   if (n_elements(archive_basedir) eq 0L) then begin
-    mg_log, 'no archive base dir specified', name=run.logger_name, /error
+    mg_log, 'no archive base dir specified', name=run.logger_name, /warn
     status = 1L
     goto, done
   endif
@@ -556,7 +559,7 @@ end
 ; :Keywords:
 ;   status : out, optional, type=integer
 ;     set to a named variable to retrieve the status of the date: 0 for success,
-;     anything else indicates a problem
+;     -1 for missing data, and anything else indicates a problem
 ;   log_filename : out, optional, type=string
 ;     set to a named variable to retrieve the filename of the log file for the
 ;     date
@@ -601,20 +604,22 @@ pro ucomp_verify, date, config_filename, $
 
   mg_log, 'checking %s', run.date, name=run.logger_name, /info
 
-  ucomp_verify_check_files, run=run, status=check_files_status
+  ucomp_verify_check_files, run=run, status=check_files_status, $
+                            n_files=n_raw_files
   status or= 1L * check_files_status
 
   ucomp_verify_check_permissions, run=run, status=check_permissions_status
   status or= 2L * check_permissions_status
 
   ucomp_verify_check_logs, run=run, status=check_logs_status, $
-                           n_raw_files=n_raw_files
+                           n_raw_files=n_raw_files_in_logs, $
+                           machine_log_present=machine_log_present
   status or= 4L * check_logs_status
 
   ucomp_verify_check_collection_server, run=run, status=check_collection_server
   status or= 8L * check_collection_server
 
-  if (n_raw_files gt 0L) then begin
+  if (n_raw_files_in_logs gt 0L) then begin
     ucomp_verify_check_archive_server, run=run, status=check_archive_server
     status or= 16L * check_archive_server
   endif else begin
@@ -622,13 +627,37 @@ pro ucomp_verify, date, config_filename, $
             name=run.logger_name, /info
   endelse
 
+  if (n_raw_files eq 0L && ~machine_log_present) then begin
+    status = -1L
+  endif
+
   done:
 
   if (status eq 0L) then begin
     mg_log, 'verification succeeded', name=logger_name, /info
   endif else begin
-    mg_log, 'verification failed (%d)', status, name=logger_name, /error
+    if (status lt 0L) then begin
+      mg_log, 'no data for this date', name=logger_name, /warn
+    endif else begin
+      mg_log, 'verification failed (%d)', status, name=logger_name, /error
+    endelse
   endelse
 
   if (obj_valid(run)) then obj_destroy, run
+end
+
+
+; main-level example program
+
+date = '20240826'
+config_basename = 'ucomp.production.cfg'
+config_filename = filepath(config_basename, $
+                           subdir=['..', '..', '..', 'ucomp-config'], $
+                           root=mg_src_root())
+
+ucomp_verify, date, config_filename, $
+              status=status, $
+              log_filename=log_filename, $
+              mode=mode
+
 end
