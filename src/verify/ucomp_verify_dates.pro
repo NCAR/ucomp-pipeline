@@ -11,15 +11,9 @@
 pro ucomp_verify_dates_display_log, log_filename
   compile_opt strictarr
 
-  n_lines = file_lines(log_filename)
-  if (n_lines eq 0L) then return
+  log_lines = ucomp_log_filter(log_filename, /info, n_messages=n_messages)
 
-  openr, lun, log_filename, /get_lun
-  log_lines = strarr(n_lines)
-  readf, lun, log_lines
-  free_lun, lun
-
-  for i = 0L, n_lines - 1L do print, log_lines[i]
+  for i = 0L, n_messages - 1L do print, log_lines[i]
 end
 
 
@@ -93,7 +87,7 @@ pro ucomp_verify_dates, date_expression, config_filename
           ucomp_verify, endpts[0], config_filename, $
                         status=status, $
                         log_filename=log_filename
-          if (status ne 0L) then failed_days->add, endpts[0]
+          if (status gt 0L) then failed_days->add, endpts[0]
           ucomp_verify_dates_display_log, log_filename
           mg_log, divider, name=console_logger, /info
         end
@@ -104,7 +98,7 @@ pro ucomp_verify_dates, date_expression, config_filename
             ucomp_verify, dates[d], config_filename, $
                           status=status, $
                           log_filename=log_filename
-            if (status ne 0L) then failed_days->add, dates[d]
+            if (status gt 0L) then failed_days->add, dates[d]
             ucomp_verify_dates_display_log, log_filename
             mg_log, divider, name=console_logger, /info
          endfor
