@@ -344,16 +344,16 @@ pro ucomp_l1_promote_header, file, $
                 after=after
   ucomp_addpar, primary_header, 'CONTOFF', $
                 run->line(file.wave_region, 'continuum_offset'), $
-                format='(F0.5)', comment='[nm] continuum offset', $
+                format='(F0.3)', comment='[nm] continuum offset', $
                 after=after
 
   ; promote CONTIN to primary header and add a long description of its value
 
-  continuum_comment = 'Continuum can be "red", "blue", or "both": "both" gives equal weight to red and blue sides, "red" samples 90% red contimuum and 10% blue, "blue" samples 90% blue continuum and 10% red; the continuum position is offset from line center by the value of CONTOFF'
+  continuum_comment = 'The continuum position is offset from line center WAVELNG by plus/minus the value of CONTOFF and is a blend of the red and blue channel. CONTIN can be "red", "blue", or "both". The red and blue continuum are sampled differently in each option: "red" ("blue") samples predominantly red (blue) continuum, "both" is a combination of red and blue. [See User’s guide.]'
   continuum_comment = mg_strwrap(continuum_comment, width=72)
 
   ucomp_addpar, primary_header, 'CONTIN', ucomp_getpar(headers[0], 'CONTIN'), $
-                comment='[both/blue/red] location of continuum', $
+                comment='[both/blue/red] location of the off-band pseudo-continuum', $
                 after='CONTOFF'
   for i = 0L, n_elements(continuum_comment) - 1L do begin
     ucomp_addpar, primary_header, 'COMMENT', continuum_comment[i], $
