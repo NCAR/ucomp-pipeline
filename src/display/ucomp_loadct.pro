@@ -93,6 +93,12 @@ pro ucomp_loadct, name, n_colors=n_colors, rgb_table=rgb_table, $
         rgb_table[0:_n_colors - 1L, *] = shift(rgb_table[0:_n_colors - 1L, *], $
                                                _n_colors / 2, 0)
       end
+    'density': begin
+        mpl_filename = filepath('mpl.tbl', $
+                                subdir=['..', '..', 'resource', 'colortables'], $
+                                root=mg_src_root())
+        loadct, 16, /silent, file=mpl_filename, rgb_table=rgb_table, ncolors=n_colors
+      end
     'doppler': begin
         rgb_table = mg_makect(blue, white, red, ncolors=n_colors)
       end
@@ -101,7 +107,7 @@ pro ucomp_loadct, name, n_colors=n_colors, rgb_table=rgb_table, $
         mpl_filename = filepath('mpl.tbl', $
                                 subdir=['..', '..', 'resource', 'colortables'], $
                                 root=mg_src_root())
-        loadct, 12, file=mpl_filename, rgb_table=rgb_table, ncolors=n_colors
+        loadct, 12, /silent, file=mpl_filename, rgb_table=rgb_table, ncolors=n_colors
       end
     'difference': begin
         rgb_table = mg_makect(cyan, black, pink, ncolors=n_colors)

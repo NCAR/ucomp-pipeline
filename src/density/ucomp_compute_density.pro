@@ -52,6 +52,7 @@ function ucomp_compute_density, peak_intensity_1074, peak_intensity_1079, $
     d1 = densities[density_location]
     d2 = densities[density_location + 1]
 
+    ; TODO: this is not right, should use bilinear interpolation
     density[i] = d1 + (d2 - d1) * (ratio[i] - r1) / (r2 - r1)
 
     ; c = randomu(seed, 1)
