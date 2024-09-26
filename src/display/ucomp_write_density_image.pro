@@ -26,7 +26,7 @@ pro ucomp_write_density_image, basename, thumbnail=thumbnail, run=run
   ; TODO: look these up in a config file
   display_min = 6.5
   display_max = 8.5
-  display_gamma = 0.7
+  display_gamma = 1.0
 
   original_device = !d.name
   set_plot, 'Z'
