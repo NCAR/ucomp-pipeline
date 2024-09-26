@@ -1,6 +1,7 @@
 add_subdirectory(calendar)
 add_subdirectory(calibrate)
 add_subdirectory(database)
+add_subdirectory(density)
 add_subdirectory(display)
 add_subdirectory(distribute)
 add_subdirectory(eod)
