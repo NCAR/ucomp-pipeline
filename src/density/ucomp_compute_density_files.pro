@@ -6,11 +6,13 @@ pro ucomp_compute_density_files, l2_basename_1074, $
                                  run=run
   compile_opt strictarr
 
-  l2_dir = filepath('', $
-                    subdir=[run.date, 'level2'], $
-                    root=run->config('processing/basedir'))
-  l2_filename_1074 = filepath(l2_basename_1074, root=l2_dir)
-  l2_filename_1079 = filepath(l2_basename_1079, root=l2_dir)
+  l2_dirname = filepath('', $
+                        subdir=[run.date, 'level2'], $
+                        root=run->config('processing/basedir'))
+  ucomp_mkdir, l2_dirname, logger_name=run.logger_name
+
+  l2_filename_1074 = filepath(l2_basename_1074, root=l2_dirname)
+  l2_filename_1079 = filepath(l2_basename_1079, root=l2_dirname)
 
   fits_open, l2_filename_1074, fcb
   fits_read, fcb, !null, primary_1074_header, exten_no=0
@@ -43,12 +45,14 @@ pro ucomp_compute_density_files, l2_basename_1074, $
                                   center_wavelength_1074, center_wavelength_1079, $
                                   heights, densities, ratios, r_sun)
 
-  output_filename = filepath(output_basename, root=l2_dir)
+  output_filename = filepath(output_basename, root=l2_dirname)
 
   fits_open, output_filename, fcb, /write
   ucomp_fits_write, fcb, density, primary_1074_header, /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
   fits_close, fcb
+
+  ucomp_write_density_image, output_basename, run=run
 end
 
 
@@ -66,7 +70,9 @@ config_filename = filepath(config_basename, $
 
 run = ucomp_run(date, 'test', config_filename)
 
-ucomp_compute_density_files, f_1074, f_1079, 'density.fts', run=run
+output_basename = string(strmid(f_1074, 0, 15), strmid(f_1079, 9, 6), $
+                         format='%s-%s.ucomp.1074-1079.density.fts')
+ucomp_compute_density_files, f_1074, f_1079, output_basename, run=run
 
 obj_destroy, run
 
