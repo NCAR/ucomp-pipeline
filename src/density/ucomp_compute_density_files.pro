@@ -6,6 +6,10 @@ pro ucomp_compute_density_files, l2_basename_1074, $
                                  run=run
   compile_opt strictarr
 
+  mg_log, 'computing density for:', name=run.logger_name, /info
+  mg_log, '  %s', file_basename(l2_basename_1074), name=run.logger_name, /info
+  mg_log, '  %s', file_basename(l2_basename_1079), name=run.logger_name, /info
+
   l2_dirname = filepath('', $
                         subdir=[run.date, 'level2'], $
                         root=run->config('processing/basedir'))
@@ -43,8 +47,21 @@ pro ucomp_compute_density_files, l2_basename_1074, $
   density = ucomp_compute_density(peak_intensity_1074, peak_intensity_1079, $
                                   line_width_1074, line_width_1079, $
                                   center_wavelength_1074, center_wavelength_1079, $
-                                  heights, densities, ratios, r_sun)
+                                  heights, densities, ratios, r_sun, $
+                                  run->line('1074', 'noise_intensity_min'), $
+                                  run->line('1074', 'noise_intensity_max'), $
+                                  run->line('1079', 'noise_intensity_min'), $
+                                  run->line('1079', 'noise_intensity_max'), $
+                                  run->line('1074', 'noise_line_width_min'), $
+                                  run->line('1074', 'noise_line_width_max'), $
+                                  run->line('1079', 'noise_line_width_min'), $
+                                  run->line('1079', 'noise_line_width_max'), $
+                                  count=n_good_pixels, $
+                                  in_ratio_range=in_ratio_range)
 
+  mg_log, '%d good pixels', n_good_pixels, name=run.logger_name, /debug
+  mg_log, '%d out-of-range ratio pixels', n_good_pixels - in_ratio_range, $
+          name=run.logger_name, /debug
   output_filename = filepath(output_basename, root=l2_dirname)
 
   fits_open, output_filename, fcb, /write
@@ -58,10 +75,14 @@ end
 
 ; main-level example
 
-date = '20220225'
+; date = '20220225'
+date = '20240409'
 
-f_1074 = '20220225.182056.ucomp.1074.l2.fts'
-f_1079 = '20220225.182341.ucomp.1079.l2.fts'
+; f_1074 = '20220225.182056.ucomp.1074.l2.fts'
+; f_1079 = '20220225.182341.ucomp.1079.l2.fts'
+
+f_1074 = '20240409.191848.ucomp.1074.l2.fts'
+f_1079 = '20240409.191146.ucomp.1079.l2.fts'
 
 config_basename = 'ucomp.production.cfg'
 config_filename = filepath(config_basename, $

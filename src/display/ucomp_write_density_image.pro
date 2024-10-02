@@ -66,7 +66,7 @@ pro ucomp_write_density_image, basename, thumbnail=thumbnail, run=run
                      /nan)
   tv, scaled_im
 
-  desnity_description = '1074 nm / 1079 nm density description here'
+  desnity_description = 'Electron Density [cm!E-3!N]'
   title = 'Density'
 
   xyouts, 0.5, 0.71, /normal, alignment=0.5, $
