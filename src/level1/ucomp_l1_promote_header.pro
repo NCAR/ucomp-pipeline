@@ -105,7 +105,7 @@ pro ucomp_l1_promote_header, file, $
                 comment='physical = data * BSCALE + BZERO', $
                 after='BZERO'
 
-  after = 'R_SUN'
+  after = 'RSUN_REF'
   ucomp_addpar, primary_header, 'DOI', run->line(file.wave_region, 'doi'), $
                 comment='Digital Object Identifier', $
                 after=after
