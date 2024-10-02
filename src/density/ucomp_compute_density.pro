@@ -29,12 +29,26 @@
 ;     ratios of 1074 / 1079 data
 ;   r_sun : in, required, type=float
 ;     number of pixels in 1 solar radius
+;
+; :Keywords:
+;   count : out, optional, type=long
+;     number of good pixels in the mask
 ;-
 function ucomp_compute_density, peak_intensity_1074, peak_intensity_1079, $
                                 line_width_1074, line_width_1079, $
                                 center_wavelength_1074, center_wavelength_1079, $
                                 heights, densities, ratios, $
-                                r_sun
+                                r_sun, $
+                                noise_intensity_min_1074, $
+                                noise_intensity_max_1074, $
+                                noise_intensity_min_1079, $
+                                noise_intensity_max_1079, $
+                                noise_line_width_min_1074, $
+                                noise_line_width_max_1074, $
+                                noise_line_width_min_1079, $
+                                noise_line_width_max_1079, $
+                                count=n_mask_indices, $
+                                in_ratio_range=in_ratio_range
   compile_opt strictarr
 
   dims = size(peak_intensity_1074, /dimensions)
@@ -53,10 +67,18 @@ function ucomp_compute_density, peak_intensity_1074, peak_intensity_1079, $
   ratio_1079 = peak_intensity_1079 * line_width_1079 * center_wavelength_1079
   ratio = ratio_1074 / ratio_1079
 
-  ; eliminate pixels with either 1074 or 1079 below 0.0 (or some other threshold)
-  mask_indices = where(peak_intensity_1074 gt 0L and peak_intensity_1079 gt 0L $
-                         and finite(ratio), $
-                       n_mask_indices)
+  ; eliminate pixels with intensity or line width outside our noise mask
+  ; range for either 1074 or 1079
+  mask_indices = where(peak_intensity_1074 gt noise_intensity_min_1074 $
+      and peak_intensity_1074 lt noise_intensity_max_1074 $
+      and peak_intensity_1079 gt noise_intensity_min_1079 $
+      and peak_intensity_1079 lt noise_intensity_max_1079 $
+      and line_width_1074 gt noise_line_width_min_1074 $
+      and line_width_1074 lt noise_line_width_max_1074 $
+      and line_width_1079 gt noise_line_width_min_1079 $
+      and line_width_1079 lt noise_line_width_max_1079 $
+      and finite(ratio), $
+    n_mask_indices)
 
   density = peak_intensity_1074 * 0.0 + !values.f_nan
 
@@ -66,6 +88,8 @@ function ucomp_compute_density, peak_intensity_1074, peak_intensity_1079, $
   ;     densities
   ;   - interpolate into densities with given indices to find density
 
+  in_ratio_range = 0L
+
   for index = 0L, n_mask_indices - 1L do begin
     i = mask_indices[index]
     height_location = value_locate(heights, d[i])
@@ -73,19 +97,27 @@ function ucomp_compute_density, peak_intensity_1074, peak_intensity_1079, $
     ; skip pixels outside our height range, e.g., 1.0-2.0 R_sun
     if (height_location eq n_elements(heights) - 1L) then continue
 
+    ratios1 = reform(ratios[*, height_location])
     density1 = interpol(densities, $
-                        reform(ratios[*, height_location]), $
+                        ratios1, $
                         ratio[i], $
                         /lsquadratic)
+
+    ratios2 = reform(ratios[*, height_location + 1])
     density2 = interpol(densities, $
-                        reform(ratios[*, height_location + 1]), $
+                        ratios2, $
                         ratio[i], $
                         /lsquadratic)
 
-    h1 = heights[height_location]
-    h2 = heights[height_location + 1]
+    in_ratios1 = ratio[i] gt min(ratios1) and ratio[i] lt max(ratios1)
+    in_ratios2 = ratio[i] gt min(ratios2) and ratio[i] lt max(ratios2)
+    if (in_ratios1 and in_ratios2) then begin
+      h1 = heights[height_location]
+      h2 = heights[height_location + 1]
 
-    density[i] = (density2 - density1) / (h2 - h1) * (d[i] - h1) + density1
+      density[i] = (density2 - density1) / (h2 - h1) * (d[i] - h1) + density1
+      in_ratio_range += 1L
+    endif
   endfor
 
   return, density
