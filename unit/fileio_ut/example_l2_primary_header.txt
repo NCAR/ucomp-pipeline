@@ -1,0 +1,201 @@
+SIMPLE  =                    T / image conforms to FITS standard
+BITPIX  =                  -32 / bits per data value
+NAXIS   =                    0 / number of axes
+EXTEND  =                    T / file may contain extensions
+COMMENT --- Basic info ---
+ORIGIN  = 'NCAR/HAO'           / Institution
+INSTRUME= 'UCoMP'              / Upgraded Coronal Multichannel Polarimeter
+TELESCOP= '20 cm One Shot'     / NSO One Shot telescope
+LOCATION= 'MLSO'               / MLSO
+OBSSWID = '1.0.6   '           / data collection software ID
+DATE-OBS= '2022-01-11T19:28:41.72' / [UT] date/time when obs started
+DATE-END= '2022-01-11T19:30:42.18' / [UT] date/time when obs ended
+MJD-OBS =      59590.811585649 / [days] modified Julian date
+MJD-END =      59590.812986112 / [days] modified Julian date
+FILTER  = '1074    '           / [nm] prefilter wavelength region identifier
+OBJECT  = 'SUN     '           /
+BUNIT   = '1.0E-06 B/Bsun'     / brightness with respect to solar disk
+LEVEL   = 'L2      '           / level 2 calibrated
+COMMENT --- World Coordinate System (WCS) info ---
+COMMENT Ephemeris calculations done by sun.pro
+WCSNAME = 'helioprojective-cartesian' / World Coordinate System (WCS) name
+CDELT1  =                2.834 / [arcsec/pixel] image X increment = platescale
+CDELT2  =                2.834 / [arcsec/pixel] image Y increment = platescale
+CRPIX1  =                640.5 / [pixel] occulter X center (index origin=1)
+CTYPE1  = 'HPLN-TAN'           / helioprojective west angle: solar X
+CRVAL1  =                 0.00 / [arcsec] occulter X sun center
+CUNIT1  = 'arcsec  '           / unit of CRVAL1
+CRPIX2  =                512.5 / [pixel] occulter Y center (index origin=1)
+CTYPE2  = 'HPLT-TAN'           / helioprojective north angle: solar Y
+CRVAL2  =                 0.00 / [arcsec] occulter Y sun center
+CUNIT2  = 'arcsec  '           / unit of CRVAL2
+DSUN_OBS=       147124599720.6 / [m] distance to the Sun from observer
+HGLN_OBS=                0.000 / [deg] Stonyhurst heliographic longitude
+HGLT_OBS=               -4.202 / [deg] Stonyhurst heliographic latitude
+PC1_1   =                1.000 / coord transform matrix element (1, 1) WCS std.
+PC1_2   =                0.000 / coord transform matrix element (1, 2) WCS std.
+PC2_1   =                0.000 / coord transform matrix element (2, 1) WCS std.
+PC2_2   =                1.000 / coord transform matrix element (2, 2) WCS std.
+COMMENT --- Ephemeris info ---
+COMMENT Ephemeris calculations done by sun.pro
+SOLAR_P0=               -3.145 / [deg] solar P angle applied (image has N up)
+SOLAR_B0=               -4.202 / [deg] solar B-Angle
+SECANT_Z=             1.961522 / secant of the Zenith Distance
+SID_TIME=              0.12562 / [day fraction] GMST sidereal time
+CAR_ROT =                 2253 / Carrington Rotation Number
+JUL_DATE=    2459591.311585649 / [days] Julian date
+RSUN_OBS=               975.76 / [arcsec] solar radius using ref radius 959.63"
+R_SUN   =               344.31 / [pixel] solar radius
+COMMENT --- Level 1 processing info ---
+DOI     = 'https://doi.org/10.26024/g8p7-wy42' / Digital Object Identifier
+DATE_DP = '2023-11-30T06:24:08' / [UT] L1 processing date/time
+DPSWID  = '1.0.1 [9f35649]'    / L1 processing software (2023-11-29) [production
+LIN_CRCT=                    F / camera linearity corrected
+DEMODV  =                    1 / demod coeffs version [2023-05-15T10:07:04Z]
+CONTSUB =                    T / whether the continuum was subtracted
+CAMERAS = 'both    '           / cameras used in processing
+BOPAL   =                14.80 / [B/Bsun] opal radiance
+COMMENT --- Level 2 processing info ---
+DATE_DP2= '2023-11-30T09:03:14' / [UT] L2 processing date/time
+DPSWID2 = '1.0.1 [9f35649]'    / L2 processing software (2023-11-29) [production
+D_LAMBDA=                0.110 / [nm] wavelength spacing
+COMMENT --- Quality metrics ---
+VCROSSTK=             0.691477 / Stokes V crosstalk metric
+MED_BKG =               13.753 / [ppm] median of line center background annulus
+NUMSAT0O=                    0 / number of saturated pixels in onband RCAM
+NUMSAT1O=                    0 / number of saturated pixels in onband TCAM
+NUMSAT0C=                    0 / number of saturated pixels in bkg RCAM
+NUMSAT1C=                    0 / number of saturated pixels in bkg TCAM
+NUMNL0O =                   41 / number of non-linear pixels in onband RCAM
+NUMNL1O =                   97 / number of non-linear pixels in onband TCAM
+NUMNL0C =                   35 / number of non-linear pixels in bkg RCAM
+NUMNL1C =                   88 / number of non-linear pixels in bkg TCAM
+COMMENT --- Camera info ---
+EXPTIME =               80.000 / [ms] Exposure time
+FRAMERT =               10.691 / [Hz] Frequency of images
+GAIN    = 'high'               / Camera gain setting
+SAVEALL =                    F / [TF] Save all frames instead of summing
+TCAMID  = 'Raptor OWL1280 10055' / Unique ID of the TCAM (Camera 1)
+RCAMID  = 'Raptor OWL1280 10006' / Unique ID of the RCAM (Camera 0)
+TCAMLUT = ''                   / Unique ID of the LUT for TCAM
+RCAMLUT = ''                   / Unique ID of the LUT for RCAM
+TCAMNUC = 'normal'             / Camera Correction for TCAM
+RCAMNUC = 'normal'             / Camera Correction for RCAM
+NFRAME  =                  160 / total number of image frames in file
+REMFRAME=                    1 / number of bad frames removed
+NUMWAVE =                    5 / number of wavelengths
+NUMSUM  =                   16 / number of camera reads summed in an image frame
+NREPEAT =                    2 / number of repeats of wavelength scans
+NUMBEAM =                    2 / number of beams
+COMMENT Total camera reads in this file = NFRAME * NUMSUM where
+COMMENT   NFRAME = NUMWAVE * NREPEAT * NUMBEAM * 2(Cameras) * 4(Polarizations)
+COMMENT --- Observing info ---
+OBSERVER= 'Berkey'
+OBS_ID  = '1074_05wave_2beam_16sums_2rep_BOTH' / Name of current observation
+OBS_IDAU= ''                   / Author of the observing program
+OBS_IDDA= ' Mon Sep 20 14:30:49 2021' / Edit date of the observing program
+OBS_IDVE= '7f10e4c4e8f3f7b0072ee934b920f90f' / [Md5 hash] Observation ver
+OBS_PLAN= 'all_wavelenght_coronal.cbk' / Name of Current program
+OBS_PLAU= 'BERKEY'             / Author of the program
+OBS_PLDA= ''                   / Edit date of the observing plan
+OBS_PLVE= '6a81ac11c29ae24c9b7eb179e0177574' / [Md5 hash] Program ver
+COMMENT --- Hardware settings ---
+DARKID  = 'DARK SHUT 1'        / Dark Shutter ID
+O1ID    = 'O1#2'               / Unique ID of objective lens
+DIFFSRID= 'S1B'                / Unique ID of diffuser used (change to diffuser
+OCCLTRID= '35'                 / Unique ID of the current occulter
+FLCVNEG =               -7.000 / [V] Negative FeLC Drive voltage
+FLCVPOS =                7.000 / [V] Positive FeLC Drive voltage
+POLHOFF =            11021.000 / [counts] Offset in counts for the Cal Pololariz
+REDHOFF =             8694.000 / [counts] Offset in counts for the Cal Retarder
+T_COMPS =                    T / [TF] Lyot turning temperature compensation on
+WAVOFF  =                1.870 / [nm] Tuning offset for Lyot filter
+LCVRELX =                0.250 / [s] delay after LCVR tuning before data
+FILTFWHM=                0.138 / [nm] Lyot FWHM
+CONTOFF =              1.25625 / [nm] continuum offset
+COMMENT Continuum can be "red", "blue", or "both": "both" gives equal weight to
+COMMENT red and blue sides, "red" samples 90% red contimuum and 10% blue, "blue"
+COMMENT samples 90% blue continuum and 10% red; the continuum position is offset
+COMMENT from line center by the value of CONTOFF
+CONTIN  = 'both    '           / [both/blue/red] location of continuum
+OCCLTR-X=               69.950 / Occulter X position
+OCCLTR-Y=               61.500 / Occulter Y position
+O1FOCUS =               61.480 / O1 focus position
+COMMENT --- Temperatures ---
+COMMENT Temperatures used in the Lyot filter calibrations are low-pass
+COMMENT filtered and reported in keywords that start with T_. The raw,
+COMMENT unfiltered temperature values for recorded temperatures are recorded
+COMMENT in keywords that begin with TU_.
+T_RACK  =               22.804 / [C] Computer Rack Temp
+T_LCVR1 =               34.560 / [C] Lyot LCVR1 Temp
+T_LCVR2 =               34.509 / [C] Lyot LCVR2 Temp
+T_LCVR3 =               34.585 / [C] Lyot LCVR3 Temp
+T_LNB1  =               34.572 / [C] LiNb1 Temp
+T_MOD   =               32.098 / [C] Modulator Temp
+T_LNB2  =               34.477 / [C] LiNb2 Temp
+T_LCVR4 =               34.447 / [C] Lyot LCVR4 Temp
+T_LCVR5 =               34.189 / [C] Lyot LCVR5 Temp
+T_BASE  =               30.968 / [C] Instrument Baseplate Temp
+TU_RACK =               23.483 / [C] Computer Rack Temp Unfiltered
+TU_LCVR1=               34.563 / [C] Lyot LCVR1 Temp Unfiltered
+TU_LCVR2=               34.506 / [C] Lyot LCVR2 Temp Unfiltered
+TU_LCVR3=               34.581 / [C] Lyot LCVR3 Temp Unfiltered
+TU_LNB1 =               34.570 / [C] LiNb1 Temp Unfiltered
+TU_MOD  =               32.086 / [C] Modulator Temp Unfiltered
+TU_LNB2 =               34.479 / [C] LiNb2 Temp Unfiltered
+TU_LCVR4=               34.458 / [C] Lyot LCVR4 Temp Unfiltered
+TU_LCVR5=               34.234 / [C] Lyot LCVR5 Temp Unfiltered
+TU_BASE =               31.088 / [C] Instrument Baseplate Temp Unfiltereed
+TU_C0ARR=                4.866 / [C] Camera 0 Sensor array temp Unfiltered
+TU_C0PCB=               28.000 / [C] Camera 0 PCB board temp Unfiltered
+TU_C1ARR=                5.025 / [C] Camera 1 Sensor array temp Unfiltered
+TU_C1PCB=               27.500 / [C] Camera 1 PCB board temp Unfiltered
+COMMENT --- SGS info ---
+SGSSCINT=              1.43230 / [arcsec] SGS scintillation seeing estimate
+SGSDIMV =              8.73740 / [V] SGS Dim Mean
+SGSDIMS =              0.00652 / [V] SGS Dim Std
+SGSSUMV =              8.73885 / [V] SGS Sum Mean
+SGSSUMS =              0.00388 / [V] SGS Sum Std
+SGSRAV  =             -0.00005 / [V] SGS RA Mean
+SGSRAS  =              0.00891 / [V] SGS RA Std
+SGSDECV =             -0.00012 / [V] SGS DEC Mean
+SGSDECS =              0.00851 / [V] SGS DEC Std
+SGSLOOP =              1.00000 / SGS Loop Fraction
+SGSRAZR =             47.00000 / [V] SGS RA zero point
+SGSDECZR=             -6.00000 / [V] SGS DEC zero point
+COMMENT --- Weather info ---
+WNDSPD  =                8.000 / [mph] wind speed
+WNDDIR  =               61.000 / [deg] wind direction
+COMMENT --- Occulter centering info ---
+COMMENT X/YOFFSET define position w.r.t. distortion corrected L0 images
+XOFFSET0=                0.868 / [pixels] RCAM occulter x-offset from CRPIX1
+YOFFSET0=               -8.407 / [pixels] RCAM occulter y-offset from CRPIX2
+RADIUS0 =              355.518 / [pixels] RCAM occulter radius
+FITCHI0 =             0.029087 / [pixels] chi-squared for RCAM center fit
+XOFFSET1=                2.564 / [pixels] TCAM occulter x-offset from CRPIX1
+YOFFSET1=               -8.819 / [pixels] TCAM occulter y-offset from CRPIX2
+RADIUS1 =              356.049 / [pixels] TCAM occulter radius
+FITCHI1 =             0.020361 / [pixels] chi-squared for TCAM center fit
+POST_ANG=              183.500 / [deg] post angle CCW from north
+RADIUS  =              355.784 / [pixels] occulter average radius
+IMAGESCL=             2.818861 / [arcsec/pixels] image scale for this file
+RCAMECC =               0.0213 / occulter eccentricity in RCAM
+TCAMECC =               0.0166 / occulter eccentricity in TCAM
+HISTORY
+HISTORY Level 1 calibration and processing steps:
+HISTORY   - quality check to determine if the file should be processed
+HISTORY   - average level 0 data with same onband and wavelength
+HISTORY   - apply dark correction
+HISTORY   - apply gain correction
+HISTORY   - camera corrections such as hot pixel correction
+HISTORY   - demodulation
+HISTORY   - distortion correction
+HISTORY   - find the occulter position and radius
+HISTORY   - subtract continuum
+HISTORY   - remove hoizontal/vertical bands
+HISTORY   - center images using occulter position and rotate to north up
+HISTORY   - combine the cameras
+HISTORY   - polarimetric correction
+HISTORY   - correct for sky transmission
+HISTORY   - update FITS keywords
+END
