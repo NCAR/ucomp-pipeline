@@ -349,7 +349,7 @@ pro ucomp_l1_promote_header, file, $
 
   ; promote CONTIN to primary header and add a long description of its value
 
-  continuum_comment = 'The continuum position is offset from line center WAVELNG by plus/minus the value of CONTOFF and is a blend of the red and blue channel. CONTIN can be "red", "blue", or "both". The red and blue continuum are sampled differently in each option: "red" ("blue") samples predominantly red (blue) continuum, "both" is a combination of red and blue. [See User’s guide.]'
+  continuum_comment = 'The continuum position is offset from line center WAVELNG by plus/minus the value of CONTOFF and is a blend of the red and blue channel. CONTIN can be "red", "blue", or "both". The red and blue continuum are sampled differently in each option: "red" ("blue") samples predominantly red (blue) continuum, "both" is a combination of red and blue. [See User''s guide.]'
   continuum_comment = mg_strwrap(continuum_comment, width=72)
 
   ucomp_addpar, primary_header, 'CONTIN', ucomp_getpar(headers[0], 'CONTIN'), $
