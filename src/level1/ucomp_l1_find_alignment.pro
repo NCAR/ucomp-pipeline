@@ -323,8 +323,8 @@ pro ucomp_l1_find_alignment, file, $
   ucomp_addpar, primary_header, 'RSUN_REF', $
                 run->line(file.wave_region, 'solar_radius'), $
                 comment=string(run->line(file.wave_region, 'solar_radius_wavelength'), $
-                               format='[m] solar radius at %0.3f nm'), $
-                format='(f9.2)', after=after
+                               format='[m] solar radius at %0.1f nm'), $
+                format='(f11.1)', after=after
 
   ucomp_addpar, primary_header, 'COMMENT', 'Ephemeris info', $
                 before='SOLAR_P0', /title
