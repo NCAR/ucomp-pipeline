@@ -472,9 +472,23 @@ def cat_keywords(args):
                         "dark": ["EXTNAME", "DATATYPE", "DATE-BEG"],
                         "flat": ["EXTNAME", "DATATYPE", "DATE-BEG", "WAVELNG", "ONBAND"],
                         "unknown": ["EXTNAME"]}
-    default_formats = {"EXTNAME": ":25s", "DATATYPE": ":7s", "DATE-BEG": ":22s",
-                       "WAVELNG": ":8.3f", "ONBAND": "!s:5s", "POLANGLE": ":5.1f",
+    default_formats = {"EXTNAME": ":32s", "DATATYPE": ":7s", "DATE-BEG": ":22s",
+                       "WAVELNG": ":8.3f", "BLUE_REF": ":8.3f", "RED_REF": ":8.3f",
+                       "RSTWVL": ":8.3f", "ONBAND": "!s:5s", "POLANGLE": ":5.1f",
                        "RETANGLE": ":5.1f"}
+    l1_keywords = ["EXTNAME", "WAVELNG"]
+    l2_keywords = {"Center wavelength intensity": ["EXTNAME", "WAVELNG"],
+                   "Enhanced intensity": ["EXTNAME", "WAVELNG"],
+                   "Peak intensity": ["EXTNAME", "BLUE_REF", "RED_REF"],
+                   "LOS velocity": ["EXTNAME", "BLUE_REF", "RED_REF", "RSTWVL"],
+                   "Line width (FWHM)": ["EXTNAME"],
+                   "Noise mask": ["EXTNAME"],
+                   "Weighted average I": ["EXTNAME"],
+                   "Weighted average Q": ["EXTNAME"],
+                   "Weighted average U": ["EXTNAME"],
+                   "Weighted average L": ["EXTNAME"],
+                   "Azimuth": ["EXTNAME"],
+                   "Radial azimuth": ["EXTNAME"]}
     # TODO: add defaults for L1 and master flat/dark files
     try:
         for i, f in enumerate(args.files):
@@ -484,14 +498,21 @@ def cat_keywords(args):
                 with fits.open(f) as fits_file:
                     for e, hdu in enumerate(fits_file):
                         if e == 0:
+                            level = hdu.header["LEVEL"]
                             continue
 
                         if args.keywords is None:
-                            if "DATATYPE" in hdu.header:
-                                datatype = hdu.header["DATATYPE"]
+                            if level == "L2":
+                                extname = hdu.header["EXTNAME"]
+                                keywords = l2_keywords[extname]
+                            elif level == "L1":
+                                keywords = l1_keywords
                             else:
-                                datatype = "unknown"
-                            keywords = default_keywords[datatype]
+                                if "DATATYPE" in hdu.header:
+                                    datatype = hdu.header["DATATYPE"]
+                                else:
+                                    datatype = "unknown"
+                                keywords = default_keywords[datatype]
                         else:
                             keywords = args.keywords.split(",")
 
