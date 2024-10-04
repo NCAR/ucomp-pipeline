@@ -472,7 +472,7 @@ def cat_keywords(args):
                         "dark": ["EXTNAME", "DATATYPE", "DATE-BEG"],
                         "flat": ["EXTNAME", "DATATYPE", "DATE-BEG", "WAVELNG", "ONBAND"],
                         "unknown": ["EXTNAME"]}
-    default_formats = {"EXTNAME": ":32s", "DATATYPE": ":7s", "DATE-BEG": ":22s",
+    default_formats = {"EXTNAME": ":32s", "DATATYPE": ":5s", "DATE-BEG": ":22s",
                        "WAVELNG": ":8.3f", "BLUE_REF": ":8.3f", "RED_REF": ":8.3f",
                        "RSTWVL": ":8.3f", "ONBAND": "!s:5s", "POLANGLE": ":5.1f",
                        "RETANGLE": ":5.1f"}
