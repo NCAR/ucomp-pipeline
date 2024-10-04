@@ -489,7 +489,8 @@ def cat_keywords(args):
                    "Weighted average L": ["EXTNAME"],
                    "Azimuth": ["EXTNAME"],
                    "Radial azimuth": ["EXTNAME"]}
-    # TODO: add defaults for L1 and master flat/dark files
+    l3_keywords = ["EXTNAME"]
+
     try:
         for i, f in enumerate(args.files):
             if i != 0: print()
@@ -507,6 +508,8 @@ def cat_keywords(args):
                                 keywords = l2_keywords[extname]
                             elif level == "L1":
                                 keywords = l1_keywords
+                            elif level == "L3":
+                                keywords = l3_keywords
                             else:
                                 if "DATATYPE" in hdu.header:
                                     datatype = hdu.header["DATATYPE"]
