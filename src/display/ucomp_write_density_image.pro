@@ -18,7 +18,7 @@ pro ucomp_write_density_image, basename, thumbnail=thumbnail, run=run
 
   date_stamp = ucomp_dt2stamp(strmid(datetimes, 0, 15))
   date_stamp += string(ucomp_decompose_time(strmid(datetimes, 16, 6)), $
-                       format=' and %02d-%02d-%02dZ')
+                       format=' and %02d:%02d:%02dZ')
 
   nx = run->epoch('nx', datetime=datetime)
   ny = run->epoch('ny', datetime=datetime)
