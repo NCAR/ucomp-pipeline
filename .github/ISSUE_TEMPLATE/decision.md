@@ -35,12 +35,10 @@ Full explanation of decision.
 Pros
 
 - benefits of this decision
-- problems with other options
 
 Cons
 
 - problems with this decision
-- benefits of other options
 
 ## More Information
 
