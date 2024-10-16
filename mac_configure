@@ -10,7 +10,7 @@ rm -rf build
 mkdir build
 cd build
 
-IDL_ROOT_DIR=/Applications/harris/idl
+IDL_ROOT_DIR=/Applications/NV5/idl90
 PYTHON3_ROOT_DIR=/Users/mgalloy/anaconda3
 
 cmake \
