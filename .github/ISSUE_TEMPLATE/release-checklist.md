@@ -1,7 +1,7 @@
 ---
-name: KCor release checklist
-about: Checklist for a KCor pipeline release
-title: 'Release KCor '
+name: Release checklist
+about: Checklist for a pipeline release
+title: 'Release v'
 labels: release
 assignees: mgalloy
 
