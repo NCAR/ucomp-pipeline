@@ -3,7 +3,6 @@ name: Bug report
 about: Issue for a bug report
 title: ''
 labels: bug
-projects: ["NCAR/49"]
 assignees: mgalloy
 
 ---

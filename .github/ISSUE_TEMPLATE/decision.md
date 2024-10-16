@@ -1,6 +1,6 @@
 ---
-name: Architecture Decision Record (ADR)
-about: Document Architecture Decision Record (ADR) to be able to revise decisions later
+name: Decision
+about: Document decisions with an Architecture Decision Record (ADR)
 title: ''
 labels: decision
 assignees: mgalloy
