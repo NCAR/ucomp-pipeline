@@ -37,7 +37,7 @@ function ucomp_centering_metric, rcam, tcam, occulter_radius, $
   dims = size(rcam, /dimensions)
 
   test_annulus = ucomp_annulus(inner_radius, outer_radius, dimensions=dims)
-  good_values = rcam gt 0.0 and rcam lt 100.0 and tcam gt 0.0 and tcam gt 100.0
+  good_values = rcam gt 0.0 and rcam lt 100.0 and tcam gt 0.0 and tcam lt 100.0
   annulus_indices = where(test_annulus and good_values, n_annulus_points)
 
   if (n_annulus_points eq 0L) then begin
