@@ -25,6 +25,9 @@ pro ucomp_movepar, header, name, after=after, before=before
     message, 'AFTER and BEFORE cannot both be specified'
   endif
 
+  end_line = 'END' + string(bytarr(77) + (byte(' '))[0])
+  end_index = (where(strmatch(header, end_line), n_ends))[0]
+
   indices = findgen(n_elements(header))
   src_index = (where(strmatch(header, string(name, format='%-8s=*'))))[0]
 
@@ -39,7 +42,11 @@ pro ucomp_movepar, header, name, after=after, before=before
   endif
 
   if ((n_elements(after) eq 0L) && (n_elements(before) eq 0L)) then begin
-    dst_index = n_elements(header)
+    if (n_ends eq 0L) then begin
+      message, 'no location specificed with AFTER or BEFORE and no END of header'
+    endif
+    
+    dst_index = end_index - 0.5
     indices[src_index] = dst_index
   endif
 
