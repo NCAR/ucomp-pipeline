@@ -4,7 +4,7 @@
 ; Create a subset of all the files in a program to average based on the
 ; averaging criteria. The current criteria:
 ;
-;   - find gaps larger than `MAX_GAP`
+;   - find gaps larger than `MAX_LENGTH`
 ;   - return files before the first gap
 ;
 ; :Returns:

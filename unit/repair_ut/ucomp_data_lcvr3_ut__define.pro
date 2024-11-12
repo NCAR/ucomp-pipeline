@@ -9,15 +9,19 @@ function ucomp_data_lcvr3_ut::test_basic
   !null = sxpar(original_primary_header, 'T_LCVR3', comment=original_t_lcvr3_comment)
   !null = sxpar(original_primary_header, 'TU_LCVR3', comment=original_tu_lcvr3_comment)
 
-  assert, original_t_lcvr3_comment eq ' [C] Lyot LCVR2 Temp'
-  assert, original_tu_lcvr3_comment eq ' [C] Lyot LCVR2 Temp Unfiltered'
+  assert, original_t_lcvr3_comment eq ' [C] Lyot LCVR2 Temp', $
+          'bad original T_LCVR3 comment: %s', original_t_lcvr3_comment
+  assert, original_tu_lcvr3_comment eq ' [C] Lyot LCVR2 Temp Unfiltered', $
+          'bad original TU_LCVR3 comment: %s', original_tu_lcvr3_comment
 
   ucomp_data_lcvr3, primary_header, ext_data, ext_headers
 
   !null = sxpar(primary_header, 'T_LCVR3', comment=t_lcvr3_comment)
   !null = sxpar(primary_header, 'TU_LCVR3', comment=tu_lcvr3_comment)
-  assert, t_lcvr3_comment eq '  [C] Lyot LCVR3 Temp'
-  assert, tu_lcvr3_comment eq '  [C] Lyot LCVR3 Temp Unfiltered'
+  assert, t_lcvr3_comment eq ' [C] Lyot LCVR3 Temp', $
+          'bad T_LCVR3 comment: %s', t_lcvr3_comment
+  assert, tu_lcvr3_comment eq ' [C] Lyot LCVR3 Temp Unfiltered', $
+          'bad TU_LCVR3 comment: %s', tu_lcvr3_comment
 
   return, 1
 end
