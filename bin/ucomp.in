@@ -499,7 +499,7 @@ def cat_keywords(args):
                 with fits.open(f) as fits_file:
                     for e, hdu in enumerate(fits_file):
                         if e == 0:
-                            level = hdu.header["LEVEL"]
+                            level = hdu.header["LEVEL"] if "LEVEL" in hdu.header else "L0"
                             continue
 
                         if args.keywords is None:
