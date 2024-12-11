@@ -475,6 +475,13 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                   comment='[nm] blue reference wavelength', format='F0.3'
     ucomp_addpar, header, 'RED_REF', red_reference_wavelength, $
                   comment='[nm] red reference wavelength', format='F0.3'
+    ucomp_addpar, header, 'CNTR_FIT', wavelengths[center_index], $
+                  comment='[nm] blue wavelength used in fit', format='F0.3'
+    ucomp_addpar, header, 'BLUE_FIT', wavelengths[blue_index], $
+                  comment='[nm] blue wavelength used in fit', format='F0.3'
+    ucomp_addpar, header, 'RED_FIT', wavelengths[red_index], $
+                  comment='[nm] red wavelength used in fit', format='F0.3'
+
   endif
 
   ucomp_fits_write, fcb, $
@@ -513,6 +520,9 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   if (gaussian_fit_method eq 'analytic') then begin
     sxdelpar, header, 'BLUE_REF'
     sxdelpar, header, 'RED_REF'
+    sxdelpar, header, 'CNTR_FIT'
+    sxdelpar, header, 'BLUE_FIT'
+    sxdelpar, header, 'RED_FIT'
   endif
 
   ; write line width
