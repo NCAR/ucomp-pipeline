@@ -467,10 +467,18 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   endfor
 
   ; write peak intensity
-  ucomp_addpar, header, 'FITMETHD', perform_gauss_fit ? gaussian_fit_method : 'analytic', $
-                comment=' Gaussian fit method', $
+  if (perform_gauss_fit) then begin
+    comment = string(gaussian_fit_method, format='%s Gaussian fit using all wavelengths')
+  endif else begin
+    comment = 'Analytic Gaussian fit using 3 ref wavelengths'
+  endelse
+  ucomp_addpar, header, 'FITMETHD', $
+                perform_gauss_fit ? gaussian_fit_method : 'analytic', $
+                comment=perform_gauss_fit ? 'Gaussian fit using all wavelengths' : 'Analytic Gaussian fit', $
                 before='SKYTRANS'
   if (gaussian_fit_method eq 'analytic') then begin
+    ucomp_addpar, header, 'CNTR_REF', center_wavelength, $
+                  comment='[nm] center reference wavelength', format='F0.3'
     ucomp_addpar, header, 'BLUE_REF', blue_reference_wavelength, $
                   comment='[nm] blue reference wavelength', format='F0.3'
     ucomp_addpar, header, 'RED_REF', red_reference_wavelength, $
