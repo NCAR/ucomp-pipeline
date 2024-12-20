@@ -614,7 +614,7 @@ def validate(args):
 # log sub-command
 
 def prune_logfiles(files, max_version):
-    version_re = re.compile("\d+")
+    version_re = re.compile(r"\d+")
     for f in files:
         versions = glob.glob("%s.*" % f)
         for v in versions:
@@ -629,7 +629,7 @@ def prune_logfiles(files, max_version):
 def filter_file(logfile, level_index, follow, tail=None):
     loglevel_filter = "|".join(LEVELS[level_index:])
     loglevel_prog = re.compile(".*(%s):.*" % loglevel_filter)
-    logstart_prog = re.compile("(\[\d+\] )?\d{8}.\d{6}")
+    logstart_prog = re.compile(r"(\[\d+\] )?\d{8}.\d{6}")
 
     matched_last_line = False
 
@@ -683,7 +683,7 @@ def filter_file(logfile, level_index, follow, tail=None):
 
 
 def filter_log(args):
-    date_re = "^\d{8}$"
+    date_re = r"^\d{8}$"
     date_prog = re.compile(date_re)
 
     logfiles = []
