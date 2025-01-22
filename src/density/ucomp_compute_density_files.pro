@@ -33,16 +33,16 @@ pro ucomp_compute_density_files, l2_basename_1074, $
   center_wavelength_1074 = run->line('1074', 'center_wavelength')
   center_wavelength_1079 = run->line('1079', 'center_wavelength')
 
-  density_ncdf_basename = run->epoch('density_basename')
-  density_ncdf_filename = filepath(density_ncdf_basename, $
-                                   subdir='density', $
-                                   root=run.resource_root)
+  density_basename = run->epoch('density_basename')
+  density_filename = filepath(density_basename, $
+                              subdir='density', $
+                              root=run.resource_root)
 
-  ; lookup heights, densities, ratios from resource netCDF file
-  heights = mg_nc_getdata(density_ncdf_filename, 'h')
-  densities = mg_nc_getdata(density_ncdf_filename, 'den')
-  ratios = mg_nc_getdata(density_ncdf_filename, 'rat')
-  chianti_version = mg_nc_getdata(density_ncdf_filename, '.chianti_version')
+  ratios = ucomp_read_density_ratio(density_filename, $
+                                    heights=heights, $
+                                    densities=densities, $
+                                    chianti_version=chianti_version, $
+                                    inverted_ratio=inverted_ratio)
 
   r_sun = ucomp_getpar(primary_1074_header, 'R_SUN')
 
@@ -59,6 +59,7 @@ pro ucomp_compute_density_files, l2_basename_1074, $
                                   run->line('1079', 'noise_line_width_min'), $
                                   run->line('1079', 'noise_line_width_max'), $
                                   count=n_good_pixels, $
+                                  inverted_ratio=inverted_ratio, $
                                   in_ratio_range=in_ratio_range)
 
   mg_log, '%d good pixels', n_good_pixels, name=run.logger_name, /debug
@@ -106,7 +107,7 @@ pro ucomp_compute_density_files, l2_basename_1074, $
   ucomp_addpar, primary_header, 'CHIANTIV', chianti_version, $
                 comment='Chianti version used to calculate lookup table', $
                 after=after
-  ucomp_addpar, primary_header, 'CHIANTIF', density_ncdf_basename, $
+  ucomp_addpar, primary_header, 'CHIANTIF', density_basename, $
                 comment='Chianti lookup table', $
                 after=after
   ucomp_addpar, primary_header, '1074FILE', l2_basename_1074, $
@@ -197,6 +198,8 @@ config_filename = filepath(config_basename, $
 
 run = ucomp_run(date, 'test', config_filename)
 
+; output_basename = string(strmid(f_1074, 0, 15), strmid(f_1079, 9, 6), $
+;                          format='%s-%s.ucomp.1074-1079.morton.density.fts')
 output_basename = string(strmid(f_1074, 0, 15), strmid(f_1079, 9, 6), $
                          format='%s-%s.ucomp.1074-1079.density.fts')
 ucomp_compute_density_files, f_1074, f_1079, output_basename, run=run
