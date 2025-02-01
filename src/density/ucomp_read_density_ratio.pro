@@ -25,9 +25,14 @@ function ucomp_read_density_ratio, density_filename, $
                                    heights=heights, $
                                    densities=densities, $
                                    chianti_version=chianti_version, $
-                                   inverted_ratio=inverted_ratio
+                                   inverted_ratio=inverted_ratio, $
+                                   electron_temperature=electron_temperature, $
+                                   n_levels=n_levels, $
+                                   abundances_filename=abundances_filename, $
+                                   protons=protons, $
+                                   limb_darkening=limb_darkening
   compile_opt strictarr
-  ; on_error, 2
+  on_error, 2
 
   ext_pos = strpos(density_filename, '.', /reverse_search)
   ext = strmid(density_filename, ext_pos)
@@ -37,8 +42,18 @@ function ucomp_read_density_ratio, density_filename, $
         heights = mg_nc_getdata(density_filename, 'h')
         densities = mg_nc_getdata(density_filename, 'den')
         ratios = mg_nc_getdata(density_filename, 'rat')
-        chianti_version = mg_nc_getdata(density_filename, '.chianti_version')
+
         inverted_ratio = 0B
+
+        chianti_version = mg_nc_getdata(density_filename, '.chianti_version')
+
+        n_levels = mg_nc_getdata(density_filename, '.n_levels')
+        electron_temperature = mg_nc_getdata(density_filename, '.electron_temperature')
+        abundances_filename = mg_nc_getdata(density_filename, '.abundances_filename')
+
+        limb_darkening = mg_nc_getdata(density_filename, '.limbdark')
+        protons = mg_nc_getdata(density_filename, '.protons')
+
         return, ratios
       end
     '.sav' : begin
@@ -47,6 +62,11 @@ function ucomp_read_density_ratio, density_filename, $
         densities = 10^den
         chianti_version = ''
         inverted_ratio = 1B
+        n_levels = 0B
+        electron_temperature = !values.f_nan
+        abundances_filename = 'default'
+        protons = 1B
+        limb_darkening = 0B
         return, transpose(ratio_array)
       end
     else: message, 'unknown density file extension'

@@ -684,11 +684,73 @@ end
 
 
 ;+
+; Retrieve the distortion coefficients and metadata from a distortion file.
+;
+; :Returns:
+;   structure of the form::
+;
+;       distortion = {distortion_basename: '', $
+;                     distortion_date: '', $
+;                     distortion_coefficients: ptr_new()}
+;
+; :Params:
+;   distortion_basename : in, required, type=string
+;     basename of distortion file
+;-
+function ucomp_run::read_distortion_file, distortion_basename
+  compile_opt strictarr
+
+  distortion_dir = self->config('cameras/distortion_dir')
+  ; look in the repo if the distortion_dir option is not found; new
+  ; distortion files are too large to place in the repo
+  if (n_elements(distortion_dir) eq 0L) then begin
+    self->getProperty, resource_root=resource_root
+    distortion_dir = filepath('', subdir='distortion', root=resource_root)
+  endif
+
+  distortion = {distortion_basename: '', $
+                distortion_date: '', $
+                distortion_coefficients: ptr_new(/allocate_heap)}
+
+  distortion_filename = filepath(distortion_basename, $
+                                 root=distortion_dir)
+  restore, filename=distortion_filename
+  distortion.distortion_basename = distortion_basename
+
+  distortion_savfile = idl_savefile(distortion_filename)
+  distortion.distortion_date = (distortion_savfile.contents()).date
+  obj_destroy, distortion_savfile
+
+  if (n_elements(dx0_c) lt 1310720L) then begin
+    nx = self->epoch('nx', datetime=datetime)
+    ny = self->epoch('ny', datetime=datetime)
+
+    x = dindgen(nx, ny) mod nx
+    y = transpose(dindgen(ny, nx) mod ny)
+
+    dx0_c = x + ucomp_eval_surf(dx0_c, dindgen(nx), dindgen(ny))
+    dy0_c = y + ucomp_eval_surf(dy0_c, dindgen(nx), dindgen(ny))
+    dx1_c = x + ucomp_eval_surf(dx1_c, dindgen(nx), dindgen(ny))
+    dy1_c = y + ucomp_eval_surf(dy1_c, dindgen(nx), dindgen(ny))
+  endif
+
+  *distortion.distortion_coefficients = {dx0_c: dx0_c, $
+                                         dy0_c: dy0_c, $
+                                         dx1_c: dx1_c, $
+                                         dy1_c: dy1_c}
+
+  return, distortion
+end
+
+
+;+
 ; Retrieve the distortion coefficients for the epoch in the given date/time.
 ;
 ; :Keywords:
 ;   datetime : in, required, type=string
 ;     date/time in the format "YYYYMMDD_HHMMSS"
+;   wave_region : in, required, type=string
+;     wave region to get distortion for
 ;   dx0_c : out, optional, type="fltarr(3, 3)"
 ;     set to a named variable to retrieve the RCAM x distortion coefficients
 ;   dy0_c : out, optional, type="fltarr(3, 3)"
@@ -698,7 +760,7 @@ end
 ;   dy1_c : out, optional, type="fltarr(3, 3)"
 ;     set to a named variable to retrieve the TCAM y distortion coefficients
 ;-
-pro ucomp_run::get_distortion, datetime=datetime, $
+pro ucomp_run::get_distortion, datetime=datetime, wave_region, $
                                dx0_c=dx0_c, $
                                dy0_c=dy0_c, $
                                dx1_c=dx1_c, $
@@ -707,51 +769,24 @@ pro ucomp_run::get_distortion, datetime=datetime, $
                                distortion_date=distortion_date
   compile_opt strictarr
 
-  distortion_basename = self->epoch('distortion_basename', datetime=datetime)
-  if (self.distortion_basename eq distortion_basename) then begin
-    coeffs = *self.distortion_coefficients
-    dx0_c = coeffs.dx0_c
-    dy0_c = coeffs.dy0_c
-    dx1_c = coeffs.dx1_c
-    dy1_c = coeffs.dy1_c
-    distortion_date = self.distortion_date
+  distortion_basename = self->line(wave_region, 'distortion_basename', $
+                                   datetime=datetime)
+  if (self.distortions->hasKey(wave_region)) then begin
+    distortion = self.distortions[wave_region]
+    if (distortion.distortion_basename ne distortion_basename) then begin
+      ptr_free, distortion.distortion_coefficients
+      self.distortion = self->read_distortion_file(distortion_basename)
+    endif
   endif else begin
-    distortion_dir = self->config('cameras/distortion_dir')
-    ; look in the repo if the distortion_dir option is not found; new
-    ; distortion files are too large to place in the repo
-    if (n_elements(distortion_dir) eq 0L) then begin
-      self->getProperty, resource_root=resource_root
-      distortion_dir = filepath('', subdir='distortion', root=resource_root)
-    endif
-
-    distortion_filename = filepath(distortion_basename, $
-                                   root=distortion_dir)
-    restore, filename=distortion_filename
-    self.distortion_basename = distortion_basename
-
-    distortion_savfile = idl_savefile(distortion_filename)
-    distortion_date = (distortion_savfile.contents()).date
-    self.distortion_date = distortion_date
-    obj_destroy, distortion_savfile
-
-    if (n_elements(dx0_c) lt 1310720L) then begin
-      nx = self->epoch('nx', datetime=datetime)
-      ny = self->epoch('ny', datetime=datetime)
-
-      x = dindgen(nx, ny) mod nx
-      y = transpose(dindgen(ny, nx) mod ny)
-
-      dx0_c = x + ucomp_eval_surf(dx0_c, dindgen(nx), dindgen(ny))
-      dy0_c = y + ucomp_eval_surf(dy0_c, dindgen(nx), dindgen(ny))
-      dx1_c = x + ucomp_eval_surf(dx1_c, dindgen(nx), dindgen(ny))
-      dy1_c = y + ucomp_eval_surf(dy1_c, dindgen(nx), dindgen(ny))
-    endif
-
-    *self.distortion_coefficients = {dx0_c: dx0_c, $
-                                     dy0_c: dy0_c, $
-                                     dx1_c: dx1_c, $
-                                     dy1_c: dy1_c}
+    distortion = self->read_distortion_file(distortion_basename)
   endelse
+
+  coeffs = *distortion.distortion_coefficients
+  dx0_c = coeffs.dx0_c
+  dy0_c = coeffs.dy0_c
+  dx1_c = coeffs.dx1_c
+  dy1_c = coeffs.dy1_c
+  distortion_date = distortion.distortion_date
 end
 
 
@@ -1186,7 +1221,11 @@ pro ucomp_run::cleanup
             self.adjacent_pixels[2], $
             self.adjacent_pixels[3]
 
-  ptr_free, self.distortion_coefficients
+  foreach wave_region_distortion, self.distortions, wave_region do begin
+    ptr_free, wave_region_distortion.distortion_coefficients
+  endforeach
+  obj_destroy, self.distortions
+
   obj_destroy, self.dmatrix_coefficients
   ptr_free, self.demod_info
 
@@ -1306,7 +1345,8 @@ function ucomp_run::init, date, mode, config_filename, $
 
   self.dmatrix_coefficients    = hash()
   self.demod_info              = ptr_new(/allocate_heap)
-  self.distortion_coefficients = ptr_new(/allocate_heap)
+
+  self.distortions = hash()
 
   self.files = orderedhash()   ; wave_region (string) -> list of file objects
 
@@ -1355,10 +1395,7 @@ pro ucomp_run__define
            dmatrix_coefficients    : obj_new(), $
            demod_info              : ptr_new(), $
 
-           distortion_basename     : '', $
-           distortion_date         : '', $
-           distortion_coefficients : ptr_new(), $
-
+           distortions             : obj_new(), $
 
            files                   : obj_new(), $
 

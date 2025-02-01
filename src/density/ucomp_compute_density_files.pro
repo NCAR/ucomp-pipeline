@@ -42,7 +42,12 @@ pro ucomp_compute_density_files, l2_basename_1074, $
                                     heights=heights, $
                                     densities=densities, $
                                     chianti_version=chianti_version, $
-                                    inverted_ratio=inverted_ratio)
+                                    inverted_ratio=inverted_ratio, $
+                                    electron_temperature=electron_temperature, $
+                                    n_levels=n_levels, $
+                                    abundances_filename=abundances_filename, $
+                                    protons=protons, $
+                                    limb_darkening=limb_darkening)
 
   r_sun = ucomp_getpar(primary_1074_header, 'R_SUN')
 
@@ -116,6 +121,22 @@ pro ucomp_compute_density_files, l2_basename_1074, $
   ucomp_addpar, primary_header, '1079FILE', l2_basename_1079, $
                 comment='level 2 1079 filename', $
                 after=after
+  ucomp_addpar, primary_header, 'N_LEVELS', n_levels, $
+                comment='number of energy levels used', $
+                after=after
+  ucomp_addpar, primary_header, 'ELECTEMP', electron_temperature, $
+                comment='[K] electron temperature', $
+                after=after
+  ucomp_addpar, primary_header, 'ABUND', abundances_filename, $
+                comment='abundances filename', $
+                after=after
+  ucomp_addpar, primary_header, 'PROTONS', boolean(protons), $
+                comment='include protons', $
+                after=after
+  ucomp_addpar, primary_header, 'LIMBDARK', boolean(limb_darkening), $
+                comment='include limb darkening', $
+                after=after
+
   ucomp_addpar, primary_header, 'COMMENT', 'Density', /title, before='CHIANTIV'
 
   fits_open, output_filename, fcb, /write
@@ -201,7 +222,7 @@ run = ucomp_run(date, 'test', config_filename)
 ; output_basename = string(strmid(f_1074, 0, 15), strmid(f_1079, 9, 6), $
 ;                          format='%s-%s.ucomp.1074-1079.morton.density.fts')
 output_basename = string(strmid(f_1074, 0, 15), strmid(f_1079, 9, 6), $
-                         format='%s-%s.ucomp.1074-1079.density.fts')
+                         format='%s-%s.ucomp.1074-1079.levels100_density.fts')
 ucomp_compute_density_files, f_1074, f_1079, output_basename, run=run
 
 obj_destroy, run

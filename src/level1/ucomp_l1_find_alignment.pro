@@ -39,7 +39,7 @@ pro ucomp_l1_find_alignment, file, $
   n_pol_states = dims[2]
   if (run->config('centering/step_order') eq 'pre-gaincorrection') then begin
     datetime = strmid(file_basename(file.raw_filename), 0, 15)
-    run->get_distortion, datetime=datetime, $
+    run->get_distortion, datetime=datetime, file.wave_region, $
                          dx0_c=dx0_c, $
                          dy0_c=dy0_c, $
                          dx1_c=dx1_c, $
