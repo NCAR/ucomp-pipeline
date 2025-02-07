@@ -65,7 +65,7 @@ def compute_ratios(limbdark=True, protons=True, n_levels=None,
       for density_index, density in enumerate(densities):
         fe13.calc_rho_sym(density,
                           electron_temperature,
-                          height,
+                          height - 1.0,
                           thetaBlocal,
                           include_limbdark=limbdark,  # maybe try with off?
                           include_protons=protons)
