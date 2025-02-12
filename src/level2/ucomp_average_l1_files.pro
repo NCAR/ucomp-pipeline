@@ -4,8 +4,8 @@
 ; Average an array of files.
 ;
 ; :Params:
-;   files : in, required, type=objarr
-;     UCoMP file objects for files to average
+;   l1_filenames : in, required, type=strarr
+;     UCoMP L1 filenames for files to average
 ;   output_filename_format : in, optional, type=string
 ;     filename of average file; if not present, do not write the output file
 ;
@@ -14,49 +14,47 @@
 ;     averaging method: "mean", "median", or "sigma"
 ;   averaged_data : type, optional, type="fltarr(nx, ny, n_pol_state, n_wavelength)"
 ;     set to a named variable to retrieve the averaged data
-;   run : in, optional, type=string
-;     UCoMP run object
+;   run : in, optional, type=object
+;     UCoMP run object, only needed to produce display images
 ;-
-pro ucomp_average_l1_files, files, $
+pro ucomp_average_l1_files, l1_filenames, $
                             output_filename, $
                             method=method, $
                             averaged_data=averaged_data, $
+                            logger_name=logger_name, $
+                            min_average_files=min_average_files, $
                             run=run
   compile_opt idl2
 
   catch, error
   if (error ne 0) then begin
     catch, /cancel
-    mg_log, /last_error, name=run.logger_name
+    mg_log, /last_error, name=logger_name
     goto, done
   endif
 
   _method = mg_default(method, 'mean')
 
-  n_files = n_elements(files)
-
-  l1_dir = filepath('', $
-                    subdir=[run.date, 'level1'], $
-                    root=run->config('processing/basedir'))
+  n_files = n_elements(l1_filenames)
 
   ok = bytarr(n_files)
   for f = 0L, n_files - 1L do begin
-    ok[f] = file_test(filepath(files[f].l1_basename, root=l1_dir), /regular)
+    ok[f] = file_test(l1_filenames[f], /regular)
   endfor
 
   ok_indices = where(ok gt 0L, n_ok_files, /null)
-  ok_files = files[ok_indices]
+  ok_files = l1_filenames[ok_indices]
 
   if (n_ok_files eq 0L) then begin
-    mg_log, 'no OK files to average', name=run.logger_name, /warn
+    mg_log, 'no OK files to average', name=logger_name, /warn
     goto, done
   endif
 
-  min_average_files = run->config('averaging/min_average_files')
-  if (n_ok_files lt min_average_files) then begin
+  _min_average_files = n_elements(min_average_files) eq 0L ? 1L : min_average_files
+  if (n_ok_files lt _min_average_files) then begin
     mg_log, 'not enough OK files to average (%d < %d)', $
             n_ok_files, min_average_files, $
-            name=run.logger_name, /warn
+            name=logger_name, /warn
     goto, done
   endif
 
@@ -92,10 +90,10 @@ pro ucomp_average_l1_files, files, $
   all_wavelengths = list()
   for f = 0L, n_ok_files - 1L do begin
     mg_log, 'listing %d/%d %s', $
-            f + 1L, n_ok_files, ok_files[f].l1_basename, $
-            name=run.logger_name, /debug
+            f + 1L, n_ok_files, file_basename(ok_files[f]), $
+            name=logger_name, /debug
 
-    ucomp_read_l1_data, filepath(ok_files[f].l1_basename, root=l1_dir), $
+    ucomp_read_l1_data, ok_files[f], $
                         primary_header=primary_header, $
                         ext_headers=ext_headers
     for e = 0L, n_elements(ext_headers) - 1L do begin
@@ -129,7 +127,7 @@ pro ucomp_average_l1_files, files, $
     n_unique_wavelengths = n_elements(all_wavelengths)
   endelse
 
-  ucomp_read_l1_data, filepath(ok_files[0].l1_basename, root=l1_dir), $
+  ucomp_read_l1_data, ok_files[0], $
                       primary_data=primary_data, $
                       primary_header=primary_header, $
                       ext_data=ext_data
@@ -156,7 +154,7 @@ pro ucomp_average_l1_files, files, $
             w + 1L, $
             n_unique_wavelengths, $
             all_wavelengths[w], $
-            name=run.logger_name, $
+            name=logger_name, $
             /info
 
     mean_wavelength_data = make_array(dimension=[dims[0:2], n_ok_files], $
@@ -172,7 +170,7 @@ pro ucomp_average_l1_files, files, $
     sum2_background_data = make_array(dimension=[dims[0:1], n_ok_files], $
                                       type=size(ext_data, /type)) + !values.f_nan
     for f = 0L, n_ok_files - 1L do begin
-      ucomp_read_l1_data, filepath(ok_files[f].l1_basename, root=l1_dir), $
+      ucomp_read_l1_data, ok_files[f], $
                           primary_header=primary_header, $
                           ext_data=ext_data, $
                           ext_headers=ext_headers, $
@@ -231,8 +229,13 @@ pro ucomp_average_l1_files, files, $
     ;     - if so, average files could just average primary header
     ;     - if not, produce SGS averages of each wavelength?
 
-    ucomp_addpar, primary_header, 'DATE-OBS', ok_files[0].date_obs
-    ucomp_addpar, primary_header, 'DATE-END', ok_files[-1].date_obs, $
+    first_primary_header = headfits(ok_files[0])
+    last_primary_header = headfits(ok_files[-1])
+
+    ucomp_addpar, primary_header, 'DATE-OBS', $
+                  ucomp_getpar(first_primary_header, 'DATE-OBS')
+    ucomp_addpar, primary_header, 'DATE-END', $
+                  ucomp_getpar(last_primary_header, 'DATE-END'), $
                   comment='[UT] date/time when obs ended', $
                   after='DATE-OBS'
     ucomp_addpar, primary_header, 'NUMWAVE', n_unique_wavelengths
@@ -281,26 +284,30 @@ pro ucomp_average_l1_files, files, $
                            averaged_background, $
                            averaged_background_headers
 
+    wave_region = ucomp_getpar(primary_header, 'FILTER')
     occulter_radius = ucomp_getpar(primary_header, 'RADIUS')
-    ucomp_write_iquv_image, averaged_data, $
-                            file_basename(output_filename), $
-                            ok_files[0].wave_region, $
-                            float(all_wavelengths), $
-                            occulter_radius=occulter_radius, $
-                            /daily, sigma=method eq 'sigma', $
-                            run=run
 
-    post_angle = ucomp_getpar(primary_header, 'POST_ANG')
-    p_angle = ucomp_getpar(primary_header, 'SOLAR_P0')
-    ucomp_write_all_iquv_image, averaged_data, $
-                                file_basename(output_filename), $
-                                ok_files[0].wave_region, $
-                                float(all_wavelengths), $
-                                occulter_radius, $
-                                post_angle, $
-                                p_angle, $
-                                /daily, sigma=method eq 'sigma', $
-                                run=run
+    if (obj_valid(run)) then begin
+      ucomp_write_iquv_image, averaged_data, $
+                              file_basename(output_filename), $
+                              wave_region, $
+                              float(all_wavelengths), $
+                              occulter_radius=occulter_radius, $
+                              /daily, sigma=method eq 'sigma', $
+                              run=run
+
+      post_angle = ucomp_getpar(primary_header, 'POST_ANG')
+      p_angle = ucomp_getpar(primary_header, 'SOLAR_P0')
+      ucomp_write_all_iquv_image, averaged_data, $
+                                  file_basename(output_filename), $
+                                  wave_region, $
+                                  float(all_wavelengths), $
+                                  occulter_radius, $
+                                  post_angle, $
+                                  p_angle, $
+                                  /daily, sigma=method eq 'sigma', $
+                                  run=run
+    endif
   endif
 
   obj_destroy, [averaged_headers, averaged_background_headers]
