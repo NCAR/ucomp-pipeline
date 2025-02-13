@@ -277,6 +277,7 @@ pro ucomp_average_l1_files, l1_filenames, $
   endif
 
   if (n_elements(output_filename) gt 0L) then begin
+    mg_log, 'writing %s...', file_basename(output_filename), name=logger_name, /info
     ucomp_write_fits_file, output_filename, $
                            primary_header, $
                            averaged_data, $

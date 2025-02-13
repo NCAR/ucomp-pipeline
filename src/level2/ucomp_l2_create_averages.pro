@@ -98,7 +98,8 @@ pro ucomp_l2_create_averages, wave_region, method, $
     ucomp_average_l1_files, good_filenames, $
                             average_filename, $
                             method=method, $
-                            min_average_files=run->config('averaging/min_average_files')
+                            min_average_files=run->config('averaging/min_average_files'), $
+                            logger_name=run.logger_name, $
                             run=run
   endfor
 
