@@ -85,15 +85,15 @@ pro ucomp_l1_check_gbu_median_diff, wave_region, run=run
     good_filenames = strarr(n_good_files)
     for f = 0L, n_good_files - 1L do good_filenames[f] = good_files[f].l1_filename
 
-    ucomp_average_l1_files, good_files, method='mean', $
+    ucomp_average_l1_files, good_filenames, method='mean', $
                             min_average_files=run->config('averaging/min_average_files'), $
                             logger_name=run.logger_name, $
                             averaged_data=mean_data, run=run
-    ucomp_average_l1_files, good_files, method='median', $
+    ucomp_average_l1_files, good_filenames, method='median', $
                             min_average_files=run->config('averaging/min_average_files'), $
                             logger_name=run.logger_name, $
                             averaged_data=median_data, run=run
-    ucomp_average_l1_files, good_files, method='sigma', $
+    ucomp_average_l1_files, good_filenames, method='sigma', $
                             min_average_files=run->config('averaging/min_average_files'), $
                             logger_name=run.logger_name, $
                             averaged_data=sigma_data, run=run
