@@ -35,7 +35,7 @@ def write_ncdf(filename: str, heights, densities, ratios, info):
     rootgrp.close()
 
 
-def compute_ratios(abundances_basename=None,
+def compute_ratios(abundances_basename=None, chianti_maxtemp=False,
                    invert=False, limbdark=True, protons=True,
                    n_levels=None,
                    n_heights: int=99, min_height=1.01, max_height=2.0,
@@ -50,9 +50,12 @@ def compute_ratios(abundances_basename=None,
 
     fe13 = pycelp.Ion("fe_13", nlevels=n_levels, abundFile=abundances_filename)
 
-    # This produces a temperature of 1676832 K, whereas Solarsoft Chianti
+    # get_maxtemp produces a temperature of 1676832 K, whereas Solarsoft Chianti
     # routine MAX_TEMP give a temperature of 1778279 K.
-    electron_temperature = fe13.get_maxtemp()
+    if chianti_maxtemp:
+        electron_temperature = 1778279.0
+    else:
+        electron_temperature = fe13.get_maxtemp()
 
     densities   = 10.0**np.linspace(min_density, max_density, n_densities)
     heights     = np.linspace(min_height, max_height, n_heights)
@@ -102,6 +105,8 @@ if __name__ == "__main__":
         help="output filename")
     parser.add_argument("--abundances-basename", "-a", default=None, type=str,
         help="abundances basename, i.e., 'sun_coronal_2021_chianti'")
+    parser.add_argument("--chianti-maxtemp", default=False, action="store_true",
+        help="temperature is normally 1676832 K, if set use Chianti's temperature 1778279 K")
     parser.add_argument("--invert", "-i", default=False, action="store_true",
         help="normally ratio computed is 1074/1079, this option inverts it")
     parser.add_argument("--no-limbdark", default=False, action="store_true",
@@ -125,6 +130,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     abundances_basename = args.abundances_basename
+    chianti_maxtemp     = args.chianti_maxtemp
     invert              = args.invert
     limbdark            = not args.no_limbdark
     protons             = not args.no_protons
@@ -150,6 +156,7 @@ if __name__ == "__main__":
         basename = f"chianti_v{chianti_version}_pycelp_fe13_h{n_heights}_d{n_densities}_{name}ratio.nc"
 
     print(f"abundances basename : {abundances_basename}")
+    print(f"chianti_maxtemp     : {'YES' if chianti_maxtemp else 'NO'}")
     print(f"invert              : {'YES' if invert else 'NO'}")
     print(f"limb darkening      : {'YES' if limbdark else 'NO'}")
     print(f"protons             : {'YES' if protons else 'NO'}")
@@ -163,6 +170,7 @@ if __name__ == "__main__":
 
     heights, densities, ratios, info = compute_ratios(
         abundances_basename=abundances_basename,
+        chianti_maxtemp=chianti_maxtemp,
         invert=invert, limbdark=limbdark, protons=protons, n_levels=n_levels,
         n_heights=n_heights, min_height=min_height, max_height=max_height,
         n_densities=n_densities,
