@@ -47,6 +47,7 @@ function ucomp_compute_density, peak_intensity_1074, peak_intensity_1079, $
                                 noise_line_width_max_1074, $
                                 noise_line_width_min_1079, $
                                 noise_line_width_max_1079, $
+                                ignore_linewidth=ignore_linewidth, $
                                 inverted_ratio=inverted_ratio, $
                                 count=n_mask_indices, $
                                 in_ratio_range=in_ratio_range
@@ -64,8 +65,14 @@ function ucomp_compute_density, peak_intensity_1074, peak_intensity_1079, $
   d = d_pixels / r_sun
 
   ; calculate ratio of 1074/1079
-  ratio_1074 = peak_intensity_1074 * line_width_1074 * center_wavelength_1074
-  ratio_1079 = peak_intensity_1079 * line_width_1079 * center_wavelength_1079
+  if (keyword_set(ignore_linewidth)) then begin
+    ratio_1074 = peak_intensity_1074 * center_wavelength_1074
+    ratio_1079 = peak_intensity_1079 * center_wavelength_1079
+  endif else begin
+    ratio_1074 = peak_intensity_1074 * line_width_1074 * center_wavelength_1074
+    ratio_1079 = peak_intensity_1079 * line_width_1079 * center_wavelength_1079
+  endelse
+
   ratio = keyword_set(inverted_ratio) ? (ratio_1079 / ratio_1074) : (ratio_1074 / ratio_1079)
 
   ; eliminate pixels with intensity or line width outside our noise mask

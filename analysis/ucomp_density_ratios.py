@@ -160,7 +160,7 @@ if __name__ == "__main__":
     print(f"invert              : {'YES' if invert else 'NO'}")
     print(f"limb darkening      : {'YES' if limbdark else 'NO'}")
     print(f"protons             : {'YES' if protons else 'NO'}")
-    print(f"# of levels         : {n_levels}")
+    print(f"# of levels         : {'all' if n_levels is None else n_levels}")
     print(f"# of heights        : {n_heights}")
     print(f"height range        : {min_height:0.3f} - {max_height:0.3f} R_sun")
     print(f"# of densities      : {n_densities}")

@@ -28,7 +28,7 @@ function ucomp_read_density_ratio, density_filename, $
                                    inverted_ratio=inverted_ratio, $
                                    electron_temperature=electron_temperature, $
                                    n_levels=n_levels, $
-                                   abundances_filename=abundances_filename, $
+                                   abundances_basename=abundances_basename, $
                                    protons=protons, $
                                    limb_darkening=limb_darkening
   compile_opt strictarr
@@ -47,7 +47,7 @@ function ucomp_read_density_ratio, density_filename, $
 
         n_levels = mg_nc_getdata(density_filename, '.n_levels')
         electron_temperature = mg_nc_getdata(density_filename, '.electron_temperature')
-        abundances_filename = mg_nc_getdata(density_filename, '.abundances_filename')
+        abundances_basename = mg_nc_getdata(density_filename, '.abundances_basename')
 
         inverted_ratio = mg_nc_getdata(density_filename, '.invert')
         limb_darkening = mg_nc_getdata(density_filename, '.limbdark')
@@ -63,7 +63,7 @@ function ucomp_read_density_ratio, density_filename, $
         inverted_ratio = 1B
         n_levels = 0B
         electron_temperature = !values.f_nan
-        abundances_filename = 'default'
+        abundances_basename = 'default'
         protons = 1B
         limb_darkening = 0B
         return, transpose(ratio_array)

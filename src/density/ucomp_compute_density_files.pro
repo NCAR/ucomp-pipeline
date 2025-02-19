@@ -3,6 +3,7 @@
 pro ucomp_compute_density_files, l2_basename_1074, $
                                  l2_basename_1079, $
                                  output_basename, $
+                                 ignore_linewidth=ignore_linewidth, $
                                  run=run
   compile_opt strictarr
 
@@ -45,7 +46,7 @@ pro ucomp_compute_density_files, l2_basename_1074, $
                                     inverted_ratio=inverted_ratio, $
                                     electron_temperature=electron_temperature, $
                                     n_levels=n_levels, $
-                                    abundances_filename=abundances_filename, $
+                                    abundances_basename=abundances_basename, $
                                     protons=protons, $
                                     limb_darkening=limb_darkening)
 
@@ -64,6 +65,7 @@ pro ucomp_compute_density_files, l2_basename_1074, $
                                   run->line('1079', 'noise_line_width_min'), $
                                   run->line('1079', 'noise_line_width_max'), $
                                   count=n_good_pixels, $
+                                  ignore_linewidth=ignore_linewidth, $
                                   inverted_ratio=inverted_ratio, $
                                   in_ratio_range=in_ratio_range)
 
@@ -127,7 +129,7 @@ pro ucomp_compute_density_files, l2_basename_1074, $
   ucomp_addpar, primary_header, 'ELECTEMP', electron_temperature, $
                 comment='[K] electron temperature', $
                 after=after
-  ucomp_addpar, primary_header, 'ABUND', abundances_filename, $
+  ucomp_addpar, primary_header, 'ABUND', abundances_basename, $
                 comment='abundances filename', $
                 after=after
   ucomp_addpar, primary_header, 'PROTONS', boolean(protons), $
@@ -199,12 +201,12 @@ date = '20240409'
 ; f_1074 = '20240409.193422.ucomp.1074.l2.fts'
 ; f_1079 = '20240409.180009.ucomp.1079.l2.fts'
 
-f_1074 = '20240409.180747.ucomp.1074.l2.fts'
-f_1079 = '20240409.210322.ucomp.1079.l2.fts'
+; f_1074 = '20240409.180747.ucomp.1074.l2.fts'
+; f_1079 = '20240409.210322.ucomp.1079.l2.fts'
 
 ; #1
-; f_1074 = '20240409.180747.ucomp.1074.l2.fts'
-; f_1079 = '20240409.180009.ucomp.1079.l2.fts'
+f_1074 = '20240409.180747.ucomp.1074.l2.fts'
+f_1079 = '20240409.180009.ucomp.1079.l2.fts'
 
 ; #2
 ; f_1074 = '20240409.190537.ucomp.1074.l2.fts'
@@ -213,6 +215,10 @@ f_1079 = '20240409.210322.ucomp.1079.l2.fts'
 ; #3
 ; f_1074 = '20240409.191848.ucomp.1074.l2.fts'
 ; f_1079 = '20240409.192457.ucomp.1079.l2.fts'
+
+; table = 2
+; ignore_linewidth = 1B
+; name = string(table, ignore_linewidth ? 2 : 1, format='table%d.method%d')
 
 name = 'test'
 
@@ -224,12 +230,11 @@ config_filename = filepath(config_basename, $
 
 run = ucomp_run(date, 'test', config_filename)
 
-; output_basename = string(strmid(f_1074, 0, 15), strmid(f_1079, 9, 6), $
-;                          format='%s-%s.ucomp.1074-1079.morton.density.fts')
 output_basename = string(strmid(f_1074, 0, 15), strmid(f_1079, 9, 6), $
                          name, $
                          format='%s-%s.ucomp.1074-1079.%s.density.fts')
-ucomp_compute_density_files, f_1074, f_1079, output_basename, run=run
+ucomp_compute_density_files, f_1074, f_1079, output_basename, $
+                             ignore_linewidth=ignore_linewidth, run=run
 
 obj_destroy, run
 
