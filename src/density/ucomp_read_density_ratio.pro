@@ -43,14 +43,13 @@ function ucomp_read_density_ratio, density_filename, $
         densities = mg_nc_getdata(density_filename, 'den')
         ratios = mg_nc_getdata(density_filename, 'rat')
 
-        inverted_ratio = 0B
-
         chianti_version = mg_nc_getdata(density_filename, '.chianti_version')
 
         n_levels = mg_nc_getdata(density_filename, '.n_levels')
         electron_temperature = mg_nc_getdata(density_filename, '.electron_temperature')
         abundances_filename = mg_nc_getdata(density_filename, '.abundances_filename')
 
+        inverted_ratio = mg_nc_getdata(density_filename, '.invert')
         limb_darkening = mg_nc_getdata(density_filename, '.limbdark')
         protons = mg_nc_getdata(density_filename, '.protons')
 

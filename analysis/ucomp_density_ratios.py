@@ -17,6 +17,7 @@ def write_ncdf(filename: str, heights, densities, ratios, info):
     rootgrp.abundances_basename = abundances_basename if abundances_basename is not None else ""
     n_levels = info["n_levels"]
     rootgrp.n_levels = float(n_levels) if n_levels is not None else np.nan
+    rootgrp.invert = np.uint8(info["invert"])
     rootgrp.limbdark = np.uint8(info["limbdark"])
     rootgrp.protons = np.uint8(info["protons"])
 
@@ -34,7 +35,8 @@ def write_ncdf(filename: str, heights, densities, ratios, info):
     rootgrp.close()
 
 
-def compute_ratios(abundances_basename=None, limbdark=True, protons=True,
+def compute_ratios(abundances_basename=None,
+                   invert=False, limbdark=True, protons=True,
                    n_levels=None,
                    n_heights: int=99, min_height=1.01, max_height=2.0,
                    n_densities: int=120, min_density=6.0, max_density=12.0):
@@ -74,13 +76,17 @@ def compute_ratios(abundances_basename=None, limbdark=True, protons=True,
         intensities[0, height_index, density_index] = line0.calc_Iemiss()[0]
         intensities[1, height_index, density_index] = line1.calc_Iemiss()[0]
 
-    ratios = intensities[0, :, :] / intensities[1, :, :]
+    if invert:
+        ratios = intensities[1, :, :] / intensities[0, :, :]
+    else:
+        ratios = intensities[0, :, :] / intensities[1, :, :]
 
     info = {
         "chianti_version": chianti_version,
         "electron_temperature": electron_temperature,
         "abundances_basename" : f"{abundances_basename}.abund",
         "n_levels": n_levels,
+        "invert": invert,
         "limbdark": limbdark,
         "protons": protons}
 
@@ -96,6 +102,8 @@ if __name__ == "__main__":
         help="output filename")
     parser.add_argument("--abundances-basename", "-a", default=None, type=str,
         help="abundances basename, i.e., 'sun_coronal_2021_chianti'")
+    parser.add_argument("--invert", "-i", default=False, action="store_true",
+        help="normally ratio computed is 1074/1079, this option inverts it")
     parser.add_argument("--no-limbdark", default=False, action="store_true",
         help="set to not include limb darkening")
     parser.add_argument("--no-protons", default=False, action="store_true",
@@ -117,6 +125,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     abundances_basename = args.abundances_basename
+    invert              = args.invert
     limbdark            = not args.no_limbdark
     protons             = not args.no_protons
     n_levels            = args.n_levels
@@ -141,6 +150,7 @@ if __name__ == "__main__":
         basename = f"chianti_v{chianti_version}_pycelp_fe13_h{n_heights}_d{n_densities}_{name}ratio.nc"
 
     print(f"abundances basename : {abundances_basename}")
+    print(f"invert              : {'YES' if invert else 'NO'}")
     print(f"limb darkening      : {'YES' if limbdark else 'NO'}")
     print(f"protons             : {'YES' if protons else 'NO'}")
     print(f"# of levels         : {n_levels}")
@@ -153,7 +163,7 @@ if __name__ == "__main__":
 
     heights, densities, ratios, info = compute_ratios(
         abundances_basename=abundances_basename,
-        limbdark=limbdark, protons=protons, n_levels=n_levels,
+        invert=invert, limbdark=limbdark, protons=protons, n_levels=n_levels,
         n_heights=n_heights, min_height=min_height, max_height=max_height,
         n_densities=n_densities,
         min_density=min_density, max_density=max_density)

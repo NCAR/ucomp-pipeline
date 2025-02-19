@@ -172,9 +172,6 @@ date = '20240409'
 ; f_1074 = '20220225.182056.ucomp.1074.l2.fts'
 ; f_1079 = '20220225.182341.ucomp.1079.l2.fts'
 
-; f_1074 = '20240409.191848.ucomp.1074.l2.fts'
-; f_1079 = '20240409.191146.ucomp.1079.l2.fts'
-
 ; f_1074 = '20220111.192841.ucomp.1074.l2.fts'
 ; f_1079 = '20220111.193101.ucomp.1079.l2.fts'
 
@@ -184,14 +181,8 @@ date = '20240409'
 ; f_1074 = '20220407.181026.ucomp.1074.l2.fts'
 ; f_1079 = '20220407.181312.ucomp.1079.l2.fts'
 
- ; f_1074 = '20240409.180747.ucomp.1074.l2.fts'
- ; f_1079 = '20240409.180009.ucomp.1079.l2.fts'
-
- ; f_1074 = '20240409.190537.ucomp.1074.l2.fts'
- ; f_1079 = '20240409.191146.ucomp.1079.l2.fts'
-
 ; f_1074 = '20240409.191848.ucomp.1074.l2.fts'
-; f_1079 = '20240409.192457.ucomp.1079.l2.fts'
+; f_1079 = '20240409.191146.ucomp.1079.l2.fts'
 
 ; f_1074 = '20240409.193422.ucomp.1074.l2.fts'
 ; f_1079 =  '20240409.210322.ucomp.1079.l2.fts'
@@ -211,6 +202,20 @@ date = '20240409'
 f_1074 = '20240409.180747.ucomp.1074.l2.fts'
 f_1079 = '20240409.210322.ucomp.1079.l2.fts'
 
+; #1
+; f_1074 = '20240409.180747.ucomp.1074.l2.fts'
+; f_1079 = '20240409.180009.ucomp.1079.l2.fts'
+
+; #2
+; f_1074 = '20240409.190537.ucomp.1074.l2.fts'
+; f_1079 = '20240409.191146.ucomp.1079.l2.fts'
+
+; #3
+; f_1074 = '20240409.191848.ucomp.1074.l2.fts'
+; f_1079 = '20240409.192457.ucomp.1079.l2.fts'
+
+name = 'test'
+
 config_basename = 'ucomp.production.cfg'
 ; config_basename = 'ucomp.latest.cfg'
 config_filename = filepath(config_basename, $
@@ -222,7 +227,8 @@ run = ucomp_run(date, 'test', config_filename)
 ; output_basename = string(strmid(f_1074, 0, 15), strmid(f_1079, 9, 6), $
 ;                          format='%s-%s.ucomp.1074-1079.morton.density.fts')
 output_basename = string(strmid(f_1074, 0, 15), strmid(f_1079, 9, 6), $
-                         format='%s-%s.ucomp.1074-1079.levels100_density.fts')
+                         name, $
+                         format='%s-%s.ucomp.1074-1079.%s.density.fts')
 ucomp_compute_density_files, f_1074, f_1079, output_basename, run=run
 
 obj_destroy, run
