@@ -1,35 +1,50 @@
 ; docformat = 'rst'
 
-pro ucomp_compute_density_files, l2_basename_1074, $
-                                 l2_basename_1079, $
+pro ucomp_compute_density_files, l2_basenames_1074, $
+                                 l2_basenames_1079, $
                                  output_basename, $
                                  ignore_linewidth=ignore_linewidth, $
                                  run=run
   compile_opt strictarr
 
   mg_log, 'computing density for:', name=run.logger_name, /info
-  mg_log, '  %s', file_basename(l2_basename_1074), name=run.logger_name, /info
-  mg_log, '  %s', file_basename(l2_basename_1079), name=run.logger_name, /info
+  for f = 0L, n_elements(l2_basenames_1074) - 1L do begin
+    mg_log, '  %d/%d 1074 nm: %s', $
+            f + 1 , n_elements(l2_basenames_1074), $
+            file_basename(l2_basenames_1074[f]), $
+            name=run.logger_name, /info
+  endfor
+  for f = 0L, n_elements(l2_basenames_1079) - 1L do begin
+    mg_log, '  %d/%d 1079 nm: %s', $
+            f + 1 , n_elements(l2_basenames_1079), $
+            file_basename(l2_basenames_1079[f]), $
+            name=run.logger_name, /info
+  endfor
 
   l2_dirname = filepath('', $
                         subdir=[run.date, 'level2'], $
                         root=run->config('processing/basedir'))
   ucomp_mkdir, l2_dirname, logger_name=run.logger_name
 
-  l2_filename_1074 = filepath(l2_basename_1074, root=l2_dirname)
-  l2_filename_1079 = filepath(l2_basename_1079, root=l2_dirname)
+  l2_filenames_1074 = filepath(l2_basenames_1074, root=l2_dirname)
+  ucomp_average_l2_files, l2_filenames_1074, $
+                          primary_header=primary_1074_header, $
+                          peak_intensity=peak_intensity_1074, $
+                          header_peak_intensity=peak_intensity_1074_header, $
+                          line_width=line_width_1074, $
+                          header_line_width=line_width_1074_header, $
+                          date_obs=date_obs_1074, $
+                          date_end=date_end_1074
 
-  fits_open, l2_filename_1074, fcb
-  fits_read, fcb, !null, primary_1074_header, exten_no=0
-  fits_read, fcb, peak_intensity_1074, peak_intensity_1074_header, extname='Peak intensity'
-  fits_read, fcb, line_width_1074, line_width_1074_header, extname='Line width (FWHM)'
-  fits_close, fcb
-
-  fits_open, l2_filename_1079, fcb
-  fits_read, fcb, !null, primary_1079_header, exten_no=0
-  fits_read, fcb, peak_intensity_1079, peak_intensity_1079_header, extname='Peak intensity'
-  fits_read, fcb, line_width_1079, line_width_1079_header, extname='Line width (FWHM)'
-  fits_close, fcb
+  l2_filenames_1079 = filepath(l2_basenames_1079, root=l2_dirname)
+  ucomp_average_l2_files, l2_filenames_1079, $
+                          primary_header=primary_1079_header, $
+                          peak_intensity=peak_intensity_1079, $
+                          header_peak_intensity=peak_intensity_1079_header, $
+                          line_width=line_width_1079, $
+                          header_line_width=line_width_1079_header, $
+                          date_obs=date_obs_1079, $
+                          date_end=date_end_1079
 
   center_wavelength_1074 = run->line('1074', 'center_wavelength')
   center_wavelength_1079 = run->line('1079', 'center_wavelength')
@@ -117,17 +132,28 @@ pro ucomp_compute_density_files, l2_basename_1074, $
   ucomp_addpar, primary_header, 'CHIANTIF', density_basename, $
                 comment='Chianti lookup table', $
                 after=after
-  ucomp_addpar, primary_header, '1074FILE', l2_basename_1074, $
-                comment='level 2 1074 filename', $
-                after=after
-  ucomp_addpar, primary_header, '1079FILE', l2_basename_1079, $
-                comment='level 2 1079 filename', $
-                after=after
+  for f = 0L, n_elements(l2_basenames_1074) - 1L do begin
+    ucomp_addpar, primary_header, $
+                  string(f + 1, format='1074FIL%d'), $
+                  l2_basenames_1074[f], $
+                  comment=string(f + 1, n_elements(l2_basenames_1074), $
+                                 format='%d/%d level 2 1074 filename'), $
+                  after=after
+  endfor
+  for f = 0L, n_elements(l2_basenames_1079) - 1L do begin
+    ucomp_addpar, primary_header, $
+                  string(f + 1, format='1079FIL%d'), $
+                  l2_basenames_1079[f], $
+                  comment=string(f + 1, n_elements(l2_basenames_1079), $
+                                 format='%d/%d level 2 1079 filename'), $
+                  after=after
+  endfor
   ucomp_addpar, primary_header, 'N_LEVELS', n_levels, $
                 comment='number of energy levels used', $
                 after=after
   ucomp_addpar, primary_header, 'ELECTEMP', electron_temperature, $
                 comment='[K] electron temperature', $
+                format='(f0.1)', $
                 after=after
   ucomp_addpar, primary_header, 'ABUND', abundances_basename, $
                 comment='abundances filename', $
@@ -204,13 +230,19 @@ date = '20240409'
 ; f_1074 = '20240409.180747.ucomp.1074.l2.fts'
 ; f_1079 = '20240409.210322.ucomp.1079.l2.fts'
 
-; #1
-f_1074 = '20240409.180747.ucomp.1074.l2.fts'
-f_1079 = '20240409.180009.ucomp.1079.l2.fts'
-
-; #2
 ; f_1074 = '20240409.190537.ucomp.1074.l2.fts'
 ; f_1079 = '20240409.191146.ucomp.1079.l2.fts'
+
+; f_1074 = ['20240409.190537.ucomp.1074.l2.fts', '20240409.191848.ucomp.1074.l2.fts']
+; f_1079 = ['20240409.191146.ucomp.1079.l2.fts', '20240409.192457.ucomp.1079.l2.fts']
+
+; #1
+; f_1074 = '20240409.180747.ucomp.1074.l2.fts'
+; f_1079 = '20240409.180009.ucomp.1079.l2.fts'
+
+; #2
+f_1074 = '20240409.190537.ucomp.1074.l2.fts'
+f_1079 = '20240409.191146.ucomp.1079.l2.fts'
 
 ; #3
 ; f_1074 = '20240409.191848.ucomp.1074.l2.fts'
@@ -220,7 +252,7 @@ f_1079 = '20240409.180009.ucomp.1079.l2.fts'
 ; ignore_linewidth = 1B
 ; name = string(table, ignore_linewidth ? 2 : 1, format='table%d.method%d')
 
-name = 'test'
+name = 'not-averaged'
 
 config_basename = 'ucomp.production.cfg'
 ; config_basename = 'ucomp.latest.cfg'
@@ -230,7 +262,7 @@ config_filename = filepath(config_basename, $
 
 run = ucomp_run(date, 'test', config_filename)
 
-output_basename = string(strmid(f_1074, 0, 15), strmid(f_1079, 9, 6), $
+output_basename = string(strmid(f_1074[0], 0, 15), strmid(f_1079[0], 9, 6), $
                          name, $
                          format='%s-%s.ucomp.1074-1079.%s.density.fts')
 ucomp_compute_density_files, f_1074, f_1079, output_basename, $
