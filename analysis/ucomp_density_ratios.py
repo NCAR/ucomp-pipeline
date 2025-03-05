@@ -38,7 +38,7 @@ def write_ncdf(filename: str, heights, densities, ratios, info):
 def compute_ratios(abundances_basename=None, chianti_maxtemp=False,
                    invert=False, limbdark=True, protons=True,
                    n_levels=None,
-                   n_heights: int=99, min_height=1.01, max_height=2.0,
+                   n_heights: int=240, min_height=1.005, max_height=2.2,
                    n_densities: int=120, min_density=6.0, max_density=12.0):
     chianti_dir, chianti_version = pycelp.chianti.getChiantiDir()
 
@@ -115,12 +115,12 @@ if __name__ == "__main__":
         help="set to not include protons")
     parser.add_argument("--n-levels", default=None, type=int,
         help="number of levels (default: all)")
-    parser.add_argument("--n-heights", default=99, type=int,
-        help="number of heights (default: 99)")
-    parser.add_argument("--min-height", default=1.01, type=float,
-        help="min height (default: 1.01)")
-    parser.add_argument("--max-height", default=2.0, type=float,
-        help="max height (default: 2.0)")
+    parser.add_argument("--n-heights", default=240, type=int,
+        help="number of heights (default: 240)")
+    parser.add_argument("--min-height", default=1.005, type=float,
+        help="min height (default: 1.005)")
+    parser.add_argument("--max-height", default=2.2, type=float,
+        help="max height (default: 2.2)")
     parser.add_argument("--n-densities", default=120, type=int,
         help="number of densities (default: 120)")
     parser.add_argument("--min-density", default=6.0, type=float,
