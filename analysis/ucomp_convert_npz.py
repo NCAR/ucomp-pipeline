@@ -18,6 +18,15 @@ def convert(filename: str):
 
     rootgrp = Dataset(ncdf_filename, "w", format="NETCDF4")
 
+    rootgrp.chianti_version = "10.1"
+    rootgrp.electron_temperature = 1676832.9
+    rootgrp.abundances_basename = ""
+
+    rootgrp.n_levels = np.nan
+    rootgrp.invert = np.uint8(0)
+    rootgrp.limbdark = np.uint8(1)
+    rootgrp.protons = np.uint8(1)
+
     # variables h, den, rat(h_dim, den_dim)
     h_dim = rootgrp.createDimension("h", file["h"].shape[0])
     den_dim = rootgrp.createDimension("den", file["den"].shape[0])
