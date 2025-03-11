@@ -69,9 +69,11 @@ pro ucomp_l2_publish, run=run
 
   ; add catalog, GBU, quality files and user guide
 
-  citation_filename = filepath('UCOMP_CITATION.txt', $
-                               subdir='docs', $
-                               root=run.resource_root)
+  citation_template_filename = filepath('UCOMP_CITATION.txt', $
+                                        subdir='docs', $
+                                        root=run.resource_root)
+  citation_filename = filepath('UCOMP_CITATION.txt', root=processing_dir)
+  ucomp_make_citation_file, citation_template_filename, citation_filename
   files_list->add, citation_filename
   n_nondatafiles += 1L
 

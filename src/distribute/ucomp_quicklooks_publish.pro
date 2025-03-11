@@ -234,9 +234,11 @@ pro ucomp_quicklooks_publish, run=run
 
   ; add catalog, GBU, quality files and user guide
 
-  citation_filename = filepath('UCOMP_CITATION.txt', $
-                               subdir='docs', $
-                               root=run.resource_root)
+  citation_template_filename = filepath('UCOMP_CITATION.txt', $
+                                        subdir='docs', $
+                                        root=run.resource_root)
+  citation_filename = filepath('UCOMP_CITATION.txt', root=processing_dir)
+  ucomp_make_citation_file, citation_template_filename, citation_filename
   quicklook_files_list->add, citation_filename
 
   ucomp_add_userguide, quicklook_files_list, run=run
