@@ -34,7 +34,7 @@ pro ucomp_eod_steps, wave_regions, run=run
   endelse
 
   ;== level 2
-  if (run->config('steps/level1')) then begin
+  if (run->config('steps/level2')) then begin
     for w = 0L, n_elements(wave_regions) - 1L do begin
       ucomp_pipeline_step, 'ucomp_l2_process', wave_regions[w], run=run
       ucomp_pipeline_step, 'ucomp_write_l2_movies', wave_regions[w], run=run
@@ -43,5 +43,12 @@ pro ucomp_eod_steps, wave_regions, run=run
     ucomp_pipeline_step, 'ucomp_l2_temperature_maps', run=run
   endif else begin
     mg_log, 'skipping level 2 processing', name=run.logger_name, /info
+  endelse
+
+  ;== level 3
+  if (run->config('steps/level3')) then begin
+    ucomp_pipeline_step, 'ucomp_l3_process', run=run
+  endif else begin
+    mg_log, 'skipping level 3 processing', name=run.logger_name, /info
   endelse
 end
