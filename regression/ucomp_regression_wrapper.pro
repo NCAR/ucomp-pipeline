@@ -95,6 +95,9 @@ pro ucomp_regression_wrapper, date, config_filename
 
   mg_log, 'after checking standards, status %d', status, name=run.logger_name, /info
 
+  exception_relpaths = ['UCOMP_CITATION.txt']
+  exception_paths = filepath(exception_relpaths, root=results_dir)
+
   ; compare matches
   for m = 0L, n_elements(result_matches) - 1L do begin
     result_path = filepath(results[result_matches[m]], root=results_dir)
@@ -110,12 +113,21 @@ pro ucomp_regression_wrapper, date, config_filename
       mg_log, 'result %s is a directory, but standard is not', $
               results[result_matches[m]], $
               name=run.logger_name, /warn
+      continue
     endif
     if (~result_is_dir && standard_is_dir) then begin
       status or= 4L
       mg_log, 'result %s is a directory, but standard is not', $
               results[result_matches[m]], $
               name=run.logger_name, /warn
+      continue
+    endif
+
+    !null = where(result_path eq exception_paths, n_exceptions_found)
+    if (n_exceptions_found gt 0L) then begin
+      mg_log, 'result is in do-not-compare list, skipping', $
+              name=run.logger_name, /warn
+      continue
     endif
 
     case 1 of
