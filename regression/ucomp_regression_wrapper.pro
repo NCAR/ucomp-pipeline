@@ -126,7 +126,7 @@ pro ucomp_regression_wrapper, date, config_filename
     !null = where(result_path eq exception_paths, n_exceptions_found)
     if (n_exceptions_found gt 0L) then begin
       mg_log, 'result is in do-not-compare list, skipping', $
-              name=run.logger_name, /warn
+              name=run.logger_name, /debug
       continue
     endif
 
