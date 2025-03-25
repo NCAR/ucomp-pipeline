@@ -59,6 +59,11 @@ pro ucomp_l1_find_alignment, file, $
 
   rcam_center_guess = ucomp_occulter_guess(0, date, occulter_x, occulter_y, run=run)
   rcam_offband_indices = where(file.onband_indices eq 1, n_rcam_offband)
+  if (n_rcam_offband eq 0L) then begin
+    mg_log, 'no offband RCAM images, skipping', name=run.logger_name, /warn
+    status = 1L
+    goto, done
+  endif
 
   mg_log, /check_math, name=run.logger_name, /debug
   rcam_background = mean(reform(data[*, *, *, 0, rcam_offband_indices]), dimension=4, /nan)
@@ -93,6 +98,11 @@ pro ucomp_l1_find_alignment, file, $
 
   tcam_center_guess = ucomp_occulter_guess(1, date, occulter_x, occulter_y, run=run)
   tcam_offband_indices = where(file.onband_indices eq 0, n_tcam_offband)
+  if (n_tcam_offband eq 0L) then begin
+    mg_log, 'no offband TCAM images, skipping', name=run.logger_name, /warn
+    status = 1L
+    goto, done
+  endif
 
   mg_log, /check_math, name=run.logger_name, /debug
   tcam_background = mean(reform(data[*, *, *, 1, tcam_offband_indices]), dimension=4, /nan)
