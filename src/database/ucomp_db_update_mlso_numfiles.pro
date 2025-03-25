@@ -25,10 +25,9 @@ pro ucomp_db_update_mlso_numfiles, obsday_index, db, run=run
   for f = 0L, n_total_fits_files - 1L do begin
     if (files[f].good and files[f].wrote_l1) then begin
       published = run->config(files[f].wave_region + '/publish_l1', found=found)
-      if (~found) then published = 0B
-      if (published) then begin
-        n_good_fits_files += 1L
-      endif
+      if (published) then n_good_fits_files += 1L
+      mg_log, 'n_good_fits_files: %d', n_good_fits_files, $
+              name=run.logger_name, /debug
     endif
   endfor
 
@@ -39,4 +38,19 @@ pro ucomp_db_update_mlso_numfiles, obsday_index, db, run=run
           name=run.logger_name, /info
 
   done:
+end
+
+
+; main-level example program
+
+date = '20250323'
+config_basename = 'ucomp.latest.cfg'
+config_filename = filepath(config_basename, $
+                           subdir=['..', '..', '..', 'ucomp-config'], $
+                           root=mg_src_root())
+run = ucomp_run(date, 'test', config_filename)
+published = run->config('1074' + '/publish_l1', found=found)
+help, published, found
+obj_destroy, run
+
 end
