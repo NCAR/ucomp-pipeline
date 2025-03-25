@@ -729,3 +729,5 @@
 #### 1.0.17 [Mar 24, 2025]
 
 - fix for mlso_numfiles entry
+
+#### 1.0.18
