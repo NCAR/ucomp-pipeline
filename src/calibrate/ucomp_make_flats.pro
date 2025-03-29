@@ -18,10 +18,9 @@
 pro ucomp_make_flats, wave_region, run=run
   compile_opt strictarr
 
-  mg_log, 'making flats for %s nm...', wave_region, name=run.logger_name, /info
-
   ; query run object for all the flat files for a given wave region
-  flat_files = run->get_files(data_type='flat', wave_region=wave_region, $
+  flat_files = run->get_files(data_type='flat', $
+                              wave_region=wave_region, $
                               count=n_flat_files)
 
   if (n_flat_files eq 0L) then begin
@@ -104,7 +103,8 @@ pro ucomp_make_flats, wave_region, run=run
                             onband=averaged_onband, $
                             sgsdimv=averaged_sgsdimv, $
                             wavelength=averaged_wavelength
-    mg_log, 'averaging %d to %d flat exts', n_extensions, n_averaged_extensions, $
+    mg_log, 'averaging %d raw exts down to %d master flat exts', $
+            n_extensions, n_averaged_extensions, $
             name=run.logger_name, /debug
 
     ; move demoted_keywords from primary header to extension headers
@@ -143,7 +143,7 @@ pro ucomp_make_flats, wave_region, run=run
 
       dims = size(ext_data, /dimensions)
 
-      flat_image = mean(flat_image, dimension=3)
+      flat_image = mean(flat_image, dimension=3, /nan)
 
       flat_extnames->add, string(averaged_wavelength[e], $
                                  averaged_onband[e] ? 'tcam' : 'rcam', $
@@ -158,18 +158,16 @@ pro ucomp_make_flats, wave_region, run=run
         field_mask_indices = where(field_mask, /null)
 
         if (averaged_onband[e] eq 0) then begin
-          rcam_roughness = ucomp_roughness(rcam_image)
-          flat_file.rcam_roughness = rcam_roughness
-          mg_log, 'RCAM roughness: %0.3f', flat_file.tcam_roughness, $
+          flat_file.rcam_roughness = ucomp_roughness(rcam_image)
+          mg_log, 'RCAM roughness: %0.4f', flat_file.rcam_roughness, $
                   name=run.logger_name, /debug
 
           flat_file.rcam_median_linecenter = median(rcam_image[field_mask_indices])
           flat_file.tcam_median_continuum = median(tcam_image[field_mask_indices])
         endif
         if (averaged_onband[e] eq 1) then begin
-          tcam_roughness = ucomp_roughness(tcam_image)
-          flat_file.tcam_roughness = tcam_roughness
-          mg_log, 'TCAM roughness : %0.3f', flat_file.tcam_roughness, $
+          flat_file.tcam_roughness = ucomp_roughness(tcam_image)
+          mg_log, 'TCAM roughness : %0.4f', flat_file.tcam_roughness, $
                   name=run.logger_name, /debug
 
           flat_file.tcam_median_linecenter = median(tcam_image[field_mask_indices])
@@ -177,8 +175,8 @@ pro ucomp_make_flats, wave_region, run=run
         endif
       endif
       flat_data->add, flat_image
-    endfor
-  endfor
+    endfor   ; each averaged extension
+  endfor   ; each flat file
 
   ; remove keywords that were moved from the primary header to the extension
   ; headers from the primary header
@@ -222,13 +220,15 @@ pro ucomp_make_flats, wave_region, run=run
 
   fits_open, output_filename, output_fcb, /write
   fits_write, output_fcb, 0, first_primary_header
-  flat_raw_extensions = strarr(n_elements(flat_headers))
-  for f = 0L, n_elements(flat_headers) - 1L do begin
-    flat_raw_extensions[f] = ucomp_getpar(flat_headers[f], 'RAWEXTS')
+
+  n_flats = n_elements(flat_headers)
+  flat_raw_extensions = strarr(n_flats)
+  for e = 0L, n_flats - 1L do begin
+    flat_raw_extensions[e] = ucomp_getpar(flat_headers[e], 'RAWEXTS')
     fits_write, output_fcb, $
-                flat_data[f], $
-                flat_headers[f], $
-                extname=flat_extnames[f]
+                flat_data[e], $
+                flat_headers[e], $
+                extname=flat_extnames[e]
   endfor
 
   mkhdr, times_header, flat_times_array, /extend, /image
@@ -275,4 +275,69 @@ pro ucomp_make_flats, wave_region, run=run
   if (obj_valid(flat_headers)) then obj_destroy, flat_headers
   if (obj_valid(flat_data)) then obj_destroy, flat_data
   if (obj_valid(flat_extnames)) then obj_destroy, flat_extnames
+end
+
+
+; main-level example program
+
+date = '20250323'
+basename = '20250323.184523.31.ucomp.1074.l0.fts'
+wave_region = '1074'
+e = 7
+camera = 0
+
+config_basename = 'ucomp.latest.cfg'
+config_filename = filepath(config_basename, $
+                           subdir=['..', '..', '..', 'ucomp-config'], $
+                           root=mg_src_root())
+
+run = ucomp_run(date, 'test', config_filename)
+
+raw_filename = filepath(basename, subdir=date, root=run->config('raw/basedir'))
+
+ucomp_read_raw_data, raw_filename, $
+                     primary_data=primary_data, $
+                     primary_header=primary_header, $
+                     ext_data=ext_data, $
+                     ext_headers=ext_headers, $
+                     n_extensions=n_extensions, $
+                     repair_routine=run->epoch('raw_data_repair_routine', datetime=datetime), $
+                     badframes=run.badframes, $
+                     logger=run.logger_name
+print, total(finite(mean(ext_data[*, *, *, camera, e], dimension=3, /nan)), /integer), format='total finite: %d'
+ucomp_average_flatfile, primary_header, ext_data, ext_headers, $
+                        n_extensions=n_averaged_extensions, $
+                        exptime=averaged_exptime, $
+                        gain_mode=averaged_gain_mode, $
+                        onband=averaged_onband, $
+                        sgsdimv=averaged_sgsdimv, $
+                        wavelength=averaged_wavelength
+print, total(finite(mean(ext_data[*, *, *, camera, e], dimension=3, /nan)), /integer), format='total finite: %d'
+
+flat_image = reform(ext_data[*, *, *, *, e])
+print, total(finite(mean(flat_image[*, *, *, camera], dimension=3, /nan)), /integer), format='total finite: %d'
+flat_image = mean(flat_image, dimension=3, /nan)
+print, total(finite(flat_image[*, *, camera]), /integer), format='total finite: %d'
+
+print, averaged_wavelength[e], format='wavelength: %0.3f'
+center_wavelength = run->line(wave_region, 'center_wavelength')
+print, center_wavelength, format='center wavelength: %0.3f'
+is_center_wavelength = abs(averaged_wavelength[e] - center_wavelength) lt 0.001
+help, is_center_wavelength
+print, averaged_onband[e] eq 0 ? 'TCAM' : 'RCAM', format='ONBAND: %s'
+
+n_good_rcam = total(finite(flat_image[*, *, 0]), /integer)
+n_good_tcam = total(finite(flat_image[*, *, 1]), /integer)
+flat_file_valid = n_good_rcam gt 0L && n_good_tcam gt 0L
+if (flat_file_valid eq 0B) then begin
+  print, basename, e + 1, format='%s: ext %d'
+  if (n_good_rcam eq 0L) then print, 'RCAM all NaN'
+  if (n_good_tcam eq 0L) then print, 'TCAM all NaN'
+endif
+
+print, camera eq 0 ? 'RCAM' : 'TCAM', ucomp_roughness(flat_image[*, *, camera]), $
+       format='%s roughness: %0.4f'
+
+obj_destroy, run
+
 end
