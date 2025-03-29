@@ -40,7 +40,10 @@ function ucomp_cal_quality_conditions, wave_region, run=run
      description: 'check if any extension is identically zero'}, $
     {mask: 0UL, $
      checker: 'ucomp_quality_inout', $
-     description: 'check for in/out values that are neither in or out'}]
+     description: 'check for in/out values that are neither in or out'}, $
+    {mask: 0UL, $
+     checker: 'ucomp_quality_missing_state', $
+     description: 'check if missing a state after removing bad frames and averaging'}]
 
   quality_conditions.mask = 2UL ^ (ulindgen(n_elements(quality_conditions)))
 
