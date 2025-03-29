@@ -50,10 +50,9 @@ pro ucomp_pipeline_step, routine_name, wave_region, skip=skip, run=run, _ref_ext
 
     mg_log, /check_math, from=routine_name, name=run.logger_name, /debug
 
-    mg_log, 'memory usage: %0.1fM', $
-            (memory(/highwater) - start_memory) / 1024. / 1024., $
-            from=routine_name, name=run.logger_name, /debug
-    mg_log, 'done (%s)', ucomp_sec2str(time), $
+    memory_usage = (memory(/highwater) - start_memory) / 1024.0 / 1024.0
+    mg_log, 'done (%s) [memory usage: %0.1fM]', $
+            ucomp_sec2str(time), memory_usage, $
             from=routine_name, name=run.logger_name, /info
   endelse
 end
