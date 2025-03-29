@@ -24,6 +24,7 @@ function ucomp_roughness, im
   if (n_outside gt 0L) then x[outside_indices] = !values.f_nan
 
   norm = 2L^16  - 1.0
+
   s = mean(abs(laplacian(x, /nan, /edge_truncate) / norm), /nan)
   return, s
 end
