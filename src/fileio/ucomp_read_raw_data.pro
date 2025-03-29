@@ -137,8 +137,11 @@ pro ucomp_read_raw_data, filename, $
                   (file_badframes.camera)[f], $
                   (file_badframes.extension)[f], $
                   name=logger, /debug
+          ext_data[*, *, $
+                   (file_badframes.polstate)[f], $
+                   (file_badframes.camera)[f], $
+                   (file_badframes.extension)[f] - 1] = !values.f_nan
         endfor
-        ext_data[*, *, file_badframes.polstate, file_badframes.camera, file_badframes.extension - 1] = !values.f_nan
       endif
     endif
   endif
