@@ -14,9 +14,6 @@
 pro ucomp_make_demod, wave_region, run=run
   compile_opt strictarr
 
-  mg_log, 'making demod matrix for %s nm...', wave_region, $
-          name=run.logger_name, /info
-
   l1_dir = filepath('level1', $
                     subdir=run.date, $
                     root=run->config('processing/basedir'))
