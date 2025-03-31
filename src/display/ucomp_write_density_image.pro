@@ -3,14 +3,14 @@
 pro ucomp_write_density_image, basename, thumbnail=thumbnail, run=run
   compile_opt strictarr
 
-  l2_dirname = filepath('', $
-                        subdir=[run.date, 'level2'], $
+  l3_dirname = filepath('', $
+                        subdir=[run.date, 'level3'], $
                         root=run->config('processing/basedir'))
 
   gif_basename = file_basename(basename, '.fts') + '.gif'
-  gif_filename = filepath(gif_basename, root=l2_dirname)
+  gif_filename = filepath(gif_basename, root=l3_dirname)
 
-  fits_open, filepath(basename, root=l2_dirname), fcb
+  fits_open, filepath(basename, root=l3_dirname), fcb
   fits_read, fcb, density, primary_header, exten_no=0
   fits_close, fcb
 

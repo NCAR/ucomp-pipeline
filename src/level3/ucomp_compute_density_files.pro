@@ -24,7 +24,10 @@ pro ucomp_compute_density_files, l2_basenames_1074, $
   l2_dirname = filepath('', $
                         subdir=[run.date, 'level2'], $
                         root=run->config('processing/basedir'))
-  ucomp_mkdir, l2_dirname, logger_name=run.logger_name
+  l3_dirname = filepath('', $
+                        subdir=[run.date, 'level3'], $
+                        root=run->config('processing/basedir'))
+  ucomp_mkdir, l3_dirname, logger_name=run.logger_name
 
   l2_filenames_1074 = filepath(l2_basenames_1074, root=l2_dirname)
   ucomp_average_l2_files, l2_filenames_1074, $
@@ -87,7 +90,7 @@ pro ucomp_compute_density_files, l2_basenames_1074, $
   mg_log, '%d good pixels', n_good_pixels, name=run.logger_name, /debug
   mg_log, '%d out-of-range ratio pixels', n_good_pixels - in_ratio_range, $
           name=run.logger_name, /debug
-  output_filename = filepath(output_basename, root=l2_dirname)
+  output_filename = filepath(output_basename, root=l3_dirname)
 
   primary_header = primary_1074_header
 
@@ -241,8 +244,8 @@ date = '20240409'
 ; f_1079 = '20240409.180009.ucomp.1079.l2.fts'
 
 ; #2
-f_1074 = '20240409.190537.ucomp.1074.l2.fts'
-f_1079 = '20240409.191146.ucomp.1079.l2.fts'
+; f_1074 = '20240409.190537.ucomp.1074.l2.fts'
+; f_1079 = '20240409.191146.ucomp.1079.l2.fts'
 
 ; #3
 ; f_1074 = '20240409.191848.ucomp.1074.l2.fts'
@@ -252,10 +255,14 @@ f_1079 = '20240409.191146.ucomp.1079.l2.fts'
 ; ignore_linewidth = 1B
 ; name = string(table, ignore_linewidth ? 2 : 1, format='table%d.method%d')
 
-name = 'not-averaged'
+date = '20250323'
+f_1074 = '20250323.212823.ucomp.1074.l2.fts'
+f_1079 = '20250323.212354.ucomp.1079.l2.fts'
 
-config_basename = 'ucomp.production.cfg'
-; config_basename = 'ucomp.latest.cfg'
+name = 'parker'
+
+; config_basename = 'ucomp.production.cfg'
+config_basename = 'ucomp.latest.cfg'
 config_filename = filepath(config_basename, $
                            subdir=['..', '..', '..', 'ucomp-config'], $
                            root=mg_src_root())
