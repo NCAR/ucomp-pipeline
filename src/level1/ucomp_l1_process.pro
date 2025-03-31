@@ -35,11 +35,7 @@ pro ucomp_l1_process, wave_region, run=run
 
   mg_log, '%0.1f secs/file', (t1 - t0) / n_files, name=run.logger_name, /info
 
-  if (run->config('gbu/perform_check') && run->epoch('perform_gbu_check')) then begin
-    ucomp_l1_check_gbu_median_diff, wave_region, run=run
-  endif else begin
-    mg_log, 'skipping GBU check', name=run.logger_name, /debug
-  endelse
+  ucomp_l1_check_gbu_median_diff, wave_region, run=run
 
   done:
 end

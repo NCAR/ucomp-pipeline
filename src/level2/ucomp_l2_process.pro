@@ -36,10 +36,12 @@ pro ucomp_l2_process, wave_region, run=run
             f + 1L, n_files, file.l1_basename, $
             name=run.logger_name, /info
 
-    if (~file.ok || file.gbu ne 0L) then begin
-      mg_log, 'poor quality for %s', file.l1_basename, $
-              name=run.logger_name, /warn
-      continue
+    if (run->config('gbu/perform_check') && run->epoch('perform_gbu_check')) then begin
+      if (~file.ok || file.gbu ne 0L) then begin
+        mg_log, 'reject %s for quality', file.l1_basename, $
+                name=run.logger_name, /warn
+        continue
+      endif
     endif
 
     ucomp_l2_file_step, 'ucomp_l2_file', file.l1_filename, run=run
