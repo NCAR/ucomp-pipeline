@@ -137,17 +137,17 @@ pro ucomp_make_darks, run=run
 
       dark_image = reform(ext_data[*, *, *, *, e])
 
-      dark_image = mean(dark_image, dimension=3)
+      dark_image = mean(dark_image, dimension=3, /nan)
 
       dark_data->add, dark_image
 
       rcam_means += total(reform(dark_image[*, *, 0], nx * ny), $
                           1, $
-                          /preserve_type)
+                          /preserve_type, /nan)
       n_rcam += 1L
       tcam_means += total(reform(dark_image[*, *, 1], nx * ny), $
                           1, $
-                          /preserve_type)
+                          /preserve_type, /nan)
       n_tcam += 1L
     endfor
 
