@@ -65,6 +65,12 @@ except KeyboardInterrupt:
     sys.exit(1)
 
 
+PROGRAM_NAMES = """
+@PROGRAM_TABLE@
+"""
+PROGRAM_CONVERTER = configparser.ConfigParser()
+PROGRAM_CONVERTER.read_string(PROGRAM_NAMES)
+
 POLL_SECS = 0.1
 
 LEVELS = ["DEBUG", "INFO", "WARN", "ERROR", "CRITICAL"]
@@ -319,7 +325,7 @@ def list_fits_file_default(f):
             primary_header = fits_file[0].header
             header_1 = [] if len(fits_file) == 1 else fits_file[1].header
             s = "s" if len(fits_file) != 2 else ""
-            n_exts = f"{len(fits_file) - 1} ext{s}"
+            n_exts = f"{len(fits_file) - 1:2d} ext{s}"
             if "FILTER" in primary_header:
                 wave_region = primary_header["FILTER"]
                 if type(wave_region) == float:
@@ -328,8 +334,14 @@ def list_fits_file_default(f):
                     wave_region = f"{wave_region:>4s} nm"
             else:
                 wave_region = 7 * "-"
-            data_type = f"{header_1['DATATYPE']}" if "DATATYPE" in header_1 else 3 * "-"
-        print(f"{basename:38s}  {n_exts:8s}  {wave_region:7s}  [{data_type}]")
+            data_type = f"{header_1['DATATYPE']}" if "DATATYPE" in header_1 else 4 * "-"
+            obs_plan = primary_header["OBS_PLAN"] if "OBS_PLAN" in primary_header else ""
+            if obs_plan[-4:] == ".cbk":
+                obs_plan = obs_plan[:-4]
+            # TODO: convert plan name to "waves" or "synoptic"
+            if PROGRAM_CONVERTER.has_option("DEFAULT", obs_plan):
+                obs_plan = PROGRAM_CONVERTER.get("DEFAULT", obs_plan)
+        print(f"{basename:38s}  {data_type:4s}  {wave_region:7s}  {n_exts:8s}  {obs_plan:8s}")
     except FileNotFoundError:
         print(f"{basename} not found")
 

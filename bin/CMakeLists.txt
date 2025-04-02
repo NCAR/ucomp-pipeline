@@ -1,3 +1,5 @@
+file(READ ../resource/program_names.cfg PROGRAM_TABLE)
+
 configure_file(ucomp_include.sh.in ucomp_include.sh @ONLY)
 configure_file(ucomp.in ucomp @ONLY)
 configure_file(ucompd.in ucompd @ONLY)
