@@ -142,7 +142,9 @@ function ucomp_run::get_files, wave_region=wave_region, $
   case 1 of
     n_elements(program_name) gt 0L: begin
       if (n_elements(wave_region) eq 0L) then message, 'WAVE_REGION not provided'
+
       if (~(self.files)->hasKey('sci')) then return, !null
+      if (~(self.files)['sci']->hasKey(wave_region)) then return, !null
 
       files_list = ((self.files)['sci'])[wave_region]
       files = files_list->toArray()
