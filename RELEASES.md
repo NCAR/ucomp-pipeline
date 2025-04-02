@@ -731,3 +731,5 @@
 - fix for mlso_numfiles entry
 
 #### 1.0.18
+
+- automatically find files for computing density

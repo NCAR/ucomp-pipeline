@@ -10,9 +10,9 @@
 pro ucomp_l3_density, run=run
   compile_opt strictarr
 
-  ; TODO: move these to a config file
-  density_file_time_threshold = 10.0 * 60.0   ; [sec] 10 minutes
-  density_ignore_linewidth = 0B
+  ; read density configuration parameters
+  density_file_time_threshold = run->epoch('density_file_time_threshold')
+  density_ignore_linewidth = run->epoch('density_ignore_linewidth')
 
   ; find matching 1074 + 1079 pairs of files in the synoptic program that are
   ; within a threshold time (10 minutes?)
