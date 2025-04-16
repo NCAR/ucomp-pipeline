@@ -65,17 +65,17 @@ function ucomp_quality_check_nominal_temps, file, $
 
   for t = 0L, n_elements(std_keywords) - 1L do begin
     temp = ucomp_getpar(primary_header, std_keywords[t], /float, found=found)
-    result ||= (temp lt std_min_temp) || (temp gt std_max_temp)
+    result = result || (temp lt std_min_temp) || (temp gt std_max_temp)
   endfor
 
   for t = 0L, n_elements(lcvr_keywords) - 1L do begin
     temp = ucomp_getpar(primary_header, lcvr_keywords[t], /float, found=found)
-    result ||= (temp lt lcvr_min_temp) || (temp gt lcvr_max_temp)
+    result = result || (temp lt lcvr_min_temp) || (temp gt lcvr_max_temp)
   endfor
 
   for t = 0L, n_elements(mod_keywords) - 1L do begin
     temp = ucomp_getpar(primary_header, mod_keywords[t], /float, found=found)
-    result ||= (temp lt mod_min_temp) || (temp gt mod_max_temp)
+    result = result || (temp lt mod_min_temp) || (temp gt mod_max_temp)
   endfor
 
   return, result
