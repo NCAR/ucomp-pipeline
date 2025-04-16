@@ -733,3 +733,5 @@
 #### 1.0.18
 
 - automatically find files for computing density
+- updated temperature thresholds for quality check
+- updated logic for identical temperature check
