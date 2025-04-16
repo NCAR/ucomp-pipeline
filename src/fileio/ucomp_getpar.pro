@@ -35,7 +35,7 @@ function ucomp_getpar, header, name, $
   value = fxpar(header, name, comment=comment, /null, count=count, _extra=e)
 
   found = count gt 0L
-  if (~found) then value = keyword_set(float) !values.f_nan : !null
+  if (~found) then value = keyword_set(float) ? !values.f_nan : !null
 
   ; if keyword is not found and not asking whether keyword is present, then
   ; crash -- we are in an unknown state
