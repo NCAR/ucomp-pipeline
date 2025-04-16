@@ -52,9 +52,14 @@ pro ucomp_l3_density, run=run
   diffs = abs(times_1074 - times_1079)
 
   pair_indices = where(60.0 * 60.0 * diffs lt density_file_time_threshold, n_pairs)
-  pair_xy = array_indices([n_1074_files, n_1079_files], pair_indices, /dimensions)
+  if (n_pairs gt 0L) then begin
+    mg_log, '%d density pairs', n_pairs, name=run.logger_name, /info
+  endif else begin
+    mg_log, 'no density pairs', name=run.logger_name, /warn
+    goto, done
+  endelse
 
-  mg_log, '%d density pairs', n_pairs, name=run.logger_name, /info
+  pair_xy = array_indices([n_1074_files, n_1079_files], pair_indices, /dimensions)
 
   for p = 0L, n_pairs - 1L do begin
     index_1074 = pair_xy[0, p]
