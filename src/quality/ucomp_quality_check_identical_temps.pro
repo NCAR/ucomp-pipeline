@@ -40,21 +40,21 @@ function ucomp_quality_check_identical_temps, file, $
 
   lcvr_keywords = 'LCVR' + ['1', '2', '3', '4', '5']
 
+  ; TODO: use first found temperature, instead of LCVR1
+
   good_t_lcvr_temps = 0B
-  t_lcvr1 = ucomp_getpar(primary_header, 'T_' + lcvr_keywords[0])
+  t_lcvr1 = ucomp_getpar(primary_header, 'T_' + lcvr_keywords[0], /float, found=t_lcvr1_found)
 
   good_tu_lcvr_temps = 0B
-  tu_lcvr1 = ucomp_getpar(primary_header, 'TU_' + lcvr_keywords[0])
+  tu_lcvr1 = ucomp_getpar(primary_header, 'TU_' + lcvr_keywords[0], /float, found=tu_lcvr1_found)
 
   for i = 2L, n_elements(lcvr_keywords) - 1L do begin
     t_keyword = 'T_' + lcvr_keywords[i]
-    if (abs(t_lcvr1 - ucomp_getpar(primary_header, t_keyword)) gt tolerance) then begin
-      good_t_lcvr_temps = 1B
-    endif
+    t_temp = ucomp_getpar(primary_header, t_keyword, /float)
+    if (abs(t_lcvr1 - t_temp) gt tolerance) then good_t_lcvr_temps = 1B
     tu_keyword = 'TU_' + lcvr_keywords[i]
-    if (abs(tu_lcvr1 - ucomp_getpar(primary_header, tu_keyword)) gt tolerance) then begin
-      good_tu_lcvr_temps = 1B
-    endif
+    tu_temp = ucomp_getpar(primary_header, tu_keyword, /float)
+    if (abs(tu_lcvr1 - tu_temp) gt tolerance) then good_tu_lcvr_temps = 1B
   endfor
 
   locations = ['BASE', 'LNB1', 'MOD', 'LNB2', 'RACK']
@@ -65,14 +65,16 @@ function ucomp_quality_check_identical_temps, file, $
                        'TU_C0' + ['ARR', 'PCB'], $
                        'TU_C1' + ['ARR', 'PCB']]
 
+  ; TODO: use first found temperature, instead of T_BASE
+
   good_temps = 0B
-  t_base = ucomp_getpar(primary_header, 'T_BASE')
+  t_base = ucomp_getpar(primary_header, 'T_BASE', /float, found=t_base_found)
 
   for i = 2L, n_elements(all_temp_keywords) - 1L do begin
     keyword = all_temp_keywords[i]
-    if (abs(t_base - ucomp_getpar(primary_header, keyword)) gt tolerance) then begin
-      good_temps = 1B
-    endif
+    temp = ucomp_getpar(primary_header, keyword, /float, found=found)
+    if (~found || ~finite(temp)) then continue   ; TODO: not sure what is right here
+    if (abs(t_base - temp) gt tolerance) then good_temps = 1B
   endfor
 
   return, ~good_temps || ~good_t_lcvr_temps || ~good_tu_lcvr_temps
