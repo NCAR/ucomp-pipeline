@@ -7,8 +7,6 @@
 ; :Params:
 ;   wave_region : in, required, type=string
 ;     wave region to create average files for
-;   method : in, required, type=string
-;     method of averaging, either "mean", "median", or "sigma"
 ;
 ; :Keywords:
 ;   average_filenames : out, optional, type=strarr
@@ -16,7 +14,7 @@
 ;   run : in, required, type=object
 ;     UCoMP run object
 ;-
-pro ucomp_l2_create_averages, wave_region, method, $
+pro ucomp_l2_create_averages, wave_region, $
                               average_filenames=average_filenames, $
                               run=run
   compile_opt strictarr
@@ -41,16 +39,16 @@ pro ucomp_l2_create_averages, wave_region, method, $
   mg_log, 'found %s for %s nm science files [%s]', $
           mg_plural(n_programs, 'program'), wave_region, method, $
           name=run.logger_name, /info
-  average_filenames = strarr(n_programs)
+  average_filenames = strarr(2, n_programs)   ; mean and median filenames
   for p = 0L, n_programs - 1L do begin
     program_files = run->get_files(wave_region=wave_region, $
                                    program=program_names[p], $
                                    count=n_files)
     if (n_files eq 0L) then begin
-      mg_log, 'no %s nm files in %s [%s]', $
-              wave_region, program_names[p], method, $
+      mg_log, 'no %s nm files in %s', $
+              wave_region, program_names[p], $
               name=run.logger_name, /info
-      average_filenames[p] = ''
+      average_filenames[*, p] = ''
       continue
     endif
 
@@ -59,10 +57,10 @@ pro ucomp_l2_create_averages, wave_region, method, $
     for f = 0L, n_files - 1L do good[f] = program_files[f].good
     good_files_indices = where(good eq 1, n_good_files)
     if (n_good_files eq 0L) then begin
-      mg_log, 'no good %s nm files in %s [%s]', $
-              wave_region, program_names[p], method, $
+      mg_log, 'no good %s nm files in %s', $
+              wave_region, program_names[p], $
               name=run.logger_name, /info
-      average_filenames[p] = ''
+      average_filenames[*, p] = ''
       continue
     endif
 
@@ -79,10 +77,18 @@ pro ucomp_l2_create_averages, wave_region, method, $
             method, n_good_files, wave_region, program_names[p], $
             name=run.logger_name, /info
 
-    average_basename = string(run.date, wave_region, program_names[p], method, $
-                              format='(%"%s.ucomp.%s.l1.%s.%s.fts")')
-    average_filename = filepath(average_basename, root=l2_dir)
-    average_filenames[p] = average_filename
+    mean_average_basename = string(run.date, wave_region, program_names[p], $
+                                   format='(%"%s.ucomp.%s.l1.%s.mean.fts")')
+    mean_average_filename = filepath(mean_average_basename, root=l2_dir)
+    median_average_basename = string(run.date, wave_region, program_names[p], $
+                                     format='(%"%s.ucomp.%s.l1.%s.median.fts")')
+    median_average_filename = filepath(median_average_basename, root=l2_dir)
+    sigma_basename = string(run.date, wave_region, program_names[p], $
+                                     format='(%"%s.ucomp.%s.l1.%s.sigma.fts")')
+    sigma_filename = filepath(sigma_basename, root=l2_dir)
+
+    average_filenames[0, p] = mean_average_filename
+    average_filenames[1, p] = median_average_filename
 
     n_digits = floor(alog10(n_good_files)) + 1L
     for f = 0L, n_good_files - 1L do begin
@@ -96,8 +102,9 @@ pro ucomp_l2_create_averages, wave_region, method, $
     good_filenames = strarr(n_good_files)
     for f = 0L, n_good_files - 1L do good_filenames[f] = good_files[f].l1_filename
     ucomp_average_l1_files, good_filenames, $
-                            average_filename, $
-                            method=method, $
+                            [mean_average_basename, $
+                             median_average_filename, $
+                             sigma_filename], $
                             min_average_files=run->config('averaging/min_average_files'), $
                             logger_name=run.logger_name, $
                             run=run

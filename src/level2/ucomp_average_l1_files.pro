@@ -6,21 +6,25 @@
 ; :Params:
 ;   l1_filenames : in, required, type=strarr
 ;     UCoMP L1 filenames for files to average
-;   output_filename_format : in, optional, type=string
-;     filename of average file; if not present, do not write the output file
+;   output_filenames : in, optional, type=strarr(3)
+;     filenames of average files (mean, median, sigma); if not present, do not
+;     write the output file; must be in the order mean, median, sigma
 ;
 ; :Keywords:
-;   method : in, optional, type=string, default=mean
-;     averaging method: "mean", "median", or "sigma"
-;   averaged_data : type, optional, type="fltarr(nx, ny, n_pol_state, n_wavelength)"
-;     set to a named variable to retrieve the averaged data
+;   mean_averaged_data : type, optional, type="fltarr(nx, ny, n_pol_state, n_wavelength)"
+;     set to a named variable to retrieve the mean averaged data
+;   median_averaged_data : type, optional, type="fltarr(nx, ny, n_pol_state, n_wavelength)"
+;     set to a named variable to retrieve the median averaged data
+;   sigma_data : type, optional, type="fltarr(nx, ny, n_pol_state, n_wavelength)"
+;     set to a named variable to retrieve the standard deviation data
 ;   run : in, optional, type=object
 ;     UCoMP run object, only needed to produce display images
 ;-
 pro ucomp_average_l1_files, l1_filenames, $
-                            output_filename, $
-                            method=method, $
-                            averaged_data=averaged_data, $
+                            output_filenames, $
+                            mean_averaged_data=mean_averaged_data, $
+                            median_averaged_data=median_averaged_data, $
+                            sigma_data=sigma_data, $
                             logger_name=logger_name, $
                             min_average_files=min_average_files, $
                             run=run
@@ -32,8 +36,6 @@ pro ucomp_average_l1_files, l1_filenames, $
     mg_log, /last_error, name=logger_name
     goto, done
   endif
-
-  _method = mg_default(method, 'mean')
 
   n_files = n_elements(l1_filenames)
 
@@ -133,16 +135,17 @@ pro ucomp_average_l1_files, l1_filenames, $
                       ext_data=ext_data
 
   dims = size(ext_data, /dimensions)
-  averaged_data = make_array(dimension=[dims[0:2], n_unique_wavelengths], $
-                             type=size(ext_data, /type)) + !values.f_nan
-  averaged_background = make_array(dimension=[dims[0:1], n_unique_wavelengths], $
-                                   type=size(ext_data, /type)) + !values.f_nan
-  if (_method eq 'sigma') then begin
-    sum2_data = make_array(dimension=[dims[0:2], n_unique_wavelengths], $
-                           type=size(ext_data, /type)) + !values.f_nan
-    sum2_background = make_array(dimension=[dims[0:1], n_unique_wavelengths], $
-                                 type=size(ext_data, /type)) + !values.f_nan
-  endif
+  mean_averaged_data = make_array(dimension=[dims[0:2], n_unique_wavelengths], $
+                                  type=size(ext_data, /type)) + !values.f_nan
+  mean_averaged_background = make_array(dimension=[dims[0:1], n_unique_wavelengths], $
+                                        type=size(ext_data, /type)) + !values.f_nan
+
+  median_averaged_data = mean_averaged_data
+  median_averaged_background = mean_averaged_background
+  sigma_data = mean_averaged_data
+  sigma_background = mean_averaged_background
+  sum2_data = mean_averaged_data
+  sum2_background = mean_averaged_background
 
   averaged_headers = list()
   averaged_background_headers = list()
@@ -244,72 +247,78 @@ pro ucomp_average_l1_files, l1_filenames, $
                   after='NUMBEAM'
 
     if (size(mean_wavelength_data, /n_dimensions) gt 3L) then begin
-      case _method of
-        'mean': begin
-            averaged_data[*, *, *, w] = mean(mean_wavelength_data, dimension=4, /nan)
-            averaged_background[*, *, w] = mean(mean_background_data, dimension=3, /nan)
-          end
-        'median': begin
-            averaged_data[*, *, *, w] = median(median_wavelength_data, dimension=4)
-            averaged_background[*, *, w] = median(median_background_data, dimension=3)
-          end
-        'sigma': begin
-            averaged_data[*, *, *, w] = mean(mean_wavelength_data, dimension=4, /nan)
-            averaged_background[*, *, w] = mean(mean_background_data, dimension=3, /nan)
-            sum2_data[*, *, *, w] = total(sum2_wavelength_data, 4, /nan, /preserve_type)
-            sum2_background[*, *, w] = total(sum2_background_data, 3, /nan, /preserve_type)
-          end
-        else:
-      endcase
+      mean_averaged_data[*, *, *, w] = mean(mean_wavelength_data, dimension=4, /nan)
+      mean_averaged_background[*, *, w] = mean(mean_background_data, dimension=3, /nan)
+      median_averaged_data[*, *, *, w] = median(median_wavelength_data, dimension=4)
+      median_averaged_background[*, *, w] = median(median_background_data, dimension=3)
+      sigma_data[*, *, *, w] = mean(mean_wavelength_data, dimension=4, /nan)
+      sigma_background[*, *, w] = mean(mean_background_data, dimension=3, /nan)
+      sum2_data[*, *, *, w] = total(sum2_wavelength_data, 4, /nan, /preserve_type)
+      sum2_background[*, *, w] = total(sum2_background_data, 3, /nan, /preserve_type)
     endif else begin
-      averaged_data[*, *, *, w] = mean_wavelength_data
-      averaged_background[*, *, w] = mean_background_data
-      if (_method eq 'sigma') then begin
-        sum2_data[*, *, *, w] = sum2_wavelength_data
-        sum2_background[*, *, w] = sum2_background_data
-      endif
+      mean_averaged_data[*, *, *, w] = mean_wavelength_data
+      mean_averaged_background[*, *, w] = mean_background_data
+      medan_averaged_data[*, *, *, w] = median_wavelength_data
+      medan_averaged_background[*, *, w] = median_background_data
+      sum2_data[*, *, *, w] = sum2_wavelength_data
+      sum2_background[*, *, w] = sum2_background_data
     endelse
   endfor
 
-  if (_method eq 'sigma') then begin
-    averaged_data = sqrt(sum2_data / double(n_ok_files) - averaged_data^2)
-    averaged_background = sqrt(sum2_background / double(n_ok_files) - averaged_background^2)
-  endif
+  sigma_data = sqrt(sum2_data / double(n_ok_files) - averaged_data^2)
+  sigma_background = sqrt(sum2_background / double(n_ok_files) - averaged_background^2)
 
-  if (n_elements(output_filename) gt 0L) then begin
-    mg_log, 'writing %s...', file_basename(output_filename), name=logger_name, /info
-    ucomp_write_fits_file, output_filename, $
-                           primary_header, $
-                           averaged_data, $
-                           averaged_headers, $
-                           averaged_background, $
-                           averaged_background_headers
+  n_methods = n_elements(output_filenames)
+  for m = 0, n_methods - 1L do begin
+    output_filename = output_filenames[m]
+    case m of
+      0: begin
+          averaged_data = mean_averaged_data
+          averaged_background = mean_background_data
+        end
+      1: begin
+          averaged_data = median_averaged_data
+          averaged_background = median_background_data
+        end
+      2: begin
+          averaged_data = sigma_data
+          averaged_background = sigma_background
+        end
+    endcase
+
+    mg_log, 'writing %s...', file_basename(output_filenames[m]), name=logger_name, /info
+    ucomp_write_fits_file, output_filenames[0], $
+                          primary_header, $
+                          averaged_data, $
+                          averaged_headers, $
+                          averaged_background, $
+                          averaged_background_headers
 
     wave_region = ucomp_getpar(primary_header, 'FILTER')
     occulter_radius = ucomp_getpar(primary_header, 'RADIUS')
 
     if (obj_valid(run)) then begin
       ucomp_write_iquv_image, averaged_data, $
-                              file_basename(output_filename), $
+                              file_basename(output_filenames[m]), $
                               wave_region, $
                               float(all_wavelengths), $
                               occulter_radius=occulter_radius, $
-                              /daily, sigma=method eq 'sigma', $
+                              /daily, sigma=m eq 2, $
                               run=run
-
+  
       post_angle = ucomp_getpar(primary_header, 'POST_ANG')
       p_angle = ucomp_getpar(primary_header, 'SOLAR_P0')
       ucomp_write_all_iquv_image, averaged_data, $
-                                  file_basename(output_filename), $
+                                  file_basename(output_filenames[m]), $
                                   wave_region, $
                                   float(all_wavelengths), $
                                   occulter_radius, $
                                   post_angle, $
                                   p_angle, $
-                                  /daily, sigma=method eq 'sigma', $
+                                  /daily, sigma=m eq 2, $
                                   run=run
     endif
-  endif
+  endfor
 
   obj_destroy, [averaged_headers, averaged_background_headers]
 

@@ -48,18 +48,13 @@ pro ucomp_l2_process, wave_region, run=run
     file.wrote_l2 = 1B
   endfor
 
-  methods = ['mean', 'median', 'sigma']
-  for m = 0L, n_elements(methods) - 1L do begin
-    ; TODO: make this a pipeline step and remove methods[m] argument to do all
-    ; methods at the same time
-    ucomp_l2_create_averages, wave_region, methods[m], $
-                              average_filenames=average_filenames, $
-                              run=run
+  ; TODO: make this a pipeline step
+  ucomp_l2_create_averages, wave_region, $
+                            average_filenames=average_filenames, $
+                            run=run
 
-    if (methods[m] eq 'sigma') then continue
-    for f = 0L, n_elements(average_filenames) - 1L do begin
-      ucomp_l2_file_step, 'ucomp_l2_file', average_filenames[f], $
-                          /thumbnail, run=run
-    endfor
+  for f = 0L, n_elements(average_filenames) - 1L do begin
+    ucomp_l2_file_step, 'ucomp_l2_file', average_filenames[f], $
+                        /thumbnail, run=run
   endfor
 end
