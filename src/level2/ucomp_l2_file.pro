@@ -164,7 +164,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                             line_width=line_width, $
                             peak_intensity=peak_intensity
 
-  gaussian_fit_method = run->config('l2/gaussian_fit_method')
+  gaussian_fit_method = run->config('level2/gaussian_fit_method')
   perform_gauss_fit = (n_wavelengths gt 3L) $
                         && run->line(wave_region, 'gauss_fit') $
                         && (gaussian_fit_method ne 'analytic')
@@ -258,7 +258,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   noise_mask[noisy_indices] = 0.0
 
   ; mask data on various thresholds
-  if (run->config('l2/mask_noise')) then begin
+  if (run->config('level2/mask_noise')) then begin
     intensity_center[noisy_indices]          = !values.f_nan
     enhanced_intensity_center[noisy_indices] = !values.f_nan
     peak_intensity[noisy_indices]            = !values.f_nan
@@ -275,7 +275,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
 
   dims = size(intensity_center, /dimensions)
 
-  if (run->config('l2/mask_geometry')) then begin
+  if (run->config('level2/mask_geometry')) then begin
     ; mask outputs
     geometric_mask = ucomp_mask(dims[0:1], $
       field_radius=run->epoch('field_radius'), $
@@ -545,7 +545,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
 
   sxdelpar, header, 'FITMETHD'
 
-  if (~run->config('l2/mask_noise')) then begin
+  if (~run->config('level2/mask_noise')) then begin
     ucomp_fits_write, fcb, $
                       float(noise_mask), $
                       header, $

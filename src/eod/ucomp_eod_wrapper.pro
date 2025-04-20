@@ -131,6 +131,11 @@ pro ucomp_eod_wrapper, date, config_filename
     ucomp_pipeline_step, 'ucomp_catalogs_publish', run=run
   endif
 
+  if (run->config('steps/level3')) then begin
+    ucomp_pipeline_step, 'ucomp_l3_archive', run=run
+    ucomp_pipeline_step, 'ucomp_l3_publish', run=run
+  endif
+
   ucomp_pipeline_step, 'ucomp_send_notification', run=run
 
   processed = 1B

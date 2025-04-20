@@ -1530,7 +1530,7 @@ if __name__ == "__main__":
     archive_parser.add_argument("-f", "--flags", type=str, help=flags_help,
         default="latest")
     archive_parser.add_argument("-l", "--level", type=str, default=None,
-        help="level to archive: 0, 1, or 2")
+        help="level to archive: 0, 1, 2, or 3")
     archive_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
     archive_parser.add_argument("--verbose", action="store_true",
         help="set to show more information on launch")
