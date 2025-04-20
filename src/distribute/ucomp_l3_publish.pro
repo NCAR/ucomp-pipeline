@@ -34,10 +34,11 @@ pro ucomp_l3_publish, run=run
     ucomp_mkdir, web_dir, logger_name=run.logger_name
   endif
 
-  if (~distribute_fits && ~distribute_gifs)
-    mg_log, 'no results basedirs, skipping publishing L3 data', name=run.logger, /info
+  if (~distribute_fits && ~distribute_gifs) then begin
+    mg_log, 'no results basedirs, skipping publishing L3 data', $
+            name=run.logger, /info
     goto, cleanup
-  endelse
+  endif
 
   processing_dir = filepath(run.date, root=run->config('processing/basedir'))
   l3_dir = filepath('', subdir='level3', root=processing_dir)
