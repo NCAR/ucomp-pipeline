@@ -258,15 +258,15 @@ pro ucomp_average_l1_files, l1_filenames, $
     endif else begin
       mean_averaged_data[*, *, *, w] = mean_wavelength_data
       mean_averaged_background[*, *, w] = mean_background_data
-      medan_averaged_data[*, *, *, w] = median_wavelength_data
-      medan_averaged_background[*, *, w] = median_background_data
+      median_averaged_data[*, *, *, w] = median_wavelength_data
+      median_averaged_background[*, *, w] = median_background_data
       sum2_data[*, *, *, w] = sum2_wavelength_data
       sum2_background[*, *, w] = sum2_background_data
     endelse
   endfor
 
-  sigma_data = sqrt(sum2_data / double(n_ok_files) - averaged_data^2)
-  sigma_background = sqrt(sum2_background / double(n_ok_files) - averaged_background^2)
+  sigma_data = sqrt(sum2_data / double(n_ok_files) - mean_averaged_data^2)
+  sigma_background = sqrt(sum2_background / double(n_ok_files) - mean_averaged_background^2)
 
   n_methods = n_elements(output_filenames)
   for m = 0, n_methods - 1L do begin

@@ -1,8 +1,7 @@
 ; docformat = 'rst'
 
 ;+
-; Create average files for a wave region using a particular method, e.g.,
-; "mean" or "median".
+; Create average files for a wave region.
 ;
 ; :Params:
 ;   wave_region : in, required, type=string
@@ -36,8 +35,8 @@ pro ucomp_l2_create_averages, wave_region, $
     goto, done
   endif
 
-  mg_log, 'found %s for %s nm science files [%s]', $
-          mg_plural(n_programs, 'program'), wave_region, method, $
+  mg_log, 'found %s for %s nm science files', $
+          mg_plural(n_programs, 'program'), wave_region, $
           name=run.logger_name, /info
   average_filenames = strarr(2, n_programs)   ; mean and median filenames
   for p = 0L, n_programs - 1L do begin
@@ -73,8 +72,8 @@ pro ucomp_l2_create_averages, wave_region, $
                                            count=n_good_files, $
                                            max_length=max_length)
 
-    mg_log, '%s averaging %d %s nm files in %s', $
-            method, n_good_files, wave_region, program_names[p], $
+    mg_log, 'averaging %d %s nm files in %s', $
+            n_good_files, wave_region, program_names[p], $
             name=run.logger_name, /info
 
     mean_average_basename = string(run.date, wave_region, program_names[p], $
