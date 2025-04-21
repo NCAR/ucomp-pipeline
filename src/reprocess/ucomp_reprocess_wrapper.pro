@@ -107,7 +107,9 @@ pro ucomp_reprocess_wrapper, date, config_filename
       ucomp_pipeline_step, 'ucomp_l1_archive', wave_regions[w], run=run
     endfor
     ucomp_pipeline_step, 'ucomp_l1_publish', run=run
-  endif
+  endif else begin
+    mg_log, 'skipping level1 archiving/publishing...', name=run.logger_name, /info
+  endelse
 
   if (run->config('steps/level2')) then begin
     for w = 0L, n_elements(wave_regions) - 1L do begin
@@ -118,7 +120,16 @@ pro ucomp_reprocess_wrapper, date, config_filename
     ucomp_pipeline_step, 'ucomp_averages_publish', run=run
     ucomp_pipeline_step, 'ucomp_quicklooks_publish', run=run
     ucomp_pipeline_step, 'ucomp_catalogs_publish', run=run
-  endif
+  endif else begin
+    mg_log, 'skipping level2 archiving/publishing...', name=run.logger_name, /info
+  endelse
+
+  if (run->config('steps/level3')) then begin
+    ucomp_pipeline_step, 'ucomp_l3_archive', run=run
+    ucomp_pipeline_step, 'ucomp_l3_publish', run=run
+  endif else begin
+    mg_log, 'skipping level3 archiving/publishing...', name=run.logger_name, /info
+  endelse
 
   ucomp_pipeline_step, 'ucomp_send_notification', run=run
 
