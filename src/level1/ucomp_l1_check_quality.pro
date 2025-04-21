@@ -37,9 +37,9 @@ pro ucomp_l1_check_quality, file, $
 
   quality_conditions = ucomp_quality_conditions(file.wave_region, run=run)
   for q = 0L, n_elements(quality_conditions) - 1L do begin
+    run.datetime = string(file.ut_date, file.ut_time, format='%s.%s')
     if (((2UL^q and run->config('quality/mask')) ne 0) $
           && ((2UL^q and run->epoch('quality_mask')) ne 0)) then begin
-      run.datetime = string(file.ut_date, file.ut_time, format='%s.%s')
       quality = call_function(quality_conditions[q].checker, $
                               file, $
                               primary_header, $
