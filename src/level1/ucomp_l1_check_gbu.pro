@@ -38,16 +38,19 @@ pro ucomp_l1_check_gbu, file, $
   gbu_conditions = ucomp_gbu_conditions(wave_region, run=run)
   for g = 0L, n_elements(gbu_conditions) - 1L do begin
     run.datetime = string(file.ut_date, file.ut_time, format='%s.%s')
-    gbu = call_function(gbu_conditions[g].checker, $
-                        file, $
-                        primary_header, $
-                        ext_data, $
-                        ext_headers, $
-                        backgrounds, $
-                        background_headers, $
-                        run=run)
-    mg_log, '%s GBU condition: %d', gbu_conditions[g].checker, gbu, $
-            name=run.logger_name, /debug
+    if (((2UL^g and run->config('gbu/mask')) ne 0) $
+          && ((2UL^g and run->epoch('gbu_mask')) ne 0)) then begin
+      gbu = call_function(gbu_conditions[g].checker, $
+                          file, $
+                          primary_header, $
+                          ext_data, $
+                          ext_headers, $
+                          backgrounds, $
+                          background_headers, $
+                          run=run)
+      mg_log, '%s GBU condition: %d', gbu_conditions[g].checker, gbu, $
+              name=run.logger_name, /debug
+    endif else gbu = 0UL
     file.gbu = gbu_conditions[g].mask * gbu
   endfor
 
