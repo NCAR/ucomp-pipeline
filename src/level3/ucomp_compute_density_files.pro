@@ -167,6 +167,9 @@ pro ucomp_compute_density_files, l2_basenames_1074, $
   ucomp_addpar, primary_header, 'LIMBDARK', boolean(limb_darkening), $
                 comment='include limb darkening', $
                 after=after
+  ucomp_addpar, primary_header, 'USELINEW', boolean(~keyword_set(ignore_linewidth)), $
+                comment='use line width', $
+                after=after
 
   ucomp_addpar, primary_header, 'COMMENT', 'Density', /title, before='CHIANTIV'
 
@@ -255,11 +258,21 @@ date = '20240409'
 ; ignore_linewidth = 1B
 ; name = string(table, ignore_linewidth ? 2 : 1, format='table%d.method%d')
 
-date = '20250323'
-f_1074 = '20250323.212823.ucomp.1074.l2.fts'
-f_1079 = '20250323.212354.ucomp.1079.l2.fts'
+; date = '20250323'
+; f_1074 = '20250323.212823.ucomp.1074.l2.fts'
+; f_1079 = '20250323.212354.ucomp.1079.l2.fts'
 
-name = 'parker'
+date = '20240409'
+; f_1074 = '20240409.180747.ucomp.1074.l2.fts'
+; f_1079 = '20240409.180009.ucomp.1079.l2.fts'
+
+; f_1074 = '20240409.190537.ucomp.1074.l2.fts'
+; f_1079 = '20240409.191146.ucomp.1079.l2.fts'
+
+f_1074 = '20240409.210752.ucomp.1074.l2.fts'
+f_1079 = '20240409.210322.ucomp.1079.l2.fts'
+
+name = 'alin'
 
 ; config_basename = 'ucomp.production.cfg'
 config_basename = 'ucomp.latest.cfg'
