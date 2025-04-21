@@ -87,7 +87,7 @@ def compute_ratios(abundances_basename=None, chianti_maxtemp=False,
     info = {
         "chianti_version": chianti_version,
         "electron_temperature": electron_temperature,
-        "abundances_basename" : f"{abundances_basename}.abund",
+        "abundances_basename" : None if abundances_basename is None else f"{abundances_basename}.abund",
         "n_levels": n_levels,
         "invert": invert,
         "limbdark": limbdark,
