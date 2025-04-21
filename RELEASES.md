@@ -735,3 +735,9 @@
 - automatically find files for computing density
 - updated temperature thresholds for quality check
 - updated logic for identical temperature check
+- more efficient average calculations
+- ability to turn off individual GBU checks for time period
+- publish level 3 data products
+- fix bug in roughness calculation
+- handle bad frames better
+
