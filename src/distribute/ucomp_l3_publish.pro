@@ -63,8 +63,8 @@ pro ucomp_l3_publish, run=run
     goto, cleanup
   endif
 
-  if (n_density_fits_files gt 0L) then files_list->add, density_fits_files
-  if (n_density_gif_files gt 0L) then files_list->add, density_gif_files
+  if (n_density_fits_files gt 0L) then files_list->add, density_fits_files, /extract
+  if (n_density_gif_files gt 0L) then files_list->add, density_gif_files, /extract
 
   ; add catalog, GBU, quality files and user guide
 
