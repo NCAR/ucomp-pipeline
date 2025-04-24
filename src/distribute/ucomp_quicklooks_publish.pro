@@ -232,6 +232,17 @@ pro ucomp_quicklooks_publish, run=run
             name=run.logger_name, /info
   endif
 
+  ; add density GIFs
+  density_files = file_search(filepath('*.density.gif', $
+                                       subdir='level3', $
+                                       root=processing_dir), $
+                              count=n_density_files)
+  if (n_density_files gt 0L) then begin
+    mg_log, 'publishing %d density GIFs', n_density_files, $
+            name=run.logger_name, /info
+    quicklook_files_list->add, density_files, /extract
+  endif
+
   ; add catalog, GBU, quality files and user guide
 
   citation_template_filename = filepath('UCOMP_CITATION.txt', $
