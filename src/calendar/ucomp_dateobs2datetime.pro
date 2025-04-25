@@ -21,6 +21,5 @@ function ucomp_dateobs2datetime, dateobs
   ut_minute = strmid(dateobs, 14, 2)
   ut_second = strmid(dateobs, 17, 2)
 
-  return, string(ut_year, ut_month, ut_day, ut_hour, ut_minute, ut_second, $
-                 format='%s%s%s.%s%s%s')
+  return, ut_year + ut_month + ut_day + '.' + ut_hour + ut_minute + ut_second
 end
