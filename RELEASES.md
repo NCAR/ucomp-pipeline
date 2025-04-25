@@ -736,8 +736,9 @@
 - updated temperature thresholds for quality check
 - updated logic for identical temperature check
 - more efficient average calculations
+- faster mission image scale plot
 - ability to turn off individual GBU checks for time period
 - publish level 3 data products
-- fix bug in roughness calculation
+- fix bug in flat roughness calculation
 - handle bad frames better
-
+- specify minimum number of files need to create average for GBU test
