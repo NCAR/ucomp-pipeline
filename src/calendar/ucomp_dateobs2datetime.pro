@@ -1,13 +1,13 @@
 ; docformat = 'rst'
 
 ;+
-; Convert a DATE-OBS string to a "YYYYMMDD.HHMMSS" string.
+; Convert a DATE-OBS string, or array of strings, to a "YYYYMMDD.HHMMSS" string.
 ;
 ; :Returns:
-;   string
+;   string/strarr
 ;
 ; :Params:
-;   dateobs : in, required, type=string
+;   dateobs : in, required, type=string/strarr
 ;     DATE-OBS string like "2020-05-09T00:45:03.04" or "2020-05-09"
 ;-
 function ucomp_dateobs2datetime, dateobs
