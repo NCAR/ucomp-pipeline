@@ -86,7 +86,7 @@ pro ucomp_l1_check_gbu_median_diff, wave_region, run=run
     for f = 0L, n_good_files - 1L do good_filenames[f] = good_files[f].l1_filename
 
     ucomp_average_l1_files, good_filenames, $
-                            min_average_files=run->config('averaging/min_average_files'), $
+                            min_average_files=run->line(wave_region, 'gbu_min_files_for_stddev_diff'), $
                             logger_name=run.logger_name, $
                             mean_averaged_data=mean_data, $
                             median_averaged_data=median_data, $
