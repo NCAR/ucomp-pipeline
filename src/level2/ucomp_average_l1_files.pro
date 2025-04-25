@@ -204,15 +204,15 @@ pro ucomp_average_l1_files, l1_filenames, $
           end
         else: begin
             mean_wavelength_data[*, *, *, f] = mean(ext_data[*, *, *, matching_indices], $
-                                               dimension=4, /nan)
+                                                    dimension=4, /nan)
             median_wavelength_data[*, *, *, f] = median(ext_data[*, *, *, matching_indices], $
-                                                dimension=4)
+                                                        dimension=4, /even)
             sum2_wavelength_data[*, *, *, f] = total((ext_data[*, *, *, matching_indices])^2, $
                                                      4, /nan, /preserve_type)
             mean_background_data[*, *, f] = mean(ext_background_data[*, *, matching_indices], $
-                                            dimension=3, /nan)
+                                                 dimension=3, /nan)
             median_background_data[*, *, f] = median(ext_background_data[*, *, matching_indices], $
-                                            dimension=3)
+                                                     dimension=3, /even)
             sum2_background_data[*, *, f] = total((ext_background_data[*, *, matching_indices])^2, $
                                                   3, /nan, /preserve_type)
             if (f eq 0L) then begin
@@ -249,8 +249,8 @@ pro ucomp_average_l1_files, l1_filenames, $
     if (size(mean_wavelength_data, /n_dimensions) gt 3L) then begin
       mean_averaged_data[*, *, *, w] = mean(mean_wavelength_data, dimension=4, /nan)
       mean_averaged_background[*, *, w] = mean(mean_background_data, dimension=3, /nan)
-      median_averaged_data[*, *, *, w] = median(median_wavelength_data, dimension=4)
-      median_averaged_background[*, *, w] = median(median_background_data, dimension=3)
+      median_averaged_data[*, *, *, w] = median(median_wavelength_data, dimension=4, /even)
+      median_averaged_background[*, *, w] = median(median_background_data, dimension=3, /even)
       sigma_data[*, *, *, w] = mean(mean_wavelength_data, dimension=4, /nan)
       sigma_background[*, *, w] = mean(mean_background_data, dimension=3, /nan)
       sum2_data[*, *, *, w] = total(sum2_wavelength_data, 4, /nan, /preserve_type)
@@ -274,11 +274,11 @@ pro ucomp_average_l1_files, l1_filenames, $
     case m of
       0: begin
           averaged_data = mean_averaged_data
-          averaged_background = mean_background_data
+          averaged_background = mean_averaged_background
         end
       1: begin
           averaged_data = median_averaged_data
-          averaged_background = median_background_data
+          averaged_background = median_averaged_background
         end
       2: begin
           averaged_data = sigma_data
@@ -288,11 +288,11 @@ pro ucomp_average_l1_files, l1_filenames, $
 
     mg_log, 'writing %s...', file_basename(output_filenames[m]), name=logger_name, /info
     ucomp_write_fits_file, output_filenames[0], $
-                          primary_header, $
-                          averaged_data, $
-                          averaged_headers, $
-                          averaged_background, $
-                          averaged_background_headers
+                           primary_header, $
+                           averaged_data, $
+                           averaged_headers, $
+                           averaged_background, $
+                           averaged_background_headers
 
     wave_region = ucomp_getpar(primary_header, 'FILTER')
     occulter_radius = ucomp_getpar(primary_header, 'RADIUS')
@@ -323,4 +323,34 @@ pro ucomp_average_l1_files, l1_filenames, $
   obj_destroy, [averaged_headers, averaged_background_headers]
 
   done:
+end
+
+
+; main-level example program
+
+date = '20240409'
+config_basename = 'ucomp.latest.cfg'
+config_filename = filepath(config_basename, $
+                           subdir=['..', '..', '..', 'ucomp-config'], $
+                           root=mg_src_root())
+run = ucomp_run(date, 'test', config_filename)
+
+l1_dir = filepath('', $
+                  subdir=[date, 'level1'], $
+                  root=run->config('processing/basedir'))
+basenames = ['20240409.190537.ucomp.1074.l1.p7.fts', $
+             '20240409.191848.ucomp.1074.l1.p7.fts']
+l1_filenames = filepath(basenames, root=l1_dir)
+
+ucomp_average_l1_files, l1_filenames, $
+                        '20240409.ucomp.1074.l1.feXIII_cross_calibration.' + ['mean', 'median', 'sigma'] + '.fts', $
+                        mean_averaged_data=mean_averaged_data, $
+                        median_averaged_data=median_averaged_data, $
+                        sigma_data=sigma_data, $
+                        logger_name=run.logger_name, $
+                        min_average_files=2, $
+                        run=run
+
+obj_destroy, run
+
 end
