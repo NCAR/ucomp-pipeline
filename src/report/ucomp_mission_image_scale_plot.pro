@@ -34,17 +34,24 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
   plate_scale_tolerance = 0.0 * image_scale
   occulter_diameter = 0.0 * image_scale
 
+  datetimes = ucomp_dateobs2datetime(data.date_obs)
+  occulter_ids = 'OC-' + data.occltrid + '-mm'
+
+  ; there are a lot of lookups needed to determine if/when the plate scale
+  ; and occulter diameter changes -- this can take an hour for 1074 nm
   for f = 0L, n_files - 1L do begin
-    datetime = ucomp_dateobs2datetime((data.date_obs)[f])
-    plate_scale[f] = run->line(wave_region, 'plate_scale', datetime=datetime)
+    plate_scale[f] = run->line(wave_region, 'plate_scale', $
+                               datetime=datetimes[f])
     plate_scale_tolerance[f] = run->line(wave_region, 'plate_scale_tolerance', $
-                                         datetime=datetime)
-    odiam = run->epoch('OC-' + (data.occltrid)[f] + '-mm', $
-                       datetime=datetime, found=occulter_diameter_found)
+                                         datetime=datetimes[f])
+
+    odiam = run->epoch(occulter_ids[f], datetime=datetimes[f], $
+                       found=occulter_diameter_found)
     occulter_diameter[f] = occulter_diameter_found ? odiam : !values.f_nan
   endfor
 
   jds = ucomp_dateobs2julday(data.date_obs)
+
   !null = label_date(date_format='%Y-%N-%D')
 
   image_scale_range = [2.7, 3.2]
@@ -99,10 +106,10 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
                  ytitle='Image scale [arcsec/pixel]', $
                  ystyle=1, yrange=image_scale_range
 
-
   if (n_files gt 1L) then begin
     diffs = [0.0, plate_scale[1:-1] - plate_scale[0:-2]]
     change_indices = where(diffs gt 0.0, n_changes, /null)
+    mg_log, '%d plate scale changes', n_changes, name=run.logger_name, /debug
     change_indices = [0L, change_indices, n_elements(plate_scale)]
     for c = 0L, n_changes do begin
       s = change_indices[c]
@@ -164,4 +171,28 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
   if (n_elements(original_device) gt 0L) then set_plot, original_device
 
   mg_log, 'done', name=run.logger_name, /info
+end
+
+
+; main-level example program
+
+date = '20240409'
+config_basename = 'ucomp.latest.cfg'
+config_filename = filepath(config_basename, $
+                           subdir=['..', '..', '..', 'ucomp-config'], $
+                           root=mg_src_root())
+run = ucomp_run(date, 'test', config_filename)
+
+wave_region = '1079'
+
+db = ucomp_db_connect(run->config('database/config_filename'), $
+                      run->config('database/config_section'), $
+                      logger_name=run.logger_name, $
+                      log_statements=run->config('database/log_statements'), $
+                      status=status)
+
+ucomp_mission_image_scale_plot, wave_region, db, run=run
+
+obj_destroy, [db, run]
+
 end
