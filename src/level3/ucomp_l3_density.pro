@@ -61,20 +61,29 @@ pro ucomp_l3_density, run=run
 
   pair_xy = array_indices([n_1074_files, n_1079_files], pair_indices, /dimensions)
 
+  output_basenames = strarr(n_pairs)
+
   for p = 0L, n_pairs - 1L do begin
     index_1074 = pair_xy[0, p]
     index_1079 = pair_xy[1, p]
     file_1074 = synoptic_1074_files[index_1074]
     file_1079 = synoptic_1079_files[index_1079]
-    output_basename = string(strmid(file_1074.l2_basename, 0, 15), $
-                             strmid(file_1079.l2_basename, 9, 6), $
-                             format='%s-%s.ucomp.1074-1079.density.fts')
+    output_basenames[p] = string(strmid(file_1074.l2_basename, 0, 15), $
+                                 strmid(file_1079.l2_basename, 9, 6), $
+                                 format='%s-%s.ucomp.1074-1079.density.fts')
     ucomp_compute_density_files, file_1074.l2_basename, $
                                  file_1079.l2_basename, $
-                                 output_basename, $
+                                 output_basenames[p], $
                                  ignore_linewidth=density_ignore_linewidth, $
                                  run=run
   endfor
+
+  if (n_pairs eq 0L) then begin
+    mg_log, 'no density files to insert into database', $
+            name=run.logger_name, /info
+  endif else begin
+    ucomp_db_density_insert, output_basenames, run=run
+  endelse
 
   done:
 end
