@@ -60,6 +60,45 @@ pro ucomp_db_file_insert, files, level, product_type, $
   if (status ne 0L) then goto, done
   filetype_index = filetype_results.filetype_id
 
+  fields = [{name: 'file_name', type: '''%s'''}, $
+            {name: 'l0_file_name', type: '''%s'''}, $
+            {name: 'date_obs', type: '''%s'''}, $
+            {name: 'obsday_id', type: '%d'}, $
+            {name: 'obsday_hours', type: '%f'}, $
+            {name: 'carrington_rotation', type: '%d'}, $
+
+            {name: 'level_id', type: '%d'}, $
+            {name: 'producttype_id', type: '%d'}, $
+            {name: 'filetype_id', type: '%d'}, $
+
+            {name: 'obs_plan', type: '''%s'''}, $
+            {name: 'obs_id', type: '''%s'''}, $
+
+            {name: 'quality', type: '%d'}, $
+            {name: 'gbu', type: '%d'}, $
+
+            {name: 'n_rcam_onband_saturated_pixels', type: '%d'}, $
+            {name: 'n_tcam_onband_saturated_pixels', type: '%d'}, $
+            {name: 'n_rcam_bkg_saturated_pixels', type: '%d'}, $
+            {name: 'n_tcam_bkg_saturated_pixels', type: '%d'}, $
+            {name: 'n_rcam_onband_nonlinear_pixels', type: '%d'}, $
+            {name: 'n_tcam_onband_nonlinear_pixels', type: '%d'}, $
+            {name: 'n_rcam_bkg_nonlinear_pixels', type: '%d'}, $
+            {name: 'n_tcam_bkg_nonlinear_pixels', type: '%d'}, $
+
+            {name: 'median_background', type: '%s'}, $
+            {name: 'vcrosstalk_metric', type: '%s'}, $
+            {name: 'wind_speed', type: '%s'}, $
+            {name: 'wind_direction', type: '%s'}, $
+
+            {name: 'wave_region', type: '%d'}, $
+            {name: 'ntunes', type: '%d'}, $
+
+            {name: 'ucomp_sw_id', type: '%d'}]
+  sql_cmd_fmt = string(strjoin(fields.name, ', '), $
+                       strjoin(fields.type, ', '), $
+                       format='(%"insert into ucomp_file (%s) values (%s)")')
+
   for f = 0L, n_files - 1L do begin
     file = files[f]
 
@@ -84,48 +123,11 @@ pro ucomp_db_file_insert, files, level, product_type, $
     endelse
 
     mg_log, 'ingesting %s', file.l1_basename, name=logger_name, /info
-    fields = [{name: 'file_name', type: '''%s'''}, $
-              {name: 'l0_file_name', type: '''%s'''}, $
-              {name: 'date_obs', type: '''%s'''}, $
-              {name: 'obsday_id', type: '%d'}, $
-              {name: 'obsday_hours', type: '%f'}, $
-              {name: 'carrington_rotation', type: '%d'}, $
 
-              {name: 'level_id', type: '%d'}, $
-              {name: 'producttype_id', type: '%d'}, $
-              {name: 'filetype_id', type: '%d'}, $
-
-              {name: 'obs_plan', type: '''%s'''}, $
-              {name: 'obs_id', type: '''%s'''}, $
-
-              {name: 'quality', type: '%d'}, $
-              {name: 'gbu', type: '%d'}, $
-
-              {name: 'n_rcam_onband_saturated_pixels', type: '%d'}, $
-              {name: 'n_tcam_onband_saturated_pixels', type: '%d'}, $
-              {name: 'n_rcam_bkg_saturated_pixels', type: '%d'}, $
-              {name: 'n_tcam_bkg_saturated_pixels', type: '%d'}, $
-              {name: 'n_rcam_onband_nonlinear_pixels', type: '%d'}, $
-              {name: 'n_tcam_onband_nonlinear_pixels', type: '%d'}, $
-              {name: 'n_rcam_bkg_nonlinear_pixels', type: '%d'}, $
-              {name: 'n_tcam_bkg_nonlinear_pixels', type: '%d'}, $
-
-              {name: 'median_background', type: '%s'}, $
-              {name: 'vcrosstalk_metric', type: '%s'}, $
-              {name: 'wind_speed', type: '%s'}, $
-              {name: 'wind_direction', type: '%s'}, $
-
-              {name: 'wave_region', type: '%d'}, $
-              {name: 'ntunes', type: '%d'}, $
-
-              {name: 'ucomp_sw_id', type: '%d'}]
-    sql_cmd = string(strjoin(fields.name, ', '), $
-                     strjoin(fields.type, ', '), $
-                     format='(%"insert into ucomp_file (%s) values (%s)")')
-    db->execute, sql_cmd, $
+    db->execute, sql_cmd_fmt, $
                  filename, $
                  file_basename(file.raw_filename), $
-                 file.date_obs,$
+                 file.date_obs, $
                  obsday_index, $
                  file.obsday_hours, $
                  long(file.carrington_rotation), $
