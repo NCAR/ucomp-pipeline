@@ -66,7 +66,7 @@ pro ucomp_db_density_insert, density_basenames, run=run
                        format='(%"insert into ucomp_file (%s) values (%s)")')
 
   for f = 0L, n_elements(density_basenames) - 1L do begin
-    mg_log, 'ingesting %s', density_basenames[f], name=logger_name, /info
+    mg_log, 'ingesting %s', density_basenames[f], name=run.logger_name, /info
 
     density_filename = filepath(density_basenames[f], root=l3_dir)
     primary_header = headfits(density_filename)
