@@ -730,7 +730,7 @@
 
 - fix for mlso_numfiles entry
 
-#### 1.0.18
+#### 1.0.18 [Apr 30, 2025]
 
 - automatically find files for computing density
 - updated temperature thresholds for quality check
