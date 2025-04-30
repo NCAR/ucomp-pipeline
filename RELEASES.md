@@ -742,3 +742,5 @@
 - fix bug in flat roughness calculation
 - handle bad frames better
 - specify minimum number of files need to create average for GBU test
+
+#### 1.0.19
