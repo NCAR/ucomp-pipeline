@@ -102,7 +102,10 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
   device, decomposed=0
 
   n_colors = 252
-  ucomp_loadct, option_prefix, n_colors=n_colors
+  ucomp_loadct, option_prefix, n_colors=n_colors, rgb_table=rgb_table
+  new_rgb_table = bytarr(n_colors + 1, 3)
+  new_rgb_table[1, 0] = rgb_table
+  ucomp_loadct_rgb, new_rgb_table
 
   display_gamma = run->line(wave_region, option_prefix + '_display_gamma')
   mg_gamma_ct, display_gamma, /current, n_colors=n_colors
@@ -111,7 +114,7 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
   display_max   = run->line(wave_region, option_prefix + '_display_max')
   display_power = run->line(wave_region, option_prefix + '_display_power')
 
-  missing_color = 252
+  missing_color = 0
   tvlct, 0, 0, 0, missing_color
   background_color = 253
   tvlct, 255, 255, 255, background_color
@@ -130,9 +133,10 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
                min=display_min^display_power, $
                max=display_max^display_power, $
                top=n_colors - 1L, $
-               /nan)
+               /nan) + 1B
 
-  if (n_nan gt 0L) then map[nan_indices] = missing_color
+  map = float(map)
+  if (n_nan gt 0L) then map[nan_indices] = !values.f_nan
 
   north_up_map = shift(map, 0, -180)
   east_limb = reverse(north_up_map[*, 0:359], 2)
@@ -143,8 +147,7 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
   for d = 0L, n_dates - 1L do jd_dates[d] = ucomp_dateobs2julday(dates[d])
 
   charsize = 0.9
-  ;smooth_kernel = [11, 1]
-  ;smooth_kernel = [3, 1]
+  smooth_kernel = [11, 1]
 
   title = string(name, wave_region, height, start_date, end_date, $
                  format='(%"UCoMP synoptic map for %s at %s nm at r%0.2f from %s to %s")')
@@ -231,4 +234,48 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
   endfor
 
   mg_log, 'done', name=run.logger_name, /info
+end
+
+
+; main-level example program
+
+date = '20221124'
+config_basename = 'ucomp.production.cfg'
+config_filename = filepath(config_basename, $
+                           subdir=['..', '..', '..', 'ucomp-config'], $
+                           root=mg_src_root())
+run = ucomp_run(date, 'test', config_filename)
+
+wave_region = '1074'
+n_rolling_days = 28L
+
+db = ucomp_db_connect(run->config('database/config_filename'), $
+                      run->config('database/config_section'), $
+                      logger_name=run.logger_name, $
+                      log_statements=run->config('database/log_statements'), $
+                      status=status)
+
+ucomp_rolling_synoptic_map, wave_region, $
+                            'intensity', 'int', 'intensity', $
+                            1.3, 'r13i', $
+                            db, $
+                            n_days=n_rolling_days, run=run
+ucomp_rolling_synoptic_map, wave_region, $
+                            'linear polarization', 'linpol', 'linpol', $
+                            1.3, 'r13l', $
+                            db, $
+                            n_days=n_rolling_days, run=run
+ucomp_rolling_synoptic_map, wave_region, $
+                            'radial azimith', 'radazi', 'radial_azimuth', $
+                            1.3, 'r13radazi', $
+                            db, $
+                            n_days=n_rolling_days, run=run
+ucomp_rolling_synoptic_map, wave_region, $
+                            'doppler velocity', 'doppler', 'doppler', $
+                            1.3, 'r13doppler', $
+                            db, $
+                            n_days=n_rolling_days, run=run
+
+obj_destroy, [db, run]
+
 end
