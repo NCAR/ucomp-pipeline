@@ -98,47 +98,61 @@ pro ucomp_db_update, run=run
     ucomp_mission_eccentricity_plot, wave_regions[w], db, run=run
     ucomp_rolling_o1focus_plot, wave_regions[w], db, /mission, run=run
 
-    ucomp_rolling_synoptic_map, wave_regions[w], $
-                                'intensity', 'int', 'intensity', $
-                                1.08, 'r108i', $
-                                db, $
-                                n_days=n_rolling_days, run=run
-    ucomp_rolling_synoptic_map, wave_regions[w], $
-                                'intensity', 'int', 'intensity', $
-                                1.3, 'r13i', $
-                                db, $
-                                n_days=n_rolling_days, run=run
-    ucomp_rolling_synoptic_map, wave_regions[w], $
-                                'linear polarization', 'linpol', 'linpol', $
-                                1.08, 'r108l', $
-                                db, $
-                                n_days=n_rolling_days, run=run
-    ucomp_rolling_synoptic_map, wave_regions[w], $
-                                'linear polarization', 'linpol', 'linpol', $
-                                1.3, 'r13l', $
-                                db, $
-                                n_days=n_rolling_days, run=run
-    ucomp_rolling_synoptic_map, wave_regions[w], $
-                                'radial azimuth', 'radazi', 'radial_azimuth', $
-                                1.08, 'r108radazi', $
-                                db, $
-                                n_days=n_rolling_days, run=run
-    ucomp_rolling_synoptic_map, wave_regions[w], $
-                                'radial azimith', 'radazi', 'radial_azimuth', $
-                                1.3, 'r13radazi', $
-                                db, $
-                                n_days=n_rolling_days, run=run
+    smoothing = [0B, 1B]
 
-    ucomp_rolling_synoptic_map, wave_regions[w], $
-                                'doppler velocity', 'doppler', 'doppler', $
-                                1.08, 'r108doppler', $
-                                db, $
-                                n_days=n_rolling_days, run=run
-    ucomp_rolling_synoptic_map, wave_regions[w], $
-                                'doppler velocity', 'doppler', 'doppler', $
-                                1.3, 'r13doppler', $
-                                db, $
-                                n_days=n_rolling_days, run=run
+    for s = 0L, n_elements(smoothing) - 1L do begin
+      ucomp_rolling_synoptic_map, wave_regions[w], $
+                                  'intensity', 'int', 'intensity', $
+                                  1.08, 'r108i', $
+                                  db, $
+                                  n_days=n_rolling_days, smooth=smoothing[s], $
+                                  run=run
+      ucomp_rolling_synoptic_map, wave_regions[w], $
+                                  'intensity', 'int', 'intensity', $
+                                  1.3, 'r13i', $
+                                  db, $
+                                  n_days=n_rolling_days, smooth=smoothing[s], $
+                                  run=run
+
+      ucomp_rolling_synoptic_map, wave_regions[w], $
+                                  'linear polarization', 'linpol', 'linpol', $
+                                  1.08, 'r108l', $
+                                  db, $
+                                  n_days=n_rolling_days, smooth=smoothing[s], $
+                                  run=run
+      ucomp_rolling_synoptic_map, wave_regions[w], $
+                                  'linear polarization', 'linpol', 'linpol', $
+                                  1.3, 'r13l', $
+                                  db, $
+                                  n_days=n_rolling_days, smooth=smoothing[s], $
+                                  run=run
+
+      ucomp_rolling_synoptic_map, wave_regions[w], $
+                                  'radial azimuth', 'radazi', 'radial_azimuth', $
+                                  1.08, 'r108radazi', $
+                                  db, $
+                                  n_days=n_rolling_days, smooth=smoothing[s], $
+                                  run=run
+      ucomp_rolling_synoptic_map, wave_regions[w], $
+                                  'radial azimith', 'radazi', 'radial_azimuth', $
+                                  1.3, 'r13radazi', $
+                                  db, $
+                                  n_days=n_rolling_days, smooth=smoothing[s], $
+                                  run=run
+
+      ucomp_rolling_synoptic_map, wave_regions[w], $
+                                  'doppler velocity', 'doppler', 'doppler', $
+                                  1.08, 'r108doppler', $
+                                  db, $
+                                  n_days=n_rolling_days, smooth=smoothing[s], $
+                                  run=run
+      ucomp_rolling_synoptic_map, wave_regions[w], $
+                                  'doppler velocity', 'doppler', 'doppler', $
+                                  1.3, 'r13doppler', $
+                                  db, $
+                                  n_days=n_rolling_days, smooth=smoothing[s], $
+                                  run=run
+    endfor
 
     ucomp_daily_o1focus_plot, wave_regions[w], obsday_index, db, run=run
     ucomp_daily_eccentricity_plot, wave_regions[w], obsday_index, db, run=run

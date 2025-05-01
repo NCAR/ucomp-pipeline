@@ -21,12 +21,18 @@
 ;     database connection
 ;
 ; :Keywords:
+;   n_days : in, optional, type=long, default=28
+;     number of days to produce the synoptic map for, going backward from the
+;     run date
+;   smooth : in, optional, type=boolean
+;     set to produce a smoothed synoptic map
 ;   run : in, required, type=object
 ;     KCor run object
 ;-
 pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
                                 height, field, db, $
-                                n_days=n_days, run=run
+                                n_days=n_days, smooth=smooth, $
+                                run=run
   compile_opt strictarr
 
   _n_days = mg_default(n_days, 28L)   ; number of days to include in the plot
@@ -147,7 +153,7 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
   for d = 0L, n_dates - 1L do jd_dates[d] = ucomp_dateobs2julday(dates[d])
 
   charsize = 0.9
-  smooth_kernel = [11, 1]
+  if keyword_set(smooth) then smooth_kernel = [11, 1]
 
   title = string(name, wave_region, height, start_date, end_date, $
                  format='(%"UCoMP synoptic map for %s at %s nm at r%0.2f from %s to %s")')
@@ -193,8 +199,9 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
                                  wave_region, $
                                  _n_days, $
                                  flag, $
+                                 keyword_set(smooth) ? '.smoothed' : '', $
                                  100.0 * height, $
-                                 format='(%"%s.ucomp.%s.%dday.synoptic.%s.r%03d.gif")'), $
+                                 format='(%"%s.ucomp.%s.%dday.synoptic.%s%s.r%03d.gif")'), $
                           root=eng_dir)
   write_gif, gif_filename, im, rgb[*, 0], rgb[*, 1], rgb[*, 2]
 
@@ -239,7 +246,7 @@ end
 
 ; main-level example program
 
-date = '20221124'
+date = '20220213'
 config_basename = 'ucomp.production.cfg'
 config_filename = filepath(config_basename, $
                            subdir=['..', '..', '..', 'ucomp-config'], $
@@ -254,26 +261,31 @@ db = ucomp_db_connect(run->config('database/config_filename'), $
                       logger_name=run.logger_name, $
                       log_statements=run->config('database/log_statements'), $
                       status=status)
+smooth = 0B
 
 ucomp_rolling_synoptic_map, wave_region, $
                             'intensity', 'int', 'intensity', $
                             1.3, 'r13i', $
                             db, $
+                            smooth=smooth, $
                             n_days=n_rolling_days, run=run
 ucomp_rolling_synoptic_map, wave_region, $
                             'linear polarization', 'linpol', 'linpol', $
                             1.3, 'r13l', $
                             db, $
+                            smooth=smooth, $
                             n_days=n_rolling_days, run=run
 ucomp_rolling_synoptic_map, wave_region, $
                             'radial azimith', 'radazi', 'radial_azimuth', $
                             1.3, 'r13radazi', $
                             db, $
+                            smooth=smooth, $
                             n_days=n_rolling_days, run=run
 ucomp_rolling_synoptic_map, wave_region, $
                             'doppler velocity', 'doppler', 'doppler', $
                             1.3, 'r13doppler', $
                             db, $
+                            smooth=smooth, $
                             n_days=n_rolling_days, run=run
 
 obj_destroy, [db, run]
