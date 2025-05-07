@@ -1,5 +1,22 @@
 ; docformat = 'rst'
 
+;+
+; Compute the density from the ratio of given 1074 and 1079 level 2 files.
+;
+; :Params:
+;   l2_basenames_1074 : in, required, type=str/strarr
+;     filenames of level 2 1074 files
+;   l2_basenames_1079 : in, required, type=str/strarr
+;     filenames of level 2 1079 files
+;   output_basename : in, required, type=string
+;     basename for output file
+;
+; :Keywords:
+;   ignore_linewidth : in, optional, type=boolean
+;     set to not use the line width in the density calculation
+;   run : in, required, type=object
+;     UCoMP run object
+;-
 pro ucomp_compute_density_files, l2_basenames_1074, $
                                  l2_basenames_1079, $
                                  output_basename, $
@@ -93,6 +110,7 @@ pro ucomp_compute_density_files, l2_basenames_1074, $
   output_filename = filepath(output_basename, root=l3_dirname)
 
   primary_header = primary_1074_header
+  density_header = primary_1074_header
 
   ucomp_addpar, primary_header, 'LEVEL', 'L3', comment='level 3 calibrated'
   ucomp_addpar, primary_header, 'FILTER', '1074/1079'
@@ -125,18 +143,20 @@ pro ucomp_compute_density_files, l2_basenames_1074, $
                      'SGS info', 'Weather info', 'Occulter centering info']
   ucomp_delpar, primary_header, remove_sections, /section
   ucomp_delpar, primary_header, /history
+  ucomp_delpar, density_header, remove_sections, /section
+  ucomp_delpar, density_header, /history
 
   ; add Level 3 processing section
 
   after = 'RSUN_REF'
-  ucomp_addpar, primary_header, 'CHIANTIV', chianti_version, $
+  ucomp_addpar, density_header, 'CHIANTIV', chianti_version, $
                 comment='Chianti version used to calculate lookup table', $
                 after=after
-  ucomp_addpar, primary_header, 'CHIANTIF', density_basename, $
+  ucomp_addpar, density_header, 'CHIANTIF', density_basename, $
                 comment='Chianti lookup table', $
                 after=after
   for f = 0L, n_elements(l2_basenames_1074) - 1L do begin
-    ucomp_addpar, primary_header, $
+    ucomp_addpar, density_header, $
                   string(f + 1, format='1074FIL%d'), $
                   l2_basenames_1074[f], $
                   comment=string(f + 1, n_elements(l2_basenames_1074), $
@@ -144,37 +164,41 @@ pro ucomp_compute_density_files, l2_basenames_1074, $
                   after=after
   endfor
   for f = 0L, n_elements(l2_basenames_1079) - 1L do begin
-    ucomp_addpar, primary_header, $
+    ucomp_addpar, density_header, $
                   string(f + 1, format='1079FIL%d'), $
                   l2_basenames_1079[f], $
                   comment=string(f + 1, n_elements(l2_basenames_1079), $
                                  format='%d/%d level 2 1079 filename'), $
                   after=after
   endfor
-  ucomp_addpar, primary_header, 'N_LEVELS', n_levels, $
+
+  ucomp_addpar, density_header, 'N_LEVELS', n_levels, $
                 comment='number of energy levels used', $
                 after=after
-  ucomp_addpar, primary_header, 'ELECTEMP', electron_temperature, $
+  ucomp_addpar, density_header, 'ELECTEMP', electron_temperature, $
                 comment='[K] electron temperature', $
                 format='(f0.1)', $
                 after=after
-  ucomp_addpar, primary_header, 'ABUND', abundances_basename, $
+  ucomp_addpar, density_header, 'ABUND', abundances_basename, $
                 comment='abundances filename', $
                 after=after
-  ucomp_addpar, primary_header, 'PROTONS', boolean(protons), $
+  ucomp_addpar, density_header, 'PROTONS', boolean(protons), $
                 comment='include protons', $
                 after=after
-  ucomp_addpar, primary_header, 'LIMBDARK', boolean(limb_darkening), $
+  ucomp_addpar, density_header, 'LIMBDARK', boolean(limb_darkening), $
                 comment='include limb darkening', $
                 after=after
-  ucomp_addpar, primary_header, 'USELINEW', boolean(~keyword_set(ignore_linewidth)), $
+  ucomp_addpar, density_header, 'USELINEW', boolean(~keyword_set(ignore_linewidth)), $
                 comment='use line width', $
                 after=after
 
-  ucomp_addpar, primary_header, 'COMMENT', 'Density', /title, before='CHIANTIV'
+  ucomp_addpar, density_header, 'COMMENT', 'Density', /title, before='CHIANTIV'
 
   fits_open, output_filename, fcb, /write
-  ucomp_fits_write, fcb, density, primary_header, /no_abort, message=error_msg
+  ucomp_fits_write, fcb, 0L, primary_header, /no_abort, message=error_msg
+  ucomp_fits_write, fcb, density, density_header, $
+                    extname='Density', $
+                    /no_abort, message=error_msg
   ucomp_fits_write, fcb, peak_intensity_1074, peak_intensity_1074_header, $
                     extname='Peak intensity [1074 nm]', $
                     /no_abort, message=error_msg
@@ -272,7 +296,8 @@ date = '20240409'
 f_1074 = '20240409.210752.ucomp.1074.l2.fts'
 f_1079 = '20240409.210322.ucomp.1079.l2.fts'
 
-name = 'alin'
+name = 'normal'
+ignore_linewidth = 1B
 
 ; config_basename = 'ucomp.production.cfg'
 config_basename = 'ucomp.latest.cfg'

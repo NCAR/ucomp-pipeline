@@ -1,6 +1,17 @@
 ; docformat = 'rst'
 
-pro ucomp_write_density_image, basename, thumbnail=thumbnail, run=run
+;+
+; Write a PNG image of the density in a level 3 density FITS file.
+;
+; :Params:
+;   basename : in, required, type=string
+;     basename of density FITS file
+;
+; :Keywords:
+;   run : in, required, type=object
+;     UCoMP run object
+;-
+pro ucomp_write_density_image, basename, run=run
   compile_opt strictarr
 
   l3_dirname = filepath('', $
@@ -11,7 +22,8 @@ pro ucomp_write_density_image, basename, thumbnail=thumbnail, run=run
   gif_filename = filepath(gif_basename, root=l3_dirname)
 
   fits_open, filepath(basename, root=l3_dirname), fcb
-  fits_read, fcb, density, primary_header, exten_no=0
+  fits_read, fcb, !null, primary_header, exten_no=0
+  fits_read, fcb, density, density_header, exten_no=1
   fits_close, fcb
 
   datetimes = strmid(basename, 0, 22)
