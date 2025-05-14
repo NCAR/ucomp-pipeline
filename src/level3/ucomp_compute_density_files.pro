@@ -202,15 +202,13 @@ pro ucomp_compute_density_files, l2_basenames_1074, $
   ucomp_fits_write, fcb, peak_intensity_1074, peak_intensity_1074_header, $
                     extname='Peak intensity [1074 nm]', $
                     /no_abort, message=error_msg
-  if (~keyword_set(ignore_linewidth)) then begin
-    ucomp_fits_write, fcb, line_width_1074, line_width_1074_header, $
-                      extname='Line width (FWHM) [1074 nm]', $
-                      /no_abort, message=error_msg
-  endif
   ucomp_fits_write, fcb, peak_intensity_1079, peak_intensity_1079_header, $
                     extname='Peak intensity [1079 nm]', $
                     /no_abort, message=error_msg
   if (~keyword_set(ignore_linewidth)) then begin
+    ucomp_fits_write, fcb, line_width_1074, line_width_1074_header, $
+                      extname='Line width (FWHM) [1074 nm]', $
+                      /no_abort, message=error_msg
     ucomp_fits_write, fcb, line_width_1079, line_width_1079_header, $
                       extname='Line width (FWHM) [1079 nm]', $
                       /no_abort, message=error_msg
