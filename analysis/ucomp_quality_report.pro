@@ -40,6 +40,29 @@ pro ucomp_quality_report, db, run=run
     !null = where(sci_quality_bitmask and sci_masks[c], n_condition)
     print, sci_masks[c], n_condition, sci_checkers[c], format='%4d %6d %-35s'
   endfor
+
+  n_sci_condition = n_elements(sci_conditions)
+  sci_mixed_quality = intarr(n_sci_condition, n_sci_condition)
+  for c1 = 0L, n_sci_condition - 1L do begin
+    for c2 = 0L, n_sci_condition - 1L do begin
+      !null = where(((sci_quality_bitmask and sci_masks[c1]) gt 0) $
+                    and ((sci_quality_bitmask and sci_masks[c2]) gt 0), n_condition)
+      sci_mixed_quality[c1, c2] = n_condition
+    endfor
+  endfor
+
+  print
+  print, sci_mixed_quality
+
+  print
+  print, 'Unique failings'
+  for c = 0L, n_sci_condition - 1L do begin
+    !null = where(sci_quality_bitmask and sci_masks[c], n_condition)
+    !null = where(sci_quality_bitmask eq sci_masks[c], n_unique_condition)
+    print, sci_masks[c], n_unique_condition, sci_checkers[c], $
+           100.0 * n_unique_condition / n_condition, $
+           format='%4d %6d %-35s (%0.1f%%)'
+  endfor
 end
 
 
