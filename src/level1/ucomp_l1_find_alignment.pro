@@ -295,7 +295,7 @@ pro ucomp_l1_find_alignment, file, $
                 'World Coordinate System (WCS) info', $
                 before='WCSNAME', /title
   ucomp_addpar, primary_header, 'COMMENT', $
-                'Ephemeris calculations done by sun.pro', $
+                'Ephemeris calculations done by sun.pro at time of DATE-OBS', $
                 before='WCSNAME'
 
   after = 'CDELT2'
