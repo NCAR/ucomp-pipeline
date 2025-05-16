@@ -458,7 +458,8 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   header = ext_headers[0]
   sxdelpar, header, 'WAVELNG'
 
-  delete_keywords = ['RAWEXTS', $
+  delete_keywords = ['DATETYPE', $
+                     'RAWEXTS', $
                      'RAWDARK1', 'DARKEXT1', 'RAWDARK2', 'DARKEXT2', $
                      'FLTFILE1', 'FLTEXTS1', 'MFLTEXT1', $
                      'FLTFILE2', 'FLTEXTS2', 'MFLTEXT2']
@@ -475,7 +476,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   ucomp_addpar, header, 'FITMETHD', $
                 perform_gauss_fit ? gaussian_fit_method : 'analytic', $
                 comment=perform_gauss_fit ? 'Gaussian fit using all wavelengths' : 'Analytic Gaussian fit', $
-                before='SKYTRANS'
+                after='SKYTRANS'
   if (gaussian_fit_method eq 'analytic') then begin
     ucomp_addpar, header, 'CNTR_REF', center_wavelength, $
                   comment='[nm] center reference wavelength', format='F0.3'
@@ -489,7 +490,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                   comment='[nm] blue wavelength used in fit', format='F0.3'
     ucomp_addpar, header, 'RED_FIT', wavelengths[red_index], $
                   comment='[nm] red wavelength used in fit', format='F0.3'
-
+    ucomp_addpar, header, 'COMMENT', 'Fit info', /title, before='FITMETHD'
   endif
 
   ucomp_fits_write, fcb, $
@@ -543,7 +544,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                     /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
 
-  sxdelpar, header, 'FITMETHD'
+  ucomp_delpar, header, 'Fit info', /section
 
   if (~run->config('level2/mask_noise')) then begin
     ucomp_fits_write, fcb, $

@@ -1,5 +1,45 @@
 ; docformat = 'rst'
 
+pro ucomp_compute_density_files_update_peak_intensity_header, primary_header, $
+                                                              peak_intensity_header
+  compile_opt strictarr
+
+  after = 'INHERIT'
+  add_keywords = ['DATE-OBS', 'DATE-END']
+  for k = 0L, n_elements(add_keywords) - 1L do begin
+    ucomp_addpar, peak_intensity_header, $
+                  add_keywords[k], $
+                  ucomp_getpar(primary_header, add_keywords[k], comment=comment), $
+                  comment=comment, $
+                  after=after
+  endfor
+
+  ucomp_addpar, peak_intensity_header, $
+                'BUNIT', $
+                ucomp_getpar(primary_header, 'BUNIT', comment=comment), $
+                comment=comment, $
+                after='OBJECT'
+
+  after = 'TCAMMED'
+  ephemeris_keywords = ['SOLAR_P0', 'SOLAR_B0', 'SECANT_Z', 'SID_TIME', $
+    'CAR_ROT', 'JUL_DATE', 'RSUN_OBS', 'R_SUN', 'RSUN_REF']
+  formats = ['F0.3', 'F0.3', 'F0.6', 'F0.5', 'I', 'F0.9', 'F0.2', 'F0.2', 'F0.1']
+  for k = 0L, n_elements(ephemeris_keywords) - 1L do begin
+    ucomp_addpar, peak_intensity_header, $
+                  ephemeris_keywords[k], $
+                  ucomp_getpar(primary_header, ephemeris_keywords[k], comment=comment), $
+                  comment=comment, $
+                  format=formats[k]
+                  after=after
+  endfor
+  ucomp_addpar, peak_intensity_header, 'COMMENT', 'Ephemeris info', $
+                before='SOLAR_P0', /title
+  ucomp_addpar, peak_intensity_header, 'COMMENT', $
+                'Ephemeris calculations done by sun.pro at time of DATE-OBS', $
+                before='SOLAR_P0'
+end
+
+
 ;+
 ; Compute the density from the ratio of given 1074 and 1079 level 2 files.
 ;
@@ -80,6 +120,7 @@ pro ucomp_compute_density_files, l2_basenames_1074, $
                                     chianti_version=chianti_version, $
                                     inverted_ratio=inverted_ratio, $
                                     electron_temperature=electron_temperature, $
+                                    tsun=tsun, $
                                     n_levels=n_levels, $
                                     abundances_basename=abundances_basename, $
                                     protons=protons, $
@@ -144,16 +185,22 @@ pro ucomp_compute_density_files, l2_basenames_1074, $
   ucomp_delpar, primary_header, remove_sections, /section
   ucomp_delpar, primary_header, /history
   ucomp_delpar, density_header, remove_sections, /section
+  ucomp_delpar, density_header, $
+                ['World Coordinate System (WCS) info', 'Ephemeris info'], $
+                /section
+  ucomp_delpar, density_header, 'LEVEL'
+  ucomp_addpar, density_header, 'FILTER', '1074/1079'
+  ucomp_addpar, density_header, 'BUNIT', 'electrons/cm^3'
   ucomp_delpar, density_header, /history
 
   ; add Level 3 processing section
 
-  after = 'RSUN_REF'
+  after = 'PRODUCT'
   ucomp_addpar, density_header, 'CHIANTIV', chianti_version, $
                 comment='Chianti version used to calculate lookup table', $
                 after=after
-  ucomp_addpar, density_header, 'CHIANTIF', density_basename, $
-                comment='Chianti lookup table', $
+  ucomp_addpar, density_header, 'DENSFILE', density_basename, $
+                comment='density LUT', $
                 after=after
   for f = 0L, n_elements(l2_basenames_1074) - 1L do begin
     ucomp_addpar, density_header, $
@@ -173,10 +220,15 @@ pro ucomp_compute_density_files, l2_basenames_1074, $
   endfor
 
   ucomp_addpar, density_header, 'N_LEVELS', n_levels, $
-                comment='number of energy levels used', $
+                comment='number of energy levels used for FeXIII', $
+                format='(I)', $
                 after=after
-  ucomp_addpar, density_header, 'ELECTEMP', electron_temperature, $
-                comment='[K] electron temperature', $
+  ucomp_addpar, density_header, 'TPEAK', electron_temperature, $
+                comment='[K] Fe XIII peak formation temperature', $
+                format='(f0.1)', $
+                after=after
+  ucomp_addpar, density_header, 'TSUN', tsun, $
+                comment='[K] black body temp to approx solar spectrum', $
                 format='(f0.1)', $
                 after=after
   ucomp_addpar, density_header, 'ABUND', abundances_basename, $
@@ -193,6 +245,12 @@ pro ucomp_compute_density_files, l2_basenames_1074, $
                 after=after
 
   ucomp_addpar, density_header, 'COMMENT', 'Density', /title, before='CHIANTIV'
+
+
+  ucomp_compute_density_files_update_peak_intensity_header, primary_1074_header, $
+                                                            peak_intensity_1074_header
+  ucomp_compute_density_files_update_peak_intensity_header, primary_1079_header, $
+                                                            peak_intensity_1079_header
 
   fits_open, output_filename, fcb, /write
   ucomp_fits_write, fcb, 0L, primary_header, /no_abort, message=error_msg

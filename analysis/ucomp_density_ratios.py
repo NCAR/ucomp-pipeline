@@ -8,15 +8,20 @@ import numpy as np
 from netCDF4 import Dataset
 
 
-def write_ncdf(filename: str, heights, densities, ratios, info):
+def write_ncdf(filename: str, heights, densities, ratios, info: dict):
+    """Write the NCDF density lookup table. `info` dict must have keys:
+    chianti_version:str, electron_temperature:float, abundances_basename:str,
+    n_levels:int, invert:bool, limbdark:bool, protons:bool. `ratios` array
+    shape is (`n_heights`, `n_densities`).
+    """
     rootgrp = Dataset(filename, "w", format="NETCDF4")
 
     rootgrp.chianti_version = info["chianti_version"]
     rootgrp.electron_temperature = info["electron_temperature"]
+    rootgrp.tsun = info["tsun"]
     abundances_basename = info["abundances_basename"]
     rootgrp.abundances_basename = abundances_basename if abundances_basename is not None else ""
-    n_levels = info["n_levels"]
-    rootgrp.n_levels = float(n_levels) if n_levels is not None else np.nan
+    rootgrp.n_levels = info["n_levels"]
     rootgrp.invert = np.uint8(info["invert"])
     rootgrp.limbdark = np.uint8(info["limbdark"])
     rootgrp.protons = np.uint8(info["protons"])
@@ -35,11 +40,22 @@ def write_ncdf(filename: str, heights, densities, ratios, info):
     rootgrp.close()
 
 
-def compute_ratios(abundances_basename=None, chianti_maxtemp=False,
-                   invert=False, limbdark=True, protons=True,
-                   n_levels=None,
-                   n_heights: int=240, min_height=1.005, max_height=2.2,
-                   n_densities: int=120, min_density=6.0, max_density=12.0):
+def compute_ratios(
+    abundances_basename:str|None=None,
+    chianti_maxtemp:bool=False,
+    tsun:float=5800.0,
+    invert:bool=False,
+    limbdark:bool=True,
+    protons:bool=True,
+    n_levels:int|None=None,
+    n_heights: int=240,
+    min_height:float=1.005,
+    max_height:float=2.2,
+    n_densities: int=120,
+    min_density:float=6.0,
+    max_density:float=12.0):
+    """Compute the ratio of 1074/1079 (or inverted).
+    """
     chianti_dir, chianti_version = pycelp.chianti.getChiantiDir()
 
     if abundances_basename is not None:
@@ -49,6 +65,12 @@ def compute_ratios(abundances_basename=None, chianti_maxtemp=False,
         abundances_filename = None
 
     fe13 = pycelp.Ion("fe_13", nlevels=n_levels, abundFile=abundances_filename)
+
+    # set values that were not specified by inputs
+    n_levels = fe13.nlevels
+    if abundances_filename is None:
+        abundances_filename = fe13.abund_data["filename"]
+        abundances_basename = os.path.basename(abundances_filename)
 
     # get_maxtemp produces a temperature of 1676832 K, whereas Solarsoft Chianti
     # routine MAX_TEMP give a temperature of 1778279 K.
@@ -65,6 +87,26 @@ def compute_ratios(abundances_basename=None, chianti_maxtemp=False,
 
     thetaB_local = 0.0
 
+    info = {
+        "chianti_version": chianti_version,
+        "electron_temperature": electron_temperature,
+        "tsun": tsun,
+        "abundances_basename" : None if abundances_basename is None else f"{abundances_basename}.abund",
+        "n_levels": n_levels,
+        "invert": invert,
+        "limbdark": limbdark,
+        "protons": protons
+    }
+
+    print(f"Chianti version      : {info['chianti_version']}")
+    print(f"electron_temperature : {info['electron_temperature']:0.1f} K")
+    print(f"Tsun                 : {info['tsun']} K")
+    print(f"abundances_basename  : {info['abundances_basename']}")
+    print(f"n_levels             : {info['n_levels']}")
+    print(f"invert               : {'YES' if info['invert'] else 'NO'}")
+    print(f"limbdark             : {'YES' if info['limbdark'] else 'NO'}")
+    print(f"protons              : {'YES' if info['protons'] else 'NO'}")
+
     for height_index, height in enumerate(heights):
       print(f"{height_index+ 1} / {n_heights}: {height:0.2f} R_sun")
       for density_index, density in enumerate(densities):
@@ -73,7 +115,8 @@ def compute_ratios(abundances_basename=None, chianti_maxtemp=False,
                           height - 1.0,
                           thetaB_local,
                           include_limbdark=limbdark,
-                          include_protons=protons)
+                          include_protons=protons,
+                          photo_temp=tsun)
         line0 = fe13.get_emissionLine(10747.0)
         line1 = fe13.get_emissionLine(10789.0)
         intensities[0, height_index, density_index] = line0.calc_Iemiss()[0]
@@ -83,15 +126,6 @@ def compute_ratios(abundances_basename=None, chianti_maxtemp=False,
         ratios = intensities[1, :, :] / intensities[0, :, :]
     else:
         ratios = intensities[0, :, :] / intensities[1, :, :]
-
-    info = {
-        "chianti_version": chianti_version,
-        "electron_temperature": electron_temperature,
-        "abundances_basename" : None if abundances_basename is None else f"{abundances_basename}.abund",
-        "n_levels": n_levels,
-        "invert": invert,
-        "limbdark": limbdark,
-        "protons": protons}
 
     return(heights, densities, ratios, info)
 
@@ -107,6 +141,8 @@ if __name__ == "__main__":
         help="abundances basename, i.e., 'sun_coronal_2021_chianti'")
     parser.add_argument("--chianti-maxtemp", default=False, action="store_true",
         help="temperature is normally 1676832 K, if set use Chianti's temperature 1778279 K")
+    parser.add_argument("--tsun", default=5800.0, type=float,
+        help="black body temp used to approximate solar spectrum")
     parser.add_argument("--invert", "-i", default=False, action="store_true",
         help="normally ratio computed is 1074/1079, this option inverts it")
     parser.add_argument("--no-limbdark", default=False, action="store_true",
@@ -131,6 +167,7 @@ if __name__ == "__main__":
 
     abundances_basename = args.abundances_basename
     chianti_maxtemp     = args.chianti_maxtemp
+    tsun                = args.tsun
     invert              = args.invert
     limbdark            = not args.no_limbdark
     protons             = not args.no_protons
@@ -157,6 +194,7 @@ if __name__ == "__main__":
 
     print(f"abundances basename : {abundances_basename}")
     print(f"chianti_maxtemp     : {'YES' if chianti_maxtemp else 'NO'}")
+    print(f"Tsun                : {tsun}")
     print(f"invert              : {'YES' if invert else 'NO'}")
     print(f"limb darkening      : {'YES' if limbdark else 'NO'}")
     print(f"protons             : {'YES' if protons else 'NO'}")
@@ -171,6 +209,7 @@ if __name__ == "__main__":
     heights, densities, ratios, info = compute_ratios(
         abundances_basename=abundances_basename,
         chianti_maxtemp=chianti_maxtemp,
+        tsun=tsun,
         invert=invert, limbdark=limbdark, protons=protons, n_levels=n_levels,
         n_heights=n_heights, min_height=min_height, max_height=max_height,
         n_densities=n_densities,

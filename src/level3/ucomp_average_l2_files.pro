@@ -34,8 +34,8 @@ pro ucomp_average_l2_files, l2_filenames, $
     fits_open, l2_filenames[f], fcb
 
     fits_read, fcb, !null, primary_header, exten_no=0
-    fits_read, fcb, file_peak_intensity, peak_intensity_header, extname='Peak intensity'
-    fits_read, fcb, file_line_width, line_width_header, extname='Line width (FWHM)'
+    fits_read, fcb, file_peak_intensity, peak_intensity_header, /no_pdu, extname='Peak intensity'
+    fits_read, fcb, file_line_width, line_width_header, /no_pdu, extname='Line width (FWHM)'
 
     if (f eq 0L) then begin
       dims = size(file_peak_intensity, /dimensions)

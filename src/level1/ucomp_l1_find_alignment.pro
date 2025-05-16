@@ -339,7 +339,7 @@ pro ucomp_l1_find_alignment, file, $
   ucomp_addpar, primary_header, 'COMMENT', 'Ephemeris info', $
                 before='SOLAR_P0', /title
   ucomp_addpar, primary_header, 'COMMENT', $
-                'Ephemeris calculations done by sun.pro', $
+                'Ephemeris calculations done by sun.pro at time of DATE-OBS', $
                 before='SOLAR_P0'
 
   file.rcam_geometry.p_angle = p_angle

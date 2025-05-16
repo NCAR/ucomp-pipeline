@@ -27,6 +27,7 @@ function ucomp_read_density_ratio, density_filename, $
                                    chianti_version=chianti_version, $
                                    inverted_ratio=inverted_ratio, $
                                    electron_temperature=electron_temperature, $
+                                   tsun=tsun, $
                                    n_levels=n_levels, $
                                    abundances_basename=abundances_basename, $
                                    protons=protons, $
@@ -47,6 +48,7 @@ function ucomp_read_density_ratio, density_filename, $
 
         n_levels = mg_nc_getdata(density_filename, '.n_levels')
         electron_temperature = mg_nc_getdata(density_filename, '.electron_temperature')
+        tsun = mg_nc_getdata(density_filename, '.tsun')
         abundances_basename = mg_nc_getdata(density_filename, '.abundances_basename')
 
         inverted_ratio = mg_nc_getdata(density_filename, '.invert')
@@ -63,6 +65,7 @@ function ucomp_read_density_ratio, density_filename, $
         inverted_ratio = 1B
         n_levels = 0B
         electron_temperature = !values.f_nan
+        tsun = 6000.0
         abundances_basename = 'default'
         protons = 1B
         limb_darkening = 0B
