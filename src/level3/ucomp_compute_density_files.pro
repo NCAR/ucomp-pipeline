@@ -184,13 +184,17 @@ pro ucomp_compute_density_files, l2_basenames_1074, $
                      'SGS info', 'Weather info', 'Occulter centering info']
   ucomp_delpar, primary_header, remove_sections, /section
   ucomp_delpar, primary_header, /history
+  ucomp_delpar, primary_header, 'BUNIT'
+  ucomp_delpar, primary_header, 'PRODUCT'
+
   ucomp_delpar, density_header, remove_sections, /section
   ucomp_delpar, density_header, $
                 ['World Coordinate System (WCS) info', 'Ephemeris info'], $
                 /section
   ucomp_delpar, density_header, 'LEVEL'
   ucomp_addpar, density_header, 'FILTER', '1074/1079'
-  ucomp_addpar, density_header, 'BUNIT', 'electrons/cm^3'
+  ucomp_addpar, density_header, 'INHERIT', boolean(1B), after='EXTNAME'
+  ucomp_addpar, density_header, 'BUNIT', 'electrons/cm^3', after='OBJECT'
   ucomp_delpar, density_header, /history
 
   ; add Level 3 processing section
