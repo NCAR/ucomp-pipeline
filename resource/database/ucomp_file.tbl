@@ -2,43 +2,46 @@
 -- this table is for user searches
 
 create table ucomp_file (
-  file_id                  int (10) auto_increment primary key,
-  dt_created               timestamp default current_timestamp,
-  file_name                char (80) not null,
-  l0_file_name             char (70),
-  date_obs                 datetime not null,
-  obsday_id                mediumint (5) not null,
-  obsday_hours             float(8, 4),   -- hours into the observing day
-  carrington_rotation      mediumint (5),
+  file_id                               int (10) auto_increment primary key,
+  dt_created                            timestamp default current_timestamp,
+  file_name                             char (80) not null,
+  l0_file_name                          char (70),
+  date_obs                              datetime not null,
+  obsday_id                             mediumint (5) not null,
+  obsday_hours                          float(8, 4),   -- hours into the observing day
+  carrington_rotation                   mediumint (5),
 
-  level_id                 tinyint (2) not null,
-  producttype_id           tinyint (2),
-  filetype_id              tinyint (2),
+  level_id                              tinyint (2) not null,
+  producttype_id                        tinyint (2),
+  filetype_id                           tinyint (2),
 
-  obs_plan                 char (60),
-  obs_id                   char (60),
+  obs_plan                              char (60),
+  obs_id                                char (60),
 
-  quality                  int,
-  gbu                      int,
+  quality                               int,
+  gbu                                   int,
 
-  n_rcam_onband_saturated_pixels  int,
-  n_tcam_onband_saturated_pixels  int,
-  n_rcam_bkg_saturated_pixels     int,
-  n_tcam_bkg_saturated_pixels     int,
-  n_rcam_onband_nonlinear_pixels  int,
-  n_tcam_onband_nonlinear_pixels  int,
-  n_rcam_bkg_nonlinear_pixels     int,
-  n_tcam_bkg_nonlinear_pixels     int,
+  n_rcam_onband_saturated_pixels        int,
+  n_tcam_onband_saturated_pixels        int,
+  n_rcam_bkg_saturated_pixels           int,
+  n_tcam_bkg_saturated_pixels           int,
+  n_rcam_onband_nonlinear_pixels        int,
+  n_tcam_onband_nonlinear_pixels        int,
+  n_rcam_bkg_nonlinear_pixels           int,
+  n_tcam_bkg_nonlinear_pixels           int,
 
-  median_background        float(10, 4),
-  vcrosstalk_metric        float(8, 4),
-  wind_speed               float(7, 3),
-  wind_direction           float(7, 3),
+  max_n_rcam_nonlinear_pixels_by_frame  int,
+  max_n_tcam_nonlinear_pixels_by_frame  int,
 
-  wave_region              char (4),
-  ntunes                   tinyint (2),
+  median_background                     float(10, 4),
+  vcrosstalk_metric                     float(8, 4),
+  wind_speed                            float(7, 3),
+  wind_direction                        float(7, 3),
 
-  ucomp_sw_id              int (10),
+  wave_region                           char (4),
+  ntunes                                tinyint (2),
+
+  ucomp_sw_id                           int (10),
 
   unique (file_name),
 

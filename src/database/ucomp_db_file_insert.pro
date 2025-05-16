@@ -86,6 +86,9 @@ pro ucomp_db_file_insert, files, level, product_type, $
             {name: 'n_rcam_bkg_nonlinear_pixels', type: '%d'}, $
             {name: 'n_tcam_bkg_nonlinear_pixels', type: '%d'}, $
 
+            {name: 'max_n_rcam_nonlinear_pixels_by_frame', type: '%d'}, $
+            {name: 'max_n_tcam_nonlinear_pixels_by_frame', type: '%d'}, $
+
             {name: 'median_background', type: '%s'}, $
             {name: 'vcrosstalk_metric', type: '%s'}, $
             {name: 'wind_speed', type: '%s'}, $
@@ -148,6 +151,9 @@ pro ucomp_db_file_insert, files, level, product_type, $
                  file.n_tcam_onband_nonlinear_pixels, $
                  file.n_rcam_bkg_nonlinear_pixels, $
                  file.n_tcam_bkg_nonlinear_pixels, $
+
+                 file.max_n_rcam_nonlinear_pixels_by_frame, $
+                 file.max_n_tcam_nonlinear_pixels_by_frame, $
 
                  ucomp_db_float(file.median_background, format='%0.4f'), $
                  ucomp_db_float(file.vcrosstalk_metric, $

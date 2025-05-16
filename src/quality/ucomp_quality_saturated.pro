@@ -39,7 +39,15 @@ function ucomp_quality_saturated, file, $
     rcam_data = ext_data[*, *, *, *, rcam_indices]
     if (size(rcam_data, /n_dimensions) gt 4) then begin
       rcam_onband_maximums = max(rcam_data, dimension=5)
-    endif else rcam_onband_maximums = rcam_data
+    endif else begin
+      rcam_onband_maximums = rcam_data
+    endelse
+
+    nonlinear_mask = reform(long(rcam_data[*, *, *, 0, *] gt nonlinear_threshold))
+    dims = size(nonlinear_mask, /dimensions)
+    nonlinear_mask = reform(nonlinear_mask, dims[0] * dims[1], dims[2] * dims[3])
+    file.max_n_rcam_nonlinear_pixels_by_frame = max(total(nonlinear_mask, 1))
+
     rcam_onband_maximums = max(rcam_onband_maximums, dimension=3)
 
     !null = where(rcam_onband_maximums[*, *, 0] gt saturated_threshold, n_rcam_onband_saturated_pixels)
@@ -52,7 +60,15 @@ function ucomp_quality_saturated, file, $
     tcam_data = ext_data[*, *, *, *, tcam_indices]
     if (size(tcam_data, /n_dimensions) gt 4) then begin
       tcam_onband_maximums = max(tcam_data, dimension=5)
-    endif else tcam_onband_maximums = tcam_data
+    endif else begin
+      tcam_onband_maximums = tcam_data
+    endelse
+
+    nonlinear_mask = reform(long(tcam_data[*, *, *, 1, *] gt nonlinear_threshold))
+    dims = size(nonlinear_mask, /dimensions)
+    nonlinear_mask = reform(nonlinear_mask, dims[0] * dims[1], dims[2] * dims[3])
+    file.max_n_tcam_nonlinear_pixels_by_frame = max(total(nonlinear_mask, 1))
+
     tcam_onband_maximums = max(tcam_onband_maximums, dimension=3)
 
     !null = where(tcam_onband_maximums[*, *, 1] gt saturated_threshold, n_tcam_onband_saturated_pixels)
