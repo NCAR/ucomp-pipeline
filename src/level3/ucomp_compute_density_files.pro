@@ -126,7 +126,9 @@ pro ucomp_compute_density_files, l2_basenames_1074, $
                                     protons=protons, $
                                     limb_darkening=limb_darkening)
 
-  r_sun = ucomp_getpar(primary_1074_header, 'R_SUN')
+  r_sun_1074 = ucomp_getpar(primary_1074_header, 'R_SUN')
+  r_sun_1079 = ucomp_getpar(primary_1079_header, 'R_SUN')
+  r_sun = (r_sun_1074 + r_sun_1079) / 2.0
 
   density = ucomp_compute_density(peak_intensity_1074, peak_intensity_1079, $
                                   line_width_1074, line_width_1079, $
