@@ -36,9 +36,9 @@ pro ucomp_write_density_image, basename, run=run
   ny = run->epoch('ny', datetime=datetime)
 
   ; TODO: look these up in a config file
-  display_min = 6.5
-  display_max = 8.5
-  display_gamma = 1.0
+  display_min = run->epoch('density_display_min', datetime=datetime)
+  display_max = run->epoch('density_display_max', datetime=datetime)
+  display_gamma = run->epoch('density_display_gamma', datetime=datetime)
 
   original_device = !d.name
   set_plot, 'Z'
