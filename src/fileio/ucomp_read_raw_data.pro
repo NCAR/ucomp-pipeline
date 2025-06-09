@@ -131,7 +131,7 @@ pro ucomp_read_raw_data, filename, $
       if (n_invalid_frames eq 0L) then begin
         ; log bad frames removed
         for f = 0L, n_file_badframes - 1L do begin
-          mg_log, '%s: removing pol state %d, camera %d, ext %d', $
+          mg_log, '%s: bad pol state %d, camera %d (removing both), ext %d', $
                   file_basename(filename), $
                   (file_badframes.polstate)[f], $
                   (file_badframes.camera)[f], $
@@ -139,7 +139,7 @@ pro ucomp_read_raw_data, filename, $
                   name=logger, /debug
           ext_data[*, *, $
                    (file_badframes.polstate)[f], $
-                   (file_badframes.camera)[f], $
+                   *, $
                    (file_badframes.extension)[f] - 1] = !values.f_nan
         endfor
       endif
