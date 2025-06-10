@@ -91,9 +91,15 @@ pro ucomp_read_raw_data, filename, $
         dims = size(data, /dimensions)
 
         ext_data = make_array(dimension=[dims, n_extensions], type=type)
+        is_science = make_array(n_extensions, type=1)
       endif
 
-      if (arg_present(ext_data)) then ext_data[0, 0, 0, 0, e - 1] = data
+
+      if (arg_present(ext_data)) then begin
+        ext_data[0, 0, 0, 0, e - 1] = data
+        datatype = ucomp_getpar(header, 'DATATYPE')
+        is_science[e - 1] = datatype eq 'sci'
+      endif
       if (arg_present(ext_headers)) then ext_headers->add, header
     endfor
   endif
@@ -131,16 +137,31 @@ pro ucomp_read_raw_data, filename, $
       if (n_invalid_frames eq 0L) then begin
         ; log bad frames removed
         for f = 0L, n_file_badframes - 1L do begin
-          mg_log, '%s: bad pol state %d, camera %d (removing both), ext %d', $
-                  file_basename(filename), $
-                  (file_badframes.polstate)[f], $
-                  (file_badframes.camera)[f], $
-                  (file_badframes.extension)[f], $
-                  name=logger, /debug
-          ext_data[*, *, $
-                   (file_badframes.polstate)[f], $
-                   *, $
-                   (file_badframes.extension)[f] - 1] = !values.f_nan
+          ; only remove both cameras for science images, remove only bad frame
+          ; for dark, flat, and cal files
+          if (is_science[(file_badframes.extension)[f] - 1]) then begin
+            mg_log, '%s: bad pol state %d, camera %d (removing both), ext %d', $
+                    file_basename(filename), $
+                    (file_badframes.polstate)[f], $
+                    (file_badframes.camera)[f], $
+                    (file_badframes.extension)[f], $
+                    name=logger, /debug
+            ext_data[*, *, $
+                     (file_badframes.polstate)[f], $
+                     *, $
+                     (file_badframes.extension)[f] - 1] = !values.f_nan
+          endif else begin
+            mg_log, '%s: bad pol state %d, camera %d, ext %d', $
+                    file_basename(filename), $
+                    (file_badframes.polstate)[f], $
+                    (file_badframes.camera)[f], $
+                    (file_badframes.extension)[f], $
+                    name=logger, /debug
+            ext_data[*, *, $
+                     (file_badframes.polstate)[f], $
+                     (file_badframes.camera)[f], $
+                     (file_badframes.extension)[f] - 1] = !values.f_nan
+          endelse
         endfor
       endif
     endif
