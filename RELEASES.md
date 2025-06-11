@@ -744,3 +744,7 @@
 - specify minimum number of files need to create average for GBU test
 
 #### 1.0.19
+
+- improved method of using bad frames
+- split level 0 files for 20240409
+- improved density file metadata and density lookup table
