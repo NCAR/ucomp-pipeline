@@ -743,7 +743,7 @@
 - handle bad frames better
 - specify minimum number of files need to create average for GBU test
 
-#### 1.0.19
+#### 1.0.19 [Jun 11, 2025]
 
 - improved method of using bad frames
 - split level 0 files for 20240409
