@@ -9,7 +9,7 @@ project(ucomp-pipeline)
 
 set(VERSION_MAJOR "1")
 set(VERSION_MINOR "0")
-set(VERSION_PATCH "19")
+set(VERSION_PATCH "20")
 set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
 set(CMAKE_MODULE_PATH

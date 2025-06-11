@@ -748,3 +748,5 @@
 - improved method of using bad frames
 - split level 0 files for 20240409
 - improved density file metadata and density lookup table
+
+#### 1.0.20
