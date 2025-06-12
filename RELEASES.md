@@ -752,3 +752,5 @@
 #### 1.0.20 [Jun 11, 2025]
 
 - handle files where bad frames removal leave only a single extension
+
+#### 1.0.21
