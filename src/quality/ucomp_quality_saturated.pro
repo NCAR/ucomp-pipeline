@@ -44,7 +44,7 @@ function ucomp_quality_saturated, file, $
     endelse
 
     nonlinear_mask = reform(long(rcam_data[*, *, *, 0, *] gt nonlinear_threshold))
-    dims = size(nonlinear_mask, /dimensions)
+    dims = [size(nonlinear_mask, /dimensions), 1]
     nonlinear_mask = reform(nonlinear_mask, dims[0] * dims[1], dims[2] * dims[3])
     file.max_n_rcam_nonlinear_pixels_by_frame = max(total(nonlinear_mask, 1))
 
@@ -65,7 +65,7 @@ function ucomp_quality_saturated, file, $
     endelse
 
     nonlinear_mask = reform(long(tcam_data[*, *, *, 1, *] gt nonlinear_threshold))
-    dims = size(nonlinear_mask, /dimensions)
+    dims = [size(nonlinear_mask, /dimensions), 1]
     nonlinear_mask = reform(nonlinear_mask, dims[0] * dims[1], dims[2] * dims[3])
     file.max_n_tcam_nonlinear_pixels_by_frame = max(total(nonlinear_mask, 1))
 
@@ -88,4 +88,59 @@ function ucomp_quality_saturated, file, $
 
   ; TODO: always pass while we collect statistics
   return, 0UL
+end
+
+
+; main-level example program
+
+nonlinear_threshold = 3000.0
+
+date = '20250323'
+
+config_basename = 'ucomp.latest.cfg'
+config_filename = filepath(config_basename, $
+                           subdir=['..', '..', '..', 'ucomp-config'], $
+                           root=mg_src_root())
+
+run = ucomp_run(date, 'test', config_filename)
+
+raw_basename = '20250323.211848.75.ucomp.1079.l0.fts'
+raw_basedir = run->config('raw/basedir')
+raw_filename = filepath(raw_basename, subdir=date, root=raw_basedir)
+
+ucomp_read_raw_data, raw_filename, $
+                     primary_header=primary_header, $
+                     ext_data=ext_data, $
+                     ext_headers=headers, $
+                     n_extensions=n_extensions, $
+                     repair_routine=run->epoch('raw_data_repair_routine'), $
+                     badframes=run.badframes, $
+                     all_zero=all_zero
+
+onband_indices = bytarr(n_extensions)
+for e = 1L, n_extensions do begin
+  extension_header = headers[e - 1]
+  onband_indices[e - 1] = ucomp_getpar(extension_header, 'ONBAND', found=found) eq 'tcam'
+endfor
+
+rcam_indices = where(onband_indices eq 0L, n_rcam_indices)
+tcam_indices = where(onband_indices eq 1L, n_tcam_indices)
+
+tcam_data = ext_data[*, *, *, *, tcam_indices]
+
+if (size(tcam_data, /n_dimensions) gt 4) then begin
+  tcam_onband_maximums = max(tcam_data, dimension=5)
+endif else begin
+  tcam_onband_maximums = tcam_data
+endelse
+
+nonlinear_mask = reform(long(tcam_data[*, *, *, 1, *] gt nonlinear_threshold))
+dims = [size(nonlinear_mask, /dimensions), 1]
+
+help, tcam_onband_maximums
+tcam_onband_maximums = max(tcam_onband_maximums, dimension=3)
+help, tcam_onband_maximums
+
+obj_destroy, run
+
 end
