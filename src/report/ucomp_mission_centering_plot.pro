@@ -69,10 +69,13 @@ pro ucomp_mission_centering_plot, wave_region, db, run=run
   time_range = [jds[0], jds[-1]]
 
   month_ticks = mg_tick_locator(time_range, /months)
-  if (n_elements(month_ticks) eq 0L) then begin
+  n_months = n_elements(month_ticks)
+  if (n_months eq 0L) then begin
     month_ticks = 1L
   endif else begin
-    month_ticks = month_ticks[0:*:3]
+    max_ticks = 7
+    n_minor = n_months / max_ticks
+    month_ticks = month_ticks[0:*:n_minor]
   endelse
 
   !p.multi = [0, 2, 2, 0, 0]
@@ -89,7 +92,7 @@ pro ucomp_mission_centering_plot, wave_region, db, run=run
                  xtickformat='label_date', $
                  xtickv=month_ticks, $
                  xticks=n_elements(month_ticks) - 1L, $
-                 xminor=3, $
+                 xminor=n_minor, $
                  ytitle='Radius [pixels]', $
                  ystyle=1, yrange=r_range
 
@@ -105,7 +108,7 @@ pro ucomp_mission_centering_plot, wave_region, db, run=run
                   xtickformat='label_date', $
                   xtickv=month_ticks, $
                   xticks=n_elements(month_ticks) - 1L, $
-                  xminor=3, $
+                  xminor=n_minor, $
                   ytitle='Radius [pixels]', $
                   ystyle=1, yrange=r_range
 
@@ -185,4 +188,29 @@ pro ucomp_mission_centering_plot, wave_region, db, run=run
   if (n_elements(original_device) gt 0L) then set_plot, original_device
 
   mg_log, 'done', name=run.logger_name, /info
+end
+
+
+; main-level example program
+
+date = '20250324'
+wave_region = '1074'
+
+config_basename = 'ucomp.production.cfg'
+config_filename = filepath(config_basename, $
+                           subdir=['..', '..', '..', 'ucomp-config'], $
+                           root=mg_src_root())
+
+run = ucomp_run(date, 'test', config_filename)
+
+db = ucomp_db_connect(run->config('database/config_filename'), $
+                      run->config('database/config_section'), $
+                      logger_name=run.logger_name, $
+                      log_statements=run->config('database/log_statements'), $
+                      status=status)
+
+ucomp_mission_centering_plot, wave_region, db, run=run
+
+obj_destroy, [db, run]
+
 end
