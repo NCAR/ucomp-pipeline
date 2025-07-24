@@ -37,6 +37,7 @@ pro ucomp_db_l2_average_insert, wave_region, obsday_index, sw_index, db, run=run
   filetype_index = filetype_results.filetype_id
 
   fields = [{name: 'file_name', type: '''%s'''}, $
+            {name: 'filesize', type: '%d'}, $
             {name: 'date_obs', type: '''%s'''}, $
             {name: 'obsday_id', type: '%d'}, $
             {name: 'carrington_rotation', type: '%d'}, $
@@ -107,6 +108,7 @@ pro ucomp_db_l2_average_insert, wave_region, obsday_index, sw_index, db, run=run
 
       db->execute, sql_cmd, $
                    file_basename(files[f]), $
+                   mg_filesize(files[f]), $
                    date_obs,$
                    obsday_index, $
                    carrington_rotation, $

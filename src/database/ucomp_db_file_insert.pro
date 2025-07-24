@@ -61,6 +61,7 @@ pro ucomp_db_file_insert, files, level, product_type, $
   filetype_index = filetype_results.filetype_id
 
   fields = [{name: 'file_name', type: '''%s'''}, $
+            {name: 'filesize', type: '%d'}, $
             {name: 'l0_file_name', type: '''%s'''}, $
             {name: 'date_obs', type: '''%s'''}, $
             {name: 'obsday_id', type: '%d'}, $
@@ -129,6 +130,7 @@ pro ucomp_db_file_insert, files, level, product_type, $
 
     db->execute, sql_cmd_fmt, $
                  filename, $
+                 mg_filesize(file.l1_filename), $
                  file_basename(file.raw_filename), $
                  file.date_obs, $
                  obsday_index, $

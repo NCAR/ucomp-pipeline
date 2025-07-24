@@ -47,7 +47,7 @@ pro ucomp_db_density_insert, density_basenames, run=run
   filetype_index = filetype_results.filetype_id
 
   fields = [{name: 'file_name', type: '''%s'''}, $
-
+            {name: 'filesize', type: '%d'}, $
             {name: 'date_obs', type: '''%s'''}, $
             {name: 'obsday_id', type: '%d'}, $
             {name: 'obsday_hours', type: '%f'}, $
@@ -88,6 +88,7 @@ pro ucomp_db_density_insert, density_basenames, run=run
 
     db->execute, sql_cmd_fmt, $
                  density_basenames[f], $
+                 mg_filesize(density_filename), $
 
                  date_obs, $
                  obsday_index, $
