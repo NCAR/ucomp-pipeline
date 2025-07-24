@@ -74,7 +74,7 @@ pro ucomp_mission_centering_plot, wave_region, db, run=run
     month_ticks = 1L
   endif else begin
     max_ticks = 7
-    n_minor = n_months / max_ticks
+    n_minor = n_months / max_ticks > 1
     month_ticks = month_ticks[0:*:n_minor]
   endelse
 
