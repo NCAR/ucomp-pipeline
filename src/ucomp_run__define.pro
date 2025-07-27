@@ -884,9 +884,20 @@ end
 ;
 ; :Returns:
 ;   boolean whether the current config file is valid
+;
+; :Keywords:
+;   error : out, optional, type=integer
+;     set to a named variable to retrieve the error status of validating, 0 for
+;     no errors
 ;-
-function ucomp_run::validate_config
+function ucomp_run::validate_config, error=error
   compile_opt strictarr
+
+  catch, error
+  if (error ne 0L) then begin
+    catch, /cancel
+    return, 0
+  endif
 
   self->getProperty, logger_name=logger_name
 
@@ -1287,8 +1298,15 @@ function ucomp_run::init, date, mode, config_filename, $
   self.config_filename = config_filename
   self.options = ucomp_read_config(self.config_filename, spec=config_spec_filename)
 
-  valid_config = self->validate_config()
-  if (~valid_config) then return, 0
+  valid_config = self->validate_config(error=error)
+  if (error ne 0L) then begin
+    mg_log, 'error in validating configuration file', name=logger_name, /critical
+    return, 0
+  endif
+  if (~valid_config) then begin
+    mg_log, 'invalid configuration file', name=logger_name, /critical
+    return, 0
+  endif
 
   if (~keyword_set(no_log)) then self->_setup_logger, reprocess=reprocess
 
