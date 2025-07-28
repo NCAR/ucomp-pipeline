@@ -73,6 +73,9 @@ pro ucomp_loadct, name, n_colors=n_colors, rgb_table=rgb_table, $
         ; used color table 3 previously
         loadct, 0, /silent, ncolors=n_colors, rgb_table=rgb_table
       end
+    'background': begin
+        loadct, 0, /silent, ncolors=n_colors, rgb_table=rgb_table
+      end
     'quv': begin
         ; rgb_table = mg_makect(cyan, black, pink, ncolors=n_colors)
         loadct, 0, /silent, ncolors=n_colors, rgb_table=rgb_table

@@ -137,6 +137,27 @@ pro ucomp_l1_find_alignment, file, $
   rcam = file.rcam_geometry
   tcam = file.tcam_geometry
 
+  if (run->config('centering/diagnostic_images')) then begin
+    engineering_basedir = run->config('engineering/basedir')
+    eng_dir = filepath('', $
+                      subdir=ucomp_decompose_date(run.date), $
+                      root=engineering_basedir)
+    if (~file_test(eng_dir, /directory)) then begin
+      ucomp_mkdir, eng_dir, logger_name=run.logger_name
+    endif
+
+    basename = file_basename(file.l1_basename, '.fts')
+    camera_names = ['rcam', 'tcam']
+    geometry = [rcam, tcam]
+
+    for c = 0L, 1L do begin
+      bkg_basename = string(basename, camera_names[c], format='%s.%s.bkg.gif')
+      bkg_filename = filepath(bkg_basename, root=eng_dir)
+      ucomp_write_bkg_annotation, c eq 0 ? rcam_background : tcam_background, $
+                                  geometry[c], bkg_filename, run=run
+    endfor
+  endif
+
   after = 'WNDDIR'
 
   ucomp_addpar, primary_header, $
