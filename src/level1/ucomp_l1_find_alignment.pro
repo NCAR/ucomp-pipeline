@@ -154,7 +154,7 @@ pro ucomp_l1_find_alignment, file, $
       bkg_basename = string(basename, camera_names[c], format='%s.%s.bkg.gif')
       bkg_filename = filepath(bkg_basename, root=eng_dir)
       ucomp_write_bkg_annotation, c eq 0 ? rcam_background : tcam_background, $
-                                  geometry[c], bkg_filename, run=run
+                                  geometry[c], file.wave_region, bkg_filename, run=run
     endfor
   endif
 

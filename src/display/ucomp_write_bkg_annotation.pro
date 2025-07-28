@@ -1,12 +1,30 @@
 ; docformat = 'rst'
 
-pro ucomp_write_bkg_annotation, im, geometry, filename, run=run
+;+
+; Write the annotated background GIF for an L1 file. The centering is found
+; using an averaged, smoothed background image.
+;
+; :Params:
+;   bkg : in, required, type="fltarr(nx, ny)"
+;     averaged, smoothed background image used to find the center for the image
+;   geometry: in, required, type=object
+;     `ucomp_geometry` object
+;   wave_region : in, required, type=string
+;     wave region for the file
+;   output_filename : in, required, type=string
+;     full path for output file
+;
+; :Keywords:
+;   run : in, required, type=object
+;     `ucomp_run` object
+;-
+pro ucomp_write_bkg_annotation, bkg, geometry, wave_region, output_filename, run=run
   compile_opt strictarr
 
-  display_min   = 0.0
-  display_max   = 10.0
-  display_gamma = 0.7
-  display_power = 0.7
+  display_min   = run->line(wave_region, 'background_display_min')
+  display_max   = run->line(wave_region, 'background_display_max')
+  display_gamma = run->line(wave_region, 'background_display_gamma')
+  display_power = run->line(wave_region, 'background_display_power')
 
   nx = run->epoch('nx')
   ny = run->epoch('ny')
@@ -36,13 +54,13 @@ pro ucomp_write_bkg_annotation, im, geometry, filename, run=run
   tvlct, r, g, b, /get
 
   ; display continuum image used to determine center
-  scaled_im = bytscl(mg_signed_power(im, display_power), $
-                     min=mg_signed_power(display_min, display_power), $
-                     max=mg_signed_power(display_max, display_power), $
-                     top=n_colors - 1L, $
-                     /nan)
+  scaled_bkg = bytscl(mg_signed_power(bkg, display_power), $
+                      min=mg_signed_power(display_min, display_power), $
+                      max=mg_signed_power(display_max, display_power), $
+                      top=n_colors - 1L, $
+                      /nan)
 
-  tv, scaled_im
+  tv, scaled_bkg
 
   ; annotate with centering
   geometry->display, 0, $
@@ -50,8 +68,8 @@ pro ucomp_write_bkg_annotation, im, geometry, filename, run=run
                      guess_color=guess_color, $
                      inflection_color=inflection_color, $
                      /no_rotate
-  im = tvrd()
-  write_gif, filename, im, r, g, b
+  annotated_im = tvrd()
+  write_gif, output_filename, annotated_im, r, g, b
 
   done:
   gamma_ct, 1.0, /current   ; reset gamma to linear ramp
