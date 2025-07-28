@@ -1,7 +1,7 @@
 ; docformat = 'rst'
 
 ;+
-; Process a UCoMP science file.
+; Write the intensity GIF for an L1 science file.
 ;
 ; :Params:
 ;   file : in, required, type=object
