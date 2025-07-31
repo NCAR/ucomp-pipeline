@@ -8,6 +8,12 @@ import numpy as np
 from netCDF4 import Dataset
 
 
+"""Before running, you need a Chianti database and to export the XUVTOP
+environment to the location of the Chianti database. For example:
+
+    $ export XUVTOP=/hao/dawn/Data/chianti/chianti-11.0/
+"""
+
 def write_ncdf(filename: str, heights, densities, ratios, info: dict):
     """Write the NCDF density lookup table. `info` dict must have keys:
     chianti_version:str, electron_temperature:float, abundances_basename:str,
@@ -21,7 +27,7 @@ def write_ncdf(filename: str, heights, densities, ratios, info: dict):
     rootgrp.tsun = info["tsun"]
     abundances_basename = info["abundances_basename"]
     rootgrp.abundances_basename = abundances_basename if abundances_basename is not None else ""
-    rootgrp.n_levels = info["n_levels"]
+    rootgrp.n_levels = np.int32(info["n_levels"])
     rootgrp.invert = np.uint8(info["invert"])
     rootgrp.limbdark = np.uint8(info["limbdark"])
     rootgrp.protons = np.uint8(info["protons"])
@@ -59,8 +65,10 @@ def compute_ratios(
     chianti_dir, chianti_version = pycelp.chianti.getChiantiDir()
 
     if abundances_basename is not None:
+        if not abundances_basename.endswith(".abund"):
+            abundances_basename += ".abund"
         abundances_filename = os.path.join(chianti_dir,
-            "abundance", f"{abundances_basename}.abund")
+            "abundance", f"{abundances_basename}")
     else:
         abundances_filename = None
 
@@ -91,7 +99,7 @@ def compute_ratios(
         "chianti_version": chianti_version,
         "electron_temperature": electron_temperature,
         "tsun": tsun,
-        "abundances_basename" : None if abundances_basename is None else f"{abundances_basename}.abund",
+        "abundances_basename" : None if abundances_basename is None else f"{abundances_basename}",
         "n_levels": n_levels,
         "invert": invert,
         "limbdark": limbdark,
