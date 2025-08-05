@@ -159,13 +159,13 @@ if __name__ == "__main__":
         help="set to not include protons")
     parser.add_argument("--n-levels", default=None, type=int,
         help="number of levels (default: all)")
-    parser.add_argument("--n-heights", default=240, type=int,
-        help="number of heights (default: 240)")
+    parser.add_argument("--n-heights", default=239, type=int,
+        help="number of heights (default: 239)")
     parser.add_argument("--min-height", default=1.005, type=float,
         help="min height (default: 1.005)")
     parser.add_argument("--max-height", default=2.2, type=float,
         help="max height (default: 2.2)")
-    parser.add_argument("--n-densities", default=120, type=int,
+    parser.add_argument("--n-densities", default=301, type=int,
         help="number of densities (default: 120)")
     parser.add_argument("--min-density", default=6.0, type=float,
         help="log of min density (default: 6.0)")
@@ -211,6 +211,7 @@ if __name__ == "__main__":
     print(f"height range        : {min_height:0.3f} - {max_height:0.3f} R_sun")
     print(f"# of densities      : {n_densities}")
     print(f"density range       : 10**{min_density:0.2f} - 10**{max_density:0.2f}")
+    print(f"output basename     : {basename}")
 
     t0 = datetime.datetime.now()
 
