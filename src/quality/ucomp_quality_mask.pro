@@ -18,7 +18,6 @@
 ;   calibration : in, optional, type=boolean
 ;     set to use calibration quality checks instead of the science quality
 ;     checks
-;
 ;   run : in, required, type=object
 ;     UCoMP run object
 ;-
