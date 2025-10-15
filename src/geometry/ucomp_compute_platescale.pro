@@ -1,7 +1,7 @@
 ; docformat = 'rst'
 
 ;+
-; Compute the image scale for a given image.
+; Compute the image scale (plate scale) for a given image.
 ;
 ; :Returns:
 ;   plate scale as float
