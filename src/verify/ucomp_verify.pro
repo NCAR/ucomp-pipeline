@@ -287,14 +287,6 @@ pro ucomp_verify_check_logs, run=run, status=status, $
       return
     endif
 
-    collection_server = run->config('verification/collection_server')
-    collection_basedir = run->config('verification/collection_basedir')
-    if (n_elements(collection_server) eq 0L || n_elements(collection_basedir) eq 0L) then begin
-      mg_log, 'cannot check collection server', name=run.logger_name, /warn
-      status = 1L
-      return
-    endif
-
     missing_files = ucomp_verify_missing(raw_files, $
                                          machine_log_filename, $
                                          extra_files=extra_files)
@@ -308,17 +300,23 @@ pro ucomp_verify_check_logs, run=run, status=status, $
       endfor
     endif
 
-    n_on_server = ucomp_verify_check_missing(run.date, $
-                                             missing_files, $
-                                             collection_server, $
-                                             collection_basedir, $
-                                             run->config('verification/ssh_key'), $
-                                             logger_name=run.logger_name, $
-                                             error=error)
-    if (error ne 0L) then begin
-      status = 1L
-      return
-    endif
+    collection_server = run->config('verification/collection_server')
+    collection_basedir = run->config('verification/collection_basedir')
+    if (n_elements(collection_server) eq 0L || n_elements(collection_basedir) eq 0L) then begin
+      mg_log, 'cannot check collection server', name=run.logger_name, /warn
+    endif else begin
+      n_on_server = ucomp_verify_check_missing(run.date, $
+                                               missing_files, $
+                                               collection_server, $
+                                               collection_basedir, $
+                                               run->config('verification/ssh_key'), $
+                                               logger_name=run.logger_name, $
+                                               error=error)
+      if (error ne 0L) then begin
+        status = 1L
+        return
+      endif
+    endelse
 
     n_missing_files = n_elements(missing_files)
     if (n_missing_files gt 0L) then begin
@@ -327,17 +325,22 @@ pro ucomp_verify_check_logs, run=run, status=status, $
                 mg_plural(missing_files[f], 'missing file', 'missing files'), $
                 name=run.logger_name, /warn
       endfor
-      if (n_on_server eq 0L) then begin
-        mg_log, '%s not on collection server', $
-                mg_plural(n_missing_files, 'missing file', 'missing files'), $
-                name=run.logger_name, /warn
+      if (n_elements(n_on_server) gt 0L) then begin
+        if (n_on_server eq 0L) then begin
+          mg_log, '%s not on collection server', $
+                  mg_plural(n_missing_files, 'missing file', 'missing files'), $
+                  name=run.logger_name, /warn
+        endif else begin
+          mg_log, '%d of %s on collection server', $
+                  n_on_server, $
+                  mg_plural(n_missing_files, 'missing file', 'missing files'), $
+                  name=run.logger_name, /error
+          status = 1L
+          return
+        endelse
       endif else begin
-        mg_log, '%d of %s on collection server', $
-                n_on_server, $
-                mg_plural(n_missing_files, 'missing file', 'missing files'), $
-                name=run.logger_name, /error
-        status = 1L
-        return
+        mg_log, 'collection_server or collection_basedir not specified', $
+                name=run.logger_name, /warn
       endelse
     endif
   endif
@@ -412,14 +415,12 @@ pro ucomp_verify_check_collection_server, run=run, status=status
   collection_server = run->config('verification/collection_server')
   if (n_elements(collection_server) eq 0L) then begin
     mg_log, 'no collection server specified', name=run.logger_name, /warn
-    status = 1UL
     goto, done
   endif
 
   collection_basedir = run->config('verification/collection_basedir')
   if (n_elements(collection_basedir) eq 0L) then begin
     mg_log, 'no collection basedir specified', name=run.logger_name, /warn
-    status = 1UL
     goto, done
   endif
 

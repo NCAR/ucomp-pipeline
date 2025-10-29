@@ -24,8 +24,10 @@ PIPE_DIR=$(dirname ${BIN_DIR})
 source ${BIN_DIR}/ucomp_parse_args.sh
 source ${BIN_DIR}/ucomp_include.sh
 
+CONFIG_FILENAME=@CONFIG_DIR@/ucomp.${CONFIG}.cfg
+
 ${IDL} -quiet -IDL_QUIET 1 -IDL_STARTUP "" \
   -IDL_PATH ${UCOMP_PATH} -IDL_DLM_PATH ${UCOMP_DLM_PATH} \
-  -e "ucomp_verify_dates, '${DATE}', '${CONFIG}'"
+  -e "ucomp_verify_dates, '${DATE}', '${CONFIG_FILENAME}'"
 
 exit $?

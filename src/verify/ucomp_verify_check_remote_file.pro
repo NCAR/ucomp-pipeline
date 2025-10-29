@@ -36,12 +36,14 @@ function ucomp_verify_check_remote_file, basename, $
   compile_opt strictarr
 
   local_filename = filepath(basename, root=local_dir)
-  if (~file_test(local_filename, /regular)) then begin
+  if (file_test(local_filename, /regular)) then begin
+    local_found = 1B
+    local_filesize = mg_filesize(local_filename)
+  endif else begin
     mg_log, '%s not found locally', basename, name=logger_name, /warn
-    return, 1UL
-  endif
+    local_found = 0B
+  endelse
 
-  local_filesize = mg_filesize(local_filename)
   remote_filename = filepath(basename, root=remote_dir)
   ssh_options = ''
   if (n_elements(ssh_key) gt 0L) then ssh_options += string(ssh_key, format='(%"-i %s")')
@@ -82,14 +84,18 @@ function ucomp_verify_check_remote_file, basename, $
     return, 16UL
   endif
 
-  if (remote_filesize ne local_filesize) then begin
-    mg_log, 'non-matching file sizes (local: %s B, remote %s B)', $
-            mg_float2str(local_filesize, places_sep=','), $
-            mg_float2str(remote_filesize, places_sep=','), $
-            name=logger_name, /warn
-    return, 32UL
+  if (local_found) then begin
+    if (remote_filesize ne local_filesize) then begin
+      mg_log, 'non-matching file sizes (local: %s B, remote %s B)', $
+              mg_float2str(local_filesize, places_sep=','), $
+              mg_float2str(remote_filesize, places_sep=','), $
+              name=logger_name, /warn
+      return, 32UL
+    endif
   endif
 
-  mg_log, '%s matches on remote server', basename, name=logger_name, /info
+  mg_log, '%s %s on remote server', $
+          basename, local_found ? 'matches' : 'consistent', $
+          name=logger_name, /info
   return, 0UL
 end
