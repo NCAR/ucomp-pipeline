@@ -754,3 +754,6 @@
 - handle files where bad frames removal leave only a single extension
 
 #### 1.0.21
+
+- fix for RAWDARK{1,2} FITS keywords
+- fix for order of operations in dark-corrected flat creation
