@@ -321,8 +321,8 @@ pro ucomp_verify_check_logs, run=run, status=status, $
     n_missing_files = n_elements(missing_files)
     if (n_missing_files gt 0L) then begin
       for f = 0L, n_elements(missing_files) - 1L do begin
-        mg_log, '%s, but present in machine log', $
-                mg_plural(missing_files[f], 'missing file', 'missing files'), $
+        mg_log, '%s missing, but present in machine log', $
+                missing_files[f], $
                 name=run.logger_name, /warn
       endfor
       if (n_elements(n_on_server) gt 0L) then begin
@@ -366,7 +366,7 @@ pro ucomp_verify_check_logs, run=run, status=status, $
       n_matches eq 0: begin
           mg_log, 'missing %s', ml_files[f], name=run.logger_name, /warn
           n_bad += 1L
-          ;status = 1L
+          status = 1L
         end
       n_matches eq 1: begin
           info = file_info(raw_files[matching_index[0]])
