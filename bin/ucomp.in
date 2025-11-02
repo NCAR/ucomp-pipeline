@@ -1279,6 +1279,59 @@ def simulate(args):
         data_process.kill()
 
 
+def expand_date_range(r):
+    ends = r.split("-")
+    start_dt = datetime.datetime.strptime(ends[0], "%Y%m%d")
+    end_dt = datetime.datetime.strptime(ends[1], "%Y%m%d")
+
+    if end_dt < start_dt:
+        raise IndexError
+
+    dates = []
+
+    dt = start_dt
+    while dt < end_dt:
+        dates.append(dt.strftime("%Y%m%d"))
+        dt += datetime.timedelta(days=1)
+
+    return dates
+
+
+# locate sub-command
+def locate(args):
+    # get config file
+    config_filename = get_config_filename(args.flags)
+
+    if args.dates:
+        for e in args.dates:
+            for r in e.split(","):
+                if r.find("-") < 0:
+                    dates = [r]
+                else:
+                    try:
+                        dates = expand_date_range(r)
+                    except IndexError:
+                        args.parser.error(r"bad date range expression: {r}")
+
+                for d in dates:
+                    if args.raw:
+                        base_dir = get_raw_basedir(d, args.flags, args.parser.error)
+                    else:
+                        base_dir = get_processing_basedir(d, args.flags, args.parser.error)
+                    print(f"{base_dir}/{d}")
+    else:
+        try:
+            if args.raw:
+                base_dir = get_raw_basedir(d, args.flags, args.parser.error)
+            else:
+                base_dir = get_processing_basedir(d, args.flags, args.parser.error)
+            print(base_dir)
+        except configparser.NoOptionError:
+            routing_file = config.get("processing", "routing_file")
+            with open(routing_file, "r") as f:
+                print(f.read().strip())
+
+
 def print_help(args):
     args.parser.print_help()
 
@@ -1583,6 +1636,27 @@ if __name__ == "__main__":
     script_parser.add_argument("--verbose", action="store_true",
         help="set to show more information on launch")
     script_parser.set_defaults(func=run_script, parser=script_parser)
+
+    locate_parser = subparsers.add_parser(
+        "locate", aliases=["loc"], help="locate raw data for given date(s)"
+    )
+    locate_parser.add_argument(
+        "dates",
+        type=str,
+        nargs="*",
+        help="date to run on in the form YYYYMMDD",
+        metavar="date",
+    )
+    locate_parser.add_argument(
+        "-f", "--flags", type=str, help=flags_help, default="reprocess"
+    )
+    locate_parser.add_argument(
+        "-r", "--raw", action="store_true", help="set to show raw instead of processed location"
+    )
+    locate_parser.add_argument(
+        "-v", "--verbose", action="store_true", help="set to display verbose output"
+    )
+    locate_parser.set_defaults(func=locate, parser=locate_parser)
 
     # uncomment the following line and the shtab import at the top of this file
     # to generate a bash completion file
