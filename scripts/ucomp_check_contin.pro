@@ -24,6 +24,7 @@ pro ucomp_check_contin, date, config_filename
           mg_log, '%s: %s to %s at ext %d', $
                   basename, contin, new_contin, e, $
                   name=run.logger_name, /error
+          contin = new_contin
         endif
       endelse
     endfor
