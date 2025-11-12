@@ -188,3 +188,48 @@ pro ucomp_read_raw_data, filename, $
     call_procedure, repair_routine[r], primary_header, ext_data, ext_headers
   endfor
 end
+
+
+; main-level example program
+
+date = '20240409'
+
+config_basename = 'ucomp.badframes.cfg'
+config_filename = filepath(config_basename, $
+                           subdir=['..', '..', '..', 'ucomp-config'], $
+                           root=mg_src_root())
+run = ucomp_run(date, 'test', config_filename)
+
+l0_basedir = run->config('raw/basedir')
+l0_basename = '20240409.180009.92.ucomp.1079.l0.fts'
+l0_filename = filepath(l0_basename, subdir=date, root=l0_basedir)
+
+run.datetime = strmid(l0_basename, 0, 15)
+ucomp_read_raw_data, l0_filename, $
+                     primary_header=primary_header, $
+                     ext_data=data, $
+                     ext_headers=headers, $
+                     repair_routine=run->epoch('raw_data_repair_routine'), $
+                     badframes=run.badframes, $
+                     all_zero=all_zero, $
+                     logger=run.logger_name
+
+; bad frames for this file (l0_filename, camera, ext, polstate):
+; 20240409.180009.92.ucomp.1079.l0.fts,       0,      31,       1
+print, total(finite(data[*, *, 1, 0, 30]), /integer), format='# finite values: %d'
+
+averaged_basename = '20240409.180009.ucomp.1079.average_data.p5.fts'
+averaged_filename = filepath(averaged_basename, $
+                             subdir=[date, 'level1', '01-average_data'], $
+                             root=run->config('processing/basedir'))
+
+forward_function readfits
+averaged_im = readfits(averaged_filename, exten_no=1)
+; average should be from extensions 1, 11, 21, 31
+
+computed_average = mean(data[*, *, *, *, [0, 10, 20, 30]], dimension=5, /nan)
+print, array_equal(averaged_im, computed_average) ? 'average equal' : 'average different'
+
+obj_destroy, run
+
+end
