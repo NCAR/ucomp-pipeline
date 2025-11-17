@@ -603,7 +603,12 @@ pro ucomp_verify, date, config_filename, $
   mg_log, name=logger_name, logger=logger
   logger->getProperty, filename=log_filename
 
-  mg_log, 'checking %s', run.date, name=run.logger_name, /info
+  if (run->epoch('verify') || run->config('verification/verify_bad_days')) then begin
+    mg_log, 'checking %s', run.date, name=run.logger_name, /info
+  endif else begin
+    mg_log, 'skipping checking %s', run.date, name=run.logger_name, /info
+    goto, done
+  endelse
 
   ucomp_verify_check_files, run=run, status=check_files_status, $
                             n_files=n_raw_files
