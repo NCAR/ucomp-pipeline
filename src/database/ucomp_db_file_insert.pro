@@ -139,8 +139,8 @@ pro ucomp_db_file_insert, files, level, product_type, $
                  level_index, $
                  producttype_index, $
                  filetype_index, $
-                 file.obs_plan, $
-                 file.obs_id, $
+                 file.obs_plan_name, $
+                 file.obs_id_name, $
 
                  file.quality_bitmask, $
                  file.gbu, $

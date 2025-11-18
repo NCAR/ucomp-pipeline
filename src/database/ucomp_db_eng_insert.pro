@@ -178,9 +178,9 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
                  file.focus, $
                  ucomp_db_float(file.o1focus), $
 
-                 file.obs_id, $
+                 file.obs_id_name, $
                  file.obs_id_version, $
-                 file.obs_plan, $
+                 file.obs_plan_name, $
                  file.obs_plan_version, $
 
                  file.cover_in, $

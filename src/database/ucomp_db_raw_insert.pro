@@ -95,8 +95,8 @@ pro ucomp_db_raw_insert, l0_files, obsday_index, db, logger_name=logger_name
                  file.quality_bitmask, $
                  level_index, $
 
-                 file.obs_id, $
-                 file.obs_plan, $
+                 file.obs_id_name, $
+                 file.obs_plan_name, $
 
                  ucomp_db_float(file.t_rack, valid_range=[-20.0, 100.0]), $
                  ucomp_db_float(file.t_lcvr1, valid_range=[-20.0, 100.0]), $

@@ -210,9 +210,9 @@ pro ucomp_file::getProperty, run=run, $
                              wave_region=wave_region, $
                              center_wavelength=center_wavelength, $
                              data_type=data_type, $
-                             obs_id=obs_id, $
+                             obs_id_name=obs_id_name, $
                              obs_id_version=obs_id_version, $
-                             obs_plan=obs_plan, $
+                             obs_plan_name=obs_plan_name, $
                              obs_plan_version=obs_plan_version, $
                              program_name=program_name, $
                              exptime=exptime, $
@@ -399,9 +399,9 @@ pro ucomp_file::getProperty, run=run, $
     ephem2, julian_date, sol_ra, sol_dec, b0_steve, p_angle
   endif
 
-  if (arg_present(obs_id)) then obs_id = self.obs_id
+  if (arg_present(obs_id_name)) then obs_id_name = self.obs_id
   if (arg_present(obs_id_version)) then obs_id_version = self.obs_id_version
-  if (arg_present(obs_plan)) then obs_plan = self.obs_plan
+  if (arg_present(obs_plan_name)) then obs_plan_name = self.obs_plan
   if (arg_present(obs_plan_version)) then obs_plan_version = self.obs_plan_version
   if (arg_present(program_name)) then begin
     ; remove either .cbk or .ckb
