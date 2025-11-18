@@ -12,7 +12,9 @@ create table ucomp_eng (
   o1focus             float (8, 3),  -- O1 position in mm
 
   obs_plan            char (60),     -- name of current program
+  obs_plan_version    char(40),      -- plan hash value
   obs_id              char (60),     -- name of current measurement
+  obs_id_version      char(40),      -- measurement hash value
 
   -- TODO: how about gain?
 

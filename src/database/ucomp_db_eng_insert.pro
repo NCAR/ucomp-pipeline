@@ -45,7 +45,9 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
             {name: 'o1focus', type: '%s'}, $
 
             {name: 'obs_id', type: '''%s'''}, $
+            {name: 'obs_id_version', type: '''%s'''}, $
             {name: 'obs_plan', type: '''%s'''}, $
+            {name: 'obs_plan_version', type: '''%s'''}, $
 
             {name: 'cover', type: '%d'}, $
             {name: 'darkshutter', type: '%d'}, $
@@ -177,7 +179,9 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
                  ucomp_db_float(file.o1focus), $
 
                  file.obs_id, $
+                 file.obs_id_version, $
                  file.obs_plan, $
+                 file.obs_plan_version, $
 
                  file.cover_in, $
                  file.darkshutter_in, $

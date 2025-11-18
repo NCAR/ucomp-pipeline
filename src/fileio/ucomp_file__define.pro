@@ -211,7 +211,9 @@ pro ucomp_file::getProperty, run=run, $
                              center_wavelength=center_wavelength, $
                              data_type=data_type, $
                              obs_id=obs_id, $
+                             obs_id_version=obs_id_version, $
                              obs_plan=obs_plan, $
+                             obs_plan_version=obs_plan_version, $
                              program_name=program_name, $
                              exptime=exptime, $
                              gain_mode=gain_mode, $
@@ -398,7 +400,9 @@ pro ucomp_file::getProperty, run=run, $
   endif
 
   if (arg_present(obs_id)) then obs_id = self.obs_id
+  if (arg_present(obs_id_version)) then obs_id_version = self.obs_id_version
   if (arg_present(obs_plan)) then obs_plan = self.obs_plan
+  if (arg_present(obs_plan_version)) then obs_plan_version = self.obs_plan_version
   if (arg_present(program_name)) then begin
     ; remove either .cbk or .ckb
     program_name = file_basename(self.obs_plan, '.cbk')
@@ -685,7 +689,9 @@ pro ucomp_file::_inventory
   self.date_obs  = ucomp_getpar(primary_header, 'DATE-OBS', found=found)
 
   self.obs_id = ucomp_getpar(primary_header, 'OBS_ID', found=found)
+  self.obs_id_version = ucomp_getpar(primary_header, 'OBS_IDVE', found=found)
   self.obs_plan = ucomp_getpar(primary_header, 'OBS_PLAN', found=found)
+  self.obs_plan_version = ucomp_getpar(primary_header, 'OBS_PLVE', found=found)
 
   if (n_elements(extension_header) gt 0L) then begin
     self.cover_in = ucomp_getpar(extension_header, 'COVER', found=found) eq 'in'
@@ -932,7 +938,9 @@ pro ucomp_file__define
            wave_region                          : '', $
            data_type                            : '', $
            obs_id                               : '', $
+           obs_id_version                       : '', $
            obs_plan                             : '', $
+           obs_plan_version                     : '', $
            exptime                              : 0.0, $
            gain_mode                            : '', $
            numsum                               : 0L, $
