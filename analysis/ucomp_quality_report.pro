@@ -3,7 +3,7 @@
 pro ucomp_quality_report, db, run=run
   compile_opt strictarr
 
-  q = 'select * from ucomp_raw;'
+  q = 'select * from ucomp_raw order by date_obs;'
   raw_files = db->query(q, count=n_raw_files)
 
   cal_indices = where(raw_files.datatype ne 'sci', n_cal_files)
@@ -31,14 +31,21 @@ pro ucomp_quality_report, db, run=run
   sci_checkers = sci_conditions.checker
   sci_quality_bitmask = (raw_files[sci_indices]).quality_bitmask
   !null = where(sci_quality_bitmask ne 0, n_bad_sci_files)
+
   print, n_bad_sci_files, n_sci_files, 100.0 * n_bad_sci_files / n_sci_files, $
          format='Sci files failing quailty: %d/%d (%0.1d%%)'
   print, 'Mask', '# bad', 'Checking routine', format='%-4s %-6s %-35s'
   print, string(bytarr(4) + dash), string(bytarr(6) + dash), string(bytarr(35) + dash), $
          format='%-4s %-6s %-35s'
   for c = 0L, n_elements(sci_conditions) - 1L do begin
-    !null = where(sci_quality_bitmask and sci_masks[c], n_condition)
+    condition_indices = where(sci_quality_bitmask and sci_masks[c], n_condition)
     print, sci_masks[c], n_condition, sci_checkers[c], format='%4d %6d %-35s'
+    if (n_condition gt 0L) then begin
+      condition_filename = string(sci_masks[c], format='ucomp.sci.quality.%d.txt')
+      openw, lun, condition_filename, /get_lun
+      printf, lun, transpose((raw_files[sci_indices[condition_indices]]).file_name)
+      free_lun, lun
+    endif
   endfor
 
   n_sci_condition = n_elements(sci_conditions)
@@ -68,7 +75,7 @@ end
 
 ; main-level example
 
-start_date = '20210526'
+start_date = '20210715'
 end_date = '20221201'
 
 config_basename = 'ucomp.production.cfg'
