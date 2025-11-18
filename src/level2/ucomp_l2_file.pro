@@ -174,6 +174,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
           run->line(wave_region, 'gauss_fit') ? 'YES' : 'NO', $
           name=run.logger_name, /debug
   if (perform_gauss_fit) then begin
+    clock_id = run->start('gaussian_fit')
     ; TODO: make sure to geometric mask and intensity threshold mask before
     ; doing this
     all_intensities = reform(ext_data[*, *, 0, *])
@@ -181,6 +182,8 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
     case gaussian_fit_method of
       '3-term': n_terms = 3L
       '4-term': n_terms = 4L
+      ; TODO: need "both" option for doing both 3- and 4-term
+      'both': n_terms = 3L
       'analytic': message, 'invalid fit method: analytic'
       else: message, string(gaussian_fit_method, format='unknown fit method: %s')
     endcase
@@ -204,7 +207,8 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                      n_terms=n_terms, $
                      estimates_peak_intensity=peak_intensity, $
                      estimates_xpeak=xpeak, $
-                     estimates_line_width=line_width * sqrt(2.0), $
+                     estimates_line_width=line_width / sqrt(2.0), $
+                     ; TODO: use more restrictive velocity mask, also pass indices instead of mask
                      mask=geometry_mask and fit_mask, $
                      min_threshold=run->line(wave_region, 'noise_intensity_min'), $
                      max_threshold=run->line(wave_region, 'noise_intensity_max'), $
@@ -219,12 +223,40 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
     mg_log, '%d Gaussian fits (%d term) performed', n_fits, n_terms, $
       name=run.logger_name, /debug
 
+    if (gaussian_fit_method eq 'both') then begin
+      n_terms = 4L
+      ucomp_gauss_fit, all_intensities, $
+                       wavelengths, $
+                       center_wavelength, $
+                       n_terms=n_terms, $
+                       ; TODO: use 3-term fit to make better estimates
+                       estimates_peak_intensity=peak_intensity, $
+                       estimates_xpeak=xpeak, $
+                       estimates_line_width=line_width / sqrt(2.0), $
+                       ; TODO: use more restrictive velocity mask, also pass indices instead of mask
+                       mask=geometry_mask and fit_mask, $
+                       min_threshold=run->line(wave_region, 'noise_intensity_min'), $
+                       max_threshold=run->line(wave_region, 'noise_intensity_max'), $
+                       n_fits=n_fits2, $
+                       doppler_shift=fit_doppler_shift2, $
+                       line_width=fit_line_width2, $
+                       peak_intensity=fit_peak_intensity2, $
+                       coefficients=fit_coefficients2, $
+                       chisq=fit_chisq2, $
+                       sigma=fit_sigma2
+    endif
+
+    ; TODO: write l2fit FITS file with different fits, sigma, and chi-squared
+
     ; TODO: compare/mask fit_{doppler_shift,line_width,peak_intensity} to their
     ; analytic counterparts
 
     dopper_shift = fit_doppler_shift
     line_width = fit_line_width
     peak_intensity = fit_peak_intensity
+
+    time = run->stop(clock_id)
+    mg_log, 'gaussian fit: %0.1f secs', time, name=run.logger_name, /debug
   endif
 
   c = 299792.458D
