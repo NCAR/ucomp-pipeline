@@ -26,3 +26,6 @@
 /analysis/*.csv
 /analysis/*.txt
 /analysis/*.lst
+/analysis/*.nc
+/analysis/*.ps
+/analysis/*.sav
