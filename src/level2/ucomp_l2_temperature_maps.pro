@@ -52,6 +52,10 @@ pro ucomp_l2_temperature_maps, run=run
               name=run.logger_name, /debug
     endfor
 
+    ; if (~valid_map) then begin
+    ;   ; TODO: try to find individual level 1 files
+    ; endif
+
     if (~valid_map) then continue
 
     ucomp_write_composite_image, mean_filenames, run=run
