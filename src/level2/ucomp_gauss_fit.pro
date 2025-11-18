@@ -71,6 +71,7 @@ pro ucomp_gauss_fit, all_intensities, $
         valid_indices = where(pts gt min_threshold and pts lt max_threshold)
         n_fits += 1L
 
+        ; TODO: if doing both use 3-term results for 4-term estimates
         case _n_terms of
           3: estimates = [estimates_peak_intensity[x, y], $
                           estimates_xpeak[x, y], $
