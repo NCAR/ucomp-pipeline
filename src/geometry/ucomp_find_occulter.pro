@@ -3,9 +3,10 @@
 ;+
 ; Procedure to find the edge of the occulting disk.
 ;
-; A 3-element array is returned containing: the x-offset of the image, the
-; y-offset of the image, and the occulter radius. The value of chi^2 (`CHISQ`)
-; is optionally returned.
+; A 3-element array is returned containing: the x- and y-coordinates of the
+; center of the occulter  and the occulter radius. The value of chi^2 (`CHISQ`)
+; is optionally returned. The `ELLIPTICAL` keyword can change to retrieve an
+; elliptical fit.
 ;
 ; :Examples:
 ;   For example, call like::
@@ -86,7 +87,7 @@ function ucomp_find_occulter, data, $
 
   ; remove points under the occulter post
   if (keyword_set(remove_post)) then begin
-    post_width_angle = 8.0
+    post_width_angle = 14.0
     l0_post_angle = -90.0
     theta = atan(y - center_guess[1], x - center_guess[0]) * !radeg
     non_post_indices = where(theta lt (l0_post_angle - post_width_angle / 2.0) $
