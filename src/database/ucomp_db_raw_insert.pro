@@ -50,6 +50,9 @@ pro ucomp_db_raw_insert, l0_files, obsday_index, db, logger_name=logger_name
 
               {name: 'datatype', type: '''%s'''}, $
               {name: 'wave_region', type: '''%s'''}, $
+
+              {name: 'contin', type: '''%s'''}, $
+
               {name: 'quality_id', type: '%d'}, $
               {name: 'quality_bitmask', type: '%d'}, $
               {name: 'level_id', type: '%d'}, $
@@ -80,7 +83,20 @@ pro ucomp_db_raw_insert, l0_files, obsday_index, db, logger_name=logger_name
               {name: 'tu_c0arr', type: '%s'}, $
               {name: 'tu_c0pcb', type: '%s'}, $
               {name: 'tu_c1arr', type: '%s'}, $
-              {name: 'tu_c1pcb', type: '%s'}]
+              {name: 'tu_c1pcb', type: '%s'}, $
+
+              {name: 'sgsdimv', type: '%s'}, $
+              {name: 'sgsdims', type: '%s'}, $
+              {name: 'sgsscint', type: '%s'}, $
+              {name: 'sgssumv', type: '%s'}, $
+              {name: 'sgssums', type: '%s'}, $
+              {name: 'sgsloop', type: '%s'}, $
+              {name: 'sgsrav', type: '%s'}, $
+              {name: 'sgsras', type: '%s'}, $
+              {name: 'sgsrazr', type: '%s'}, $
+              {name: 'sgsdecv', type: '%s'}, $
+              {name: 'sgsdecs', type: '%s'}, $
+              {name: 'sgsdeczr', type: '%s'}]
     sql_cmd = string(strjoin(fields.name, ', '), $
                      strjoin(fields.type, ', '), $
                      format='(%"insert into ucomp_raw (%s) values (%s)")')
@@ -91,6 +107,8 @@ pro ucomp_db_raw_insert, l0_files, obsday_index, db, logger_name=logger_name
 
                  file.data_type, $
                  file.wave_region, $
+                 file.contin, $
+
                  file.quality_bitmask eq 0 ? ok_quality_index : bad_quality_index, $
                  file.quality_bitmask, $
                  level_index, $
@@ -122,6 +140,19 @@ pro ucomp_db_raw_insert, l0_files, obsday_index, db, logger_name=logger_name
                  ucomp_db_float(file.tu_c0pcb, valid_range=[-20.0, 100.0]), $
                  ucomp_db_float(file.tu_c1arr, valid_range=[-20.0, 100.0]), $
                  ucomp_db_float(file.tu_c1pcb, valid_range=[-20.0, 100.0]), $
+
+                 ucomp_db_float(mean(file.sgs_dimv, /nan)), $
+                 ucomp_db_float(mean(file.sgs_dims, /nan)), $
+                 ucomp_db_float(mean(file.sgs_scint, /nan)), $
+                 ucomp_db_float(mean(file.sgs_sumv, /nan)), $
+                 ucomp_db_float(mean(file.sgs_sums, /nan)), $
+                 ucomp_db_float(mean(file.sgs_loop, /nan)), $
+                 ucomp_db_float(mean(file.sgs_rav, /nan)), $
+                 ucomp_db_float(mean(file.sgs_ras, /nan)), $
+                 ucomp_db_float(mean(file.sgs_razr, /nan)), $
+                 ucomp_db_float(mean(file.sgs_decv, /nan)), $
+                 ucomp_db_float(mean(file.sgs_ras, /nan)), $
+                 ucomp_db_float(mean(file.sgs_deczr, /nan)), $
 
                  status=status
     if (status ne 0L) then goto, done

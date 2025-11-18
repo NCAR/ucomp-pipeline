@@ -221,6 +221,7 @@ pro ucomp_file::getProperty, run=run, $
                              focus=focus, $
                              o1focus=o1focus, $
                              nd=nd, $
+                             contin=contin, $
                              n_extensions=n_extensions, $
                              wavelengths=wavelengths, $
                              n_unique_wavelengths=n_unique_wavelengths, $
@@ -414,6 +415,8 @@ pro ucomp_file::getProperty, run=run, $
   if (arg_present(gain_mode)) then gain_mode = self.gain_mode
   if (arg_present(pol_list)) then pol_list = 'iquv'
   if (arg_present(nd)) then nd = self.nd
+
+  if (arg_present(contin)) then contin = self.contin
 
   if (arg_present(wave_region)) then wave_region = self.wave_region
   if (arg_present(center_wavelength)) then begin
@@ -785,8 +788,13 @@ pro ucomp_file::_inventory
     *self.sgs_deczr      = fltarr(self.n_extensions)
   endif
 
+  self.contin = ucomp_getpar(ext_headers[0], 'CONTIN')
   for e = 1L, self.n_extensions do begin
     extension_header = ext_headers[e - 1L]
+
+    if (self.contin ne ucomp_getpar(extension_header, 'CONTIN')) then begin
+      self.contin = 'multiple'
+    endif
 
     if (e eq 1) then self.date_begin = ucomp_getpar(extension_header, 'DATE-BEG')
     if (e eq self.n_extensions) then self.date_end = ucomp_getpar(extension_header, 'DATE-BEG')
@@ -962,6 +970,8 @@ pro ucomp_file__define
            dark_id                              : '', $
            rcamnuc                              : '', $
            tcamnuc                              : '', $
+
+           contin                               : '', $
 
            obsswid                              : '', $
 

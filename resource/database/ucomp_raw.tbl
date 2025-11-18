@@ -8,6 +8,8 @@ create table ucomp_raw (
   datatype         char(4),        -- data type of first extension
   wave_region      char(4),
 
+  contin           char (10),      -- blue/both/red/multiple
+
   quality_id       tinyint (2) not null,
   quality_bitmask  int,
   level_id         tinyint (2) not null,
@@ -39,6 +41,19 @@ create table ucomp_raw (
   tu_c0pcb         float(8, 3),
   tu_c1arr         float(8, 3),
   tu_c1pcb         float(8, 3),
+
+  sgsdimv          float,
+  sgsdims          float,
+  sgsscint         float,
+  sgssumv          float,
+  sgssums          float,
+  sgsloop          float,
+  sgsrav           float,
+  sgsras           float,
+  sgsrazr          float,
+  sgsdecv          float,
+  sgsdecs          float,
+  sgsdeczr         float,
 
   unique(file_name),
 
