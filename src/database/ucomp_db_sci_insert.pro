@@ -119,22 +119,43 @@ pro ucomp_db_sci_insert, files, wave_region, $
     u_profile = ucomp_radial_profile(u, sun_pixels, $
                                      standard_deviation=u_profile_stddev)
 
-    intensity108 = ucomp_annulus_gridmeans(intensity, 1.08, sun_pixels)
-    intensity13  = ucomp_annulus_gridmeans(intensity, 1.3, sun_pixels)
+    ; TODO: specify these values in the epochs file and the width probably
+    ; needs to be 0.01 instead
+    annulus_width = 0.02
+    annulus_nbins = 720L
+
+    intensity108 = ucomp_annulus_gridmeans(intensity, 1.08, sun_pixels, $
+                                           width=annulus_width, $
+                                           nbins=annulus_nbins)
+    intensity13  = ucomp_annulus_gridmeans(intensity, 1.3, sun_pixels, $
+                                           width=annulus_width, $
+                                           nbins=annulus_nbins)
 
     linearpol    = sqrt(q^2 + u^2)
-    linearpol108 = ucomp_annulus_gridmeans(linearpol, 1.08, sun_pixels)
-    linearpol13  = ucomp_annulus_gridmeans(linearpol, 1.3, sun_pixels)
+    linearpol108 = ucomp_annulus_gridmeans(linearpol, 1.08, sun_pixels, $
+                                           width=annulus_width, $
+                                           nbins=annulus_nbins)
+    linearpol13  = ucomp_annulus_gridmeans(linearpol, 1.3, sun_pixels, $
+                                           width=annulus_width, $
+                                           nbins=annulus_nbins)
 
     azimuth = ucomp_azimuth(q, u, radial_azimuth=radial_azimuth)
-    radial_azimuth108 = ucomp_annulus_gridmeans(radial_azimuth, 1.08, sun_pixels)
-    radial_azimuth13  = ucomp_annulus_gridmeans(radial_azimuth, 1.3, sun_pixels)
+    radial_azimuth108 = ucomp_annulus_gridmeans(radial_azimuth, 1.08, sun_pixels, $
+                                                width=annulus_width, $
+                                                nbins=annulus_nbins)
+    radial_azimuth13  = ucomp_annulus_gridmeans(radial_azimuth, 1.3, sun_pixels, $
+                                                width=annulus_width, $
+                                                nbins=annulus_nbins)
 
     !null = ucomp_doppler(file, ext_data, velocity=velocity, run=run)
     velocity_type = n_elements(velocity) eq 0L ? '%s' : '''%s'''
     if (n_elements(velocity) ne 0L) then begin
-      velocity108 = ucomp_annulus_gridmeans(velocity, 1.08, sun_pixels)
-      velocity13  = ucomp_annulus_gridmeans(velocity, 1.3, sun_pixels)
+      velocity108 = ucomp_annulus_gridmeans(velocity, 1.08, sun_pixels, $
+                                            width=annulus_width, $
+                                            nbins=annulus_nbins)
+      velocity13  = ucomp_annulus_gridmeans(velocity, 1.3, sun_pixels, $
+                                            width=annulus_width, $
+                                            nbins=annulus_nbins)
     endif
 
     float_fmt = '%0.3f'
