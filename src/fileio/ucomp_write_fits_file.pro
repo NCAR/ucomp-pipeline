@@ -65,12 +65,12 @@ pro ucomp_write_fits_file, filename, $
     for e = 1L, n_extensions do begin
       ; define extension name
       wavelength = ucomp_getpar(ext_headers[e - 1], 'WAVELNG')
-      extname = string(wavelength, format='(%"Background I [%0.3f nm]")')
+      extname = string(wavelength, format='(%"Background IQUV [%0.3f nm]")')
 
       case n_background_dims of
-        2: data = backgrounds
-        3: data = backgrounds[*, *, e - 1]
+        3: data = backgrounds
         4: data = backgrounds[*, *, *, e - 1]
+        5: data = backgrounds[*, *, *, *, e - 1]
         else: begin
            dims = strjoin(strtrim(size(backgrounds, /dimensions), 2), ', ')
            message, string(dims, format='(%"invalid number of background dimensions to write: [%s]")')

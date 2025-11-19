@@ -15,7 +15,7 @@
 ;     extension data, cuts `n_exts` in half
 ;   ext_headers : in, required, type=list
 ;     extension headers as list of `strarr`
-;   backgrounds : out, type="fltarr(nx, ny, n_cameras, n_exts)"
+;   backgrounds : out, type="fltarr(nx, ny, n_pol_states, n_cameras, n_exts)"
 ;     backgrounds created in this step
 ;   background_headers : in, required, type=list
 ;     extension headers for background images as list of `strarr`
@@ -83,7 +83,7 @@ pro ucomp_l1_continuum_subtraction, file, $
   type = size(ext_data, /type)
 
   combined_dims = [dims[0:3], dims[4] / 2L]
-  background_dims = [dims[0:1], dims[3], dims[4] / 2L]   ; only I
+  background_dims = [dims[0:3], dims[4] / 2L]   ; only I
   combined_ext_data = make_array(dimension=combined_dims, type=type)
   backgrounds       = make_array(dimension=background_dims, type=type)
   ext_headers_array = ext_headers->toArray(/transpose)
@@ -138,8 +138,8 @@ pro ucomp_l1_continuum_subtraction, file, $
     cam1 = c1[0] * ext_data[*, *, *, 1, m] + c1[1] * ext_data[*, *, *, 1, match_indices[m]]
     combined_ext_data[*, *, *, 0, i] = cam0
     combined_ext_data[*, *, *, 1, i] = cam1
-    backgrounds[*, *, 0, i] = ext_data[*, *, 0, 0, b[0]]
-    backgrounds[*, *, 1, i] = ext_data[*, *, 0, 1, b[1]]
+    backgrounds[*, *, *, 0, i] = ext_data[*, *, *, 0, b[0]]
+    backgrounds[*, *, *, 1, i] = ext_data[*, *, *, 1, b[1]]
     keep_wavelengths[i] = wavelength[match_indices[m]]
 
     i += 1L

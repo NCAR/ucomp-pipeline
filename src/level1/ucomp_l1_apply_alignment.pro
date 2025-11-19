@@ -13,7 +13,7 @@
 ;     extension data
 ;   headers : in, required, type=list
 ;     extension headers as list of `strarr`
-;   backgrounds : out, type="fltarr(nx, ny, n_cameras, n_exts)"
+;   backgrounds : out, type="fltarr(nx, ny, n_pol_states, n_cameras, n_exts)"
 ;     background images
 ;   background_headers : in, required, type=list
 ;     extension headers for background images as list of `strarr`
@@ -49,9 +49,9 @@ pro ucomp_l1_apply_alignment, file, $
     for p = 0, n_pol_states - 1L do begin
       data[*, *, p, 0, e] = ucomp_center_image(data[*, *, p, 0, e], rcam_geometry)
       data[*, *, p, 1, e] = ucomp_center_image(data[*, *, p, 1, e], tcam_geometry)
+      backgrounds[*, *, p, 0, e] = ucomp_center_image(backgrounds[*, *, p, 0, e], rcam_geometry)
+      backgrounds[*, *, p, 1, e] = ucomp_center_image(backgrounds[*, *, p, 1, e], tcam_geometry)
     endfor
-    backgrounds[*, *, 0, e] = ucomp_center_image(backgrounds[*, *, 0, e], rcam_geometry)
-    backgrounds[*, *, 1, e] = ucomp_center_image(backgrounds[*, *, 1, e], tcam_geometry)
   endfor
 
   file.rotated = 1B

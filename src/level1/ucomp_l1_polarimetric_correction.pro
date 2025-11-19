@@ -12,7 +12,7 @@
 ;     extension data
 ;   headers : in, required, type=list
 ;     extension headers as list of `strarr`
-;   backgrounds : out, type="fltarr(nx, ny, n_exts)"
+;   backgrounds : out, type="fltarr(nx, ny, n_pol_states, n_exts)"
 ;     background images
 ;   background_headers : in, required, type=list
 ;     extension headers for background images as list of `strarr`

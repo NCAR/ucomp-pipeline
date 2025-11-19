@@ -15,7 +15,7 @@
 ;     extension data, removes `n_cameras` dimension on output
 ;   ext_headers : in, required, type=list
 ;     extension headers as list of `strarr`
-;   backgrounds : out, type="fltarr(nx, ny, n_cameras, n_exts)"
+;   backgrounds : out, type="fltarr(nx, ny, n_pol_states, n_cameras, n_exts)"
 ;     background images, removes `n_cameras` dimension on output
 ;   background_headers : in, required, type=list
 ;     extension headers for background images as list of `strarr`
@@ -97,15 +97,15 @@ pro ucomp_l1_combine_cameras, file, $
   case cameras of
     'rcam': begin
         ext_data = reform(ext_data[*, *, *, 0, *])
-        backgrounds = reform(backgrounds[*, *, 0, *])
+        backgrounds = reform(backgrounds[*, *, *, 0, *])
       end
     'tcam': begin
         ext_data = reform(ext_data[*, *, *, 1, *])
-        backgrounds = reform(backgrounds[*, *, 1, *])
+        backgrounds = reform(backgrounds[*, *, *, 1, *])
       end
     'both': begin
         ext_data = mean(ext_data, dimension=4, /nan)
-        backgrounds = mean(backgrounds, dimension=3, /nan)
+        backgrounds = mean(backgrounds, dimension=4, /nan)
       end
     else: message, string(cameras, format='(%"invalid combinecameras/use value: ''%s''")')
   endcase
