@@ -153,6 +153,7 @@ pro ucomp_geometry::setProperty, xsize=xsize, $
                                  occulter_chisq=occulter_chisq, $
                                  occulter_error=occulter_error, $
                                  post_angle=post_angle, $
+                                 found_post_angle=found_post_angle, $
                                  eccentricity=eccentricity, $
                                  ellipse_angle=ellipse_angle, $
                                  p_angle=p_angle
@@ -169,6 +170,7 @@ pro ucomp_geometry::setProperty, xsize=xsize, $
   if (n_elements(occulter_chisq) gt 0L) then self.occulter_chisq = occulter_chisq
   if (n_elements(occulter_error) gt 0L) then self.occulter_error = occulter_error
   if (n_elements(post_angle) gt 0L) then self.post_angle = post_angle
+  if (n_elements(found_post_angle) gt 0L) then self.found_post_angle = found_post_angle
   if (n_elements(eccentricity) gt 0L) then self.eccentricity = eccentricity
   if (n_elements(ellipse_angle) gt 0L) then self.ellipse_angle = ellipse_angle
   if (n_elements(p_angle) gt 0L) then self.p_angle = p_angle
@@ -189,6 +191,7 @@ pro ucomp_geometry::getProperty, xsize=xsize, $
                                  occulter_chisq=occulter_chisq, $
                                  occulter_error=occulter_error, $
                                  post_angle=post_angle, $
+                                 found_post_angle=found_post_angle, $
                                  eccentricity=eccentricity, $
                                  ellipse_angle=ellipse_angle, $
                                  p_angle=p_angle
@@ -205,6 +208,7 @@ pro ucomp_geometry::getProperty, xsize=xsize, $
   if (arg_present(occulter_chisq)) then occulter_chisq = self.occulter_chisq
   if (arg_present(occulter_error)) then occulter_error = self.occulter_error
   if (arg_present(post_angle)) then post_angle = self.post_angle
+  if (arg_present(found_post_angle)) then found_post_angle = self.found_post_angle
   if (arg_present(eccentricity)) then eccentricity = self.eccentricity
   if (arg_present(ellipse_angle)) then ellipse_angle = self.ellipse_angle
   if (arg_present(p_angle)) then p_angle = self.p_angle
@@ -244,6 +248,7 @@ function ucomp_geometry::init, _extra=e
   self.occulter_radius = !values.f_nan
 
   self.post_angle = !values.f_nan
+  self.found_post_angle = !values.f_nan
   self.eccentricity = !values.f_nan
   self.ellipse_angle = !values.f_nan
 
@@ -264,21 +269,22 @@ pro ucomp_geometry__define
   compile_opt strictarr
 
    !null = {ucomp_geometry, inherits IDL_Object, $
-            xsize             : 0L, $
-            ysize             : 0L, $
-            center_guess      : fltarr(2), $
-            radius_guess      : 0.0, $
-            dradius           : 0.0, $
-            inflection_points : ptr_new(), $
-            occulter_center   : fltarr(2), $
-            occulter_radius   : 0.0, $
-            occulter_chisq    : 0.0, $
-            occulter_error    : 0L, $
-            post_angle        : 0.0, $
-            eccentricity      : 0.0, $
-            ellipse_angle     : 0.0, $
-            p_angle           : 0.0, $
-            occulter_color    : 0UL, $
-            guess_color       : 0UL, $
-            inflection_color  : 0UL}
+            xsize               : 0L, $
+            ysize               : 0L, $
+            center_guess        : fltarr(2), $
+            radius_guess        : 0.0, $
+            dradius             : 0.0, $
+            inflection_points   : ptr_new(), $
+            occulter_center     : fltarr(2), $
+            occulter_radius     : 0.0, $
+            occulter_chisq      : 0.0, $
+            occulter_error      : 0L, $
+            post_angle          : 0.0, $
+            found_post_angle    : 0.0, $
+            eccentricity        : 0.0, $
+            ellipse_angle       : 0.0, $
+            p_angle             : 0.0, $
+            occulter_color      : 0UL, $
+            guess_color         : 0UL, $
+            inflection_color    : 0UL}
 end

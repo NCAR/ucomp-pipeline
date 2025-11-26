@@ -1,89 +1,91 @@
 -- one per L1 file, only center line
 
 create table ucomp_eng (
-  eng_id              int (10) auto_increment primary key,
-  file_name           char (40) not null,
-  date_obs            datetime not null,
-  obsday_id           mediumint (5) not null,
-  obsday_hours        float(8, 4),   -- hours into the observing day
-  level_id            tinyint (2) not null,
+  eng_id                       int (10) auto_increment primary key,
+  file_name                    char (40) not null,
+  date_obs                     datetime not null,
+  obsday_id                    mediumint (5) not null,
+  obsday_hours                 float(8, 4),   -- hours into the observing day
+  level_id                     tinyint (2) not null,
 
-  focus               float (6, 2),  -- focus stage position
-  o1focus             float (8, 3),  -- O1 position in mm
+  focus                        float (6, 2),  -- focus stage position
+  o1focus                      float (8, 3),  -- O1 position in mm
 
-  obs_plan            char (60),     -- name of current program
-  obs_plan_version    char(40),      -- plan hash value
-  obs_id              char (60),     -- name of current measurement
-  obs_id_version      char(40),      -- measurement hash value
+  obs_plan                     char (60),     -- name of current program
+  obs_plan_version             char(40),      -- plan hash value
+  obs_id                       char (60),     -- name of current measurement
+  obs_id_version               char(40),      -- measurement hash value
 
   -- TODO: how about gain?
 
-  cover               tinyint (1),
-  darkshutter         tinyint (1),
-  opal                tinyint (1),
-  polangle            float (8, 3),
-  retangle            tinyint (1),
-  caloptic            tinyint (1),
+  cover                        tinyint (1),
+  darkshutter                  tinyint (1),
+  opal                         tinyint (1),
+  polangle                     float (8, 3),
+  retangle                     tinyint (1),
+  caloptic                     tinyint (1),
 
   -- distortion corrected centers/radii for occulter
-  rcam_xcenter        float(8, 4),   -- center x for RCAM image
-  rcam_ycenter        float(8, 4),   -- center y for RCAM image
-  rcam_radius         float(8, 4),   -- radius for RCAM image
-  rcam_occulter_chisq float(10, 3),  -- chi squared for RCAM occulter fit
-  tcam_xcenter        float(8, 4),   -- center x for TCAM image
-  tcam_ycenter        float(8, 4),   -- center y for TCAM image
-  tcam_radius         float(8, 4),   -- radius for TCAM image
-  tcam_occulter_chisq float(10, 3),  -- chi squared for TCAM occulter fit
+  rcam_xcenter                 float(8, 4),   -- center x for RCAM image
+  rcam_ycenter                 float(8, 4),   -- center y for RCAM image
+  rcam_radius                  float(8, 4),   -- radius for RCAM image
+  rcam_occulter_chisq          float(10, 3),  -- chi squared for RCAM occulter fit
+  tcam_xcenter                 float(8, 4),   -- center x for TCAM image
+  tcam_ycenter                 float(8, 4),   -- center y for TCAM image
+  tcam_radius                  float(8, 4),   -- radius for TCAM image
+  tcam_occulter_chisq          float(10, 3),  -- chi squared for TCAM occulter fit
 
-  rcam_post_angle     float(7, 3),
-  tcam_post_angle     float(7, 3),
+  rcam_post_angle              float(7, 3),
+  tcam_post_angle              float(7, 3),
+  rcam_found_post_angle        float(7, 3),
+  tcam_found_post_angle        float(7, 3),
 
-  rcam_eccentricity   float(7, 3),
-  tcam_eccentricity   float(7, 3),
-  rcam_ellipse_angle  float(7, 3),   -- radians
-  tcam_ellipse_angle  float(7, 3),   -- radians
+  rcam_eccentricity            float(7, 3),
+  tcam_eccentricity            float(7, 3),
+  rcam_ellipse_angle           float(7, 3),   -- radians
+  tcam_ellipse_angle           float(7, 3),   -- radians
 
-  image_scale         float(7, 3),   -- plate scale computed for this file
+  image_scale                  float(7, 3),   -- plate scale computed for this file
 
-  wave_region         char (4),
-  ntunes              tinyint (2),
-  pol_list            char (4),
+  wave_region                  char (4),
+  ntunes                       tinyint (2),
+  pol_list                     char (4),
 
-  nextensions         smallint,
+  nextensions                  smallint,
 
   -- extract the rest from from first extension
 
-  exposure            float (5, 1),  -- millisec
-  nd                  tinyint (2),
-  background          float (7, 3),  -- median of masked line center background for i
+  exposure                     float (5, 1),  -- millisec
+  nd                           tinyint (2),
+  background                   float (7, 3),  -- median of masked line center background for i
 
-  t_base              float (9, 6),  -- filter wheel temp
-  t_lcvr1             float (9, 6),  -- Lyot LCVR1 temp
-  t_lcvr2             float (9, 6),  -- Lyot LCVR2 temp
-  t_lcvr3             float (9, 6),  -- Lyot LCVR2 temp
-  t_lnb1              float (9, 6),  -- LiNb1 temp
-  t_mod               float (9, 6),  -- modulator temp
-  t_lnb2              float (9, 6),  -- LiNb2 temp
-  t_lcvr4             float (9, 6),  -- Lyot LCVR4 temp
-  t_lcvr5             float (9, 6),  -- Lyot LCVR5 temp
-  t_rack              float (9, 6),  -- computer Rack temp
-  tu_base             float (9, 6),  -- filter wheel temp unfiltered
-  tu_lcvr1            float (9, 6),  -- Lyot LCVR1 temp unfiltered
-  tu_lcvr2            float (9, 6),  -- Lyot LCVR2 temp unfiltered
-  tu_lcvr3            float (9, 6),  -- Lyot LCVR2 temp unfiltered
-  tu_lnb1             float (9, 6),  -- LiNb1 temp unfiltered
-  tu_mod              float (9, 6),  -- modulator temp unfiltered
-  tu_lnb2             float (9, 6),  -- LiNb2 temp unfiltered
-  tu_lcvr4            float (9, 6),  -- Lyot LCVR4 temp unfiltered
-  tu_lcvr5            float (9, 6),  -- Lyot LCVR5 temp unfiltered
-  tu_rack             float (9, 6),  -- computer Rack temp unfiltered
-  tu_c0arr            float (9, 6),  -- camera 0 Sensor array temp
-  tu_c0pcb            float (9, 6),  -- camera 0 PCB board temp
-  tu_c1arr            float (9, 6),  -- camera 1 Sensor array temp
-  tu_c1pcb            float (9, 6),  -- camera 1 PCB board temp
+  t_base                       float (9, 6),  -- filter wheel temp
+  t_lcvr1                      float (9, 6),  -- Lyot LCVR1 temp
+  t_lcvr2                      float (9, 6),  -- Lyot LCVR2 temp
+  t_lcvr3                      float (9, 6),  -- Lyot LCVR2 temp
+  t_lnb1                       float (9, 6),  -- LiNb1 temp
+  t_mod                        float (9, 6),  -- modulator temp
+  t_lnb2                       float (9, 6),  -- LiNb2 temp
+  t_lcvr4                      float (9, 6),  -- Lyot LCVR4 temp
+  t_lcvr5                      float (9, 6),  -- Lyot LCVR5 temp
+  t_rack                       float (9, 6),  -- computer Rack temp
+  tu_base                      float (9, 6),  -- filter wheel temp unfiltered
+  tu_lcvr1                     float (9, 6),  -- Lyot LCVR1 temp unfiltered
+  tu_lcvr2                     float (9, 6),  -- Lyot LCVR2 temp unfiltered
+  tu_lcvr3                     float (9, 6),  -- Lyot LCVR2 temp unfiltered
+  tu_lnb1                      float (9, 6),  -- LiNb1 temp unfiltered
+  tu_mod                       float (9, 6),  -- modulator temp unfiltered
+  tu_lnb2                      float (9, 6),  -- LiNb2 temp unfiltered
+  tu_lcvr4                     float (9, 6),  -- Lyot LCVR4 temp unfiltered
+  tu_lcvr5                     float (9, 6),  -- Lyot LCVR5 temp unfiltered
+  tu_rack                      float (9, 6),  -- computer Rack temp unfiltered
+  tu_c0arr                     float (9, 6),  -- camera 0 Sensor array temp
+  tu_c0pcb                     float (9, 6),  -- camera 0 PCB board temp
+  tu_c1arr                     float (9, 6),  -- camera 1 Sensor array temp
+  tu_c1pcb                     float (9, 6),  -- camera 1 PCB board temp
 
-  occltrid            char (10),     -- occulter ID
-  o1id                char (10),     -- O1 ID
+  occltrid                     char (10),     -- occulter ID
+  o1id                         char (10),     -- O1 ID
 
   -- dark corrected flat median for onband and continuum
   flat_rcam_median_linecenter  float (14, 7),
@@ -91,15 +93,15 @@ create table ucomp_eng (
   flat_tcam_median_linecenter  float (14, 7),
   flat_tcam_median_continuum   float (14, 7),
 
-  dmodswid            char(24),
-  distort             char(50),
+  dmodswid                     char(24),
+  distort                      char(50),
 
-  obsswid             varchar(30),
+  obsswid                      varchar(30),
 
-  sky_pol_factor      float(6, 3),
-  sky_bias            float(7, 4),
+  sky_pol_factor               float(6, 3),
+  sky_bias                     float(7, 4),
 
-  ucomp_sw_id         int (10),
+  ucomp_sw_id                  int (10),
 
   unique (file_name),
 

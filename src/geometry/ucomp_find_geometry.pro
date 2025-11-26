@@ -75,22 +75,22 @@ function ucomp_find_geometry, data, $
                                  /remove_post)
   error or= occulter_error
 
-  post_angle = ucomp_find_post(data, $
-                               occulter[0:1], $
-                               occulter[2], $
-                               angle_guess=post_angle_guess, $
-                               angle_width=post_angle_width, $
-                               angle_search_tolerance=post_angle_search_tolerance, $
-                               error=post_error, $
-                               err_msg=post_err_msg, $
-                               fit_coefficients=fit_coefficients, $
-                               fit_estimates=fit_estimates)
+  found_post_angle = ucomp_find_post(data, $
+                                     occulter[0:1], $
+                                     occulter[2], $
+                                     angle_guess=post_angle_guess, $
+                                     angle_width=post_angle_width, $
+                                     angle_search_tolerance=post_angle_search_tolerance, $
+                                     error=post_error, $
+                                     err_msg=post_err_msg, $
+                                     fit_coefficients=fit_coefficients, $
+                                     fit_estimates=fit_estimates)
   error or= 2L * post_error
 
-  if (abs(post_angle - post_angle_guess) gt post_angle_tolerance) then begin
+  if (abs(found_post_angle - post_angle_guess) gt post_angle_tolerance) then begin
     mg_log, 'bad post angle found: %0.1f', post_angle, name=logger_name, /error
     post_angle = post_angle_guess
-  endif
+  endif else post_angle = found_post_angle
 
   geometry = ucomp_geometry(xsize=xsize, $
                             ysize=ysize, $
@@ -102,7 +102,8 @@ function ucomp_find_geometry, data, $
                             occulter_radius=occulter[2], $
                             occulter_chisq=occulter_chisq, $
                             occulter_error=occulter_error, $
-                            post_angle=post_angle)
+                            post_angle=post_angle, $
+                            found_post_angle=found_post_angle)
 
   return, geometry
 end

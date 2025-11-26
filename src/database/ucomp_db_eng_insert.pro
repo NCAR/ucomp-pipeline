@@ -67,6 +67,8 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
 
             {name: 'rcam_post_angle', type: '%s'}, $
             {name: 'tcam_post_angle', type: '%s'}, $
+            {name: 'rcam_found_post_angle', type: '%s'}, $
+            {name: 'tcam_found_post_angle', type: '%s'}, $
             {name: 'rcam_eccentricity', type: '%s'}, $
             {name: 'tcam_eccentricity', type: '%s'}, $
             {name: 'rcam_ellipse_angle', type: '%s'}, $
@@ -149,6 +151,8 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
       rcam_occulter_chisq = file.rcam_geometry.occulter_chisq
       rcam_post_angle = file.rcam_geometry.post_angle
       tcam_post_angle = file.tcam_geometry.post_angle
+      rcam_found_post_angle = file.rcam_geometry.found_post_angle
+      tcam_found_post_angle = file.tcam_geometry.found_post_angle
       rcam_eccentricity = file.rcam_geometry.eccentricity
       tcam_eccentricity = file.tcam_geometry.eccentricity
       rcam_ellipse_angle = file.rcam_geometry.ellipse_angle
@@ -162,6 +166,8 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
       tcam_occulter_chisq = !values.f_nan
       rcam_post_angle = !values.f_nan
       tcam_post_angle = !values.f_nan
+      rcam_found_post_angle = !values.f_nan
+      tcam_found_post_angle = !values.f_nan
       rcam_eccentricity = !values.f_nan
       tcam_eccentricity = !values.f_nan
       rcam_ellipse_angle = !values.f_nan
@@ -201,6 +207,8 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
 
                  ucomp_db_float(rcam_post_angle, valid_range=[-360.0, 360.0]), $
                  ucomp_db_float(tcam_post_angle, valid_range=[-360.0, 360.0]), $
+                 ucomp_db_float(rcam_found_post_angle, valid_range=[-360.0, 360.0]), $
+                 ucomp_db_float(tcam_found_post_angle, valid_range=[-360.0, 360.0]), $
                  ucomp_db_float(rcam_eccentricity, valid_range=[0.0, 1.0]), $
                  ucomp_db_float(tcam_eccentricity, valid_range=[0.0, 1.0]), $
                  ucomp_db_float(rcam_ellipse_angle), $
