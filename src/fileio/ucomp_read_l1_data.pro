@@ -17,7 +17,7 @@
 ;     set to a named variable to retrieve the extension data
 ;   ext_headers : out, optional, type="list of strarr(n_ext_keywords)"
 ;     set to a named variable to retrieve the extension headers
-;   background_data : out, optional, type="fltarr(nx, ny, n_exts)"
+;   background_data : out, optional, type="fltarr(nx, ny, n_polstates, n_exts)"
 ;     set to a named variable to retrieve the background data
 ;   background_headers : out, optional, type="list of strarr(n_ext_keywords)"
 ;     set to a named variable to retrieve the background headers
@@ -81,10 +81,11 @@ pro ucomp_read_l1_data, filename, $
         type = 4   ; always convert to float
         dims = size(data, /dimensions)
 
-        background_data = make_array(dimension=[dims, n_wavelengths], type=type)
+        background_data = make_array(dimension=[dims, n_wavelengths], $
+                                     type=type)
       endif
 
-      if (arg_present(background_data)) then background_data[0, 0, e - 1 - n_wavelengths] = data
+      if (arg_present(background_data)) then background_data[0, 0, 0, e - 1 - n_wavelengths] = data
       if (arg_present(background_headers)) then background_headers->add, header
     endfor
   endif
