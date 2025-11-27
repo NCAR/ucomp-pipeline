@@ -137,7 +137,7 @@ pro ucomp_average_l1_files, l1_filenames, $
   dims = size(ext_data, /dimensions)
   mean_averaged_data = make_array(dimension=[dims[0:2], n_unique_wavelengths], $
                                   type=size(ext_data, /type)) + !values.f_nan
-  mean_averaged_background = make_array(dimension=[dims[0:1], n_unique_wavelengths], $
+  mean_averaged_background = make_array(dimension=[dims[0:2], n_unique_wavelengths], $
                                         type=size(ext_data, /type)) + !values.f_nan
 
   median_averaged_data = mean_averaged_data
@@ -166,11 +166,11 @@ pro ucomp_average_l1_files, l1_filenames, $
                                         type=size(ext_data, /type)) + !values.f_nan
     sum2_wavelength_data = make_array(dimension=[dims[0:2], n_ok_files], $
                                       type=size(ext_data, /type)) + !values.f_nan
-    mean_background_data = make_array(dimension=[dims[0:1], n_ok_files], $
+    mean_background_data = make_array(dimension=[dims[0:2], n_ok_files], $
                                       type=size(ext_data, /type)) + !values.f_nan
-    median_background_data = make_array(dimension=[dims[0:1], n_ok_files], $
+    median_background_data = make_array(dimension=[dims[0:2], n_ok_files], $
                                         type=size(ext_data, /type)) + !values.f_nan
-    sum2_background_data = make_array(dimension=[dims[0:1], n_ok_files], $
+    sum2_background_data = make_array(dimension=[dims[0:2], n_ok_files], $
                                       type=size(ext_data, /type)) + !values.f_nan
     for f = 0L, n_ok_files - 1L do begin
       ucomp_read_l1_data, ok_files[f], $
@@ -194,9 +194,9 @@ pro ucomp_average_l1_files, l1_filenames, $
             mean_wavelength_data[*, *, *, f] = ext_data[*, *, *, matching_indices[0]]
             median_wavelength_data[*, *, *, f] = ext_data[*, *, *, matching_indices[0]]
             sum2_wavelength_data[*, *, *, f] = (ext_data[*, *, *, matching_indices[0]])^2
-            mean_background_data[*, *, f] = ext_background_data[*, *, matching_indices[0]]
-            median_background_data[*, *, f] = ext_background_data[*, *, matching_indices[0]]
-            sum2_background_data[*, *, f] = (ext_background_data[*, *, matching_indices[0]])^2
+            mean_background_data[*, *, *, f] = ext_background_data[*, *, *, matching_indices[0]]
+            median_background_data[*, *, *, f] = ext_background_data[*, *, *, matching_indices[0]]
+            sum2_background_data[*, *, *, f] = (ext_background_data[*, *, *, matching_indices[0]])^2
             if (f eq 0L) then begin
               averaged_headers->add, ext_headers[matching_indices[0]]
               averaged_background_headers->add, background_headers[matching_indices[0]]
@@ -209,12 +209,12 @@ pro ucomp_average_l1_files, l1_filenames, $
                                                         dimension=4, /even)
             sum2_wavelength_data[*, *, *, f] = total((ext_data[*, *, *, matching_indices])^2, $
                                                      4, /nan, /preserve_type)
-            mean_background_data[*, *, f] = mean(ext_background_data[*, *, matching_indices], $
-                                                 dimension=3, /nan)
-            median_background_data[*, *, f] = median(ext_background_data[*, *, matching_indices], $
-                                                     dimension=3, /even)
-            sum2_background_data[*, *, f] = total((ext_background_data[*, *, matching_indices])^2, $
-                                                  3, /nan, /preserve_type)
+            mean_background_data[*, *, *, f] = mean(ext_background_data[*, *, *, matching_indices], $
+                                                    dimension=4, /nan)
+            median_background_data[*, *, *, f] = median(ext_background_data[*, *, *, matching_indices], $
+                                                        dimension=4, /even)
+            sum2_background_data[*, *, *, f] = total((ext_background_data[*, *, *, matching_indices])^2, $
+                                                     4, /nan, /preserve_type)
             if (f eq 0L) then begin
               averaged_headers->add, ext_headers[matching_indices[0]]
               averaged_background_headers->add, background_headers[matching_indices[0]]
@@ -248,20 +248,20 @@ pro ucomp_average_l1_files, l1_filenames, $
 
     if (size(mean_wavelength_data, /n_dimensions) gt 3L) then begin
       mean_averaged_data[*, *, *, w] = mean(mean_wavelength_data, dimension=4, /nan)
-      mean_averaged_background[*, *, w] = mean(mean_background_data, dimension=3, /nan)
+      mean_averaged_background[*, *, *, w] = mean(mean_background_data, dimension=4, /nan)
       median_averaged_data[*, *, *, w] = median(median_wavelength_data, dimension=4, /even)
-      median_averaged_background[*, *, w] = median(median_background_data, dimension=3, /even)
+      median_averaged_background[*, *, *, w] = median(median_background_data, dimension=4, /even)
       sigma_data[*, *, *, w] = mean(mean_wavelength_data, dimension=4, /nan)
-      sigma_background[*, *, w] = mean(mean_background_data, dimension=3, /nan)
+      sigma_background[*, *, *, w] = mean(mean_background_data, dimension=4, /nan)
       sum2_data[*, *, *, w] = total(sum2_wavelength_data, 4, /nan, /preserve_type)
       sum2_background[*, *, w] = total(sum2_background_data, 3, /nan, /preserve_type)
     endif else begin
       mean_averaged_data[*, *, *, w] = mean_wavelength_data
-      mean_averaged_background[*, *, w] = mean_background_data
+      mean_averaged_background[*, *, *, w] = mean_background_data
       median_averaged_data[*, *, *, w] = median_wavelength_data
-      median_averaged_background[*, *, w] = median_background_data
+      median_averaged_background[*, *, *, w] = median_background_data
       sum2_data[*, *, *, w] = sum2_wavelength_data
-      sum2_background[*, *, w] = sum2_background_data
+      sum2_background[*, *, *, w] = sum2_background_data
     endelse
   endfor
 
