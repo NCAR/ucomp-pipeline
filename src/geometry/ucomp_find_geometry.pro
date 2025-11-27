@@ -88,7 +88,7 @@ function ucomp_find_geometry, data, $
   error or= 2L * post_error
 
   if (abs(found_post_angle - post_angle_guess) gt post_angle_tolerance) then begin
-    mg_log, 'bad post angle found: %0.1f', post_angle, name=logger_name, /error
+    mg_log, 'bad post angle found: %0.1f', found_post_angle, name=logger_name, /error
     post_angle = post_angle_guess
   endif else post_angle = found_post_angle
 
