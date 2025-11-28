@@ -35,10 +35,10 @@ create table ucomp_eng (
   tcam_radius                  float(8, 4),   -- radius for TCAM image
   tcam_occulter_chisq          float(10, 3),  -- chi squared for TCAM occulter fit
 
-  rcam_post_angle              float(7, 3),
-  tcam_post_angle              float(7, 3),
-  rcam_found_post_angle        float(7, 3),
-  tcam_found_post_angle        float(7, 3),
+  rcam_post_angle              float(7, 3),   -- [deg] CCW angle from North
+  tcam_post_angle              float(7, 3),   -- [deg] CCW angle from North
+  rcam_found_post_angle        float(7, 3),   -- [deg] CCW angle from top of sensor
+  tcam_found_post_angle        float(7, 3),   -- [deg] CCW angle from top of sensor
 
   rcam_eccentricity            float(7, 3),
   tcam_eccentricity            float(7, 3),
