@@ -254,7 +254,7 @@ pro ucomp_average_l1_files, l1_filenames, $
       sigma_data[*, *, *, w] = mean(mean_wavelength_data, dimension=4, /nan)
       sigma_background[*, *, *, w] = mean(mean_background_data, dimension=4, /nan)
       sum2_data[*, *, *, w] = total(sum2_wavelength_data, 4, /nan, /preserve_type)
-      sum2_background[*, *, w] = total(sum2_background_data, 3, /nan, /preserve_type)
+      sum2_background[*, *, *, w] = total(sum2_background_data, 4, /nan, /preserve_type)
     endif else begin
       mean_averaged_data[*, *, *, w] = mean_wavelength_data
       mean_averaged_background[*, *, *, w] = mean_background_data
