@@ -559,6 +559,23 @@ end
 
 
 ;+
+; Find all changes to the given option in the epochs file.
+;
+; :Returns:
+;   array of structures with fields `section` and `value`
+;
+; :Params:
+;   option_name : in, required, type=string
+;     name of an epoch option, e.g., 'center_wavelength'
+;-
+function ucomp_run::epoch_changes, option_name
+  compile_opt strictarr
+
+  return, self.epochs->changes(option_name)
+end
+
+
+;+
 ; Load the bad frames if a bad frames directory was set in the config file and
 ; if there is a file for the day to be processed.
 ;-
@@ -826,6 +843,26 @@ function ucomp_run::line, wave_region, option_name, datetime=datetime, $
 
   options = self.lines[wave_region]
   return, options->get(option_name, datetime=datetime, found=found, changed=changed)
+end
+
+
+;+
+; Find all changes of the given option for the given wave region.
+;
+; :Returns:
+;   array of structures with fields `section` and `value`
+;
+; :Params:
+;   wave_region : in, required, type=string
+;     wave region name, e.g., '1074'
+;   option_name : in, required, type=string
+;     name of an epoch option, e.g., 'center_wavelength'
+;-
+function ucomp_run::line_changes, wave_region, option_name
+  compile_opt strictarr
+
+  wave_options = self.lines[wave_region]
+  return, wave_options->changes(option_name)
 end
 
 

@@ -37,20 +37,46 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
   datetimes = ucomp_dateobs2datetime(data.date_obs)
   occulter_ids = 'OC-' + data.occltrid + '-mm'
 
-  ; there are a lot of lookups needed to determine if/when the plate scale
-  ; and occulter diameter changes -- this can take an hour for 1074 nm
-  for f = 0L, n_files - 1L do begin
-    plate_scale[f] = run->line(wave_region, 'plate_scale', $
-                               datetime=datetimes[f])
-    plate_scale_tolerance[f] = run->line(wave_region, 'plate_scale_tolerance', $
-                                         datetime=datetimes[f])
+  jds = ucomp_dateobs2julday(data.date_obs)
 
-    odiam = run->epoch(occulter_ids[f], datetime=datetimes[f], $
+  plate_scale_changes = run->line_changes(wave_region, 'plate_scale')
+  plate_scale_tolerance_changes = run->line_changes(wave_region, 'plate_scale_tolerance')
+
+  unique_occulter_ids = occulter_ids[uniq(occulter_ids, sort(occulter_ids))]
+  for i = 0L, n_elements(unique_occulter_ids) - 1L do begin
+    ; the below assumes the size of a given occulter ID does not change over
+    ; the mission in the epoch file
+    odiam = run->epoch(unique_occulter_ids[i], datetime=datetimes[0], $
                        found=occulter_diameter_found)
-    occulter_diameter[f] = occulter_diameter_found ? odiam : !values.f_nan
+    occulter_diameter_value = occulter_diameter_found ? odiam : !values.f_nan
+    indices = where(occulter_ids eq unique_occulter_ids[i], /null)
+    occulter_diameter[indices] = occulter_diameter_value
   endfor
 
-  jds = ucomp_dateobs2julday(data.date_obs)
+  for c = 0L, n_elements(plate_scale_changes) - 1L do begin
+    change = plate_scale_changes[c]
+    if (change.datetime eq 'DEFAULT') then index = 0 else begin
+      change_dt = mg_epoch_parse_datetime(change.datetime)
+      index = value_locate(jds, change_dt.to_julian()) + 1L
+      obj_destroy, change_dt
+    endelse
+    if (index lt n_elements(plate_scale) - 1L) then begin
+      plate_scale[index:*] = change.value
+    endif
+  endfor
+
+  for c = 0L, n_elements(plate_scale_tolerance_changes) - 1L do begin
+    change = plate_scale_tolerance_changes[c]
+    if (change.datetime eq 'DEFAULT') then index = 0 else begin
+      change_dt = mg_epoch_parse_datetime(change.datetime)
+      index = value_locate(jds, change_dt.to_julian()) + 1L
+      obj_destroy, change_dt
+    endelse
+    if (index lt n_elements(plate_scale) - 1L) then begin
+      plate_scale_tolerance[index:*] = change.value
+    endif
+  endfor
+  mg_log, 'finished finding epoch changes', name=run.logger_name, /info
 
   !null = label_date(date_format='%Y-%N-%D')
 
@@ -84,13 +110,17 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
   symsize          = 0.25
 
   month_ticks = mg_tick_locator([jds[0], jds[-1]], /months)
+  n_months = n_elements(month_ticks)
   if (n_elements(month_ticks) eq 0L) then begin
     month_ticks = 1L
+    n_minor = 1L
   endif else begin
-    month_ticks = month_ticks[0:*:3]
+    max_ticks = 7L
+    n_minor = n_months / max_ticks > 1
+    month_ticks = month_ticks[0:*:n_minor]
   endelse
 
-  mg_range_plot, [jds], [image_scale], $
+  mg_range_plot, [jds], [image_scale], /nodata, $
                  charsize=charsize, $
                  title=string(wave_region, $
                               format='Image scale per %s nm file over the UCoMP mission'), $
@@ -102,14 +132,16 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
                  xtickformat='label_date', $
                  xtickv=month_ticks, $
                  xticks=n_elements(month_ticks) - 1L, $
-                 xminor=3, $
+                 xminor=n_minor, $
                  ytitle='Image scale [arcsec/pixel]', $
                  ystyle=1, yrange=image_scale_range
 
   if (n_files gt 1L) then begin
     diffs = [0.0, plate_scale[1:-1] - plate_scale[0:-2]]
     change_indices = where(diffs gt 0.0, n_changes, /null)
-    mg_log, '%d plate scale changes', n_changes, name=run.logger_name, /debug
+    mg_log, '%d plate scale %s', $
+            n_changes, mg_plural(n_changes, 'change', 'changes'), $
+            name=run.logger_name, /debug
     change_indices = [0L, change_indices, n_elements(plate_scale)]
     for c = 0L, n_changes do begin
       s = change_indices[c]
@@ -136,34 +168,55 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
                              subdir=ucomp_decompose_date(run.date), $
                              root=run->config('engineering/basedir'))
   write_gif, output_filename, tvrd(), r, g, b
+  mg_log, 'wrote %s', file_basename(output_filename), name=run.logger_name, /info
 
   output_filename = filepath(string(run.date, wave_region, $
                                     format='(%"%s.ucomp.%s.mission.image_scale.csv")'), $
                              subdir=ucomp_decompose_date(run.date), $
                              root=run->config('engineering/basedir'))
-  openw, lun, output_filename, /get_lun
-  printf, lun, ['date/time', $
-                'Julian date', $
-                'RCAM radius', $
-                'TCAM radius', $
-                'image scale', $
-                'plate scale', $
-                'occulter ID', $
-                'occulter diameter [mm]'], $
-               format='%s, %s, %s, %s, %s, %s, %s, %s'
-  for f = 0L, n_files - 1L do begin
-    printf, lun, $
-            (data.date_obs)[f], $
-            jds[f], $
-            (data.rcam_radius)[f], $
-            (data.tcam_radius)[f], $
-            image_scale[f], $
-            plate_scale[f], $
-            (data.occltrid)[f], $
-            occulter_diameter[f], $
-            format='%s, %0.9f, %0.3f, %0.3f, %0.5f, %0.5f, %s, %0.3f'
-  endfor
-  free_lun, lun
+  column_names = ['date/time', $
+                  'Julian date', $
+                  'RCAM radius', $
+                  'TCAM radius', $
+                  'image scale', $
+                  'plate scale', $
+                  'occulter ID', $
+                  'occulter diameter [mm]']
+  write_csv, output_filename, $
+             data.date_obs, $
+             jds, $
+             data.rcam_radius, $
+             data.tcam_radius, $
+             image_scale, $
+             plate_scale, $
+             data.occltrid, $
+             occulter_diameter, $
+             header=column_names
+  ; openw, lun, output_filename, /get_lun
+  ; printf, lun, ['date/time', $
+  ;               'Julian date', $
+  ;               'RCAM radius', $
+  ;               'TCAM radius', $
+  ;               'image scale', $
+  ;               'plate scale', $
+  ;               'occulter ID', $
+  ;               'occulter diameter [mm]'], $
+  ;              format='%s, %s, %s, %s, %s, %s, %s, %s'
+  ; for f = 0L, n_files - 1L do begin
+  ;   if (f mod 1000 eq 0) then mg_log, 'wrote %d/%d lines', f, n_files, name=run.logger_name, /debug
+  ;   printf, lun, $
+  ;           (data.date_obs)[f], $
+  ;           jds[f], $
+  ;           (data.rcam_radius)[f], $
+  ;           (data.tcam_radius)[f], $
+  ;           image_scale[f], $
+  ;           plate_scale[f], $
+  ;           (data.occltrid)[f], $
+  ;           occulter_diameter[f], $
+  ;           format='%s, %0.9f, %0.3f, %0.3f, %0.5f, %0.5f, %s, %0.3f'
+  ; endfor
+  ; free_lun, lun
+  mg_log, 'wrote %s', file_basename(output_filename), name=run.logger_name, /info
 
   done:
   if (n_elements(original_rgb) gt 0L) then tvlct, original_rgb
@@ -183,7 +236,7 @@ config_filename = filepath(config_basename, $
                            root=mg_src_root())
 run = ucomp_run(date, 'test', config_filename)
 
-wave_region = '1079'
+wave_region = '1074'
 
 db = ucomp_db_connect(run->config('database/config_filename'), $
                       run->config('database/config_section'), $
@@ -191,7 +244,9 @@ db = ucomp_db_connect(run->config('database/config_filename'), $
                       log_statements=run->config('database/log_statements'), $
                       status=status)
 
+overall_start = systime(/seconds)
 ucomp_mission_image_scale_plot, wave_region, db, run=run
+print, systime(/seconds) - overall_start, format='overall time: %0.1f secs'
 
 obj_destroy, [db, run]
 
