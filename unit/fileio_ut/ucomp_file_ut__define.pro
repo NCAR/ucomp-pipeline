@@ -32,8 +32,10 @@ function ucomp_file_ut::test_basic
                        wave_region=wave_region, $
                        center_wavelength=center_wavelength, $
                        data_type=data_type, $
-                       obs_id=obs_id, $
-                       obs_plan=obs_plan, $
+                       obs_id_name=obs_id_name, $
+                       obs_id_version=obs_id_version, $
+                       obs_plan_name=obs_plan_name, $
+                       obs_plan_version=obs_plan_version, $
                        exptime=exptime, $
                        gain_mode=gain_mode, $
                        pol_list=pol_list, $
@@ -123,8 +125,10 @@ function ucomp_file_ut::test_dark
                      wave_region=wave_region, $
                      center_wavelength=center_wavelength, $
                      data_type=data_type, $
-                     obs_id=obs_id, $
-                     obs_plan=obs_plan, $
+                     obs_id_name=obs_id_name, $
+                     obs_id_version=obs_id_version, $
+                     obs_plan_name=obs_plan_name, $
+                     obs_plan_version=obs_plan_version, $
                      exptime=exptime, $
                      gain_mode=gain_mode, $
                      pol_list=pol_list, $
