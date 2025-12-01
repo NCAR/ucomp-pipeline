@@ -43,7 +43,10 @@ function ucomp_cal_quality_conditions, wave_region, run=run
      description: 'check for in/out values that are neither in or out'}, $
     {mask: 0UL, $
      checker: 'ucomp_quality_missing_state', $
-     description: 'check if missing a state after removing bad frames and averaging'}]
+     description: 'check if missing a state after removing bad frames and averaging'}, $
+    {mask: 0UL, $
+     checker: 'ucomp_quality_contin', $
+     description: 'check CONTIN is the same for every extension'}]
 
   quality_conditions.mask = 2UL ^ (ulindgen(n_elements(quality_conditions)))
 

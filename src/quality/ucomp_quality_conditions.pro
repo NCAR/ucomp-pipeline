@@ -52,7 +52,10 @@ function ucomp_quality_conditions, wave_region, run=run
      description: 'some wavelengths that do not match wave region'}, $
     {mask: 0UL, $
      checker: 'ucomp_quality_processing', $
-     description: 'an error occurred in L1 processing'}]
+     description: 'an error occurred in L1 processing'}, $
+    {mask: 0UL, $
+     checker: 'ucomp_quality_contin', $
+     description: 'check CONTIN is the same for every extension'}]
 
   quality_conditions.mask = 2UL ^ (ulindgen(n_elements(quality_conditions)))
 
