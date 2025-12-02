@@ -171,6 +171,7 @@ pro ucomp_daily_sgs_plots, engineering_dir, run=run
   ; use daily min/max as range for SGSDECZR, unless all 0.0s
   sgsrazr_range = [min(sgs_razr, max=sgs_razr_max), sgs_razr_max]
   sgsrazr_range += 0.1 * ((sgsrazr_range[1] - sgsrazr_range[0]) > 1.0) * [-1.0, 1.0]
+  if (total(finite(sgsrazr_range), /integer) eq 0) then sgsrazr_range = [0.0, 1.0]
 
   mg_range_plot, hours, sgs_rav, $
                  title=pdate + ' UCoMP Spar Guider System (SGS) RAV Right Ascension Error Signal', $
@@ -212,6 +213,7 @@ pro ucomp_daily_sgs_plots, engineering_dir, run=run
   ; use daily min/max as range for SGSDECZR, unless all 0.0s
   sgsdeczr_range = [min(sgs_deczr, max=sgs_deczr_max), sgs_deczr_max]
   sgsdeczr_range += 0.1 * ((sgsdeczr_range[1] - sgsdeczr_range[0]) > 1.0) * [-1.0, 1.0]
+  if (total(finite(sgsdeczr_range), /integer) eq 0) then sgsdeczr_range = [0.0, 1.0]
 
   mg_range_plot, hours, sgs_decv, $
                  title=pdate + ' UCoMP DECV: Spar Guider System (SGS) Declination Error Signal', $
