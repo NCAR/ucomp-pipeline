@@ -22,5 +22,6 @@ pro ucomp_calibration_steps, run=run
   for w = 0L, n_elements(wave_regions) - 1L do begin
     ucomp_pipeline_step, 'ucomp_make_flats', wave_regions[w], run=run
     ucomp_pipeline_step, 'ucomp_make_demod', wave_regions[w], run=run
+    ucomp_pipeline_step, 'ucomp_make_darkcor_flats', wave_regions[w], run=run
   endfor
 end
