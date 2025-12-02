@@ -28,13 +28,54 @@ function ucomp_quality_contin, file, $
   compile_opt strictarr
 
   contin = ''
-  for e = 1L, file.n_extensions - 1L do begin
+  for e = 0L, n_elements(ext_headers) - 1L do begin
     new_contin = sxpar(ext_headers[e], 'CONTIN')
-    ext_datatype = ucomp_getpar(ext_headers[e], 'DATATYPE')
     if (contin eq '') then contin = new_contin else begin
-      if (contin ne new_contin) then return, 1UL
+      if (contin ne new_contin) then begin
+        mg_log, 'ext %d: %s != %s', e + 1, contin, new_contin, $
+                name=run.logger_name, /warn
+        return, 1UL
+      endif
     endelse
   endfor
 
   return, 0UL
+end
+
+
+; main-level example program
+
+date = '20210715'
+
+config_basename = 'ucomp.latest.cfg'
+config_filename = filepath(config_basename, $
+                           subdir=['..', '..', '..', 'ucomp-config'], $
+                           root=mg_src_root())
+
+run = ucomp_run(date, 'test', config_filename)
+
+;raw_basename = '20210715.190726.38.ucomp.1074.l0.fts'
+raw_basename = '20210715.190248.46.ucomp.789.l0.fts'
+raw_basedir = run->config('raw/basedir')
+raw_filename = filepath(raw_basename, subdir=date, root=raw_basedir)
+
+ucomp_read_raw_data, raw_filename, $
+                     primary_header=primary_header, $
+                     ext_data=ext_data, $
+                     ext_headers=ext_headers, $
+                     n_extensions=n_extensions, $
+                     repair_routine=run->epoch('raw_data_repair_routine'), $
+                     badframes=run.badframes, $
+                     all_zero=all_zero
+
+
+file = ucomp_file(raw_filename, run=run)
+
+quality = ucomp_quality_contin(file, $
+                               primary_header, $
+                               ext_data, $
+                               ext_headers, $
+                               run=run)
+obj_destroy, [file, run]
+
 end

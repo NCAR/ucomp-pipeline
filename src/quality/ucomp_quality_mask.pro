@@ -56,6 +56,7 @@ run = ucomp_run(date, 'test', config_filename)
 
 print, strmid((ucomp_quality_conditions(wave_region, run=run)).checker, 14)
 print, ucomp_quality_mask('datatype|all_zero', wave_region, run=run)
+print, ucomp_quality_mask('', wave_region, run=run)
 
 obj_destroy, run
 
