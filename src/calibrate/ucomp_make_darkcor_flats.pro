@@ -67,13 +67,16 @@ pro ucomp_make_darkcor_flats, wave_region, run=run
                          coefficients=dark_coefficients)
 
     ; add RAWDARK1, DARKEXT1, RAWDARK2, DARKEXT2 to header
+    after = 'RAWEXTS'
     for de = 0L, n_elements(master_dark_extensions) - 1L do begin
       ucomp_addpar, flat_header, string(de + 1, format='(%"RAWDARK%d")'), raw_dark_filenames[de], $
                     comment=string(dark_coefficients[de], $
-                                   format='(%"raw dark filename used, wt %0.2f")')
+                                   format='(%"raw dark filename used, wt %0.2f")'), $
+                    after=after
       ucomp_addpar, flat_header, string(de + 1, format='(%"DARKEXT%d")'), master_dark_extensions[de], $
                     comment=string(run.date, dark_coefficients[de], $
-                                   format='(%"%s.ucomp.dark.fts ext used, wt %0.2f")')
+                                   format='(%"%s.ucomp.dark.fts ext used, wt %0.2f")'), $
+                    after=after
     endfor
 
     fits_write, master_dark_cor_flat_fcb, flat - dark, flat_header
