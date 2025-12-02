@@ -54,6 +54,9 @@ config_filename = filepath(config_basename, $
                            root=mg_src_root())
 run = ucomp_run(date, 'test', config_filename)
 
+mask = ucomp_quality_mask(run->config('quality/mask'), wave_region, run=run) $
+         and ucomp_quality_mask(run->epoch('quality_mask'), wave_region, run=run)
+
 print, strmid((ucomp_quality_conditions(wave_region, run=run)).checker, 14)
 print, ucomp_quality_mask('datatype|all_zero', wave_region, run=run)
 print, ucomp_quality_mask('', wave_region, run=run)
