@@ -34,31 +34,37 @@ function ucomp_quality_missing_state, file, $
   missing = 0B
 
   if (is_flat) then begin
-    ucomp_average_flatfile, primary_header, ext_data, ext_headers, $
+    tmp_ext_data = ext_data
+    tmp_ext_headers = list(ext_headers, /extract)
+    ucomp_average_flatfile, primary_header, tmp_ext_data, tmp_ext_headers, $
                             n_extensions=n_averaged_extensions, $
                             exptime=averaged_exptime, $
                             gain_mode=averaged_gain_mode, $
                             onband=averaged_onband, $
                             sgsdimv=averaged_sgsdimv, $
                             wavelength=averaged_wavelength
+    obj_destroy, tmp_ext_headers
 
     for e = 0L, n_averaged_extensions - 1L do begin
-      rcam = reform(mean(ext_data[*, *, *, 0, e], dimension=3, /nan))
-      tcam = reform(mean(ext_data[*, *, *, 1, e], dimension=3, /nan))
+      rcam = reform(mean(tmp_ext_data[*, *, *, 0, e], dimension=3, /nan))
+      tcam = reform(mean(tmp_ext_data[*, *, *, 1, e], dimension=3, /nan))
       if (total(finite(rcam), /integer) eq 0L) then missing = 1B
       if (total(finite(tcam), /integer) eq 0L) then missing = 1B
     endfor
   endif
 
   if (is_dark) then begin
+    tmp_ext_data = ext_data
+    tmp_ext_headers = list(ext_headers, /extract)
     ucomp_average_darkfile, primary_header, ext_data, ext_headers, $
                             n_extensions=n_averaged_extensions, $
                             exptime=averaged_exptime, $
                             gain_mode=averaged_gain_mode
+    obj_destroy, tmp_ext_headers
 
     for e = 0L, n_averaged_extensions - 1L do begin
-      rcam = reform(mean(ext_data[*, *, *, 0, e], dimension=3, /nan))
-      tcam = reform(mean(ext_data[*, *, *, 1, e], dimension=3, /nan))
+      rcam = reform(mean(tmp_ext_data[*, *, *, 0, e], dimension=3, /nan))
+      tcam = reform(mean(tmp_ext_data[*, *, *, 1, e], dimension=3, /nan))
       if (total(finite(rcam), /integer) eq 0L) then missing = 1B
       if (total(finite(tcam), /integer) eq 0L) then missing = 1B
     endfor
