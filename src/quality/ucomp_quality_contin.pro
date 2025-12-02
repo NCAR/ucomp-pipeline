@@ -70,12 +70,14 @@ ucomp_read_raw_data, raw_filename, $
 
 
 file = ucomp_file(raw_filename, run=run)
+run.datetime = strmid(file_basename(raw_filename), 0, 15)
 
 quality = ucomp_quality_contin(file, $
                                primary_header, $
                                ext_data, $
                                ext_headers, $
                                run=run)
+
 obj_destroy, [file, run]
 
 end
