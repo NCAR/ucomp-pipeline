@@ -53,7 +53,7 @@ def main():
                 unit_dir = os.path.dirname(unit_filename)
                 if not os.path.exists(unit_dir):
                     os.makedirs(unit_dir)
-                print(f"mgunit_template {src_filename} > {unit_filename}")
+                print(f"mgunit_template --parent-class UCoMPutTestCase {src_filename} > {unit_filename}")
 
 
 if __name__ == "__main__":
