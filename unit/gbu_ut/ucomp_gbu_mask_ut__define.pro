@@ -27,5 +27,5 @@ end
 pro ucomp_gbu_mask_ut__define
   compile_opt strictarr
 
-  define = {ucomp_gbu_mask_ut, inherits MGutTestCase}
+  define = {ucomp_gbu_mask_ut, inherits UCoMPutTestCase}
 end
