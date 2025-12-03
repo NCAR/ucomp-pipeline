@@ -87,7 +87,8 @@ function ucomp_find_occulter, data, $
 
   ; remove points under the occulter post
   if (keyword_set(remove_post)) then begin
-    post_width_angle = 14.0
+    ; post_width_angle = 14.0
+    post_width_angle = 8.0
     l0_post_angle = -90.0
     theta = atan(y - center_guess[1], x - center_guess[0]) * !radeg
     non_post_indices = where(theta lt (l0_post_angle - post_width_angle / 2.0) $
