@@ -19,7 +19,8 @@
 pro ucomp_make_darkcor_flats, wave_region, run=run
   compile_opt strictarr
 
-  mg_log, 'making dark-corrected flats...', name=run.logger_name, /info
+  mg_log, 'making %s nm dark-corrected flats...', wave_region, $
+          name=run.logger_name, /info
 
   l1_dir = filepath('level1', $
                     subdir=run.date, $
@@ -28,6 +29,11 @@ pro ucomp_make_darkcor_flats, wave_region, run=run
   master_flat_basename = string(run.date, wave_region, $
                                 format='(%"%s.ucomp.%s.flat.fts")')
   master_flat_filename = filepath(master_flat_basename, root=l1_dir)
+  if (~file_test(master_flat_filename)) then begin
+    mg_log, 'no %s nm flats, skipping dark-corrected flats', wave_region, $
+            name=run.logger_name, /info
+    return
+  endif
 
   master_darkcor_flat_basename = string(run.date, wave_region, $
                                         format='(%"%s.ucomp.%s.darkcor_flat.fts")')
