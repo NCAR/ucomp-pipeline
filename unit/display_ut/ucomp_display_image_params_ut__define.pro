@@ -22,7 +22,7 @@ end
 function ucomp_display_image_params_ut::init, _extra=e
   compile_opt strictarr
 
-  if (~self->MGutTestCase::init(_extra=e)) then return, 0
+  if (~self->UCoMPutTestCase::init(_extra=e)) then return, 0
 
   
   self->addTestingRoutine, ['ucomp_display_image_params'], $
@@ -35,5 +35,5 @@ end
 pro ucomp_display_image_params_ut__define
   compile_opt strictarr
 
-  define = {ucomp_display_image_params_ut, inherits MGutTestCase}
+  define = {ucomp_display_image_params_ut, inherits UCoMPutTestCase}
 end
