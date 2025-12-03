@@ -39,7 +39,7 @@ end
 function ucomp_db_float_ut::init, _extra=e
   compile_opt strictarr
 
-  if (~self->MGutTestCase::init(_extra=e)) then return, 0
+  if (~self->UCoMPutTestCase::init(_extra=e)) then return, 0
 
 
   self->addTestingRoutine, ['ucomp_db_float'], $
@@ -52,5 +52,5 @@ end
 pro ucomp_db_float_ut__define
   compile_opt strictarr
 
-  define = {ucomp_db_float_ut, inherits MGutTestCase}
+  define = {ucomp_db_float_ut, inherits UCoMPutTestCase}
 end

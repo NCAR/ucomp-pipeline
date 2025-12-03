@@ -3,7 +3,7 @@
 function ucompdbmysql_ut::init, _extra=e
   compile_opt strictarr
 
-  if (~self->MGutTestCase::init(_extra=e)) then return, 0
+  if (~self->UCoMPutTestCase::init(_extra=e)) then return, 0
 
   self->addTestingRoutine, ['ucompdbmysql__define', $
                             'ucompdbmysql::cleanup', $
@@ -22,5 +22,5 @@ end
 pro ucompdbmysql_ut__define
   compile_opt strictarr
 
-  define = {ucompdbmysql_ut, inherits MGutTestCase}
+  define = {ucompdbmysql_ut, inherits UCoMPutTestCase}
 end
