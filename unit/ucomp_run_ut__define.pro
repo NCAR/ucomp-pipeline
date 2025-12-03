@@ -177,6 +177,10 @@ function ucomp_run_ut::init, _extra=e
                             'ucomp_run::_setup_logger', $
                             'ucomp_run::setProperty', $
                             'ucomp_run::getProperty', $
+                            'ucomp_run::get_distortion', $
+                            'ucomp_run::get_hot_pixels', $
+                            'ucomp_run::load_badframes', $
+                            'ucomp_run::log_memory', $
                             'ucomp_run::report', $
                             'ucomp_run::report_profiling', $
                             'ucomp_run::start_profiler', $
@@ -186,13 +190,21 @@ function ucomp_run_ut::init, _extra=e
   self->addTestingRoutine, ['ucomp_run::init', $
                             'ucomp_run::_overloadHelp', $
                             'ucomp_run::_overloadPrint', $
+                            'ucomp_run::temperature_map_option', $
+                            'ucomp_run::all_temperature_maps', $
                             'ucomp_run::can_send_alert', $
+                            'ucomp_run::validate_config', $
                             'ucomp_run::config', $
                             'ucomp_run::all_lines', $
+                            'ucomp_run::line_changes', $
                             'ucomp_run::line', $
+                            'ucomp_run::read_distortion_file', $
+                            'ucomp_run::get_dmatrix_coefficients', $
+                            'ucomp_run::epoch_changes', $
                             'ucomp_run::epoch', $
                             'ucomp_run::stop', $
                             'ucomp_run::start', $
+                            'ucomp_run::convert_program_name', $
                             'ucomp_run::get_files'], $
                            /is_function
 
