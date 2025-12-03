@@ -155,12 +155,12 @@ pro ucomp_l1_promote_header, file, $
   ucomp_addpar, primary_header, 'VCROSSTK', file.vcrosstalk_metric, $
                 comment='Stokes V crosstalk metric', after=after
 
-  background = backgrounds[*, *, *, file.n_unique_wavelengths / 2L]
-  bkg_dims = size(background, /dimensions)
+  center_wavelength_background = backgrounds[*, *, *, file.n_unique_wavelengths / 2L]
+  bkg_dims = size(center_wavelength_background, /dimensions)
   annulus_mask = ucomp_annulus(1.14 * solar_radius, 1.5 * solar_radius, $
                                dimensions=bkg_dims[0:1])
   annulus_indices = where(annulus_mask, n_annulus_pts)
-  background_i = reform(background[*, *, 0])
+  background_i = reform(center_wavelength_background[*, *, 0])
   median_background = median(background_i[annulus_indices])
   file.median_background = median_background
   ucomp_addpar, primary_header, 'MED_BKG', median_background, $
