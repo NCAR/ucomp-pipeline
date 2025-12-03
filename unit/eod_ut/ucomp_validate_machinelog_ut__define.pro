@@ -76,7 +76,7 @@ end
 function ucomp_validate_machinelog_ut::init, _extra=e
   compile_opt strictarr
 
-  if (~self->MGutTestCase::init(_extra=e)) then return, 0
+  if (~self->UCoMPutTestCase::init(_extra=e)) then return, 0
 
 
   self->addTestingRoutine, ['ucomp_validate_machinelog'], $
@@ -89,5 +89,5 @@ end
 pro ucomp_validate_machinelog_ut__define
   compile_opt strictarr
 
-  define = {ucomp_validate_machinelog_ut, inherits MGutTestCase}
+  define = {ucomp_validate_machinelog_ut, inherits UCoMPutTestCase}
 end
