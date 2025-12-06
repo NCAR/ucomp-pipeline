@@ -35,8 +35,12 @@ pro ucomp_l1_apply_dark, file, $
   n_exts = n_elements(headers)
 
   obsday_hours = file.obsday_hours
-  exptime = file.exptime
-  gain_mode = file.gain_mode
+  exptime      = file.exptime
+  gain_mode    = file.gain_mode
+  nuc          = file.nuc
+  nuc_values   = run->epoch('nuc_values')
+  nuc_index    = ucomp_nuc2index(nuc, values=nuc_values)
+
   wavelengths = file.wavelengths
 
   dims = size(data, /dimensions)
@@ -46,7 +50,8 @@ pro ucomp_l1_apply_dark, file, $
 
   ; for each extension in file
   for e = 0L, n_exts - 1L do begin
-    science_dark = cal->get_dark(obsday_hours, exptime, gain_mode, found=dark_found, $
+    science_dark = cal->get_dark(obsday_hours, exptime, gain_mode, nuc_index, $
+                                 found=dark_found, $
                                  master_extensions=master_dark_extensions, $
                                  raw_filenames=raw_dark_filenames, $
                                  coefficients=dark_coefficients)

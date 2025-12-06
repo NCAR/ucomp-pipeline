@@ -42,7 +42,8 @@ function ucomp_quality_missing_state, file, $
                             gain_mode=averaged_gain_mode, $
                             onband=averaged_onband, $
                             sgsdimv=averaged_sgsdimv, $
-                            wavelength=averaged_wavelength
+                            wavelength=averaged_wavelength, $
+                            run=run
     obj_destroy, tmp_ext_headers
 
     for e = 0L, n_averaged_extensions - 1L do begin
@@ -59,7 +60,8 @@ function ucomp_quality_missing_state, file, $
     ucomp_average_darkfile, primary_header, ext_data, ext_headers, $
                             n_extensions=n_averaged_extensions, $
                             exptime=averaged_exptime, $
-                            gain_mode=averaged_gain_mode
+                            gain_mode=averaged_gain_mode, $
+                            run=run
     obj_destroy, tmp_ext_headers
 
     for e = 0L, n_averaged_extensions - 1L do begin

@@ -37,6 +37,9 @@ pro ucomp_l1_apply_gain, file, $
   obsday_hours = file.obsday_hours
   exptime      = file.exptime
   gain_mode    = file.gain_mode
+  nuc          = file.nuc
+  nuc_values   = run->epoch('nuc_values')
+  nuc_index    = ucomp_nuc2index(nuc, values=nuc_values)
   wavelengths  = file.wavelengths
 
   dims = size(data, /dimensions)
@@ -62,6 +65,7 @@ pro ucomp_l1_apply_gain, file, $
                                         exptime, $
                                         gain_mode, $
                                         onband, $
+                                        nuc_index, $
                                         wavelengths[e], $
                                         found=flat_found, $
                                         error_msg=error_msg, $

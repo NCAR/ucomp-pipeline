@@ -1,7 +1,7 @@
 ; docformat = 'rst'
 
 ;+
-; Average similar flat extensions in a flat file.
+; Average similar dark extensions in a dark file.
 ;
 ; :Params:
 ;   primary_header : in, required, type=strarr
@@ -20,17 +20,28 @@
 ;     exposure times for the new averaged extensions
 ;   gain_mode : out, optional, type=bytarr(n_extensions)
 ;     gain modes for the new averaged extensions
+;   nuc : out, optional, type=lonarr(n_extensions)
+;     set to a named variable to retreive the "NUC" value for the averaged
+;     extensions
 ;-
 pro ucomp_average_darkfile, primary_header, ext_data, ext_headers, $
                             n_extensions=n_extensions, $
                             exptime=averaged_exptime, $
-                            gain_mode=averaged_gain_mode
+                            gain_mode=averaged_gain_mode, $
+                            nuc=averaged_nuc, $
+                            run=run
   compile_opt strictarr
 
   n_extensions = n_elements(ext_headers)
 
   exptime    = fltarr(n_extensions)
   gain_mode  = bytarr(n_extensions) + (ucomp_getpar(primary_header, 'GAIN') eq 'high')
+
+  rcam_nuc = ucomp_getpar(primary_header, 'RCAMNUC')
+  tcam_nuc = ucomp_getpar(primary_header, 'TCAMNUC')
+  if (rcam_nuc ne tcam_nuc) then begin
+    ; TODO: fail here
+  endif
 
   ; group by EXPTIME
   for e = 0L, n_extensions - 1L do begin
@@ -54,6 +65,8 @@ pro ucomp_average_darkfile, primary_header, ext_data, ext_headers, $
 
   averaged_exptime    = fltarr(n_groups)
   averaged_gain_mode  = bytarr(n_groups)
+  nuc_values          = run->epoch('nuc_values')
+  averaged_nuc        = lonarr(n_groups) + ucomp_nuc2index(rcam_nuc, values=nuc_values)
   extensions          = strarr(n_groups)
 
   for g = 0L, n_groups - 1L do begin

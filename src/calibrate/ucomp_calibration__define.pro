@@ -18,7 +18,9 @@
 ;   exptimes : in, optional, type=fltarr(n)
 ;     exposure times of the darks [ms]
 ;   gain_modes : in, optional, type=bytarr(n)
-;     gain modes of the darks [ms]
+;     gain modes of the darks
+;   nucs : in, optional, type=lonarr(n, 2)
+;     index of NUC value of the darks per camera
 ;   raw_files : in, optional, type=strarr(n)
 ;     raw filenames corresponding to the dark images
 ;-
@@ -27,6 +29,7 @@ pro ucomp_calibration::cache_darks, filename, $
                                     times=times, $
                                     exptimes=exptimes, $
                                     gain_modes=gain_modes, $
+                                    nucs=nucs, $
                                     raw_files=raw_files
   compile_opt strictarr
 
@@ -45,25 +48,27 @@ pro ucomp_calibration::cache_darks, filename, $
     fits_read, fcb, dark_image, dark_header, exten_no=1
 
     dims = size(dark_image, /dimensions)
+    n_index_extensions = 4L  ; times, exptimes, gain_modes, and NUCs
 
-    darks = make_array(dimension=[dims, fcb.nextend - 3L], $
+    darks = make_array(dimension=[dims, fcb.nextend - n_index_extensions], $
                        type=size(dark_image, /type))
-    raw_files = strarr(fcb.nextend - 3L)
+    raw_files = strarr(fcb.nextend - n_index_extensions)
 
     darks[*, *, *, 0] = dark_image
     raw_files[0] = ucomp_getpar(dark_header, 'RAWFILE')
 
     ; read the rest of the dark images
-    for e = 2L, fcb.nextend - 3L do begin   ; there are 3 "index" extensions at end of file
+    for e = 2L, fcb.nextend - n_index_extensions do begin   ; there are 4 "index" extensions at end of file
       fits_read, fcb, dark_image, dark_header, exten_no=e
       raw_files[e - 1L] = ucomp_getpar(dark_header, 'RAWFILE')
       darks[*, *, *, e - 1L] = dark_image
     endfor
 
     ; read the times and exposure times
-    fits_read, fcb, times, times_header, exten_no=fcb.nextend - 2L
-    fits_read, fcb, exptimes, exptimes_header, exten_no=fcb.nextend - 1L
-    fits_read, fcb, gain_modes, gain_modes_header, exten_no=fcb.nextend
+    fits_read, fcb, times, times_header, exten_no=fcb.nextend - 3L
+    fits_read, fcb, exptimes, exptimes_header, exten_no=fcb.nextend - 2L
+    fits_read, fcb, gain_modes, gain_modes_header, exten_no=fcb.nextend - 1L
+    fits_read, fcb, nucs, nucs_header, exten_no=fcb.nextend
 
     fits_close, fcb
   endif
@@ -72,6 +77,7 @@ pro ucomp_calibration::cache_darks, filename, $
   *self.dark_times = times
   *self.dark_exptimes = exptimes
   *self.dark_gain_modes = gain_modes
+  *self.dark_nucs = nucs
   *self.dark_raw_files = raw_files
 
   mg_log, '%d darks cached', n_elements(times), name=logger_name, /info
@@ -87,7 +93,8 @@ pro ucomp_calibration::discard_darks
   *self.darks = !null
   *self.dark_times = !null
   *self.dark_exptimes = !null
-  *self.dark_mode_gains = !null
+  *self.dark_gain_modes = !null
+  *self.dark_nucs = !null
   *self.dark_raw_files = !null
 end
 
@@ -105,6 +112,8 @@ end
 ;     exposure time [ms] needed
 ;   gain_mode : in, required, type=string
 ;     gain mode of required dark, i.e., "high" or "low"
+;   nuc_index : in, required, type=long
+;     index of NUC value of required dark
 ;
 ; :Keywords:
 ;   found : out, optional, type=boolean
@@ -123,7 +132,7 @@ end
 ;     linear combination of the two darks used to create the given dark; 1.0
 ;     if only one dark was used
 ;-
-function ucomp_calibration::get_dark, obsday_hours, exptime, gain_mode, $
+function ucomp_calibration::get_dark, obsday_hours, exptime, gain_mode, nuc_index, $
                                       found=found, $
                                       error_msg=error_msg, $
                                       master_extensions=master_extensions, $
@@ -145,7 +154,8 @@ function ucomp_calibration::get_dark, obsday_hours, exptime, gain_mode, $
   exptime_threshold = 0.01   ; [ms]
   gain_index        = gain_mode eq 'high'
   valid_indices = where(abs(exptime - *self.dark_exptimes) lt exptime_threshold $
-                          and (*self.dark_gain_modes eq gain_index), $
+                          and (*self.dark_gain_modes eq gain_index) $
+                          and (*self.dark_nucs eq nuc_index), $
                         n_valid_darks)
   if (n_valid_darks eq 0L) then begin
     n_valid_exptime_darks = total(abs(exptime - *self.dark_exptimes) lt exptime_threshold, $
@@ -244,6 +254,8 @@ end
 ;     gain modes of the darks [ms]
 ;   onbands : in, optional, type=lonarr(n)
 ;     `ONBAND` indices of the darks
+;   nucs : in, optional, type=lonarr(n, 2)
+;     index of NUC value of the darks per camera
 ;   raw_files : in, optional, type=strarr(n)
 ;     raw filenames of the darks
 ;   extensions : in, optional, type=strarr(n)
@@ -256,6 +268,7 @@ pro ucomp_calibration::cache_flats, filenames, $
                                     wavelengths=wavelengths, $
                                     gain_modes=gain_modes, $
                                     onbands=onbands, $
+                                    nucs=nucs, $
                                     sgsdimv=sgsdimv, $
                                     raw_files=raw_files, $
                                     extensions=extensions
@@ -265,12 +278,13 @@ pro ucomp_calibration::cache_flats, filenames, $
 
   ; master flat file with extensions 1..n:
   ;   exts 1 to n - 5:   flat images
-  ;   ext n - 4:         times of the flat images
-  ;   ext n - 3:         exposure times of the flat images
-  ;   ext n - 2:         wavelengths of the flat images
-  ;   ext n - 1:         gain modes of the flat images
+  ;   ext n - 5:         times of the flat images
+  ;   ext n - 4:         exposure times of the flat images
+  ;   ext n - 3:         wavelengths of the flat images
+  ;   ext n - 2:         gain modes of the flat images
+  ;   ext n - 1:         NUCs of the flat images
   ;   ext n:             onbands of the flat images
-  n_index_exts = 5L
+  n_index_exts = 6L
 
   if (n_elements(filenames) gt 0L) then begin
     ; determine total number of flats in all flat files
@@ -292,6 +306,7 @@ pro ucomp_calibration::cache_flats, filenames, $
     wavelengths = fltarr(n_flats)
     gain_modes  = lonarr(n_flats)
     onbands     = lonarr(n_flats)
+    nucs        = lonarr(n_flats)
     sgsdimv     = fltarr(n_flats)
     extensions  = strarr(n_flats)
     raw_files   = strarr(n_flats)
@@ -309,17 +324,19 @@ pro ucomp_calibration::cache_flats, filenames, $
       endfor
 
       ; read index extensions
-      fits_read, fcb, flat_times, times_header, exten_no=fcb.nextend - 4L
-      fits_read, fcb, flat_exptimes, exptimes_header, exten_no=fcb.nextend - 3L
-      fits_read, fcb, flat_wavelengths, wavelengths_header, exten_no=fcb.nextend - 2L
-      fits_read, fcb, flat_gain_modes, gain_modes_header, exten_no=fcb.nextend - 1L
-      fits_read, fcb, flat_onbands, onbands_header, exten_no=fcb.nextend
+      fits_read, fcb, flat_times, times_header, exten_no=fcb.nextend - 5L
+      fits_read, fcb, flat_exptimes, exptimes_header, exten_no=fcb.nextend - 4L
+      fits_read, fcb, flat_wavelengths, wavelengths_header, exten_no=fcb.nextend - 3L
+      fits_read, fcb, flat_gain_modes, gain_modes_header, exten_no=fcb.nextend - 2L
+      fits_read, fcb, flat_onbands, onbands_header, exten_no=fcb.nextend - 1L
+      fits_read, fcb, flat_nucs, nucs_header, exten_no=fcb.nextend
 
       times[i]       = flat_times
       exptimes[i]    = flat_exptimes
       wavelengths[i] = flat_wavelengths
       gain_modes[i]  = flat_gain_modes
       onbands[i]     = flat_onbands
+      nucs[i]        = flat_nucs
 
       i += n_elements(flat_times)
 
@@ -336,6 +353,7 @@ pro ucomp_calibration::cache_flats, filenames, $
     *self.flat_wavelengths = wavelengths
     *self.flat_gain_modes = gain_modes
     *self.flat_onbands = onbands
+    *self.flat_nucs = nucs
     *self.flat_sgsdimv = sgsdimv
     *self.flat_extensions = extensions
     *self.flat_raw_files = raw_files
@@ -362,6 +380,7 @@ pro ucomp_calibration::cache_flats, filenames, $
     *self.flat_wavelengths = [*self.flat_wavelengths, wavelengths]
     *self.flat_gain_modes = [*self.flat_gain_modes, gain_modes]
     *self.flat_onbands = [*self.flat_onbands, onbands]
+    *self.flat_onbands = [*self.flat_nucs, nucs]
     *self.flat_sgsdimv = [*self.flat_sgsdimv, sgsdimv]
     *self.flat_extensions = [*self.flat_extensions, extensions]
     *self.flat_raw_files = [*self.flat_raw_files, raw_files]
@@ -424,6 +443,7 @@ pro ucomp_calibration::discard_flats
   *self.flat_exptimes = !null
   *self.flat_wavelengths = !null
   *self.flat_gain_modes = !null
+  *self.flat_nucs = !null
   *self.flat_extensions = !null
   *self.flat_raw_files = !null
 end
@@ -447,6 +467,8 @@ end
 ;     gain mode of required dark, i.e., "high" or "low"
 ;   onband : in, required, type=string
 ;     `ONBAND` value, i.e., "rcam" or "tcam"
+;   nuc_index : in, required, type=long
+;     index of NUC value of required dark
 ;   wavelength : in, required, type=float
 ;     wavelength of science image in nm
 ;
@@ -474,7 +496,7 @@ end
 ;     if only one flat was used
 ;-
 function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
-                                      onband, wavelength, $
+                                      onband, nuc_index, wavelength, $
                                       found=found, $
                                       error_msg=error_msg, $
                                       times_found=times_found, $
@@ -511,7 +533,8 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
   ; TODO: use exptime to find proper flat
   valid_indices = where((abs(wavelength - *self.flat_wavelengths) lt wavelength_threshold) $
                           and (*self.flat_gain_modes eq gain_index) $
-                          and (*self.flat_onbands eq onband_index), $
+                          and (*self.flat_onbands eq onband_index) $
+                          and (*self.flat_nucs eq nuc_index), $
                           ; TOOD: removing below allows flats in the future to be found
                           ;and (obsday_hours gt *self.flat_times), $
                         n_valid_flats)
@@ -535,7 +558,7 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
     exptime_found = (*self.flat_exptimes)[valid_indices[0]]
 
     times_found = (*self.flat_times)[valid_indices[0]]
-    flat_dark = self->get_dark(times_found, exptime, gain_mode, $
+    flat_dark = self->get_dark(times_found, exptime, gain_mode, nuc_index, $
                                found=flat_dark_found, error_msg=dark_error_msg)
     if (~flat_dark_found) then begin
       found = 0B
@@ -556,7 +579,7 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
     exptime_found = (*self.flat_exptimes)[valid_indices[n_valid_flats - 1]]
 
     times_found = (*self.flat_times)[valid_indices[n_valid_flats - 1L]]
-    flat_dark = self->get_dark(times_found, exptime, gain_mode, $
+    flat_dark = self->get_dark(times_found, exptime, gain_mode, nuc_index, $
                                found=flat_dark_found, error_msg=dark_error_msg)
     if (~flat_dark_found) then begin
       found = 0B
@@ -583,7 +606,7 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
 
       times_found = (*self.flat_times)[valid_indices[[index1, index2]]]
 
-      flat_dark1 = self->get_dark(times_found[0], exptime, gain_mode, $
+      flat_dark1 = self->get_dark(times_found[0], exptime, gain_mode, nuc_index, $
                                   found=flat_dark_found, error_msg=dark_error_msg)
       if (~flat_dark_found) then begin
         found = 0B
@@ -592,7 +615,7 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
       endif
       flat1 -= flat_dark1
 
-      flat_dark2 = self->get_dark(times_found[1], exptime, gain_mode, $
+      flat_dark2 = self->get_dark(times_found[1], exptime, gain_mode, nuc_index, $
                                   found=flat_dark_found, error_msg=dark_error_msg)
       if (~flat_dark_found) then begin
         found = 0B
@@ -625,7 +648,7 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
       exptime_found = (*self.flat_exptimes)[valid_indices[index]]
 
       times_found = (*self.flat_times)[valid_indices[index]]
-      flat_dark = self->get_dark(times_found, exptime, gain_mode, $
+      flat_dark = self->get_dark(times_found, exptime, gain_mode, nuc_index, $
                                  found=flat_dark_found, error_msg=dark_error_msg)
       if (~flat_dark_found) then begin
         found = 0B
@@ -653,11 +676,11 @@ pro ucomp_calibration::cleanup
   compile_opt strictarr
 
   ptr_free, self.darks, self.dark_times, self.dark_exptimes, $
-            self.dark_gain_modes, self.dark_raw_files
+            self.dark_gain_modes, self.dark_nucs, self.dark_raw_files
   ptr_free, self.flats, self.flat_times, self.flat_exptimes, $
             self.flat_wavelengths, self.flat_gain_modes, self.flat_onbands, $
-            self.flat_sgsdimv, self.flat_extensions, self.flat_raw_files, $
-            self.flat_wave_region_offsets
+            self.flat_nucs, self.flat_sgsdimv, self.flat_extensions, $
+            self.flat_raw_files, self.flat_wave_region_offsets
 
 end
 
@@ -682,6 +705,7 @@ function ucomp_calibration::init, run=run
   self.dark_times       = ptr_new(/allocate_heap)
   self.dark_exptimes    = ptr_new(/allocate_heap)
   self.dark_gain_modes  = ptr_new(/allocate_heap)
+  self.dark_nucs        = ptr_new(/allocate_heap)
   self.dark_raw_files   = ptr_new(/allocate_heap)
 
   ; master flat cache
@@ -691,6 +715,7 @@ function ucomp_calibration::init, run=run
   self.flat_wavelengths = ptr_new(/allocate_heap)
   self.flat_gain_modes  = ptr_new(/allocate_heap)
   self.flat_onbands     = ptr_new(/allocate_heap)
+  self.flat_nucs        = ptr_new(/allocate_heap)
   self.flat_sgsdimv     = ptr_new(/allocate_heap)
   self.flat_extensions  = ptr_new(/allocate_heap)
   self.flat_raw_files   = ptr_new(/allocate_heap)
@@ -715,6 +740,7 @@ pro ucomp_calibration__define
            dark_times: ptr_new(), $
            dark_exptimes: ptr_new(), $
            dark_gain_modes: ptr_new(), $
+           dark_nucs: ptr_new(), $
            dark_raw_files: ptr_new(), $
 
            ; master flat cache
@@ -724,10 +750,11 @@ pro ucomp_calibration__define
            flat_wavelengths: ptr_new(), $  ; [nm] wavelengths
            flat_gain_modes: ptr_new(), $   ; 'low' or 'high'
            flat_onbands: ptr_new(), $      ; 'tcam' or 'rcam'
+           flat_nucs: ptr_new(), $         ; 'normal' or 'Offset + gain corrected'
            flat_sgsdimv: ptr_new(), $      ; SGSDIMV values
            flat_extensions: ptr_new(), $   ; extension into flat file
            flat_raw_files: ptr_new(), $    ; basename of raw file containing flat
-           flat_wave_region_offsets: ptr_new() $ ; offset
+           flat_wave_region_offsets : ptr_new() $ ; offset
 
            ; TODO: demodulation matrices
   }

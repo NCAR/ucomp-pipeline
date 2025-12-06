@@ -16,6 +16,8 @@
 ;     array of gain modes of the flats, 'high' or 'low'
 ;   flat_onbands : in, required, type=intarr(n_flats)
 ;     array of ONBAND values: 0 for RCAM, 1 for TCAM
+;   flat_nucs : in, required, type=lonarr(n_flats)
+;     array of indices of NUC values
 ;   flat_data : in, required, type="fltarr(nx, ny, n_cameras, n_extensions)"
 ;     array of ONBAND values: 0 for RCAM, 1 for TCAM
 ;
@@ -29,6 +31,7 @@ pro ucomp_flat_plots, wave_region, $
                       flat_wavelengths, $
                       flat_gain_modes, $
                       flat_onbands, $
+                      flat_nucs, $
                       flat_data, $
                       run=run
   compile_opt strictarr
@@ -49,6 +52,7 @@ pro ucomp_flat_plots, wave_region, $
     flat_dark = cal->get_dark(flat_times[f], $
                               flat_exposures[f], $
                               flat_gain_modes[f] ? 'high' : 'low', $
+                              flat_nucs[f], $
                               found=flat_dark_found)
     if (flat_dark_found) then begin
       if (size(flat_dark, /n_dimensions) eq 4L) then flat_dark = flat_dark[*, *, *, 0]

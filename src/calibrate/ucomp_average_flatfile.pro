@@ -25,6 +25,9 @@
 ;   onband : out, optional, type=bytarr(n_extensions)
 ;     set to a named variable to retrieve the "ONBAND" value for the averaged
 ;     extensions where "rcam" = 0 and "tcam" = 1
+;   nuc : out, optional, type=lonarr(n_extensions)
+;     set to a named variable to retreive the "NUC" value for the averaged
+;     extensions
 ;   wavelength : out, optional, type=fltarr(n_extensions)
 ;     set to a named variable to retrieve the "WAVELNG" value for the averaged
 ;     extensions
@@ -34,8 +37,10 @@ pro ucomp_average_flatfile, primary_header, ext_data, ext_headers, $
                             exptime=averaged_exptime, $
                             gain_mode=averaged_gain_mode, $
                             onband=averaged_onband, $
+                            nuc=averaged_nuc, $
                             sgsdimv=averaged_sgsdimv, $
-                            wavelength=averaged_wavelength
+                            wavelength=averaged_wavelength, $
+                            run=run
   compile_opt strictarr
 
   n_extensions = n_elements(ext_headers)
@@ -45,6 +50,12 @@ pro ucomp_average_flatfile, primary_header, ext_data, ext_headers, $
   onband     = bytarr(n_extensions)
   sgsdimv    = fltarr(n_extensions)
   wavelength = fltarr(n_extensions)
+
+  rcam_nuc = ucomp_getpar(primary_header, 'RCAMNUC')
+  tcam_nuc = ucomp_getpar(primary_header, 'TCAMNUC')
+  if (rcam_nuc ne tcam_nuc) then begin
+    ; TODO: fail here
+  endif
 
   ; group by EXPTIME, ONBAND, WAVELNG
   for e = 0L, n_extensions - 1L do begin
@@ -73,6 +84,8 @@ pro ucomp_average_flatfile, primary_header, ext_data, ext_headers, $
   averaged_exptime    = fltarr(n_groups)
   averaged_gain_mode  = bytarr(n_groups)
   averaged_onband     = bytarr(n_groups)
+  nuc_values          = run->epoch('nuc_values')
+  averaged_nuc        = lonarr(n_groups) + ucomp_nuc2index(rcam_nuc, values=nuc_values)
   averaged_sgsdimv    = fltarr(n_groups)
   averaged_wavelength = fltarr(n_groups)
   extensions          = strarr(n_groups)

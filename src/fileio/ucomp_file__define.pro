@@ -217,6 +217,7 @@ pro ucomp_file::getProperty, run=run, $
                              program_name=program_name, $
                              exptime=exptime, $
                              gain_mode=gain_mode, $
+                             nuc=nuc, $
                              pol_list=pol_list, $
                              focus=focus, $
                              o1focus=o1focus, $
@@ -413,6 +414,7 @@ pro ucomp_file::getProperty, run=run, $
 
   if (arg_present(exptime)) then exptime = self.exptime
   if (arg_present(gain_mode)) then gain_mode = self.gain_mode
+  if (arg_present(nuc)) then nuc = self.nuc
   if (arg_present(pol_list)) then pol_list = 'iquv'
   if (arg_present(nd)) then nd = self.nd
 
@@ -727,6 +729,12 @@ pro ucomp_file::_inventory
 
   self.gain_mode = strtrim(strlowcase(ucomp_getpar(primary_header, 'GAIN', found=found)), 2)
 
+  rcam_nuc = strtrim(ucomp_getpar(primary_header, 'RCAMNUC', found=found), 2)
+  tcam_nuc = strtrim(ucomp_getpar(primary_header, 'TCAMNUC', found=found), 2)
+  if (rcam_nuc ne tcam_nuc) then begin
+    ; TODO: fail here
+  endif else self.nuc = rcam_nuc
+
   ; TODO: enter this from the headers
   self.nd = 0L
 
@@ -951,6 +959,7 @@ pro ucomp_file__define
            obs_plan_version                     : '', $
            exptime                              : 0.0, $
            gain_mode                            : '', $
+           nuc                                  : '', $
            numsum                               : 0L, $
 
            focus                                : 0.0, $

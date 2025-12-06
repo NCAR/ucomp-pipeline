@@ -51,6 +51,7 @@ pro ucomp_make_darks, run=run
   dark_times      = list()
   dark_exposures  = list()
   dark_gain_modes = list()
+  dark_nucs       = list()
   dark_raw_files  = list()
 
   dark_data       = list()
@@ -100,7 +101,9 @@ pro ucomp_make_darks, run=run
     ucomp_average_darkfile, primary_header, ext_data, ext_headers, $
                             n_extensions=n_averaged_extensions, $
                             exptime=averaged_exptime, $
-                            gain_mode=averaged_gain_mode
+                            gain_mode=averaged_gain_mode, $
+                            nuc=averaged_nuc, $
+                            run=run
 
     ; move demoted_keywords from primary header to extension headers
     for k = 0L, n_elements(demoted_keywords) - 1L do begin
@@ -130,6 +133,7 @@ pro ucomp_make_darks, run=run
 
     dark_exposures->add, averaged_exptime, /extract
     dark_gain_modes->add, averaged_gain_mode, /extract
+    dark_nucs->add, averaged_nuc, /extract
     dark_raw_files->add, averaged_raw_files, /extract
 
     for e = 0L, n_averaged_extensions - 1L do begin
@@ -195,10 +199,12 @@ pro ucomp_make_darks, run=run
   dark_times_array      = dark_times->toArray()
   dark_exposures_array  = dark_exposures->toArray()
   dark_gain_modes_array = dark_gain_modes->toArray()
+  dark_nucs_array = dark_nucs->toArray()
   dark_raw_files_array  = dark_raw_files->toArray()
   obj_destroy, [dark_times, $
                 dark_exposures, $
                 dark_gain_modes, $
+                dark_nucs, $
                 dark_raw_files]
 
   ; write master dark FITS file in the process_basedir/level1
@@ -224,6 +230,9 @@ pro ucomp_make_darks, run=run
   mkhdr, gain_modes_header, dark_gain_modes_array, /extend, /image
   fits_write, output_fcb, dark_gain_modes_array, gain_modes_header, extname='Gain modes'
 
+  mkhdr, nucs_header, dark_nucs_array, /extend, /image
+  fits_write, output_fcb, dark_nucs_array, nucs_header, extname='NUCs'
+
   fits_close, output_fcb
 
   averaged_dark_images = dark_data->toArray(/transpose)
@@ -236,6 +245,7 @@ pro ucomp_make_darks, run=run
                     times=dark_times_array, $
                     exptimes=dark_exposures_array, $
                     gain_modes=dark_gain_modes_array, $
+                    nucs=dark_nucs_array, $
                     raw_files=dark_raw_files_array
 
   tcam_means /= (n_tcam gt 0L ? n_tcam : 1L)

@@ -41,7 +41,7 @@ pro ucomp_make_darkcor_flats, wave_region, run=run
 
   cal = run.calibration
 
-  n_index_extensions = 5L
+  n_index_extensions = 6L
   fits_open, master_flat_filename, master_flat_fcb
   fits_open, master_darkcor_flat_filename, master_dark_cor_flat_fcb, /write
 
@@ -55,6 +55,9 @@ pro ucomp_make_darkcor_flats, wave_region, run=run
   gainmodes_exten_no = master_flat_fcb.nextend - n_index_extensions + 4L
   fits_read, master_flat_fcb, gain_mode_indices, gainmodes_header, exten_no=gainmodes_exten_no
 
+  nucs_exten_no = master_flat_fcb.nextend - n_index_extensions + 6L
+  fits_read, master_flat_fcb, nucs_indices, nucs_header, exten_no=nucs_exten_no
+
   ; read primary extension, write primary extension
   fits_read, master_flat_fcb, primary_data, primary_header, exten_no=0L
   fits_write, master_dark_cor_flat_fcb, primary_data, primary_header
@@ -67,6 +70,7 @@ pro ucomp_make_darkcor_flats, wave_region, run=run
     dark = cal->get_dark(times[e - 1], $
                          exptimes[e - 1], $
                          (['low', 'high'])[gain_mode_indices[e - 1]], $
+                         nucs_indices[e - 1], $
                          found=dark_found, $
                          master_extensions=master_dark_extensions, $
                          raw_filenames=raw_dark_filenames, $
