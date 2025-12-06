@@ -9,8 +9,12 @@ function ucomp_nuc2index_ut::test_basic
 
   index = ucomp_nuc2index('normal', values=nuc_values)
   assert, index eq 0, 'incorrect index for normal: %d', index
+
   index = ucomp_nuc2index('Offset + gain corrected', values=nuc_values)
   assert, index eq 1, 'incorrect index for Offset + gain corrected: %d', index
+
+  index = ucomp_nuc2index('An unexpected value', values=nuc_values)
+  assert, index eq 2, 'incorrect index for An unexpected value: %d', index
 
   obj_destroy, run
 
