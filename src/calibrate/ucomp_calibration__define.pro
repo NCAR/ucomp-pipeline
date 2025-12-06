@@ -380,7 +380,7 @@ pro ucomp_calibration::cache_flats, filenames, $
     *self.flat_wavelengths = [*self.flat_wavelengths, wavelengths]
     *self.flat_gain_modes = [*self.flat_gain_modes, gain_modes]
     *self.flat_onbands = [*self.flat_onbands, onbands]
-    *self.flat_onbands = [*self.flat_nucs, nucs]
+    *self.flat_nucs = [*self.flat_nucs, nucs]
     *self.flat_sgsdimv = [*self.flat_sgsdimv, sgsdimv]
     *self.flat_extensions = [*self.flat_extensions, extensions]
     *self.flat_raw_files = [*self.flat_raw_files, raw_files]
@@ -531,6 +531,16 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
   gain_index           = gain_mode eq 'high'
   onband_index         = onband eq 'tcam'
   ; TODO: use exptime to find proper flat
+
+  mg_log, strjoin(strtrim(abs(wavelength - *self.flat_wavelengths) lt wavelength_threshold, 2), ','), $
+          name='ucomp/eod', /debug
+  mg_log, strjoin(strtrim(*self.flat_gain_modes eq gain_index, 2), ','), $
+          name='ucomp/eod', /debug
+  mg_log, strjoin(strtrim(*self.flat_onbands eq onband_index, 2), ','), $
+          name='ucomp/eod', /debug
+  mg_log, strjoin(strtrim(*self.flat_nucs eq nuc_index, 2), ','), $
+          name='ucomp/eod', /debug
+
   valid_indices = where((abs(wavelength - *self.flat_wavelengths) lt wavelength_threshold) $
                           and (*self.flat_gain_modes eq gain_index) $
                           and (*self.flat_onbands eq onband_index) $
