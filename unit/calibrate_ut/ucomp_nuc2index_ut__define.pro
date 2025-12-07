@@ -14,7 +14,27 @@ function ucomp_nuc2index_ut::test_basic
   assert, index eq 1, 'incorrect index for Offset + gain corrected: %d', index
 
   index = ucomp_nuc2index('An unexpected value', values=nuc_values)
-  assert, index eq 2, 'incorrect index for An unexpected value: %d', index
+  assert, index eq -1, 'incorrect index for An unexpected value: %d', index
+
+  obj_destroy, run
+
+  return, 1
+end
+
+
+function ucomp_nuc2index_ut::test_roundtrip
+  compile_opt strictarr
+
+  run = self->get_run()
+
+  nuc_values = run->epoch('nuc_values')
+  n_nuc_values = n_elements(nuc_values)
+
+  for v = 0L, n_nuc_values - 1L do begin
+    index = ucomp_nuc2index(nuc_values[v], values=nuc_values)
+    assert, ucomp_index2nuc(index, values=nuc_values) eq nuc_values[v], $
+            'invalid roundtrip for %s', nuc_values[v]
+  endfor
 
   obj_destroy, run
 

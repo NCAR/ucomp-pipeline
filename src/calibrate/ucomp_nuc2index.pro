@@ -18,5 +18,5 @@ function ucomp_nuc2index, nuc, values=values
   compile_opt strictarr
 
   indices = where(nuc eq values, count)
-  return, count eq 0L ? (n_elements(values) - 1L) : indices[0]
+  return, indices[0]
 end

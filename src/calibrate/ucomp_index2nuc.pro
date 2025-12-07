@@ -17,5 +17,5 @@
 function ucomp_index2nuc, index, values=values
   compile_opt strictarr
 
-  return, values[index]
+  return, index eq -1 ? 'invalid' : values[index]
 end

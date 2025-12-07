@@ -732,7 +732,7 @@ pro ucomp_file::_inventory
   rcam_nuc = strtrim(ucomp_getpar(primary_header, 'RCAMNUC', found=found), 2)
   tcam_nuc = strtrim(ucomp_getpar(primary_header, 'TCAMNUC', found=found), 2)
   if (rcam_nuc ne tcam_nuc) then begin
-    self.nuc = 'invalid'
+    self.nuc = rcam_nuc + '/' + tcam_nuc
   endif else self.nuc = rcam_nuc
 
   ; TODO: enter this from the headers

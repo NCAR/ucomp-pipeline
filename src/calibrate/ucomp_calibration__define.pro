@@ -149,6 +149,11 @@ function ucomp_calibration::get_dark, obsday_hours, exptime, gain_mode, nuc_inde
     return, !null
   endif
 
+  if (nuc_index lt 0L) then begin
+    error_msg = 'invalid NUC index'
+    return, !null
+  endif
+
   ; find the darks with an exposure time that is close enough to the given
   ; exptime
   exptime_threshold = 0.01   ; [ms]
@@ -521,6 +526,11 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
   error_msg = ''
   if (n_elements(*self.flats) eq 0L) then begin
     error_msg = 'no flats'
+    return, !null
+  endif
+
+  if (nuc_index lt 0L) then begin
+    error_msg = 'invalid NUC index'
     return, !null
   endif
 
