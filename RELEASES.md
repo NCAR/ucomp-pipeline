@@ -768,3 +768,5 @@
 - mark days with unfixable verification problems in epochs file
 - create background images with centering annotations
 - epoch updates
+
+#### 1.0.22
