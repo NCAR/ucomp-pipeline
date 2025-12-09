@@ -753,7 +753,18 @@
 
 - handle files where bad frames removal leave only a single extension
 
-#### 1.0.21
+#### 1.0.21 [Dec 9, 2025]
 
+- provide IQUV for backgrounds in level 1 FITS files
 - fix for RAWDARK{1,2} FITS keywords
 - fix for order of operations in dark-corrected flat creation
+- use like NUC values for dark and flat corrections
+- produce master dark-corrected flat file
+- changed occulter post gap from 8 to 14 degrees
+- greatly improve performance of mission image scale plot creation
+- update SGS plot ranges
+- use quality check names in quality mask
+- handle CONTIN value checks within a file
+- mark days with unfixable verification problems in epochs file
+- create background images with centering annotations
+- epoch updates
