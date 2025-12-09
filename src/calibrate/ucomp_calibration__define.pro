@@ -287,8 +287,8 @@ pro ucomp_calibration::cache_flats, filenames, $
   ;   ext n - 4:         exposure times of the flat images
   ;   ext n - 3:         wavelengths of the flat images
   ;   ext n - 2:         gain modes of the flat images
-  ;   ext n - 1:         NUCs of the flat images
-  ;   ext n:             onbands of the flat images
+  ;   ext n - 1:         onbands of the flat images
+  ;   ext n:             NUCs of the flat images
   n_index_exts = 6L
 
   if (n_elements(filenames) gt 0L) then begin
