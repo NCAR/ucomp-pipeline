@@ -19,7 +19,6 @@ pro ucomp_db_update, run=run
   endif
 
   dark_files = run->get_files(data_type='dark', count=n_dark_files)
-  flat_files = run->get_files(data_type='flat', count=n_flat_files)
   cal_files = run->get_files(data_type='cal', count=n_cal_files)
 
   ; connect to the database
@@ -49,20 +48,29 @@ pro ucomp_db_update, run=run
                        logger_name=run.logger_name
 
   ucomp_db_cal_insert, dark_files, 'dark', $
-                       obsday_index, sw_index, db, $
-                       logger_name=run.logger_name
-  ucomp_db_cal_insert, flat_files, 'flat', $
-                       obsday_index, sw_index, db, $
+                       obsday_index, sw_index, $
+                       database=db, $
                        logger_name=run.logger_name
   ucomp_db_cal_insert, cal_files, 'cal', $
-                       obsday_index, sw_index, db, $
+                       obsday_index, sw_index, $
+                       database=db, $
                        logger_name=run.logger_name
+
+  wave_regions = run->config('options/wave_regions')
+
+  for w = 0L, n_elements(wave_regions) - 1L do begin
+    flat_files = run->get_files(data_type='flat', wave_region=wave_regions[w], $
+                                count=n_flat_files)
+    ucomp_db_cal_insert, flat_files, 'flat', $
+                         obsday_index, sw_index, wave_regions[w], $
+                         database=db, $
+                         logger_name=run.logger_name, run=run
+  endfor
 
   ucomp_db_update_mlso_numfiles, obsday_index, db, run=run
 
   ucomp_rolling_dark_plots, db, run=run
 
-  wave_regions = run->config('options/wave_regions')
   for w = 0L, n_elements(wave_regions) - 1L do begin
     sci_files = run->get_files(data_type='sci', wave_region=wave_regions[w], $
                                count=n_sci_files)

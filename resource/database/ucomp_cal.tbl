@@ -40,6 +40,12 @@ create table ucomp_cal (
   tcam_median_continuum   float (14, 7),
   tcam_median_linecenter  float (14, 7),
 
+  -- normalized to 80 ms exposure time and NUMSUM=16
+  darkcorrected_rcam_median_linecenter   float (14, 7),
+  darkcorrected_rcam_median_continuum    float (14, 7),
+  darkcorrected_tcam_median_linecenter   float (14, 7),
+  darkcorrected_tcam_median_continuum    float (14, 7),
+
   occltrid                char (10),
 
   ucomp_sw_id             int (10),
