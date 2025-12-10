@@ -142,6 +142,9 @@ pro ucomp_make_flats, wave_region, run=run
     flat_nucs->add, averaged_nuc, /extract
     flat_sgsdimv->add, averaged_sgsdimv, /extract
 
+    ; normalized to 80 ms and NUMSUM=16
+    norm = 16.0 * 80.0 / flat_file.exptime
+
     for e = 0L, n_averaged_extensions - 1L do begin
       flat_image = reform(ext_data[*, *, *, *, e])
 
@@ -166,16 +169,16 @@ pro ucomp_make_flats, wave_region, run=run
           mg_log, 'RCAM roughness: %0.4f', flat_file.rcam_roughness, $
                   name=run.logger_name, /debug
 
-          flat_file.rcam_median_linecenter = median(rcam_image[field_mask_indices])
-          flat_file.tcam_median_continuum = median(tcam_image[field_mask_indices])
+          flat_file.rcam_median_linecenter = norm * median(rcam_image[field_mask_indices])
+          flat_file.tcam_median_continuum = norm * median(tcam_image[field_mask_indices])
         endif
         if (averaged_onband[e] eq 1) then begin
           flat_file.tcam_roughness = ucomp_roughness(tcam_image)
           mg_log, 'TCAM roughness : %0.4f', flat_file.tcam_roughness, $
                   name=run.logger_name, /debug
 
-          flat_file.tcam_median_linecenter = median(tcam_image[field_mask_indices])
-          flat_file.rcam_median_continuum = median(rcam_image[field_mask_indices])
+          flat_file.tcam_median_linecenter = norm * median(tcam_image[field_mask_indices])
+          flat_file.rcam_median_continuum = norm * median(rcam_image[field_mask_indices])
         endif
       endif
       flat_data->add, flat_image
