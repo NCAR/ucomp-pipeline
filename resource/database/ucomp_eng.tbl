@@ -86,6 +86,8 @@ create table ucomp_eng (
 
   occltrid                     char (10),     -- occulter ID
   o1id                         char (10),     -- O1 ID
+  rcamnuc                      char (30),
+  tcamnuc                      char (30),
 
   -- dark corrected flat median for onband and continuum
   flat_rcam_median_linecenter  float (14, 7),

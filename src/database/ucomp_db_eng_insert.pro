@@ -113,6 +113,8 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
 
             {name: 'occltrid', type: '''%s'''}, $
             {name: 'o1id', type: '''%s'''}, $
+            {name: 'rcamnuc', type: '''%s'''}, $
+            {name: 'tcamnuc', type: '''%s'''}, $
 
             {name: 'flat_rcam_median_linecenter', type: '%s'}, $
             {name: 'flat_rcam_median_continuum', type: '%s'}, $
@@ -253,6 +255,8 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
 
                  file.occultrid, $
                  file.o1id, $
+                 file.rcamnuc, $
+                 file.tcamnuc, $
 
                  ucomp_db_float(file.flat_rcam_median_linecenter), $
                  ucomp_db_float(file.flat_rcam_median_continuum), $
