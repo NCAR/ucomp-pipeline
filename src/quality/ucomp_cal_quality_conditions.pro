@@ -46,7 +46,10 @@ function ucomp_cal_quality_conditions, wave_region, run=run
      description: 'check if missing a state after removing bad frames and averaging'}, $
     {mask: 0UL, $
      checker: 'ucomp_quality_contin', $
-     description: 'check CONTIN is the same for every extension'}]
+     description: 'check CONTIN is the same for every extension'}, $
+    {mask: 0UL, $
+     checker: 'ucomp_quality_nuc', $
+     description: 'check RCAMNUC and TCAMNUC are standard and consistent'}]
 
   quality_conditions.mask = 2UL ^ (ulindgen(n_elements(quality_conditions)))
 
