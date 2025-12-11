@@ -6,7 +6,7 @@ function ucomp_quality_mask_ut::test_cal
   run = self->get_run()
 
   result = ucomp_quality_mask('datatype|contin', /calibration, run=run)
-  standard = [1B, 0B, 1B, 1B, 1B, 1B, 0B]
+  standard = [1B, 0B, 1B, 1B, 1B, 1B, 0B, 1B]
   assert, array_equal(result, standard), 'incorrect result'
 
   obj_destroy, run
@@ -21,7 +21,7 @@ function ucomp_quality_mask_ut::test_sci
   run = self->get_run()
   
   result = ucomp_quality_mask('datatype|contin', run=run)
-  standard = [1B, 1B, 0B, 1B, 1B, 1B, 1B, 1B, 1B, 1B, 0B]
+  standard = [1B, 1B, 0B, 1B, 1B, 1B, 1B, 1B, 1B, 1B, 0B, 1B]
   assert, array_equal(result, standard), 'incorrect result'
 
   obj_destroy, run
