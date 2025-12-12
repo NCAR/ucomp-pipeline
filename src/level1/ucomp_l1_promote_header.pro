@@ -153,7 +153,7 @@ pro ucomp_l1_promote_header, file, $
     annulus_mask = ucomp_annulus(1.14 * solar_radius, 1.5 * solar_radius, $
                                  dimensions=intensity_dims[0:1])
     annulus_indices = where(annulus_mask, n_annulus_pts)
-    intensity = reform(center_wavelength_intensity[*, *, 0])
+    center_wavelength_intensity = reform(center_wavelength_data[*, *, 0])
     file.median_intensity = median(center_wavelength_intensity[annulus_indices])
   endif
 
