@@ -84,6 +84,7 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
 
             {name: 'exposure', type: '%f'}, $
             {name: 'nd', type: '%d'}, $
+            {name: 'intensity', type: '%s'}, $
             {name: 'background', type: '%s'}, $
 
             {name: 't_base', type: '%s'}, $
@@ -226,6 +227,7 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
 
                  file.exptime, $
                  file.nd, $
+                 ucomp_db_float(file.median_intensity), $
                  ucomp_db_float(file.median_background), $
 
                  ucomp_db_float(file.t_base, valid_range=[-20.0, 100.0]), $

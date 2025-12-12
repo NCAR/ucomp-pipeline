@@ -86,6 +86,7 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
                              flat_tcam_median_linecenter=flat_tcam_median_linecenter, $
                              flat_tcam_median_continuum=flat_tcam_median_continuum, $
                              image_scale=image_scale, $
+                             median_intensity=median_intensity, $
                              median_background=median_background, $
                              quality_bitmask=quality_bitmask, $
                              n_rcam_onband_saturated_pixels=n_rcam_onband_saturated_pixels, $
@@ -131,6 +132,7 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
 
   if (n_elements(image_scale)) then self.image_scale = image_scale
 
+  if (n_elements(median_intensity)) then self.median_intensity = median_intensity
   if (n_elements(median_background)) then self.median_background = median_background
 
   if (n_elements(quality_bitmask) gt 0L) then begin
@@ -228,6 +230,7 @@ pro ucomp_file::getProperty, run=run, $
                              n_unique_wavelengths=n_unique_wavelengths, $
                              unique_wavelengths=unique_wavelengths, $
                              onband_indices=onband_indices, $
+                             median_intensity=median_intensity, $
                              median_background=median_background, $
                              quality_bitmask=quality_bitmask, $
                              n_rcam_onband_saturated_pixels=n_rcam_onband_saturated_pixels, $
@@ -431,6 +434,7 @@ pro ucomp_file::getProperty, run=run, $
 
   if (arg_present(data_type)) then data_type = self.data_type
 
+  if (arg_present(median_intensity)) then median_intensity = self.median_intensity
   if (arg_present(median_background)) then median_background = self.median_background
 
   if (arg_present(quality_bitmask)) then quality_bitmask = self.quality_bitmask
@@ -883,6 +887,7 @@ function ucomp_file::init, raw_filename, run=run
 
   self.data_type = 'unk'
 
+  self.median_intensity  = !values.f_nan
   self.median_background = !values.f_nan
   self.vcrosstalk_metric = !values.f_nan
   self.max_sigma         = !values.f_nan
@@ -984,6 +989,7 @@ pro ucomp_file__define
 
            obsswid                              : '', $
 
+           median_intensity                     : 0.0, $
            median_background                    : 0.0, $
 
            ; for flats only

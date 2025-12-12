@@ -57,7 +57,8 @@ create table ucomp_eng (
 
   exposure                     float (5, 1),  -- millisec
   nd                           tinyint (2),
-  background                   float (7, 3),  -- median of masked line center background for i
+  intensity                    float (7, 3),  -- median of masked line center intensity
+  background                   float (7, 3),  -- median of masked line center background for I
 
   t_base                       float (9, 6),  -- filter wheel temp
   t_lcvr1                      float (9, 6),  -- Lyot LCVR1 temp

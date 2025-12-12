@@ -148,6 +148,13 @@ pro ucomp_l1_promote_header, file, $
   if (n_elements(center_wavelength_indices) gt 0L) then begin
     center_wavelength_data = data[*, *, *, center_wavelength_indices]
     file.vcrosstalk_metric = ucomp_vcrosstalk_metric(center_wavelength_data, solar_radius)
+
+    intensity_dims = size(center_wavelength_data, /dimensions)
+    annulus_mask = ucomp_annulus(1.14 * solar_radius, 1.5 * solar_radius, $
+                                 dimensions=intensity_dims[0:1])
+    annulus_indices = where(annulus_mask, n_annulus_pts)
+    intensity = reform(center_wavelength_intensity[*, *, 0])
+    file.median_intensity = median(center_wavelength_intensity[annulus_indices])
   endif
 
   ; quality metrics
@@ -155,17 +162,19 @@ pro ucomp_l1_promote_header, file, $
   ucomp_addpar, primary_header, 'VCROSSTK', file.vcrosstalk_metric, $
                 comment='Stokes V crosstalk metric', after=after
 
-  center_wavelength_background = backgrounds[*, *, *, file.n_unique_wavelengths / 2L]
-  bkg_dims = size(center_wavelength_background, /dimensions)
-  annulus_mask = ucomp_annulus(1.14 * solar_radius, 1.5 * solar_radius, $
-                               dimensions=bkg_dims[0:1])
-  annulus_indices = where(annulus_mask, n_annulus_pts)
-  background_i = reform(center_wavelength_background[*, *, 0])
-  median_background = median(background_i[annulus_indices])
-  file.median_background = median_background
-  ucomp_addpar, primary_header, 'MED_BKG', median_background, $
-                comment='[ppm] median of line center background annulus', $
-                format='(F0.3)', after=after
+  if (n_elements(center_wavelength_indices) gt 0L) then begin
+    center_wavelength_background = backgrounds[*, *, *, center_wavelength_indices]
+    bkg_dims = size(center_wavelength_background, /dimensions)
+    annulus_mask = ucomp_annulus(1.14 * solar_radius, 1.5 * solar_radius, $
+                                dimensions=bkg_dims[0:1])
+    annulus_indices = where(annulus_mask, n_annulus_pts)
+    background_i = reform(center_wavelength_background[*, *, 0])
+    median_background = median(background_i[annulus_indices])
+    file.median_background = median_background
+    ucomp_addpar, primary_header, 'MED_BKG', median_background, $
+                  comment='[ppm] median of line center background annulus', $
+                  format='(F0.3)', after=after
+  endif
 
   ucomp_addpar, primary_header, 'NUMSAT0O', file.n_rcam_onband_saturated_pixels, $
                 comment='number of saturated pixels in onband RCAM', $
