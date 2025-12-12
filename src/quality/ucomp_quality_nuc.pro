@@ -29,9 +29,25 @@ function ucomp_quality_nuc, file, $
 
   rcam_nuc = ucomp_getpar(primary_header, 'RCAMNUC')
   tcam_nuc = ucomp_getpar(primary_header, 'TCAMNUC')
+  if (rcam_nuc ne tcam_nuc) then begin
+    msg = string(rcam_nuc, tcam_nuc, format='RCAM_NUC ''%s'' != TCAMNUC ''%s''')
+    mg_log, msg, name=run.logger_name, /error
+    run->send_alert, 'BAD_NUC_VALUE', msg
+  endif
 
   rcam_index = ucomp_nuc2index(rcam_nuc, values=run->epoch('nuc_values'))
+  if (rcam_index lt 0) then begin
+    msg = string(rcam_nuc, format='RCAM_NUC ''%s'' not an accepted value')
+    mg_log, msg, name=run.logger_name, /error
+    run->send_alert, 'BAD_NUC_VALUE', msg
+  endif
+
   tcam_index = ucomp_nuc2index(tcam_nuc, values=run->epoch('nuc_values'))
+  if (tcam_index lt 0) then begin
+    msg = string(tcam_nuc, format='TCAM_NUC ''%s'' not an accepted value')
+    mg_log, msg, name=run.logger_name, /error
+    run->send_alert, 'BAD_NUC_VALUE', msg
+  endif
 
   return, (rcam_nuc ne tcam_nuc) || (rcam_index lt 0) || (tcam_index lt 0)
 end

@@ -959,7 +959,7 @@ end
 
 ;+
 ; Query whether a given alert should be send. Alerts are a type of notification
-; send *during* the running of the near-realtime pipeline to warn the observers
+; sent *during* the running of the near-realtime pipeline to warn the observers
 ; about some non-optimal functioning of the instrument.
 ;
 ; :Returns:
@@ -971,8 +971,13 @@ end
 ;   msg : in, required, type=string/strarr
 ;     message to be sent in the alert, not including the filename that is
 ;     causing the alert
+;
+; :Keywords:
+;   datetime : out, optional, type=string
+;     set to a named variable to retrieve the official date/time for the alert
+;     in the format "YYYYMMDD.HHMMSS"
 ;-
-function ucomp_run::can_send_alert, type, msg
+function ucomp_run::_can_send_alert, type, msg, datetime=datetime
   compile_opt strictarr
 
   dt_format = '(C(CYI4.4, CMOI2.2, CDI2.2, ".", CHI2.2, CMI2.2, CSI2.2))'
@@ -1009,7 +1014,7 @@ function ucomp_run::can_send_alert, type, msg
   if (n_elements(last_match_datetime) eq 0L) then begin
     can_send = 1B
   endif else begin
-    alert_timeout = self->config('alerts/' + type)
+    alert_timeout = self->config('alerts/' + strlowcase(type))
     case 1B of
       alert_timeout lt 0: can_send = 0B
       alert_timeout eq 0: can_send = 1B
@@ -1027,14 +1032,62 @@ function ucomp_run::can_send_alert, type, msg
 
   ; if alert can be sent, add alert info to the alerts.log and cache
   if (can_send) then begin
-    now = string(systime(/seconds, /julian), format=dt_format)
+    now = systime(/julian)
+    formatted_now = string(now, format=dt_format)
     printf, lun, now, type, msg_hash, format='(%"%-16s %-30s %s")'
-    self.alerts->add, {datetime: now, type: type, msg_hash: msg_hash}
+    self.alerts->add, {datetime: formatted_now, type: type, msg_hash: msg_hash}
+    datetime = now   ; return to caller
   endif
 
   free_lun, lun
 
   return, can_send
+end
+
+
+;+
+; This should be only called by `::can_send_alert` if it determines that the
+; alert should be sent.
+;
+; :Params:
+;   type : in, required, type=string
+;     alert type, e.g., "BAD_FITS_KEYWORD"
+;   msg : in, required, type=string/strarr
+;     message to be sent in the alert, not including the filename that is
+;     causing the alert
+;-
+pro ucomp_run::send_alert, type, msg
+  compile_opt strictarr
+
+  can_send = self->_can_send_alert(type, msg, datetime=datetime)
+  if (can_send) then begin
+    dt_format = '(C(CYI4.4, "-", CMOI2.2, "-", CDI2.2, "T", CHI2.2, ":", CMI2.2, ":", CSI2.2))'
+    formatted_datetime = string(datetime, format=dt_format)
+
+    to_email = self->config('notifications/email')
+    subject = string(type, format='UCoMP Alert: %s')
+
+    body = list()
+
+    body->add, string(formatted_datetime, format='Alert generated @ %s')
+    body->add, ''
+    body->add, msg
+    body->add, ''
+
+    ; add tag about pipeline and process at the end of body
+    spawn, 'hostname', hostname, exit_status=status
+    if (status ne 0) then hostname = 'unknown'
+    body->add, string(mg_src_root(/filename), $
+                      getenv('USER'), hostname, $
+                      format='(%"Sent from %s (%s@%s)")')
+    code_version = ucomp_version(revision=revision, branch=branch)
+    body->add, string(code_version, revision, branch, $
+                      format='(%"ucomp-pipeline %s (%s on %s)")')
+    body_text = body->toArray()
+    obj_destroy, body
+
+    mg_send_mail, to_email, subject, body_text, from='ucomp-pipeline@ucar.edu'
+  endif
 end
 
 
