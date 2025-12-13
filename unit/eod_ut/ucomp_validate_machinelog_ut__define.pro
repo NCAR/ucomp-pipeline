@@ -17,6 +17,7 @@ function ucomp_validate_machinelog_ut::test_pass
   return, 1
 end
 
+
 function ucomp_validate_machinelog_ut::test_missingfile
   compile_opt strictarr
 
