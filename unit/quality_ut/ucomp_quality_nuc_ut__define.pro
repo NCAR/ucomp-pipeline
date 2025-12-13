@@ -34,10 +34,16 @@ end
 function ucomp_quality_nuc_ut::test_oddvalue
   compile_opt strictarr
 
-  run = self->get_run()
+  date = '20220816'
+  raw_basename = '20220816.221044.99.ucomp.l0.fts'
+
+  run = self->get_run(date=date)
   nuc = 'A new strange value'
   primary_header = self->make_header(nuc, nuc)
 
+  raw_dir = run->config('raw/basedir')
+  raw_filename = filepath(raw_basename, subdir=date, root=raw_dir)
+  file = ucomp_file(raw_filename, run=run)
   quality = ucomp_quality_nuc(file, $
                               primary_header, $
                               ext_data, $
@@ -45,7 +51,7 @@ function ucomp_quality_nuc_ut::test_oddvalue
                               run=run)
   assert, quality eq 1, 'strange NUCs passed'
 
-  obj_destroy, run
+  obj_destroy, [file, run]
 
   return, 1
 end
@@ -54,9 +60,15 @@ end
 function ucomp_quality_nuc_ut::test_different
   compile_opt strictarr
 
-  run = self->get_run()
+  date = '20220816'
+  raw_basename = '20220816.221044.99.ucomp.l0.fts'
+
+  run = self->get_run(date=date)
   primary_header = self->make_header('normal', 'Offset + gain corrected')
 
+  raw_dir = run->config('raw/basedir')
+  raw_filename = filepath(raw_basename, subdir=date, root=raw_dir)
+  file = ucomp_file(raw_filename, run=run)
   quality = ucomp_quality_nuc(file, $
                               primary_header, $
                               ext_data, $
@@ -64,7 +76,7 @@ function ucomp_quality_nuc_ut::test_different
                               run=run)
   assert, quality eq 1, 'different NUCs passed'
 
-  obj_destroy, run
+  obj_destroy, [file, run]
 
   return, 1
 end

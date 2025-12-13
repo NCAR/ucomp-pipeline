@@ -178,6 +178,7 @@ function ucomp_run_ut::init, _extra=e
                             'ucomp_run::setProperty', $
                             'ucomp_run::getProperty', $
                             'ucomp_run::get_distortion', $
+                            'ucomp_run::send_alert', $
                             'ucomp_run::get_hot_pixels', $
                             'ucomp_run::load_badframes', $
                             'ucomp_run::log_memory', $
@@ -192,7 +193,6 @@ function ucomp_run_ut::init, _extra=e
                             'ucomp_run::_overloadPrint', $
                             'ucomp_run::temperature_map_option', $
                             'ucomp_run::all_temperature_maps', $
-                            'ucomp_run::can_send_alert', $
                             'ucomp_run::validate_config', $
                             'ucomp_run::config', $
                             'ucomp_run::all_lines', $

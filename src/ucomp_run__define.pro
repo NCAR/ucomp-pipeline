@@ -962,6 +962,8 @@ end
 ; sent *during* the running of the near-realtime pipeline to warn the observers
 ; about some non-optimal functioning of the instrument.
 ;
+; Don't call this directly: it is called automatically by `::send_alert`.
+;
 ; :Returns:
 ;   1B if the alert should be send, 0B otherwise
 ;
@@ -980,10 +982,16 @@ end
 function ucomp_run::_can_send_alert, type, msg, datetime=datetime
   compile_opt strictarr
 
+  self->getProperty, logger_name=logger_name
+
   dt_format = '(C(CYI4.4, CMOI2.2, CDI2.2, ".", CHI2.2, CMI2.2, CSI2.2))'
-  alerts_filename = filepath('alerts.log', $
-                            subdir=self.date, $
-                            root=self->config('processing/basedir'))
+  alerts_dir = filepath('', $
+                        subdir=self.date, $
+                        root=self->config('processing/basedir'))
+  if (~file_test(alerts_dir, /directory)) then begin
+    ucomp_mkdir, alerts_dir, logger_name=logger_name
+  endif
+  alerts_filename = filepath('alerts.log', root=alerts_dir)
 
   n_alerts = file_test(alerts_filename, /regular) ? file_lines(alerts_filename) : 0L
 
@@ -1014,7 +1022,12 @@ function ucomp_run::_can_send_alert, type, msg, datetime=datetime
   if (n_elements(last_match_datetime) eq 0L) then begin
     can_send = 1B
   endif else begin
-    alert_timeout = self->config('alerts/' + strlowcase(type))
+    alert_timeout = self->config('alerts/' + strlowcase(type), $
+                                 found=alert_timeout_found)
+    if (~alert_timeout_found) then begin
+      mg_log, 'unknown alert type''%s''', type, name=logger_name, /error
+      alert_timeout = 0
+    endif
     case 1B of
       alert_timeout lt 0: can_send = 0B
       alert_timeout eq 0: can_send = 1B
@@ -1046,8 +1059,16 @@ end
 
 
 ;+
-; This should be only called by `::can_send_alert` if it determines that the
-; alert should be sent.
+; Potentially send an alert.
+;
+; Alerts are a type of notification sent *during* the running of the
+; near-realtime pipeline to warn the observers about some non-optimal
+; functioning of the instrument
+;
+; Each alert type has a "timeout" value where new alerts of that type are not
+; sent until after the timeout period has expired, e.g., if an alert with a
+; timeout value of 30 minutes is sent, then new alerts of that type would not
+; be sent until after 30 minutes, no matter how often this method is called.
 ;
 ; :Params:
 ;   type : in, required, type=string
@@ -1060,12 +1081,15 @@ pro ucomp_run::send_alert, type, msg
   compile_opt strictarr
 
   can_send = self->_can_send_alert(type, msg, datetime=datetime)
-  if (can_send) then begin
+  should_send = self->config('alerts/send_email')
+  if (can_send && should_send) then begin
     dt_format = '(C(CYI4.4, "-", CMOI2.2, "-", CDI2.2, "T", CHI2.2, ":", CMI2.2, ":", CSI2.2))'
     formatted_datetime = string(datetime, format=dt_format)
 
     to_email = self->config('notifications/email')
-    subject = string(type, format='UCoMP Alert: %s')
+    self->getProperty, date=date, config_flag=config_flag
+    subject = string(type, date, config_flag, $
+                     format='UCoMP alert %s for %s (%s)')
 
     body = list()
 

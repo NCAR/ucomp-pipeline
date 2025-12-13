@@ -30,21 +30,27 @@ function ucomp_quality_nuc, file, $
   rcam_nuc = ucomp_getpar(primary_header, 'RCAMNUC')
   tcam_nuc = ucomp_getpar(primary_header, 'TCAMNUC')
   if (rcam_nuc ne tcam_nuc) then begin
-    msg = string(rcam_nuc, tcam_nuc, format='RCAM_NUC ''%s'' != TCAMNUC ''%s''')
+    basename = file_basename(file.raw_filename)
+    msg = string(rcam_nuc, tcam_nuc, basename, $
+                 format='RCAM_NUC ''%s'' != TCAMNUC ''%s'' for %s')
     mg_log, msg, name=run.logger_name, /error
     run->send_alert, 'BAD_NUC_VALUE', msg
   endif
 
   rcam_index = ucomp_nuc2index(rcam_nuc, values=run->epoch('nuc_values'))
   if (rcam_index lt 0) then begin
-    msg = string(rcam_nuc, format='RCAM_NUC ''%s'' not an accepted value')
+    basename = file_basename(file.raw_filename)
+    msg = string(rcam_nuc, basename, $
+                 format='RCAM_NUC ''%s'' not an accepted value for %s')
     mg_log, msg, name=run.logger_name, /error
     run->send_alert, 'BAD_NUC_VALUE', msg
   endif
 
   tcam_index = ucomp_nuc2index(tcam_nuc, values=run->epoch('nuc_values'))
   if (tcam_index lt 0) then begin
-    msg = string(tcam_nuc, format='TCAM_NUC ''%s'' not an accepted value')
+    basename = file_basename(file.raw_filename)
+    msg = string(tcam_nuc, basename, $
+                 format='TCAM_NUC ''%s'' not an accepted value for %s')
     mg_log, msg, name=run.logger_name, /error
     run->send_alert, 'BAD_NUC_VALUE', msg
   endif
