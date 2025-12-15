@@ -20,16 +20,24 @@
 ;     number of azimuthal bins
 ;   width : in, optional, type=float, default=0.02
 ;     width of annulus in Rsun
+;   n_points : out, optional, type=fltarr(nbins)
+;     set to a named variable to retrieve the number of points in each bin used
+;     to compute the mean
+;   use_median : in, optional, type=boolean
+;     set to compute the median instead of mean
 ;-
 function ucomp_annulus_gridmeans, image, radius, sun_pixels, $
                                   nbins=nbins, $
-                                  width=width
+                                  width=width, $
+                                  n_points=n_points, $
+                                  use_median=use_median
   compile_opt strictarr
 
-  _width = n_elements(width) eq 0L ? 0.02 : width
+  _width = n_elements(width) eq 0L ? 0.01 : width
   _nbins = n_elements(nbins) eq 0L ? 720L : nbins
 
   gridmeans = fltarr(_nbins)
+  n_points = lonarr(_nbins)
 
   dims = size(image, /dimensions)
   !null = mg_dist(dims[0], dims[1], /center, theta=theta)
@@ -46,7 +54,13 @@ function ucomp_annulus_gridmeans, image, radius, sun_pixels, $
 
   for i = 0L, _nbins - 1L do begin
     if (ri[i] ne ri[i + 1]) then begin
-      gridmeans[i] = mean(image[annulus_indices[ri[ri[i]:ri[i + 1] - 1]]])
+      bin_indices = annulus_indices[ri[ri[i]:ri[i + 1] - 1]]
+      n_points[i] = n_elements(bin_indices)
+      if (keyword_set(use_median)) then begin
+        gridmeans[i] = median(image[bin_indices])
+      endif else begin
+        gridmeans[i] = mean(image[bin_indices], /nan)
+      endelse
     endif
   endfor
 
