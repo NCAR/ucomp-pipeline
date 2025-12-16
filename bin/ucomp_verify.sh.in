@@ -22,9 +22,8 @@ SCRIPT_LOC=$(canonicalpath $0)
 BIN_DIR=$(dirname ${SCRIPT_LOC})
 
 LOG_FILENAME=/tmp/ucomp-$RANDOM.log
-CONFIG_FILENAME=@CONFIG_DIR@/ucomp.production.cfg
 
-$BIN_DIR/ucomp_verify_dates.sh $CONFIG_FILENAME "$START_DATE-$END_DATE" &> $LOG_FILENAME
+$BIN_DIR/ucomp_verify_dates.sh production "$START_DATE-$END_DATE" &> $LOG_FILENAME
 N_FAILED_DAYS=$?
 
 echo -e "\nSent from $0 ($(whoami)@$(hostname))" >> $LOG_FILENAME
