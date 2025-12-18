@@ -71,9 +71,14 @@ pro ucomp_mission_centering_plot, wave_region, db, run=run
   psym             = 6
   symsize          = 0.25
 
-  x_range    = (1280.0 - 1.0) / 2.0 + 40.0 * [-1.0, 1.0]
-  y_range    = (1024.0 - 1.0) / 2.0 + 40.0 * [-1.0, 1.0]
-  r_range    = 340.0 + 20.0 * [-1.0, 1.0]
+  x_changes = run->epoch_changes('centering_x_range')
+  y_changes = run->epoch_changes('centering_y_range')
+  r_changes = run->epoch_changes('centering_r_range')
+
+  x_range   = [min(x_changes.value[0, *]), max(x_changes.value[1, *])]
+  y_range   = [min(y_changes.value[0, *]), max(y_changes.value[1, *])]
+  r_range   = [min(r_changes.value[0, *]), max(r_changes.value[1, *])]
+
   time_range = [jds[0], jds[-1]]
 
   month_ticks = mg_tick_locator(time_range, /months)
