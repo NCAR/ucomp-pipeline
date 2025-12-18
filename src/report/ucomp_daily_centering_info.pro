@@ -38,9 +38,9 @@ pro ucomp_daily_centering_info, filename, radiusdiff_filename, wave_region, run=
   charsize = 0.4
   symsize  = 0.25
 
-  x_range    = (1280.0 - 1.0) / 2.0 + [-40.0, 40.0]
-  y_range    = (1024.0 - 1.0) / 2.0 + [-40.0, 40.0]
-  r_range    = 340.0 + [-20.0, 20.0]
+  x_range = run->epoch('centering_x_range', datetime=run.date)
+  y_range = run->epoch('centering_y_range', datetime=run.date)
+  r_range = run->epoch('centering_r_range', datetime=run.date)
 
   !null = ucomp_hours_format(/minutes)
   time_range = [16.0, 28.0]
