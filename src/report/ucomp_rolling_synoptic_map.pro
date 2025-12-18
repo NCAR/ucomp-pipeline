@@ -40,6 +40,8 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
   mg_log, 'producing %d day %s synoptic plot', n_days, name, $
           name=run.logger_name, /info
 
+  annulus_nbins = run->line(wave_region, 'synmap_annulus_nbins')
+
   ; query database for data
   end_date_tokens = long(ucomp_decompose_date(run.date))
   end_date = string(end_date_tokens, format='(%"%04d-%02d-%02d")')
@@ -76,12 +78,14 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
   dates = raw_data.date_obs
   n_dates = n_elements(dates)
 
-  map = fltarr(n_days, 720) + !values.f_nan
+  map = fltarr(n_days, annulus_nbins) + !values.f_nan
   means = fltarr(n_days) + !values.f_nan
   for r = 0L, n_dates - 1L do begin
     decoded = *product_data[r]
     if (n_elements(decoded) gt 0L) then begin
-      *product_data[r] = float(*product_data[r], 0, 720)   ; decode byte data to float
+      len = n_elements(decoded) / 4L   ; 4 bytes/float
+      d =  float(*product_data[r], 0, len)   ; decode byte data to float
+      *product_data[r] = congrid(d, annulus_nbins)
     endif
 
     date = dates[r]
@@ -113,6 +117,7 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
   new_rgb_table[1, 0] = rgb_table
   ucomp_loadct_rgb, new_rgb_table
 
+  ; TODO: use line-specific synoptic-specfic display parameters
   display_gamma = run->line(wave_region, option_prefix + '_display_gamma')
   mg_gamma_ct, display_gamma, /current, n_colors=n_colors
 
@@ -144,9 +149,9 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
   map = float(map)
   if (n_nan gt 0L) then map[nan_indices] = !values.f_nan
 
-  north_up_map = shift(map, 0, -180)
-  east_limb = reverse(north_up_map[*, 0:359], 2)
-  west_limb = north_up_map[*, 360:*]
+  north_up_map = shift(map, 0, - annulus_nbins / 2)
+  east_limb = reverse(north_up_map[*, 0:(annulus_nbins / 2 - 1)], 2)
+  west_limb = north_up_map[*, annulus_nbins / 2:*]
 
   !null = label_date(date_format='%D %M %Z')
   jd_dates = dblarr(n_dates)
@@ -269,24 +274,24 @@ ucomp_rolling_synoptic_map, wave_region, $
                             db, $
                             smooth=smooth, $
                             n_days=n_rolling_days, run=run
-ucomp_rolling_synoptic_map, wave_region, $
-                            'linear polarization', 'linpol', 'linpol', $
-                            1.3, 'r13l', $
-                            db, $
-                            smooth=smooth, $
-                            n_days=n_rolling_days, run=run
-ucomp_rolling_synoptic_map, wave_region, $
-                            'radial azimith', 'radazi', 'radial_azimuth', $
-                            1.3, 'r13radazi', $
-                            db, $
-                            smooth=smooth, $
-                            n_days=n_rolling_days, run=run
-ucomp_rolling_synoptic_map, wave_region, $
-                            'doppler velocity', 'doppler', 'doppler', $
-                            1.3, 'r13doppler', $
-                            db, $
-                            smooth=smooth, $
-                            n_days=n_rolling_days, run=run
+; ucomp_rolling_synoptic_map, wave_region, $
+                            ; 'linear polarization', 'linpol', 'linpol', $
+                            ; 1.3, 'r13l', $
+                            ; db, $
+                            ; smooth=smooth, $
+                            ; n_days=n_rolling_days, run=run
+; ucomp_rolling_synoptic_map, wave_region, $
+                            ; 'radial azimith', 'radazi', 'radial_azimuth', $
+                            ; 1.3, 'r13radazi', $
+                            ; db, $
+                            ; smooth=smooth, $
+                            ; n_days=n_rolling_days, run=run
+; ucomp_rolling_synoptic_map, wave_region, $
+                            ; 'doppler velocity', 'doppler', 'doppler', $
+                            ; 1.3, 'r13doppler', $
+                            ; db, $
+                            ; smooth=smooth, $
+                            ; n_days=n_rolling_days, run=run
 
 obj_destroy, [db, run]
 

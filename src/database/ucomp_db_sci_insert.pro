@@ -71,6 +71,9 @@ pro ucomp_db_sci_insert, files, wave_region, $
   process_basedir = run->config('processing/basedir')
   process_dir = filepath(run.date, root=process_basedir)
 
+  annulus_width = run->line(wave_region, 'synmap_annulus_width')
+  annulus_nbins = run->line(wave_region, 'synmap_annulus_nbins')
+
   for f = 0L, n_files - 1L do begin
     file = science_files[f]
 
@@ -118,11 +121,6 @@ pro ucomp_db_sci_insert, files, wave_region, $
                                      standard_deviation=q_profile_stddev)
     u_profile = ucomp_radial_profile(u, sun_pixels, $
                                      standard_deviation=u_profile_stddev)
-
-    ; TODO: specify these values in the epochs file and the width probably
-    ; needs to be 0.01 instead
-    annulus_width = 0.02
-    annulus_nbins = 720L
 
     intensity108 = ucomp_annulus_gridmeans(intensity, 1.08, sun_pixels, $
                                            width=annulus_width, $
