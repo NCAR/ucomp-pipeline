@@ -27,6 +27,12 @@ pro ucomp_mission_centering_plot, wave_region, db, run=run
     mg_log, '%d %s nm files found', n_files, wave_region, name=run.logger_name, /info
   endelse
 
+  rcam_xcenter = data.rcam_xcenter
+  tcam_xcenter = data.tcam_xcenter
+
+  rcam_ycenter = data.rcam_ycenter
+  tcam_ycenter = data.tcam_ycenter
+
   rcam_radius = data.rcam_radius
   tcam_radius = data.tcam_radius
 
@@ -37,7 +43,7 @@ pro ucomp_mission_centering_plot, wave_region, db, run=run
   !null = label_date(date_format='%Y-%N-%D')
 
   gbu_max_fit_chisq = run->line(wave_region, 'gbu_max_fit_chisq')
-  fit_chisq_range = [0.0, 2.0 * gbu_max_fit_chisq]
+  fit_chisq_range = [1.0e-2, 100.0 * gbu_max_fit_chisq]
 
   ; save original graphics settings
   original_device = !d.name
@@ -48,7 +54,7 @@ pro ucomp_mission_centering_plot, wave_region, db, run=run
   tvlct, original_rgb, /get
   device, decomposed=0, $
           set_pixel_depth=8, $
-          set_resolution=[1600, 800]
+          set_resolution=[1600, 1000]
 
   tvlct, 0, 0, 0, 0
   tvlct, 255, 255, 255, 1
@@ -61,10 +67,12 @@ pro ucomp_mission_centering_plot, wave_region, db, run=run
   background_color = 1
   clip_color       = 2
 
-  charsize         = 0.9
+  charsize         = 1.6
   psym             = 6
   symsize          = 0.25
 
+  x_range    = (1280.0 - 1.0) / 2.0 + 40.0 * [-1.0, 1.0]
+  y_range    = (1024.0 - 1.0) / 2.0 + 40.0 * [-1.0, 1.0]
   r_range    = 340.0 + 20.0 * [-1.0, 1.0]
   time_range = [jds[0], jds[-1]]
 
@@ -78,7 +86,73 @@ pro ucomp_mission_centering_plot, wave_region, db, run=run
     month_ticks = month_ticks[0:*:n_minor]
   endelse
 
-  !p.multi = [0, 2, 2, 0, 0]
+  n_cameras = 2L
+  n_plots   = 4L   ; x, y, radius, chi-squared
+  !p.multi  = [0, n_cameras, n_plots, 0, 0]
+
+  mg_range_plot, [jds], [rcam_xcenter], $
+                 charsize=charsize, $
+                 title=string(wave_region, $
+                              format='RCAM x-center for %s nm files over the UCoMP mission'), $
+                 color=color, background=background_color, $
+                 psym=psym, symsize=symsize, $
+                 clip_color=2, clip_psym=7, clip_symsize=1.0, $
+                 xtitle='Date', $
+                 xstyle=1, range=time_range, $
+                 xtickformat='label_date', $
+                 xtickv=month_ticks, $
+                 xticks=n_elements(month_ticks) - 1L, $
+                 xminor=n_minor, $
+                 ytitle='x-center [pixels]', $
+                 ystyle=1, yrange=x_range
+
+  mg_range_plot, [jds], [tcam_xcenter], $
+                 charsize=charsize, $
+                 title=string(wave_region, $
+                              format='TCAM x-center for %s nm files over the UCoMP mission'), $
+                 color=color, background=background_color, $
+                 psym=psym, symsize=symsize, $
+                 clip_color=2, clip_psym=7, clip_symsize=1.0, $
+                 xtitle='Date', $
+                 xstyle=1, range=time_range, $
+                 xtickformat='label_date', $
+                 xtickv=month_ticks, $
+                 xticks=n_elements(month_ticks) - 1L, $
+                 xminor=n_minor, $
+                 ytitle='x-center [pixels]', $
+                 ystyle=1, yrange=x_range
+
+  mg_range_plot, [jds], [rcam_ycenter], $
+                 charsize=charsize, $
+                 title=string(wave_region, $
+                              format='RCAM y-center for %s nm files over the UCoMP mission'), $
+                 color=color, background=background_color, $
+                 psym=psym, symsize=symsize, $
+                 clip_color=2, clip_psym=7, clip_symsize=1.0, $
+                 xtitle='Date', $
+                 xstyle=1, range=time_range, $
+                 xtickformat='label_date', $
+                 xtickv=month_ticks, $
+                 xticks=n_elements(month_ticks) - 1L, $
+                 xminor=n_minor, $
+                 ytitle='y-center [pixels]', $
+                 ystyle=1, yrange=y_range
+
+  mg_range_plot, [jds], [tcam_ycenter], $
+                 charsize=charsize, $
+                 title=string(wave_region, $
+                              format='TCAM y-center for %s nm files over the UCoMP mission'), $
+                 color=color, background=background_color, $
+                 psym=psym, symsize=symsize, $
+                 clip_color=2, clip_psym=7, clip_symsize=1.0, $
+                 xtitle='Date', $
+                 xstyle=1, range=time_range, $
+                 xtickformat='label_date', $
+                 xtickv=month_ticks, $
+                 xticks=n_elements(month_ticks) - 1L, $
+                 xminor=n_minor, $
+                 ytitle='y-center [pixels]', $
+                 ystyle=1, yrange=y_range
 
   mg_range_plot, [jds], [rcam_radius], $
                  charsize=charsize, $
@@ -126,7 +200,7 @@ pro ucomp_mission_centering_plot, wave_region, db, run=run
                  xticks=n_elements(month_ticks) - 1L, $
                  xminor=3, $
                  ytitle='Chi-squared', $
-                 ystyle=1, yrange=fit_chisq_range
+                 /ylog, ystyle=1, yrange=fit_chisq_range
 
   plots, [jds[0], jds[-1]], fltarr(2) + gbu_max_fit_chisq, linestyle=3, color=color
 
@@ -144,7 +218,7 @@ pro ucomp_mission_centering_plot, wave_region, db, run=run
                  xticks=n_elements(month_ticks) - 1L, $
                  xminor=3, $
                  ytitle='Chi-squared', $
-                 ystyle=1, yrange=fit_chisq_range
+                 /ylog, ystyle=1, yrange=fit_chisq_range
 
   plots, [jds[0], jds[-1]], fltarr(2) + gbu_max_fit_chisq, linestyle=3, color=color
 

@@ -15,7 +15,7 @@
 ;   run : in, required, type=object
 ;     KCor run object
 ;-
-pro ucomp_plot_centering_info, filename, radiusdiff_filename, wave_region, run=run
+pro ucomp_daily_centering_info, filename, radiusdiff_filename, wave_region, run=run
   compile_opt strictarr
 
   mg_log, 'plotting centering info...', name=run.logger_name, /info
@@ -30,7 +30,7 @@ pro ucomp_plot_centering_info, filename, radiusdiff_filename, wave_region, run=r
   set_plot, 'Z'
   device, get_decomposed=original_decomposed
   tvlct, original_rgb, /get
-  device, set_resolution=[1280, 768], $
+  device, set_resolution=[1600, 1000], $
           decomposed=0, $
           set_colors=256, $
           z_buffering=0

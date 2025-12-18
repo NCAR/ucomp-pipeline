@@ -40,14 +40,14 @@ pro ucomp_l1_engineering_plots, run=run
 
   wave_regions = run->config('options/wave_regions')
   for w = 0L, n_elements(wave_regions) - 1L do begin
-    ucomp_plot_centering_info, filepath(string(run.date, wave_regions[w], $
-                                               format='(%"%s.ucomp.%s.daily.centering.gif")'), $
-                                        root=engineering_dir), $
-                               filepath(string(run.date, wave_regions[w], $
-                                               format='(%"%s.ucomp.%s.daily.radius-diff.gif")'), $
-                                        root=engineering_dir), $
-                               wave_regions[w], $
-                               run=run
+    ucomp_daily_centering_info, filepath(string(run.date, wave_regions[w], $
+                                                format='(%"%s.ucomp.%s.daily.centering.gif")'), $
+                                         root=engineering_dir), $
+                                filepath(string(run.date, wave_regions[w], $
+                                                format='(%"%s.ucomp.%s.daily.radius-diff.gif")'), $
+                                         root=engineering_dir), $
+                                wave_regions[w], $
+                                run=run
     ucomp_plot_temp_vs_voltage, filepath(string(run.date, wave_regions[w], $
                                                 format='(%"%s.ucomp.%s.daily.temp_vs_volt.gif")'), $
                                          root=engineering_dir), $
