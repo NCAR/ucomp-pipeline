@@ -84,8 +84,9 @@ pro ucomp_rolling_synoptic_map, wave_region, name, flag, option_prefix, $
     decoded = *product_data[r]
     if (n_elements(decoded) gt 0L) then begin
       len = n_elements(decoded) / 4L   ; 4 bytes/float
-      d =  float(*product_data[r], 0, len)   ; decode byte data to float
-      *product_data[r] = congrid(d, annulus_nbins)
+      d = float(*product_data[r], 0, len)   ; decode byte data to float
+      if (len ne annulus_nbins) then d = congrid(d, annulus_nbins)
+      *product_data[r] = d
     endif
 
     date = dates[r]
