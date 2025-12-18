@@ -17,8 +17,14 @@ pro ucomp_l1_check_gbu_median_diff, wave_region, run=run
 
   mg_log, 'starting...', name=run.logger_name, /info
 
+  mask = ucomp_gbu_mask(run->config('gbu/mask'), file.wave_region, run=run) $
+           and ucomp_gbu_mask(run->epoch('gbu_mask'), file.wave_region, run=run)
+
   conditions = ucomp_gbu_conditions(wave_region, run=run)
   indices = where(conditions.checker eq 'ucomp_gbu_median_diff')
+
+  if (~mask[indices[0]]) then goto, done
+
   gbu_mask = conditions[indices[0]].mask
 
   l1_dir = filepath('', $

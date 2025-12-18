@@ -35,11 +35,13 @@ pro ucomp_l1_check_gbu, file, $
 
   status = 0L
 
+  mask = ucomp_gbu_mask(run->config('gbu/mask'), file.wave_region, run=run) $
+           and ucomp_gbu_mask(run->epoch('gbu_mask'), file.wave_region, run=run)
+
   gbu_conditions = ucomp_gbu_conditions(wave_region, run=run)
   for g = 0L, n_elements(gbu_conditions) - 1L do begin
     run.datetime = string(file.ut_date, file.ut_time, format='%s.%s')
-    if (((2UL^g and run->config('gbu/mask')) ne 0) $
-          && ((2UL^g and run->epoch('gbu_mask')) ne 0)) then begin
+    if (mask[g]) then begin
       gbu = call_function(gbu_conditions[g].checker, $
                           file, $
                           primary_header, $
