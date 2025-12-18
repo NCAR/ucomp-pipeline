@@ -102,6 +102,11 @@ pro ucomp_average_l1_files, l1_filenames, $
       wavelength = string(ucomp_getpar(ext_headers[e], 'WAVELNG'), format='(F0.3)')
       all_wavelengths->add, wavelength
     endfor
+    for s = 0L, n_sgs_keywords - 1L do begin
+      sgsv = ucomp_getpar(primary_header, sgs_keywords[s], found=found)
+      sgs_counts[s] += 1L
+      sgs_values[s] = sgsv
+    endfor
     for t = 0L, n_temp_keywords - 1L do begin
       temp = ucomp_getpar(primary_header, temp_keywords[t], found=found)
       if (found && (n_elements(temp) gt 0L)) then begin
@@ -114,6 +119,11 @@ pro ucomp_average_l1_files, l1_filenames, $
 
   all_wavelengths_array = all_wavelengths->toArray()
   obj_destroy, all_wavelengths
+
+  for s = 0L, n_sgs_keywords - 1L do begin
+    if (sgs_counts[s] gt 0L) then sgs_values[s] /= sgs_counts[s]
+    ucomp_addpar, primary_header, sgs_keywords[s], sgs_values[s]
+  endfor
 
   for t = 0L, n_temp_keywords - 1L do begin
     if (temp_counts[t] gt 0L) then temp_values[t] /= temp_counts[t]
