@@ -60,6 +60,8 @@ pro ucomp_average_l1_files, l1_filenames, $
     goto, done
   endif
 
+  averaged_primary_header = headfits(ok_files[0])
+
   sgs_keywords = ['SGSSCINT', $
                   'SGSDIMV', $
                   'SGSDIMS', $
@@ -104,14 +106,24 @@ pro ucomp_average_l1_files, l1_filenames, $
     endfor
     for s = 0L, n_sgs_keywords - 1L do begin
       sgsv = ucomp_getpar(primary_header, sgs_keywords[s], found=found)
-      sgs_counts[s] += 1L
-      sgs_values[s] = sgsv
+      if (found && (n_elements(sgsv) gt 0L)) then begin
+        sgs_counts[s] += 1L
+        if (sgs_counts[s] eq 1L) then begin
+          sgs_values[s] = sgsv
+        endif else begin
+          sgs_values[s] += sgsv
+        endelse
+      endif
     endfor
     for t = 0L, n_temp_keywords - 1L do begin
       temp = ucomp_getpar(primary_header, temp_keywords[t], found=found)
       if (found && (n_elements(temp) gt 0L)) then begin
         temp_counts[t] += 1L
-        temp_values[t] += temp
+        if (temp_counts[t] eq 1L) then begin
+          temp_values[t] = temp
+        endif else begin
+          temp_values[t] += temp
+        endelse
       endif
     endfor
     obj_destroy, ext_headers
@@ -122,12 +134,12 @@ pro ucomp_average_l1_files, l1_filenames, $
 
   for s = 0L, n_sgs_keywords - 1L do begin
     if (sgs_counts[s] gt 0L) then sgs_values[s] /= sgs_counts[s]
-    ucomp_addpar, primary_header, sgs_keywords[s], sgs_values[s]
+    ucomp_addpar, averaged_primary_header, sgs_keywords[s], sgs_values[s]
   endfor
 
   for t = 0L, n_temp_keywords - 1L do begin
     if (temp_counts[t] gt 0L) then temp_values[t] /= temp_counts[t]
-    ucomp_addpar, primary_header, temp_keywords[t], temp_values[t]
+    ucomp_addpar, averaged_primary_header, temp_keywords[t], temp_values[t]
   endfor
 
   if (n_elements(all_wavelengths_array) eq 0L) then begin
@@ -141,7 +153,6 @@ pro ucomp_average_l1_files, l1_filenames, $
 
   ucomp_read_l1_data, ok_files[0], $
                       primary_data=primary_data, $
-                      primary_header=primary_header, $
                       ext_data=ext_data
 
   dims = size(ext_data, /dimensions)
@@ -235,24 +246,17 @@ pro ucomp_average_l1_files, l1_filenames, $
       obj_destroy, [ext_headers, background_headers]
     endfor
 
-    ; TODO: need to average SGS values also
-    ;   How should they be averaged?
-    ;     - SGS values are by extension in the level 0 file
-    ;     - should level 1 files average them to the primary header?
-    ;     - if so, average files could just average primary header
-    ;     - if not, produce SGS averages of each wavelength?
-
     first_primary_header = headfits(ok_files[0])
     last_primary_header = headfits(ok_files[-1])
 
-    ucomp_addpar, primary_header, 'DATE-OBS', $
+    ucomp_addpar, averaged_primary_header, 'DATE-OBS', $
                   ucomp_getpar(first_primary_header, 'DATE-OBS')
-    ucomp_addpar, primary_header, 'DATE-END', $
+    ucomp_addpar, averaged_primary_header, 'DATE-END', $
                   ucomp_getpar(last_primary_header, 'DATE-END'), $
                   comment='[UT] date/time when obs ended', $
                   after='DATE-OBS'
-    ucomp_addpar, primary_header, 'NUMWAVE', n_unique_wavelengths
-    ucomp_addpar, primary_header, 'NUMFILES', n_ok_files, $
+    ucomp_addpar, averaged_primary_header, 'NUMWAVE', n_unique_wavelengths
+    ucomp_addpar, averaged_primary_header, 'NUMFILES', n_ok_files, $
                   comment='number of level 1 files averaged', $
                   after='NUMBEAM'
 
@@ -297,15 +301,15 @@ pro ucomp_average_l1_files, l1_filenames, $
     endcase
 
     mg_log, 'writing %s...', file_basename(output_filenames[m]), name=logger_name, /info
-    ucomp_write_fits_file, output_filenames[0], $
-                           primary_header, $
+    ucomp_write_fits_file, output_filenames[m], $
+                           averaged_primary_header, $
                            averaged_data, $
                            averaged_headers, $
                            averaged_background, $
                            averaged_background_headers
 
-    wave_region = ucomp_getpar(primary_header, 'FILTER')
-    occulter_radius = ucomp_getpar(primary_header, 'RADIUS')
+    wave_region = ucomp_getpar(averaged_primary_header, 'FILTER')
+    occulter_radius = ucomp_getpar(averaged_primary_header, 'RADIUS')
 
     if (obj_valid(run)) then begin
       ucomp_write_iquv_image, averaged_data, $
@@ -316,8 +320,8 @@ pro ucomp_average_l1_files, l1_filenames, $
                               /daily, sigma=m eq 2, $
                               run=run
   
-      post_angle = ucomp_getpar(primary_header, 'POST_ANG')
-      p_angle = ucomp_getpar(primary_header, 'SOLAR_P0')
+      post_angle = ucomp_getpar(averaged_primary_header, 'POST_ANG')
+      p_angle = ucomp_getpar(averaged_primary_header, 'SOLAR_P0')
       ucomp_write_all_iquv_image, averaged_data, $
                                   file_basename(output_filenames[m]), $
                                   wave_region, $
@@ -352,8 +356,14 @@ basenames = ['20240409.190537.ucomp.1074.l1.p7.fts', $
              '20240409.191848.ucomp.1074.l1.p7.fts']
 l1_filenames = filepath(basenames, root=l1_dir)
 
+l2_dir = filepath('', $
+                  subdir=[run.date, 'level2'], $
+                  root=run->config('processing/basedir'))
+output_basenames = '20240409.ucomp.1074.l1.feXIII_cross_calibration.' + ['mean', 'median', 'sigma'] + '.fts'
+output_filenames = filepath(output_basenames, root=l2_dir)
+
 ucomp_average_l1_files, l1_filenames, $
-                        '20240409.ucomp.1074.l1.feXIII_cross_calibration.' + ['mean', 'median', 'sigma'] + '.fts', $
+                        output_filenames, $
                         mean_averaged_data=mean_averaged_data, $
                         median_averaged_data=median_averaged_data, $
                         sigma_data=sigma_data, $
