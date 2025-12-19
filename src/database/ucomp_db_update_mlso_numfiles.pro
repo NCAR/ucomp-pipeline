@@ -26,8 +26,6 @@ pro ucomp_db_update_mlso_numfiles, obsday_index, db, run=run
     if (files[f].good and files[f].wrote_l1) then begin
       published = run->config(files[f].wave_region + '/publish_l1', found=found)
       if (published) then n_good_fits_files += 1L
-      mg_log, 'n_good_fits_files: %d', n_good_fits_files, $
-              name=run.logger_name, /debug
     endif
   endfor
 
