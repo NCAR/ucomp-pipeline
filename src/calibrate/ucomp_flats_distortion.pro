@@ -57,6 +57,7 @@ pro ucomp_flats_distortion, run=run
     ucomp_write_fits_file, distortion_filename, $
                            primary_header, $
                            data, headers, $
-                           backgrounds, background_headers
+                           backgrounds, background_headers, $
+                           logger_name=run.logger_name
   endfor
 end

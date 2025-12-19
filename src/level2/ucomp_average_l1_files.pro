@@ -93,7 +93,7 @@ pro ucomp_average_l1_files, l1_filenames, $
   ; first pass of files: get list of wavelengths
   all_wavelengths = list()
   for f = 0L, n_ok_files - 1L do begin
-    mg_log, 'listing %d/%d %s', $
+    mg_log, '%d/%d: %s', $
             f + 1L, n_ok_files, file_basename(ok_files[f]), $
             name=logger_name, /debug
 
@@ -174,7 +174,7 @@ pro ucomp_average_l1_files, l1_filenames, $
   ; second pass of files: compute total and number of extensions for each
   ; wavelength
   for w = 0L, n_unique_wavelengths - 1L do begin
-    mg_log, 'averaging %d/%d: %0.3f nm', $
+    mg_log, 'averaging wavelength %d/%d: %0.3f nm', $
             w + 1L, $
             n_unique_wavelengths, $
             all_wavelengths[w], $
@@ -284,7 +284,6 @@ pro ucomp_average_l1_files, l1_filenames, $
 
   n_methods = n_elements(output_filenames)
   for m = 0, n_methods - 1L do begin
-    output_filename = output_filenames[m]
     case m of
       0: begin
           averaged_data = mean_averaged_data
@@ -306,7 +305,8 @@ pro ucomp_average_l1_files, l1_filenames, $
                            averaged_data, $
                            averaged_headers, $
                            averaged_background, $
-                           averaged_background_headers
+                           averaged_background_headers, $
+                           logger_name=run.logger_name
 
     wave_region = ucomp_getpar(averaged_primary_header, 'FILTER')
     occulter_radius = ucomp_getpar(averaged_primary_header, 'RADIUS')

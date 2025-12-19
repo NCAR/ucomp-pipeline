@@ -26,13 +26,20 @@ pro ucomp_write_fits_file, filename, $
                            primary_header, $
                            ext_data, ext_headers, $
                            backgrounds, background_headers, $
-                           intensity=intensity
+                           intensity=intensity, $
+                           logger_name=logger_name
   compile_opt strictarr
   on_error, 2
 
   n_dims = size(ext_data, /n_dimensions)
   n_background_dims = size(backgrounds, /n_dimensions)
   n_extensions = n_elements(ext_headers)
+  n_background_extensions = n_elements(background_headers)
+
+  mg_log, 'writing %s FITS file with %d dims, %d bkg dims, %d exts, %d bkg exts', $
+          keyword_set(intensity) ? 'intensity' : 'full', $
+          n_dims, n_background_dims, n_extensions, n_background_extensions, $
+          name=logger_name, /debug
 
   fits_open, filename, fcb, /write
   ucomp_fits_write, fcb, 0.0, primary_header, /no_abort, message=error_msg
@@ -86,4 +93,5 @@ pro ucomp_write_fits_file, filename, $
   endif
 
   fits_close, fcb
+  mg_log, 'wrote %s', file_basename(filename), name=logger_name, /debug
 end

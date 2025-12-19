@@ -43,6 +43,7 @@ pro ucomp_write_intermediate_file, name, file, $
     ucomp_write_fits_file, filename, $
                            primary_header, $
                            data, headers, $
-                           backgrounds, background_headers
+                           backgrounds, background_headers, $
+                           logger_name=run.logger_name
   endif
 end

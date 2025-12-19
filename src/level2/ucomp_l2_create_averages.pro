@@ -72,7 +72,7 @@ pro ucomp_l2_create_averages, wave_region, $
                                            count=n_good_files, $
                                            max_length=max_length)
 
-    mg_log, 'averaging %d %s nm files in %s', $
+    mg_log, '%d %s nm files in %s', $
             n_good_files, wave_region, program_names[p], $
             name=run.logger_name, /info
 
@@ -101,7 +101,7 @@ pro ucomp_l2_create_averages, wave_region, $
     good_filenames = strarr(n_good_files)
     for f = 0L, n_good_files - 1L do good_filenames[f] = good_files[f].l1_filename
     ucomp_average_l1_files, good_filenames, $
-                            [mean_average_basename, $
+                            [mean_average_filename, $
                              median_average_filename, $
                              sigma_filename], $
                             min_average_files=run->config('averaging/min_average_files'), $

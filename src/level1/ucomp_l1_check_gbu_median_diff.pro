@@ -25,6 +25,8 @@ pro ucomp_l1_check_gbu_median_diff, wave_region, run=run
 
   if (~mask[indices[0]]) then goto, done
 
+  min_average_files = run->line(wave_region, 'gbu_min_files_for_stddev_diff')
+
   gbu_mask = conditions[indices[0]].mask
 
   l1_dir = filepath('', $
@@ -67,8 +69,10 @@ pro ucomp_l1_check_gbu_median_diff, wave_region, run=run
       good[f] = program_files[f].good && program_files[f].wrote_l1
     endfor
     good_files_indices = where(good eq 1, n_good_files)
-    if (n_good_files eq 0L) then begin
-      mg_log, 'no good %s nm files in %s', $
+
+    if (n_good_files lt min_average_files) then begin
+      mg_log, 'not enough (%d < %d) good %s nm files in %s', $
+              n_good_files, min_average_files, $
               wave_region, program_names[program_number], $
               name=run.logger_name, /info
       continue
@@ -92,7 +96,7 @@ pro ucomp_l1_check_gbu_median_diff, wave_region, run=run
     for f = 0L, n_good_files - 1L do good_filenames[f] = good_files[f].l1_filename
 
     ucomp_average_l1_files, good_filenames, $
-                            min_average_files=run->line(wave_region, 'gbu_min_files_for_stddev_diff'), $
+                            min_average_files=min_average_files, $
                             logger_name=run.logger_name, $
                             mean_averaged_data=mean_data, $
                             median_averaged_data=median_data, $
