@@ -33,8 +33,8 @@ pro ucomp_write_gbu, wave_region, run=run
                       root=l1_dir)
   openw, lun, filename, /get_lun
   printf, lun, 'Filename', 'Reason', 'Bkg', 'V', $
-               'RCAM', 'TCAM', 'Sigma', $
-          format='(%"%-38s %6s %7s %9s %9s %9s %7s")'
+               'RCAM', 'TCAM', 'I sigma', 'QU sigma', $
+          format='(%"%-38s %6s %7s %9s %9s %9s %7s %8s")'
 
   for f = 0L, n_files - 1L do begin
     l1_filename = filepath(files[f].l1_basename, root=l1_dir)
@@ -51,8 +51,9 @@ pro ucomp_write_gbu, wave_region, run=run
               files[f].vcrosstalk_metric, $
               rcam.occulter_chisq, $
               tcam.occulter_chisq, $
-              files[f].max_sigma, $
-              format='(%"%-38s %6d %7.1f %9.2f %9.1f %9.1f %7.2f")'
+              files[f].max_i_sigma, $
+              files[f].max_qu_sigma, $
+              format='(%"%-38s %6d %7.1f %9.2f %9.1f %9.1f %7.2f %8.2f")'
     endif
   endfor
 
