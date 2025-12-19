@@ -26,14 +26,17 @@ pro ucomp_pipeline_step, routine_name, wave_region, skip=skip, run=run, _ref_ext
   endif else begin
     if ((n_elements(wave_region) gt 0L) && (size(wave_region, /type) eq 7)) then begin
       if (ucomp_isinteger(wave_region)) then begin
-        mg_log, 'starting for %s nm...', wave_region, $
-                from=routine_name, name=run.logger_name, /info
+        name = string(wave_region, format='%s nm')
       endif else begin
-        mg_log, 'starting for %s...', wave_region, from=routine_name, name=run.logger_name, /info
+        name = wave_region
       endelse
     endif else begin
-      mg_log, 'starting...', from=routine_name, name=run.logger_name, /info
+      name = ''
     endelse
+
+    mg_log, 'starting%s...', $
+            strlen(name) eq 0 ? '' : ' for ' + name, $
+            from=routine_name, name=run.logger_name, /info
 
     start_memory = memory(/current)
 
@@ -51,7 +54,8 @@ pro ucomp_pipeline_step, routine_name, wave_region, skip=skip, run=run, _ref_ext
     mg_log, /check_math, from=routine_name, name=run.logger_name, /debug
 
     memory_usage = (memory(/highwater) - start_memory) / 1024.0 / 1024.0
-    mg_log, 'done (%s) [memory usage: %0.1fM]', $
+    mg_log, '%sdone (%s) [memory usage: %0.1fM]', $
+            strlen(name) eq 0L ? '' : (name + ' '), $
             ucomp_sec2str(time), memory_usage, $
             from=routine_name, name=run.logger_name, /info
   endelse
