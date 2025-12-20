@@ -770,3 +770,9 @@
 - epoch updates
 
 #### 1.0.22
+
+- bug fixes in averaging
+- eliminate V and separate I from Q/U thresholds for difference from median
+  GBU test
+- average SGS values for average file
+- send BAD_NUC_VALUE alert if encountered in raw data
