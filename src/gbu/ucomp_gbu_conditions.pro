@@ -61,7 +61,7 @@ function ucomp_gbu_conditions, wave_region, run=run
                      values: 'Wgbu_max_fit_chisq'}, $
                     {mask: 0UL, $
                      checker: 'ucomp_gbu_median_diff', $
-                     description: 'the difference of the image with the median is above threshold I:(%(gbu_max_stddev_i)0.1f, QU:(%(gbu_max_stddev_qu)0.1f) [min %(gbu_min_files_for_stddev_diff)d files]', $
+                     description: 'the difference of the image with the median is above threshold (I:%(gbu_max_stddev_i)0.1f, QU:%(gbu_max_stddev_qu)0.1f) [min %(gbu_min_files_for_stddev_diff)d files]', $
                      values: 'Wgbu_max_stddev_i,Wgbu_max_stddev_qu,Wgbu_min_files_for_stddev_diff'}]
   gbu_conditions.mask = 2UL ^ (ulindgen(n_elements(gbu_conditions)))
 
