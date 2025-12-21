@@ -30,6 +30,9 @@ pro ucomp_l3_density, run=run
     goto, done
   endif
 
+  mg_log, '%d 1074 nm synoptic files', n_1074_files, name=run.logger_name, /info
+  mg_log, '%d 1079 nm synoptic files', n_1079_files, name=run.logger_name, /info
+
   ; get times for files
   times_1074 = fltarr(n_1074_files) + !values.f_nan
   for f = 0L, n_1074_files - 1L do begin
