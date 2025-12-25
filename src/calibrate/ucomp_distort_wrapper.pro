@@ -1,7 +1,8 @@
 ; docformat = 'rst'
 
 ;+
-; Run the UCoMP pipeline calibration.
+; Run the UCoMP pipeline calibration to simply apply the distortion to the
+; flats. Results are in `process/YYYYMMDD/distortion`.
 ;
 ; :Params:
 ;   date : in, required, type=string
@@ -12,7 +13,7 @@
 pro ucomp_distort_wrapper, date, config_filename
   compile_opt strictarr
 
-; initialize performance metrics
+  ; initialize performance metrics
   t0 = systime(/seconds)
   start_memory = memory(/current)
 
