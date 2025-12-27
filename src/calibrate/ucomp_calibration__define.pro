@@ -172,8 +172,6 @@ function ucomp_calibration::get_dark, obsday_hours, exptime, gain_mode, nuc_inde
     return, !null
   endif
 
-  ; TODO: check for a dark with a non-matching exptime and normalize
-
   found = 1B
 
   ; find closest two darks (or closest dark if before first dark or after last
@@ -543,27 +541,46 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
   ; TODO: use exptime to find proper flat
 
   mg_log, strjoin(strtrim(abs(wavelength - *self.flat_wavelengths) lt wavelength_threshold, 2), ','), $
-          name='ucomp/eod', /debug
+          name=logger_name, /debug
   mg_log, strjoin(strtrim(*self.flat_gain_modes eq gain_index, 2), ','), $
-          name='ucomp/eod', /debug
+          name=logger_name, /debug
   mg_log, strjoin(strtrim(*self.flat_onbands eq onband_index, 2), ','), $
-          name='ucomp/eod', /debug
+          name=logger_name, /debug
   mg_log, strjoin(strtrim(*self.flat_nucs eq nuc_index, 2), ','), $
-          name='ucomp/eod', /debug
+          name=logger_name, /debug
 
-  valid_indices = where((abs(wavelength - *self.flat_wavelengths) lt wavelength_threshold) $
-                          and (*self.flat_gain_modes eq gain_index) $
-                          and (*self.flat_onbands eq onband_index) $
-                          and (*self.flat_nucs eq nuc_index), $
-                          ; TOOD: removing below allows flats in the future to be found
-                          ;and (obsday_hours gt *self.flat_times), $
+  wave_region = ucomp_wave_region(wavelength)
+  allow_flats_nonmatching_exptime = self.run->line(wave_region, 'allow_flats_nonmatching_exptime')
+  if (allow_flats_nonmatching_exptime) then begin
+  endif else begin
+  endelse
+
+  normalize_exptime = 0B
+  exptime_mask = abs(exptime - *self.flat_exptimes) lt exptime_threshold
+  flat_mask = (abs(wavelength - *self.flat_wavelengths) lt wavelength_threshold) $
+                and (*self.flat_gain_modes eq gain_index) $
+                and (*self.flat_onbands eq onband_index) $
+                and (*self.flat_nucs eq nuc_index)
+  valid_indices = where(exptime_mask and flat_mask, $
+                        ; TOOD: removing below allows flats in the future to be found
+                        ;and (obsday_hours gt *self.flat_times), $
                         n_valid_flats)
   if (n_valid_flats eq 0L) then begin
-    error_msg = 'no valid flats'
-    return, !null
+    if (allow_flats_nonmatching_exptime) then begin
+      valid_indices = where(flat_mask, n_valid_flats)
+      if (n_valid_flats eq 0L) then begin
+        error_msg = 'no valid flats'
+        return, !null
+      endif else begin
+        normalize_exptime = 1B
+        mg_log, 'no matching EXPTIME flats, normalizing', $
+                name=logger_name, /debug
+      endelse
+    endif else begin
+      error_msg = 'no valid flats'
+      return, !null
+    endelse
   endif
-
-  ; TODO: check for a dark with a non-matching exptime and normalize
 
   found = 1B
 
@@ -586,7 +603,7 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
       return, !null
     endif
     interpolated_flat -= flat_dark
-    interpolated_flat *= exptime / exptime_found
+    if (normalize_exptime) then interpolated_flat *= exptime / exptime_found
 
     master_extensions = self->convert_flat_index_to_wave_region(valid_indices[0]) + 1L
     raw_extensions = (*self.flat_extensions)[valid_indices[0]]
@@ -607,7 +624,7 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
       return, !null
     endif
     interpolated_flat -= flat_dark
-    interpolated_flat *= exptime / exptime_found
+    if (normalize_exptime) then interpolated_flat *= exptime / exptime_found
 
     master_extensions = self->convert_flat_index_to_wave_region(valid_indices[n_valid_flats - 1]) + 1L
     raw_extensions = (*self.flat_extensions)[valid_indices[n_valid_flats - 1]]
@@ -644,8 +661,8 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
       endif
       flat2 -= flat_dark2
 
-      flat1 *= exptime / exptime_found1
-      flat2 *= exptime / exptime_found2
+      if (normalize_exptime) then flat1 *= exptime / exptime_found1
+      if (normalize_exptime) then flat2 *= exptime / exptime_found2
 
       a1 = (valid_times[index2] - obsday_hours) / (valid_times[index2] - valid_times[index1])
       a2 = (obsday_hours - valid_times[index1]) / (valid_times[index2] - valid_times[index1])
@@ -676,7 +693,7 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
         return, !null
       endif
       interpolated_flat -= flat_dark
-      interpolated_flat *= exptime / exptime_found
+      if (normalize_exptime) then interpolated_flat *= exptime / exptime_found
 
       master_extensions = self->convert_flat_index_to_wave_region(valid_indices[index]) + 1L
       raw_extensions = (*self.flat_extensions)[valid_indices[index]]
