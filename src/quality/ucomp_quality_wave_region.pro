@@ -29,8 +29,8 @@ function ucomp_quality_wave_region, file, $
 
   wave_region = ucomp_getpar(primary_header, 'FILTER')
 
-  for e = 0L, file.n_extensions - 1L do begin
-    wavelength  = ucomp_getpar(ext_headers[e], 'WAVELNG')
+  for e = 0L, n_elements(ext_headers) - 1L do begin
+    wavelength = ucomp_getpar(ext_headers[e], 'WAVELNG')
     if (wave_region ne ucomp_wave_region(wavelength)) then return, 1UL
   endfor
 
