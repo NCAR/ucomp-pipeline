@@ -112,7 +112,7 @@ pro ucomp_l1_average_data, file, $
       for e = 0L, n_groups - 1L do begin
         !null = where(finite(ext_data[*, *, p, c, e]) eq 1, n_non_nan)
         if (n_non_nan eq 0L) then begin
-          status = 1L
+          ; status = 1L
           mg_log, 'polstate %d, camera %d, ext %d all NaNs', p, c, e, $
                   name=run.logger_name, /warn
         endif

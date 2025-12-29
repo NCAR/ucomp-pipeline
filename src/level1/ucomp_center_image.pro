@@ -15,6 +15,8 @@
 function ucomp_center_image, im, geometry
   compile_opt strictarr
 
+  if (total(finite(im), /integer) eq 0L) then return, im
+
   dims = size(im, /dimensions)
   nx = dims[0]
   ny = dims[1]
@@ -35,5 +37,5 @@ function ucomp_center_image, im, geometry
   xpp = xp + geometry.occulter_center[0]
   ypp = yp + geometry.occulter_center[1]
 
-  return, interpolate(im, xpp, ypp, missing=0.0, cubic=-0.5, /double)
+  return, interpolate(im, xpp, ypp, missing=!values.f_nan, cubic=-0.5, /double)
 end
