@@ -538,22 +538,18 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
   wavelength_threshold = 0.001     ; [nm]
   gain_index           = gain_mode eq 'high'
   onband_index         = onband eq 'tcam'
-  ; TODO: use exptime to find proper flat
 
-  mg_log, strjoin(strtrim(abs(wavelength - *self.flat_wavelengths) lt wavelength_threshold, 2), ','), $
-          name=logger_name, /debug
-  mg_log, strjoin(strtrim(*self.flat_gain_modes eq gain_index, 2), ','), $
-          name=logger_name, /debug
-  mg_log, strjoin(strtrim(*self.flat_onbands eq onband_index, 2), ','), $
-          name=logger_name, /debug
-  mg_log, strjoin(strtrim(*self.flat_nucs eq nuc_index, 2), ','), $
-          name=logger_name, /debug
+  ; mg_log, strjoin(strtrim(long(abs(wavelength - *self.flat_wavelengths) lt wavelength_threshold), 2), ','), $
+  ;         name=logger_name, /debug
+  ; mg_log, strjoin(strtrim(long(*self.flat_gain_modes eq gain_index), 2), ','), $
+  ;         name=logger_name, /debug
+  ; mg_log, strjoin(strtrim(long(*self.flat_onbands eq onband_index), 2), ','), $
+  ;         name=logger_name, /debug
+  ; mg_log, strjoin(strtrim(long(*self.flat_nucs eq nuc_index), 2), ','), $
+  ;         name=logger_name, /debug
 
   wave_region = ucomp_wave_region(wavelength)
   allow_flats_nonmatching_exptime = self.run->line(wave_region, 'allow_flats_nonmatching_exptime')
-  if (allow_flats_nonmatching_exptime) then begin
-  endif else begin
-  endelse
 
   normalize_exptime = 0B
   exptime_mask = abs(exptime - *self.flat_exptimes) lt exptime_threshold
@@ -561,9 +557,10 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
                 and (*self.flat_gain_modes eq gain_index) $
                 and (*self.flat_onbands eq onband_index) $
                 and (*self.flat_nucs eq nuc_index)
+  ; only_before_mask = obsday_hours gt *self.flat_times
   valid_indices = where(exptime_mask and flat_mask, $
-                        ; TOOD: removing below allows flats in the future to be found
-                        ;and (obsday_hours gt *self.flat_times), $
+                        ; TODO: use below to only allow flats from before
+                        ; and only_before_mask, $
                         n_valid_flats)
   if (n_valid_flats eq 0L) then begin
     if (allow_flats_nonmatching_exptime) then begin
