@@ -16,8 +16,12 @@
 pro ucomp_mission_image_scale_plot, wave_region, db, run=run
   compile_opt strictarr
 
+  query = 'select distinct occltrid from ucomp_eng where ucomp_eng.wave_region = ''%s'';'
+  unique_occulter_ids = db->query(query, wave_region, error=error)
+  unique_occulter_ids = unique_occulter_ids.occltrid
+  unique_occulter_ids = unique_occulter_ids[where(unique_occulter_ids ne '', n_occulters, /null)]
+
   query = 'select ucomp_eng.date_obs, ucomp_eng.occltrid, ucomp_eng.image_scale, ucomp_eng.rcam_radius, ucomp_eng.tcam_radius from ucomp_eng inner join ucomp_file on ucomp_eng.file_name=ucomp_file.l0_file_name where ucomp_eng.wave_region = ''%s'' and ucomp_file.quality = 0 and ucomp_file.gbu = 0 order by ucomp_eng.date_obs'
-  ;query = 'select * from ucomp_eng where wave_region=''%s'' order by date_obs'
   data = db->query(query, wave_region, $
                    count=n_files, error=error, fields=fields, sql_statement=sql)
 
@@ -35,21 +39,21 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
   occulter_diameter = 0.0 * image_scale
 
   datetimes = ucomp_dateobs2datetime(data.date_obs)
-  occulter_ids = 'OC-' + data.occltrid + '-mm'
+  occulter_ids_mm = 'OC-' + data.occltrid + '-mm'
 
   jds = ucomp_dateobs2julday(data.date_obs)
 
   plate_scale_changes = run->line_changes(wave_region, 'plate_scale')
   plate_scale_tolerance_changes = run->line_changes(wave_region, 'plate_scale_tolerance')
 
-  unique_occulter_ids = occulter_ids[uniq(occulter_ids, sort(occulter_ids))]
-  for i = 0L, n_elements(unique_occulter_ids) - 1L do begin
+  unique_occulter_ids_mm = occulter_ids_mm[uniq(occulter_ids_mm, sort(occulter_ids))]
+  for i = 0L, n_elements(unique_occulter_ids_mm) - 1L do begin
     ; the below assumes the size of a given occulter ID does not change over
     ; the mission in the epoch file
-    odiam = run->epoch(unique_occulter_ids[i], datetime=datetimes[0], $
+    odiam = run->epoch(unique_occulter_ids_mm[i], datetime=datetimes[0], $
                        found=occulter_diameter_found)
     occulter_diameter_value = occulter_diameter_found ? odiam : !values.f_nan
-    indices = where(occulter_ids eq unique_occulter_ids[i], /null)
+    indices = where(occulter_ids_mm eq unique_occulter_ids_mm[i], /null)
     occulter_diameter[indices] = occulter_diameter_value
   endfor
 
@@ -91,13 +95,19 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
   tvlct, original_rgb, /get
   device, decomposed=0, $
           set_pixel_depth=8, $
-          set_resolution=[800, 300]
+          set_resolution=[1000, 450]
 
   tvlct, 0, 0, 0, 0
   tvlct, 255, 255, 255, 1
   tvlct, 255, 0, 0, 2
   tvlct, 255, 128, 128, 3
   tvlct, 240, 240, 240, 4
+
+  ; need at least n_occulters different colors
+  loadct, 48, bottom=5, ncolors=12   ; color table 48 is CB-Set3
+  ; starting at 7 instead of 5 to skip a difficult-to-see yellow at index 6
+  occulter_color_offset = 7
+
   tvlct, r, g, b, /get
 
   color            = 0
@@ -157,10 +167,18 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
     plots, [jds], [plate_scale], linestyle=0, color=platescale_color
   endelse
 
-  mg_range_oplot, jds, image_scale, $
-                  color=color, $
-                  psym=psym, symsize=symsize, $
-                  clip_color=2, clip_psym=7, clip_symsize=1.0
+  ygap = 15.0
+  for o = 0L, n_occulters - 1L do begin
+    occulter_indices = where(data.occltrid eq unique_occulter_ids[o], n_occulter_datapts)
+    if (n_occulter_datapts gt 0L) then begin
+      mg_range_oplot, jds[occulter_indices], image_scale[occulter_indices], $
+                      color=occulter_color_offset + o, $
+                      psym=psym, symsize=symsize, $
+                      clip_color=2, clip_psym=7, clip_symsize=1.0
+      xyouts, 850.0, 400.0 - o * ygap, string(unique_occulter_ids[o], format='Occulter %s'), $
+              /device, charsize=1.0, color=occulter_color_offset + o
+    endif
+  endfor
 
   ; save plots image file
   output_filename = filepath(string(run.date, wave_region, $
