@@ -57,13 +57,22 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
     occulter_diameter[indices] = occulter_diameter_value
   endfor
 
-  for c = 0L, n_elements(plate_scale_changes) - 1L do begin
+  n_plate_scale_changes = n_elements(plate_scale_changes)
+  plate_scale_change_stats = replicate({start_jd: 0.0D, end_jd: 0.0D, value: 0.0}, $
+                                       n_plate_scale_changes)
+
+  for c = 0L, n_plate_scale_changes - 1L do begin
     change = plate_scale_changes[c]
-    if (change.datetime eq 'DEFAULT') then index = 0 else begin
+    if (change.datetime eq 'DEFAULT') then begin
+      plate_scale_change_stats[c].start_jd = jds[0]
+      index = 0
+    endif else begin
       change_dt = mg_epoch_parse_datetime(change.datetime)
+      plate_scale_change_stats[c].start_jd = change_dt.to_julian()
       index = value_locate(jds, change_dt.to_julian()) + 1L
       obj_destroy, change_dt
     endelse
+    plate_scale_change_stats[c].value = change.value
     if (index lt n_elements(plate_scale) - 1L) then begin
       plate_scale[index:*] = change.value
     endif
@@ -93,9 +102,11 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
   set_plot, 'Z'
   device, get_decomposed=original_decomposed
   tvlct, original_rgb, /get
+  width = 1000
+  height = 450
   device, decomposed=0, $
           set_pixel_depth=8, $
-          set_resolution=[1000, 450]
+          set_resolution=[width, height]
 
   tvlct, 0, 0, 0, 0
   tvlct, 255, 255, 255, 1
@@ -143,8 +154,10 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
                  xtickv=month_ticks, $
                  xticks=n_elements(month_ticks) - 1L, $
                  xminor=n_minor, $
+                 xticklen=0.01 * (float(width) / float(height)), $
                  ytitle='Image scale [arcsec/pixel]', $
-                 ystyle=1, yrange=image_scale_range
+                 ystyle=1, yrange=image_scale_range, $
+                 yticklen=0.01
 
   if (n_files gt 1L) then begin
     diffs = [0.0, plate_scale[1:-1] - plate_scale[0:-2]]
@@ -175,9 +188,28 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
                       color=occulter_color_offset + o, $
                       psym=psym, symsize=symsize, $
                       clip_color=2, clip_psym=7, clip_symsize=1.0
-      xyouts, 850.0, 400.0 - o * ygap, string(unique_occulter_ids[o], format='Occulter %s'), $
+      xyouts, width - 150.0, height - 50.0 - o * ygap, string(unique_occulter_ids[o], format='Occulter %s'), $
               /device, charsize=1.0, color=occulter_color_offset + o
     endif
+  endfor
+
+  xgap = 0.015 * (jds[-1] - jds[0])
+  stat_height = 2.78   ; in plate scale units
+  for c = 0L, n_plate_scale_changes - 1L do begin
+    start_jd = plate_scale_change_stats[c].start_jd
+    end_jd = c ge (n_plate_scale_changes - 1) ? jds[-1] : plate_scale_change_stats[c + 1].start_jd
+    epoch_indices = where(jds ge start_jd and jds lt end_jd, /null)
+
+    platescale_mean = mean(image_scale[epoch_indices], /nan)
+    platescale_median = median(image_scale[epoch_indices])
+    platescale_stddev = stddev(image_scale[epoch_indices], /nan)
+
+    xyouts, end_jd - xgap, stat_height, alignment=1.0, $   ;start_jd + xgap, stat_height, $
+            string(plate_scale_change_stats[c].value, $
+                   platescale_mean, $
+                   platescale_median, $
+                   platescale_stddev, format='nominal: %0.3f!Cmean: %0.3f!Cmedian: %0.3f!Cstd dev: %0.3f'), $
+            charsize=0.9, color=0
   endfor
 
   ; save plots image file
@@ -210,30 +242,6 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
              data.occltrid, $
              occulter_diameter, $
              header=column_names
-  ; openw, lun, output_filename, /get_lun
-  ; printf, lun, ['date/time', $
-  ;               'Julian date', $
-  ;               'RCAM radius', $
-  ;               'TCAM radius', $
-  ;               'image scale', $
-  ;               'plate scale', $
-  ;               'occulter ID', $
-  ;               'occulter diameter [mm]'], $
-  ;              format='%s, %s, %s, %s, %s, %s, %s, %s'
-  ; for f = 0L, n_files - 1L do begin
-  ;   if (f mod 1000 eq 0) then mg_log, 'wrote %d/%d lines', f, n_files, name=run.logger_name, /debug
-  ;   printf, lun, $
-  ;           (data.date_obs)[f], $
-  ;           jds[f], $
-  ;           (data.rcam_radius)[f], $
-  ;           (data.tcam_radius)[f], $
-  ;           image_scale[f], $
-  ;           plate_scale[f], $
-  ;           (data.occltrid)[f], $
-  ;           occulter_diameter[f], $
-  ;           format='%s, %0.9f, %0.3f, %0.3f, %0.5f, %0.5f, %s, %0.3f'
-  ; endfor
-  ; free_lun, lun
   mg_log, 'wrote %s', file_basename(output_filename), name=run.logger_name, /info
 
   done:
