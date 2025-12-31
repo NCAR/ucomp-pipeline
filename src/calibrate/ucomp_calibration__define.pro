@@ -557,10 +557,14 @@ function ucomp_calibration::get_flat, obsday_hours, exptime, gain_mode, $
                 and (*self.flat_gain_modes eq gain_index) $
                 and (*self.flat_onbands eq onband_index) $
                 and (*self.flat_nucs eq nuc_index)
-  ; only_before_mask = obsday_hours gt *self.flat_times
+
+  ; allow only flats before the requested time
+  allow_only_before = 0B
+  if (keyword_set(allow_only_before)) then begin
+    flat_mask and= obsday_hours gt *self.flat_times
+  endif
+
   valid_indices = where(exptime_mask and flat_mask, $
-                        ; TODO: use below to only allow flats from before
-                        ; and only_before_mask, $
                         n_valid_flats)
   if (n_valid_flats eq 0L) then begin
     if (allow_flats_nonmatching_exptime) then begin
