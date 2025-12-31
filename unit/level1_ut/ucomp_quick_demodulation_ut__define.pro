@@ -1,5 +1,26 @@
 ; docformat = 'rst'
 
+; NaNs in one pol state should make all pol states NaN after demodulation
+function ucomp_quick_demodulation_ut::test_nan
+  compile_opt strictarr
+
+  xsize = 100   ; 1280
+  ysize = 100   ; 1024
+  n_extensions = 10
+  data = randomu(seed, xsize, ysize, 4, 2, n_extensions)
+  dmatrix = randomu(seed, 4, 4)
+
+  data[*, *, 1, *, *] = !values.f_nan
+
+  result = ucomp_quick_demodulation(dmatrix, data)
+
+  n_finite = total(finite(result), /integer)
+  assert, n_finite eq 0L, '%d finite pixels', n_finite
+
+  return, 1
+end
+
+
 function ucomp_quick_demodulation_ut::test_basic, output=output
   compile_opt strictarr
 
@@ -25,7 +46,7 @@ function ucomp_quick_demodulation_ut::test_basic, output=output
   result = ucomp_quick_demodulation(dmatrix, data)
   t2 = systime(/seconds)
   output = string(t1 - t0, t2 - t1, (t1 - t0) / (t2 - t1), $
-                  format='(%"%0.1fs vs %0.1fs, %0.1fx")')
+                  format='(%"%0.2fs vs %0.2fs, %0.1fx speedup")')
 
   threshold = 0.0001
   assert, total(abs(result - standard) gt threshold, /integer) eq 0L, $
