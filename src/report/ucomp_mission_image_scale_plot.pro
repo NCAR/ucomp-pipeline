@@ -162,8 +162,8 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
   if (n_files gt 1L) then begin
     diffs = [0.0, plate_scale[1:-1] - plate_scale[0:-2]]
     change_indices = where(diffs gt 0.0, n_changes, /null)
-    mg_log, '%d plate scale %s', $
-            n_changes, mg_plural(n_changes, 'change', 'changes'), $
+    mg_log, '%s', $
+            mg_plural(n_changes, 'plate scale change', 'plate scale changes'), $
             name=run.logger_name, /debug
     change_indices = [0L, change_indices, n_elements(plate_scale)]
     for c = 0L, n_changes do begin
