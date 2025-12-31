@@ -198,18 +198,22 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
   for c = 0L, n_plate_scale_changes - 1L do begin
     start_jd = plate_scale_change_stats[c].start_jd
     end_jd = c ge (n_plate_scale_changes - 1) ? jds[-1] : plate_scale_change_stats[c + 1].start_jd
-    epoch_indices = where(jds ge start_jd and jds lt end_jd, /null)
+    epoch_indices = where(jds ge start_jd and jds lt end_jd, n_epoch_indices, /null)
 
-    platescale_mean = mean(image_scale[epoch_indices], /nan)
-    platescale_median = median(image_scale[epoch_indices])
-    platescale_stddev = stddev(image_scale[epoch_indices], /nan)
+    if (n_epoch_indices gt 0L) then begin
+      platescale_mean = mean(image_scale[epoch_indices], /nan)
+      platescale_median = median(image_scale[epoch_indices])
+      platescale_stddev = stddev(image_scale[epoch_indices], /nan)
 
-    xyouts, end_jd - xgap, stat_height, alignment=1.0, $   ;start_jd + xgap, stat_height, $
-            string(plate_scale_change_stats[c].value, $
-                   platescale_mean, $
-                   platescale_median, $
-                   platescale_stddev, format='nominal: %0.3f!Cmean: %0.3f!Cmedian: %0.3f!Cstd dev: %0.3f'), $
-            charsize=0.9, color=0
+      xyouts, end_jd - xgap, stat_height, alignment=1.0, $   ;start_jd + xgap, stat_height, $
+              string(plate_scale_change_stats[c].value, $
+                    platescale_mean, $
+                    platescale_median, $
+                    platescale_stddev, format='nominal: %0.3f!Cmean: %0.3f!Cmedian: %0.3f!Cstd dev: %0.3f'), $
+              charsize=0.9, color=0
+    endif else begin
+      mg_log, 'epoch with no data: %s', plate_scale_changes[c].value, /error
+    endelse
   endfor
 
   ; save plots image file
