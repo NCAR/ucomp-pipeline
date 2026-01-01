@@ -672,13 +672,14 @@ pro ucomp_file::_inventory
 
   datetime = strmid(file_basename(self.raw_filename), 0, 15)
   self.run->setProperty, datetime=datetime
-  self.run->getProperty, logger_name=logger_name
+  self.run->getProperty, logger_name=logger_name, metadata_fixes=metadata_fixes
 
   ucomp_read_raw_data, self.raw_filename, $
                        primary_header=primary_header, $
                        ext_headers=ext_headers, $
                        n_extensions=n_extensions, $
                        repair_routine=self.run->epoch('raw_data_repair_routine'), $
+                       metadata_fixes=metadata_fixes, $
                        logger=logger_name
 
   self.n_extensions = n_extensions
@@ -876,13 +877,13 @@ end
 function ucomp_file::init, raw_filename, run=run
   compile_opt strictarr
 
-  catch, error
-  if (error ne 0L) then begin
-    catch, /cancel
-    msg = strtrim(strmid(!error_state.msg, strpos(!error_state.msg, ':') + 1), 2)
-    mg_log, '%s', msg, name=run.logger_name, /error
-    return, 0
-  endif
+  ; catch, error
+  ; if (error ne 0L) then begin
+  ;   catch, /cancel
+  ;   msg = strtrim(strmid(!error_state.msg, strpos(!error_state.msg, ':') + 1), 2)
+  ;   mg_log, '%s', msg, name=run.logger_name, /error
+  ;   return, 0
+  ; endif
 
   self.raw_filename = raw_filename
   self.run = run

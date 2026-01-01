@@ -27,6 +27,14 @@
 ;         replicate({filename: '', camera: 0L, extension: 0L, polstate: 0L}, $
 ;                   n_badframes)
 ;
+;   metadata_fixes : in, optional, type=array of structures
+;     to fix the value of FITS keyword values, set to an array of structures of
+;     the form::
+;
+;         replicate({filename: '', extension: 0L, $
+;                    keyword_name: '', keyword_value: ''}, $
+;                   n_metadata_fixes)
+;
 ;   all_zero : out, optional, type=byte
 ;     set to a named variable to retrieve whether any extension of the file was
 ;     identically zero
@@ -41,6 +49,7 @@ pro ucomp_read_raw_data, filename, $
                          n_extensions=n_extensions, $
                          repair_routine=repair_routine, $
                          badframes=badframes, $
+                         metadata_fixes=metadata_fixes, $
                          all_zero=all_zero, $
                          logger=logger
   compile_opt strictarr
@@ -167,6 +176,18 @@ pro ucomp_read_raw_data, filename, $
     endif
   endif
 
+  if (arg_present(ext_headers) && (n_elements(metadata_fixes) gt 0L)) then begin
+    file_indices = where(metadata_fixes.filename eq file_basename(filename), $
+                         n_file_badframes)
+    for f = 0L, n_file_badframes - 1L do begin
+      h = ext_headers[metadata_fixes[file_indices[f]].extension - 1]
+      ucomp_addpar, h, $
+                    metadata_fixes[file_indices[f]].keyword_name, $
+                    metadata_fixes[file_indices[f]].keyword_value
+      ext_headers[metadata_fixes[file_indices[f]].extension - 1] = h
+    endfor
+  endif
+
   if (arg_present(primary_header)) then begin
     if (n_elements(ext_data) eq 0L) then begin
       n_total_frames = !null
@@ -192,7 +213,8 @@ end
 
 ; main-level example program
 
-date = '20240409'
+; date = '20240409'
+date = '20220221'
 
 config_basename = 'ucomp.badframes.cfg'
 config_filename = filepath(config_basename, $
@@ -201,9 +223,11 @@ config_filename = filepath(config_basename, $
 run = ucomp_run(date, 'test', config_filename)
 
 l0_basedir = run->config('raw/basedir')
-l0_basename = '20240409.180009.92.ucomp.1079.l0.fts'
+; l0_basename = '20240409.180009.92.ucomp.1079.l0.fts'
+l0_basename = '20220221.180817.95.ucomp.637.l0.fts'
 l0_filename = filepath(l0_basename, subdir=date, root=l0_basedir)
 
+help, run.metadata_fixes
 run.datetime = strmid(l0_basename, 0, 15)
 ucomp_read_raw_data, l0_filename, $
                      primary_header=primary_header, $
@@ -211,24 +235,27 @@ ucomp_read_raw_data, l0_filename, $
                      ext_headers=headers, $
                      repair_routine=run->epoch('raw_data_repair_routine'), $
                      badframes=run.badframes, $
+                     metadata_fixes=run.metadata_fixes, $
                      all_zero=all_zero, $
                      logger=run.logger_name
 
 ; bad frames for this file (l0_filename, camera, ext, polstate):
 ; 20240409.180009.92.ucomp.1079.l0.fts,       0,      31,       1
-print, total(finite(data[*, *, 1, 0, 30]), /integer), format='# finite values: %d'
+; print, total(finite(data[*, *, 1, 0, 30]), /integer), format='# finite values: %d'
+; 
+; averaged_basename = '20240409.180009.ucomp.1079.average_data.p5.fts'
+; averaged_filename = filepath(averaged_basename, $
+                             ; subdir=[date, 'level1', '01-average_data'], $
+                             ; root=run->config('processing/basedir'))
 
-averaged_basename = '20240409.180009.ucomp.1079.average_data.p5.fts'
-averaged_filename = filepath(averaged_basename, $
-                             subdir=[date, 'level1', '01-average_data'], $
-                             root=run->config('processing/basedir'))
-
-forward_function readfits
-averaged_im = readfits(averaged_filename, exten_no=1)
+; forward_function readfits
+; averaged_im = readfits(averaged_filename, exten_no=1)
 ; average should be from extensions 1, 11, 21, 31
 
-computed_average = mean(data[*, *, *, *, [0, 10, 20, 30]], dimension=5, /nan)
-print, array_equal(averaged_im, computed_average) ? 'average equal' : 'average different'
+; computed_average = mean(data[*, *, *, *, [0, 10, 20, 30]], dimension=5, /nan)
+; print, array_equal(averaged_im, computed_average) ? 'average equal' : 'average different'
+
+print, headers[0]
 
 obj_destroy, run
 

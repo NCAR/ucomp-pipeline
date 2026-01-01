@@ -25,7 +25,9 @@ pro ucomp_quicklook, file, run=run
                        primary_header=primary_header, $
                        ext_data=data, $
                        ext_headers=headers, $
-                       repair_routine=run->epoch('raw_data_repair_routine')
+                       repair_routine=run->epoch('raw_data_repair_routine'), $
+                       badframes=run.badframes, $
+                       metadata_fixes=run.metadata_fixes
 
   ; find only center wavelength in each camera
   rcam_indices = where(abs(file.wavelengths - file.center_wavelength) lt 0.001 $

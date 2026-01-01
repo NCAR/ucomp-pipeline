@@ -582,12 +582,29 @@ end
 pro ucomp_run::load_badframes
   compile_opt strictarr
 
-  badframes_dir = self->config('averaging/badframes_dir')
+  badframes_dir = self->config('raw/badframes_dir')
   if (n_elements(badframes_dir) ne 0L && (badframes_dir ne '')) then begin
     basename = string(self.date, format='%s.ucomp.badframes.csv')
     filename = filepath(basename, root=badframes_dir)
     if (file_test(filename, /regular)) then begin
       *self.badframes = ucomp_read_badframes(filename)
+    endif
+  endif
+end
+
+
+;+
+; Load the metadata fixes for a day.
+;-
+pro ucomp_run::load_metadata_fixes
+  compile_opt strictarr
+
+  metadata_fixes_dir = self->config('raw/metadata_fixes_dir')
+  if (n_elements(metadata_fixes_dir) ne 0L && (metadata_fixes_dir ne '')) then begin
+    basename = string(self.date, format='%s.mid_issue.ucomp.csv')
+    filename = filepath(basename, root=metadata_fixes_dir)
+    if (file_test(filename, /regular)) then begin
+      *self.metadata_fixes = ucomp_read_metadata_fixes(filename)
     endif
   endif
 end
@@ -1166,6 +1183,7 @@ pro ucomp_run::getProperty, date=date, $
                             resource_root=resource_root, $
                             calibration=calibration, $
                             badframes=badframes, $
+                            metadata_fixes=metadata_fixes, $
                             t0=t0
   compile_opt strictarr
   on_error, 2
@@ -1196,6 +1214,7 @@ pro ucomp_run::getProperty, date=date, $
   if (arg_present(calibration)) then calibration = self.calibration
 
   if (arg_present(badframes)) then badframes = *self.badframes
+  if (arg_present(metadata_fixes)) then metadata_fixes = *self.metadata_fixes
 
   if (arg_present(t0)) then t0 = self.t0
 end
@@ -1337,7 +1356,7 @@ pro ucomp_run::cleanup
   obj_destroy, [self.options, self.epochs, self.lines, self.temperature_maps, $
                 self.program_names]
 
-  ptr_free, self.badframes
+  ptr_free, self.badframes, self.metadata_fixes
 
   ptr_free, self.hot_pixels[0], $
             self.hot_pixels[1], $
@@ -1472,6 +1491,9 @@ function ucomp_run::init, date, mode, config_filename, $
   self.badframes = ptr_new(/allocate_heap)
   self->load_badframes
 
+  self.metadata_fixes = ptr_new(/allocate_heap)
+  self->load_metadata_fixes
+
   for i = 0L, 3L do begin
     self.hot_pixels[i] = ptr_new(/allocate_heap)
     self.adjacent_pixels[i] = ptr_new(/allocate_heap)
@@ -1520,6 +1542,7 @@ pro ucomp_run__define
            program_names           : obj_new(), $
 
            badframes               : ptr_new(), $
+           metadata_fixes          : ptr_new(), $
 
            hot_pixels_basename     : strarr(2), $
            hot_pixels_date         : strarr(2), $

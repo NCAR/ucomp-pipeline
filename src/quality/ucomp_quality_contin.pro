@@ -66,6 +66,7 @@ ucomp_read_raw_data, raw_filename, $
                      n_extensions=n_extensions, $
                      repair_routine=run->epoch('raw_data_repair_routine'), $
                      badframes=run.badframes, $
+                     metadata_fixes=run.metadata_fixes, $
                      all_zero=all_zero
 
 
