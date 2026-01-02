@@ -212,7 +212,8 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
                     platescale_stddev, format='nominal: %0.3f!Cmean: %0.3f!Cmedian: %0.3f!Cstd dev: %0.3f'), $
               charsize=0.9, color=0
     endif else begin
-      mg_log, 'epoch with no data starting: %s', plate_scale_changes[c].datetime, $
+      mg_log, 'epoch with no %s nm data starting: %s', $
+              wave_region, plate_scale_changes[c].datetime, $
               name=run.logger_name, /error
     endelse
   endfor
