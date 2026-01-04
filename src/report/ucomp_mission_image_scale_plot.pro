@@ -216,7 +216,7 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
               wave_region, $
               plate_scale_changes[c].datetime, $
               c eq n_plate_scale_changes - 1L ? '' : plate_scale_changes[c + 1].datetime, $
-              name=run.logger_name, /error
+              name=run.logger_name, /warn
     endelse
   endfor
 
