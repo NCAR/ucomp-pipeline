@@ -4,7 +4,7 @@ function ucomp_gbu_mask_ut::test_basic
   compile_opt strictarr
 
   result = ucomp_gbu_mask('vcrosstalk|median_diff')
-  standard = [1B, 1B, 1B, 1B, 0B, 1B, 0B]
+  standard = [1B, 1B, 1B, 1B, 0B, 1B, 0B, 1B]
   assert, array_equal(result, standard), 'incorrect result'
 
   return, 1
