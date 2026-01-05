@@ -34,6 +34,8 @@ function ucomp_quality_dark_values, file, $
   quality_rcam_dark_range = run->epoch('quality_rcam_dark_range')
   quality_tcam_dark_range = run->epoch('quality_tcam_dark_range')
 
+  numsum = ucomp_getpar(ext_headers[0], 'NUMSUM')
+
   dims = size(ext_data, /dimensions)
 
   r_outer = run->epoch('field_radius')
@@ -49,16 +51,16 @@ function ucomp_quality_dark_values, file, $
     n_dims = size(rcam_test_data, /n_dimensions)
   endwhile
 
-  rcam_median = median(rcam_test_data[field_mask_indices])
-  tcam_median = median(tcam_test_data[field_mask_indices])
+  rcam_median = median(rcam_test_data[field_mask_indices]) / numsum
+  tcam_median = median(tcam_test_data[field_mask_indices]) / numsum
 
-  if (rcam_median lt quality_rcam_dark_range[0] $
-        || rcam_median gt quality_rcam_dark_range[1]) then begin
+  if ((rcam_median lt quality_rcam_dark_range[0]) $
+        || (rcam_median gt quality_rcam_dark_range[1])) then begin
     return, 1UL
   endif
 
-  if (tcam_median lt quality_tcam_dark_range[0] $
-        || tcam_median gt quality_tcam_dark_range[1]) then begin
+  if ((tcam_median lt quality_tcam_dark_range[0]) $
+        || (tcam_median gt quality_tcam_dark_range[1])) then begin
     return, 1UL
   endif
 
