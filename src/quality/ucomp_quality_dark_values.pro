@@ -54,15 +54,33 @@ function ucomp_quality_dark_values, file, $
   rcam_median = median(rcam_test_data[field_mask_indices]) / numsum
   tcam_median = median(tcam_test_data[field_mask_indices]) / numsum
 
-  if ((rcam_median lt quality_rcam_dark_range[0]) $
-        || (rcam_median gt quality_rcam_dark_range[1])) then begin
-    return, 1UL
+  fail = 0B
+
+  if ((rcam_median lt quality_rcam_dark_range[0])) then begin
+    mg_log, 'RCAM median < %0.1f', quality_rcam_dark_range[0], $
+            run.logger_name, /warn
+    fail = 1B
   endif
 
-  if ((tcam_median lt quality_tcam_dark_range[0]) $
-        || (tcam_median gt quality_tcam_dark_range[1])) then begin
-    return, 1UL
+  if ((rcam_median gt quality_rcam_dark_range[1])) then begin
+    mg_log, 'RCAM median > %0.1f', quality_rcam_dark_range[1], $
+            run.logger_name, /warn
+    fail = 1B
   endif
+
+  if ((tcam_median lt quality_tcam_dark_range[0])) then begin
+    mg_log, 'TCAM median < %0.1f', quality_tcam_dark_range[0], $
+            run.logger_name, /warn
+    fail = 1B
+  endif
+
+  if ((tcam_median gt quality_tcam_dark_range[1])) then begin
+    mg_log, 'TCAM median > %0.1f', quality_tcam_dark_range[1], $
+            run.logger_name, /warn
+    fail = 1B
+  endif
+
+  if (fail) then return, 1UL
 
   return, 0UL
 end
