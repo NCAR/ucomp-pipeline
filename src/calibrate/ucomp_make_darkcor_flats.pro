@@ -76,6 +76,9 @@ pro ucomp_make_darkcor_flats, wave_region, run=run
                          raw_filenames=raw_dark_filenames, $
                          coefficients=dark_coefficients)
 
+    ; if no dark found, then dark-corrected flat is not defined
+    if (~dark_found) then dark = !values.f_nan
+
     ; add RAWDARK1, DARKEXT1, RAWDARK2, DARKEXT2 to header
     after = 'RAWEXTS'
     for de = 0L, n_elements(master_dark_extensions) - 1L do begin
