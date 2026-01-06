@@ -57,25 +57,25 @@ function ucomp_quality_dark_values, file, $
   fail = 0B
 
   if ((rcam_median lt quality_rcam_dark_range[0])) then begin
-    mg_log, 'RCAM median < %0.1f', quality_rcam_dark_range[0], $
+    mg_log, 'RCAM median %0.1f < %0.1f', rcam_median, quality_rcam_dark_range[0], $
             name=run.logger_name, /warn
     fail = 1B
   endif
 
   if ((rcam_median gt quality_rcam_dark_range[1])) then begin
-    mg_log, 'RCAM median > %0.1f', quality_rcam_dark_range[1], $
+    mg_log, 'RCAM median %0.1f > %0.1f', rcam_median, quality_rcam_dark_range[1], $
             name=run.logger_name, /warn
     fail = 1B
   endif
 
   if ((tcam_median lt quality_tcam_dark_range[0])) then begin
-    mg_log, 'TCAM median < %0.1f', quality_tcam_dark_range[0], $
+    mg_log, 'TCAM median %0.1f < %0.1f', tcam_median, quality_tcam_dark_range[0], $
             name=run.logger_name, /warn
     fail = 1B
   endif
 
   if ((tcam_median gt quality_tcam_dark_range[1])) then begin
-    mg_log, 'TCAM median > %0.1f', quality_tcam_dark_range[1], $
+    mg_log, 'TCAM median %0.1f > %0.1f', tcam_median, quality_tcam_dark_range[1], $
             name=run.logger_name, /warn
     fail = 1B
   endif
