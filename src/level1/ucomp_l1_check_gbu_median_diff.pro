@@ -17,6 +17,9 @@ pro ucomp_l1_check_gbu_median_diff, wave_region, run=run
 
   mg_log, 'starting...', name=run.logger_name, /info
 
+  publish_type = run->config(wave_region + '/publish_type')
+  check_qu = publish_type eq 'all'
+
   mask = ucomp_gbu_mask(run->config('gbu/mask'), wave_region, run=run) $
            and ucomp_gbu_mask(run->epoch('gbu_mask'), wave_region, run=run)
 
@@ -142,16 +145,18 @@ pro ucomp_l1_check_gbu_median_diff, wave_region, run=run
       endfor
 
       ; next, check Q and U
-      for p = 1L, dims[2] - 2L do begin
-        for w = 0L, dims[3] - 1L do begin
-          !null = where((sigma_data[*, *, p, w] eq 0.0) or (mask eq 0), $
-                        complement=nonzero_indices, ncomplement=n_nonzero)
-          if (n_nonzero gt 0L) then begin
-            diff = abs(ext_data[*, *, p, w] - median_data[*, *, p, w]) / sigma_data[*, *, p, w]
-            sigma[p, w] = median(diff[nonzero_indices])
-          endif
+      if (check_qu) then begin
+        for p = 1L, dims[2] - 2L do begin
+          for w = 0L, dims[3] - 1L do begin
+            !null = where((sigma_data[*, *, p, w] eq 0.0) or (mask eq 0), $
+                          complement=nonzero_indices, ncomplement=n_nonzero)
+            if (n_nonzero gt 0L) then begin
+              diff = abs(ext_data[*, *, p, w] - median_data[*, *, p, w]) / sigma_data[*, *, p, w]
+              sigma[p, w] = median(diff[nonzero_indices])
+            endif
+          endfor
         endfor
-      endfor
+      endif
 
       ; do not check V
 
