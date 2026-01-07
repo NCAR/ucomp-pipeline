@@ -142,18 +142,21 @@ pro ucomp_make_darks, run=run
 
       dark_image = reform(ext_data[*, *, *, *, e])
 
-      dark_image = mean(dark_image, dimension=3, /nan)
-
-      dark_data->add, dark_image
-
-      rcam_means += total(reform(dark_image[*, *, 0], nx * ny), $
+      rcam_means += total(total(reform(dark_image[*, *, *, 0]), $
+                                1, $
+                                /preserve_type, /nan), $
                           1, $
                           /preserve_type, /nan)
       n_rcam += 1L
-      tcam_means += total(reform(dark_image[*, *, 1], nx * ny), $
+      tcam_means += total(total(reform(dark_image[*, *, *, 1]), $
+                                1, $
+                                /preserve_type, /nan), $
                           1, $
                           /preserve_type, /nan)
       n_tcam += 1L
+
+      dark_image = mean(dark_image, dimension=3, /nan)
+      dark_data->add, dark_image
     endfor
 
     dims = size(dark_image, /dimensions)
@@ -249,20 +252,20 @@ pro ucomp_make_darks, run=run
                     nucs=dark_nucs_array, $
                     raw_files=dark_raw_files_array
 
-  tcam_means /= (n_tcam gt 0L ? n_tcam : 1L)
   rcam_means /= (n_rcam gt 0L ? n_rcam : 1L)
+  rcam_means /= nx * ny
+  tcam_means /= (n_tcam gt 0L ? n_tcam : 1L)
+  tcam_means /= nx * ny
 
   for p = 0L, n_pol_states - 1L do begin
-    mg_log, '%d tcam dark means, pol state %d: %s', $
-            n_tcam, p, $
-            strjoin(strtrim(string(tcam_means[p, *], format='(F0.2)'), 2), ', '), $
+    mg_log, '%d RCAM dark means, pol state %d: %0.1f', $
+            n_rcam, p, rcam_means[p], $
             name=run.logger_name, /debug
   endfor
 
   for p = 0L, n_pol_states - 1L do begin
-    mg_log, '%d rcam dark means, pol state %d: %s', $
-            n_rcam, p, $
-            strjoin(strtrim(string(rcam_means[p, *], format='(F0.2)'), 2), ', '), $
+    mg_log, '%d TCAM dark means, pol state %d: %0.1f', $
+            n_tcam, p, tcam_means[p], $
             name=run.logger_name, /debug
   endfor
 
