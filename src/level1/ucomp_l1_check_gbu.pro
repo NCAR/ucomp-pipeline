@@ -56,5 +56,10 @@ pro ucomp_l1_check_gbu, file, $
     file.gbu = gbu_conditions[g].mask * gbu
   endfor
 
+  if (file.gbu ne 0) then begin
+    bad_conditions = ucomp_list_conditions(file.gbu, gbu_conditions)
+    mg_log, 'failed %s', bad_conditions, name=run.logger_name, /warn
+  endif
+
   done:
 end

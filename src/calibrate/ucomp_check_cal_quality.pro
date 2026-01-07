@@ -41,8 +41,6 @@ pro ucomp_check_cal_quality, type, run=run
 
     quality_conditions = ucomp_cal_quality_conditions(file.wave_region, run=run)
     for q = 0L, n_elements(quality_conditions) - 1L do begin
-      mg_log, 'checking %s...', quality_conditions[q].checker, $
-              name=run.logger_name, /debug
       quality = call_function(quality_conditions[q].checker, $
                               file, $
                               primary_header, $
@@ -53,10 +51,17 @@ pro ucomp_check_cal_quality, type, run=run
       quality_bitmasks[f] or= quality_conditions[q].mask * quality
     endfor
     file.quality_bitmask = quality_bitmasks[f]
-    mg_log, '%s quality: %d', $
-            file_basename(file.raw_filename), $
-            file.quality_bitmask, $
-            name=run.logger_name, /debug
+    if (file.quality_bitmask eq 0) then begin
+      mg_log, '%s quality: GOOD', $
+              file_basename(file.raw_filename), $
+              name=run.logger_name, /debug
+    endif else begin
+      bad_conditions = ucomp_list_conditions(file.quality_bitmask, quality_conditions)
+      mg_log, '%s failed quality: %s', $
+              file_basename(file.raw_filename), $
+              bad_conditions, $
+              name=run.logger_name, /warn
+    endelse
   endfor
 
   !null = where(quality_bitmasks eq 0UL, n_ok_files)

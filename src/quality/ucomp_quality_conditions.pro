@@ -24,40 +24,52 @@ function ucomp_quality_conditions, wave_region, run=run
   quality_conditions = [ $
     {mask: 0UL, $
      checker: 'ucomp_quality_inout', $
+     name: 'inout', $
      description: 'in/out values that are neither in or out'}, $
     {mask: 0UL, $
      checker: 'ucomp_quality_check_time_interval', $
+     name: 'check_time_interval', $
      description: string(run->epoch('max_ext_time'), $
                          format='(%"check for sequential extensions acquired more than %0.1f secs apart")')}, $
     {mask: 0UL, $
      checker: 'ucomp_quality_datatype', $
+     name: 'datatype', $
      description: 'multiple datatypes in a file'}, $
     {mask: 0UL, $
      checker: 'ucomp_quality_all_zero', $
+     name: 'all_zero', $
      description: 'an extension is identically zero'}, $
     {mask: 0UL, $
      checker: 'ucomp_quality_check_identical_temps', $
+     name: 'check_identical_temps', $
      description: 'any reported temperatures are identical'}, $
     {mask: 0UL, $
      checker: 'ucomp_quality_check_nominal_temps', $
+     name: 'check_nominal_temps', $
      description: 'a temperature is not in the nominal range'}, $
     {mask: 0UL, $
      checker: 'ucomp_quality_check_o1focus', $
+     name: 'check_o1focus', $
      description: 'multiple O1FOCUS values in a file'}, $
     {mask: 0UL, $
      checker: 'ucomp_quality_saturated', $
+     name: 'saturated', $
      description: 'checked for saturated and non-linear pixels in a file'}, $
     {mask: 0UL, $
      checker: 'ucomp_quality_wave_region', $
+     name: 'wave_region', $
      description: 'some wavelengths that do not match wave region'}, $
     {mask: 0UL, $
      checker: 'ucomp_quality_processing', $
+     name: 'processing', $
      description: 'an error occurred in L1 processing'}, $
     {mask: 0UL, $
      checker: 'ucomp_quality_contin', $
+     name: 'contin', $
      description: 'check CONTIN is the same for every extension'}, $
     {mask: 0UL, $
      checker: 'ucomp_quality_nuc', $
+     name: 'nuc', $
      description: 'check RCAMNUC and TCAMNUC are standard and consistent'}]
 
   quality_conditions.mask = 2UL ^ (ulindgen(n_elements(quality_conditions)))

@@ -37,34 +37,42 @@ function ucomp_gbu_conditions, wave_region, run=run
   ;   with a "W"); separate multiple variables with a comma
   gbu_conditions = [{mask: 0UL, $
                      checker: 'ucomp_gbu_sgsloop', $
+                     name: 'sgsloop', $
                      description: 'spar guide control loop is below threshold (%(sgsloop_min)0.2f)', $
                      values: 'Esgsloop_min'}, $
                     {mask: 0UL, $
                      checker: 'ucomp_gbu_sgsdimv', $
+                     name: 'sgsdimv', $
                      description: 'spar guider intensity below threshold (0.9 * %(i0)0.3f * exp(-0.05 * secz))', $
                      values: 'Ei0'}, $
                     {mask: 0UL, $
                      checker: 'ucomp_gbu_max_background', $
+                     name: 'max_background', $
                      description: 'median background is above threshold (%(gbu_max_background)0.1f)', $
                      values: 'Wgbu_max_background'}, $
                     {mask: 0UL, $
                      checker: 'ucomp_gbu_min_background', $
+                     name: 'min_background', $
                      description: 'median background is below threshold (%(gbu_min_background)0.1f)', $
                      values: 'Wgbu_min_background'}, $
                     {mask: 0UL, $
                      checker: 'ucomp_gbu_vcrosstalk', $
+                     name: 'vcrosstalk', $
                      description: 'spurious Stokes V signal is above threshold (%(gbu_max_v_metric)0.1f)', $
                      values: 'Wgbu_max_v_metric'}, $
                     {mask: 0UL, $
                      checker: 'ucomp_gbu_fit_chisq', $
+                     name: 'fit_chisq', $
                      description: 'the chi-squared of the occulter fit is above threshold (%(gbu_max_fit_chisq)0.1f)', $
                      values: 'Wgbu_max_fit_chisq'}, $
                     {mask: 0UL, $
                      checker: 'ucomp_gbu_median_diff', $
+                     name: 'median_diff', $
                      description: 'the difference of the image with the median is above threshold (I:%(gbu_max_stddev_i)0.1f, QU:%(gbu_max_stddev_qu)0.1f) [min %(gbu_min_files_for_stddev_diff)d files]', $
                      values: 'Wgbu_max_stddev_i,Wgbu_max_stddev_qu,Wgbu_min_files_for_stddev_diff'}, $
                     {mask: 0UL, $
                      checker: 'ucomp_gbu_missingwavelengths', $
+                     name: 'missingwavelengths', $
                      description: 'missing center (%(center_wavelength)0.2f nm) or blue/red (%(blue_reference_wavelength)0.2f/%(red_reference_wavelength)0.2f nm)', $
                      values: 'Wcenter_wavelength,Wblue_reference_wavelength,Wred_reference_wavelength'}]
   gbu_conditions.mask = 2UL ^ (ulindgen(n_elements(gbu_conditions)))
