@@ -31,8 +31,14 @@ function ucomp_quality_dark_values, file, $
   is_dark = strtrim(ucomp_getpar(ext_headers[0], 'DATATYPE'), 2) eq 'dark'
   if (~is_dark) then return, 0UL
 
-  quality_rcam_dark_range = run->epoch('quality_rcam_dark_range')
-  quality_tcam_dark_range = run->epoch('quality_tcam_dark_range')
+  rcam_nuc = ucomp_getpar(primary_header, 'RCAMNUC')
+  tcam_nuc = ucomp_getpar(primary_header, 'TCAMNUC')
+
+  rcam_nuc = strlowcase((rcam_nuc.replace(' + ', '+')).replace(' ', '-'))
+  tcam_nuc = strlowcase((tcam_nuc.replace(' + ', '+')).replace(' ', '-'))
+
+  quality_rcam_dark_range = run->epoch('quality_rcam_dark_' + rcam_nuc + '_range')
+  quality_tcam_dark_range = run->epoch('quality_tcam_dark_' + tcam_nuc + '_range')
 
   dims = size(ext_data, /dimensions)
 

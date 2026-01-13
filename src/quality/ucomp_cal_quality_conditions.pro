@@ -35,9 +35,7 @@ function ucomp_cal_quality_conditions, wave_region, run=run
     {mask: 0UL, $
      checker: 'ucomp_quality_dark_values', $
      name: 'dark_values', $
-     description: string(run->epoch('quality_rcam_dark_range'), $
-                         run->epoch('quality_tcam_dark_range'), $
-                         format='(%"check median dark value in nominal range (RCAM: %0.1f-%0.1f, TCAM: %0.1f-%0.1f)")')}, $
+     description: 'check median dark value in nominal range', $
     {mask: 0UL, $
      checker: 'ucomp_quality_all_zero', $
      name: 'all_zero', $
