@@ -35,7 +35,7 @@ function ucomp_cal_quality_conditions, wave_region, run=run
     {mask: 0UL, $
      checker: 'ucomp_quality_dark_values', $
      name: 'dark_values', $
-     description: 'check median dark value in nominal range', $
+     description: 'check median dark value in nominal range'}, $
     {mask: 0UL, $
      checker: 'ucomp_quality_all_zero', $
      name: 'all_zero', $
