@@ -134,31 +134,16 @@ pro ucomp_l1_check_gbu_median_diff, wave_region, run=run
       dims = size(ext_data, /dimensions)
       sigma = fltarr(dims[2], dims[3]) + !values.f_nan
 
-      p = 0   ; intensity check first
-      for w = 0L, dims[3] - 1L do begin
-        !null = where((sigma_data[*, *, p, w] eq 0.0) or (mask eq 0), $
-                      complement=nonzero_indices, ncomplement=n_nonzero)
-        if (n_nonzero gt 0L) then begin
-          diff = abs(ext_data[*, *, p, w] - median_data[*, *, p, w]) / sigma_data[*, *, p, w]
-          sigma[p, w] = median(diff[nonzero_indices])
-        endif
-      endfor
-
-      ; next, check Q and U
-      if (check_qu) then begin
-        for p = 1L, dims[2] - 2L do begin
-          for w = 0L, dims[3] - 1L do begin
-            !null = where((sigma_data[*, *, p, w] eq 0.0) or (mask eq 0), $
-                          complement=nonzero_indices, ncomplement=n_nonzero)
-            if (n_nonzero gt 0L) then begin
-              diff = abs(ext_data[*, *, p, w] - median_data[*, *, p, w]) / sigma_data[*, *, p, w]
-              sigma[p, w] = median(diff[nonzero_indices])
-            endif
-          endfor
+      for p = 0L, dims[2] - 1L do begin
+        for w = 0L, dims[3] - 1L do begin
+          !null = where((sigma_data[*, *, p, w] eq 0.0) or (mask eq 0), $
+                        complement=nonzero_indices, ncomplement=n_nonzero)
+          if (n_nonzero gt 0L) then begin
+            diff = abs(ext_data[*, *, p, w] - median_data[*, *, p, w]) / sigma_data[*, *, p, w]
+            sigma[p, w] = median(diff[nonzero_indices])
+          endif
         endfor
-      endif
-
-      ; do not check V
+      endfor
 
       for w = 0L, dims[3] - 1L do begin
         mg_log, 'sigma @ %0.3f nm: %s', $
@@ -167,15 +152,21 @@ pro ucomp_l1_check_gbu_median_diff, wave_region, run=run
                 name=run.logger_name, /debug
       endfor
 
+      ; intensity check first
       program_files[f].max_i_sigma = max(sigma[0, *], /nan)
       if (program_files[f].max_i_sigma gt run->line(wave_region, 'gbu_max_stddev_i')) then begin
         program_files[f].gbu = gbu_mask
       endif
 
+      ; next, check Q and U
       program_files[f].max_qu_sigma = max(sigma[1:2, *], /nan)
-      if (program_files[f].max_qu_sigma gt run->line(wave_region, 'gbu_max_stddev_qu')) then begin
-        program_files[f].gbu = gbu_mask
+      if (check_qu) then begin
+        if (program_files[f].max_qu_sigma gt run->line(wave_region, 'gbu_max_stddev_qu')) then begin
+          program_files[f].gbu = gbu_mask
+        endif
       endif
+
+      ; do not check V
     endfor
   endfor
 
