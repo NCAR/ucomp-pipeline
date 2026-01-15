@@ -11,8 +11,10 @@
 ;     demodulated data
 ;   solar_radius : in, required, type=float
 ;     solar radius in pixels
+;   post_angle : in, required, type=float
+;     post angle in degrees
 ;-
-function ucomp_vcrosstalk_metric, data, solar_radius
+function ucomp_vcrosstalk_metric, data, solar_radius, post_angle
   compile_opt strictarr
 
   v = data[*, *, 3]
@@ -22,7 +24,12 @@ function ucomp_vcrosstalk_metric, data, solar_radius
   annulus_mask = ucomp_annulus(1.08 * solar_radius, $
                                1.14 * solar_radius, $
                                dimensions=dims[0:1])
-  annulus_indices = where(annulus_mask, n_annulus_pts)
+  post_mask = ucomp_post_mask(dims[0:1], post_angle)
+  threshold_mask = abs(v) lt 5.0
 
-  return, total((v[annulus_indices])^2, /preserve_type) * 1.0e6 / n_annulus_pts / n_annulus_pts
+  mask = annulus_mask and post_mask and threshold_mask
+
+  indices = where(mask, n_pts)
+
+  return, total((v[indices])^2, /preserve_type, /nan) * 1.0e6 / n_pts / n_pts
 end
