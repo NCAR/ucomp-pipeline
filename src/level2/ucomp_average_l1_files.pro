@@ -17,6 +17,13 @@
 ;     set to a named variable to retrieve the median averaged data
 ;   sigma_data : type, optional, type="fltarr(nx, ny, n_pol_state, n_wavelength)"
 ;     set to a named variable to retrieve the standard deviation data
+;   mean_averaged_background : type, optional, type="fltarr(nx, ny, n_pol_state, n_wavelength)"
+;     set to a named variable to retrieve the mean averaged background
+;   median_averaged_background : type, optional, type="fltarr(nx, ny, n_pol_state, n_wavelength)"
+;     set to a named variable to retrieve the median averaged background
+;   sigma_background : type, optional, type="fltarr(nx, ny, n_pol_state, n_wavelength)"
+;     set to a named variable to retrieve the standard deviation of the
+;     background
 ;   run : in, optional, type=object
 ;     UCoMP run object, only needed to produce display images
 ;-
@@ -25,6 +32,9 @@ pro ucomp_average_l1_files, l1_filenames, $
                             mean_averaged_data=mean_averaged_data, $
                             median_averaged_data=median_averaged_data, $
                             sigma_data=sigma_data, $
+                            mean_averaged_background=mean_averaged_background, $
+                            median_averaged_background=median_averaged_background, $
+                            sigma_background=sigma_background, $
                             logger_name=logger_name, $
                             min_average_files=min_average_files, $
                             run=run
