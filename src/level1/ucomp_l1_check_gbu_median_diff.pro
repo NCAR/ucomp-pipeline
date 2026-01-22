@@ -24,13 +24,13 @@ pro ucomp_l1_check_gbu_median_diff, wave_region, run=run
            and ucomp_gbu_mask(run->epoch('gbu_mask'), wave_region, run=run)
 
   conditions = ucomp_gbu_conditions(wave_region, run=run)
-  indices = where(conditions.checker eq 'ucomp_gbu_median_diff')
-
-  if (~mask[indices[0]]) then goto, done
+  gbu_median_diff_indices = where(conditions.checker eq 'ucomp_gbu_median_diff')
+  gbu_background_diff_indices = where(conditions.checker eq 'ucomp_gbu_background_diff')
 
   min_average_files = run->line(wave_region, 'gbu_min_files_for_stddev_diff')
 
-  gbu_mask = conditions[indices[0]].mask
+  gbu_median_diff_mask = conditions[gbu_median_diff_indices[0]].mask
+  gbu_background_diff_mask = conditions[gbu_background_diff_indices[0]].mask
 
   l1_dir = filepath('', $
                     subdir=[run.date, 'level1'], $
@@ -96,7 +96,12 @@ pro ucomp_l1_check_gbu_median_diff, wave_region, run=run
     median_post_angle = median(post_angle)
 
     good_filenames = strarr(n_good_files)
-    for f = 0L, n_good_files - 1L do good_filenames[f] = good_files[f].l1_filename
+    median_backgrounds = fltarr(n_good_files)
+    for f = 0L, n_good_files - 1L do begin
+      good_filenames[f] = good_files[f].l1_filename
+      median_backgrounds[f] = good_files[f].median_background
+    endfor
+    program_median_background = median(median_backgrounds)
 
     ucomp_average_l1_files, good_filenames, $
                             min_average_files=min_average_files, $
@@ -104,6 +109,9 @@ pro ucomp_l1_check_gbu_median_diff, wave_region, run=run
                             mean_averaged_data=mean_data, $
                             median_averaged_data=median_data, $
                             sigma_data=sigma_data, $
+                            ; mean_averaged_background=mean_background, $
+                            ; median_averaged_background=median_background, $
+                            ; sigma_background=sigma_background, $
                             run=run
 
     if (n_elements(mean_data) eq 0L) then begin
@@ -128,6 +136,8 @@ pro ucomp_l1_check_gbu_median_diff, wave_region, run=run
                           primary_header=primary_header, $
                           ext_data=ext_data, $
                           ext_headers=ext_headers, $
+                          ; background_data=background_data, $
+                          ; background_headers=background_headers, $
                           n_wavelengths=n_wavelengths
 
       unique_wavelengths = program_files[f].unique_wavelengths
@@ -155,18 +165,35 @@ pro ucomp_l1_check_gbu_median_diff, wave_region, run=run
       ; intensity check first
       program_files[f].max_i_sigma = max(sigma[0, *], /nan)
       if (program_files[f].max_i_sigma gt run->line(wave_region, 'gbu_max_stddev_i')) then begin
-        program_files[f].gbu = gbu_mask
+        program_files[f].gbu = gbu_median_diff_mask
       endif
 
       ; next, check Q and U
       program_files[f].max_qu_sigma = max(sigma[1:2, *], /nan)
       if (check_qu) then begin
         if (program_files[f].max_qu_sigma gt run->line(wave_region, 'gbu_max_stddev_qu')) then begin
-          program_files[f].gbu = gbu_mask
+          program_files[f].gbu = gbu_median_diff_mask
         endif
       endif
 
       ; do not check V
+
+      ; check background
+      background_percent_diff = 100.0 * (program_files[f].median_background -  program_median_background) $
+                                  / program_median_background
+
+      mg_log, 'background %% diff: %0.1f %%', $
+              background_percent_diff, $
+              name=run.logger_name, /debug
+      mg_log, 'max background %% diff: %0.1f%% (threshold: %0.1f %%)', $
+              max(background_percent_diff), $
+              run->line(wave_region, 'gbu_max_background_increase'), $
+              name=run.logger_name, /debug
+
+      ; not performing this check right now, but writing % diff in logs
+      ; if (max(background_percent_diff) gt run->line(wave_region, 'gbu_max_background_increase')) then begin
+      ;   program_files[f].gbu = gbu_background_diff_mask
+      ; endif
     endfor
   endfor
 

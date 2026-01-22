@@ -74,7 +74,12 @@ function ucomp_gbu_conditions, wave_region, run=run
                      checker: 'ucomp_gbu_missingwavelengths', $
                      name: 'missingwavelengths', $
                      description: 'missing center (%(center_wavelength)0.2f nm) or blue/red (%(blue_reference_wavelength)0.2f/%(red_reference_wavelength)0.2f nm)', $
-                     values: 'Wcenter_wavelength,Wblue_reference_wavelength,Wred_reference_wavelength'}]
+                     values: 'Wcenter_wavelength,Wblue_reference_wavelength,Wred_reference_wavelength'}, $
+                    {mask: 0UL, $
+                     checker: 'ucomp_gbu_background_diff', $
+                     name: 'background_diff', $
+                     description: 'the difference between background and median for the wavelength above threshold (%(gbu_max_background_increase)0.1f%)', $
+                     values: 'Wgbu_max_background_increase'}]
   gbu_conditions.mask = 2UL ^ (ulindgen(n_elements(gbu_conditions)))
 
   return, gbu_conditions
