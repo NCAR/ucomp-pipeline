@@ -145,37 +145,49 @@ pro ucomp_l1_promote_header, file, $
 
   solar_radius = file.semidiameter / run->line(file.wave_region, 'plate_scale')
   center_wavelength_indices = file->get_center_wavelength_indices()
+
   if (n_elements(center_wavelength_indices) gt 0L) then begin
     center_wavelength_data = data[*, *, *, center_wavelength_indices]
-    file.vcrosstalk_metric = ucomp_vcrosstalk_metric(center_wavelength_data, $
-                                                     solar_radius, $
-                                                     file.post_angle)
     intensity_dims = size(center_wavelength_data, /dimensions)
     annulus_mask = ucomp_annulus(1.14 * solar_radius, 1.5 * solar_radius, $
                                  dimensions=intensity_dims[0:1])
-    annulus_indices = where(annulus_mask, n_annulus_pts)
+    post_mask = ucomp_post_mask(intensity_dims[0:1], file.post_angle)
+    intensity_indices = where(annulus_mask and post_mask, n_intensity_pts)
     center_wavelength_intensity = reform(center_wavelength_data[*, *, 0])
-    file.median_intensity = median(center_wavelength_intensity[annulus_indices])
+    file.median_intensity = median(center_wavelength_intensity[intensity_indices])
   endif
+
+  vcrosstalk_by_extension = fltarr(file.n_extensions)
+  for e = 0L, file.n_extensions - 1L do begin
+    vcrosstalk_by_extension[e] = ucomp_vcrosstalk_metric(data[*, *, *, e], $
+                                                         solar_radius, $
+                                                         file.post_angle)
+  endfor
+  file.vcrosstalk_metric = max(vcrosstalk_by_extension)
 
   ; quality metrics
   after = 'CAMERAS'
-  ucomp_addpar, primary_header, 'VCROSSTK', file.vcrosstalk_metric, $
-                comment='Stokes V crosstalk metric', after=after
+
+  ucomp_addpar, primary_header, 'VXTALK', file.vcrosstalk_metric, $
+                comment='Stokes V crosstalk metric', format='(F0.3)', $
+                after=after
 
   if (n_elements(center_wavelength_indices) gt 0L) then begin
     center_wavelength_background = backgrounds[*, *, *, center_wavelength_indices]
     bkg_dims = size(center_wavelength_background, /dimensions)
-    annulus_mask = ucomp_annulus(1.14 * solar_radius, 1.5 * solar_radius, $
+    annulus_mask = ucomp_annulus(1.1 * solar_radius, 1.5 * solar_radius, $
                                 dimensions=bkg_dims[0:1])
-    annulus_indices = where(annulus_mask, n_annulus_pts)
+    post_mask = ucomp_post_mask(intensity_dims[0:1], file.post_angle)
+    background_mask = annulus_mask and post_mask
+; TODO: compute for all wavelength, put mean in the primary header, use max for GBU
+    background_indices = where(background_mask, n_background_pts)
     background_i = reform(center_wavelength_background[*, *, 0])
-    median_background = median(background_i[annulus_indices])
+    median_background = median(background_i[background_indices])
     file.median_background = median_background
-    ucomp_addpar, primary_header, 'MED_BKG', median_background, $
-                  comment='[ppm] median of line center background annulus', $
-                  format='(F0.3)', after=after
   endif
+  ucomp_addpar, primary_header, 'MED_BKG', file.median_background, $
+                comment='[ppm] median of line center background annulus', $
+                format='(F0.3)', after=after
 
   ucomp_addpar, primary_header, 'NUMSAT0O', file.n_rcam_onband_saturated_pixels, $
                 comment='number of saturated pixels in onband RCAM', $
@@ -184,10 +196,10 @@ pro ucomp_l1_promote_header, file, $
                 comment='number of saturated pixels in onband TCAM', $
                 after=after
   ucomp_addpar, primary_header, 'NUMSAT0C', file.n_rcam_bkg_saturated_pixels, $
-                comment='number of saturated pixels in bkg RCAM', $
+                comment='number of saturated pixels in offband RCAM', $
                 after=after
   ucomp_addpar, primary_header, 'NUMSAT1C', file.n_tcam_bkg_saturated_pixels, $
-                comment='number of saturated pixels in bkg TCAM', $
+                comment='number of saturated pixels in offband TCAM', $
                 after=after
 
   ucomp_addpar, primary_header, 'NUMNL0O', file.n_rcam_onband_nonlinear_pixels, $
@@ -197,14 +209,14 @@ pro ucomp_l1_promote_header, file, $
                 comment='number of non-linear pixels in onband TCAM', $
                 after=after
   ucomp_addpar, primary_header, 'NUMNL0C', file.n_rcam_bkg_nonlinear_pixels, $
-                comment='number of non-linear pixels in bkg RCAM', $
+                comment='number of non-linear pixels in offband RCAM', $
                 after=after
   ucomp_addpar, primary_header, 'NUMNL1C', file.n_tcam_bkg_nonlinear_pixels, $
-                comment='number of non-linear pixels in bkg TCAM', $
+                comment='number of non-linear pixels in offband TCAM', $
                 after=after
 
   ucomp_addpar, primary_header, 'COMMENT', 'Quality metrics', $
-                before='VCROSSTK', /title
+                before='VXTALK', /title
 
   ; update extension headers
 
@@ -236,6 +248,11 @@ pro ucomp_l1_promote_header, file, $
 
     ucomp_addpar, h, 'NAXIS3', ucomp_getpar(h, 'NAXIS3'), $
                   comment='polarization states: I, Q, U, V'
+
+    ucomp_addpar, h, 'VXTALKE', vcrosstalk_by_extension[e], $
+                  comment='Stokes V crosstalk metric', $
+                  format='(F0.3)', $
+                  after='TCAMMED'
 
     headers[e] = h
     background_headers[e] = b
