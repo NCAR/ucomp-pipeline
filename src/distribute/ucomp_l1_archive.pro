@@ -34,7 +34,7 @@ pro ucomp_l1_archive, wave_region, run=run
 
   tarfile_basename = string(run.date, wave_region, version, $
                             format='(%"%s.ucomp.%s.l1.v%s.tar.gz")')
-  tarlist_basename = string(run.date, wave_region, $
+  tarlist_basename = string(run.date, wave_region, version, $
                             format='(%"%s.ucomp.%s.l1.v%s.tarlist")')
   tarfile = filepath(tarfile_basename, root=l1_dir)
   tarlist = filepath(tarlist_basename, root=l1_dir)
