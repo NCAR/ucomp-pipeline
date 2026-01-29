@@ -65,7 +65,11 @@ pro ucomp_l2_create_averages, wave_region, $
 
     good_files = program_files[good_files_indices]
 
-    max_length = run->config('averaging/max_length')
+    if (program_names[p] eq 'waves') then begin
+      max_length = run->config('averaging/max_waves_length')
+    endif else begin
+      max_length = run->config('averaging/max_nonwaves_length')
+    endelse
     mg_log, 'max length: %0.1f secs', max_length, name=run.logger_name, /debug
     good_files = ucomp_l2_average_criteria(good_files, $
                                            program_names[p], $
@@ -104,7 +108,7 @@ pro ucomp_l2_create_averages, wave_region, $
                             [mean_average_filename, $
                              median_average_filename, $
                              sigma_filename], $
-                            min_average_files=run->config('averaging/min_average_files'), $
+                            min_sigma_files=run->config('averaging/min_sigma_files'), $
                             logger_name=run.logger_name, $
                             run=run
   endfor

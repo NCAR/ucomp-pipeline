@@ -11,19 +11,24 @@
 ;     write the output file; must be in the order mean, median, sigma
 ;
 ; :Keywords:
-;   mean_averaged_data : type, optional, type="fltarr(nx, ny, n_pol_state, n_wavelength)"
+;   mean_averaged_data : out, optional, type="fltarr(nx, ny, n_pol_state, n_wavelength)"
 ;     set to a named variable to retrieve the mean averaged data
-;   median_averaged_data : type, optional, type="fltarr(nx, ny, n_pol_state, n_wavelength)"
+;   median_averaged_data : out, optional, type="fltarr(nx, ny, n_pol_state, n_wavelength)"
 ;     set to a named variable to retrieve the median averaged data
-;   sigma_data : type, optional, type="fltarr(nx, ny, n_pol_state, n_wavelength)"
+;   sigma_data : out, optional, type="fltarr(nx, ny, n_pol_state, n_wavelength)"
 ;     set to a named variable to retrieve the standard deviation data
-;   mean_averaged_background : type, optional, type="fltarr(nx, ny, n_pol_state, n_wavelength)"
+;   mean_averaged_background : out, optional, type="fltarr(nx, ny, n_pol_state, n_wavelength)"
 ;     set to a named variable to retrieve the mean averaged background
-;   median_averaged_background : type, optional, type="fltarr(nx, ny, n_pol_state, n_wavelength)"
+;   median_averaged_background : out, optional, type="fltarr(nx, ny, n_pol_state, n_wavelength)"
 ;     set to a named variable to retrieve the median averaged background
-;   sigma_background : type, optional, type="fltarr(nx, ny, n_pol_state, n_wavelength)"
+;   sigma_background : out, optional, type="fltarr(nx, ny, n_pol_state, n_wavelength)"
 ;     set to a named variable to retrieve the standard deviation of the
 ;     background
+;   min_sigma_files : in, optional, type=integer
+;     minimum number of files to average in order to produce a median or sigma
+;     file
+;   logger_name : in, optional, type=string
+;     logger to send log output to
 ;   run : in, optional, type=object
 ;     UCoMP run object, only needed to produce display images
 ;-
@@ -35,8 +40,8 @@ pro ucomp_average_l1_files, l1_filenames, $
                             mean_averaged_background=mean_averaged_background, $
                             median_averaged_background=median_averaged_background, $
                             sigma_background=sigma_background, $
+                            min_sigma_files=min_sigma_files, $
                             logger_name=logger_name, $
-                            min_average_files=min_average_files, $
                             run=run
   compile_opt idl2
 
@@ -59,14 +64,6 @@ pro ucomp_average_l1_files, l1_filenames, $
 
   if (n_ok_files eq 0L) then begin
     mg_log, 'no OK files to average', name=logger_name, /warn
-    goto, done
-  endif
-
-  _min_average_files = n_elements(min_average_files) eq 0L ? 1L : min_average_files
-  if (n_ok_files lt _min_average_files) then begin
-    mg_log, 'not enough OK files to average (%d < %d)', $
-            n_ok_files, min_average_files, $
-            name=logger_name, /warn
     goto, done
   endif
 
@@ -292,7 +289,13 @@ pro ucomp_average_l1_files, l1_filenames, $
   sigma_data = sqrt(sum2_data / double(n_ok_files) - mean_averaged_data^2)
   sigma_background = sqrt(sum2_background / double(n_ok_files) - mean_averaged_background^2)
 
+  ; if you don't have more than min_sigma_files good files, then only write
+  ; mean (output files are always in 1. mean, 2. median, and 3. sigma order)
   n_methods = n_elements(output_filenames)
+  if (n_elements(min_sigma_files) gt 0L) then begin
+    if (n_ok_files lt min_sigma_files) then n_methods = 1
+  endif
+
   for m = 0, n_methods - 1L do begin
     case m of
       0: begin
@@ -316,7 +319,7 @@ pro ucomp_average_l1_files, l1_filenames, $
                            averaged_headers, $
                            averaged_background, $
                            averaged_background_headers, $
-                           logger_name=run.logger_name
+                           logger_name=logger_name
 
     wave_region = ucomp_getpar(averaged_primary_header, 'FILTER')
     occulter_radius = ucomp_getpar(averaged_primary_header, 'RADIUS')

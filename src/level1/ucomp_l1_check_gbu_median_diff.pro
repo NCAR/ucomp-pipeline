@@ -104,14 +104,14 @@ pro ucomp_l1_check_gbu_median_diff, wave_region, run=run
     program_median_background = median(median_backgrounds)
 
     ucomp_average_l1_files, good_filenames, $
-                            min_average_files=min_average_files, $
-                            logger_name=run.logger_name, $
                             mean_averaged_data=mean_data, $
                             median_averaged_data=median_data, $
                             sigma_data=sigma_data, $
+                            min_sigma_files=1, $
                             ; mean_averaged_background=mean_background, $
                             ; median_averaged_background=median_background, $
                             ; sigma_background=sigma_background, $
+                            logger_name=run.logger_name, $
                             run=run
 
     if (n_elements(mean_data) eq 0L) then begin
