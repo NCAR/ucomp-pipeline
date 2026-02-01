@@ -771,8 +771,16 @@
 
 #### 1.0.22
 
+- update algorithm for finding 1074/1079 pairs to use to compute density
+- adjusted averaging scheme and thresholds
 - bug fixes in averaging
+- improve V crosstalk metric GBU test, record by extension
 - eliminate V and separate I from Q/U thresholds for difference from median
   GBU test
-- average SGS values for average file
+- add missing center or blue/red reference GBU test
+- add difference between background and median above threshold GBU test
+- use matching NUC darks/flats to correct science images
 - send BAD_NUC_VALUE alert if encountered in raw data
+- average SGS values for average file
+- knock out wavelengths instead of entire files when bad frames are removed
+- update some engineering plot ranges
