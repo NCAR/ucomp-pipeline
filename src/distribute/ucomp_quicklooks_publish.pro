@@ -233,7 +233,7 @@ pro ucomp_quicklooks_publish, run=run
   endif
 
   ; add density GIFs
-  density_files = file_search(filepath('*.density.gif', $
+  density_files = file_search(filepath('*.{density,density_thumb}.gif', $
                                        subdir='level3', $
                                        root=processing_dir), $
                               count=n_density_files)
