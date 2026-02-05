@@ -594,7 +594,7 @@ pro ucomp_run::load_badframes
         *self.badframes = ucomp_read_badframes(filename)
         mg_log, 'read %s', basename, name=logger_name, /debug
       endif else begin
-        mg_log, '%s does not exist', filename, name=logger_name, /error
+        mg_log, '%s does not exist', filename, name=logger_name, /warn
       endelse
     endelse
   endif
