@@ -584,8 +584,8 @@ pro ucomp_run::load_badframes
 
   badframes_dir = self->config('raw/badframes_dir')
   if (n_elements(badframes_dir) ne 0L && (badframes_dir ne '')) then begin
+    self->getProperty, logger_name=logger_name
     if (~file_test(badframes_dir, /directory)) then begin
-      self->getProperty, logger_name=logger_name
       mg_log, '%s does not exist', badframes_dir, name=logger_name, /error
     endif else begin
       basename = string(self.date, format='%s.ucomp.badframes.csv')
