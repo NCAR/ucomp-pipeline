@@ -8,17 +8,23 @@
 ;     basename of density FITS file
 ;
 ; :Keywords:
+;   thumbnail : in, optional, type=boolean
+;     set to produce the thumbnail images for the website
 ;   run : in, required, type=object
 ;     UCoMP run object
 ;-
-pro ucomp_write_density_image, basename, run=run
+pro ucomp_write_density_image, basename, thumbnail=thumbnail, run=run
   compile_opt strictarr
 
   l3_dirname = filepath('', $
                         subdir=[run.date, 'level3'], $
                         root=run->config('processing/basedir'))
 
-  gif_basename = file_basename(basename, '.fts') + '.gif'
+  if (keyword_set(thumbnail)) then begin
+    gif_basename = file_basename(basename, '.fts') + '_thumb.gif'
+  endif else begin
+    gif_basename = file_basename(basename, '.fts') + '.gif'
+  endelse
   gif_filename = filepath(gif_basename, root=l3_dirname)
 
   fits_open, filepath(basename, root=l3_dirname), fcb
@@ -26,16 +32,18 @@ pro ucomp_write_density_image, basename, run=run
   fits_read, fcb, density, density_header, exten_no=1
   fits_close, fcb
 
+  reduce_factor = keyword_set(thumbnail) ? 2L : 1L
   datetimes = strmid(basename, 0, 22)
 
   date_stamp = ucomp_dt2stamp(strmid(datetimes, 0, 15))
   date_stamp += string(ucomp_decompose_time(strmid(datetimes, 16, 6)), $
                        format=' and %02d:%02d:%02dZ')
 
-  nx = run->epoch('nx', datetime=datetime)
-  ny = run->epoch('ny', datetime=datetime)
+  dims = size(density, /dimensions)
+  nx = dims[0] / reduce_factor
+  ny = dims[1] / reduce_factor
+  density = rebin(density, nx, ny)
 
-  ; TODO: look these up in a config file
   display_min = run->epoch('density_display_min', datetime=datetime)
   display_max = run->epoch('density_display_max', datetime=datetime)
   display_gamma = run->epoch('density_display_gamma', datetime=datetime)
@@ -65,9 +73,9 @@ pro ucomp_write_density_image, basename, run=run
 
   mlso_charsize = 1.25
   ionization_charsize = 1.75
-  title_charsize = 2.5
+  title_charsize = keyword_set(thumbnail) ? 1.65 : 2.5
   date_charsize = 1.9
-  detail_charsize = 1.25
+  detail_charsize = keyword_set(thumbnail) ? 1.0 : 1.25
 
   n_divisions = 4L
 
@@ -78,20 +86,23 @@ pro ucomp_write_density_image, basename, run=run
                      /nan)
   tv, scaled_im
 
-  desnity_description = 'Electron Density [cm!E-3!N]'
+  density_description = 'Electron Density [cm!E-3!N]'
   title = 'Density'
 
-  xyouts, 0.5, 0.71, /normal, alignment=0.5, $
-          'MLSO UCoMP', $
-          charsize=mlso_charsize, color=text_color
-  xyouts, 0.5, 0.67, /normal, alignment=0.5, $
-          desnity_description, $
-          charsize=ionization_charsize, color=text_color
-  xyouts, 0.5, 0.605, /normal, alignment=0.5, $
-          date_stamp, $
-          charsize=date_charsize, color=text_color
+  if (~keyword_set(thumbnail)) then begin
+    xyouts, 0.5, 0.71, /normal, alignment=0.5, $
+            'MLSO UCoMP', $
+            charsize=mlso_charsize, color=text_color
+    xyouts, 0.5, 0.67, /normal, alignment=0.5, $
+            density_description, $
+            charsize=ionization_charsize, color=text_color
+    xyouts, 0.5, 0.605, /normal, alignment=0.5, $
+            date_stamp, $
+            charsize=date_charsize, color=text_color
+  endif
 
-  xyouts, 0.5, 0.54, /normal, alignment=0.5, $
+
+  xyouts, 0.5, keyword_set(thumbnail) ? 0.57 : 0.54, /normal, alignment=0.5, $
           string(title, format='log(%s)'), $
           charsize=title_charsize, color=text_color
   colorbar2, position=[0.35, 0.5, 0.65, 0.52], $
@@ -107,9 +118,11 @@ pro ucomp_write_density_image, basename, run=run
   if (display_gamma ne 1.0) then begin
     scaling_text += string(display_gamma, format=', gamma: %0.2g')
   endif
-  xyouts, 0.5, 0.45, /normal, alignment=0.5, $
-          scaling_text, $
-          charsize=detail_charsize, color=text_color
+  if (~keyword_set(thumbnail)) then begin
+    xyouts, 0.5, 0.45, /normal, alignment=0.5, $
+            scaling_text, $
+            charsize=detail_charsize, color=text_color
+  endif
 
   write_gif, gif_filename, tvrd(), r, g, b
   mg_log, 'wrote %s', gif_basename, name=run.logger_name, /debug

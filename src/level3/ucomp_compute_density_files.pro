@@ -282,6 +282,7 @@ pro ucomp_compute_density_files, l2_basenames_1074, $
   fits_close, fcb
 
   ucomp_write_density_image, output_basename, run=run
+  ucomp_write_density_image, output_basename, /thumbnail, run=run
 end
 
 
