@@ -137,6 +137,18 @@ pro ucomp_l1_find_alignment, file, $
   rcam = file.rcam_geometry
   tcam = file.tcam_geometry
 
+  radius_threshold = 5.0   ; pixels
+  if (abs(radius_guess - rcam.occulter_radius) gt radius_threshold) then begin
+    mg_log, 'radius guess %0.1f differs from found value %0.1f by more than %0.1f pixels', $
+            radius_guess, rcam.occulter_radius, radius_threshold, $
+            name=run.logger_name, /warn
+  endif
+  if (abs(radius_guess - tcam.occulter_radius) gt radius_threshold) then begin
+    mg_log, 'radius guess %0.1f differs from found value %0.1f by more than %0.1f pixels', $
+            radius_guess, tcam.occulter_radius, radius_threshold, $
+            name=run.logger_name, /warn
+  endif
+
   if (run->config('centering/diagnostic_images')) then begin
     engineering_basedir = run->config('engineering/basedir')
     eng_dir = filepath('', $
