@@ -91,6 +91,8 @@ pro ucomp_make_darks, run=run
                          repair_routine=run->epoch('raw_data_repair_routine', datetime=datetime), $
                          badframes=run.badframes, $
                          metadata_fixes=run.metadata_fixes, $
+                         use_occulter_id=run->epoch('use_occulter_id'), $
+                         occulter_id=run->epoch('occulter_id'), $
                          logger=run.logger_name
 
     ext_data = float(ext_data)

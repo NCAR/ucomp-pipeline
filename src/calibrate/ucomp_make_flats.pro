@@ -90,6 +90,8 @@ pro ucomp_make_flats, wave_region, run=run
                          repair_routine=run->epoch('raw_data_repair_routine', datetime=datetime), $
                          badframes=run.badframes, $
                          metadata_fixes=run.metadata_fixes, $
+                         use_occulter_id=run->epoch('use_occulter_id'), $
+                         occulter_id=run->epoch('occulter_id'), $
                          logger=run.logger_name
 
     ext_data = float(ext_data)
@@ -319,6 +321,8 @@ ucomp_read_raw_data, raw_filename, $
                      repair_routine=run->epoch('raw_data_repair_routine', datetime=datetime), $
                      badframes=run.badframes, $
                      metadata_fixes=run.metadata_fixes, $
+                     use_occulter_id=run->epoch('use_occulter_id'), $
+                     occulter_id=run->epoch('occulter_id'), $
                      logger=run.logger_name
 print, total(finite(mean(ext_data[*, *, *, camera, e], dimension=3, /nan)), /integer), format='total finite: %d'
 ucomp_average_flatfile, primary_header, ext_data, ext_headers, $

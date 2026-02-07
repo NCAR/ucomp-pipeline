@@ -51,6 +51,8 @@ pro ucomp_read_raw_data, filename, $
                          badframes=badframes, $
                          metadata_fixes=metadata_fixes, $
                          all_zero=all_zero, $
+                         use_occulter_id=use_occulter_id, $
+                         occulter_id=occulter_id, $
                          logger=logger
   compile_opt strictarr
   ;on_error, 2
@@ -204,6 +206,16 @@ pro ucomp_read_raw_data, filename, $
                   after='NFRAME'
   endif
 
+  mg_log, 'Use occulter ID: %s', $
+          keyword_set(use_occulter_id) ? 'YES' : 'NO', $
+          name=logger, /debug
+  mg_log, 'Occulter ID: %s', $
+          occulter_id, $
+          name=logger, /debug
+  if (~keyword_set(use_occulter_id)) then begin
+    ucomp_addpar, primary_header, 'OCCLTRID', occulter_id
+  endif
+
   ; repair data
   for r = 0L, n_elements(repair_routine) - 1L do begin
     call_procedure, repair_routine[r], primary_header, ext_data, ext_headers
@@ -214,9 +226,9 @@ end
 ; main-level example program
 
 ; date = '20240409'
-date = '20220221'
-
-config_basename = 'ucomp.badframes.cfg'
+; date = '20220221'
+date = '20210715'
+config_basename = 'ucomp.latest.cfg'
 config_filename = filepath(config_basename, $
                            subdir=['..', '..', '..', 'ucomp-config'], $
                            root=mg_src_root())
@@ -224,11 +236,14 @@ run = ucomp_run(date, 'test', config_filename)
 
 l0_basedir = run->config('raw/basedir')
 ; l0_basename = '20240409.180009.92.ucomp.1079.l0.fts'
-l0_basename = '20220221.180817.95.ucomp.637.l0.fts'
+; l0_basename = '20220221.180817.95.ucomp.637.l0.fts'
+l0_basename = '20210715.174001.86.ucomp.530.l0.fts'
 l0_filename = filepath(l0_basename, subdir=date, root=l0_basedir)
 
-help, run.metadata_fixes
 run.datetime = strmid(l0_basename, 0, 15)
+
+help, run->epoch('use_occulter_id')
+help, run->epoch('occulter_id')
 ucomp_read_raw_data, l0_filename, $
                      primary_header=primary_header, $
                      ext_data=data, $
@@ -237,6 +252,8 @@ ucomp_read_raw_data, l0_filename, $
                      badframes=run.badframes, $
                      metadata_fixes=run.metadata_fixes, $
                      all_zero=all_zero, $
+                     use_occulter_id=run->epoch('use_occulter_id'), $
+                     occulter_id=run->epoch('occulter_id'), $
                      logger=run.logger_name
 
 ; bad frames for this file (l0_filename, camera, ext, polstate):
@@ -255,6 +272,7 @@ ucomp_read_raw_data, l0_filename, $
 ; computed_average = mean(data[*, *, *, *, [0, 10, 20, 30]], dimension=5, /nan)
 ; print, array_equal(averaged_im, computed_average) ? 'average equal' : 'average different'
 
+print, primary_header
 print, headers[0]
 
 obj_destroy, run

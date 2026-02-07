@@ -36,6 +36,8 @@ pro ucomp_check_cal_quality, type, run=run
                          badframes=run.badframes, $
                          metadata_fixes=run.metadata_fixes, $
                          all_zero=all_zero, $
+                         use_occulter_id=run->epoch('use_occulter_id'), $
+                         occulter_id=run->epoch('occulter_id'), $
                          logger=run.logger_name
     file.all_zero = all_zero
 

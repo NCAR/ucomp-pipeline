@@ -67,6 +67,8 @@ ucomp_read_raw_data, raw_filename, $
                      repair_routine=run->epoch('raw_data_repair_routine'), $
                      badframes=run.badframes, $
                      metadata_fixes=run.metadata_fixes, $
+                     use_occulter_id=run->epoch('use_occulter_id'), $
+                     occulter_id=run->epoch('occulter_id'), $
                      all_zero=all_zero
 
 

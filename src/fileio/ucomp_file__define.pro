@@ -680,6 +680,8 @@ pro ucomp_file::_inventory
                        n_extensions=n_extensions, $
                        repair_routine=self.run->epoch('raw_data_repair_routine'), $
                        metadata_fixes=metadata_fixes, $
+                       use_occulter_id=self.run->epoch('use_occulter_id'), $
+                       occulter_id=self.run->epoch('occulter_id'), $
                        logger=logger_name
 
   self.n_extensions = n_extensions

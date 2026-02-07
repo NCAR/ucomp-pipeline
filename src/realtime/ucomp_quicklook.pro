@@ -27,6 +27,8 @@ pro ucomp_quicklook, file, run=run
                        ext_headers=headers, $
                        repair_routine=run->epoch('raw_data_repair_routine'), $
                        badframes=run.badframes, $
+                       use_occulter_id=run->epoch('use_occulter_id'), $
+                       occulter_id=run->epoch('occulter_id'), $
                        metadata_fixes=run.metadata_fixes
 
   ; find only center wavelength in each camera
