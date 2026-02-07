@@ -65,6 +65,8 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
             {name: 'tcam_radius', type: '%s'}, $
             {name: 'tcam_occulter_chisq', type: '%s'}, $
 
+            {name: 'radius_guess', type: '%s'}, $
+
             {name: 'rcam_post_angle', type: '%s'}, $
             {name: 'tcam_post_angle', type: '%s'}, $
             {name: 'rcam_found_post_angle', type: '%s'}, $
@@ -148,10 +150,15 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
     if (obj_valid(file.rcam_geometry) && obj_valid(file.tcam_geometry)) then begin
       rcam_center = file.rcam_geometry.occulter_center
       rcam_radius = file.rcam_geometry.occulter_radius
+      rcam_occulter_chisq = file.rcam_geometry.occulter_chisq
       tcam_center = file.tcam_geometry.occulter_center
       tcam_radius = file.tcam_geometry.occulter_radius
       tcam_occulter_chisq = file.tcam_geometry.occulter_chisq
-      rcam_occulter_chisq = file.rcam_geometry.occulter_chisq
+
+      rcam_radius_guess = file.rcam_geometry.radius_guess
+      tcam_radius_guess = file.tcam_geometry.radius_guess
+      radius_guess = mean([rcam_radius_guess, tcam_radius_guess], /nan)
+
       rcam_post_angle = file.rcam_geometry.post_angle
       tcam_post_angle = file.tcam_geometry.post_angle
       rcam_found_post_angle = file.rcam_geometry.found_post_angle
@@ -167,6 +174,9 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
       tcam_center = fltarr(2) + !values.f_nan
       tcam_radius = !values.f_nan
       tcam_occulter_chisq = !values.f_nan
+
+      radius_guess = !values.f_nan
+
       rcam_post_angle = !values.f_nan
       tcam_post_angle = !values.f_nan
       rcam_found_post_angle = !values.f_nan
@@ -207,6 +217,8 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
                  ucomp_db_float(tcam_center[1], valid_range=[0.0, 1023.0]), $
                  ucomp_db_float(tcam_radius, valid_range=[0.0, 820.0]), $
                  ucomp_db_float(tcam_occulter_chisq), $
+
+                 ucomp_db_float(radius_guess), $
 
                  ucomp_db_float(rcam_post_angle, valid_range=[-360.0, 360.0]), $
                  ucomp_db_float(tcam_post_angle, valid_range=[-360.0, 360.0]), $
