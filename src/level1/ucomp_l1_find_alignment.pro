@@ -249,7 +249,7 @@ pro ucomp_l1_find_alignment, file, $
                                                  center_guess=rcam_center_guess, $
                                                  radius_guess=radius_guess, $
                                                  dradius=dradius, $
-                                                 post_angle_guess=post_angle_guess, $
+                                                 post_angle_guess=rcam_post_angle_guess, $
                                                  post_angle_gap=post_angle_gap, $
                                                  post_angle_tolerance=post_angle_tolerance, $
                                                  /elliptical, $
@@ -266,7 +266,7 @@ pro ucomp_l1_find_alignment, file, $
                                                  center_guess=rcam_center_guess, $
                                                  radius_guess=radius_guess, $
                                                  dradius=dradius, $
-                                                 post_angle_guess=post_angle_guess, $
+                                                 post_angle_guess=tcam_post_angle_guess, $
                                                  post_angle_gap=post_angle_gap, $
                                                  post_angle_tolerance=post_angle_tolerance, $
                                                  /elliptical, $
