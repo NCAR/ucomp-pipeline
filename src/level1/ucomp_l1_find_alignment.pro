@@ -83,8 +83,8 @@ pro ucomp_l1_find_alignment, file, $
                                                      dx0_c, dy0_c), $
                               2)
   endif
-  rcam_background = smooth(rcam_background, 3, /nan)
-  file.rcam_geometry = ucomp_find_geometry(rcam_background, $
+  smoothed_rcam_background = smooth(rcam_background, 3, /nan)
+  file.rcam_geometry = ucomp_find_geometry(smoothed_rcam_background, $
                                            xsize=run->epoch('nx'), $
                                            ysize=run->epoch('ny'), $
                                            center_guess=rcam_center_guess, $
@@ -126,8 +126,8 @@ pro ucomp_l1_find_alignment, file, $
                                                      dx1_c, dy1_c), $
                               2)
   endif
-  tcam_background = smooth(tcam_background, 3, /nan)
-  file.tcam_geometry = ucomp_find_geometry(tcam_background, $
+  smoothed_tcam_background = smooth(tcam_background, 3, /nan)
+  file.tcam_geometry = ucomp_find_geometry(smoothed_tcam_background, $
                                            xsize=run->epoch('nx'), $
                                            ysize=run->epoch('ny'), $
                                            center_guess=tcam_center_guess, $
@@ -175,7 +175,9 @@ pro ucomp_l1_find_alignment, file, $
     for c = 0L, 1L do begin
       bkg_basename = string(basename, camera_names[c], format='%s.%s.bkg.gif')
       bkg_filename = filepath(bkg_basename, root=eng_dir)
-      ucomp_write_bkg_annotation, c eq 0 ? rcam_background : tcam_background, $
+      ucomp_write_bkg_annotation, c eq 0 $
+                                    ? smoothed_rcam_background $
+                                    : smoothed_tcam_background, $
                                   geometry[c], file.wave_region, bkg_filename, run=run
     endfor
 
@@ -241,7 +243,7 @@ pro ucomp_l1_find_alignment, file, $
                 format='(F0.4)', after=after
 
   ; determine eccentricity of cameras
-  rcam_elliptical_geometry = ucomp_find_geometry(rcam_background, $
+  rcam_elliptical_geometry = ucomp_find_geometry(smoothed_rcam_background, $
                                                  xsize=run->epoch('nx'), $
                                                  ysize=run->epoch('ny'), $
                                                  center_guess=rcam_center_guess, $
@@ -258,7 +260,7 @@ pro ucomp_l1_find_alignment, file, $
   rcam.ellipse_angle = rcam_ellipse_angle
   obj_destroy, rcam_elliptical_geometry
 
-  tcam_elliptical_geometry = ucomp_find_geometry(tcam_background, $
+  tcam_elliptical_geometry = ucomp_find_geometry(smoothed_tcam_background, $
                                                  xsize=run->epoch('nx'), $
                                                  ysize=run->epoch('ny'), $
                                                  center_guess=rcam_center_guess, $
