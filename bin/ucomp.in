@@ -500,7 +500,10 @@ def cat_keywords(args):
                    "Weighted average U": ["EXTNAME"],
                    "Weighted average L": ["EXTNAME"],
                    "Azimuth": ["EXTNAME"],
-                   "Radial azimuth": ["EXTNAME"]}
+                   "Radial azimuth": ["EXTNAME"],
+                   "Fit chi-squared": ["EXTNAME"],
+                   "Fit sigma": ["EXTNAME"],
+                   "Fit coefficients": ["EXTNAME"]}
     l3_keywords = ["EXTNAME"]
 
     try:
