@@ -31,6 +31,11 @@
 ;     the optional guess of the radius of the discontinuity
 ;   center_guess : in, required, type=fltarr(2)
 ;     guess for the center; if not provided, use center of `data`
+;   post_angle_guess : in, optional, type=float, default=180.0
+;     initial guess angle in degrees from north for the location of the post
+;   post_angle_gap : in, optional, type=float, default=14.0
+;     gap to not search around `post_angle_guess` when finding occulter
+;     [degrees]
 ;   dradius : in, optional, type=float, default=40.0
 ;     the +/- size of the radius which to scan
 ;   error : out, optional, type=long
@@ -58,6 +63,8 @@ function ucomp_find_occulter, data, $
                               chisq=chisq, $
                               radius_guess=radius_guess, $
                               center_guess=center_guess, $
+                              post_angle_guess=post_angle_guess, $
+                              post_angle_gap=post_angle_gap, $
                               dradius=dradius, $
                               error=error, $
                               points=points, $
@@ -68,8 +75,12 @@ function ucomp_find_occulter, data, $
                               remove_post=remove_post
   compile_opt strictarr
 
-  ; if guess of radius is input, use it, otherwise use default guess
+  ; set defaults
   _radius_guess = n_elements(radius_guess) eq 0L ? 330.0 : radius_guess
+  _post_angle_guess = n_elements(post_angle_guess) eq 0L $
+    ? (post_angle_guess - 270.0) $
+    : -90.0
+  _post_angle_gap = n_elements(post_angle_gap) eq 0L ? 14.0 : post_angle_gap
 
   ; if number of points around radius is input, use it, otherwise use default
   ; number of points (+/-) around radius for determination
@@ -87,11 +98,9 @@ function ucomp_find_occulter, data, $
 
   ; remove points under the occulter post
   if (keyword_set(remove_post)) then begin
-    post_width_angle = 14.0
-    l0_post_angle = -90.0
     theta = atan(y - center_guess[1], x - center_guess[0]) * !radeg
-    non_post_indices = where(theta lt (l0_post_angle - post_width_angle / 2.0) $
-                               or theta gt (l0_post_angle + post_width_angle / 2.0))
+    non_post_indices = where(theta lt (_post_angle_guess - _post_angle_gap / 2.0) $
+                               or theta gt (_post_angle_guess + _post_angle_gap / 2.0))
 
     points = points[*, non_post_indices]
 
@@ -105,6 +114,8 @@ function ucomp_find_occulter, data, $
     endelse
   endif
 
+  ; elliptical fit is used to determine metrics like the eccentricity of the
+  ; occulter, etc.; the standard fit is used to for centering
   if (keyword_set(elliptical)) then begin
     p = mpfitellipse(x, y, $
                      weights=pt_weights, $

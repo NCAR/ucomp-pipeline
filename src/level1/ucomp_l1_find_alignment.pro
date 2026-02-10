@@ -54,10 +54,11 @@ pro ucomp_l1_find_alignment, file, $
   mg_log, 'radius guess: %0.1f', radius_guess, name=run.logger_name, /debug
   dradius = run->epoch('dradius')
 
-  post_angle_guess = run->epoch('post_angle_guess')
   post_angle_tolerance = run->epoch('post_angle_tolerance')
+  post_angle_gap = run->epoch('post_angle_gap')
 
-  rcam_center_guess = ucomp_occulter_guess(0, date, occulter_x, occulter_y, run=run)
+  rcam_post_angle_guess = run->epoch('rcam_post_angle_guess')
+
   rcam_offband_indices = where(file.onband_indices eq 1, n_rcam_offband)
   if (n_rcam_offband eq 0L) then begin
     mg_log, 'no offband RCAM images, skipping', name=run.logger_name, /warn
@@ -69,6 +70,9 @@ pro ucomp_l1_find_alignment, file, $
   rcam_background = mean(reform(data[*, *, *, 0, rcam_offband_indices]), dimension=4, /nan)
   while (size(rcam_background, /n_dimensions) gt 3L) do rcam_background = mean(rcam_background, dimension=4, /nan)
   rcam_background = mean(rcam_background, dimension=3, /nan)
+
+  rcam_center_guess = ucomp_occulter_guess(rcam_background, 0, date, $
+                                           occulter_x, occulter_y, run=run)
 
   ; if all elements of dimension 3 are NaNs then the above lines will produce
   ; an floating-point operand error (128)
@@ -86,7 +90,8 @@ pro ucomp_l1_find_alignment, file, $
                                            center_guess=rcam_center_guess, $
                                            radius_guess=radius_guess, $
                                            dradius=dradius, $
-                                           post_angle_guess=post_angle_guess, $
+                                           post_angle_guess=rcam_post_angle_guess, $
+                                           post_angle_gap=post_angle_gap, $
                                            post_angle_tolerance=post_angle_tolerance, $
                                            error=rcam_error, $
                                            post_err_msg=rcam_post_err_msg, $
@@ -96,7 +101,8 @@ pro ucomp_l1_find_alignment, file, $
     mg_log, 'RCAM post error message: %s', rcam_post_err_msg, name=run.logger_name, /warn
   endif
 
-  tcam_center_guess = ucomp_occulter_guess(1, date, occulter_x, occulter_y, run=run)
+  tcam_post_angle_guess = run->epoch('tcam_post_angle_guess')
+
   tcam_offband_indices = where(file.onband_indices eq 0, n_tcam_offband)
   if (n_tcam_offband eq 0L) then begin
     mg_log, 'no offband TCAM images, skipping', name=run.logger_name, /warn
@@ -108,6 +114,9 @@ pro ucomp_l1_find_alignment, file, $
   tcam_background = mean(reform(data[*, *, *, 1, tcam_offband_indices]), dimension=4, /nan)
   while (size(tcam_background, /n_dimensions) gt 3L) do tcam_background = mean(tcam_background, dimension=4, /nan)
   tcam_background = mean(tcam_background, dimension=3, /nan)
+
+  tcam_center_guess = ucomp_occulter_guess(tcam_background, 1, date, $
+                                           occulter_x, occulter_y, run=run)
 
   ; if all elements of dimension 3 are NaNs then the above lines will produce
   ; an floating-point operand error (128)
@@ -124,7 +133,8 @@ pro ucomp_l1_find_alignment, file, $
                                            center_guess=tcam_center_guess, $
                                            radius_guess=radius_guess, $
                                            dradius=dradius, $
-                                           post_angle_guess=post_angle_guess, $
+                                           post_angle_guess=tcam_post_angle_guess, $
+                                           post_angle_gap=post_angle_gap, $
                                            post_angle_tolerance=post_angle_tolerance, $
                                            error=tcam_error, $
                                            post_err_msg=tcam_post_err_msg, $
@@ -168,6 +178,10 @@ pro ucomp_l1_find_alignment, file, $
       ucomp_write_bkg_annotation, c eq 0 ? rcam_background : tcam_background, $
                                   geometry[c], file.wave_region, bkg_filename, run=run
     endfor
+
+    background_basename = string(basename, format='%s.bkg.sav')
+    background_filename = filepath(background_basename, root=eng_dir)
+    save, rcam_background, tcam_background, filename=background_filename
   endif
 
   after = 'WNDDIR'
@@ -206,7 +220,7 @@ pro ucomp_l1_find_alignment, file, $
                 comment='[pixels] chi-squared for TCAM center fit', $
                 format='(F0.6)', after=after
 
-  mg_log, 'RCAM post angle: %0.1f, TCAM post angle: %0.1f', $
+  mg_log, 'RCAM post angle: %0.2f, TCAM post angle: %0.2f', $
           rcam.post_angle, tcam.post_angle, $
           name=run.logger_name, /debug
   ucomp_addpar, primary_header, 'POST_ANG', $
@@ -234,6 +248,7 @@ pro ucomp_l1_find_alignment, file, $
                                                  radius_guess=radius_guess, $
                                                  dradius=dradius, $
                                                  post_angle_guess=post_angle_guess, $
+                                                 post_angle_gap=post_angle_gap, $
                                                  post_angle_tolerance=post_angle_tolerance, $
                                                  /elliptical, $
                                                  eccentricity=rcam_eccentricity, $
@@ -250,6 +265,7 @@ pro ucomp_l1_find_alignment, file, $
                                                  radius_guess=radius_guess, $
                                                  dradius=dradius, $
                                                  post_angle_guess=post_angle_guess, $
+                                                 post_angle_gap=post_angle_gap, $
                                                  post_angle_tolerance=post_angle_tolerance, $
                                                  /elliptical, $
                                                  eccentricity=tcam_eccentricity, $

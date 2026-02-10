@@ -33,6 +33,9 @@
 ;     initial guess angle in degrees from north for the location of the post
 ;   post_angle_width : in, optional, type=float, default=5.0
 ;     initial guess for width of Gaussian fit
+;   post_angle_gap : in, optional, type=float, default=14.0
+;     gap to not search around `post_angle_guess` when finding occulter
+;     [degrees]
 ;   post_angle_tolerance : in, optional, type=float, default=30.0
 ;     amount added and subtracted to `post_angle_guess` to search for post in
 ;   error : out, optional, type=long
@@ -53,6 +56,7 @@ function ucomp_find_geometry, data, $
                               ellipse_angle=ellipse_angle, $
                               post_angle_guess=post_angle_guess, $
                               post_angle_width=post_angle_width, $
+                              post_angle_gap=post_angle_gap, $
                               post_angle_search_tolerance=post_angle_search_tolerance, $
                               post_angle_tolerance=post_angle_tolerance, $
                               error=error, $
@@ -66,6 +70,8 @@ function ucomp_find_geometry, data, $
                                  chisq=occulter_chisq, $
                                  radius_guess=radius_guess, $
                                  center_guess=center_guess, $
+                                 post_angle_guess=post_angle_guess, $
+                                 post_angle_gap=post_angle_gap, $
                                  dradius=dradius, $
                                  error=occulter_error, $
                                  points=points, $
