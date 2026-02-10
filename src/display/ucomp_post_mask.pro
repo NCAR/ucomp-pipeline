@@ -13,7 +13,7 @@
 ;     position angle of post
 ;
 ; :Keywords:
-;   post_width : in, optional, type=float, default=60.0
+;   post_width : in, optional, type=float, default=70.0
 ;     width of the post in pixels
 ;-
 function ucomp_post_mask, dims, post_angle, post_width=post_width
@@ -22,7 +22,7 @@ function ucomp_post_mask, dims, post_angle, post_width=post_width
   nx = dims[0]
   ny = dims[1]
 
-  _post_width = mg_default(post_width, 60.0)
+  _post_width = mg_default(post_width, 70.0)
 
   post_mask = fltarr(nx, ny) + 1.0
 
