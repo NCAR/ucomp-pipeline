@@ -206,13 +206,7 @@ pro ucomp_read_raw_data, filename, $
                   after='NFRAME'
   endif
 
-  mg_log, 'Use occulter ID: %s', $
-          keyword_set(use_occulter_id) ? 'YES' : 'NO', $
-          name=logger, /debug
-  mg_log, 'Occulter ID: %s', $
-          occulter_id, $
-          name=logger, /debug
-  if (~keyword_set(use_occulter_id)) then begin
+  if ((n_elements(occulter_id) gt 0L) && ~keyword_set(use_occulter_id)) then begin
     ucomp_addpar, primary_header, 'OCCLTRID', occulter_id
   endif
 
