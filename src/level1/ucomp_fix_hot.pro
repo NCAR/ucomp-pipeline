@@ -25,9 +25,9 @@ function ucomp_fix_hot, data, hot=hot, adjacent=adjacent
 
   fixed_data = data
 
-  ; TODO verify the function is never called by mistake with adjacent = 0
+  ; [TODO] verify the function is never called by mistake with adjacent = 0
   if (n_elements(adjacent) eq 0L) then begin
-  ; define kernel
+    ; define kernel
     kernel = fltarr(3, 3) + 1.0
     kernel[1, 1] = 0.0
     kernel = kernel / total(kernel, /preserve_type)
@@ -40,7 +40,7 @@ function ucomp_fix_hot, data, hot=hot, adjacent=adjacent
     ; compute median to use in case of large clusters of hot pixels
     pos = where(fixed_data gt 0, count)
     case count of
-      0: med = 0.0   ; TODO: not sure what is correct here
+      0: med = 0.0   ; [TODO]: not sure what is correct here
       1: med = fixed_data[pos]
       else: med = median(fixed_data[pos])
     endcase
