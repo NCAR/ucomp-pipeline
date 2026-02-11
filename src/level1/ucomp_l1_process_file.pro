@@ -1,7 +1,7 @@
 ; docformat = 'rst'
 
 ;+
-; Process a UCoMP science file.
+; Process one UCoMP science file.
 ;
 ; :Params:
 ;   file : in, required, type=object
@@ -18,8 +18,8 @@ pro ucomp_l1_process_file, file, run=run
   if (error ne 0L) then begin
     if (!error_state.name eq 'IDL_M_USER_ERR') then begin
       ; this is when a routine exited by calling MESSAGE from one of the steps
-      ; of the level 1 processing -- if there was an actual error, it is the
-      ; responsibility of the failing routine to issue a MG_LOG, /ERROR
+      ; of the level 1 processing -- if there was an specific error, it is the
+      ; responsibility of the failing routine to issue an MG_LOG, /ERROR
       pos = strpos(!error_state.msg, ':')
       if (pos lt 0L) then begin
         mg_log, !error_state.msg, name=run.logger_name, /warn
@@ -82,12 +82,12 @@ pro ucomp_l1_process_file, file, run=run
   step_number = 1L
 
   ; remove comments from primary header
-  ; TODO: maybe this is not necessary?
+  ; [TODO]: maybe this is not necessary?
   sxdelpar, primary_header, 'COMMENT'
 
-  ucomp_l1_step, 'ucomp_l1_average_data', $
-                 file, primary_header, data, headers, step_number=step_number, run=run
   ucomp_l1_step, 'ucomp_l1_camera_linearity', $
+                 file, primary_header, data, headers, step_number=step_number, run=run
+  ucomp_l1_step, 'ucomp_l1_average_data', $
                  file, primary_header, data, headers, step_number=step_number, run=run
 
   ucomp_l1_step, 'ucomp_l1_apply_dark', $
@@ -169,6 +169,7 @@ pro ucomp_l1_process_file, file, run=run
     mg_log, 'skipping GBU check', name=run.logger_name, /debug
   endelse
 
+  ; write the level 1 FITS file
   l1_filename = filepath(file.l1_basename, root=l1_dirname)
   ucomp_write_fits_file, l1_filename, $
                          primary_header, $
@@ -176,6 +177,7 @@ pro ucomp_l1_process_file, file, run=run
                          backgrounds, background_headers, $
                          logger_name=run.logger_name
 
+  ; write the level 1 intensity FITS file
   l1_intensity_filename = filepath(file.l1_intensity_basename, root=l1_dirname)
   ucomp_write_fits_file, l1_intensity_filename, $
                          primary_header, $
@@ -185,16 +187,20 @@ pro ucomp_l1_process_file, file, run=run
                          logger_name=run.logger_name
   file.wrote_l1 = 1B
 
+  ; write the center wavelength intensity quicklook
   ucomp_write_intensity_image, file, data, primary_header, /grid, run=run
   ucomp_write_intensity_image, file, data, primary_header, /enhanced, /grid, $
                                run=run
 
+  ; write the center wavelength IQUV quicklook
   ucomp_write_iquv_image, data, $
                           file.l1_basename, $
                           file.wave_region, $
                           file.wavelengths, $
                           occulter_radius=file.occulter_radius, $
                           run=run
+
+  ; write the all wavelengths IQUV quicklook
   ucomp_write_all_iquv_image, data, $
                               file.l1_basename, $
                               file.wave_region, $
