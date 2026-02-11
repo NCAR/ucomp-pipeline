@@ -21,7 +21,7 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
   compile_opt strictarr
 
   n_files = n_elements(l0_files)
-  mg_log, 'inserting %d files into ucomp_eng', n_files, name=logger_name, /info
+  mg_log, 'inserting %d files', n_files, name=logger_name, /info
 
   ; get index for OK quality data files
   q = 'select * from ucomp_quality where quality=''OK'''
@@ -142,10 +142,6 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
 
     mg_log, 'ingesting %s', file_basename(file.raw_filename), $
             name=logger_name, /info
-
-    ; TODO: calculate: sky_pol_factor, sky_bias
-    dmodswid = ''
-    distortion = ''
 
     if (obj_valid(file.rcam_geometry) && obj_valid(file.tcam_geometry)) then begin
       rcam_center = file.rcam_geometry.occulter_center
@@ -277,11 +273,12 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
                  ucomp_db_float(file.flat_tcam_median_linecenter), $
                  ucomp_db_float(file.flat_tcam_median_continuum), $
 
-                 dmodswid, $
-                 distortion, $
+                 file.demodulation_coeffs_version, $
+                 file.distortion_basename, $
 
                  file.obsswid, $
 
+                 ; [TODO]: calculate: sky_pol_factor, sky_bias
                  ucomp_db_float(sky_pol_factor), $
                  ucomp_db_float(sky_bias), $
 

@@ -74,6 +74,7 @@ pro ucomp_l1_demodulation, file, $
   endcase
 
   demod_version = run->epoch('demodulation_coeffs_version', datetime=datetime)
+  file.demodulation_coeffs_version = demod_version
   ucomp_addpar, primary_header, 'DEMODV', demod_version, $
                 comment=string(ucomp_idlsave2dateobs(demod_info.date), $
                                format='demod coeffs version [%s]'), $

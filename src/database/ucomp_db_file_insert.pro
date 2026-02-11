@@ -37,7 +37,7 @@ pro ucomp_db_file_insert, files, level, product_type, $
             name=logger_name, /info
     goto, done
   endif else begin
-    mg_log, 'inserting up to %d %s nm %s files into ucomp_file', $
+    mg_log, 'inserting up to %d %s nm %s files', $
             n_files, files[0].wave_region, file_type, $
             name=logger_name, /info
   endelse

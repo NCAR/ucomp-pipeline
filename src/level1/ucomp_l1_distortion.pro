@@ -65,6 +65,7 @@ pro ucomp_l1_distortion, file, $
   done:
   ucomp_addpar, primary_header, 'DISTORTC', boolean(apply_distortion), $
                 comment='whether distortion corrected', after='DEMODV'
+  file.distortion_basename = distortion_basename
   ucomp_addpar, primary_header, 'DISTORTF', distortion_basename, $
                 comment=string(distortion_date, format='%s'), $
                 after='DISTORTC'

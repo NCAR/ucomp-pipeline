@@ -61,10 +61,13 @@ pro ucomp_db_sci_insert, files, wave_region, $
   ; choose science file -- right now, just the first file
   science_files = ucomp_db_sci_insert_select(files, count=n_files)
   if (n_files eq 0L) then begin
-    mg_log, 'no appropriate files for ucomp_sci tables', name=run.logger_name, /info
+    mg_log, 'no %s nm files for ucomp_sci', $
+            wave_region, $
+            name=run.logger_name, /info
     goto, done
   endif else begin
-    mg_log, 'inserting %d files into ucomp_sci tables', n_files, $
+    mg_log, 'inserting %d %s nm files', $
+            n_files, wave_region, $
             name=run.logger_name, /info
   endelse
 

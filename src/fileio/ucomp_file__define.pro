@@ -73,6 +73,8 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
                              linearity_corrected=linearity_corrected, $
                              wrote_l1=wrote_l1, $
                              wrote_l2=wrote_l2, $
+                             distortion_basename=distortion_basename, $
+                             demodulation_coeffs_version=demodulation_coeffs_version, $
                              rcam_geometry=rcam_geometry, $
                              tcam_geometry=tcam_geometry, $
                              rcam_roughness=rcam_roughness, $
@@ -114,6 +116,9 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
   if (n_elements(linearity_corrected)) then self.linearity_corrected = linearity_corrected
   if (n_elements(wrote_l1) gt 0L) then self.wrote_l1 = wrote_l1
   if (n_elements(wrote_l2)) then self.wrote_l2 = wrote_l2
+
+  if (n_elements(distortion_basename)) then self.distortion_basename = wrote_distortion_basenamel2
+  if (n_elements(demodulation_coeffs_version)) then self.demodulation_coeffs_version = demodulation_coeffs_version
 
   if (n_elements(rcam_geometry)) then self.rcam_geometry = rcam_geometry
   if (n_elements(tcam_geometry)) then self.tcam_geometry = tcam_geometry
@@ -196,6 +201,8 @@ pro ucomp_file::getProperty, run=run, $
                              linearity_corrected=linearity_corrected, $
                              wrote_l1=wrote_l1, $
                              wrote_l2=wrote_l2, $
+                             distortion_basename=distortion_basename, $
+                             demodulation_coeffs_version=demodulation_coeffs_version, $
                              hst_date=hst_date, $
                              hst_time=hst_time, $
                              ut_date=ut_date, $
@@ -365,6 +372,9 @@ pro ucomp_file::getProperty, run=run, $
   if (arg_present(linearity_corrected)) then linearity_corrected = self.linearity_corrected
   if (arg_present(wrote_l1)) then wrote_l1 = self.wrote_l1
   if (arg_present(wrote_l2)) then wrote_l2 = self.wrote_l2
+
+  if (arg_present(distortion_basename)) then distortion_basename = self.distortion_basename
+  if (arg_present(demodulation_coeffs_version)) then demodulation_coeffs_version = self.demodulation_coeffs_version
 
   if (arg_present(n_extensions)) then n_extensions = self.n_extensions
 
@@ -951,6 +961,9 @@ pro ucomp_file__define
            linearity_corrected                  : 0B, $
            wrote_l1                             : 0B, $
            wrote_l2                             : 0B, $
+
+           distortion_basename                  : '', $
+           demodulation_coeffs_version          : '', $
 
            hst_date                             : '', $
            hst_time                             : '', $
