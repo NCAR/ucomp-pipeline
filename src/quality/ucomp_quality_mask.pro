@@ -24,6 +24,7 @@
 function ucomp_quality_mask, exclude_expression, wave_region, $
                              calibration=calibration, run=run
   compile_opt strictarr
+  on_error, 2
 
   if (keyword_set(calibration)) then begin
     conditions = ucomp_cal_quality_conditions(wave_region, run=run)
@@ -35,9 +36,13 @@ function ucomp_quality_mask, exclude_expression, wave_region, $
   tokens = strsplit(exclude_expression, '|', /extract, count=n_tokens)
 
   for t = 0L, n_tokens - 1L do begin
-    indices = where('ucomp_quality_' + tokens[t] eq conditions.checker, /null)
-    ; TODO: throw error if checker not found
-    mask[indices] = 0B
+    condition_indices = where('ucomp_quality_' + tokens[t] eq conditions.checker, $
+                              n_conditions)
+    if (n_conditions eq 0L) then begin
+      message, string(tokens[t], format='ucomp_quality_%s condition not found')
+    endif else begin
+      mask[condition_indices] = 0B
+    endelse
   endfor
 
   return, mask

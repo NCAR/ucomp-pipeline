@@ -19,13 +19,33 @@ function ucomp_quality_mask_ut::test_sci
   compile_opt strictarr
 
   run = self->get_run()
-  
+
   result = ucomp_quality_mask('datatype|contin', run=run)
   standard = [1B, 1B, 0B, 1B, 1B, 1B, 1B, 1B, 1B, 1B, 0B, 1B]
   assert, array_equal(result, standard), 'incorrect result'
 
   obj_destroy, run
-  
+
+  return, 1
+end
+
+
+function ucomp_quality_mask_ut::test_not_found
+  compile_opt strictarr
+  error = 0L
+  catch, error
+  if (error ne 0L) then begin
+    catch, /cancel
+    obj_destroy, run
+    return, 1
+  endif
+
+  run = self->get_run()
+
+  result = ucomp_quality_mask('datatype|unknown', run=run)
+
+  obj_destroy, run
+
   return, 1
 end
 
