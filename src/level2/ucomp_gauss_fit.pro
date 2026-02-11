@@ -64,41 +64,44 @@ pro ucomp_gauss_fit, all_intensities, $
   fit_chisq = fltarr(nx, ny) + !values.f_nan
   fit_sigma = fltarr(nx, ny, _n_terms) + !values.f_nan
 
-  for y = 0L, ny - 1L do begin
-    for x = 0L, nx - 1L do begin
-      if (mask[x, y]) then begin
-        pts = reform(all_intensities[x, y, *])
-        valid_indices = where(pts gt min_threshold and pts lt max_threshold)
-        n_fits += 1L
+  mask_indices = where(mask gt 0, n_mask_indices)
+  if (n_mask_indices eq 0L) then goto, done
 
-        ; TODO: if doing both use 3-term results for 4-term estimates
-        case _n_terms of
-          3: estimates = [estimates_peak_intensity[x, y], $
-                          estimates_xpeak[x, y], $
-                          estimates_line_width[x, y]]
-          4: estimates = [estimates_peak_intensity[x, y], $
-                          estimates_xpeak[x, y], $
-                          estimates_line_width[x, y], $
-                          0.0]
-          else: ; no estimate
-        endcase
+  xy = array_indices(dims[0:1], mask_indices, /dimensions)
+  for i = 0L, n_mask_indices - 1L do begin
+    x = xy[0, i]
+    y = xy[1, i]
+    pts = reform(all_intensities[x, y, *])
+    valid_indices = where(pts gt min_threshold and pts lt max_threshold)
 
-        fit = mlso_gaussfit(wavelengths[valid_indices], $
-                            pts[valid_indices], $
-                            pixel_coefficients, $
-                            nterms=_n_terms, $
-                            estimates=estimates, $
-                            chisq=chisq, $
-                            sigma=sigma)
+    case _n_terms of
+      3: estimates = [estimates_peak_intensity[x, y], $
+                      estimates_xpeak[x, y], $
+                      estimates_line_width[x, y]]
+      4: estimates = [estimates_peak_intensity[x, y], $
+                      estimates_xpeak[x, y], $
+                      estimates_line_width[x, y], $
+                      0.0]
+      else: ; no estimate
+    endcase
 
-        fit_coefficients[x, y, *] = pixel_coefficients
-        fit_chisq[x, y] = chisq
-        fit_sigma[x, y, *] = sigma
+    fit = mlso_gaussfit(wavelengths[valid_indices], $
+                        pts[valid_indices], $
+                        pixel_coefficients, $
+                        nterms=_n_terms, $
+                        estimates=estimates, $
+                        chisq=chisq, $
+                        sigma=sigma)
 
-        peak_intensity[x, y] = fit[0] + fit[3]
-        doppler_shift[x, y] = center_wavelength - fit[1]
-        line_width[x, y] = 2.0 * fit[2]
-      endif
-    endfor
+    fit_coefficients[x, y, *] = pixel_coefficients
+    fit_chisq[x, y] = chisq
+    fit_sigma[x, y, *] = sigma
+
+    peak_intensity[x, y] = fit[0] + fit[3]
+    doppler_shift[x, y] = center_wavelength - fit[1]
+    line_width[x, y] = 2.0 * fit[2]
   endfor
+
+  done:
+  n_fits = n_mask_indices
 end
