@@ -772,6 +772,10 @@
 #### 1.0.22
 
 - update algorithm for finding 1074/1079 pairs to use to compute density
+- create density thumbnails
+- improved initial center/radius estimates
+- better post masking
+- updated occulter sizes
 - adjusted averaging scheme and thresholds
 - bug fixes in averaging
 - improve V crosstalk metric GBU test, record by extension
@@ -784,3 +788,5 @@
 - average SGS values for average file
 - knock out wavelengths instead of entire files when bad frames are removed
 - update some engineering plot ranges
+- fix bad hardware position header data
+- epoch updates including OCCLTRID for early mission data
