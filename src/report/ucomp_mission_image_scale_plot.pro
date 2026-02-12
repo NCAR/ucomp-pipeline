@@ -102,7 +102,7 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
   set_plot, 'Z'
   device, get_decomposed=original_decomposed
   tvlct, original_rgb, /get
-  width = 1000
+  width = 1200
   height = 450
   device, decomposed=0, $
           set_pixel_depth=8, $
@@ -207,9 +207,10 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
 
       xyouts, end_jd - xgap, stat_height, alignment=1.0, $   ;start_jd + xgap, stat_height, $
               string(plate_scale_change_stats[c].value, $
-                    platescale_mean, $
-                    platescale_median, $
-                    platescale_stddev, format='nominal: %0.3f!Cmean: %0.3f!Cmedian: %0.3f!Cstd dev: %0.3f'), $
+                     platescale_mean, $
+                     platescale_median, $
+                     platescale_stddev, $
+                     format='nominal: %0.3f!Cmean: %0.3f!Cmedian: %0.3f!Cstd dev: %0.3f'), $
               charsize=0.9, color=0
     endif else begin
       mg_log, 'epoch with no %s nm data: %s-%s', $
