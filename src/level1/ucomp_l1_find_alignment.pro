@@ -73,6 +73,8 @@ pro ucomp_l1_find_alignment, file, $
 
   rcam_center_guess = ucomp_occulter_guess(rcam_background, 0, date, $
                                            occulter_x, occulter_y, run=run)
+  mg_log, 'RCAM center guess: %0.2f, %0.2f', rcam_center_guess, $
+          name=run.logger_name, /debug
 
   ; if all elements of dimension 3 are NaNs then the above lines will produce
   ; an floating-point operand error (128)
@@ -101,6 +103,9 @@ pro ucomp_l1_find_alignment, file, $
     mg_log, 'RCAM post error message: %s', rcam_post_err_msg, name=run.logger_name, /warn
   endif
 
+  mg_log, 'RCAM found center: %0.2f, %0.2f', file.rcam_geometry.occulter_center, $
+          name=run.logger_name, /debug
+
   tcam_post_angle_guess = run->epoch('tcam_post_angle_guess')
 
   tcam_offband_indices = where(file.onband_indices eq 0, n_tcam_offband)
@@ -117,6 +122,8 @@ pro ucomp_l1_find_alignment, file, $
 
   tcam_center_guess = ucomp_occulter_guess(tcam_background, 1, date, $
                                            occulter_x, occulter_y, run=run)
+  mg_log, 'TCAM center guess: %0.2f, %0.2f', tcam_center_guess, $
+          name=run.logger_name, /debug
 
   ; if all elements of dimension 3 are NaNs then the above lines will produce
   ; an floating-point operand error (128)
@@ -144,6 +151,9 @@ pro ucomp_l1_find_alignment, file, $
     mg_log, 'TCAM post error message: %s', tcam_post_err_msg, name=run.logger_name, /warn
   endif
 
+  mg_log, 'TCAM found center: %0.2f, %0.2f', file.tcam_geometry.occulter_center, $
+          name=run.logger_name, /debug
+
   rcam = file.rcam_geometry
   tcam = file.tcam_geometry
 
@@ -158,6 +168,26 @@ pro ucomp_l1_find_alignment, file, $
             radius_guess, tcam.occulter_radius, radius_tolerance, $
             name=run.logger_name, /warn
   endif
+
+  center_tolerance = 5.0   ; pixels
+  rcam_center_difference = sqrt(total((rcam.occulter_center - rcam_center_guess)^2))
+  if (rcam_center_difference gt center_tolerance) then begin
+    mg_log, 'RCAM center difference %0.2f larger than %0.1f', $
+            rcam_center_difference, center_tolerance, $
+            name=run.logger_name, /warn
+  endif else begin
+    mg_log, 'RCAM center difference %0.2f', rcam_center_difference, $
+            name=run.logger_name, /debug
+  endelse
+  tcam_center_difference = sqrt(total((tcam.occulter_center - tcam_center_guess)^2))
+  if (tcam_center_difference gt center_tolerance) then begin
+    mg_log, 'TCAM center difference %0.2f larger than %0.1f', $
+            tcam_center_difference, center_tolerance, $
+            name=run.logger_name, /warn
+  endif else begin
+    mg_log, 'TCAM center difference %0.2f', tcam_center_difference, $
+            name=run.logger_name, /debug
+  endelse
 
   if (run->config('centering/diagnostic_images')) then begin
     engineering_basedir = run->config('engineering/basedir')

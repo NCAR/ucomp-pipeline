@@ -31,7 +31,6 @@ function ucomp_occulter_guess, bkg, camera_index, datetime, $
   nx = dims[0]
   ny = dims[1]
 
-  ; TODO: need to adjust this threshold by wave region and maybe epoch?
   threshold = 0.6 * median(bkg)
 
   ; threshold = 1.6-2.0 for 637
@@ -49,13 +48,14 @@ function ucomp_occulter_guess, bkg, camera_index, datetime, $
   ; find the centroid of the under-the-occulter region
   ind = where(lr eq occulter_region, count)
   xy = array_indices(lr, ind)
-  center = reform(mean(xy, dimension=2))
-  mg_log, 'centroid center guess: %0.2f, %0.2f', center, name=run.logger_name, /debug
+  center_guess = reform(mean(xy, dimension=2))
 
-  ; TODO: remove this once centroid is working
-  center = ([nx, ny] - 1.0) / 2.0
-  mg_log, 'centered center guess: %0.2f, %0.2f', center, name=run.logger_name, /debug
+  ; sanity check to make sure algorithm is not fooled too badly
+  image_center = ([nx, ny] - 1.0) / 2.0
+  if (sqrt(total((image_center - center_guess)^2)) gt 30.0) then begin
+    center_guess = image_center
+  endif
 
   ; initial guess for the center of the image
-  return, center
+  return, center_guess
 end
