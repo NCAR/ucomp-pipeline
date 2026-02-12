@@ -671,7 +671,7 @@ pro ucomp_run::get_hot_pixels, gain_mode, camera_index, $
     mg_log, 'loading hot pixels for %s gain', $
             gain_mode, $
             name=logger_name, /debug
-    mg_log, '   adjacent 0 %s, 1 %s', $
+    mg_log, '| adjacent RCAM %s, TCAM %s', $
             n_elements(adjacent_0) eq 0L ? 'not present' : 'present', $
             n_elements(adjacent_1) eq 0L ? 'not present' : 'present', $
             name=logger_name, /debug
