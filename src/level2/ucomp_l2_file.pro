@@ -199,6 +199,11 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
     fit_mask = total((all_intensities gt noise_intensity_min) $
         and (all_intensities lt noise_intensity_max), $
       3, /integer) gt (n_terms + 1L)
+    ; [TODO]: maybe we need a more complicated mask that tests the wings less
+    ; strictly than the center wavelength
+    ; fit_mask = total((all_intensities gt noise_intensity_min)
+    ;     and (rebin(all_intensities[*, *, center_index], nx, ny, n_wavelengths) lt noise_intensity_max), $
+    ;   3, /integer) gt (n_terms + 1L)
 
     xpeak = run->line(wave_region, 'center_wavelength') + doppler_shift
     ucomp_gauss_fit, all_intensities, $

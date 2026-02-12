@@ -1,11 +1,22 @@
 ; docformat = 'rst'
 
 ;+
+; Fit a 3- or 4-term Gaussian for each pixel value in `all_intensities` not
+; excluded by `MASK`. If `z = (x - a[1]) / a[2]`, then the 3-term fit is::
+;
+;   f(x) = a[0] * exp(- z^2/2)
+;
+; and the 4-term fit is:
+;
+;   f(x) = a[0] * exp(-z^2/2) + a[3]
 ;
 ; :Params:
 ;   all_intensities : in, required, type="fltarr(nx, ny, n_wavelengths)"
+;     data to fit
 ;   wavelengths : in, required, type=fltarr(n_wavelengths)
+;     wavelengths of the data in `all_intensities` [nm]
 ;   center_wavelength : in, required, type=float
+;     center wavelength [nm]
 ;
 ; :Keywords:
 ;   n_terms : in, optional, type=integer, default=4
@@ -13,7 +24,7 @@
 ;   mask : in, optional, type="bytarr(nx, ny)"
 ;     mask of which pixels to fit
 ;   n_fits : out, optional, type=integer
-;     set to a named variable to retrive the number of Gaussian fits performed
+;     set to a named variable to retrieve the number of Gaussian fits performed
 ;   doppler_shift : out, optional, type="fltarr(nx, ny)"
 ;     set to a named variable to retrieve the doppler shift
 ;   line_width : out, optional, type="fltarr(nx, ny)"
