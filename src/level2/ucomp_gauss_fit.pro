@@ -67,6 +67,10 @@ pro ucomp_gauss_fit, all_intensities, $
   mask_indices = where(mask gt 0, n_mask_indices)
   if (n_mask_indices eq 0L) then goto, done
 
+  estimates = [[estimates_peak_intensity[mask_indices]], $
+               [estimates_xpeak[mask_indices]], $
+               [estimates_line_width[mask_indices]]]
+
   xy = array_indices(dims[0:1], mask_indices, /dimensions)
   for i = 0L, n_mask_indices - 1L do begin
     x = xy[0, i]
@@ -74,32 +78,31 @@ pro ucomp_gauss_fit, all_intensities, $
     pts = reform(all_intensities[x, y, *])
     valid_indices = where(pts gt min_threshold and pts lt max_threshold)
 
-    case _n_terms of
-      3: estimates = [estimates_peak_intensity[x, y], $
-                      estimates_xpeak[x, y], $
-                      estimates_line_width[x, y]]
-      4: estimates = [estimates_peak_intensity[x, y], $
-                      estimates_xpeak[x, y], $
-                      estimates_line_width[x, y], $
-                      0.0]
-      else: ; no estimate
-    endcase
-
     fit = mlso_gaussfit(wavelengths[valid_indices], $
                         pts[valid_indices], $
                         pixel_coefficients, $
-                        nterms=_n_terms, $
-                        estimates=estimates, $
+                        nterms=3L, $
+                        estimates=reform(estimates[i, *]), $
                         chisq=chisq, $
                         sigma=sigma)
+
+    if (_n_terms eq 4L) then begin
+      fit = mlso_gaussfit(wavelengths[valid_indices], $
+                          pts[valid_indices], $
+                          pixel_coefficients, $
+                          nterms=4L, $
+                          estimates=[pixel_coefficients, 0.0], $
+                          chisq=chisq, $
+                          sigma=sigma)
+    endif
 
     fit_coefficients[x, y, *] = pixel_coefficients
     fit_chisq[x, y] = chisq
     fit_sigma[x, y, *] = sigma
 
-    peak_intensity[x, y] = fit[0] + fit[3]
-    doppler_shift[x, y] = center_wavelength - fit[1]
-    line_width[x, y] = 2.0 * fit[2]
+    peak_intensity[x, y] = pixel_coefficients[1]
+    doppler_shift[x, y] = pixel_coefficients[1] - center_wavelength
+    line_width[x, y] = 2.0 * pixel_coefficients[2]
   endfor
 
   done:
