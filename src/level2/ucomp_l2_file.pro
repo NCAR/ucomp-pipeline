@@ -136,9 +136,9 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   intensity_blue   = reform(ext_data[*, *, 0, blue_index])
   intensity_red    = reform(ext_data[*, *, 0, red_index])
 
-  summed_intensity = ucomp_integrate(reform(ext_data[*, *, 0, *]))
-  summed_q         = ucomp_integrate(reform(ext_data[*, *, 1, *]))
-  summed_u         = ucomp_integrate(reform(ext_data[*, *, 2, *]))
+  summed_intensity = ucomp_integrate(reform(ext_data[*, *, 0, *]), center_index=center_index)
+  summed_q         = ucomp_integrate(reform(ext_data[*, *, 1, *]), center_index=center_index)
+  summed_u         = ucomp_integrate(reform(ext_data[*, *, 2, *]), center_index=center_index)
 
   summed_linpol = sqrt(summed_q^2 + summed_u^2)
 
@@ -154,7 +154,8 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
             name=run.logger_name, /error
   endif
 
-  save_fit = 0B
+  noise_intensity_min = run->line(wave_region, 'noise_intensity_min')
+  noise_intensity_max = run->line(wave_region, 'noise_intensity_max')
 
   ucomp_analytic_gauss_fit, intensity_blue, $
                             intensity_center, $
@@ -175,15 +176,13 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
           name=run.logger_name, /debug
   if (perform_gauss_fit) then begin
     clock_id = run->start('gaussian_fit')
-    ; TODO: make sure to geometric mask and intensity threshold mask before
+    ; [TODO]: make sure to geometric mask and intensity threshold mask before
     ; doing this
     all_intensities = reform(ext_data[*, *, 0, *])
-    save_fit = 1B
+
     case gaussian_fit_method of
       '3-term': n_terms = 3L
       '4-term': n_terms = 4L
-      ; TODO: need "both" option for doing both 3- and 4-term
-      'both': n_terms = 3L
       'analytic': message, 'invalid fit method: analytic'
       else: message, string(gaussian_fit_method, format='unknown fit method: %s')
     endcase
@@ -195,9 +194,10 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
       post_angle=post_angle, $
       p_angle=p_angle)
 
-    ; basic mask to eliminate pixels
-    fit_mask = total((all_intensities gt run->line(wave_region, 'noise_intensity_min')) $
-        and (all_intensities lt run->line(wave_region, 'noise_intensity_max')), $
+    ; basic mask to eliminate pixels: only perform the fit for pixels with at
+    ; at least n_terms + 1 wavelengths with good signal
+    fit_mask = total((all_intensities gt noise_intensity_min) $
+        and (all_intensities lt noise_intensity_max), $
       3, /integer) gt (n_terms + 1L)
 
     xpeak = run->line(wave_region, 'center_wavelength') + doppler_shift
@@ -208,10 +208,10 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                      estimates_peak_intensity=peak_intensity, $
                      estimates_xpeak=xpeak, $
                      estimates_line_width=line_width / sqrt(2.0), $
-                     ; TODO: use more restrictive velocity mask, also pass indices instead of mask
+                     ; [TODO]: use more restrictive velocity mask
                      mask=geometry_mask and fit_mask, $
-                     min_threshold=run->line(wave_region, 'noise_intensity_min'), $
-                     max_threshold=run->line(wave_region, 'noise_intensity_max'), $
+                     min_threshold=noise_intensity_min, $
+                     max_threshold=noise_intensity_max, $
                      n_fits=n_fits, $
                      doppler_shift=fit_doppler_shift, $
                      line_width=fit_line_width, $
@@ -223,43 +223,15 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
     mg_log, '%d Gaussian fits (%d term) performed', n_fits, n_terms, $
       name=run.logger_name, /debug
 
-    if (gaussian_fit_method eq 'both') then begin
-      n_terms = 4L
-      ucomp_gauss_fit, all_intensities, $
-                       wavelengths, $
-                       center_wavelength, $
-                       n_terms=n_terms, $
-                       ; TODO: use 3-term fit to make better estimates
-                       estimates_peak_intensity=peak_intensity, $
-                       estimates_xpeak=xpeak, $
-                       estimates_line_width=line_width / sqrt(2.0), $
-                       ; TODO: use more restrictive velocity mask, also pass indices instead of mask
-                       mask=geometry_mask and fit_mask, $
-                       min_threshold=run->line(wave_region, 'noise_intensity_min'), $
-                       max_threshold=run->line(wave_region, 'noise_intensity_max'), $
-                       n_fits=n_fits2, $
-                       doppler_shift=fit_doppler_shift2, $
-                       line_width=fit_line_width2, $
-                       peak_intensity=fit_peak_intensity2, $
-                       coefficients=fit_coefficients2, $
-                       chisq=fit_chisq2, $
-                       sigma=fit_sigma2
-    endif
-
-    ; TODO: write l2fit FITS file with different fits, sigma, and chi-squared
-
-    ; TODO: compare/mask fit_{doppler_shift,line_width,peak_intensity} to their
-    ; analytic counterparts
-
     dopper_shift = fit_doppler_shift
     line_width = fit_line_width
     peak_intensity = fit_peak_intensity
 
     time = run->stop(clock_id)
-    mg_log, 'gaussian fit: %0.1f secs', time, name=run.logger_name, /debug
+    mg_log, 'Gaussian fit: %0.1f secs', time, name=run.logger_name, /debug
   endif
 
-  c = 299792.458D
+  c = 299792.458D   ; km/s
 
   ; convert Doppler shift to velocity [km/s]
   doppler_shift *= c / mean(wavelengths)
@@ -277,12 +249,12 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
 
   azimuth = ucomp_azimuth(summed_q, summed_u, radial_azimuth=radial_azimuth)
 
-  !null = where(intensity_center gt run->line(wave_region, 'noise_intensity_min') $
-      and intensity_center lt run->line(wave_region, 'noise_intensity_max') $
-      and intensity_blue gt run->line(wave_region, 'noise_intensity_min') $
-      and intensity_blue lt run->line(wave_region, 'noise_intensity_max') $
-      and intensity_red gt run->line(wave_region, 'noise_intensity_min') $
-      and intensity_red lt run->line(wave_region, 'noise_intensity_max') $
+  !null = where(intensity_center gt noise_intensity_min $
+      and intensity_center lt noise_intensity_max $
+      and intensity_blue gt noise_intensity_min $
+      and intensity_blue lt noise_intensity_max $
+      and intensity_red gt noise_intensity_min $
+      and intensity_red lt noise_intensity_max $
       and line_width gt run->line(wave_region, 'noise_line_width_min'), $
     complement=noisy_indices, /null)
 
@@ -374,8 +346,8 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   mg_log, 'rest wavelength from data: %0.2f km/s', file_rest_wavelength, $
           name=run.logger_name, /debug
 
-  coeffs = run->line(wave_region, 'rstwvl_fit')
-  model_rest_wavelength = ucomp_rest_wavelength(run.date, coeffs)
+  rstwvl_fit_coeffs = run->line(wave_region, 'rstwvl_fit')
+  model_rest_wavelength = ucomp_rest_wavelength(run.date, rstwvl_fit_coeffs)
 
   wave_offset = ucomp_getpar(primary_header, 'WAVOFF')
   wave_region_offset = run->line(wave_region, 'rstwvl_offset')
@@ -414,17 +386,19 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
     ucomp_mkdir, l2_dir, logger_name=run.logger_name
   endif
 
-  ; write level 2 file, either one of the below, depending on the input level 1
-  ; filename:
+  ; write level 2 file, either for a specific time or an average, depending on
+  ; the input level 1 filename:
+  ;
   ; - YYYYMMDD.HHMMSS.ucomp.WWWW.l1.pN.fts
   ; - YYYYMMDD.ucomp.WWWW.l1.PROGRAM.AVERAGE_TYPE.fts
+
+  ; [NOTE]: this will have an issue if the program name ever has a "." in it
+  parts = strsplit(basename, '.', /extract)
+
   if (strmid(basename, 9, 5) eq 'ucomp') then begin
-    parts = strsplit(basename, '.', /extract)
-    ; this will have an issue if the program name ever has a "." in it
     l2_basename = string(parts[0], parts[2], parts[4], parts[5], $
                          format='%s.ucomp.%s.l2.%s.%s.fts')
   endif else begin
-    parts = strsplit(basename, '.', /extract)
     l2_basename = string(parts[0], parts[1], parts[3], $
                          format='%s.%s.ucomp.%s.l2.fts')
   endelse
@@ -645,7 +619,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
     if (error_msg ne '') then message, error_msg
   endif
 
-  if (save_fit) then begin
+  if (perform_gauss_fit) then begin
     ucomp_fits_write, fcb, $
                       float(fit_chisq), $
                       header, $
@@ -751,4 +725,27 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   endif
 
   done:
+end
+
+
+; main-level example program
+
+; date = '20220215'
+date = '20240409'
+config_basename = 'ucomp.3-term.cfg'
+config_filename = filepath(config_basename, $
+  subdir=['..', '..', '..', 'ucomp-config'], $
+  root=mg_src_root())
+
+run = ucomp_run(date, 'test', config_filename)
+
+; basename = '20220215.211617.ucomp.1074.l1.p5.fts'
+basename = '20240409.180748.ucomp.1074.l1.p5.fts'
+l1_dir = filepath('level1', subdir=date, root=run->config('processing/basedir'))
+filename = filepath(basename, root=l1_dir)
+
+ucomp_l2_file, filename, run=run
+
+obj_destroy, run
+
 end
