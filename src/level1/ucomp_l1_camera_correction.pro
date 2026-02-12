@@ -47,10 +47,10 @@ pro ucomp_l1_camera_correction, file, $
     for c = 0L, n_cameras - 1L do begin
       run->get_hot_pixels, file.gain_mode, c, hot=hot, adjacent=adjacent, $
                            basename=hot_pixels_basename, date=hot_pixels_date
-      mg_log, 'hot pixels %s gain %s: ADJACENT %s', $
-              file.gain_mode, c eq 0L ? 'RCAM' : 'TCAM', $
-              n_elements(adjacent) eq 0L ? 'not present' : 'present', $
-              name=run.logger_name, /debug
+      ; mg_log, 'hot pixels %s gain %s: ADJACENT %s', $
+      ;         file.gain_mode, c eq 0L ? 'RCAM' : 'TCAM', $
+      ;         n_elements(adjacent) eq 0L ? 'not present' : 'present', $
+      ;         name=run.logger_name, /debug
       for p = 0L, n_polstates - 1L do begin
         data[*, *, p, c, e] = ucomp_fix_hot(data[*, *, p, c, e], $
                                             hot=hot, $
