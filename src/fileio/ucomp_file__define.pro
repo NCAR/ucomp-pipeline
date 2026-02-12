@@ -117,7 +117,7 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
   if (n_elements(wrote_l1) gt 0L) then self.wrote_l1 = wrote_l1
   if (n_elements(wrote_l2)) then self.wrote_l2 = wrote_l2
 
-  if (n_elements(distortion_basename)) then self.distortion_basename = wrote_distortion_basenamel2
+  if (n_elements(distortion_basename)) then self.distortion_basename = distortion_basename
   if (n_elements(demodulation_coeffs_version)) then self.demodulation_coeffs_version = demodulation_coeffs_version
 
   if (n_elements(rcam_geometry)) then self.rcam_geometry = rcam_geometry
