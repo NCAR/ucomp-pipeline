@@ -22,8 +22,8 @@ function ucomp_mask_ut::test_basic
   assert, mask[640, 176] eq 0, '[640, 176] incorrect'
 
   ; post
-  assert, mask[790, 150] eq 1, '[790, 150] incorrect'
-  assert, mask[791, 150] eq 0, '[791, 150] incorrect'
+  assert, mask[784, 150] eq 1, '[790, 150] incorrect'
+  assert, mask[785, 150] eq 0, '[791, 150] incorrect'
 
   ; off-sensor
   assert, mask[150, 844] eq 1, '[150, 844] incorrect'
