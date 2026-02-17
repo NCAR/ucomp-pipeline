@@ -113,7 +113,7 @@ pro ucomp_gauss_fit, all_intensities, $
 
     peak_intensity[x, y] = pixel_coefficients[1]
     doppler_shift[x, y] = pixel_coefficients[1] - center_wavelength
-    line_width[x, y] = 2.0 * pixel_coefficients[2]
+    line_width[x, y] = pixel_coefficients[2]
   endfor
 
   done:

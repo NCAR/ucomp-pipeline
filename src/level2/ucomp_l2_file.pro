@@ -547,6 +547,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
 
   ; write line width
   line_width_fwhm = float(line_width) * run->epoch('fwhm_factor')
+  if (~perform_gauss_fit) then line_width_fwhm /= sqrt(2.0)
   ucomp_fits_write, fcb, $
                     float(line_width_fwhm), $
                     header, $
