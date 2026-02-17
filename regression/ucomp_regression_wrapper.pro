@@ -58,8 +58,8 @@ pro ucomp_regression_wrapper, date, config_filename
   standards = file_search(standards_dir, '*', count=n_standards)
   standards = strmid(standards, strlen(standards_dir) + 1L)
 
-  n_matches = mg_match(results, standards, $
-                       a_matches=result_matches, b_matches=standard_matches)
+  n_matches = mg_match(standards, results, $
+                       a_matches=standard_matches, b_matches=result_matches)
 
   if (n_results gt 0L) then begin
     extra_in_results = mg_complement(result_matches, n_results, $
@@ -132,7 +132,7 @@ pro ucomp_regression_wrapper, date, config_filename
 
     case 1 of
       stregex(results[result_matches[m]], '.*\.fts(\.gz)?', /boolean): begin
-          ucomp_compare_fits, result_path, standard_path, run.logger_name, status=compare_status
+          ucomp_compare_fits, standard_path, result_path, run.logger_name, status=compare_status
           if (compare_status ne 0L) then begin
             mg_log, 'FITS file %s does not match standard', $
                     file_basename(result_path), $
@@ -141,7 +141,7 @@ pro ucomp_regression_wrapper, date, config_filename
           end
         end
       stregex(results[result_matches[m]], '.*(\.txt|\.log|\.cfg|\.olog|\.tarlist)', /boolean): begin
-          ucomp_compare_text, result_path, standard_path, run.logger_name, status=compare_status
+          ucomp_compare_text, standard_path, result_path, run.logger_name, status=compare_status
           if (compare_status ne 0L) then begin
             mg_log, 'text file %s does not match standard', $
                     file_basename(result_path), $
@@ -155,7 +155,7 @@ pro ucomp_regression_wrapper, date, config_filename
                   name=run.logger_name, /info
         end
       else: begin
-          ucomp_compare_binary, result_path, standard_path, run.logger_name, status=compare_status
+          ucomp_compare_binary, standard_path, result_path, run.logger_name, status=compare_status
           if (compare_status ne 0L) then begin
             mg_log, 'binary file %s does not match standard', $
                     file_basename(result_path), $

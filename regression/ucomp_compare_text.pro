@@ -4,10 +4,10 @@
 ; Compare two text files.
 ;
 ; :Params:
-;   result_path : in, required, type=string
-;     filename of result
 ;   standard_path : in, required, type=string
 ;     filename in standards
+;   result_path : in, required, type=string
+;     filename of result
 ;   logger_name : in, required, type=string
 ;     logger name to send warnings to
 ;
@@ -16,7 +16,7 @@
 ;     set to a named variable to retrieve whether the files are equivalent, 0
 ;     for the same, 1 for not
 ;-
-pro ucomp_compare_text, result_path, standard_path, logger_name, status=status
+pro ucomp_compare_text, standard_path, result_path, logger_name, status=status
   compile_opt strictarr
 
   status = 0L
