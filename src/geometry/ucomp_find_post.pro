@@ -20,7 +20,9 @@
 ; :Keywords:
 ;   angle_guess : in, optional, type=float, default=180.0
 ;     initial guess angle in degrees from north for the location of the post
-;   angle_tolerance : in, optional, type=float, default=30.0
+;   angle_width : in, optional, type=float, default=5.0
+;     estimated width of post in degrees
+;   angle_search_tolerance : in, optional, type=float, default=30.0
 ;     amount added and subtracted to `post_angle_guess` to search for post in
 ;   error : out, optional, type=long
 ;     set to a named variable to retrieve the error status of the process of
@@ -28,6 +30,11 @@
 ;   err_msg : out, optional, type=string
 ;     set to a named variable to retrieve any error message generated in the
 ;     post finding process, empty string if no error
+;   fit_coefficients : out, optional, type=float(5)
+;     set to a named variable to retrieve the fit coefficients for fitting a
+;     5-term Gaussian to the post
+;   fit_estimates : out, optional, type=float(5)
+;     estimates output from the Gaussian fit of the post
 ;
 ; :Author:
 ;   MLSO Software Team
