@@ -28,8 +28,7 @@
 ;   doppler_shift : out, optional, type="fltarr(nx, ny)"
 ;     set to a named variable to retrieve the doppler shift
 ;   line_width : out, optional, type="fltarr(nx, ny)"
-;     set to a named variable to retrieve the line width, i.e., `2 * a[2]` of
-;     the fit
+;     set to a named variable to retrieve the line width [nm] as sigma
 ;   peak_intensity : out, optional, type="fltarr(nx, ny)"
 ;     set to a named variable to retrieve the peak intensity
 ;   coefficients : out, optional, type="fltarr(nx, ny, n_terms)"
@@ -88,7 +87,7 @@ pro ucomp_gauss_fit, all_intensities, $
     y = xy[1, i]
     pts = reform(all_intensities[x, y, *])
     valid_indices = where(pts gt min_threshold and pts lt max_threshold)
-
+    ; [TODO]: stop if too few valid_indices
     fit = mlso_gaussfit(wavelengths[valid_indices], $
                         pts[valid_indices], $
                         pixel_coefficients, $
@@ -98,6 +97,7 @@ pro ucomp_gauss_fit, all_intensities, $
                         sigma=sigma)
 
     if (_n_terms eq 4L) then begin
+      ; [TODO]: stop if too few valid_indices
       fit = mlso_gaussfit(wavelengths[valid_indices], $
                           pts[valid_indices], $
                           pixel_coefficients, $

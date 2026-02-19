@@ -169,10 +169,10 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   perform_gauss_fit = (n_wavelengths gt 3L) $
                         && run->line(wave_region, 'gauss_fit') $
                         && (gaussian_fit_method ne 'analytic')
-  mg_log, 'perform Guassian fit: %s, n_wavelengths: %d, gauss_fit: %s', $
+  mg_log, 'perform %s Guassian fit: %s (%d wavelengths)', $
+          gaussian_fit_method, $
           perform_gauss_fit ? 'YES' : 'NO', $
           n_wavelengths, $
-          run->line(wave_region, 'gauss_fit') ? 'YES' : 'NO', $
           name=run.logger_name, /debug
   if (perform_gauss_fit) then begin
     clock_id = run->start('gaussian_fit')
@@ -194,16 +194,10 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
       post_angle=post_angle, $
       p_angle=p_angle)
 
-    ; basic mask to eliminate pixels: only perform the fit for pixels with at
-    ; at least n_terms + 1 wavelengths with good signal
-    fit_mask = total((all_intensities gt noise_intensity_min) $
-        and (all_intensities lt noise_intensity_max), $
-      3, /integer) gt (n_terms + 1L)
-    ; [TODO]: maybe we need a more complicated mask that tests the wings less
-    ; strictly than the center wavelength
-    ; fit_mask = total((all_intensities gt noise_intensity_min)
-    ;     and (rebin(all_intensities[*, *, center_index], nx, ny, n_wavelengths) lt noise_intensity_max), $
-    ;   3, /integer) gt (n_terms + 1L)
+    noise_intensity_wings_min = run->line(wave_region, 'noise_intensity_wings_min')
+    fit_mask = (intensity_center gt noise_intensity_min) $
+      and (total((all_intensities gt noise_intensity_wings_min) $
+             and (all_intensities lt noise_intensity_max), 3, /integer) gt n_terms)
 
     xpeak = run->line(wave_region, 'center_wavelength') + doppler_shift
     ucomp_gauss_fit, all_intensities, $
@@ -215,7 +209,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                      estimates_line_width=line_width / sqrt(2.0), $
                      ; [TODO]: use more restrictive velocity mask
                      mask=geometry_mask and fit_mask, $
-                     min_threshold=noise_intensity_min, $
+                     min_threshold=noise_intensity_wings_min, $
                      max_threshold=noise_intensity_max, $
                      n_fits=n_fits, $
                      doppler_shift=fit_doppler_shift, $
@@ -239,10 +233,11 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   c = 299792.458D   ; km/s
 
   ; convert Doppler shift to velocity [km/s]
-  doppler_shift *= c / mean(wavelengths)
+  doppler_shift *= c / run->line(wave_region, 'center_wavelength')
 
-  ; convert line width to velocity [km/s]
-  line_width *= c / mean(wavelengths)
+  ; convert line width to velocity [km/s] and then to FWHM
+  line_width *= c / run->line(wave_region, 'center_wavelength')
+  line_width_fwhm = float(line_width) * run->epoch('fwhm_factor')
 
   enhanced_intensity_center = ucomp_enhanced_intensity(intensity_center, $
       radius=run->line(wave_region, 'enhanced_intensity_radius'), $
@@ -260,7 +255,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
       and intensity_blue lt noise_intensity_max $
       and intensity_red gt noise_intensity_min $
       and intensity_red lt noise_intensity_max $
-      and line_width gt run->line(wave_region, 'noise_line_width_min'), $
+      and line_width_fwhm gt run->line(wave_region, 'noise_line_width_min'), $
     complement=noisy_indices, /null)
 
   noise_mask = intensity_center * 0.0 + 1.0
@@ -272,7 +267,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
     enhanced_intensity_center[noisy_indices] = !values.f_nan
     peak_intensity[noisy_indices]            = !values.f_nan
     doppler_shift[noisy_indices]             = !values.f_nan
-    line_width[noisy_indices]                = !values.f_nan
+    line_width_fwhm[noisy_indices]           = !values.f_nan
 
     summed_intensity[noisy_indices]          = !values.f_nan
     summed_q[noisy_indices]                  = !values.f_nan
@@ -298,7 +293,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
       intensity_center[outside_mask_indices]          = !values.f_nan
       enhanced_intensity_center[outside_mask_indices] = !values.f_nan
       peak_intensity[outside_mask_indices]            = !values.f_nan
-      line_width[outside_mask_indices]                = !values.f_nan
+      line_width_fwhm[outside_mask_indices]           = !values.f_nan
       doppler_shift[outside_mask_indices]             = !values.f_nan
 
       summed_intensity[outside_mask_indices]          = !values.f_nan
@@ -329,8 +324,8 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
     and intensity_blue lt run->line(wave_region, 'rstwvl_intensity_blue_max') $
     and intensity_red gt run->line(wave_region, 'rstwvl_intensity_red_min') $
     and intensity_red lt run->line(wave_region, 'rstwvl_intensity_red_max') $
-    and line_width gt run->line(wave_region, 'rstwvl_line_width_min') $
-    and line_width lt run->line(wave_region, 'rstwvl_line_width_max') $
+    and line_width_fwhm gt run->line(wave_region, 'rstwvl_line_width_min') $
+    and line_width_fwhm lt run->line(wave_region, 'rstwvl_line_width_max') $
     and abs(doppler_shift) lt run->line(wave_region, 'rstwvl_velocity_threshold') $
     and doppler_shift ne 0.0 $
     and finite(doppler_shift) $
@@ -546,8 +541,6 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   endif
 
   ; write line width
-  line_width_fwhm = float(line_width) * run->epoch('fwhm_factor')
-  if (~perform_gauss_fit) then line_width_fwhm /= sqrt(2.0)
   ucomp_fits_write, fcb, $
                     float(line_width_fwhm), $
                     header, $
@@ -746,7 +739,10 @@ config_filename = filepath(config_basename, $
 run = ucomp_run(date, 'test', config_filename)
 
 ; basename = '20220215.211617.ucomp.1074.l1.p5.fts'
-basename = '20240409.180748.ucomp.1074.l1.p5.fts'
+; basename = '20220215.192712.ucomp.637.l1.p5.fts'
+; basename = '20240409.180748.ucomp.1074.l1.p5.fts'
+basename = '20240409.182654.ucomp.637.l1.p5.fts'
+
 l1_dir = filepath('level1', subdir=date, root=run->config('processing/basedir'))
 filename = filepath(basename, root=l1_dir)
 

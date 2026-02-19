@@ -19,8 +19,8 @@
 ;     set to a named variable to retrieve the shift of the fit gaussian from
 ;     the center wavelength in the same units as `d_lambda`
 ;   line_width : out, optional, type="fltarr(nx, ny)"
-;     set to a named variable to retrieve the line width in the same units as
-;     d_lambda
+;     set to a named variable to retrieve the line width [nm] as sigma (not
+;     e-folding)
 ;   peak_intensity : out, optional, type="fltarr(nx, ny)"
 ;     set to a named variable to retrieve the central intensity of the gaussian
 ;      in the same units as `blue`, `center`, and `red`
@@ -54,5 +54,6 @@ pro ucomp_analytic_gauss_fit, blue, center, red, d_lambda, $
       = line_width[indices]^2 / (4.0D * d_lambda)*(a[good_indices] - b[good_indices])
     peak_intensity[indices] $
       = center[indices] * exp(doppler_shift[indices]^2 / line_width[indices]^2)
+    line_width[indices] /= sqrt(2.0D)   ; convert from e-folding to sigma
   endif
 end
