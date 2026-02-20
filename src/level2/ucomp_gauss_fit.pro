@@ -111,7 +111,7 @@ pro ucomp_gauss_fit, all_intensities, $
     fit_chisq[x, y] = chisq
     fit_sigma[x, y, *] = sigma
 
-    peak_intensity[x, y] = pixel_coefficients[1]
+    peak_intensity[x, y] = pixel_coefficients[0] + (_n_terms eq 4L ? pixel_coefficients[3] : 0.0)
     doppler_shift[x, y] = pixel_coefficients[1] - center_wavelength
     line_width[x, y] = pixel_coefficients[2]
   endfor
