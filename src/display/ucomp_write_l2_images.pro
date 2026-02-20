@@ -148,7 +148,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                                                             /no_mlso_annotation, $
                                                             run=run)
 
-  peak_intensity_dashboard = ucomp_display_image(wave_region, intensity_center, $
+  peak_intensity_dashboard = ucomp_display_image(wave_region, peak_intensity, $
                                                  type='intensity', $
                                                  name='Peak Intensity', $
                                                  reduce_factor=reduce_factor, $
@@ -302,7 +302,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
   write_png, enhanced_intensity_filename, enhanced_intensity_center_display
   mg_log, 'wrote enhanced intensity PNG', name=run.logger_name, /debug
 
-  peak_intensity_display = ucomp_display_image(wave_region, intensity_center, $
+  peak_intensity_display = ucomp_display_image(wave_region, peak_intensity, $
                                                type='intensity', $
                                                name='Peak Intensity', $
                                                reduce_factor=reduce_factor, $
