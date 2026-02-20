@@ -11,28 +11,40 @@
 ;     level 1 data to integrate
 ;
 ; :Keywords:
-;   center_index : in, optional, type=integer, default=n_wavelengths/2
-;     index of center wavelength, if not present, assumed to be center index of
-;     the dimension
+;   indices : in, optional, type=integer, default="[n_wavelengths/2 + [-1, 0, 1]]"
+;     indices to weight and sum
 ;-
-function ucomp_integrate, data, center_index=center_index
+function ucomp_integrate, data, indices=indices, weights=weights
   compile_opt strictarr
+  on_error, 2
+
+  n_wavelengths = 3L
+
+  n_indices = n_elements(indices)
+  n_weights = n_elements(weights)
+
+  if (n_indices gt 0L && n_indices ne 3) then begin
+    message, string(n_indices, format='invalid number of indices %d')
+  endif
+
+  if (n_weights gt 0L && n_weights ne 3) then begin
+    message, string(n_weights, format='invalid number of weights %d')
+  endif
 
   ; set default for center index if not passed in
-  if (n_elements(center_index) eq 0L) then begin
+  if (n_elements(indices) eq 0L) then begin
     dims = size(data, /dimensions)
-    _center_index = dims[2] / 2L
+    _indices = (lindgen(n_wavelengths) - 1L) + dims[2] / 2L
   endif else begin
-    _center_index = center_index
+    _indices = indices
   endelse
 
   ; set weight for middle n_weights wavelengths
-  n_weights = 3L
-  weights = (fltarr(n_weights) + 1.0) / 2.0
+  _weights = n_elements(weights) eq 0L ? (fltarr(n_wavelengths) + 1.0) / 2.0 : weights
 
   ; weight the middle n_weights wavelengths and sum them up
-  weighted = data[*, *, _center_index - n_weights / 2:_center_index + n_weights / 2]
-  for w = 0L, n_weights - 1L do weighted[*, *, w] *= weights[w]
+  weighted = data[*, *, _indices]
+  for w = 0L, n_wavelengths - 1L do weighted[*, *, w] *= _weights[w]
   summed = total(weighted, 3, /preserve_type)
 
   return, summed

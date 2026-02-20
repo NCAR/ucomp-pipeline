@@ -136,9 +136,10 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   intensity_blue   = reform(ext_data[*, *, 0, blue_index])
   intensity_red    = reform(ext_data[*, *, 0, red_index])
 
-  summed_intensity = ucomp_integrate(reform(ext_data[*, *, 0, *]), center_index=center_index)
-  summed_q         = ucomp_integrate(reform(ext_data[*, *, 1, *]), center_index=center_index)
-  summed_u         = ucomp_integrate(reform(ext_data[*, *, 2, *]), center_index=center_index)
+  integrate_indices = [blue_index, center_index, red_index]
+  summed_intensity = ucomp_integrate(reform(ext_data[*, *, 0, *]), indices=integrate_indices)
+  summed_q         = ucomp_integrate(reform(ext_data[*, *, 1, *]), indices=integrate_indices)
+  summed_u         = ucomp_integrate(reform(ext_data[*, *, 2, *]), indices=integrate_indices)
 
   summed_linpol = sqrt(summed_q^2 + summed_u^2)
 
@@ -435,7 +436,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
 
   center_header = ext_headers[center_index]
 
-  delete_keywords = ['RAWEXTS', $
+  delete_keywords = ['NAXIS3', 'RAWEXTS', $
                      'RAWDARK1', 'DARKEXT1', 'RAWDARK2', 'DARKEXT2', $
                      'FLTFILE1', 'FLTEXTS1', 'MFLTEXT1', $
                      'FLTFILE2', 'FLTEXTS2', 'MFLTEXT2']
@@ -627,6 +628,10 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                       /no_abort, message=error_msg
     if (error_msg ne '') then message, error_msg
 
+    ucomp_addpar, header, 'NAXIS3', n_terms, $
+                  comment='number of terms in Gaussian fit', $
+                  after='NAXIS2'
+
     ucomp_fits_write, fcb, $
                       float(fit_sigma), $
                       header, $
@@ -740,8 +745,9 @@ run = ucomp_run(date, 'test', config_filename)
 
 ; basename = '20220215.211617.ucomp.1074.l1.p5.fts'
 ; basename = '20220215.192712.ucomp.637.l1.p5.fts'
-; basename = '20240409.180748.ucomp.1074.l1.p5.fts'
-basename = '20240409.182654.ucomp.637.l1.p5.fts'
+basename = '20240409.180748.ucomp.1074.l1.p5.fts'
+; basename = '20240409.182654.ucomp.637.l1.p5.fts'
+; basename = '20240409.203933.ucomp.1074.l1.p3.fts'  ; waves
 
 l1_dir = filepath('level1', subdir=date, root=run->config('processing/basedir'))
 filename = filepath(basename, root=l1_dir)
