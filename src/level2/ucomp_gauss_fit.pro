@@ -86,8 +86,9 @@ pro ucomp_gauss_fit, all_intensities, $
     x = xy[0, i]
     y = xy[1, i]
     pts = reform(all_intensities[x, y, *])
-    valid_indices = where(pts gt min_threshold and pts lt max_threshold)
-    ; [TODO]: stop if too few valid_indices
+    valid_indices = where(pts gt min_threshold and pts lt max_threshold, n_valid)
+    if (n_valid lt _n_terms) then continue
+
     fit = mlso_gaussfit(wavelengths[valid_indices], $
                         pts[valid_indices], $
                         pixel_coefficients, $
@@ -97,7 +98,6 @@ pro ucomp_gauss_fit, all_intensities, $
                         sigma=sigma)
 
     if (_n_terms eq 4L) then begin
-      ; [TODO]: stop if too few valid_indices
       fit = mlso_gaussfit(wavelengths[valid_indices], $
                           pts[valid_indices], $
                           pixel_coefficients, $
