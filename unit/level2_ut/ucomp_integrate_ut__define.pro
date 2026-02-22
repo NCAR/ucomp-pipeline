@@ -17,7 +17,7 @@ function ucomp_integrate_ut::test_center_index
   compile_opt strictarr
 
   data = findgen(10, 10, 5)
-  integrated = ucomp_integrate(data, center_index=1)
+  integrated = ucomp_integrate(data, indices=[0, 1, 2])
   standard = 0.5 * total(data[*, *, 0:2], 3, /preserve_type)
 
   assert, array_equal(integrated, standard), 'incorrect value'
