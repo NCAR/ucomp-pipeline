@@ -20,9 +20,6 @@
 function ucomp_radius_guess, occulter_id, wave_region, run=run
   compile_opt strictarr
 
-  ; TODO: make this a function of occulter and time because it changed on
-  ; 2022-02-02
-
   ; occulter physical diameter [mm]
   occulter_diameter = run->epoch('OC-' + occulter_id + '-mm', $
                                  datetime=run.date, $
