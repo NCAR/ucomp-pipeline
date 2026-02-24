@@ -202,6 +202,7 @@ pro ucomp_l1_process_file, file, run=run
 
   ; write the all wavelengths IQUV quicklook
   ucomp_write_all_iquv_image, data, $
+                              backgrounds, $
                               file.l1_basename, $
                               file.wave_region, $
                               file.wavelengths, $

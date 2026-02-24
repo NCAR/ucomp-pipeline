@@ -336,6 +336,7 @@ pro ucomp_average_l1_files, l1_filenames, $
       post_angle = ucomp_getpar(averaged_primary_header, 'POST_ANG')
       p_angle = ucomp_getpar(averaged_primary_header, 'SOLAR_P0')
       ucomp_write_all_iquv_image, averaged_data, $
+                                  averaged_background, $
                                   file_basename(output_filenames[m]), $
                                   wave_region, $
                                   float(all_wavelengths), $
