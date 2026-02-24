@@ -53,6 +53,7 @@ pro ucomp_l1_find_alignment, file, $
   radius_guess = ucomp_radius_guess(occulter_id, file.wave_region, run=run)
   mg_log, 'radius guess: %0.1f', radius_guess, name=run.logger_name, /debug
   dradius = run->epoch('dradius')
+  dradius_default = run->epoch('dradius_default')
 
   post_angle_tolerance = run->epoch('post_angle_tolerance')
   post_angle_gap = run->epoch('post_angle_gap')
@@ -72,9 +73,12 @@ pro ucomp_l1_find_alignment, file, $
   rcam_background = mean(rcam_background, dimension=3, /nan)
 
   rcam_center_guess = ucomp_occulter_guess(rcam_background, 0, date, $
-                                           occulter_x, occulter_y, run=run)
+                                           occulter_x, occulter_y, $
+                                           found=rcam_found, run=run)
   mg_log, 'RCAM center guess: %0.2f, %0.2f', rcam_center_guess, $
           name=run.logger_name, /debug
+
+  rcam_dradius = rcam_found ? dradius : dradius_default
 
   ; if all elements of dimension 3 are NaNs then the above lines will produce
   ; an floating-point operand error (128)
@@ -91,7 +95,7 @@ pro ucomp_l1_find_alignment, file, $
                                            ysize=run->epoch('ny'), $
                                            center_guess=rcam_center_guess, $
                                            radius_guess=radius_guess, $
-                                           dradius=dradius, $
+                                           dradius=rcam_dradius, $
                                            post_angle_guess=rcam_post_angle_guess, $
                                            post_angle_gap=post_angle_gap, $
                                            post_angle_tolerance=post_angle_tolerance, $
@@ -121,9 +125,12 @@ pro ucomp_l1_find_alignment, file, $
   tcam_background = mean(tcam_background, dimension=3, /nan)
 
   tcam_center_guess = ucomp_occulter_guess(tcam_background, 1, date, $
-                                           occulter_x, occulter_y, run=run)
+                                           occulter_x, occulter_y, $
+                                           found=tcam_found, run=run)
   mg_log, 'TCAM center guess: %0.2f, %0.2f', tcam_center_guess, $
           name=run.logger_name, /debug
+
+  tcam_dradius = tcam_found ? dradius : dradius_default
 
   ; if all elements of dimension 3 are NaNs then the above lines will produce
   ; an floating-point operand error (128)
@@ -139,7 +146,7 @@ pro ucomp_l1_find_alignment, file, $
                                            ysize=run->epoch('ny'), $
                                            center_guess=tcam_center_guess, $
                                            radius_guess=radius_guess, $
-                                           dradius=dradius, $
+                                           dradius=tcam_dradius, $
                                            post_angle_guess=tcam_post_angle_guess, $
                                            post_angle_gap=post_angle_gap, $
                                            post_angle_tolerance=post_angle_tolerance, $
@@ -278,7 +285,7 @@ pro ucomp_l1_find_alignment, file, $
                                                  ysize=run->epoch('ny'), $
                                                  center_guess=rcam_center_guess, $
                                                  radius_guess=radius_guess, $
-                                                 dradius=dradius, $
+                                                 dradius=rcam_dradius, $
                                                  post_angle_guess=rcam_post_angle_guess, $
                                                  post_angle_gap=post_angle_gap, $
                                                  post_angle_tolerance=post_angle_tolerance, $
@@ -295,7 +302,7 @@ pro ucomp_l1_find_alignment, file, $
                                                  ysize=run->epoch('ny'), $
                                                  center_guess=rcam_center_guess, $
                                                  radius_guess=radius_guess, $
-                                                 dradius=dradius, $
+                                                 dradius=tcam_dradius, $
                                                  post_angle_guess=tcam_post_angle_guess, $
                                                  post_angle_gap=post_angle_gap, $
                                                  post_angle_tolerance=post_angle_tolerance, $

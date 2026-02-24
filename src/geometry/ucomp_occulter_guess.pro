@@ -19,13 +19,19 @@
 ;     value of the `OCCLTR-Y` FITS keyword
 ;
 ; :Keywords:
+;   found : out, optional, type=boolean
+;     set to a named variable to retrieve whether the center was found (1B), or
+;     if the default center of the image was used (0B)
 ;   run : in, required, type=object
 ;     UCoMP run object
 ;-
 function ucomp_occulter_guess, bkg, camera_index, datetime, $
                                occulter_x, occulter_y, $
+                               found=found, $
                                run=run
   compile_opt strictarr
+
+  found = 1B
 
   dims = size(bkg, /dimensions)
   nx = dims[0]
@@ -54,6 +60,7 @@ function ucomp_occulter_guess, bkg, camera_index, datetime, $
   image_center = ([nx, ny] - 1.0) / 2.0
   if (sqrt(total((image_center - center_guess)^2)) gt 30.0) then begin
     center_guess = image_center
+    found = 0B
   endif
 
   ; initial guess for the center of the image
