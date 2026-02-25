@@ -80,10 +80,12 @@ pro ucomp_write_all_iquv_image, data, $
   v_display_gamma = run->line(wave_region, 'v_display_gamma')
   v_display_power = run->line(wave_region, 'v_display_power')
 
-  background_display_min   = run->line(wave_region, 'background_display_min')
-  background_display_max   = run->line(wave_region, 'background_display_max')
-  background_display_gamma = run->line(wave_region, 'background_display_gamma')
-  background_display_power = run->line(wave_region, 'background_display_power')
+  ; [NOTE]: maybe we should have background_i_display_{min,max,gamma,power}
+  ; parameters, but these seem OK for now
+  background_display_min   = run->line(wave_region, 'intensity_display_min')
+  background_display_max   = run->line(wave_region, 'intensity_display_max')
+  background_display_gamma = run->line(wave_region, 'intensity_display_gamma')
+  background_display_power = run->line(wave_region, 'intensity_display_power')
 
   if (keyword_set(sigma)) then begin
     i_sigma_level = 0.02
@@ -235,7 +237,6 @@ pro ucomp_write_all_iquv_image, data, $
                        max=mg_signed_power(display_max, display_power), $
                        top=n_colors - 1L, $
                        /nan)
-    print, display_power, display_min, display_max, display_gamma
     tv, scaled_im, 4 * n_wavelengths + e - 1L
   endfor
 
