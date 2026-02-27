@@ -44,5 +44,5 @@ function ucomp_center_image, im, geometry, bilinear=bilinear
 
   cubic_parameter = keyword_set(bilinear) ? !null : -0.5
   return, interpolate(im, xpp, ypp, missing=!values.f_nan, /double, $
-                      cubic=cubic_parameter, )
+                      cubic=cubic_parameter)
 end

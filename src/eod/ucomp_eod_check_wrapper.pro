@@ -121,7 +121,7 @@ pro ucomp_eod_check_wrapper, date, config_filename
     subject = string(run.date, run.config_flag, msg, $
                      format='(%"UCoMP end-of-day check for %s (%s): %s")')
     mg_send_mail, email, subject, body_text, $
-                  from='$(whoami)@ucar.edu'
+                  from='$(whoami)@ucar.edu', $
                   error=error, status_message=status_message
     if (error ne 0L) then begin
       mg_log, 'error sending EOD otification ''%s'': %s', $
