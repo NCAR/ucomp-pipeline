@@ -122,6 +122,12 @@ pro ucomp_eod_check_wrapper, date, config_filename
                      format='(%"UCoMP end-of-day check for %s (%s): %s")')
     mg_send_mail, email, subject, body_text, $
                   from='$(whoami)@ucar.edu'
+                  error=error, status_message=status_message
+    if (error ne 0L) then begin
+      mg_log, 'error sending EOD otification ''%s'': %s', $
+              subject, strjoin(status_message, ' '), $
+              name=run.logger_name, /error
+    endif
   endif else begin
     mg_log, 'machine log and correct data present', name=run.logger_name, /info
   endelse

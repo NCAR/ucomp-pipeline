@@ -188,7 +188,13 @@ pro ucomp_send_notification, run=run
 
   mg_send_mail, email, subject, body_text, $
                 from='ucomp-pipeline@ucar.edu', $
-                attachments=attachments
+                attachments=attachments, $
+                error=error, status_message=status_message
+  if (error ne 0L) then begin
+    mg_log, 'error sending notification ''%s'': %s', $
+            subject, strjoin(status_message, ' '), $
+            name=run.logger_name, /error
+  endif
 
   done:
 end

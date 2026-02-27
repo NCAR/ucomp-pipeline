@@ -1135,7 +1135,15 @@ pro ucomp_run::send_alert, type, msg
     body_text = body->toArray()
     obj_destroy, body
 
-    mg_send_mail, to_email, subject, body_text, from='ucomp-pipeline@ucar.edu'
+    mg_send_mail, to_email, subject, body_text, $
+                  from='ucomp-pipeline@ucar.edu', $
+                  error=error, status_message=status_message
+    if (error ne 0L) then begin
+      self->getProperty, logger_name=logger_name
+      mg_log, 'error sending alert ''%s'': %s', $
+              subject, strjoin(status_message, ' '), $
+              name=logger_name, /error
+    endif
   endif
 end
 

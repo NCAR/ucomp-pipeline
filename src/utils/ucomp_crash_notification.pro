@@ -68,9 +68,11 @@ pro ucomp_crash_notification, run=run
                    format='(%"UCoMP crash during %s processing for %s (%s)")')
   body = [body, '', credit]
 
-  mg_send_mail, address, subject, body, from=username, error=error
+  mg_send_mail, address, subject, body, from=username, $
+                error=error, status_message=status_message
   if (error ne 0L) then begin
-    mg_log, 'error %d sending crash notification', error, $
+    mg_log, 'error sending crash notification ''%s'': %s', $
+            subject, strjoin(status_message, ' '), $
             name=run.logger_name, /error
   endif
 
