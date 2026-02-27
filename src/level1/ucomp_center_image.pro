@@ -11,8 +11,13 @@
 ;     image to transform
 ;   geometry : in, required, type=object
 ;     geometry object for the given image
+;
+; :Keywords:
+;   bilinear : in, optional, type=boolean
+;     set to use bilinear interpolation instead of the default `cubic=-0.5`
+;     method
 ;-
-function ucomp_center_image, im, geometry
+function ucomp_center_image, im, geometry, bilinear=bilinear
   compile_opt strictarr
 
   if (total(finite(im), /integer) eq 0L) then return, im
@@ -37,5 +42,7 @@ function ucomp_center_image, im, geometry
   xpp = xp + geometry.occulter_center[0]
   ypp = yp + geometry.occulter_center[1]
 
-  return, interpolate(im, xpp, ypp, missing=!values.f_nan, cubic=-0.5, /double)
+  cubic_parameter = keyword_set(bilinear) ? !null : -0.5
+  return, interpolate(im, xpp, ypp, missing=!values.f_nan, /double, $
+                      cubic=cubic_parameter, )
 end

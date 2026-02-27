@@ -38,6 +38,8 @@ pro ucomp_l1_apply_alignment, file, $
     goto, done
   endif
 
+  use_bilinear = strlowcase(run->config('centering/interpolation_method')) eq 'bilinear'
+
   dims = size(data, /dimensions)
   n_pol_states = dims[2]
 
@@ -47,10 +49,16 @@ pro ucomp_l1_apply_alignment, file, $
   ; center images on occulter center and rotate North up
   for e = 0L, file.n_extensions - 1L do begin
     for p = 0, n_pol_states - 1L do begin
-      data[*, *, p, 0, e] = ucomp_center_image(data[*, *, p, 0, e], rcam_geometry)
-      data[*, *, p, 1, e] = ucomp_center_image(data[*, *, p, 1, e], tcam_geometry)
-      backgrounds[*, *, p, 0, e] = ucomp_center_image(backgrounds[*, *, p, 0, e], rcam_geometry)
-      backgrounds[*, *, p, 1, e] = ucomp_center_image(backgrounds[*, *, p, 1, e], tcam_geometry)
+      data[*, *, p, 0, e] = ucomp_center_image(data[*, *, p, 0, e], rcam_geometry, $
+                                               bilinear=use_bilinear)
+      data[*, *, p, 1, e] = ucomp_center_image(data[*, *, p, 1, e], tcam_geometry, $
+                                               bilinear=use_bilinear)
+      backgrounds[*, *, p, 0, e] = ucomp_center_image(backgrounds[*, *, p, 0, e], $
+                                                      rcam_geometry, $
+                                                      bilinear=use_bilinear)
+      backgrounds[*, *, p, 1, e] = ucomp_center_image(backgrounds[*, *, p, 1, e],$
+                                                      tcam_geometry, $
+                                                      bilinear=use_bilinear)
     endfor
   endfor
 
@@ -87,6 +95,11 @@ pro ucomp_l1_apply_alignment, file, $
                 comment='helioprojective north angle: solar Y', before=after
   ucomp_addpar, primary_header, 'CUNIT2', 'arcsec', $
                 comment='unit of CRVAL2', after=after
+
+  ucomp_addpar, primary_header, 'CTRINTPM', $
+                use_bilinear ? 'bilinear' : 'cubic=-0.5', $
+                comment='image centering interpolation method', $
+                after='DISTORTF'
 
   done:
 end

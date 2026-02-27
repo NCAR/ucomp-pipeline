@@ -15,12 +15,21 @@
 ;   dy_c : in, required, type="fltarr(nx, ny)"
 ;     y coefficients for subimage, already expanded to `sub_image` size
 ;
+; :Keywords:
+;   bilinear : in, optional, type=boolean
+;     set to use bilinear interpolation instead of the default cubic=-0.5
+;     method
+;
 ; :Author:
 ;   MLSO Software Team
 ;-
-function ucomp_apply_distortion, sub_image, dx_c, dy_c
+function ucomp_apply_distortion, sub_image, dx_c, dy_c, bilinear=bilinear
   compile_opt strictarr
 
-  dist_corrected = interpolate(sub_image, dx_c, dy_c, cubic=-0.5, missing=0.0)
+  cubic_parameter = keyword_set(bilinear) ? !null : -0.5
+
+  dist_corrected = interpolate(sub_image, dx_c, dy_c, missing=0.0, $
+                               cubic=cubic_parameter)
+
   return, dist_corrected
 end

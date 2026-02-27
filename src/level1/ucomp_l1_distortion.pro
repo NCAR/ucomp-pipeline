@@ -32,10 +32,7 @@ pro ucomp_l1_distortion, file, $
 
   status = 0L
 
-  apply_distortion = run->config('cameras/apply_distortion')
-  if (~apply_distortion) then begin
-    mg_log, 'skipping distortion correction', name=run.logger_name, /warn
-  endif
+  use_bilinear = strlowcase(run->config('cameras/distortion_interpolation_method')) eq 'bilinear'
 
   datetime = strmid(file_basename(file.raw_filename), 0, 15)
   run->get_distortion, datetime=datetime, file.wave_region, $
@@ -45,6 +42,12 @@ pro ucomp_l1_distortion, file, $
                        dy1_c=dy1_c, $
                        distortion_basename=distortion_basename, $
                        distortion_date=distortion_date
+
+  apply_distortion = run->config('cameras/apply_distortion')
+  if (~apply_distortion) then begin
+    mg_log, 'skipping distortion correction', name=run.logger_name, /warn
+    goto, done
+  endif
 
   for p = 0, 3 do begin
     for e = 0L, file.n_extensions - 1L do begin
@@ -65,8 +68,10 @@ pro ucomp_l1_distortion, file, $
   done:
   ucomp_addpar, primary_header, 'DISTORTC', boolean(apply_distortion), $
                 comment='whether distortion corrected', after='DEMODV'
+  ucomp_addpar, primary_header, 'DISTORTM', use_bilinear ? 'bilinear' : 'cubic=-0.5', $
+                comment='distortion interpolation method', after='DISTORTC'
   file.distortion_basename = distortion_basename
   ucomp_addpar, primary_header, 'DISTORTF', distortion_basename, $
                 comment=string(distortion_date, format='%s'), $
-                after='DISTORTC'
+                after='DISTORTM'
 end

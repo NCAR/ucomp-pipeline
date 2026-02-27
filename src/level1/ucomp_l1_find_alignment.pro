@@ -33,6 +33,8 @@ pro ucomp_l1_find_alignment, file, $
 
   status = 0L
 
+  use_bilinear = strlowcase(run->config('cameras/distortion_interpolation_method')) eq 'bilinear'
+
   ; center images on occulter center
 
   dims = size(data, /dimensions)
@@ -86,7 +88,8 @@ pro ucomp_l1_find_alignment, file, $
   if (run->config('centering/step_order') eq 'pre-gaincorrection') then begin
     rcam_background = reverse(ucomp_apply_distortion(reverse(rcam_background, $
                                                              1), $
-                                                     dx0_c, dy0_c), $
+                                                     dx0_c, dy0_c, $
+                                                     bilinear=use_bilinear), $
                               2)
   endif
   smoothed_rcam_background = smooth(rcam_background, 3, /nan)
@@ -137,7 +140,8 @@ pro ucomp_l1_find_alignment, file, $
   !null = check_math(mask=128)
   if (run->config('centering/step_order') eq 'pre-gaincorrection') then begin
     tcam_background = reverse(ucomp_apply_distortion(tcam_background, $
-                                                     dx1_c, dy1_c), $
+                                                     dx1_c, dy1_c, $
+                                                     bilinear=use_bilinear), $
                               2)
   endif
   smoothed_tcam_background = smooth(tcam_background, 3, /nan)
