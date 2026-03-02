@@ -273,7 +273,7 @@ pro ucomp_db_eng_insert, l0_files, obsday_index, sw_index, db, logger_name=logge
                  ucomp_db_float(file.flat_tcam_median_linecenter), $
                  ucomp_db_float(file.flat_tcam_median_continuum), $
 
-                 file.demodulation_coeffs_version, $
+                 strtrim(file.demodulation_coeffs_version, 2), $
                  file.distortion_basename, $
 
                  file.obsswid, $

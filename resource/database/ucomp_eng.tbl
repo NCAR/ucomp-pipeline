@@ -99,7 +99,7 @@ create table ucomp_eng (
   flat_tcam_median_continuum   float (14, 7),
 
   dmodswid                     char(24),
-  distort                      char(50),
+  distort                      varchar(70),
 
   obsswid                      varchar(30),
 
