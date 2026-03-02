@@ -96,7 +96,7 @@ pro ucomp_l1_apply_alignment, file, $
   ucomp_addpar, primary_header, 'CUNIT2', 'arcsec', $
                 comment='unit of CRVAL2', after=after
 
-  ucomp_addpar, primary_header, 'CTRINTPM', $
+  ucomp_addpar, primary_header, 'CENTERIM', $
                 use_bilinear ? 'bilinear' : 'cubic=-0.5', $
                 comment='image centering interpolation method', $
                 after='DISTORTF'
