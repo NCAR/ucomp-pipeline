@@ -37,25 +37,42 @@ pro ucomp_l1_camera_linearity, file, $
     goto, done
   endif
 
+  rcam_camera = ucomp_getpar(primary_header, 'RCAMID')
+  tcam_camera = ucomp_getpar(primary_header, 'TCAMID')
+
+  exptime = ucomp_getpar(headers[0], 'EXPTIME')
+
+  ; get linearity table for cameras present
+  rcam_table = run->get_camera_linearity(rcam_camera, exptime, found=rcam_found)
+  if (rcam_found) then begin
+    mg_log, 'found camera linearity correction for RCAM: %s', rcam_camera, $
+            name=run.logger_name, /debug
+  endif else begin
+    mg_log, 'no camera linearity correction found for RCAM: %s', rcam_camera, $
+            name=run.logger_name, /error
+  endelse
+
+  tcam_table = run->get_camera_linearity(tcam_camera, exptime, found=tcam_found)
+  if (tcam_found) then begin
+    mg_log, 'found camera linearity correction for TCAM: %s', tcam_camera, $
+            name=run.logger_name, /debug
+  endif else begin
+    mg_log, 'no camera linearity correction found for TCAM: %s', tcam_camera, $
+            name=run.logger_name, /error
+  endelse
+
+  if (~rcam_found || ~tcam_found) then goto, done
+
+  rcam = data[*, *, *, 0, *]
+  tcam = data[*, *, *, 1, *]
+
+  rcam = rcam_table[rcam]
+  tcam = tcam_table[tcam]
+
+  data[*, *, *, 0, *] = rcam
+  data[*, *, *, 1, *] = tcam
+
   file.linearity_corrected = 1B
-
-  dims = size(data, /dimensions)
-  n_polstates = dims[2]
-  n_cameras = dims[3]
-
-  ; TODO: get linearity coefficients for cameras present
-  rcam_coeffs = run->get_camera_linearity(camera, exptime)
-  tcam_coeffs = run->get_camera_linearity(camera, exptime)
-
-  for e = 0L, n_elements(headers) - 1L do begin
-    for p = 0L, n_polstates - 1L do begin
-      for c = 0L, n_cameras - 1L do begin
-        cam = reform(data[*, *, p, c, e])
-        cam = ucomp_apply_camera_linearity(cam, c eq 0 ? rcam_coeffs: tcam_coeffs)
-        data[*, *, p, c, e] = cam
-      endfor
-    endfor
-  endfor
 
   done:
   ucomp_addpar, primary_header, 'LIN_CRCT', boolean(file.linearity_corrected), $

@@ -619,6 +619,50 @@ end
 
 
 ;+
+; Load the camera linearity corrections from `cameras.cfg` in the `cameras`
+; directory of the resources.
+;-
+pro ucomp_run::load_camera_linearity
+  compile_opt strictarr
+
+  cameras_configuration_filename = filepath('cameras.cfg', $
+                                            subdir='cameras', $
+                                            root=self.resource_root)
+  cameras = ucomp_read_cameras(cameras_configuration_filename)
+  for c = 0L, n_elements(cameras) - 1L do begin
+    (self.camera_linearity)[strlowcase(cameras[c].name)] = cameras[c].table
+  endfor
+end
+
+
+;+
+; Return the camera linear lookup table for a given camera ID.
+;
+; :Returns:
+;   `fltarr(n_dns)`
+;
+; :Params:
+;   camera_id : in, required, type=string
+;     camera ID
+;   exptime : in, required, type=float
+;     exposure time [msec]
+;
+; :Keywords:
+;   found : out, optional, type=boolean
+;     set to a named variable to retrieve whether camera correction was found
+;     for a given camera
+;-
+function ucomp_run::get_camera_linearity, camera_id, exptime, found=found
+  compile_opt strictarr
+
+  found = self.camera_linearity->hasKey(strlowcase(camera_id))
+  if (found) then begin
+    return, (self.camera_linearity)[strlowcase(camera_id)]
+  endif else return, !null
+end
+
+
+;+
 ; Get hot pixel information for camera and gain.
 ;
 ; :Params:
@@ -1374,6 +1418,8 @@ pro ucomp_run::cleanup
 
   ptr_free, self.badframes, self.metadata_fixes
 
+  obj_destroy, self.camera_linearity
+
   ptr_free, self.hot_pixels[0], $
             self.hot_pixels[1], $
             self.hot_pixels[2], $
@@ -1510,6 +1556,9 @@ function ucomp_run::init, date, mode, config_filename, $
   self.metadata_fixes = ptr_new(/allocate_heap)
   self->load_metadata_fixes
 
+  self.camera_linearity = hash()
+  self->load_camera_linearity
+
   for i = 0L, 3L do begin
     self.hot_pixels[i] = ptr_new(/allocate_heap)
     self.adjacent_pixels[i] = ptr_new(/allocate_heap)
@@ -1559,6 +1608,8 @@ pro ucomp_run__define
 
            badframes               : ptr_new(), $
            metadata_fixes          : ptr_new(), $
+
+           camera_linearity        : obj_new(), $
 
            hot_pixels_basename     : strarr(2), $
            hot_pixels_date         : strarr(2), $
