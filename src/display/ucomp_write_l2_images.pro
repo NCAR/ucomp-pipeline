@@ -29,6 +29,8 @@
 ;     azimuth image
 ;   radial_azimuth : in, required, type="fltarr(nx, ny)"
 ;     radial azimuth image
+;   noise_mask : in, required, type="bytarr(nx, ny)"
+;     mask of valid points in the other images
 ;
 ; :Keywords:
 ;   write_polarization : in, optional, type=boolean
@@ -69,6 +71,8 @@ pro ucomp_write_l2_images, quicklook_filename, $
                            summed_linpol_i, $
                            azimuth, $
                            radial_azimuth, $
+
+                           noise_mask, $
 
                            write_polarization=write_polarization, $
                            reduce_factor=reduce_factor, $
@@ -121,6 +125,21 @@ pro ucomp_write_l2_images, quicklook_filename, $
       radial_azimuth[outside_mask_indices]            = !values.f_nan
     endif
   endif
+
+  noisy_indices = where(noise_mask eq 0L, /null)
+
+  intensity_center[noisy_indices]          = !values.f_nan
+  enhanced_intensity_center[noisy_indices] = !values.f_nan
+  peak_intensity[noisy_indices]            = !values.f_nan
+  line_width[noisy_indices]                = !values.f_nan
+  doppler_shift[noisy_indices]             = !values.f_nan
+
+  summed_intensity[noisy_indices]          = !values.f_nan
+  summed_q_i[noisy_indices]                = !values.f_nan
+  summed_u_i[noisy_indices]                = !values.f_nan
+  summed_linpol_i[noisy_indices]           = !values.f_nan
+  azimuth[noisy_indices]                   = !values.f_nan
+  radial_azimuth[noisy_indices]            = !values.f_nan
 
   if (n_elements(reduce_factor) gt 0L) then dims /= reduce_factor
   nx = dims[0]

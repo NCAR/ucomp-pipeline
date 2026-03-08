@@ -259,8 +259,8 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
       and line_width_fwhm gt run->line(wave_region, 'noise_line_width_min'), $
     complement=noisy_indices, /null)
 
-  noise_mask = intensity_center * 0.0 + 1.0
-  noise_mask[noisy_indices] = 0.0
+  noise_mask = byte(intensity_center) * 0B + 1B
+  noise_mask[noisy_indices] = 0
 
   ; mask data on various thresholds
   if (run->config('level2/mask_noise')) then begin
@@ -554,7 +554,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
 
   if (~run->config('level2/mask_noise')) then begin
     ucomp_fits_write, fcb, $
-                      float(noise_mask), $
+                      noise_mask, $
                       header, $
                       extname='Noise mask', $
                       ext_comment='mask low signal data', $
@@ -689,6 +689,8 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                          azimuth, $
                          radial_azimuth, $
 
+                         noise_mask, $
+
                          write_polarization=write_polarization, $
                          reduce_factor=4L, $
                          wave_region=wave_region, $
@@ -716,6 +718,8 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                            summed_linpol / summed_intensity, $
                            azimuth, $
                            radial_azimuth, $
+
+                           noise_mask, $
 
                            write_polarization=write_polarization, $
                            reduce_factor=4L, $
