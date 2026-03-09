@@ -643,21 +643,33 @@ end
 ;
 ; :Params:
 ;   camera_id : in, required, type=string
-;     camera ID
+;     camera identifier corresponding to `RCAMID` or `TCAMID` FITS keywords
+;   nuc : in, required, type=string
+;     NUC value, e.g., "normal", "Offset + gain corrected"
 ;   exptime : in, required, type=float
-;     exposure time [msec]
+;     exposure time corresponding to `EXPTIME` FITS keyword [msec]
+;   gain_mode : in, reqruied, type=string
+;     gain mode corresponding to `GAIN` FITS keyword, i.e., either "high" or
+;     "low"
 ;
 ; :Keywords:
+;   camera_name : out, optional, type=string
+;     set to a named variable to retrieve the camera name (combining ID, NUC,
+;     exposure time, and gain mode) used to lookup camera linearity
 ;   found : out, optional, type=boolean
 ;     set to a named variable to retrieve whether camera correction was found
 ;     for a given camera
 ;-
-function ucomp_run::get_camera_linearity, camera_id, exptime, found=found
+function ucomp_run::get_camera_linearity, camera_id, nuc, exptime, gain_mode, $
+                                          camera_name=camera_name, found=found
   compile_opt strictarr
 
-  found = self.camera_linearity->hasKey(strlowcase(camera_id))
+  fmt = '%s - %s - %0.1f - %s'
+  camera_name = string(camera_id, nuc, exptime, gain_mode, format=fmt)
+
+  found = self.camera_linearity->hasKey(strlowcase(camera_name))
   if (found) then begin
-    return, (self.camera_linearity)[strlowcase(camera_id)]
+    return, (self.camera_linearity)[strlowcase(camera_name)]
   endif else return, !null
 end
 

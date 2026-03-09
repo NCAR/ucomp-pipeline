@@ -37,27 +37,38 @@ pro ucomp_l1_camera_linearity, file, $
     goto, done
   endif
 
-  rcam_camera = ucomp_getpar(primary_header, 'RCAMID')
-  tcam_camera = ucomp_getpar(primary_header, 'TCAMID')
+  rcam_camera_id = ucomp_getpar(primary_header, 'RCAMID')
+  tcam_camera_id = ucomp_getpar(primary_header, 'TCAMID')
+
+  rcam_nuc = ucomp_getpar(primary_header, 'RCAMNUC')
+  tcam_nuc = ucomp_getpar(primary_header, 'TCAMNUC')
 
   exptime = ucomp_getpar(headers[0], 'EXPTIME')
 
+  gain_mode = ucomp_getpar(primary_header, 'GAIN')
+
   ; get linearity table for cameras present
-  rcam_table = run->get_camera_linearity(rcam_camera, exptime, found=rcam_found)
+  rcam_table = run->get_camera_linearity(rcam_camera_id, rcam_nuc, $
+                                         exptime, gain_mode, $
+                                         camera_name=rcam_camera_name, $
+                                         found=rcam_found)
   if (rcam_found) then begin
-    mg_log, 'found camera linearity correction for RCAM: %s', rcam_camera, $
+    mg_log, 'found camera linearity correction for RCAM: %s', rcam_camera_name, $
             name=run.logger_name, /debug
   endif else begin
-    mg_log, 'no camera linearity correction found for RCAM: %s', rcam_camera, $
+    mg_log, 'no camera linearity correction found for RCAM: %s', rcam_camera_name, $
             name=run.logger_name, /error
   endelse
 
-  tcam_table = run->get_camera_linearity(tcam_camera, exptime, found=tcam_found)
+  tcam_table = run->get_camera_linearity(tcam_camera_id, tcam_nuc, $
+                                         exptime, gain_mode, $
+                                         camera_name=tcam_camera_name, $
+                                         found=tcam_found)
   if (tcam_found) then begin
-    mg_log, 'found camera linearity correction for TCAM: %s', tcam_camera, $
+    mg_log, 'found camera linearity correction for TCAM: %s', tcam_camera_name, $
             name=run.logger_name, /debug
   endif else begin
-    mg_log, 'no camera linearity correction found for TCAM: %s', tcam_camera, $
+    mg_log, 'no camera linearity correction found for TCAM: %s', tcam_camera_name, $
             name=run.logger_name, /error
   endelse
 
