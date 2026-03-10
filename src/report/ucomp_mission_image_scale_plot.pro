@@ -19,6 +19,7 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
   query = 'select distinct occltrid from ucomp_eng where ucomp_eng.wave_region = ''%s'';'
   unique_occulter_ids = db->query(query, wave_region, error=error)
   unique_occulter_ids = unique_occulter_ids.occltrid
+  unique_occulter_ids = unique_occulter_ids[sort(unique_occulter_ids)]
   unique_occulter_ids = unique_occulter_ids[where(unique_occulter_ids ne '', n_occulters, /null)]
 
   query = 'select ucomp_eng.date_obs, ucomp_eng.occltrid, ucomp_eng.image_scale, ucomp_eng.rcam_radius, ucomp_eng.tcam_radius from ucomp_eng inner join ucomp_file on ucomp_eng.file_name=ucomp_file.l0_file_name where ucomp_eng.wave_region = ''%s'' and ucomp_file.quality = 0 and ucomp_file.gbu = 0 order by ucomp_eng.date_obs'
@@ -93,7 +94,7 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
 
   !null = label_date(date_format='%Y-%N-%D')
 
-  image_scale_range = [2.7, 3.2]
+  image_scale_range = [2.7, 3.1]
 
   ; save original graphics settings
   original_device = !d.name
@@ -115,9 +116,13 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
   tvlct, 240, 240, 240, 4
 
   ; need at least n_occulters different colors
-  loadct, 48, bottom=5, ncolors=12   ; color table 48 is CB-Set3
+  ; loadct, 48, bottom=5, ncolors=12   ; color table 48 is CB-Set3
+  loadct, 46, bottom=5;, ncolors=10   ; color table 48 is CB-Set3
   ; starting at 7 instead of 5 to skip a difficult-to-see yellow at index 6
-  occulter_color_offset = 7
+  ; occulter_color_offset = 7
+  ; color_indices = [0, 5, 6, 7, 10, 13, 14]
+  color_indices = [0, 5, 32, 62, 128, 151, 224, 255]
+  ; occulter_color_offset = 5
 
   tvlct, r, g, b, /get
 
@@ -157,6 +162,7 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
                  xticklen=0.01 * (float(width) / float(height)), $
                  ytitle='Image scale [arcsec/pixel]', $
                  ystyle=1, yrange=image_scale_range, $
+                 yticks=4, yminor=10, $
                  yticklen=0.01
 
   if (n_files gt 1L) then begin
@@ -181,15 +187,19 @@ pro ucomp_mission_image_scale_plot, wave_region, db, run=run
   endelse
 
   ygap = 15.0
+  usersym, [-1.0, -1.0, 1.0, 1.0, -1.0], [-1.0, 1.0, 1.0, -1.0, -1.0], /fill
   for o = 0L, n_occulters - 1L do begin
     occulter_indices = where(data.occltrid eq unique_occulter_ids[o], n_occulter_datapts)
     if (n_occulter_datapts gt 0L) then begin
       mg_range_oplot, jds[occulter_indices], image_scale[occulter_indices], $
-                      color=occulter_color_offset + o, $
+                      color=color_indices[o], $
                       psym=psym, symsize=symsize, $
                       clip_color=2, clip_psym=7, clip_symsize=1.0
-      xyouts, width - 150.0, height - 50.0 - o * ygap, string(unique_occulter_ids[o], format='Occulter %s'), $
-              /device, charsize=1.0, color=occulter_color_offset + o
+      plots, [width - 160.0], [height - 50.0 - o * ygap + 0.35 * ygap], /device, $
+             psym=8, symsize=1.25, color=color_indices[o]
+      xyouts, width - 150.0, height - 50.0 - o * ygap, $
+              string(unique_occulter_ids[o], format='Occulter %s'), $
+              /device, charsize=1.0, color=0
     endif
   endfor
 
