@@ -22,15 +22,19 @@
 pro ucomp_data_zr_comment, primary_header, ext_data, ext_headers
   compile_opt strictarr
 
-  n_exts = n_elements(ext_headers)
-  for e = 0L, n_ext - 1L do begin
+  n_extensions = n_elements(ext_headers)
+  for e = 0L, n_extensions - 1L do begin
     h = ext_headers[e]
 
-    sgsrazr = ucomp_getpar(h 'SGSRAZR')
-    sgsrdeczr = ucomp_getpar(h 'SGSDECZR')
+    sgsrazr = ucomp_getpar(h, 'SGSRAZR', /float, found=razr_found)
+    sgsdeczr = ucomp_getpar(h, 'SGSDECZR', /float, found=deczr_found)
 
-    ucomp_addpar, h, sgsrazr, comment='[arcsec] SGS RA zero point'
-    ucomp_addpar, h, sgsdeczr, comment='[arcsec] SGS DEC zero point'
+    if (razr_found) then begin
+      ucomp_addpar, h, 'SGSRAZR', sgsrazr, comment='[arcsec] SGS RA zero point'
+    endif
+    if (deczr_found) then begin
+      ucomp_addpar, h, 'SGSDECZR', sgsdeczr, comment='[arcsec] SGS DEC zero point'
+    endif
 
     ext_headers[e] = h
   endfor
