@@ -56,8 +56,8 @@ pro ucomp_l1_distortion, file, $
       cam1 = data[*, *, p, 1, e]
 
       if (apply_distortion) then begin
-        cam0 = ucomp_apply_distortion(cam0, dx0_c, dy0_c)
-        cam1 = ucomp_apply_distortion(cam1, dx1_c, dy1_c)
+        cam0 = ucomp_apply_distortion(cam0, dx0_c, dy0_c, bilinear=use_bilinear)
+        cam1 = ucomp_apply_distortion(cam1, dx1_c, dy1_c, bilinear=use_bilinear)
       endif
 
       data[*, *, p, 0, e] = reverse(cam0, 2)
