@@ -448,7 +448,7 @@ def ls(args):
 
         list_files(sorted(dirs))
         list_files(sorted(files), columns=columns)
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, BrokenPipeError):
         pass
 
 
@@ -545,7 +545,7 @@ def cat_keywords(args):
                         print(line)
             except FileNotFoundError:
                 print(f"{f} not found")
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, BrokenPipeError):
         pass
 
 
@@ -1670,7 +1670,8 @@ if __name__ == "__main__":
     if parser.get_default("func"):
         try:
             args.func(args)
-        except KeyboardInterrupt:
+        except (KeyboardInterrupt, BrokenPipeError):
             print()
     else:
         parser.print_help()
+    sys.stderr.close()
