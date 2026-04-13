@@ -15,7 +15,7 @@ pro ucomp_waves_timedifference, l0_dir
 
   waves_indices = where(waves, n_waves)
 
-  jds = ucomp_dateobs2julday(dateobs[waves_indices])
+  jds = ucomp_dateobs2julday(dateobs[waves_indices], /milliseconds)
   differences = (jds[1:*] - jds[0:-1]) * 24.0D * 60.0D * 60.0D
   print, differences, format='(F0.2)'
 
@@ -29,7 +29,8 @@ end
 
 ; main-level example program
 
-l0_dir = '/path/to/Data/UCoMP/incoming/20240409'
+; l0_dir = '/path/to/Data/UCoMP/incoming/20240409'
+l0_dir = '/hao/dawn/Data/UCoMP/incoming/20240409'
 ucomp_waves_timedifference, l0_dir
 
 end
