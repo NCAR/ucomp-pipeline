@@ -1,5 +1,12 @@
 ; docformat = 'rst'
 
+;+
+; Print and plot the time difference between waves files for a given day.
+;
+; :Params:
+;   l0_dir : in, required, type=str
+;     path to a directory of level 0 files
+;-
 pro ucomp_waves_timedifference, l0_dir
   compile_opt strictarr
 
@@ -29,8 +36,7 @@ end
 
 ; main-level example program
 
-; l0_dir = '/path/to/Data/UCoMP/incoming/20240409'
-l0_dir = '/hao/dawn/Data/UCoMP/incoming/20240409'
+l0_dir = '/path/to/Data/UCoMP/incoming/20240409'
 ucomp_waves_timedifference, l0_dir
 
 end
