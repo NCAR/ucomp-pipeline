@@ -19,7 +19,7 @@ function ucomp_dateobs2julday, dateobs
 
   ut_hour   = float(strmid(dateobs, 11, 2))
   ut_minute = float(strmid(dateobs, 14, 2))
-  ut_second = float(strmid(dateobs, 17, 2))
+  ut_second = float(strmid(dateobs, 17))
 
   jd = julday(ut_month, ut_day, ut_year, ut_hour, ut_minute, ut_second)
 
