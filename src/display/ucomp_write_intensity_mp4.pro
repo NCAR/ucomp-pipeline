@@ -69,7 +69,9 @@ pro ucomp_write_intensity_mp4, wave_region, run=run, enhanced=enhanced
   mp4_filename = filepath(mp4_basename, root=l1_dirname)
 
   ucomp_create_mp4, image_filenames, mp4_filename, run=run, status=status
-  mg_log, 'wrote %s', mp4_basename, name=run.logger_name, /info
+  if (status eq 0L) then begin
+    mg_log, 'wrote %s', mp4_basename, name=run.logger_name, /info
+  endif
 
   done:
   mg_log, 'done', name=run.logger_name, /info
