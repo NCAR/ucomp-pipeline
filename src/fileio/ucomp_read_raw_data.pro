@@ -81,7 +81,18 @@ pro ucomp_read_raw_data, filename, $
     if (arg_present(ext_headers)) then ext_headers = list()
     for e = 1L, n_extensions do begin
       fits_read, fcb, data, header, exten_no=e, /no_abort, message=msg
-      if (msg ne '') then message, msg
+
+      bad_extension = msg ne ''
+
+      ; truncate file if bad extension (if the first extension is bad just fail)
+      if (bad_extension && e eq 1L) then message, msg
+      if (bad_extension) then begin
+        ; truncate: don't read any more extensions
+        mg_log, msg, name=logger, /warn
+        n_extensions = e - 1L
+        ext_data = ext_data[*, *, *, *, 0:n_extensions - 1L]
+        break
+      endif
 
       if (arg_present(all_zero)) then begin
         ext_all_zero = array_equal(data, 0US)
@@ -104,7 +115,6 @@ pro ucomp_read_raw_data, filename, $
         ext_data = make_array(dimension=[dims, n_extensions], type=type)
         is_science = make_array(n_extensions, type=1)
       endif
-
 
       if (arg_present(ext_data)) then begin
         ext_data[0, 0, 0, 0, e - 1] = data
@@ -221,8 +231,9 @@ end
 
 ; date = '20240409'
 ; date = '20220221'
-date = '20210715'
-config_basename = 'ucomp.latest.cfg'
+; date = '20210715'
+date = '20240330'
+config_basename = 'ucomp.dawn.cfg'
 config_filename = filepath(config_basename, $
                            subdir=['..', '..', '..', 'ucomp-config'], $
                            root=mg_src_root())
@@ -231,7 +242,8 @@ run = ucomp_run(date, 'test', config_filename)
 l0_basedir = run->config('raw/basedir')
 ; l0_basename = '20240409.180009.92.ucomp.1079.l0.fts'
 ; l0_basename = '20220221.180817.95.ucomp.637.l0.fts'
-l0_basename = '20210715.174001.86.ucomp.530.l0.fts'
+l0_basename = '20240330.202229.24.ucomp.1074.l0.fts'
+; l0_basename = '20210715.174001.86.ucomp.530.l0.fts'
 l0_filename = filepath(l0_basename, subdir=date, root=l0_basedir)
 
 run.datetime = strmid(l0_basename, 0, 15)
@@ -242,6 +254,7 @@ ucomp_read_raw_data, l0_filename, $
                      primary_header=primary_header, $
                      ext_data=data, $
                      ext_headers=headers, $
+                     n_extensions=n_extensions, $
                      repair_routine=run->epoch('raw_data_repair_routine'), $
                      badframes=run.badframes, $
                      metadata_fixes=run.metadata_fixes, $
@@ -266,9 +279,13 @@ ucomp_read_raw_data, l0_filename, $
 ; computed_average = mean(data[*, *, *, *, [0, 10, 20, 30]], dimension=5, /nan)
 ; print, array_equal(averaged_im, computed_average) ? 'average equal' : 'average different'
 
-print, primary_header
-print, headers[0]
+print, n_extensions, format='n_extensions: %d'
+print, n_elements(headers), format='no. ext headers: %d'
+print, strjoin(strtrim(size(data, /dimensions), 2), ', '), format='data dims: %s'
 
-obj_destroy, run
+obj_destroy, [headers, run]
+mg_log, /quit
+
+mg_image, bytscl(data[*, *, 0, 0, 37]), /new
 
 end
