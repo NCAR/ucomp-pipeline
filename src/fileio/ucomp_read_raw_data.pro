@@ -87,10 +87,14 @@ pro ucomp_read_raw_data, filename, $
       ; truncate file if bad extension (if the first extension is bad just fail)
       if (bad_extension && e eq 1L) then message, msg
       if (bad_extension) then begin
-        ; truncate: don't read any more extensions
-        mg_log, msg, name=logger, /warn
+        mg_log, '%s bad ext: %d', file_basename(filename), e, $
+                name=logger, /warn
         n_extensions = e - 1L
-        ext_data = ext_data[*, *, *, *, 0:n_extensions - 1L]
+        if (arg_present(ext_data)) then begin
+          ext_data = ext_data[*, *, *, *, 0:n_extensions - 1L]
+        endif
+
+        ; truncate: don't read any more extensions
         break
       endif
 
