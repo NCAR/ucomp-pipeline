@@ -92,3 +92,30 @@ pro ucomp_read_l1_data, filename, $
 
   fits_close, fcb
 end
+
+
+; main-level example program
+
+date = '20221123'
+config_basename = 'ucomp.991.cfg'
+config_filename = filepath(config_basename, $
+                           subdir=['..', '..', '..', 'ucomp-config'], $
+                           root=mg_src_root())
+run = ucomp_run(date, 'test', config_filename)
+
+l1_basename = '20221123.193016.ucomp.991.l1.p3.fts'
+l1_filename = filepath(l1_basename, $
+                       subdir=[date, 'level1'], $
+                       root=run->config('processing/basedir'))
+obj_destroy, run
+print, l1_filename
+ucomp_read_l1_data, l1_filename, $
+                    primary_data=primary_data, $
+                    primary_header=primary_header, $
+                    ext_data=ext_data, $
+                    ext_headers=ext_headers, $
+                    background_data=background_data, $
+                    background_headers=background_headers, $
+                    n_wavelengths=n_wavelengths
+
+end
