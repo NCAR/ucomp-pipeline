@@ -33,6 +33,12 @@ try:
         ps_requirements = False
 
     try:
+        import rich
+        rich_requirements = True
+    except ModuleNotFoundError as e:
+        rich_requirements = False
+
+    try:
         from astropy.io import fits
         from astropy.utils.exceptions import AstropyUserWarning
         ls_requirements = True
@@ -645,8 +651,10 @@ def filter_file(logfile, level_index, follow, tail=None):
     loglevel_filter = "|".join(LEVELS[level_index:])
     loglevel_prog = re.compile(".*(%s):.*" % loglevel_filter)
     logstart_prog = re.compile(r"(\[\d+\] )?\d{8}.\d{6}")
+    exact_loglevel_prog = re.compile(f".*{LEVELS[level_index]}:.*")
 
     matched_last_line = False
+    exact_matched_last_line = False
 
     line = "not empty"
 
@@ -667,9 +675,15 @@ def filter_file(logfile, level_index, follow, tail=None):
 
                     if loglevel_prog.match(line):
                         matched_last_line = True
+                        exact_matched_last_line = (
+                            True if exact_loglevel_prog.match(line) else False
+                        )
                         try:
                             if tail is None:
-                                print(line.rstrip())
+                                if exact_matched_last_line:
+                                    print(line.rstrip())
+                                else:
+                                    print_bold(line.rstrip())
                             else:
                                 queue.append(line.rstrip())
                         except IOError:
@@ -695,6 +709,13 @@ def filter_file(logfile, level_index, follow, tail=None):
     if tail is not None:
         for line in queue:
             print(line)
+
+
+def print_bold(text):
+    if rich_requirements:
+        rich.print("[bold magenta]" + text + "[/]")
+    else:
+        print(text)
 
 
 def filter_log(args):
