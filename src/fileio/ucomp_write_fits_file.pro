@@ -36,7 +36,7 @@ pro ucomp_write_fits_file, filename, $
   n_extensions = n_elements(ext_headers)
   n_background_extensions = n_elements(background_headers)
 
-  mg_log, 'writing %s FITS file with %d dims, %d bkg dims, %d exts, %d bkg exts', $
+  mg_log, 'writing %s FITS file with n_dims: %d/%d, n_exts: %d/%d', $
           keyword_set(intensity) ? 'intensity' : 'full', $
           n_dims, n_background_dims, n_extensions, n_background_extensions, $
           name=logger_name, /debug
