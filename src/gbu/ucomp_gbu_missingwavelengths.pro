@@ -65,24 +65,34 @@ function ucomp_gbu_missingwavelengths, file, $
   endfor
 
   blue_missing = 0B
-  for w = 0L, n_blue - 1L do begin
-    n_good_pixels = total(finite(ext_data[*, *, *, blue_indices[w]]) gt 0L, /integer)
-    if (n_good_pixels lt n_pixels_threshold) then begin
-      blue_missing = 1B
-    endif
-    mg_log, '%d good pixels for %0.2f nm', n_good_pixels, blue_reference_wavelength, $
-            name=run.logger_name, /debug
-  endfor
+  if (blue_reference_wavelength lt 0.0) then begin
+    mg_log, 'no blue reference wavelength', name=run.logger_name, /warn
+    blue_missing = 1B
+  endif else begin
+    for w = 0L, n_blue - 1L do begin
+      n_good_pixels = total(finite(ext_data[*, *, *, blue_indices[w]]) gt 0L, /integer)
+      if (n_good_pixels lt n_pixels_threshold) then begin
+        blue_missing = 1B
+      endif
+      mg_log, '%d good pixels for %0.2f nm', n_good_pixels, blue_reference_wavelength, $
+              name=run.logger_name, /debug
+    endfor
+  endelse
 
   red_missing = 0B
-  for w = 0L, n_blue - 1L do begin
-    n_good_pixels = total(finite(ext_data[*, *, *, red_indices[w]]) gt 0L, /integer)
-    if (n_good_pixels lt n_pixels_threshold) then begin
-      red_missing = 1B
-    endif
-    mg_log, '%d good pixels for %0.2f nm', n_good_pixels, red_reference_wavelength, $
-            name=run.logger_name, /debug
-  endfor
+  if (red_reference_wavelength lt 0.0) then begin
+    mg_log, 'no red reference wavelength', name=run.logger_name, /warn
+    bluered_missing_missing = 1B
+  endif else begin
+    for w = 0L, n_blue - 1L do begin
+      n_good_pixels = total(finite(ext_data[*, *, *, red_indices[w]]) gt 0L, /integer)
+      if (n_good_pixels lt n_pixels_threshold) then begin
+        red_missing = 1B
+      endif
+      mg_log, '%d good pixels for %0.2f nm', n_good_pixels, red_reference_wavelength, $
+              name=run.logger_name, /debug
+    endfor
+  endelse
 
   return, center_missing || blue_missing || red_missing
  end
