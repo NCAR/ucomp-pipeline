@@ -170,12 +170,12 @@ pro ucomp_l1_find_alignment, file, $
 
   radius_tolerance = 5.0   ; pixels
   if (abs(radius_guess - rcam.occulter_radius) gt radius_tolerance) then begin
-    mg_log, 'radius %0.1f differs from guess %0.1f by more than %0.1f pixels', $
+    mg_log, 'RCAM |radius %0.1f - guess %0.1f| > %0.1f pixels', $
             rcam.occulter_radius, radius_guess, radius_tolerance, $
             name=run.logger_name, /warn
   endif
   if (abs(radius_guess - tcam.occulter_radius) gt radius_tolerance) then begin
-    mg_log, 'radius %0.1f differs from guess %0.1f by more than %0.1f pixels', $
+    mg_log, 'TCAM |radius %0.1f - guess %0.1f| > %0.1f pixels', $
             tcam.occulter_radius, radius_guess, radius_tolerance, $
             name=run.logger_name, /warn
   endif
