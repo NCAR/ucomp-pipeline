@@ -50,9 +50,11 @@ function ucomp_gbu_missingwavelengths, file, $
 
   ; see if the file has those wavelengths
   wavelengths = file.wavelengths
-  center_indices = where(abs(wavelengths eq center_wavelength) lt threshold, n_center)
-  blue_indices = where(abs(wavelengths eq blue_reference_wavelength) lt threshold, n_blue)
-  red_indices = where(abs(wavelengths eq red_reference_wavelength) lt threshold, n_red)
+  mg_log, 'wavelengths: %s', strjoin(strtrim(wavelengths, 2), ', '), $
+          name=run.logger_name, /debug
+  center_indices = where(abs(wavelengths - center_wavelength) lt threshold, n_center)
+  blue_indices = where(abs(wavelengths - blue_reference_wavelength) lt threshold, n_blue)
+  red_indices = where(abs(wavelengths - red_reference_wavelength) lt threshold, n_red)
 
   center_missing = 0B
   for w = 0L, n_center - 1L do begin
@@ -60,7 +62,8 @@ function ucomp_gbu_missingwavelengths, file, $
     if (n_good_pixels lt n_pixels_threshold) then begin
       center_missing = 1B
     endif
-    mg_log, '%d good pixels for %0.2f nm', n_good_pixels, center_wavelength, $
+    mg_log, '%d good pixels for %0.2f nm [%d]', $
+            n_good_pixels, center_wavelength, center_indices[w], $
             name=run.logger_name, /debug
   endfor
 
@@ -95,4 +98,4 @@ function ucomp_gbu_missingwavelengths, file, $
   endelse
 
   return, center_missing || blue_missing || red_missing
- end
+end
