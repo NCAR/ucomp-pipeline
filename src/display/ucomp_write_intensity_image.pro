@@ -95,6 +95,10 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
   for e = 1L, file.n_extensions do begin
     if (center_wavelength_only) then begin
       diff = wavelengths[e - 1L] - run->line(file.wave_region, 'center_wavelength')
+      mg_log, '%0.2f nm: %s', $
+              wavelengths[e - 1L], $
+              abs(diff) gt 0.01 ? 'skipping' : 'displaying', $
+              name=run.logger_name, /debug
       if (abs(diff) gt 0.01) then continue
     endif
 

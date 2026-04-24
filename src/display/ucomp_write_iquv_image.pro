@@ -110,11 +110,14 @@ pro ucomp_write_iquv_image, data, $
   detail_charsize = 0.9
 
   n_divisions = 4L
-
   pol_states = ['I', 'Q', 'U', 'V']
   for e = 1L, n_extensions do begin
     if (center_wavelength_only) then begin
       diff = wavelengths[e - 1L] - run->line(wave_region, 'center_wavelength')
+      mg_log, '%0.2f nm: %s', $
+              wavelengths[e - 1L], $
+              abs(diff) gt 0.01 ? 'skipping' : 'displaying', $
+              name=run.logger_name, /debug
       if (abs(diff) gt 0.01) then continue
     endif
 
