@@ -36,10 +36,17 @@ pro ucomp_create_mp4, image_filenames, mp4_filename, run=run, status=status
   ext = strmid(basename, strpos(basename, '.', /reverse_search) + 1L)
 
   ; create links so filenames are in correct order and filename format
+  link_index = 0L
   for f = 0L, n_image_files - 1L do begin
-    file_link, image_filenames[f], $
-               filepath(string(f, ext, format=tmp_image_fmt), $
-                        root=tmp_dir)
+    if (file_test(image_filenames[f], /regular)) then begin
+      link_location = filepath(string(link_index, ext, format=tmp_image_fmt), $
+                              root=tmp_dir)
+      file_link, image_filenames[f], link_location
+      link_index += 1
+    endif else begin
+      mg_log, '%s missing', file_basename(image_filenames[f]), $
+              name=run.logger_name, /error
+    endelse
   endfor
 
   ; use ffmpeg to create mp4 from image files
