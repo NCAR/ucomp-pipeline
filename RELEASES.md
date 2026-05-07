@@ -769,7 +769,7 @@
 - create background images with centering annotations
 - epoch updates
 
-#### 1.0.22
+#### 1.0.22 [May 5, 2026]
 
 - update algorithm for finding 1074/1079 pairs to use to compute density
 - create density thumbnails
@@ -790,3 +790,6 @@
 - update some engineering plot ranges
 - fix bad hardware position header data
 - epoch updates including OCCLTRID for early mission data
+
+#### 1.0.23
+
