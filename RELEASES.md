@@ -794,3 +794,7 @@
 #### 1.0.23 [June 10, 2026]
 
 - commented out focal length change until it happens
+
+#### 1.0.24 [June 10, 2026]
+
+- fixed version
