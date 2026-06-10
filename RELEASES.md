@@ -790,3 +790,7 @@
 - update some engineering plot ranges
 - fix bad hardware position header data
 - epoch updates including OCCLTRID for early mission data
+
+#### 1.0.23 [June 10, 2026]
+
+- commented out focal length change until it happens
