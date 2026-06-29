@@ -736,6 +736,8 @@ pro ucomp_file::_inventory
     self.publish = 0B
     self.max_process_level = 0L
   endif
+  (self.run)->set_publish, string(self.ut_date, self.ut_time, format='%s.%s'), $
+                           self.publish
 
   ; check observation plan for special data
   case 1 of
