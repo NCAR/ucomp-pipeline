@@ -742,7 +742,7 @@ pro ucomp_file::_inventory
   ; check observation plan for special data
   case 1 of
     self.obs_plan eq 'eng_distortion_calibration': self.max_process_level = 0L
-    self.obs_plan eq 'eng_diffuer_calibration': self.max_process_level = 0L
+    self.obs_plan eq 'eng_diffuser_calibration': self.max_process_level = 0L
     self.obs_plan eq 'eng_o1_focus': self.max_process_level = 0L
     strmid(self.obs_plan, 0, 5) eq 'scan_': self.publish = 0B
     strmid(self.obs_plan, 0, 5) eq 'eng_': self.publish = 0B
