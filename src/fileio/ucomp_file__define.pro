@@ -73,6 +73,8 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
                              linearity_corrected=linearity_corrected, $
                              wrote_l1=wrote_l1, $
                              wrote_l2=wrote_l2, $
+                             publish=publish, $
+                             max_process_level=max_process_level, $
                              distortion_basename=distortion_basename, $
                              demodulation_coeffs_version=demodulation_coeffs_version, $
                              rcam_geometry=rcam_geometry, $
@@ -110,6 +112,9 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
                              onband_indices=onband_indices, $
                              all_zero=all_zero
   compile_opt strictarr
+
+  if (n_elements(publish)) then self.publish = publish
+  if (n_elements(max_process_level)) then self.max_process_level = max_process_level
 
   if (n_elements(demodulated)) then self.demodulated = demodulated
   if (n_elements(rotated)) then self.rotated = rotated
@@ -196,6 +201,8 @@ pro ucomp_file::getProperty, run=run, $
                              l1_intensity_basename=l1_intensity_basename, $
                              intermediate_name=intermediate_name, $
                              l2_basename=l2_basename, $
+                             publish=publish, $
+                             max_process_level=max_process_level, $
                              demodulated=demodulated, $
                              rotated=rotated, $
                              linearity_corrected=linearity_corrected, $
@@ -366,6 +373,9 @@ pro ucomp_file::getProperty, run=run, $
                          self.wave_region, $
                          format='(%"%s.%s.ucomp.%s.l2.fts")')
   endif
+
+  if (arg_present(publish)) then publish = self.publish
+  if (arg_present(max_process_level)) then max_process_level = self.max_process_level
 
   if (arg_present(demodulated)) then demodulated = self.demodulated
   if (arg_present(rotated)) then rotated = self.rotated
@@ -719,6 +729,24 @@ pro ucomp_file::_inventory
   self.obs_plan = ucomp_getpar(primary_header, 'OBS_PLAN', found=found)
   self.obs_plan_version = ucomp_getpar(primary_header, 'OBS_PLVE', found=found)
 
+  ; check TESTING keyword
+  is_testing = ucomp_getpar(primary_header, 'TESTING', found=testing_found)
+  is_testing = testing_found ? byte(is_testing) : 0B
+  if (is_testing) then begin
+    self.publish = 0B
+    self.max_process_level = 0L
+  endif
+
+  ; check observation plan for special data
+  case 1 of
+    self.obs_plan eq 'eng_distortion_calibration': self.max_process_level = 0L
+    self.obs_plan eq 'eng_diffuer_calibration': self.max_process_level = 0L
+    self.obs_plan eq 'eng_o1_focus': self.max_process_level = 0L
+    strmid(self.obs_plan, 0, 5) eq 'scan_': self.publish = 0B
+    strmid(self.obs_plan, 0, 5) eq 'eng_': self.publish = 0B
+    else:   ; nothing special to be done
+  endcase
+
   if (n_elements(extension_header) gt 0L) then begin
     self.cover_in = ucomp_getpar(extension_header, 'COVER', found=found) eq 'in'
     self.darkshutter_in = ucomp_getpar(extension_header, 'DARKSHUT', found=found) eq 'in'
@@ -904,6 +932,9 @@ function ucomp_file::init, raw_filename, run=run
 
   self.data_type = 'unk'
 
+  self.publish = 1B
+  self.max_process_level = 3L
+
   self.median_intensity  = !values.f_nan
   self.median_background = !values.f_nan
   self.vcrosstalk_metric = !values.f_nan
@@ -955,6 +986,9 @@ pro ucomp_file__define
            raw_filename                         : '', $
 
            run                                  : obj_new(), $
+
+           publish                              : 0B, $
+           max_process_level                    : 0L, $
 
            demodulated                          : 0B, $
            rotated                              : 0B, $
