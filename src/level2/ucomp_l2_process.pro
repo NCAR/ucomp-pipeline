@@ -44,8 +44,13 @@ pro ucomp_l2_process, wave_region, run=run
       endif
     endif
 
-    ucomp_l2_file_step, 'ucomp_l2_file', file.l1_filename, run=run
-    file.wrote_l2 = 1B
+    if (file.max_process_level gt 1L) then begin
+      ucomp_l2_file_step, 'ucomp_l2_file', file.l1_filename, run=run
+      file.wrote_l2 = 1B
+    endif else begin
+      mg_log, 'skipping: max_process_level (%d) < 2', file.max_process_level, $
+              name=run.logger_name, /warn
+    endelse
   endfor
 
   ; TODO: make this a pipeline step

@@ -29,7 +29,7 @@ pro ucomp_l3_density, run=run
   for f = 0L, n_1074_files - 1L do begin
     if ((all_1074_files[f]).wrote_l2) then begin
       times_1074[f] = (all_1074_files[f]).obsday_hours
-      good_1074[f] = (all_1074_files[f]).ok
+      good_1074[f] = (all_1074_files[f]).ok && ((all_1074_files[f]).max_process_level gt 2L)
     endif else good_1074[f] = 0B
   endfor
 
@@ -46,7 +46,7 @@ pro ucomp_l3_density, run=run
   for f = 0L, n_1079_files - 1L do begin
     if ((all_1079_files[f]).wrote_l2) then begin
       times_1079[f] = (all_1079_files[f]).obsday_hours
-      good_1079[f] = (all_1079_files[f]).ok
+      good_1079[f] = (all_1079_files[f]).ok && ((all_1079_files[f]).max_process_level gt 2L)
     endif else good_1079[f] = 0B
   endfor
 

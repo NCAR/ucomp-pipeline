@@ -209,6 +209,40 @@ end
 
 
 ;+
+; Lookup whether the file at the given date/time should be published.
+;
+; :Returns:
+;   boolean, true if the file at the given date/time should be published, false
+;   if not
+;
+; :Params:
+;   datetime : in, required, type=string
+;     date/time in the form "YYYYMMDD.HHMMSS"
+;-
+function ucomp_run::lookup_publish, datetime
+  compile_opt strictarr
+
+  return, self.publish[datetime]
+end
+
+
+;+
+; Set whether the file at the given date/time should be published.
+;
+; :Params:
+;   datetime : in, required, type=string
+;     date/time in the form "YYYYMMDD.HHMMSS"
+;   publish : in, required, type=boolean
+;     true if the file at the given date/time should be published, false if not
+;-
+pro ucomp_run::set_publish, datetime, publish
+  compile_opt strictarr
+
+  self.publish[datetime] = publish
+end
+
+
+;+
 ; Get the program names for a given wave region.
 ;
 ; :Returns:
@@ -1464,6 +1498,7 @@ pro ucomp_run::cleanup
     obj_destroy, wave_region
   endforeach
   obj_destroy, self.files
+  obj_destroy, self.publish
 
   obj_destroy, self.alerts
 end
@@ -1589,6 +1624,7 @@ function ucomp_run::init, date, mode, config_filename, $
   self.distortions = hash()
 
   self.files = orderedhash()   ; wave_region (string) -> list of file objects
+  self.publish = hash()   ; date/time -> boolean
 
   ; list of structures of the form:
   ;   {datetime: '', type: '', msg_hash: ''}
@@ -1641,6 +1677,7 @@ pro ucomp_run__define
            distortions             : obj_new(), $
 
            files                   : obj_new(), $
+           publish                 : obj_new(), $
 
            alerts                  : obj_new(), $
 

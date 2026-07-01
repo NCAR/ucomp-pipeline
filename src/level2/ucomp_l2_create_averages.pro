@@ -53,7 +53,7 @@ pro ucomp_l2_create_averages, wave_region, $
 
     ; filter out files with bad GBU
     good = bytarr(n_files)
-    for f = 0L, n_files - 1L do good[f] = program_files[f].good
+    for f = 0L, n_files - 1L do good[f] = program_files[f].good && program_files[f].publish
     good_files_indices = where(good eq 1, n_good_files)
     if (n_good_files eq 0L) then begin
       mg_log, 'no good %s nm files in %s', $
