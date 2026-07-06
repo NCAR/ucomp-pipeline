@@ -800,3 +800,5 @@
 - fixed version
 
 #### 1.0.25
+
+- updated line width threshold for noise mask and rest wavelength calculation
