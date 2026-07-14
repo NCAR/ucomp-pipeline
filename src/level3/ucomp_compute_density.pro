@@ -82,9 +82,9 @@ function ucomp_compute_density, peak_intensity_1074, peak_intensity_1079, $
       and peak_intensity_1079 gt noise_intensity_min_1079 $
       and peak_intensity_1079 lt noise_intensity_max_1079 $
       and line_width_1074 gt noise_line_width_min_1074 $
-      ; and line_width_1074 lt noise_line_width_max_1074 $
+      and line_width_1074 lt noise_line_width_max_1074 $
       and line_width_1079 gt noise_line_width_min_1079 $
-      ; and line_width_1079 lt noise_line_width_max_1079 $
+      and line_width_1079 lt noise_line_width_max_1079 $
       and finite(ratio), $
     n_mask_indices)
 

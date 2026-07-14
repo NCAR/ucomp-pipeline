@@ -113,13 +113,13 @@ pro ucomp_l3_density, run=run
         file_1074 = good_1074_files[matching_1074_indices[0]]
         mg_log, '%s matches for before...', file_1074.l2_basename, name=run.logger_name, /info
         output_basenames[2 * f + 1] = string(strmid(file_1074.l2_basename, 0, 15), $
-                                            strmid(file_1079.l2_basename, 9, 6), $
-                                            format='%s-%s.ucomp.1074-1079.density.fts')
+                                             strmid(file_1079.l2_basename, 9, 6), $
+                                             format='%s-%s.ucomp.1074-1079.density.fts')
         ucomp_compute_density_files, file_1074.l2_basename, $
-                                    file_1079.l2_basename, $
-                                    output_basenames[2 * f + 1], $
-                                    ignore_linewidth=density_ignore_linewidth, $
-                                    run=run
+                                     file_1079.l2_basename, $
+                                     output_basenames[2 * f + 1], $
+                                     ignore_linewidth=density_ignore_linewidth, $
+                                     run=run
       endif else begin
         mg_log, 'closest file before is %0.1f secs (> %0.1f secs)', $
                 abs(min_before), density_file_time_threshold, $
