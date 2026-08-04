@@ -252,12 +252,13 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
 
   !null = where(intensity_center gt noise_intensity_min $
       and intensity_center lt noise_intensity_max $
-      and intensity_blue gt noise_intensity_min $
+      and intensity_blue gt noise_intensity_wings_min $
       and intensity_blue lt noise_intensity_max $
-      and intensity_red gt noise_intensity_min $
+      and intensity_red gt noise_intensity_wings_min $
       and intensity_red lt noise_intensity_max $
       and line_width_fwhm gt run->line(wave_region, 'noise_line_width_min') $
-      and line_width_fwhm lt run->line(wave_region, 'noise_line_width_max'), $
+      and line_width_fwhm lt run->line(wave_region, 'noise_line_width_max') $
+      and abs(doppler_shift) lt run->line(wave_region, 'noise_velocity_threshold'), $
     complement=noisy_indices, /null)
 
   noise_mask = byte(intensity_center) * 0B + 1B
