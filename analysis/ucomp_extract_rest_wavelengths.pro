@@ -2,17 +2,18 @@
 
 pro ucomp_extract_rest_wavelengths, output_basename_format, $
                                     program, $
-                                    start_date, end_date, threshold, $
+                                    start_date, end_date, $
+                                    wave_region, threshold, $
                                     run=run
   compile_opt strictarr
 
   ; TODO: lower to 3.0? change for other wave_regions
-  ;threshold = 4.0
-  wave_region = '1074'
+  ; threshold = 4.0
+  ; wave_region = '1074'
   nx = 1280L
   ny = 1024L
 
-  output_filename = string(long(threshold * 10), program, $
+  output_filename = string(wave_region, long(threshold * 10), program, $
                            format=output_basename_format)
   openw, lun, output_filename, /get_lun
 
@@ -26,7 +27,7 @@ pro ucomp_extract_rest_wavelengths, output_basename_format, $
                       root=process_rootdir)
     if (file_test(l2_dir, /directory)) then begin
       basename = string(date, wave_region, program, $
-                        format='%s.ucomp.%s.l2.%s.median.fts')
+                        format='%s.ucomp.%s.l1.%s.median.fts')
       filename = filepath(basename, root=l2_dir)
       if (file_test(filename, /regular)) then begin
         fits_open, filename, fcb
@@ -38,7 +39,6 @@ pro ucomp_extract_rest_wavelengths, output_basename_format, $
         wavelengths = fltarr(n_wavelengths)
         intensity = fltarr(nx, ny, n_wavelengths)
         n_above = lonarr(n_wavelengths)
-
         for w = 0L, n_wavelengths - 1L do begin
           fits_read, fcb, ext_data, ext_header, exten_no=w + 1L
           intensity[*, *, w] = ext_data[*, *, 0]
@@ -56,6 +56,9 @@ pro ucomp_extract_rest_wavelengths, output_basename_format, $
         x_values = rebin(findgen(nx) - float(nx) / 2.0, nx, ny)
         east = where(intensity[*, *, max_index] gt threshold and x_values lt 0.0, n_east)
         west = where(intensity[*, *, max_index] gt threshold and x_values gt 0.0, n_west)
+
+        print, threshold, n_east, n_west, $
+               format='threshold: %0.2f -> n_east pts: %d, n_west pts: %d'
 
         fits_close, fcb
 
@@ -84,8 +87,11 @@ pro ucomp_extract_rest_wavelengths, output_basename_format, $
           line_width = !values.f_nan
         endelse
 
-        print, date, center_intensity, center_wavelength, line_width, wave_offset
-        printf, lun, date, center_intensity, center_wavelength, line_width, wave_offset
+        print, n_east, n_west, date, center_intensity, center_wavelength, line_width, wave_offset, $
+                format='%d, %d, %s, %0.5f, %0.5f, %0.5f, %0.5f'
+        printf, lun, $
+                n_east, n_west, date, center_intensity, center_wavelength, line_width, wave_offset, $
+                format='%d, %d, %s, %0.5f, %0.5f, %0.5f, %0.5f'
       endif
     endif
 
@@ -99,22 +105,33 @@ end
 
 ; main-level example program
 
-start_date = '20210701'
-;start_date = '20220831'
+start_date = '20210715'
 end_date = '20221201'
 
 config_basename = 'ucomp.production.cfg'
 config_filename = filepath(config_basename, $
                            subdir=['..', '..', 'ucomp-config'], $
                            root=mg_src_root())
-run = ucomp_run('20210526', 'analysis', config_filename)
-output_basename_format = 'ucomp.rstwvl.wavoff.thresh%02d.median.%s.txt'
-; threshold = 4.0
-threshold = 1.0
-ucomp_extract_rest_wavelengths, output_basename_format, 'synoptic', $
-                                start_date, end_date, threshold, run=run
-ucomp_extract_rest_wavelengths, output_basename_format, 'waves', $
-                                start_date, end_date, threshold, run=run
+run = ucomp_run(start_date, 'analysis', config_filename)
+output_basename_format = 'ucomp.rstwvl.%s.wavoff.thresh%02d.median.%s.txt'
+
+thresholds = [1.0, 4.0]
+wave_region = '1074'
+for t = 0L, n_elements(thresholds) - 1L do begin
+  ucomp_extract_rest_wavelengths, output_basename_format, 'synoptic', $
+                                  start_date, end_date, $
+                                  wave_region, thresholds[t], run=run
+  ucomp_extract_rest_wavelengths, output_basename_format, 'waves', $
+                                  start_date, end_date, $
+                                  wave_region, thresholds[t], run=run
+endfor
+wave_region = '789'
+for t = 0L, n_elements(thresholds) - 1L do begin
+  ucomp_extract_rest_wavelengths, output_basename_format, 'synoptic', $
+                                  start_date, end_date, $
+                                  wave_region, thresholds[t], run=run
+endfor
+
 obj_destroy, run
 
 end
