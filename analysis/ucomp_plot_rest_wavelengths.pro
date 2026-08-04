@@ -1,12 +1,13 @@
 ; docformat = 'rst'
 
-pro ucomp_plot_rest_wavelengths, filename, wave_region, nominal_center_wavelength, rest_wavelength_range
+pro ucomp_plot_rest_wavelengths, filename, $
+                                 wave_region, program_name, threshold, $
+                                 nominal_center_wavelength, rest_wavelength_range
   compile_opt strictarr
 
   basename = file_basename(filename)
 
   tokens = strsplit(file_basename(filename), '.', /extract)
-  program = tokens[5]
 
   n_lines = file_lines(filename)
   dates = dblarr(n_lines)
@@ -38,15 +39,27 @@ pro ucomp_plot_rest_wavelengths, filename, wave_region, nominal_center_wavelengt
   ; c = 299792.458D
   ; rest_wavelengths *= c / nominal_center_wavelength
 
-  title = string(wave_region, program, format='Rest wavelength for %s nm (%s)')
+  title = string(wave_region, program_name, threshold, $
+                 format='Rest wavelength for %s nm [%s] (threshold: %0.1f)')
+  charsize = 0.90
+  symsize = 0.75
 
-  window, xsize=1326/2, ysize=898/2, $
-          title=string(wave_region, basename, format='Rest wavelength for %s nm - %s'), $
-          /free
+  to_ps = 1B
+  if (keyword_set(to_ps)) then begin
+    original_device = !d.name
+    set_plot, 'Z'
+    device, set_resolution=[800, 500], $
+            decomposed=1, $
+            set_pixel_depth=24
+  endif else begin
+    window, xsize=1326/2, ysize=898/2, $
+            title=string(wave_region, basename, format='Rest wavelength for %s nm - %s'), $
+            /free
+  endelse
 
   plot, years, rest_wavelengths, /nodata, $
         title=title, $
-        psym=4, symsize=1.5, charsize=1.75, $
+        psym=4, symsize=symsize, charsize=charsize, $
         color='000000'x, background='ffffff'x, $
         xstyle=1, xtitle='Date', $
         ystyle=1, yrange=rest_wavelength_range, $
@@ -76,7 +89,7 @@ pro ucomp_plot_rest_wavelengths, filename, wave_region, nominal_center_wavelengt
       n_good_indices, complement=bad_indices, ncomplement=n_bad_points)
 
     oplot, [years[bad_indices]], [rest_wavelengths[bad_indices]], $
-           psym=4, symsize=0.75, color='0000ff'x
+           psym=4, symsize=symsize, color='0000ff'x
     for p = 0L, n_bad_points - 1L do begin
       caldat, dates[bad_indices[p]], month, day, year
       print, year, month, day, differences[bad_indices[p]], $
@@ -99,22 +112,25 @@ pro ucomp_plot_rest_wavelengths, filename, wave_region, nominal_center_wavelengt
     wait, 1.0
   endfor
 
-  oplot, years, rest_wavelengths, psym=4, symsize=1.5, color='000000'x
+  oplot, years, rest_wavelengths, psym=4, symsize=symsize, color='000000'x
   oplot, years, poly(years, coeffs), color='000000'x, thick=2.0
   if (degree eq 1) then begin
     xyouts, 0.5, 0.25, /normal, alignment=0.5, $
             string(coeffs[1], format='%0.3f nm/year'), $
-            charsize=1.5, color='000000'x
-    ; TODO: print stddev on plot
+            charsize=charsize, color='000000'x
+    ; [TODO]: print stddev on plot
+    ; [TODO]: print coefficients on plot
+  endif
+
+  if (keyword_set(to_ps)) then begin
+    im = tvrd(true=1)
+    set_plot, original_device
+    output_filename = file_basename(filename, '.txt') + '.png'
+    write_png, output_filename, im
   endif
 end
 
 ; main-level example program
-
-; ucomp_plot_rest_wavelengths, 'ucomp.rstwvl.wavoff.thresh40.median.synoptic.txt'
-; ucomp_plot_rest_wavelengths, 'ucomp.rstwvl.wavoff.thresh40.median.waves.txt'
-; ucomp_plot_rest_wavelengths, 'ucomp.rstwvl.wavoff.thresh10.median.synoptic.txt'
-; ucomp_plot_rest_wavelengths, 'ucomp.rstwvl.wavoff.thresh10.median.waves.txt'
 
 thresholds = [1.0, 4.0]
 output_basename_format = 'ucomp.rstwvl.%s.wavoff.thresh%02d.median.%s.txt'
@@ -126,10 +142,12 @@ rest_wavelength_range = [1074.2, 1075.0]
 for t = 0L, n_elements(thresholds) - 1L do begin
   ucomp_plot_rest_wavelengths, string(wave_region, 10.0 * thresholds[t], 'synoptic', $
                                       format=output_basename_format), $
-                               wave_region, nominal_center_wavelength, rest_wavelength_range
+                               wave_region, 'synoptic', thresholds[t], $
+                               nominal_center_wavelength, rest_wavelength_range
   ucomp_plot_rest_wavelengths, string(wave_region, 10.0 * thresholds[t], 'waves', $
                                       format=output_basename_format), $
-                               wave_region, nominal_center_wavelength, rest_wavelength_range
+                               wave_region, 'waves', thresholds[t], $
+                               nominal_center_wavelength, rest_wavelength_range
 endfor
 
 wave_region = '789'
@@ -138,7 +156,8 @@ rest_wavelength_range = [788.0, 791.0]
 for t = 0L, n_elements(thresholds) - 1L do begin
   ucomp_plot_rest_wavelengths, string(wave_region, 10.0 * thresholds[t], 'synoptic', $
                                       format=output_basename_format), $
-                               wave_region, nominal_center_wavelength, rest_wavelength_range
+                               wave_region, 'synoptic', thresholds[t], $
+                               nominal_center_wavelength, rest_wavelength_range
 endfor
 
 
