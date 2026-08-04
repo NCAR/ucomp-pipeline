@@ -1,11 +1,9 @@
 ; docformat = 'rst'
 
-pro ucomp_plot_rest_wavelengths, filename
+pro ucomp_plot_rest_wavelengths, filename, wave_region, nominal_center_wavelength, rest_wavelength_range
   compile_opt strictarr
 
   basename = file_basename(filename)
-
-  nominal_center_wavelength = 1074.7
 
   tokens = strsplit(file_basename(filename), '.', /extract)
   program = tokens[5]
@@ -22,16 +20,16 @@ pro ucomp_plot_rest_wavelengths, filename
   free_lun, lun
 
   for i = 0L, n_lines - 1L do begin
-    tokens = strsplit(data[i], /extract)
-    date_parts = long(ucomp_decompose_date(tokens[0]))
+    tokens = strsplit(data[i], ', ', /extract)
+    date_parts = long(ucomp_decompose_date(tokens[2]))
     dates[i] = julday(date_parts[1], date_parts[2], date_parts[0], 0.0, 0.0, 0.0)
     years[i] = date_parts[0] - 2000.0 + mg_ymd2doy(date_parts[0], date_parts[1], date_parts[2]) / 365.0
-    wave_offset[i] = float(tokens[4])
-    ;rest_wavelengths[i] = float(tokens[2]) - nominal_center_wavelength - wave_offset[i]
-    rest_wavelengths[i] = float(tokens[2]) - wave_offset[i] + 1.89
+    wave_offset[i] = float(tokens[6])
+    rest_wavelengths[i] = float(tokens[4]) - wave_offset[i] + 1.89
   endfor
 
-  year_cutoff = 21.65
+  ; mg_ymd2doy(2021, 7, 15) / 365.0 = 0.536986
+  year_cutoff = 21.536986
   keep_indices = where(years gt year_cutoff, /null)
   years = years[keep_indices]
   rest_wavelengths = rest_wavelengths[keep_indices]
@@ -40,14 +38,10 @@ pro ucomp_plot_rest_wavelengths, filename
   ; c = 299792.458D
   ; rest_wavelengths *= c / nominal_center_wavelength
 
-  title = string(program, format='Rest wavelength for 1074 nm (%s)')
-
-  ; rest_wavelength_range = [-700.0, -400.0]
-  ; rest_wavelength_range = [1072.5, 1073.0]
-  rest_wavelength_range = [1074.2, 1075.0]
+  title = string(wave_region, program, format='Rest wavelength for %s nm (%s)')
 
   window, xsize=1326/2, ysize=898/2, $
-          title=string(basename, format='Rest wavelength for 1074 nm - %s'), $
+          title=string(wave_region, basename, format='Rest wavelength for %s nm - %s'), $
           /free
 
   plot, years, rest_wavelengths, /nodata, $
@@ -71,11 +65,8 @@ pro ucomp_plot_rest_wavelengths, filename
   print, strjoin(string(coeffs, format='(F0.6)'), ', '), best_chisqr, $
          format='initial coeffs: %s, chi sqr: %0.5f'
 
-  tolerance = [0.1]
-  n = 100.0
-  tolerance = 1.0 / (findgen(n) + 10.0)
-  tolerance = 0.1 * exp(- 0.2 * findgen(n))
-  tolerance = [0.1, 0.05, 0.02, 0.01, 0.0075]
+  ; tolerance = [0.1, 0.05, 0.02, 0.01, 0.0075]
+  tolerance = [10.0, 1.0, 0.1, 0.05, 0.02, 0.01, 0.0075]
 
   for t = 0L, n_elements(tolerance) - 1L do begin
     print
@@ -98,7 +89,7 @@ pro ucomp_plot_rest_wavelengths, filename
     rest_wavelengths = rest_wavelengths[good_indices]
     print, n_bad_points, format='removed %d bad points'
 
-    coeffs = poly_fit(years, rest_wavelengths, degree, chisq=chisqr)
+    coeffs = poly_fit(years, rest_wavelengths, degree, chisq=chisqr, status=status)
     print, t + 1, strjoin(string(coeffs, format='(F0.6)'), ', '), chisqr, n_good_indices, $
            format='%d. coeffs: %s, chi sqr: %0.5f (%d points)'
     if (chisqr gt best_chisqr) then begin
@@ -125,6 +116,30 @@ end
 ; ucomp_plot_rest_wavelengths, 'ucomp.rstwvl.wavoff.thresh10.median.synoptic.txt'
 ; ucomp_plot_rest_wavelengths, 'ucomp.rstwvl.wavoff.thresh10.median.waves.txt'
 
-ucomp_plot_rest_wavelengths, 'ucomp.rstwvl.wavoff.thresh40.median.combined-sorted.txt'
+thresholds = [1.0, 4.0]
+output_basename_format = 'ucomp.rstwvl.%s.wavoff.thresh%02d.median.%s.txt'
+
+program_names = ['synoptic', 'waves']
+wave_region = '1074'
+nominal_center_wavelength = 1074.7
+rest_wavelength_range = [1074.2, 1075.0]
+for t = 0L, n_elements(thresholds) - 1L do begin
+  ucomp_plot_rest_wavelengths, string(wave_region, 10.0 * thresholds[t], 'synoptic', $
+                                      format=output_basename_format), $
+                               wave_region, nominal_center_wavelength, rest_wavelength_range
+  ucomp_plot_rest_wavelengths, string(wave_region, 10.0 * thresholds[t], 'waves', $
+                                      format=output_basename_format), $
+                               wave_region, nominal_center_wavelength, rest_wavelength_range
+endfor
+
+wave_region = '789'
+nominal_center_wavelength = 789.4
+rest_wavelength_range = [788.0, 791.0]
+for t = 0L, n_elements(thresholds) - 1L do begin
+  ucomp_plot_rest_wavelengths, string(wave_region, 10.0 * thresholds[t], 'synoptic', $
+                                      format=output_basename_format), $
+                               wave_region, nominal_center_wavelength, rest_wavelength_range
+endfor
+
 
 end
