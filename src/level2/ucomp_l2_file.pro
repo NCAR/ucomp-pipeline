@@ -155,8 +155,12 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
             name=run.logger_name, /error
   endif
 
-  noise_intensity_min = run->line(wave_region, 'noise_intensity_min')
-  noise_intensity_max = run->line(wave_region, 'noise_intensity_max')
+  noise_intensity_center_min = run->line(wave_region, 'noise_intensity_center_min')
+  noise_intensity_center_max = run->line(wave_region, 'noise_intensity_center_max')
+  noise_intensity_red_min    = run->line(wave_region, 'noise_intensity_red_min')
+  noise_intensity_red_max    = run->line(wave_region, 'noise_intensity_red_max')
+  noise_intensity_blue_min   = run->line(wave_region, 'noise_intensity_blue_min')
+  noise_intensity_blue_max   = run->line(wave_region, 'noise_intensity_blue_max')
 
   ucomp_analytic_gauss_fit, intensity_blue, $
                             intensity_center, $
@@ -195,10 +199,11 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
       post_angle=post_angle, $
       p_angle=p_angle)
 
-    noise_intensity_wings_min = run->line(wave_region, 'noise_intensity_wings_min')
-    fit_mask = (intensity_center gt noise_intensity_min) $
+    ; [TODO]: this masking needs to change with fit-specific thresholds
+    noise_intensity_wings_min = min([noise_intensity_red_min, noise_intensity_blue_min])
+    fit_mask = (intensity_center gt noise_intensity_center_min) $
       and (total((all_intensities gt noise_intensity_wings_min) $
-             and (all_intensities lt noise_intensity_max), 3, /integer) gt n_terms)
+             and (all_intensities lt noise_intensity_center_max), 3, /integer) gt n_terms)
 
     xpeak = run->line(wave_region, 'center_wavelength') + doppler_shift
     ucomp_gauss_fit, all_intensities, $
@@ -210,8 +215,8 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                      estimates_line_width=line_width / sqrt(2.0), $
                      ; [TODO]: use more restrictive velocity mask
                      mask=geometry_mask and fit_mask, $
-                     min_threshold=noise_intensity_wings_min, $
-                     max_threshold=noise_intensity_max, $
+                     min_threshold=min([noise_intensity_red_min, noise_intensity_blue_min]), $
+                     max_threshold=noise_intensity_center_max, $
                      n_fits=n_fits, $
                      doppler_shift=fit_doppler_shift, $
                      line_width=fit_line_width, $
@@ -250,12 +255,12 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
 
   azimuth = ucomp_azimuth(summed_q, summed_u, radial_azimuth=radial_azimuth)
 
-  !null = where(intensity_center gt noise_intensity_min $
-      and intensity_center lt noise_intensity_max $
-      and intensity_blue gt noise_intensity_wings_min $
-      and intensity_blue lt noise_intensity_max $
-      and intensity_red gt noise_intensity_wings_min $
-      and intensity_red lt noise_intensity_max $
+  !null = where(intensity_center gt noise_intensity_center_min $
+      and intensity_center lt noise_intensity_center_max $
+      and intensity_red gt noise_intensity_red_min $
+      and intensity_red lt noise_intensity_red_max $
+      and intensity_blue gt noise_intensity_blue_min $
+      and intensity_blue lt noise_intensity_blue_max $
       and line_width_fwhm gt run->line(wave_region, 'noise_line_width_min') $
       and line_width_fwhm lt run->line(wave_region, 'noise_line_width_max') $
       and abs(doppler_shift) lt run->line(wave_region, 'noise_velocity_threshold'), $
@@ -654,14 +659,13 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   fits_close, fcb
 
   if (run->config('display/mask_l2_noise')) then begin
-    ; intensity_center[noisy_indices]          = !values.f_nan
-    ; enhanced_intensity_center[noisy_indices] = !values.f_nan
-    ; peak_intensity[noisy_indices]            = !values.f_nan
+    ; don't mask intensity products
 
     doppler_shift[noisy_indices]             = !values.f_nan
     line_width_fwhm[noisy_indices]           = !values.f_nan
 
-    ; summed_intensity[noisy_indices]          = !values.f_nan
+    ; masked by noise to match Q, U, and L
+    summed_intensity[noisy_indices]          = !values.f_nan
     summed_q[noisy_indices]                  = !values.f_nan
     summed_u[noisy_indices]                  = !values.f_nan
     summed_linpol[noisy_indices]             = !values.f_nan
@@ -690,8 +694,6 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                          summed_linpol / summed_intensity, $
                          azimuth, $
                          radial_azimuth, $
-
-                         noise_mask, $
 
                          write_polarization=write_polarization, $
                          reduce_factor=4L, $
