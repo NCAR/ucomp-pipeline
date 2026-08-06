@@ -22,6 +22,8 @@ create table ucomp_file (
   quality                               int,
   gbu                                   int,
 
+  rest_wavelength                       float,
+
   n_rcam_onband_saturated_pixels        int,
   n_tcam_onband_saturated_pixels        int,
   n_rcam_bkg_saturated_pixels           int,
