@@ -723,8 +723,6 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                            azimuth, $
                            radial_azimuth, $
 
-                           noise_mask, $
-
                            write_polarization=write_polarization, $
                            reduce_factor=4L, $
                            wave_region=wave_region, $
