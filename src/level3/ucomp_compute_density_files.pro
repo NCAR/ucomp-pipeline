@@ -134,10 +134,10 @@ pro ucomp_compute_density_files, l2_basenames_1074, $
                                   line_width_1074, line_width_1079, $
                                   center_wavelength_1074, center_wavelength_1079, $
                                   heights, densities, ratios, r_sun, $
-                                  run->line('1074', 'noise_intensity_min'), $
-                                  run->line('1074', 'noise_intensity_max'), $
-                                  run->line('1079', 'noise_intensity_min'), $
-                                  run->line('1079', 'noise_intensity_max'), $
+                                  run->line('1074', 'noise_intensity_center_min'), $
+                                  run->line('1074', 'noise_intensity_center_max'), $
+                                  run->line('1079', 'noise_intensity_center_min'), $
+                                  run->line('1079', 'noise_intensity_center_max'), $
                                   run->line('1074', 'noise_line_width_min'), $
                                   run->line('1074', 'noise_line_width_max'), $
                                   run->line('1079', 'noise_line_width_min'), $
