@@ -50,6 +50,7 @@ pro ucomp_db_l2_average_insert, wave_region, obsday_index, sw_index, db, run=run
             {name: 'obs_id', type: '''%s'''}, $
 
             {name: 'quality', type: '%d'}, $
+            {name: 'rest_wavelength', type: '%s'}, $
             {name: 'median_background', type: '%s'}, $
             {name: 'vcrosstalk_metric', type: '%s'}, $
             {name: 'wind_speed', type: '%s'}, $
@@ -98,6 +99,14 @@ pro ucomp_db_l2_average_insert, wave_region, obsday_index, sw_index, db, run=run
 
       fits_open, files[f], fcb
       fits_read, fcb, primary_data, primary_header, exten_no=0
+
+      if (types[t].product_type eq 'L2 average') then begin
+        fits_read, fcb, !null, velocity_header, exten_no=4
+        rest_wavelength = ucomp_getpar(velocity_header, 'RSTWVL')
+      endif else begin
+        rest_wavelength = !null
+      endelse
+
       fits_close, fcb
 
       date_obs = ucomp_getpar(primary_header, 'DATE-OBS')
@@ -118,6 +127,7 @@ pro ucomp_db_l2_average_insert, wave_region, obsday_index, sw_index, db, run=run
                    obs_plan, $
                    obs_id, $
                    0, $
+                   ucomp_db_float(rest_wavelength, format='%0.3f'), $
                    'NULL', $
                    'NULL', $
                    'NULL', $
