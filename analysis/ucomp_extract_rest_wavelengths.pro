@@ -7,9 +7,6 @@ pro ucomp_extract_rest_wavelengths, output_basename_format, $
                                     run=run
   compile_opt strictarr
 
-  ; TODO: lower to 3.0? change for other wave_regions
-  ; threshold = 4.0
-  ; wave_region = '1074'
   nx = 1280L
   ny = 1024L
 
@@ -113,23 +110,23 @@ config_filename = filepath(config_basename, $
                            subdir=['..', '..', 'ucomp-config'], $
                            root=mg_src_root())
 run = ucomp_run(start_date, 'analysis', config_filename)
-output_basename_format = 'ucomp.rstwvl.%s.wavoff.thresh%02d.median.%s.txt'
+
+wave_regions = run->config('options/wave_regions')
 
 thresholds = [1.0, 4.0]
-wave_region = '1074'
-for t = 0L, n_elements(thresholds) - 1L do begin
-  ucomp_extract_rest_wavelengths, output_basename_format, 'synoptic', $
-                                  start_date, end_date, $
-                                  wave_region, thresholds[t], run=run
-  ucomp_extract_rest_wavelengths, output_basename_format, 'waves', $
-                                  start_date, end_date, $
-                                  wave_region, thresholds[t], run=run
-endfor
-wave_region = '789'
-for t = 0L, n_elements(thresholds) - 1L do begin
-  ucomp_extract_rest_wavelengths, output_basename_format, 'synoptic', $
-                                  start_date, end_date, $
-                                  wave_region, thresholds[t], run=run
+output_basename_format = 'ucomp.rstwvl.%s.wavoff.thresh%02d.median.%s.txt'
+
+for w = 0L, n_elements(wave_regions) - 1L do begin
+  for t = 0L, n_elements(thresholds) - 1L do begin
+    ucomp_extract_rest_wavelengths, output_basename_format, 'synoptic', $
+                                    start_date, end_date, $
+                                    wave_regions[w], thresholds[t], run=run
+    if (wave_regions[w] eq '1074') then begin
+      ucomp_extract_rest_wavelengths, output_basename_format, 'waves', $
+                                      start_date, end_date, $
+                                      wave_regions[w], thresholds[t], run=run
+    endif
+  endfor
 endfor
 
 obj_destroy, run
