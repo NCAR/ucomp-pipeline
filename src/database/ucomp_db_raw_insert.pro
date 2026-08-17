@@ -51,6 +51,7 @@ pro ucomp_db_raw_insert, l0_files, obsday_index, db, logger_name=logger_name
               {name: 'datatype', type: '''%s'''}, $
               {name: 'wave_region', type: '''%s'''}, $
 
+              {name: 'wave_offset', type: '%s'}, $
               {name: 'contin', type: '''%s'''}, $
 
               {name: 'quality_id', type: '%d'}, $
@@ -107,6 +108,7 @@ pro ucomp_db_raw_insert, l0_files, obsday_index, db, logger_name=logger_name
 
                  file.data_type, $
                  file.wave_region, $
+                 file.wave_offset, $
                  file.contin, $
 
                  file.quality_bitmask eq 0 ? ok_quality_index : bad_quality_index, $

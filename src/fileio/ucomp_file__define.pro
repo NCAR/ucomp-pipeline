@@ -226,6 +226,7 @@ pro ucomp_file::getProperty, run=run, $
                              distance_au=distance_au, $
                              true_dec=true_dec, $
                              wave_region=wave_region, $
+                             wave_offset=wave_offset, $
                              center_wavelength=center_wavelength, $
                              data_type=data_type, $
                              obs_id_name=obs_id_name, $
@@ -447,6 +448,7 @@ pro ucomp_file::getProperty, run=run, $
   if (arg_present(contin)) then contin = self.contin
 
   if (arg_present(wave_region)) then wave_region = self.wave_region
+  if (arg_present(wave_offset)) then wave_offset = self.wave_offset
   if (arg_present(center_wavelength)) then begin
     if (self.wave_region eq '') then begin
       center_wavelength = 0.0
@@ -714,6 +716,8 @@ pro ucomp_file::_inventory
   endif else begin
     self.wave_region = ''
   endelse
+
+  self.wave_offset  = ucomp_getpar(primary_header, 'WAVOFF', found=found)
 
   if (n_elements(extension_header) gt 0L) then begin
     self.data_type = ucomp_getpar(extension_header, 'DATATYPE', found=found)
@@ -1014,6 +1018,7 @@ pro ucomp_file__define
            n_repeats                            : 0L, $
 
            wave_region                          : '', $
+           wave_offset                          : 0.0, $
            data_type                            : '', $
            obs_id                               : '', $
            obs_id_version                       : '', $
