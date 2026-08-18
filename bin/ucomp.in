@@ -369,25 +369,34 @@ def value2str(v, format=None):
     return(f"{v}")
 
 
-def list_fits_file(f, columns):
+def list_fits_file(f, extension, columns):
     basename = os.path.basename(f)
     line = f"{basename:38s}"
+    if extension is not None:
+        examine_extension = extension
+        backup_extension = 0
+    else:
+        examine_extension = 0
+        backup_extension = 1
     try:
         with fits.open(f) as fits_file:
-            primary_header = fits_file[0].header
-            header_1 = [] if len(fits_file) == 1 else fits_file[1].header
+            n_extensions = len(fits_file)
+            examine_header = fits_file[examine_extension].header
+            backup_header = fits_file[backup_extension].header
             for c in columns:
-                v = primary_header[c] if c in primary_header else None
+                v = examine_header[c] if c in examine_header else None
                 if v is None:
-                    v = header_1[c] if c in header_1 else None
+                    v = backup_header[c] if c in backup_header else None
                 v = value2str(v)
                 line += f"  {v}"
         print(line)
     except FileNotFoundError:
         print(f"{basename} not found")
+    except IndexError:
+        print(f"extension {extension} does not exist (only 0..{n_extensions - 1})")
 
 
-def list_files(files, columns=None):
+def list_files(files, extension=None, columns=None):
     line_character = "\u23AF"
     endpt_character = "\u279B"
 
@@ -421,7 +430,7 @@ def list_files(files, columns=None):
                 if columns is None:
                     list_fits_file_default(f)
                 else:
-                    list_fits_file(f, columns)
+                    list_fits_file(f, extension, columns)
             except OSError:
                 if file_extension in [".log", ".olog", ".txt", ".cfg", ".tarlist"]:
                     n_lines = file_lines(f)
@@ -453,7 +462,7 @@ def ls(args):
             columns = args.keywords.split(",")
 
         list_files(sorted(dirs))
-        list_files(sorted(files), columns=columns)
+        list_files(sorted(files), extension=args.extension, columns=columns)
     except (KeyboardInterrupt, BrokenPipeError):
         pass
 
@@ -1404,6 +1413,9 @@ if __name__ == "__main__":
     ls_parser.add_argument("-k", "--keywords", type=str,
         help="FITS keyword names to display",
         default=None)
+    ls_parser.add_argument("-e", "--extension", type=int,
+       help="used with --header to specify which extension header to display",
+       default=None)
     ls_parser.set_defaults(func=ls, parser=ls_parser)
 
     # cat sub-command
