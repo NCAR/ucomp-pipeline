@@ -382,10 +382,10 @@ def list_fits_file(f, extension, columns):
         with fits.open(f) as fits_file:
             n_extensions = len(fits_file)
             examine_header = fits_file[examine_extension].header
-            backup_header = fits_file[backup_extension].header
             for c in columns:
                 v = examine_header[c] if c in examine_header else None
-                if v is None:
+                if v is None and backup_extension < n_extensions:
+                    backup_header = fits_file[backup_extension].header
                     v = backup_header[c] if c in backup_header else None
                 v = value2str(v)
                 line += f"  {v}"
