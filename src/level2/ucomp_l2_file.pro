@@ -263,7 +263,8 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
       and intensity_blue lt noise_intensity_blue_max $
       and line_width_fwhm gt run->line(wave_region, 'noise_line_width_min') $
       and line_width_fwhm lt run->line(wave_region, 'noise_line_width_max') $
-      and abs(doppler_shift) lt run->line(wave_region, 'noise_velocity_threshold'), $
+      and abs(doppler_shift) lt run->line(wave_region, 'noise_velocity_threshold')
+      and peak_intensity gt run->line(wave_region, 'noise_intensity_peak_min'), $
     complement=noisy_indices, /null)
 
   noise_mask = byte(intensity_center) * 0B + 1B
