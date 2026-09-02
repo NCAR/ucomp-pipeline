@@ -27,11 +27,19 @@ pro ucomp_update_rest_wavelength, date, config_filename
 
   process_basedir = run->config('processing/basedir')
   l2_dir = filepath('', subdir=[date, 'level2'], root=process_basedir)
+  web_basedir = run->config('results/web_basedir')
+  web_dir = filepath('', subdir=ucomp_decompose_date(date), root=web_basedir)
   for f = 0L, n_rows - 1L do begin
     l2_filename = filepath(results[f].file_name, root=l2_dir)
     if (~file_test(l2_filename, /regular)) then begin
-      mg_log, 'can''t find %s', results[f].file_name, /error, name=run.logger_name
-      continue
+      mg_log, '%s not in process directory', results[f].file_name, $
+              /error, name=run.logger_name
+      l2_filename = filepath(results[f].file_name, root=web_dir)
+      if (~file_test(l2_filename, /regular)) then begin
+        mg_log, '%s not in web archive', results[f].file_name, $
+                /error, name=run.logger_name
+        continue
+      endif
     endif
     fits_open, l2_filename, fcb
     fits_read, fcb, !null, header, exten=4
