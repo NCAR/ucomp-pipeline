@@ -42,7 +42,7 @@ pro ucomp_db_create_tables, config_filename
   ; tables in the order they need to be created
   tables = 'ucomp_' + ['mission', $
                        'quality', 'level', $
-                       'sw', $
+                       'sw', 'process', $
                        'raw', 'eng', 'cal', 'file', $
                        'sci_dynamics', 'sci_polarization']
 
