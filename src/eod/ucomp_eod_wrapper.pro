@@ -78,6 +78,8 @@ pro ucomp_eod_wrapper, date, config_filename
     goto, done
   endif
 
+  ucomp_pipeline_step, 'ucomp_db_startup', run=run
+
   ; copy config file to processing dir, creating dir if needed
   process_dir = filepath(date, root=run->config('processing/basedir'))
   ucomp_mkdir, process_dir, logger_name=run.logger_name
