@@ -1,6 +1,6 @@
 ; docformat = 'rst'
 
-pro ucomp_update_process, db, start_date, end_date
+pro ucomp_update_process, db
   compile_opt strictarr
 
   q = 'select obsday_id, file_name, ucomp_sw_id from ucomp_file group by obsday_id order by date_obs;'
@@ -15,7 +15,6 @@ end
 ; main-level example program
 
 start_date = '20210715'
-end_date = '20250401'
 config_basename = 'ucomp.production.cfg'
 config_filename = filepath(config_basename, $
                            subdir=['..', '..', 'ucomp-config'], $
@@ -28,7 +27,7 @@ db = ucomp_db_connect(run->config('database/config_filename'), $
                       log_statements=run->config('database/log_statements'), $
                       status=status)
 
-ucomp_update_process, db, start_date, end_date
+ucomp_update_process, db
 
 obj_destroy, [db, run]
 
