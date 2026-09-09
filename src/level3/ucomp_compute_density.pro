@@ -31,6 +31,8 @@
 ;     number of pixels in 1 solar radius
 ;
 ; :Keywords:
+;   computed_mask : in, optional, type="bytarr(nx, ny)"
+;     mask of the pixels that were valid in the analytical Gaussian fit
 ;   count : out, optional, type=long
 ;     number of good pixels in the mask
 ;-
@@ -47,6 +49,7 @@ function ucomp_compute_density, peak_intensity_1074, peak_intensity_1079, $
                                 noise_line_width_max_1074, $
                                 noise_line_width_min_1079, $
                                 noise_line_width_max_1079, $
+                                computed_mask=computed_mask, $
                                 ignore_linewidth=ignore_linewidth, $
                                 inverted_ratio=inverted_ratio, $
                                 count=n_mask_indices, $
@@ -77,7 +80,7 @@ function ucomp_compute_density, peak_intensity_1074, peak_intensity_1079, $
 
   ; eliminate pixels with intensity or line width outside our noise mask
   ; range for either 1074 or 1079
-  mask_indices = where(peak_intensity_1074 gt noise_intensity_min_1074 $
+  mask = peak_intensity_1074 gt noise_intensity_min_1074 $
       and peak_intensity_1074 lt noise_intensity_max_1074 $
       and peak_intensity_1079 gt noise_intensity_min_1079 $
       and peak_intensity_1079 lt noise_intensity_max_1079 $
@@ -85,8 +88,9 @@ function ucomp_compute_density, peak_intensity_1074, peak_intensity_1079, $
       and line_width_1074 lt noise_line_width_max_1074 $
       and line_width_1079 gt noise_line_width_min_1079 $
       and line_width_1079 lt noise_line_width_max_1079 $
-      and finite(ratio), $
-    n_mask_indices)
+      and finite(ratio)
+  if (n_elements(computed_mask) gt 0L) then mask and= computed_mask
+  mask_indices = where(mask, n_mask_indices)
 
   density = peak_intensity_1074 * 0.0 + !values.f_nan
 
