@@ -155,20 +155,14 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
             name=run.logger_name, /error
   endif
 
-  noise_intensity_center_min = run->line(wave_region, 'noise_intensity_center_min')
-  noise_intensity_center_max = run->line(wave_region, 'noise_intensity_center_max')
-  noise_intensity_red_min    = run->line(wave_region, 'noise_intensity_red_min')
-  noise_intensity_red_max    = run->line(wave_region, 'noise_intensity_red_max')
-  noise_intensity_blue_min   = run->line(wave_region, 'noise_intensity_blue_min')
-  noise_intensity_blue_max   = run->line(wave_region, 'noise_intensity_blue_max')
-
   ucomp_analytic_gauss_fit, intensity_blue, $
                             intensity_center, $
                             intensity_red, $
                             d_lambda_blue, $
-                            doppler_shift=doppler_shift, $
-                            line_width=line_width, $
-                            peak_intensity=peak_intensity
+                            doppler_shift=analytic_doppler_shift, $
+                            line_width=analytic_line_width, $
+                            peak_intensity=analytic_peak_intensity, $
+                            computed_mask=analytic_mask
 
   gaussian_fit_method = run->config('level2/gaussian_fit_method')
   perform_gauss_fit = (n_wavelengths gt 3L) $
@@ -181,8 +175,6 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
           name=run.logger_name, /debug
   if (perform_gauss_fit) then begin
     clock_id = run->start('gaussian_fit')
-    ; [TODO]: make sure to geometric mask and intensity threshold mask before
-    ; doing this
     all_intensities = reform(ext_data[*, *, 0, *])
 
     case gaussian_fit_method of
@@ -199,24 +191,35 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
       post_angle=post_angle, $
       p_angle=p_angle)
 
-    ; [TODO]: this masking needs to change with fit-specific thresholds
-    noise_intensity_wings_min = min([noise_intensity_red_min, noise_intensity_blue_min])
-    fit_mask = (intensity_center gt noise_intensity_center_min) $
-      and (total((all_intensities gt noise_intensity_wings_min) $
-             and (all_intensities lt noise_intensity_center_max), 3, /integer) gt n_terms)
+    fit_intensity_center_min = run->line(wave_region, 'fit_intensity_center_min')
+    fit_intensity_center_max = run->line(wave_region, 'fit_intensity_center_max')
+    fit_intensity_nominal_wings_min = run->line(wave_region, 'fit_intensity_nominal_wings_min')
+    fit_intensity_wings_min = run->line(wave_region, 'fit_intensity_wings_min')
+    fit_intensity_wings_max = run->line(wave_region, 'fit_intensity_wings_max')
+
+    fit_mask = intensity_center gt fit_intensity_center_min $
+      and intensity_center lt fit_intensity_center_max $
+      and intensity_blue gt fit_intensity_nominal_wings_min $
+      and intensity_red gt fit_intensity_nominal_wings_min
+
+    all_dims = size(all_intensities, /dimensions)
+    for i = 0L, all_dims[3] - 1L do begin
+      if (i eq center_index) then continue
+      fit_mask and= all_intensities[*, *, i] gt fit_intensity_wings_min
+      fit_mask and= all_intensities[*, *, i] lt fit_intensity_wings_max
+    endfor
 
     xpeak = run->line(wave_region, 'center_wavelength') + doppler_shift
     ucomp_gauss_fit, all_intensities, $
                      wavelengths, $
                      center_wavelength, $
                      n_terms=n_terms, $
-                     estimates_peak_intensity=peak_intensity, $
+                     estimates_peak_intensity=analytic_peak_intensity, $
                      estimates_xpeak=xpeak, $
-                     estimates_line_width=line_width / sqrt(2.0), $
-                     ; [TODO]: use more restrictive velocity mask
+                     estimates_line_width=analytic_line_width / sqrt(2.0), $
                      mask=geometry_mask and fit_mask, $
-                     min_threshold=min([noise_intensity_red_min, noise_intensity_blue_min]), $
-                     max_threshold=noise_intensity_center_max, $
+                     min_threshold=fit_intensity_wings_min, $
+                     max_threshold=fit_intensity_wings_max, $
                      n_fits=n_fits, $
                      doppler_shift=fit_doppler_shift, $
                      line_width=fit_line_width, $
@@ -228,10 +231,6 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
     mg_log, '%d Gaussian fits (%d term) performed', n_fits, n_terms, $
       name=run.logger_name, /debug
 
-    dopper_shift = fit_doppler_shift
-    line_width = fit_line_width
-    peak_intensity = fit_peak_intensity
-
     time = run->stop(clock_id)
     mg_log, 'Gaussian fit: %0.1f secs', time, name=run.logger_name, /debug
   endif
@@ -239,11 +238,14 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   c = 299792.458D   ; km/s
 
   ; convert Doppler shift to velocity [km/s]
-  doppler_shift *= c / run->line(wave_region, 'center_wavelength')
+  analytic__doppler_shift *= c / run->line(wave_region, 'center_wavelength')
+  fit_doppler_shift *= c / run->line(wave_region, 'center_wavelength')
 
   ; convert line width to velocity [km/s] and then to FWHM
-  line_width *= c / run->line(wave_region, 'center_wavelength')
-  line_width_fwhm = float(line_width) * run->epoch('fwhm_factor')
+  analytic_line_width *= c / run->line(wave_region, 'center_wavelength')
+  analytic_line_width_fwhm = float(analytic_line_width) * run->epoch('fwhm_factor')
+  fit_line_width *= c / run->line(wave_region, 'center_wavelength')
+  fit_line_width_fwhm = float(fit_line_width) * run->epoch('fwhm_factor')
 
   enhanced_intensity_center = ucomp_enhanced_intensity(intensity_center, $
       radius=run->line(wave_region, 'enhanced_intensity_radius'), $
@@ -255,16 +257,25 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
 
   azimuth = ucomp_azimuth(summed_q, summed_u, radial_azimuth=radial_azimuth)
 
+  noise_intensity_center_min = run->line(wave_region, 'noise_intensity_center_min')
+  noise_intensity_center_max = run->line(wave_region, 'noise_intensity_center_max')
+  noise_intensity_red_min    = run->line(wave_region, 'noise_intensity_red_min')
+  noise_intensity_red_max    = run->line(wave_region, 'noise_intensity_red_max')
+  noise_intensity_blue_min   = run->line(wave_region, 'noise_intensity_blue_min')
+  noise_intensity_blue_max   = run->line(wave_region, 'noise_intensity_blue_max')
+
   !null = where(intensity_center gt noise_intensity_center_min $
       and intensity_center lt noise_intensity_center_max $
       and intensity_red gt noise_intensity_red_min $
       and intensity_red lt noise_intensity_red_max $
       and intensity_blue gt noise_intensity_blue_min $
       and intensity_blue lt noise_intensity_blue_max $
-      and line_width_fwhm gt run->line(wave_region, 'noise_line_width_min') $
-      and line_width_fwhm lt run->line(wave_region, 'noise_line_width_max') $
-      and abs(doppler_shift) lt run->line(wave_region, 'noise_velocity_threshold') $
-      and peak_intensity gt run->line(wave_region, 'noise_intensity_peak_min'), $
+      and (intensity_center + intensity_red + intensity_blue) gt run->line(wave_region, 'noise_intensity_sum_min') $
+      and analytic_line_width_fwhm gt run->line(wave_region, 'noise_line_width_min') $
+      and analytic_line_width_fwhm lt run->line(wave_region, 'noise_line_width_max') $
+      and abs(analytic_doppler_shift) lt run->line(wave_region, 'noise_velocity_threshold') $
+      and analytic_peak_intensity gt run->line(wave_region, 'noise_intensity_peak_min') $
+      and analytic_mask, $
     complement=noisy_indices, /null)
 
   noise_mask = byte(intensity_center) * 0B + 1B
@@ -274,9 +285,12 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   if (run->config('level2/mask_noise')) then begin
     intensity_center[noisy_indices]          = !values.f_nan
     enhanced_intensity_center[noisy_indices] = !values.f_nan
-    peak_intensity[noisy_indices]            = !values.f_nan
-    doppler_shift[noisy_indices]             = !values.f_nan
-    line_width_fwhm[noisy_indices]           = !values.f_nan
+    analytic_peak_intensity[noisy_indices]   = !values.f_nan
+    analytic_doppler_shift[noisy_indices]    = !values.f_nan
+    analytic_line_width_fwhm[noisy_indices]  = !values.f_nan
+    fit_peak_intensity[noisy_indices]        = !values.f_nan
+    fit_doppler_shift[noisy_indices]         = !values.f_nan
+    fit_line_width_fwhm[noisy_indices]       = !values.f_nan
 
     summed_intensity[noisy_indices]          = !values.f_nan
     summed_q[noisy_indices]                  = !values.f_nan
@@ -301,9 +315,12 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
     if (n_outside_mask gt 0L) then begin
       intensity_center[outside_mask_indices]          = !values.f_nan
       enhanced_intensity_center[outside_mask_indices] = !values.f_nan
-      peak_intensity[outside_mask_indices]            = !values.f_nan
-      line_width_fwhm[outside_mask_indices]           = !values.f_nan
-      doppler_shift[outside_mask_indices]             = !values.f_nan
+      analytic_peak_intensity[outside_mask_indices]   = !values.f_nan
+      analytic_line_width_fwhm[outside_mask_indices]  = !values.f_nan
+      analytic_doppler_shift[outside_mask_indices]    = !values.f_nan
+      fit_peak_intensity[outside_mask_indices]        = !values.f_nan
+      fit_line_width_fwhm[outside_mask_indices]       = !values.f_nan
+      fit_doppler_shift[outside_mask_indices]         = !values.f_nan
 
       summed_intensity[outside_mask_indices]          = !values.f_nan
       summed_q[outside_mask_indices]                  = !values.f_nan
@@ -327,30 +344,66 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   sun, year, month, day, fhours, sd=rsun
   sun_pixels = rsun / run->line(wave_region, 'plate_scale')
 
-  rstwvl_mask = intensity_center gt run->line(wave_region, 'rstwvl_intensity_center_min') $
-    and intensity_center lt run->line(wave_region, 'rstwvl_intensity_center_max') $
-    and intensity_blue gt run->line(wave_region, 'rstwvl_intensity_blue_min') $
+  rstwvl_mask_base = $
+    intensity_center lt run->line(wave_region, 'rstwvl_intensity_center_max') $
     and intensity_blue lt run->line(wave_region, 'rstwvl_intensity_blue_max') $
-    and intensity_red gt run->line(wave_region, 'rstwvl_intensity_red_min') $
     and intensity_red lt run->line(wave_region, 'rstwvl_intensity_red_max') $
-    and line_width_fwhm gt run->line(wave_region, 'rstwvl_line_width_min') $
-    and line_width_fwhm lt run->line(wave_region, 'rstwvl_line_width_max') $
-    and abs(doppler_shift) lt run->line(wave_region, 'rstwvl_velocity_threshold') $
-    and doppler_shift ne 0.0 $
+    and analytic_line_width_fwhm gt run->line(wave_region, 'rstwvl_line_width_min') $
+    and analytic_line_width_fwhm lt run->line(wave_region, 'rstwvl_line_width_max') $
+    and abs(analytic_doppler_shift) lt run->line(wave_region, 'rstwvl_velocity_threshold') $
+    and analytic_mask $
     and finite(doppler_shift) $
     and ucomp_annulus(occulter_radius + run->line(wave_region, 'rstwvl_over_masking'), $
-                      1.25 * sun_pixels, $
+                      1.25 * sun_pixels, $  ; [TODO]: 1.3 Rsun?
                       dimensions=dims)
+
+  rstwvl_mask = rstwvl_mask_base $
+    and intensity_center gt run->line(wave_region, 'rstwvl_intensity_center_min') $
+    and intensity_blue gt run->line(wave_region, 'rstwvl_intensity_blue_min') $
+    and intensity_red gt run->line(wave_region, 'rstwvl_intensity_red_min')
 
   east_indices = where(rstwvl_mask and x lt 0.0, n_east_indices)
   west_indices = where(rstwvl_mask and x gt 0.0, n_west_indices)
+  mg_log, 'n_east_indices: %d', n_east_indices, name=run.logger_name, /debug
+  mg_log, 'n_west_indices: %d', n_west_indices, name=run.logger_name, /debug
 
-  if (n_east_indices gt 0L && n_west_indices gt 0L) then begin
-    east_rest_wavelength = median([doppler_shift[east_indices]])
-    west_rest_wavelength = median([doppler_shift[west_indices]])
+  rstwvl_ew_min_points = run->line(wave_region, 'rstwvl_ew_min_points')
+  if (n_east_indices gt rstwvl_ew_min_points && n_west_indices gt rstwvl_ew_min_points) then begin
+    east_rest_wavelength = median([analytic_doppler_shift[east_indices]])
+    west_rest_wavelength = median([analytic_doppler_shift[west_indices]])
     file_rest_wavelength = (east_rest_wavelength + west_rest_wavelength) / 2.0
   endif else begin
-    file_rest_wavelength = median(doppler_shift)
+    ; try rstwvl_mask again with minimums / 2.0
+    rstwvl_mask = rstwvl_mask_base $
+      and intensity_center gt 0.5 * run->line(wave_region, 'rstwvl_intensity_center_min') $
+      and intensity_blue gt 0.5 * run->line(wave_region, 'rstwvl_intensity_blue_min') $
+      and intensity_red gt 0.5 * run->line(wave_region, 'rstwvl_intensity_red_min')
+
+    east_indices = where(rstwvl_mask and x lt 0.0, n_east_indices)
+    west_indices = where(rstwvl_mask and x gt 0.0, n_west_indices)
+    mg_log, 'n_east_indices2: %d', n_east_indices, name=run.logger_name, /debug
+    mg_log, 'n_west_indices2: %d', n_west_indices, name=run.logger_name, /debug
+
+    if (n_east_indices gt rstwvl_ew_min_points && n_west_indices gt rstwvl_ew_min_points) then begin
+      east_rest_wavelength = median([analytic_doppler_shift[east_indices]])
+      west_rest_wavelength = median([analytic_doppler_shift[west_indices]])
+      file_rest_wavelength = (east_rest_wavelength + west_rest_wavelength) / 2.0
+    endif else begin
+      ; then try a merged value (not east/west)
+      rstwvl_mask = rstwvl_mask_base $
+        and intensity_center gt run->line(wave_region, 'noise_intensity_center_min') $
+        and intensity_blue gt run->line(wave_region, 'noise_intensity_red_min') $
+        and intensity_red gt run->line(wave_region, 'noise_intensity_blue_min')
+
+      rstwvl_indices = where(rstwvl_mask, n_rstwvl_pts)
+      mg_log, 'n_rstwvl_pts: %d', n_rstwvl_pts, name=run.logger_name, /debug
+
+      if (n_rstwvl_pts gt run->line(wave_region, 'rstwvl_min_points')) then begin
+        file_rest_wavelength = median(analytic_doppler_shift[rstwvl_indices])
+      endif else begin
+        file_rest_wavelength = !values.f_nan
+      endelse
+    endelse
   endelse
   mg_log, 'rest wavelength from data: %0.2f km/s', file_rest_wavelength, $
           name=run.logger_name, /debug
@@ -386,7 +439,8 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   endcase
 
   ; apply rest wavelength
-  doppler_shift -= rest_wavelength
+  analytic_doppler_shift -= rest_wavelength
+  fit_doppler_shift -= rest_wavelength
 
   l2_dir = filepath('', $
                     subdir=[run.date, 'level2'], $
@@ -482,37 +536,31 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
     sxdelpar, header, delete_keywords[k]
   endfor
 
+  ; write analytic Gaussian fit peak intensity, velocity, and line width
+
   ; write peak intensity
-  if (perform_gauss_fit) then begin
-    comment = string(gaussian_fit_method, format='%s Gaussian fit using all wavelengths')
-  endif else begin
-    comment = 'Analytic Gaussian fit using 3 ref wavelengths'
-  endelse
-  ucomp_addpar, header, 'FITMETHD', $
-                perform_gauss_fit ? gaussian_fit_method : 'analytic', $
-                comment=perform_gauss_fit ? 'Gaussian fit using all wavelengths' : 'Analytic Gaussian fit', $
+  ucomp_addpar, header, 'FITMETHD', 'analytic', $
+                comment='Analytic Gaussian fit using 3 ref wavelengths', $
                 after='SKYTRANS'
-  if (gaussian_fit_method eq 'analytic') then begin
-    ucomp_addpar, header, 'CNTR_REF', center_wavelength, $
-                  comment='[nm] center reference wavelength', format='F0.3'
-    ucomp_addpar, header, 'BLUE_REF', blue_reference_wavelength, $
-                  comment='[nm] blue reference wavelength', format='F0.3'
-    ucomp_addpar, header, 'RED_REF', red_reference_wavelength, $
-                  comment='[nm] red reference wavelength', format='F0.3'
-    ucomp_addpar, header, 'CNTR_FIT', wavelengths[center_index], $
-                  comment='[nm] blue wavelength used in fit', format='F0.3'
-    ucomp_addpar, header, 'BLUE_FIT', wavelengths[blue_index], $
-                  comment='[nm] blue wavelength used in fit', format='F0.3'
-    ucomp_addpar, header, 'RED_FIT', wavelengths[red_index], $
-                  comment='[nm] red wavelength used in fit', format='F0.3'
-    ucomp_addpar, header, 'COMMENT', 'Fit info', /title, before='FITMETHD'
-  endif
+  ucomp_addpar, header, 'CNTR_REF', center_wavelength, $
+                comment='[nm] center reference wavelength', format='F0.3'
+  ucomp_addpar, header, 'BLUE_REF', blue_reference_wavelength, $
+                comment='[nm] blue reference wavelength', format='F0.3'
+  ucomp_addpar, header, 'RED_REF', red_reference_wavelength, $
+                comment='[nm] red reference wavelength', format='F0.3'
+  ucomp_addpar, header, 'CNTR_FIT', wavelengths[center_index], $
+                comment='[nm] blue wavelength used in fit', format='F0.3'
+  ucomp_addpar, header, 'BLUE_FIT', wavelengths[blue_index], $
+                comment='[nm] blue wavelength used in fit', format='F0.3'
+  ucomp_addpar, header, 'RED_FIT', wavelengths[red_index], $
+                comment='[nm] red wavelength used in fit', format='F0.3'
+  ucomp_addpar, header, 'COMMENT', 'Fit info', /title, before='FITMETHD'
 
   ucomp_fits_write, fcb, $
-                    float(peak_intensity), $
+                    float(analytic_peak_intensity), $
                     header, $
                     extname='Peak intensity', $
-                    ext_comment='peak of Gaussian fit', $
+                    ext_comment='peak of analytical Gauss fit', $
                     /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
 
@@ -531,32 +579,31 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                 after='RSTMTHD'
 
   ucomp_fits_write, fcb, $
-                    float(doppler_shift), $
+                    float(analytic_doppler_shift), $
                     header, $
                     extname='LOS velocity', $
-                    ext_comment='[km/s] Doppler velocity from Gaussian fit', $
+                    ext_comment='[km/s] Doppler velocity analytical Gauss fit', $
                     /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
 
   sxdelpar, header, 'RSTWVL'
   sxdelpar, header, 'RSTMTHD'
   sxdelpar, header, 'WAVOFF2'
-  if (gaussian_fit_method eq 'analytic') then begin
-    sxdelpar, header, 'BLUE_REF'
-    sxdelpar, header, 'RED_REF'
-    sxdelpar, header, 'CNTR_FIT'
-    sxdelpar, header, 'BLUE_FIT'
-    sxdelpar, header, 'RED_FIT'
-  endif
 
   ; write line width
   ucomp_fits_write, fcb, $
-                    float(line_width_fwhm), $
+                    float(analytic_line_width_fwhm), $
                     header, $
                     extname='Line width (FWHM)', $
-                    ext_comment='[km/s] FWHM from Gaussian fit', $
+                    ext_comment='[km/s] FWHM of analytical Gauss fit', $
                     /no_abort, message=error_msg
   if (error_msg ne '') then message, error_msg
+
+  sxdelpar, header, 'BLUE_REF'
+  sxdelpar, header, 'RED_REF'
+  sxdelpar, header, 'CNTR_FIT'
+  sxdelpar, header, 'BLUE_FIT'
+  sxdelpar, header, 'RED_FIT'
 
   ucomp_delpar, header, 'Fit info', /section
 
@@ -628,31 +675,60 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   endif
 
   if (perform_gauss_fit) then begin
+    ucomp_addpar, header, 'FITMETHD', gaussian_fit_method, $
+                  comment=string(gaussian_fit_method, $
+                                 format='%s least squares fit using all wavelengths')
+                  after='SKYTRANS'
+
+    ucomp_fits_write, fcb, $
+                      float(fit_peak_intensity), $
+                      header, $
+                      extname='LS peak intensity', $
+                      ext_comment='peak of least square Gauss fit', $
+                      /no_abort, message=error_msg
+    if (error_msg ne '') then message, error_msg
+
+    ucomp_fits_write, fcb, $
+                      float(fit_doppler_shift), $
+                      header, $
+                      extname='LS LOS velocity', $
+                      ext_comment='[km/s] Doppler velocity least square Gauss fit', $
+                      /no_abort, message=error_msg
+    if (error_msg ne '') then message, error_msg
+
+    ucomp_fits_write, fcb, $
+                      float(fit_line_width_fwhm), $
+                      header, $
+                      extname='LS Line width (FWHM)', $
+                      ext_comment='[km/s] FWHM of least square Gauss fit', $
+                      /no_abort, message=error_msg
+    if (error_msg ne '') then message, error_msg
+
     ucomp_fits_write, fcb, $
                       float(fit_chisq), $
                       header, $
-                      extname='Fit chi-squared', $
-                      ext_comment='Chi-squared of fit', $
+                      extname='LS fit chi-squared', $
+                      ext_comment='Chi-squared of least square Gauss fit', $
                       /no_abort, message=error_msg
     if (error_msg ne '') then message, error_msg
 
     ucomp_addpar, header, 'NAXIS3', n_terms, $
-                  comment='number of terms in Gaussian fit', $
+                  comment='number of terms in Gauss fit', $
                   after='NAXIS2'
 
     ucomp_fits_write, fcb, $
                       float(fit_sigma), $
                       header, $
-                      extname='Fit sigma', $
-                      ext_comment='1-sigma error estimates of fit', $
+                      extname='LS fit sigma', $
+                      ext_comment='1-sigma error of least square Gauss fit', $
                       /no_abort, message=error_msg
     if (error_msg ne '') then message, error_msg
 
     ucomp_fits_write, fcb, $
                       float(fit_coefficients), $
                       header, $
-                      extname='Fit coefficients', $
-                      ext_comment='Coefficients of fit', $
+                      extname='LS fit coefficients', $
+                      ext_comment='coefficients of least square Gauss fit', $
                       /no_abort, message=error_msg
     if (error_msg ne '') then message, error_msg
   endif

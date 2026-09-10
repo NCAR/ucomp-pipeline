@@ -89,7 +89,13 @@ function ucomp_compute_density, peak_intensity_1074, peak_intensity_1079, $
       and line_width_1079 gt noise_line_width_min_1079 $
       and line_width_1079 lt noise_line_width_max_1079 $
       and finite(ratio)
-  if (n_elements(computed_mask) gt 0L) then mask and= computed_mask
+  if (n_elements(computed_mask) gt 0L) then begin
+    mask and= computed_mask
+  endif else begin
+    mask and= peak_intensity_1074 eq 0.0
+    mask and= peak_intensity_1079 eq 0.0
+  endelse
+
   mask_indices = where(mask, n_mask_indices)
 
   density = peak_intensity_1074 * 0.0 + !values.f_nan
