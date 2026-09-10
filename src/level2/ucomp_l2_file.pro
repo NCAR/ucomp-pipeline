@@ -238,7 +238,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   c = 299792.458D   ; km/s
 
   ; convert Doppler shift to velocity [km/s]
-  analytic__doppler_shift *= c / run->line(wave_region, 'center_wavelength')
+  analytic_doppler_shift *= c / run->line(wave_region, 'center_wavelength')
   fit_doppler_shift *= c / run->line(wave_region, 'center_wavelength')
 
   ; convert line width to velocity [km/s] and then to FWHM
