@@ -774,7 +774,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                          ; dynamics images
                          intensity_center, $
                          enhanced_intensity_center, $
-                         perform_gauss_fit ? fit_peak_intensity : analytic__peak_intensity, $
+                         perform_gauss_fit ? fit_peak_intensity : analytic_peak_intensity, $
                          perform_gauss_fit ? fit_doppler_shift : analytic_doppler_shift, $
                          perform_gauss_fit ? fit_line_width_fwhm : analytic_line_width_fwhm, $
 
@@ -802,7 +802,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                            ; dynamics images
                            intensity_center, $
                            enhanced_intensity_center, $
-                           perform_gauss_fit ? fit_peak_intensity : analytic__peak_intensity, $
+                           perform_gauss_fit ? fit_peak_intensity : analytic_peak_intensity, $
                            perform_gauss_fit ? fit_doppler_shift : analytic_doppler_shift, $
                            perform_gauss_fit ? fit_line_width_fwhm : analytic_line_width_fwhm, $
 
