@@ -209,7 +209,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
       fit_mask and= all_intensities[*, *, i] lt fit_intensity_wings_max
     endfor
 
-    xpeak = run->line(wave_region, 'center_wavelength') + doppler_shift
+    xpeak = run->line(wave_region, 'center_wavelength') + analytic_doppler_shift
     ucomp_gauss_fit, all_intensities, $
                      wavelengths, $
                      center_wavelength, $
@@ -239,13 +239,17 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
 
   ; convert Doppler shift to velocity [km/s]
   analytic_doppler_shift *= c / run->line(wave_region, 'center_wavelength')
-  fit_doppler_shift *= c / run->line(wave_region, 'center_wavelength')
+  if (perform_gauss_fit) then begin
+    fit_doppler_shift *= c / run->line(wave_region, 'center_wavelength')
+  endif
 
   ; convert line width to velocity [km/s] and then to FWHM
   analytic_line_width *= c / run->line(wave_region, 'center_wavelength')
   analytic_line_width_fwhm = float(analytic_line_width) * run->epoch('fwhm_factor')
-  fit_line_width *= c / run->line(wave_region, 'center_wavelength')
-  fit_line_width_fwhm = float(fit_line_width) * run->epoch('fwhm_factor')
+  if (perform_gauss_fit) then begin
+    fit_line_width *= c / run->line(wave_region, 'center_wavelength')
+    fit_line_width_fwhm = float(fit_line_width) * run->epoch('fwhm_factor')
+  endif
 
   enhanced_intensity_center = ucomp_enhanced_intensity(intensity_center, $
       radius=run->line(wave_region, 'enhanced_intensity_radius'), $
@@ -288,9 +292,11 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
     analytic_peak_intensity[noisy_indices]   = !values.f_nan
     analytic_doppler_shift[noisy_indices]    = !values.f_nan
     analytic_line_width_fwhm[noisy_indices]  = !values.f_nan
-    fit_peak_intensity[noisy_indices]        = !values.f_nan
-    fit_doppler_shift[noisy_indices]         = !values.f_nan
-    fit_line_width_fwhm[noisy_indices]       = !values.f_nan
+    if (perform_gauss_fit) then begin
+      fit_peak_intensity[noisy_indices]      = !values.f_nan
+      fit_doppler_shift[noisy_indices]       = !values.f_nan
+      fit_line_width_fwhm[noisy_indices]     = !values.f_nan
+    endif
 
     summed_intensity[noisy_indices]          = !values.f_nan
     summed_q[noisy_indices]                  = !values.f_nan
@@ -318,9 +324,11 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
       analytic_peak_intensity[outside_mask_indices]   = !values.f_nan
       analytic_line_width_fwhm[outside_mask_indices]  = !values.f_nan
       analytic_doppler_shift[outside_mask_indices]    = !values.f_nan
-      fit_peak_intensity[outside_mask_indices]        = !values.f_nan
-      fit_line_width_fwhm[outside_mask_indices]       = !values.f_nan
-      fit_doppler_shift[outside_mask_indices]         = !values.f_nan
+      if (perform_gauss_fit) then begin
+        fit_peak_intensity[outside_mask_indices]      = !values.f_nan
+        fit_line_width_fwhm[outside_mask_indices]     = !values.f_nan
+        fit_doppler_shift[outside_mask_indices]       = !values.f_nan
+      endif
 
       summed_intensity[outside_mask_indices]          = !values.f_nan
       summed_q[outside_mask_indices]                  = !values.f_nan
@@ -352,7 +360,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
     and analytic_line_width_fwhm lt run->line(wave_region, 'rstwvl_line_width_max') $
     and abs(analytic_doppler_shift) lt run->line(wave_region, 'rstwvl_velocity_threshold') $
     and analytic_mask $
-    and finite(doppler_shift) $
+    and finite(analytic_doppler_shift) $
     and ucomp_annulus(occulter_radius + run->line(wave_region, 'rstwvl_over_masking'), $
                       1.25 * sun_pixels, $  ; [TODO]: 1.3 Rsun?
                       dimensions=dims)
@@ -440,7 +448,9 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
 
   ; apply rest wavelength
   analytic_doppler_shift -= rest_wavelength
-  fit_doppler_shift -= rest_wavelength
+  if (perform_gauss_fit) then begin
+    fit_doppler_shift -= rest_wavelength
+  endif
 
   l2_dir = filepath('', $
                     subdir=[run.date, 'level2'], $
@@ -738,8 +748,12 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   if (run->config('display/mask_l2_noise')) then begin
     ; don't mask intensity products
 
-    doppler_shift[noisy_indices]             = !values.f_nan
-    line_width_fwhm[noisy_indices]           = !values.f_nan
+    analytic_doppler_shift[noisy_indices]    = !values.f_nan
+    analytic_line_width_fwhm[noisy_indices]  = !values.f_nan
+    if (perform_gauss_fit) then begin
+      fit_doppler_shift[noisy_indices]       = !values.f_nan
+      fit_line_width_fwhm[noisy_indices]     = !values.f_nan
+    endif
 
     ; masked by noise to match Q, U, and L
     summed_intensity[noisy_indices]          = !values.f_nan
@@ -760,9 +774,9 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                          ; dynamics images
                          intensity_center, $
                          enhanced_intensity_center, $
-                         peak_intensity, $
-                         doppler_shift, $
-                         line_width_fwhm, $
+                         perform_gauss_fit ? fit_peak_intensity : analytic__peak_intensity, $
+                         perform_gauss_fit ? fit_doppler_shift : analytic_doppler_shift, $
+                         perform_gauss_fit ? fit_line_width_fwhm : analytic_line_width_fwhm, $
 
                          ; polarization images
                          summed_intensity, $
@@ -788,9 +802,9 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                            ; dynamics images
                            intensity_center, $
                            enhanced_intensity_center, $
-                           peak_intensity, $
-                           doppler_shift, $
-                           line_width_fwhm, $
+                           perform_gauss_fit ? fit_peak_intensity : analytic__peak_intensity, $
+                           perform_gauss_fit ? fit_doppler_shift : analytic_doppler_shift, $
+                           perform_gauss_fit ? fit_line_width_fwhm : analytic_line_width_fwhm, $
 
                            ; polarization images
                            summed_intensity, $
