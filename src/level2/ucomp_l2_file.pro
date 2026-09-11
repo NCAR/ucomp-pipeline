@@ -203,7 +203,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
       and intensity_red gt fit_intensity_nominal_wings_min
 
     all_dims = size(all_intensities, /dimensions)
-    for i = 0L, all_dims[3] - 1L do begin
+    for i = 0L, all_dims[2] - 1L do begin
       if (i eq center_index) then continue
       fit_mask and= all_intensities[*, *, i] gt fit_intensity_wings_min
       fit_mask and= all_intensities[*, *, i] lt fit_intensity_wings_max
