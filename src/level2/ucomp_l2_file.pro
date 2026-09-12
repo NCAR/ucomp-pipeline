@@ -709,7 +709,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
     ucomp_fits_write, fcb, $
                       float(fit_line_width_fwhm), $
                       header, $
-                      extname='LS Line width (FWHM)', $
+                      extname='LS line width (FWHM)', $
                       ext_comment='[km/s] FWHM of least square Gauss fit', $
                       /no_abort, message=error_msg
     if (error_msg ne '') then message, error_msg
