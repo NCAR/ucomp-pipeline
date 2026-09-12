@@ -352,20 +352,23 @@ def list_fits_file_default(f):
         print(f"{basename} not found")
 
 
-def value2str(v, format=None):
-    if format is not None:
-        template = f"{{v{format}}}"
-        return(template.format(v=v))
-    if type(v) == str:
-        return(f"{v:10s}")
-    elif type(v) == float:
-        return(f"{v:8.3f}")
-    elif type(v) == int:
-        return(f"{v:8d}")
-    elif type(v) == bool:
-        return(f"{v!s:5s}")
-    elif v is None:
+def value2str(v, fmt: str|None = None) -> str:
+    """Convert a value to a string, using `fmt` as an f-string format if given
+    or a default format for the type of `v` otherwise."""
+    if v is None:
         return 5 * "-"
+    elif fmt is not None:
+        template = f"{{v{fmt}}}"
+        return(template.format(v=v))
+    elif isinstance(v, str):
+        return(f"{v:10s}")
+    elif isinstance(v, float):
+        return(f"{v:8.3f}")
+    elif isinstance(v, int):
+        return(f"{v:8d}")
+    elif isinstance(v, bool):
+        return(f"{v!s:5s}")
+
     return(f"{v}")
 
 
@@ -516,6 +519,9 @@ def cat_keywords(args):
                    "Weighted average L": ["EXTNAME"],
                    "Azimuth": ["EXTNAME"],
                    "Radial azimuth": ["EXTNAME"],
+                   "Fit peak intensity": ["EXTNAME", "BLUE_REF", "RED_REF"],
+                   "Fit LOS velocity": ["EXTNAME", "BLUE_REF", "RED_REF", "RSTWVL"],
+                   "Fit line width (FWHM)": ["EXTNAME"],
                    "Fit chi-squared": ["EXTNAME"],
                    "Fit sigma": ["EXTNAME"],
                    "Fit coefficients": ["EXTNAME"]}
@@ -535,7 +541,7 @@ def cat_keywords(args):
                         if args.keywords is None:
                             if level == "L2":
                                 extname = hdu.header["EXTNAME"]
-                                keywords = l2_keywords[extname]
+                                keywords = l2_keywords[extname] if extname in l2_keywords else ["EXTNAME"]
                             elif level == "L1":
                                 keywords = l1_keywords
                             elif level == "L3":
@@ -554,7 +560,7 @@ def cat_keywords(args):
                             if k in hdu.header:
                                 value = hdu.header[k]
                                 fmt = default_formats[k] if k in default_formats else None
-                                line += "  " + value2str(value, format=fmt)
+                                line += "  " + value2str(value, fmt=fmt)
                             else:
                                 line += "  " + 5 * "-"
                         print(line)
