@@ -365,54 +365,41 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                       1.25 * sun_pixels, $  ; [TODO]: 1.3 Rsun?
                       dimensions=dims)
 
-  rstwvl_mask = rstwvl_mask_base $
-    and intensity_center gt run->line(wave_region, 'rstwvl_intensity_center_min') $
-    and intensity_blue gt run->line(wave_region, 'rstwvl_intensity_blue_min') $
-    and intensity_red gt run->line(wave_region, 'rstwvl_intensity_red_min')
-
-  east_indices = where(rstwvl_mask and x lt 0.0, n_east_indices)
-  west_indices = where(rstwvl_mask and x gt 0.0, n_west_indices)
-  mg_log, 'n_east_indices: %d', n_east_indices, name=run.logger_name, /debug
-  mg_log, 'n_west_indices: %d', n_west_indices, name=run.logger_name, /debug
-
+  min_threshold_factors = [1.0, 0.5, 0.25]
   rstwvl_ew_min_points = run->line(wave_region, 'rstwvl_ew_min_points')
-  if (n_east_indices gt rstwvl_ew_min_points && n_west_indices gt rstwvl_ew_min_points) then begin
-    east_rest_wavelength = median([analytic_doppler_shift[east_indices]])
-    west_rest_wavelength = median([analytic_doppler_shift[west_indices]])
-    file_rest_wavelength = (east_rest_wavelength + west_rest_wavelength) / 2.0
-  endif else begin
-    ; try rstwvl_mask again with minimums / 2.0
+
+  rstwvl_intensity_sum_min = run->line(wave_region, 'rstwvl_intensity_sum_min')
+  rstwvl_intensity_center_min = run->line(wave_region, 'rstwvl_intensity_center_min')
+  rstwvl_intensity_blue_min = run->line(wave_region, 'rstwvl_intensity_blue_min')
+  rstwvl_intensity_red_min = run->line(wave_region, 'rstwvl_intensity_red_min')
+
+  for f = 0L, n_elements(min_threshold_factors) - 1L do begin
+    factor = min_threshold_factors[f]
     rstwvl_mask = rstwvl_mask_base $
-      and intensity_center gt 0.5 * run->line(wave_region, 'rstwvl_intensity_center_min') $
-      and intensity_blue gt 0.5 * run->line(wave_region, 'rstwvl_intensity_blue_min') $
-      and intensity_red gt 0.5 * run->line(wave_region, 'rstwvl_intensity_red_min')
+      and (intensity_center + intensity_blue + intensity_red) gt factor * rstwvl_intensity_sum_min $
+      and intensity_center gt factor * rstwvl_intensity_center_min $
+      and intensity_blue gt factor * rstwvl_intensity_blue_min $
+      and intensity_red gt factor * rstwvl_intensity_red_min
 
     east_indices = where(rstwvl_mask and x lt 0.0, n_east_indices)
     west_indices = where(rstwvl_mask and x gt 0.0, n_west_indices)
-    mg_log, 'n_east_indices2: %d', n_east_indices, name=run.logger_name, /debug
-    mg_log, 'n_west_indices2: %d', n_west_indices, name=run.logger_name, /debug
+    mg_log, 'n_east_indices (at factor %0.2f): %d', factor, n_east_indices, $
+            name=run.logger_name, /debug
+    mg_log, 'n_west_indices (at factor %0.2f): %d', factor, n_west_indices, $
+            name=run.logger_name, /debug
 
     if (n_east_indices gt rstwvl_ew_min_points && n_west_indices gt rstwvl_ew_min_points) then begin
       east_rest_wavelength = median([analytic_doppler_shift[east_indices]])
       west_rest_wavelength = median([analytic_doppler_shift[west_indices]])
       file_rest_wavelength = (east_rest_wavelength + west_rest_wavelength) / 2.0
-    endif else begin
-      ; then try a merged value (not east/west)
-      rstwvl_mask = rstwvl_mask_base $
-        and intensity_center gt run->line(wave_region, 'noise_intensity_center_min') $
-        and intensity_blue gt run->line(wave_region, 'noise_intensity_red_min') $
-        and intensity_red gt run->line(wave_region, 'noise_intensity_blue_min')
+      break
+    endif
+  endfor
 
-      rstwvl_indices = where(rstwvl_mask, n_rstwvl_pts)
-      mg_log, 'n_rstwvl_pts: %d', n_rstwvl_pts, name=run.logger_name, /debug
+  if (n_elements(file_rest_wavelength) eq 0L) then begin
+    file_rest_wavelength = !values.f_nan
+  endif
 
-      if (n_rstwvl_pts gt run->line(wave_region, 'rstwvl_min_points')) then begin
-        file_rest_wavelength = median(analytic_doppler_shift[rstwvl_indices])
-      endif else begin
-        file_rest_wavelength = !values.f_nan
-      endelse
-    endelse
-  endelse
   mg_log, 'rest wavelength from data: %0.2f km/s', file_rest_wavelength, $
           name=run.logger_name, /debug
 
@@ -831,20 +818,15 @@ end
 
 ; main-level example program
 
-; date = '20220215'
-date = '20240409'
-config_basename = 'ucomp.3-term.cfg'
+date = '20220112'
+config_basename = 'ucomp.latest.cfg'
 config_filename = filepath(config_basename, $
   subdir=['..', '..', '..', 'ucomp-config'], $
   root=mg_src_root())
 
 run = ucomp_run(date, 'test', config_filename)
 
-; basename = '20220215.211617.ucomp.1074.l1.p5.fts'
-; basename = '20220215.192712.ucomp.637.l1.p5.fts'
-basename = '20240409.180748.ucomp.1074.l1.p5.fts'
-; basename = '20240409.182654.ucomp.637.l1.p5.fts'
-; basename = '20240409.203933.ucomp.1074.l1.p3.fts'  ; waves
+basename = '20220112.190718.ucomp.1074.l1.p5.fts'
 
 l1_dir = filepath('level1', subdir=date, root=run->config('processing/basedir'))
 filename = filepath(basename, root=l1_dir)
