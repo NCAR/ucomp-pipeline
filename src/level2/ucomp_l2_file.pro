@@ -392,12 +392,14 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
       east_rest_wavelength = median([analytic_doppler_shift[east_indices]])
       west_rest_wavelength = median([analytic_doppler_shift[west_indices]])
       file_rest_wavelength = (east_rest_wavelength + west_rest_wavelength) / 2.0
+      rest_wavelength_factor = factor
       break
     endif
   endfor
 
   if (n_elements(file_rest_wavelength) eq 0L) then begin
     file_rest_wavelength = !values.f_nan
+    rest_wavelength_factor = !values.f_nan
   endif
 
   mg_log, 'rest wavelength from data: %0.2f km/s', file_rest_wavelength, $
@@ -562,18 +564,29 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   if (error_msg ne '') then message, error_msg
 
   ; write LOS velocity
+  after = 'SKYTRANS'
   ucomp_addpar, header, 'RSTWVL', rest_wavelength, $
                 comment=' [km/s] median rest wavelength', $
                 format='(F0.3)', $
-                before='SKYTRANS'
+                before=after
   ucomp_addpar, header, 'RSTMTHD', rstwvl_method_keyword, $
                 comment='rest wavelength computation method', $
-                after='RSTWVL'
+                after=after
+  ucomp_addpar, header, 'RSTWVLF', rest_wavelength_factor, $
+                comment='rest wavelength threshold factor', $
+                format='(F0.2)', $
+                after=after
+  ucomp_addpar, header, 'RSTWVLNE', n_east_indices, $
+                comment='number of east indices used in calculation', $
+                after=after
+  ucomp_addpar, header, 'RSTWVLNW', n_west_indices, $
+                comment='number of west indices used in calculation', $
+                after=after
   ucomp_addpar, header, 'WAVOFF2', $
                 rstwvl_method_keyword eq 'model fit' ? wave_region_offset : !null, $
                 comment='[nm] offset for center wavelength', $
                 format='(F0.3)', $
-                after='RSTMTHD'
+                after=after
 
   ucomp_fits_write, fcb, $
                     float(analytic_doppler_shift), $
@@ -585,6 +598,9 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
 
   sxdelpar, header, 'RSTWVL'
   sxdelpar, header, 'RSTMTHD'
+  sxdelpar, header, 'RSTWVLF'
+  sxdelpar, header, 'RSTWVLNE'
+  sxdelpar, header, 'RSTWVLNW'
   sxdelpar, header, 'WAVOFF2'
 
   ; write line width
