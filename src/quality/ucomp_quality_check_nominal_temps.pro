@@ -37,7 +37,7 @@ function ucomp_quality_check_nominal_temps, file, $
   std_min_temp = 0.0
   std_max_temp = 50.0
 
-  locations = ['BASE', 'LNB1', 'LNB2', 'RACK']
+  locations = ['BASE', 'RACK']
   std_keywords = ['T_' + locations, $
                   'TU_' + locations, $
                   'TU_C' + ['0', '1'] + 'ARR']
@@ -45,14 +45,17 @@ function ucomp_quality_check_nominal_temps, file, $
   ; A subset of temperatures requires a more stringent validity range. Use the
   ; following:
   ;
-  ; - TU_LCVR{1,2,3,4,5}/T_LCRV{1,2,3,4,5} between 30C and 39C
+  ; - TU_LCVR{1,2,3,4,5}/T_LCRV{1,2,3,4,5} and TU_LNB{1,2}/T_LNB{1,2} between
+  ;   30C and 39C
   ; - TU_MOD/T_MOD between 25C and 36C
 
   lcvr_min_temp = 30.0
   lcvr_max_temp = 39.0
 
+  lnb_keywords = 'LNB' + ['1', '2']
   lcvr_keywords = 'LCVR' + ['1', '2', '3', '4', '5']
-  lcvr_keywords = ['T_' + lcvr_keywords, 'TU_' + lcvr_keywords]
+  lcvr_keywords = ['T_' + [lcvr_keywords, lnb_keywords], $
+                   'TU_' + [lcvr_keywords, lnb_keywords]]
 
   mod_min_temp = 25.0
   mod_max_temp = 36.0
@@ -61,8 +64,8 @@ function ucomp_quality_check_nominal_temps, file, $
 
   result = 0B
 
-  ; Don't fail NaN values, except for T_MOD/TU_MOD. TU_MOD is used for
-  ; demodulation and MUST have a good value.
+  ; Don't fail NaN values, except for {T,TU}_MOD, {T,TU}_LCVR{1,2,3,4,5} and
+  ; {T,TU}_LNB{1,2}. TU_MOD is used for demodulation and MUST have a good value.
 
   for t = 0L, n_elements(std_keywords) - 1L do begin
     temp = ucomp_getpar(primary_header, std_keywords[t], /float, found=found)
@@ -75,7 +78,7 @@ function ucomp_quality_check_nominal_temps, file, $
     temp = ucomp_getpar(primary_header, lcvr_keywords[t], /float, found=found)
     if (finite(temp)) then begin
       result = result || (temp lt lcvr_min_temp) || (temp gt lcvr_max_temp)
-    endif
+    endif else result = 1B
   endfor
 
   for t = 0L, n_elements(mod_keywords) - 1L do begin
