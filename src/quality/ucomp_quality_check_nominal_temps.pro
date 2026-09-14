@@ -42,6 +42,10 @@ function ucomp_quality_check_nominal_temps, file, $
                   'TU_' + locations, $
                   'TU_C' + ['0', '1'] + 'ARR']
 
+  if (run->epoch('check_pcb_temps')) then begin
+    std_keywords = [std_keywords, 'TU_C' + ['0', '1'] + 'PCB']
+  endif
+
   ; A subset of temperatures requires a more stringent validity range. Use the
   ; following:
   ;
