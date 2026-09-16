@@ -805,3 +805,4 @@
 - update ucomp_process database table when processing/reprocessing
 - epoch file changes for bad data
 - fix for end-of-day processing script
+- fix for thresholding hot pixels in V crosstalk GBU criteria
