@@ -803,3 +803,5 @@
 
 - updated line width threshold for noise mask and rest wavelength calculation
 - update ucomp_process database table when processing/reprocessing
+- epoch file changes for bad data
+- fix for end-of-day processing script
