@@ -334,7 +334,9 @@ def list_fits_file_default(f):
             n_exts = f"{len(fits_file) - 1:2d} ext{s}"
             if "FILTER" in primary_header:
                 wave_region = primary_header["FILTER"]
-                if type(wave_region) == float:
+                if wave_region is None:
+                    wave_region = 7 * "-"
+                elif type(wave_region) == float:
                     wave_region = f"{wave_region:4.0f} nm"
                 elif len(wave_region) > 0:
                     wave_region = f"{wave_region:>4s} nm"
