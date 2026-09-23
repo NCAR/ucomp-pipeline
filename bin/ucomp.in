@@ -90,7 +90,7 @@ CONFIG_DIR = "@CONFIG_DIR@"
 
 
 # config file helpers
-# TODO: need to handle config file inheritance
+# [TODO]: need to handle config file inheritance
 
 def get_config_filename(flags):
     config_basename = f"ucomp.{flags}.cfg"
@@ -346,7 +346,7 @@ def list_fits_file_default(f):
             obs_plan = primary_header["OBS_PLAN"] if "OBS_PLAN" in primary_header else ""
             if obs_plan[-4:] == ".cbk":
                 obs_plan = obs_plan[:-4]
-            # TODO: convert plan name to "waves" or "synoptic"
+            # [TODO]: convert plan name to "waves" or "synoptic"
             if PROGRAM_CONVERTER.has_option("DEFAULT", obs_plan):
                 obs_plan = PROGRAM_CONVERTER.get("DEFAULT", obs_plan)
         print(f"{basename:38s}  {data_type:4s}  {wave_region:7s}  {n_exts:8s}  {obs_plan:8s}")
@@ -499,7 +499,7 @@ def cat_header(args):
                 print(f"{file} not found")
 
 def cat_keywords(args):
-    # TODO: default keywords should vary by level of the data
+    # [TODO]: default keywords should vary by level of the data
     default_keywords = {"sci": ["EXTNAME", "DATATYPE", "DATE-BEG", "WAVELNG", "ONBAND"],
                         "science": ["EXTNAME", "DATATYPE", "DATE-BEG", "WAVELNG", "ONBAND"],
                         "cal": ["EXTNAME", "DATATYPE", "DATE-BEG", "WAVELNG", "ONBAND", "POLANGLE", "RETANGLE"],
@@ -1392,7 +1392,7 @@ if __name__ == "__main__":
     # show help if no sub-command given
     parser.set_defaults(func=print_help, parser=parser)
 
-    # TODO: it would be nice to arrange sub-commands into groups, but that is
+    # [TODO]: it would be nice to arrange sub-commands into groups, but that is
     # not possible with argparse right now
     # helpers: list, ls, cat, validate, log, versions, database, watch
     # processing: rt, eod, cal, reprocess
