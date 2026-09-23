@@ -68,7 +68,7 @@ function ucomp_gbu_conditions, wave_region, run=run
                     {mask: 0UL, $
                      checker: 'ucomp_gbu_median_diff', $
                      name: 'median_diff', $
-                     description: 'the difference of the image with the median is above threshold (I:%(gbu_max_stddev_i)0.1f, QU:%(gbu_max_stddev_qu)0.1f) [min %(gbu_min_files_for_stddev_diff)d files]', $
+                     description: 'difference of image with median is above threshold (I:%(gbu_max_stddev_i)0.1f, QU:%(gbu_max_stddev_qu)0.1f) [min %(gbu_min_files_for_stddev_diff)d files]', $
                      values: 'Wgbu_max_stddev_i,Wgbu_max_stddev_qu,Wgbu_min_files_for_stddev_diff'}, $
                     {mask: 0UL, $
                      checker: 'ucomp_gbu_missingwavelengths', $
@@ -78,7 +78,7 @@ function ucomp_gbu_conditions, wave_region, run=run
                     {mask: 0UL, $
                      checker: 'ucomp_gbu_background_diff', $
                      name: 'background_diff', $
-                     description: 'the difference between background and median for the wavelength above threshold (%(gbu_max_background_increase)0.1f%)', $
+                     description: 'difference between background and median for the wavelength above threshold (%(gbu_max_background_increase)0.1f%)', $
                      values: 'Wgbu_max_background_increase'}]
   gbu_conditions.mask = 2UL ^ (ulindgen(n_elements(gbu_conditions)))
 
