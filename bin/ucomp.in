@@ -362,6 +362,8 @@ def value2str(v, fmt: str|None = None) -> str:
     elif fmt is not None:
         template = f"{{v{fmt}}}"
         return(template.format(v=v))
+    elif isinstance(v, bool):
+        return "T" if v else "F"
     elif isinstance(v, str):
         return(f"{v:10s}")
     elif isinstance(v, float):
