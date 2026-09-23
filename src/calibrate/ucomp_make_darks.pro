@@ -25,7 +25,9 @@ pro ucomp_make_darks, run=run
   endif
 
   ok_dark_files = bytarr(n_dark_files)
-  for f = 0L, n_dark_files - 1L do ok_dark_files[f] = dark_files[f].ok
+  for f = 0L, n_dark_files - 1L do begin
+    ok_dark_files[f] = dark_files[f].ok and (not dark_files[f].is_testing)
+  endfor
 
   good_dark_files_indices = where(ok_dark_files, n_good_dark_files)
   if (n_good_dark_files eq 0L) then begin

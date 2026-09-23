@@ -201,6 +201,7 @@ pro ucomp_file::getProperty, run=run, $
                              l1_intensity_basename=l1_intensity_basename, $
                              intermediate_name=intermediate_name, $
                              l2_basename=l2_basename, $
+                             is_testing=is_testing, $
                              publish=publish, $
                              max_process_level=max_process_level, $
                              demodulated=demodulated, $
@@ -375,6 +376,7 @@ pro ucomp_file::getProperty, run=run, $
                          format='(%"%s.%s.ucomp.%s.l2.fts")')
   endif
 
+  if (arg_present(is_testing)) then is_testing = self.is_testing
   if (arg_present(publish)) then publish = self.publish
   if (arg_present(max_process_level)) then max_process_level = self.max_process_level
 
@@ -735,8 +737,8 @@ pro ucomp_file::_inventory
 
   ; check TESTING keyword
   is_testing = ucomp_getpar(primary_header, 'TESTING', found=testing_found)
-  is_testing = testing_found ? byte(is_testing) : 0B
-  if (is_testing) then begin
+  self.is_testing = testing_found ? byte(is_testing) : 0B
+  if (self.is_testing) then begin
     self.publish = 0B
     self.max_process_level = 0L
   endif
@@ -993,6 +995,7 @@ pro ucomp_file__define
 
            run                                  : obj_new(), $
 
+           is_testing                           : 0B, $
            publish                              : 0B, $
            max_process_level                    : 0L, $
 
