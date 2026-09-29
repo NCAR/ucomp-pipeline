@@ -93,6 +93,7 @@ function ucomp_compute_density, peak_intensity_1074, peak_intensity_1079, $
   if (n_elements(computed_mask) gt 0L) then begin
     mask and= computed_mask
   endif else begin
+    ; note: assume peak intensity wasn't computed if it is exactly 0.0
     mask and= peak_intensity_1074 ne 0.0
     mask and= peak_intensity_1079 ne 0.0
   endelse
