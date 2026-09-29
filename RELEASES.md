@@ -813,4 +813,6 @@
 - fix for thresholding hot pixels in V crosstalk GBU criteria
 - adjust quality checks on temperatures
 
-#### 1.0.26
+#### 1.0.26 [September 29, 2026]
+
+- Fix masking for density
