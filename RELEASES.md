@@ -812,3 +812,5 @@
 - fix for end-of-day processing script
 - fix for thresholding hot pixels in V crosstalk GBU criteria
 - adjust quality checks on temperatures
+
+#### 1.0.26
