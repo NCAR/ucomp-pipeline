@@ -799,7 +799,7 @@
 
 - fixed version
 
-#### 1.0.25
+#### 1.0.25 [September 29, 2026]
 
 - new format for level 2 files: always provide analytical Gaussian fit, add
   least squares fit at the end of the level 2 file if more than 3 wavelengths
