@@ -93,9 +93,13 @@ pro ucomp_write_density_image, basename, thumbnail=thumbnail, run=run
     xyouts, 0.5, 0.71, /normal, alignment=0.5, $
             'MLSO UCoMP', $
             charsize=mlso_charsize, color=text_color
-    xyouts, 0.5, 0.67, /normal, alignment=0.5, $
-            density_description, $
-            charsize=ionization_charsize, color=text_color
+  endif
+
+  xyouts, 0.5, keyword_set(thumbnail) ? 0.625 : 0.67, /normal, alignment=0.5, $
+          density_description, $
+          charsize=ionization_charsize, color=text_color
+
+  if (~keyword_set(thumbnail)) then begin
     xyouts, 0.5, 0.605, /normal, alignment=0.5, $
             date_stamp, $
             charsize=date_charsize, color=text_color
@@ -132,4 +136,36 @@ pro ucomp_write_density_image, basename, thumbnail=thumbnail, run=run
   tvlct, original_rgb
   device, decomposed=original_decomposed
   set_plot, original_device
+end
+
+
+; main-level example program
+
+date = '20240409'
+
+config_basename = 'ucomp.latest.cfg'
+config_filename = filepath(config_basename, $
+                           subdir=['..', '..', '..', 'ucomp-config'], $
+                           root=mg_src_root())
+run = ucomp_run(date, 'test', config_filename)
+
+basenames = [ $
+  '20240409.180748-180009.ucomp.1074-1079.density.fts', $
+  '20240409.190537-191146.ucomp.1074-1079.density.fts', $
+  '20240409.191848-191146.ucomp.1074-1079.density.fts', $
+  '20240409.191848-192457.ucomp.1074-1079.density.fts', $
+  '20240409.193422-192457.ucomp.1074-1079.density.fts', $
+  '20240409.204114-210322.ucomp.1074-1079.density.fts', $
+  '20240409.210752-210322.ucomp.1074-1079.density.fts', $
+  '20240409.210752-214229.ucomp.1074-1079.density.fts' $
+]
+thumbnail = 1B
+
+for i = 0L, n_elements(basenames) - 1 do begin
+  print, i + 1L, basenames[i], format='%d: %s'
+  ucomp_write_density_image, basenames[i], thumbnail=thumbnail, run=run
+endfor
+
+obj_destroy, run
+
 end

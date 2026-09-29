@@ -18,12 +18,12 @@
 ;     `UCOMPdbMySQL` database connection to use
 ;
 ; :Keywords:
-;   logger_name : in, optional, type=string
-;     logger name to use for logging, i.e., "ucomp/rt", "ucomp/eod", etc.
+;   run : in, required, type=object
+;     UCoMP run object
 ;-
 pro ucomp_db_file_insert, files, level, product_type, $
                           obsday_index, sw_index, db, $
-                          logger_name=logger_name
+                          run=run
   compile_opt strictarr
 
   n_files = n_elements(files)
@@ -34,12 +34,12 @@ pro ucomp_db_file_insert, files, level, product_type, $
 
   if (n_files eq 0L) then begin
     mg_log, 'no %s files for ucomp_file', file_type, $
-            name=logger_name, /info
+            name=run.logger_name, /info
     goto, done
   endif else begin
     mg_log, 'inserting up to %d %s nm %s files', $
             n_files, files[0].wave_region, file_type, $
-            name=logger_name, /info
+            name=run.logger_name, /info
   endelse
 
   ; get index for level 1 data files
@@ -78,6 +78,8 @@ pro ucomp_db_file_insert, files, level, product_type, $
             {name: 'quality', type: '%d'}, $
             {name: 'gbu', type: '%d'}, $
 
+            {name: 'rest_wavelength', type: '%s'}, $
+
             {name: 'n_rcam_onband_saturated_pixels', type: '%d'}, $
             {name: 'n_tcam_onband_saturated_pixels', type: '%d'}, $
             {name: 'n_rcam_bkg_saturated_pixels', type: '%d'}, $
@@ -107,9 +109,11 @@ pro ucomp_db_file_insert, files, level, product_type, $
     file = files[f]
 
     if (~file.wrote_l1) then begin
-      mg_log, 'skipping %s', file.l1_basename, name=logger_name, /debug
+      mg_log, 'skipping %s', file.l1_basename, name=run.logger_name, /debug
       continue
     endif
+
+    rest_wavelength = !values.f_nan
 
     if (strlowcase(product_type) eq 'iquv') then begin
       filename = file.l1_basename
@@ -117,16 +121,24 @@ pro ucomp_db_file_insert, files, level, product_type, $
       filename = file.l1_intensity_basename
     endif else if (strlowcase(product_type) eq 'l2 file') then begin
       if (~file.wrote_l2) then begin
-        mg_log, 'skipping %s', file.l2_basename, name=logger_name, /debug
+        mg_log, 'skipping %s', file.l2_basename, name=run.logger_name, /debug
         continue
       endif
       filename = file.l2_basename
+
+      l2_dir = filepath('', $
+                        subdir=[run.date, 'level2'], $
+                        root=run->config('processing/basedir'))
+      fits_open, filepath(filename, root=l2_dir), fcb
+      fits_read, fcb, !null, velocity_header, exten_no=4
+      rest_wavelength = ucomp_getpar(velocity_header, 'RSTWVL')
+      fits_close, fcb
     endif else begin
-      mg_log, 'unknown product_type: %s', product_type, name=logger_name, /warn
+      mg_log, 'unknown product_type: %s', product_type, name=run.logger_name, /warn
       continue
     endelse
 
-    mg_log, 'ingesting %s', file.l1_basename, name=logger_name, /info
+    mg_log, 'ingesting %s', file.l1_basename, name=run.logger_name, /info
 
     db->execute, sql_cmd_fmt, $
                  filename, $
@@ -144,6 +156,8 @@ pro ucomp_db_file_insert, files, level, product_type, $
 
                  file.quality_bitmask, $
                  file.gbu, $
+
+                 ucomp_db_float(rest_wavelength, format='%0.3f'), $
 
                  file.n_rcam_onband_saturated_pixels, $
                  file.n_tcam_onband_saturated_pixels, $

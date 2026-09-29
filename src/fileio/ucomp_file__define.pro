@@ -73,6 +73,8 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
                              linearity_corrected=linearity_corrected, $
                              wrote_l1=wrote_l1, $
                              wrote_l2=wrote_l2, $
+                             publish=publish, $
+                             max_process_level=max_process_level, $
                              distortion_basename=distortion_basename, $
                              demodulation_coeffs_version=demodulation_coeffs_version, $
                              rcam_geometry=rcam_geometry, $
@@ -110,6 +112,9 @@ pro ucomp_file::setProperty, demodulated=demodulated, $
                              onband_indices=onband_indices, $
                              all_zero=all_zero
   compile_opt strictarr
+
+  if (n_elements(publish)) then self.publish = publish
+  if (n_elements(max_process_level)) then self.max_process_level = max_process_level
 
   if (n_elements(demodulated)) then self.demodulated = demodulated
   if (n_elements(rotated)) then self.rotated = rotated
@@ -196,6 +201,9 @@ pro ucomp_file::getProperty, run=run, $
                              l1_intensity_basename=l1_intensity_basename, $
                              intermediate_name=intermediate_name, $
                              l2_basename=l2_basename, $
+                             is_testing=is_testing, $
+                             publish=publish, $
+                             max_process_level=max_process_level, $
                              demodulated=demodulated, $
                              rotated=rotated, $
                              linearity_corrected=linearity_corrected, $
@@ -219,6 +227,7 @@ pro ucomp_file::getProperty, run=run, $
                              distance_au=distance_au, $
                              true_dec=true_dec, $
                              wave_region=wave_region, $
+                             wave_offset=wave_offset, $
                              center_wavelength=center_wavelength, $
                              data_type=data_type, $
                              obs_id_name=obs_id_name, $
@@ -367,6 +376,10 @@ pro ucomp_file::getProperty, run=run, $
                          format='(%"%s.%s.ucomp.%s.l2.fts")')
   endif
 
+  if (arg_present(is_testing)) then is_testing = self.is_testing
+  if (arg_present(publish)) then publish = self.publish
+  if (arg_present(max_process_level)) then max_process_level = self.max_process_level
+
   if (arg_present(demodulated)) then demodulated = self.demodulated
   if (arg_present(rotated)) then rotated = self.rotated
   if (arg_present(linearity_corrected)) then linearity_corrected = self.linearity_corrected
@@ -437,6 +450,7 @@ pro ucomp_file::getProperty, run=run, $
   if (arg_present(contin)) then contin = self.contin
 
   if (arg_present(wave_region)) then wave_region = self.wave_region
+  if (arg_present(wave_offset)) then wave_offset = self.wave_offset
   if (arg_present(center_wavelength)) then begin
     if (self.wave_region eq '') then begin
       center_wavelength = 0.0
@@ -705,6 +719,8 @@ pro ucomp_file::_inventory
     self.wave_region = ''
   endelse
 
+  self.wave_offset  = ucomp_getpar(primary_header, 'WAVOFF', found=found)
+
   if (n_elements(extension_header) gt 0L) then begin
     self.data_type = ucomp_getpar(extension_header, 'DATATYPE', found=found)
   endif
@@ -718,6 +734,26 @@ pro ucomp_file::_inventory
   self.obs_id_version = ucomp_getpar(primary_header, 'OBS_IDVE', found=found)
   self.obs_plan = ucomp_getpar(primary_header, 'OBS_PLAN', found=found)
   self.obs_plan_version = ucomp_getpar(primary_header, 'OBS_PLVE', found=found)
+
+  ; check TESTING keyword
+  is_testing = ucomp_getpar(primary_header, 'TESTING', found=testing_found)
+  self.is_testing = testing_found ? byte(is_testing) : 0B
+  if (self.is_testing) then begin
+    self.publish = 0B
+    self.max_process_level = 0L
+  endif
+  (self.run)->set_publish, string(self.ut_date, self.ut_time, format='%s.%s'), $
+                           self.publish
+
+  ; check observation plan for special data
+  case 1 of
+    self.obs_plan eq 'eng_distortion_calibration': self.max_process_level = 0L
+    self.obs_plan eq 'eng_diffuser_calibration': self.max_process_level = 0L
+    self.obs_plan eq 'eng_o1_focus': self.max_process_level = 0L
+    strmid(self.obs_plan, 0, 5) eq 'scan_': self.publish = 0B
+    strmid(self.obs_plan, 0, 5) eq 'eng_': self.publish = 0B
+    else:   ; nothing special to be done
+  endcase
 
   if (n_elements(extension_header) gt 0L) then begin
     self.cover_in = ucomp_getpar(extension_header, 'COVER', found=found) eq 'in'
@@ -904,6 +940,9 @@ function ucomp_file::init, raw_filename, run=run
 
   self.data_type = 'unk'
 
+  self.publish = 1B
+  self.max_process_level = 3L
+
   self.median_intensity  = !values.f_nan
   self.median_background = !values.f_nan
   self.vcrosstalk_metric = !values.f_nan
@@ -956,6 +995,10 @@ pro ucomp_file__define
 
            run                                  : obj_new(), $
 
+           is_testing                           : 0B, $
+           publish                              : 0B, $
+           max_process_level                    : 0L, $
+
            demodulated                          : 0B, $
            rotated                              : 0B, $
            linearity_corrected                  : 0B, $
@@ -978,6 +1021,7 @@ pro ucomp_file__define
            n_repeats                            : 0L, $
 
            wave_region                          : '', $
+           wave_offset                          : 0.0, $
            data_type                            : '', $
            obs_id                               : '', $
            obs_id_version                       : '', $

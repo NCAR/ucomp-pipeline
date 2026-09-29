@@ -47,7 +47,7 @@ pro ucomp_l1_publish, run=run
 
     files = run->get_files(wave_region=wave_regions[w], count=n_files)
     for f = 0L, n_files - 1L do begin
-      if (files[f].wrote_l1) then begin
+      if (files[f].wrote_l1 && files[f].publish) then begin
         files_list->add, filepath(files[f].l1_basename, root=l1_dir)
         files_list->add, filepath(files[f].l1_intensity_basename, root=l1_dir)
       endif

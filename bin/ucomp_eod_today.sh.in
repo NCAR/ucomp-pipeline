@@ -20,6 +20,7 @@ BIN_DIR=$(dirname ${SCRIPT_LOC})
 PIPE_DIR=$(dirname ${BIN_DIR})
 
 CONFIG=${1}
+CONFIG_FILENAME=@CONFIG_DIR@/ucomp.${CONFIG}.cfg
 
 source ${BIN_DIR}/ucomp_include.sh
 
@@ -27,6 +28,6 @@ TODAY=$(date +"%Y%m%d")
 
 ${IDL} -quiet -IDL_QUIET 1 -IDL_STARTUP "" \
   -IDL_PATH ${UCOMP_PATH} -IDL_DLM_PATH ${UCOMP_DLM_PATH} \
-  -e "ucomp_eod_check_wrapper, '${TODAY}', '${CONFIG}'"
+  -e "ucomp_eod_wrapper, '${TODAY}', '${CONFIG_FILENAME}'"
 
 exit $?

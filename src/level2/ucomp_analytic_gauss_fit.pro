@@ -22,8 +22,11 @@
 ;     set to a named variable to retrieve the line width [nm] as sigma (not
 ;     e-folding)
 ;   peak_intensity : out, optional, type="fltarr(nx, ny)"
-;     set to a named variable to retrieve the central intensity of the gaussian
-;      in the same units as `blue`, `center`, and `red`
+;     set to a named variable to retrieve the central intensity of the Gaussian
+;     in the same units as `blue`, `center`, and `red`
+;   computed_mask L out, optional, type="bytarr(nx, ny)"
+;     set to a named variable to retrieve a mask of the values that were
+;     computed
 ;
 ; :Author:
 ;   S. Tomczyk
@@ -32,13 +35,15 @@
 pro ucomp_analytic_gauss_fit, blue, center, red, d_lambda, $
                               doppler_shift=doppler_shift, $
                               line_width=line_width, $
-                              peak_intensity=peak_intensity
+                              peak_intensity=peak_intensity, $
+                              computed_mask=computed_mask
   compile_opt strictarr
 
   ; initialize arrays
   peak_intensity = blue * 0.0D
   doppler_shift  = blue * 0.0D
   line_width     = blue * 0.0D
+  computed_mask  = byte(blue) * 0B
 
   positive_indices = where(blue gt 0.0 and center gt 0.0 and red gt 0.0, n_positive)
   a = alog(red[positive_indices] / center[positive_indices])
@@ -55,5 +60,6 @@ pro ucomp_analytic_gauss_fit, blue, center, red, d_lambda, $
     peak_intensity[indices] $
       = center[indices] * exp(doppler_shift[indices]^2 / line_width[indices]^2)
     line_width[indices] /= sqrt(2.0D)   ; convert from e-folding to sigma
+    computed_mask[indices] = 1B
   endif
 end

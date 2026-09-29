@@ -7,6 +7,7 @@ create table ucomp_raw (
 
   datatype         char(4),        -- data type of first extension
   wave_region      char(4),
+  wave_offset      float,          -- WAVOFF keyword
 
   contin           char (10),      -- blue/both/red/multiple
 

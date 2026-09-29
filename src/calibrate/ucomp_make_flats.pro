@@ -30,7 +30,9 @@ pro ucomp_make_flats, wave_region, run=run
   endif
 
   ok_flat_files = bytarr(n_flat_files)
-  for f = 0L, n_flat_files - 1L do ok_flat_files[f] = flat_files[f].ok
+  for f = 0L, n_flat_files - 1L do begin
+    ok_flat_files[f] = flat_files[f].ok and (not flat_files[f].is_testing)
+  endfor
 
   good_flat_files_indices = where(ok_flat_files, n_good_flat_files)
   if (n_good_flat_files eq 0L) then begin

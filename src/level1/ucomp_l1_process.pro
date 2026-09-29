@@ -26,10 +26,17 @@ pro ucomp_l1_process, wave_region, run=run
 
   t0 = systime(/seconds)
   for f = 0L, n_files - 1L do begin
+    file = files[f]
+
     mg_log, mg_format('%*d/%d @ %s: %s', n_digits, /simple), $
-            f + 1, n_files, wave_region, file_basename(files[f].raw_filename), $
+            f + 1, n_files, wave_region, file_basename(file.raw_filename), $
             name=run.logger_name, /info
-    ucomp_l1_process_file, files[f], run=run
+    if (file.max_process_level gt 0L) then begin
+      ucomp_l1_process_file, file, run=run
+    endif else begin
+      mg_log, 'skipping: max_process_level (%d) < 1', file.max_process_level, $
+              name=run.logger_name, /warn
+    endelse
   endfor
   t1 = systime(/seconds)
 
