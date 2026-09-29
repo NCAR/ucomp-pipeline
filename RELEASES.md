@@ -801,8 +801,14 @@
 
 #### 1.0.25
 
+- new format for level 2 files: always provide analytical Gaussian fit, add
+  least squares fit at the end of the level 2 file if more than 3 wavelengths
+- updated example/tutorial notebook
 - updated line width threshold for noise mask and rest wavelength calculation
+- updated other thresholds for noise mask
 - update ucomp_process database table when processing/reprocessing
 - epoch file changes for bad data
+- check TESTING keyword for calibration files
 - fix for end-of-day processing script
 - fix for thresholding hot pixels in V crosstalk GBU criteria
+- adjust quality checks on temperatures
