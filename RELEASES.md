@@ -816,3 +816,5 @@
 #### 1.0.26 [September 29, 2026]
 
 - Fix masking for density
+
+#### 1.0.27
