@@ -49,13 +49,12 @@ function ucomp_vcrosstalk_metric, data, solar_radius, post_angle, $
   threshold_mask = abs(v) lt _threshold_value
 
   mask = annulus_mask and post_mask
-  !null = where(threshold_mask, ncomplement=n_high_pts)
+  !null = where(not threshold_mask and mask, n_high_pts)
 
-  ; check how many pixels are caught be this threshold, if too
-  ; many, we shouldn't mask them out
+  ; check how many pixels are caught be this threshold, mask out the high
+  ; pixels only if there aren't many of them
   if (n_high_pts lt _max_high_points) then mask and= threshold_mask
 
   indices = where(mask, n_pts)
-
   return, total((v[indices])^2, /preserve_type, /nan) * 1.0e6 / n_pts / n_pts
 end

@@ -105,6 +105,14 @@ pro ucomp_db_file_insert, files, level, product_type, $
                        strjoin(fields.type, ', '), $
                        format='(%"insert into ucomp_file (%s) values (%s)")')
 
+  l1_dir = filepath('', $
+                    subdir=[run.date, 'level1'], $
+                    root=run->config('processing/basedir'))
+  l2_dir = filepath('', $
+                    subdir=[run.date, 'level2'], $
+                    root=run->config('processing/basedir'))
+
+
   for f = 0L, n_files - 1L do begin
     file = files[f]
 
@@ -117,8 +125,10 @@ pro ucomp_db_file_insert, files, level, product_type, $
 
     if (strlowcase(product_type) eq 'iquv') then begin
       filename = file.l1_basename
+      full_filename = filepath(filename, root=l1_dir)
     endif else if (strlowcase(product_type) eq 'intensity') then begin
       filename = file.l1_intensity_basename
+      full_filename = filepath(filename, root=l1_dir)
     endif else if (strlowcase(product_type) eq 'l2 file') then begin
       if (~file.wrote_l2) then begin
         mg_log, 'skipping %s', file.l2_basename, name=run.logger_name, /debug
@@ -126,10 +136,8 @@ pro ucomp_db_file_insert, files, level, product_type, $
       endif
       filename = file.l2_basename
 
-      l2_dir = filepath('', $
-                        subdir=[run.date, 'level2'], $
-                        root=run->config('processing/basedir'))
-      fits_open, filepath(filename, root=l2_dir), fcb
+      full_filename = filepath(filename, root=l2_dir)
+      fits_open, full_filename, fcb
       fits_read, fcb, !null, velocity_header, exten_no=4
       rest_wavelength = ucomp_getpar(velocity_header, 'RSTWVL')
       fits_close, fcb
@@ -142,7 +150,7 @@ pro ucomp_db_file_insert, files, level, product_type, $
 
     db->execute, sql_cmd_fmt, $
                  filename, $
-                 mg_filesize(file.l1_filename), $
+                 mg_filesize(full_filename), $
                  file_basename(file.raw_filename), $
                  file.date_obs, $
                  obsday_index, $

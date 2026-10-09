@@ -135,6 +135,14 @@ pro ucomp_rolling_dark_plots, db, run=run
   data = db->query(query, start_date, $
                    count=n_darks, error=error, fields=fields, sql_statement=sql)
 
+  if (n_darks eq 0L) then begin
+    mg_log, 'no ''Offset + gain corrected''/high gain-mode darks found', $
+            name=run.logger_name, /warn
+    goto, write_plot
+  endif else begin
+    mg_log, '%d ''Offset + gain corrected''/high gain-mode darks found', name=run.logger_name, /info
+  endelse
+
   plot, data.tu_c0arr, data.rcam_median_linecenter, /nodata, $
         charsize=charsize, $
         title='Dark sensor temperature vs. median counts', $
@@ -144,32 +152,32 @@ pro ucomp_rolling_dark_plots, db, run=run
         xstyle=1, xrange=tarr_range, $
         ytitle='Counts [DN]/NUMSUM', $
         ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
-   mg_range_oplot, data.tu_c0arr, data.rcam_median_linecenter, $
-                   psym=camera0_psym, symsize=symsize, $
-                   color=camera0_color, $
-                   clip_color=camera0_color, clip_psym=7, clip_symsize=3.0 * symsize
-   mg_range_oplot, data.tu_c1arr, data.tcam_median_linecenter, $
-                   psym=camera1_psym, symsize=symsize, $
-                   color=camera1_color, $
-                   clip_color=camera1_color, clip_psym=7, clip_symsize=3.0 * symsize
+  mg_range_oplot, data.tu_c0arr, data.rcam_median_linecenter, $
+                  psym=camera0_psym, symsize=symsize, $
+                  color=camera0_color, $
+                  clip_color=camera0_color, clip_psym=7, clip_symsize=3.0 * symsize
+  mg_range_oplot, data.tu_c1arr, data.tcam_median_linecenter, $
+                  psym=camera1_psym, symsize=symsize, $
+                  color=camera1_color, $
+                  clip_color=camera1_color, clip_psym=7, clip_symsize=3.0 * symsize
 
-   plot, data.tu_c0pcb, data.rcam_median_linecenter, /nodata, $
-         charsize=charsize, $
-         title='Dark PCB temperature vs. median counts', $
-         psym=camera0_psym, symsize=symsize, $
-         color=color, background=background_color, $
-         xtitle='PCB temperature [C]', $
-         xstyle=1, xrange=tpcb_range, $
-         ytitle='Counts [DN]/NUMSUM', $
-         ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
-   mg_range_oplot, data.tu_c0pcb, data.rcam_median_linecenter, $
-                   psym=camera0_psym, symsize=symsize, $
-                   color=camera0_color, $
-                   clip_color=camera0_color, clip_psym=7, clip_symsize=3.0 * symsize
-   mg_range_oplot, data.tu_c1pcb, data.tcam_median_linecenter, $
-                   psym=camera1_psym, symsize=symsize, $
-                   color=camera1_color, $
-                   clip_color=camera1_color, clip_psym=7, clip_symsize=3.0 * symsize
+  plot, data.tu_c0pcb, data.rcam_median_linecenter, /nodata, $
+        charsize=charsize, $
+        title='Dark PCB temperature vs. median counts', $
+        psym=camera0_psym, symsize=symsize, $
+        color=color, background=background_color, $
+        xtitle='PCB temperature [C]', $
+        xstyle=1, xrange=tpcb_range, $
+        ytitle='Counts [DN]/NUMSUM', $
+        ystyle=1, yrange=dark_range, ytickformat='ucomp_dn_format'
+  mg_range_oplot, data.tu_c0pcb, data.rcam_median_linecenter, $
+                  psym=camera0_psym, symsize=symsize, $
+                  color=camera0_color, $
+                  clip_color=camera0_color, clip_psym=7, clip_symsize=3.0 * symsize
+  mg_range_oplot, data.tu_c1pcb, data.tcam_median_linecenter, $
+                  psym=camera1_psym, symsize=symsize, $
+                  color=camera1_color, $
+                  clip_color=camera1_color, clip_psym=7, clip_symsize=3.0 * symsize
 
   !p.multi = [2, 1, 4]
   jds = ucomp_dateobs2julday(data.date_obs)
@@ -222,6 +230,7 @@ pro ucomp_rolling_dark_plots, db, run=run
                    color=camera1_color, $
                    clip_color=camera1_color, clip_psym=7, clip_symsize=3.0 * symsize
 
+  write_plot:
   ; save plots image file
   output_filename = filepath(string(run.date, format='(%"%s.ucomp.yearly.darks.gif")'), $
                              subdir=ucomp_decompose_date(run.date), $

@@ -201,6 +201,7 @@ pro ucomp_file::getProperty, run=run, $
                              l1_intensity_basename=l1_intensity_basename, $
                              intermediate_name=intermediate_name, $
                              l2_basename=l2_basename, $
+                             is_testing=is_testing, $
                              publish=publish, $
                              max_process_level=max_process_level, $
                              demodulated=demodulated, $
@@ -226,6 +227,7 @@ pro ucomp_file::getProperty, run=run, $
                              distance_au=distance_au, $
                              true_dec=true_dec, $
                              wave_region=wave_region, $
+                             wave_offset=wave_offset, $
                              center_wavelength=center_wavelength, $
                              data_type=data_type, $
                              obs_id_name=obs_id_name, $
@@ -374,6 +376,7 @@ pro ucomp_file::getProperty, run=run, $
                          format='(%"%s.%s.ucomp.%s.l2.fts")')
   endif
 
+  if (arg_present(is_testing)) then is_testing = self.is_testing
   if (arg_present(publish)) then publish = self.publish
   if (arg_present(max_process_level)) then max_process_level = self.max_process_level
 
@@ -447,6 +450,7 @@ pro ucomp_file::getProperty, run=run, $
   if (arg_present(contin)) then contin = self.contin
 
   if (arg_present(wave_region)) then wave_region = self.wave_region
+  if (arg_present(wave_offset)) then wave_offset = self.wave_offset
   if (arg_present(center_wavelength)) then begin
     if (self.wave_region eq '') then begin
       center_wavelength = 0.0
@@ -715,6 +719,8 @@ pro ucomp_file::_inventory
     self.wave_region = ''
   endelse
 
+  self.wave_offset  = ucomp_getpar(primary_header, 'WAVOFF', found=found)
+
   if (n_elements(extension_header) gt 0L) then begin
     self.data_type = ucomp_getpar(extension_header, 'DATATYPE', found=found)
   endif
@@ -731,8 +737,8 @@ pro ucomp_file::_inventory
 
   ; check TESTING keyword
   is_testing = ucomp_getpar(primary_header, 'TESTING', found=testing_found)
-  is_testing = testing_found ? byte(is_testing) : 0B
-  if (is_testing) then begin
+  self.is_testing = testing_found ? byte(is_testing) : 0B
+  if (self.is_testing) then begin
     self.publish = 0B
     self.max_process_level = 0L
   endif
@@ -989,6 +995,7 @@ pro ucomp_file__define
 
            run                                  : obj_new(), $
 
+           is_testing                           : 0B, $
            publish                              : 0B, $
            max_process_level                    : 0L, $
 
@@ -1014,6 +1021,7 @@ pro ucomp_file__define
            n_repeats                            : 0L, $
 
            wave_region                          : '', $
+           wave_offset                          : 0.0, $
            data_type                            : '', $
            obs_id                               : '', $
            obs_id_version                       : '', $

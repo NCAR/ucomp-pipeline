@@ -68,6 +68,8 @@ pro ucomp_db_update, run=run
   endfor
 
   ucomp_db_update_mlso_numfiles, obsday_index, db, run=run
+  ucomp_db_set_process, 'processed', obsday_index, db, $
+                        status=status, logger_name=run.logger_name
 
   ucomp_rolling_dark_plots, db, run=run
 

@@ -90,7 +90,7 @@ CONFIG_DIR = "@CONFIG_DIR@"
 
 
 # config file helpers
-# TODO: need to handle config file inheritance
+# [TODO]: need to handle config file inheritance
 
 def get_config_filename(flags):
     config_basename = f"ucomp.{flags}.cfg"
@@ -334,7 +334,9 @@ def list_fits_file_default(f):
             n_exts = f"{len(fits_file) - 1:2d} ext{s}"
             if "FILTER" in primary_header:
                 wave_region = primary_header["FILTER"]
-                if type(wave_region) == float:
+                if wave_region is None:
+                    wave_region = 7 * "-"
+                elif type(wave_region) == float:
                     wave_region = f"{wave_region:4.0f} nm"
                 elif len(wave_region) > 0:
                     wave_region = f"{wave_region:>4s} nm"
@@ -344,7 +346,7 @@ def list_fits_file_default(f):
             obs_plan = primary_header["OBS_PLAN"] if "OBS_PLAN" in primary_header else ""
             if obs_plan[-4:] == ".cbk":
                 obs_plan = obs_plan[:-4]
-            # TODO: convert plan name to "waves" or "synoptic"
+            # [TODO]: convert plan name to "waves" or "synoptic"
             if PROGRAM_CONVERTER.has_option("DEFAULT", obs_plan):
                 obs_plan = PROGRAM_CONVERTER.get("DEFAULT", obs_plan)
         print(f"{basename:38s}  {data_type:4s}  {wave_region:7s}  {n_exts:8s}  {obs_plan:8s}")
@@ -352,42 +354,56 @@ def list_fits_file_default(f):
         print(f"{basename} not found")
 
 
-def value2str(v, format=None):
-    if format is not None:
-        template = f"{{v{format}}}"
-        return(template.format(v=v))
-    if type(v) == str:
-        return(f"{v:10s}")
-    elif type(v) == float:
-        return(f"{v:8.3f}")
-    elif type(v) == int:
-        return(f"{v:8d}")
-    elif type(v) == bool:
-        return(f"{v!s:5s}")
-    elif v is None:
+def value2str(v, fmt: str|None = None) -> str:
+    """Convert a value to a string, using `fmt` as an f-string format if given
+    or a default format for the type of `v` otherwise."""
+    if v is None:
         return 5 * "-"
+    elif fmt is not None:
+        template = f"{{v{fmt}}}"
+        return(template.format(v=v))
+    elif isinstance(v, bool):
+        return "T" if v else "F"
+    elif isinstance(v, str):
+        return(f"{v:10s}")
+    elif isinstance(v, float):
+        return(f"{v:8.3f}")
+    elif isinstance(v, int):
+        return(f"{v:8d}")
+    elif isinstance(v, bool):
+        return(f"{v!s:5s}")
+
     return(f"{v}")
 
 
-def list_fits_file(f, columns):
+def list_fits_file(f, extension, columns):
     basename = os.path.basename(f)
     line = f"{basename:38s}"
+    if extension is not None:
+        examine_extension = extension
+        backup_extension = 0
+    else:
+        examine_extension = 0
+        backup_extension = 1
     try:
         with fits.open(f) as fits_file:
-            primary_header = fits_file[0].header
-            header_1 = [] if len(fits_file) == 1 else fits_file[1].header
+            n_extensions = len(fits_file)
+            examine_header = fits_file[examine_extension].header
             for c in columns:
-                v = primary_header[c] if c in primary_header else None
-                if v is None:
-                    v = header_1[c] if c in header_1 else None
+                v = examine_header[c] if c in examine_header else None
+                if v is None and backup_extension < n_extensions:
+                    backup_header = fits_file[backup_extension].header
+                    v = backup_header[c] if c in backup_header else None
                 v = value2str(v)
                 line += f"  {v}"
         print(line)
     except FileNotFoundError:
         print(f"{basename} not found")
+    except IndexError:
+        print(f"extension {extension} does not exist (only 0..{n_extensions - 1})")
 
 
-def list_files(files, columns=None):
+def list_files(files, extension=None, columns=None):
     line_character = "\u23AF"
     endpt_character = "\u279B"
 
@@ -421,7 +437,7 @@ def list_files(files, columns=None):
                 if columns is None:
                     list_fits_file_default(f)
                 else:
-                    list_fits_file(f, columns)
+                    list_fits_file(f, extension, columns)
             except OSError:
                 if file_extension in [".log", ".olog", ".txt", ".cfg", ".tarlist"]:
                     n_lines = file_lines(f)
@@ -453,7 +469,7 @@ def ls(args):
             columns = args.keywords.split(",")
 
         list_files(sorted(dirs))
-        list_files(sorted(files), columns=columns)
+        list_files(sorted(files), extension=args.extension, columns=columns)
     except (KeyboardInterrupt, BrokenPipeError):
         pass
 
@@ -483,7 +499,7 @@ def cat_header(args):
                 print(f"{file} not found")
 
 def cat_keywords(args):
-    # TODO: default keywords should vary by level of the data
+    # [TODO]: default keywords should vary by level of the data
     default_keywords = {"sci": ["EXTNAME", "DATATYPE", "DATE-BEG", "WAVELNG", "ONBAND"],
                         "science": ["EXTNAME", "DATATYPE", "DATE-BEG", "WAVELNG", "ONBAND"],
                         "cal": ["EXTNAME", "DATATYPE", "DATE-BEG", "WAVELNG", "ONBAND", "POLANGLE", "RETANGLE"],
@@ -507,6 +523,9 @@ def cat_keywords(args):
                    "Weighted average L": ["EXTNAME"],
                    "Azimuth": ["EXTNAME"],
                    "Radial azimuth": ["EXTNAME"],
+                   "Fit peak intensity": ["EXTNAME", "BLUE_REF", "RED_REF"],
+                   "Fit LOS velocity": ["EXTNAME", "BLUE_REF", "RED_REF", "RSTWVL"],
+                   "Fit line width (FWHM)": ["EXTNAME"],
                    "Fit chi-squared": ["EXTNAME"],
                    "Fit sigma": ["EXTNAME"],
                    "Fit coefficients": ["EXTNAME"]}
@@ -526,7 +545,7 @@ def cat_keywords(args):
                         if args.keywords is None:
                             if level == "L2":
                                 extname = hdu.header["EXTNAME"]
-                                keywords = l2_keywords[extname]
+                                keywords = l2_keywords[extname] if extname in l2_keywords else ["EXTNAME"]
                             elif level == "L1":
                                 keywords = l1_keywords
                             elif level == "L3":
@@ -545,7 +564,7 @@ def cat_keywords(args):
                             if k in hdu.header:
                                 value = hdu.header[k]
                                 fmt = default_formats[k] if k in default_formats else None
-                                line += "  " + value2str(value, format=fmt)
+                                line += "  " + value2str(value, fmt=fmt)
                             else:
                                 line += "  " + 5 * "-"
                         print(line)
@@ -1373,7 +1392,7 @@ if __name__ == "__main__":
     # show help if no sub-command given
     parser.set_defaults(func=print_help, parser=parser)
 
-    # TODO: it would be nice to arrange sub-commands into groups, but that is
+    # [TODO]: it would be nice to arrange sub-commands into groups, but that is
     # not possible with argparse right now
     # helpers: list, ls, cat, validate, log, versions, database, watch
     # processing: rt, eod, cal, reprocess
@@ -1404,6 +1423,9 @@ if __name__ == "__main__":
     ls_parser.add_argument("-k", "--keywords", type=str,
         help="FITS keyword names to display",
         default=None)
+    ls_parser.add_argument("-e", "--extension", type=int,
+       help="used with --header to specify which extension header to display",
+       default=None)
     ls_parser.set_defaults(func=ls, parser=ls_parser)
 
     # cat sub-command

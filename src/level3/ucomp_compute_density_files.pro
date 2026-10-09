@@ -288,12 +288,15 @@ end
 
 ; main-level example
 
-date = '20240409'
+; date = '20240409'
+; f_1074 = '20240409.180748.ucomp.1074.l2.fts'
+; f_1079 = '20240409.180009.ucomp.1079.l2.fts'
 
-f_1074 = '20240409.180748.ucomp.1074.l2.fts'
-f_1079 = '20240409.180009.ucomp.1079.l2.fts'
+date = '20260915'
+f_1074 = '20260915.201240.ucomp.1074.l2.fts'
+f_1079 = '20260915.201500.ucomp.1079.l2.fts'
 
-name = 'normal'
+name = 'test'
 ignore_linewidth = 1B
 
 config_basename = 'ucomp.latest.cfg'
