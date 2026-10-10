@@ -815,6 +815,8 @@
 
 #### 1.0.26 [September 29, 2026]
 
-- Fix masking for density
+- fix masking for density
 
 #### 1.0.27
+
+- added new synoptic cookbook name
