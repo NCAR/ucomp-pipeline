@@ -820,3 +820,4 @@
 #### 1.0.27
 
 - added new synoptic cookbook name
+- fix for entering filesize in ucomp_table for non-L1 files
