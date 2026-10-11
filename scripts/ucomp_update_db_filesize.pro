@@ -3,7 +3,7 @@
 pro ucomp_update_db_filesize, date, config_filename
   compile_opt strictarr
 
-  run = ucomp_run(date, 'script', config_filename)
+  run = ucomp_run(date, 'update_filesize', config_filename)
   db = ucomp_db_connect(run->config('database/config_filename'), $
                         run->config('database/config_section'), $
                         logger_name=run.logger_name, $
@@ -24,12 +24,15 @@ pro ucomp_update_db_filesize, date, config_filename
   for f = 0L, n_files - 1L do begin
     filename = filepath(data[f].file_name, root=web_dir)
     if (file_test(filename, /regular)) then begin
+      old_filesize = data[f].filesize
       filesize = mg_filesize(filename)
-      mg_log, '[%08d] %s: updating to %d bytes', $
-              data[f].file_id, data[f].file_name, filesize, $
-              /info, name=run.logger_name
-      sql_cmd = 'update ucomp_file set filesize=%d where file_id=%d'
-      db->execute, sql_cmd, filesize, data[f].file_id
+      if (old_filesize ne filesize) then begin
+        mg_log, '[%08d] %s: updating to %d bytes', $
+                data[f].file_id, data[f].file_name, filesize, $
+                /warn, name=run.logger_name
+        sql_cmd = 'update ucomp_file set filesize=%d where file_id=%d'
+        db->execute, sql_cmd, filesize, data[f].file_id
+      endif
     endif else begin
       mg_log, '[%08d] %s: file does not exist', $
               data[f].file_id, data[f].file_name, $
