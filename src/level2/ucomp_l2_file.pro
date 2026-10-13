@@ -835,14 +835,17 @@ end
 ; main-level example program
 
 date = '20220112'
+basename = '20220112.190718.ucomp.1074.l1.p5.fts'
+
+date = '20260915'
+basename = '20260915.202525.ucomp.637.l1.p3.fts'
+
 config_basename = 'ucomp.latest.cfg'
 config_filename = filepath(config_basename, $
   subdir=['..', '..', '..', 'ucomp-config'], $
   root=mg_src_root())
 
 run = ucomp_run(date, 'test', config_filename)
-
-basename = '20220112.190718.ucomp.1074.l1.p5.fts'
 
 l1_dir = filepath('level1', subdir=date, root=run->config('processing/basedir'))
 filename = filepath(basename, root=l1_dir)
