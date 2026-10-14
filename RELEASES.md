@@ -687,7 +687,7 @@
 
 - fix for creating temperature map on 20240330
 
-#### 1.0.10 [July 22, 2024]
+#### 1.0.10 [Jul 22, 2024]
 
 - added angle grid on quicklooks
 - adding DISTORTF and HOTPIXF FITS keywords
@@ -700,25 +700,25 @@
 - updated distortion and hot pixels
 - changes for new wave regions
 
-#### 1.0.11 [July 22, 2024]
+#### 1.0.11 [Jul 22, 2024]
 
 - fix for crash in creating mission image scale plot
 
-#### 1.0.12 [July 22, 2024]
+#### 1.0.12 [Jul 22, 2024]
 
 - fix for crash in creating mission image scale plot
 
-#### 1.0.13 [July 23, 2024]
+#### 1.0.13 [Jul 23, 2024]
 
 - update documentation
 - fix for days with unprocessed, ambiguous wave region level 0 files
 - log messages about files that fail inventory
 
-#### 1.0.14 [July 24, 2024]
+#### 1.0.14 [Jul 24, 2024]
 
 - check if wave region is published for number of good files for a day
 
-#### 1.0.15 [July 24, 2024]
+#### 1.0.15 [Jul 24, 2024]
 
 - fix for unknown wave region of file
 
@@ -791,15 +791,15 @@
 - fix bad hardware position header data
 - epoch updates including OCCLTRID for early mission data
 
-#### 1.0.23 [June 10, 2026]
+#### 1.0.23 [Jun 10, 2026]
 
 - commented out focal length change until it happens
 
-#### 1.0.24 [June 10, 2026]
+#### 1.0.24 [Jun 10, 2026]
 
 - fixed version
 
-#### 1.0.25 [September 29, 2026]
+#### 1.0.25 [Sep 29, 2026]
 
 - new format for level 2 files: always provide analytical Gaussian fit, add
   least squares fit at the end of the level 2 file if more than 3 wavelengths
@@ -813,7 +813,7 @@
 - fix for thresholding hot pixels in V crosstalk GBU criteria
 - adjust quality checks on temperatures
 
-#### 1.0.26 [September 29, 2026]
+#### 1.0.26 [Sep 29, 2026]
 
 - fix masking for density
 
