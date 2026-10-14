@@ -33,6 +33,7 @@ end
 function ucomp_quality_check_nominal_temps_ut::test_basic
   compile_opt strictarr
 
+  run = self->get_run(date='20210715')
   primary_header = self->make_header(32.0)
 
   quality = ucomp_quality_check_nominal_temps(file, $
@@ -77,9 +78,10 @@ end
 function ucomp_quality_check_nominal_temps_ut::test_nan
   compile_opt strictarr
 
-  primary_header = self->make_header(32.0)
+  run = self->get_run(date='20210715')
+  primary_header = self->make_header(35.0)
 
-  ucomp_addpar, primary_header, 'T_LCVR3', !values.f_nan
+  ucomp_addpar, primary_header, 'T_BASE', !values.f_nan
 
   quality = ucomp_quality_check_nominal_temps(file, $
                                               primary_header, $
