@@ -7,7 +7,7 @@
 ; Exits with a status to indicate whether the regression test passed (status 0)
 ; or failed (status non-zero). A non-zero status is a bitmask with 1 for extra
 ; file in results, 2 for missing file in results, and 4 for a difference in a
-; file in the results.
+; file in the results, and 8 for errors with fitsverify.
 ;
 ; :Params:
 ;   date : in, required, type=string
@@ -164,6 +164,36 @@ pro ucomp_regression_wrapper, date, config_filename
           endif
         end
     endcase
+  endfor
+
+  ; validate any FITS files written
+  fitsverify_location = run->config('externals/fitsverify')
+  solarnet_location = run->config('externals/solarnet')
+  for r = 0L, n_results - 1L do begin
+    filename = filepath(results[r], root=results_dir)
+    if (strmatch(filename, '*.fts') || strmatch(filename, '*.fts.gz')) then begin
+      mg_log, 'validating FITS file %s...', results[r], $
+              name=run.logger_name, /info
+      if (n_elements(fitsverify_location) gt 0L) then begin
+        spawn, string(fitsverify_location, filename, format='%s -q -e %s'), $
+               stdout, stderr, exit_status=n_errors
+        if (n_errors gt 0L) then begin
+          mg_log, '%d errors found in %s', n_errors, results[r], $
+                  name=run.logger_name, /error
+          status += 8L
+        endif
+      endif
+      if (n_elements(solarnet_location) gt 0L) then begin
+        mg_log, 'validating FITS file %s against SOLARNET...', results[r], $
+                name=run.logger_name, /info
+        spawn, string(solarnet_location, filename, format='%s -q %s'), $
+               exit_status=n_findings
+        if (n_findings gt 0L) then begin
+          mg_log, '%d findings found in %s', n_findings, results[r], $
+                  name=run.logger_name, /warn
+        endif
+      endif
+    endif
   endfor
 
   mg_log, 'exiting with status %d', status, name=run.logger_name, /info
