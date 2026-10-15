@@ -76,6 +76,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
   endfor
 
   post_angle      = ucomp_getpar(primary_header, 'POST_ANG')
+  post_width      = ucomp_getpar(primary_header, 'POST_WID')
   p_angle         = ucomp_getpar(primary_header, 'SOLAR_P0')
   occulter_radius = ucomp_getpar(primary_header, 'RADIUS')
 
@@ -189,6 +190,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
       field_radius=run->epoch('field_radius'), $
       occulter_radius=occulter_radius + run->epoch('over_masking'), $
       post_angle=post_angle, $
+      post_width=post_width, $
       p_angle=p_angle)
 
     fit_intensity_center_min = run->line(wave_region, 'fit_intensity_center_min')
@@ -256,6 +258,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
       amount=run->line(wave_region, 'enhanced_intensity_amount'), $
       occulter_radius=occulter_radius, $
       post_angle=post_angle, $
+      post_width=post_width, $
       field_radius=run->epoch('field_radius'), $
       mask=run->config('display/mask_l2'))
 
@@ -314,6 +317,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
       field_radius=run->epoch('field_radius'), $
       occulter_radius=occulter_radius + run->epoch('over_masking'), $
       post_angle=post_angle, $
+      post_width=post_width, $
       p_angle=p_angle)
 
     outside_mask_indices = where(geometric_mask eq 0, n_outside_mask)
@@ -793,6 +797,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                          reduce_factor=4L, $
                          wave_region=wave_region, $
                          post_angle=post_angle, $
+                         post_width=post_width, $
                          p_angle=p_angle, $
                          occulter_radius=occulter_radius, $
                          rsun=rsun, $
@@ -821,6 +826,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                            reduce_factor=4L, $
                            wave_region=wave_region, $
                            post_angle=post_angle, $
+                           post_width=post_width, $
                            p_angle=p_angle, $
                            occulter_radius=occulter_radius, $
 

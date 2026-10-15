@@ -40,6 +40,8 @@
 ;   post_angle : in, optional, type=float
 ;     post angle in degrees from north; if present, mask the post in the output
 ;     images
+;   post_width : in, optional, type=float
+;     post width in pixels
 ;   p_angle : in, optional, type=float
 ;     p-angle in degrees from north; if present, mask the offsensor pixels in
 ;     the output images
@@ -74,6 +76,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                            reduce_factor=reduce_factor, $
                            wave_region=wave_region, $
                            post_angle=post_angle, $
+                           post_width=post_width, $
                            p_angle=p_angle, $
                            occulter_radius=occulter_radius, $
                            rsun=rsun, $
@@ -102,6 +105,7 @@ pro ucomp_write_l2_images, quicklook_filename, $
                       field_radius=run->epoch('field_radius'), $
                       occulter_radius=occulter_radius, $
                       post_angle=post_angle, $
+                      post_width=post_width, $
                       p_angle=p_angle)
 
     outside_mask_indices = where(mask eq 0, n_outside_mask)
