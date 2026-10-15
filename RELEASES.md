@@ -817,7 +817,7 @@
 
 - fix masking for density
 
-#### 1.0.27
+#### 1.0.27 [Oct 15, 2026]
 
 - added new synoptic cookbook name
 - fix for entering filesize in ucomp_table for non-L1 files
