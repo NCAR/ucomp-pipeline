@@ -15,6 +15,12 @@
 ;     data
 ;
 ; :Keywords:
+;   occulter_radius : in, optional, type=float
+;     radius of the occulter in pixels
+;   post_angle : in, optional, type=float
+;     angle of the post in degrees from North
+;   post_width : in, optional, type=float
+;     width of post in pixels
 ;   daily : in, optional, type=boolean
 ;     set to indicate that the image corresponds to a daily average in the
 ;     level 2 directory
@@ -29,6 +35,8 @@ pro ucomp_write_iquv_image, data, $
                             wave_region, $
                             wavelengths, $
                             occulter_radius=occulter_radius, $
+                            post_angle=post_angle, $
+                            post_width=post_width, $
                             daily=daily, $
                             sigma=sigma, $
                             run=run
@@ -129,18 +137,21 @@ pro ucomp_write_iquv_image, data, $
         display_max = intensity_display_max
         display_gamma = intensity_display_gamma
         display_power = intensity_display_power
+        background_color = 0
         ct_name = 'intensity'
       endif else if (p eq 3) then begin
         display_min = v_display_min
         display_max = v_display_max
         display_gamma = v_display_gamma
         display_power = v_display_power
+        background_color = 0
         ct_name = 'quv'
       endif else begin
         display_min = qu_display_min
         display_max = qu_display_max
         display_gamma = qu_display_gamma
         display_power = qu_display_power
+        background_color = 0
         ct_name = 'quv'
       endelse
 
@@ -155,7 +166,12 @@ pro ucomp_write_iquv_image, data, $
                           occulter_radius=n_elements(occulter_radius) gt 0L $
                             ? occulter_radius / reduce_dims_factor $
                             : !null, $
-                          field_radius=run->epoch('field_radius') / reduce_dims_factor)
+                          post_angle=post_angle, $
+                          post_width=n_elements(post_width) gt 0L $
+                            ? post_width / reduce_dims_factor $
+                            : !null, $
+                          field_radius=run->epoch('field_radius') / reduce_dims_factor, $
+                          /nan)
       endif else begin
         mask = bytarr(dims[0] / reduce_dims_factor, dims[1] / reduce_dims_factor) + 1B
       endelse
@@ -165,6 +181,7 @@ pro ucomp_write_iquv_image, data, $
                          max=mg_signed_power(display_max, display_power), $
                          top=n_colors - 1L, $
                          /nan)
+      scaled_im[where(finite(scaled_im) eq 0, /null)] = background_color
 
       tv, scaled_im, p
       if (p eq 0L) then begin

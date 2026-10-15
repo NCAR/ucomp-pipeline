@@ -198,6 +198,8 @@ pro ucomp_l1_process_file, file, run=run
                           file.wave_region, $
                           file.wavelengths, $
                           occulter_radius=file.occulter_radius, $
+                          post_angle=file.post_angle, $
+                          post_width=file.post_width, $
                           run=run
 
   ; write the all wavelengths IQUV quicklook
@@ -208,6 +210,7 @@ pro ucomp_l1_process_file, file, run=run
                               file.wavelengths, $
                               file.occulter_radius, $
                               file.post_angle, $
+                              file.post_width, $
                               file.p_angle, $
                               run=run
 

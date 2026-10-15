@@ -93,6 +93,9 @@ function ucomp_find_geometry, data, $
                                      fit_estimates=fit_estimates)
   error or= 2L * post_error
 
+  ; use the fit post width instead of the default value
+  post_width = fit_coefficients[2]
+
   if (abs(found_post_angle - post_angle_guess) gt post_angle_tolerance) then begin
     mg_log, 'bad post angle found: %0.1f', found_post_angle, name=logger_name, /error
     post_angle = post_angle_guess
@@ -109,6 +112,7 @@ function ucomp_find_geometry, data, $
                             occulter_chisq=occulter_chisq, $
                             occulter_error=occulter_error, $
                             post_angle=post_angle, $
+                            post_width=post_width, $
                             found_post_angle=found_post_angle)
 
   return, geometry

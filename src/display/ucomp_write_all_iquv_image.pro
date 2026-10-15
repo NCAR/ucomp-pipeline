@@ -19,6 +19,8 @@
 ;     radius of occulter
 ;   post_angle : in, required, type=float
 ;     angle of the post in degrees
+;   post_width : in, required, type=float
+;     width of the post in pixels
 ;   p_angle : in, required, type=float
 ;     solar p0 angle in degrees
 ;
@@ -38,6 +40,7 @@ pro ucomp_write_all_iquv_image, data, $
                                 wavelengths, $
                                 occulter_radius, $
                                 post_angle, $
+                                post_width, $
                                 p_angle, $
                                 daily=daily, $
                                 sigma=sigma, $
@@ -137,12 +140,14 @@ pro ucomp_write_all_iquv_image, data, $
                       field_radius=run->epoch('field_radius') / reduce_dims_factor, $
                       occulter_radius=occulter_radius / reduce_dims_factor, $
                       post_angle=post_angle, $
-                      p_angle=p_angle)
+                      post_width=post_width / reduce_dims_factor, $
+                      p_angle=p_angle, $
+                      /nan)
   endif else if (run->line(wave_region, 'mask_l1_occulter')) then begin
     mask = ucomp_mask(dims[0:1] / reduce_dims_factor, $
                       field_radius=run->epoch('field_radius') / reduce_dims_factor, $
                       occulter_radius=occulter_radius / reduce_dims_factor, $
-                      p_angle=p_angle)
+                      p_angle=p_angle, /nan)
   endif else begin
     mask = bytarr(dims[0] / reduce_dims_factor, dims[1] / reduce_dims_factor) + 1B
   endelse
@@ -157,18 +162,21 @@ pro ucomp_write_all_iquv_image, data, $
         display_max = intensity_display_max
         display_gamma = intensity_display_gamma
         display_power = intensity_display_power
+        background_color = 0
         ct_name = 'intensity'
       endif else if (p eq 3) then begin
         display_min = v_display_min
         display_max = v_display_max
         display_gamma = v_display_gamma
         display_power = v_display_power
+        background_color = 0
         ct_name = 'quv'
       endif else begin
         display_min = qu_display_min
         display_max = qu_display_max
         display_gamma = qu_display_gamma
         display_power = qu_display_power
+        background_color = 0
         ct_name = 'quv'
       endelse
 
@@ -184,6 +192,7 @@ pro ucomp_write_all_iquv_image, data, $
                          max=mg_signed_power(display_max, display_power), $
                          top=n_colors - 1L, $
                          /nan)
+      scaled_im[where(finite(scaled_im) eq 0, /null)] = background_color
 
       tv, scaled_im, p * n_wavelengths + e - 1L
 
@@ -224,6 +233,7 @@ pro ucomp_write_all_iquv_image, data, $
   display_max   = background_display_max
   display_gamma = background_display_gamma
   display_power = background_display_power
+  background_color = 0
   ct_name       = 'background'
 
   ucomp_loadct, ct_name, n_colors=n_colors
@@ -237,6 +247,7 @@ pro ucomp_write_all_iquv_image, data, $
                        max=mg_signed_power(display_max, display_power), $
                        top=n_colors - 1L, $
                        /nan)
+    scaled_im[where(finite(scaled_im) eq 0, /null)] = background_color
     tv, scaled_im, 4 * n_wavelengths + e - 1L
   endfor
 
@@ -261,7 +272,7 @@ end
 
 ; main-level example program
 
-date = '20240409'
+date = '20260915'
 
 config_basename = 'ucomp.latest.cfg'
 config_filename = filepath(config_basename, $
@@ -273,7 +284,7 @@ run = ucomp_run(date, 'test', config_filename)
 l1_dir = filepath('level1', subdir=date, root=run->config('processing/basedir'))
 
 wave_region = '1074'
-l1_basename = '20240409.180748.ucomp.1074.l1.p5.fts'
+l1_basename = '20260915.201240.ucomp.1074.l1.p5.fts'
 l1_filename = filepath(l1_basename, root=l1_dir)
 
 ucomp_read_l1_data, l1_filename, $
@@ -287,6 +298,7 @@ ucomp_read_l1_data, l1_filename, $
 
 occulter_radius = ucomp_getpar(primary_header, 'RADIUS')
 post_angle = ucomp_getpar(primary_header, 'POST_ANG')
+post_width = ucomp_getpar(primary_header, 'POST_WID')
 p_angle = ucomp_getpar(primary_header, 'SOLAR_P0')
 wavelengths = fltarr(n_wavelengths)
 for w = 0L, n_wavelengths - 1L do begin
@@ -300,6 +312,7 @@ ucomp_write_all_iquv_image, ext_data, $
                             wavelengths, $
                             occulter_radius, $
                             post_angle, $
+                            post_width, $
                             p_angle, $
                             run=run
 

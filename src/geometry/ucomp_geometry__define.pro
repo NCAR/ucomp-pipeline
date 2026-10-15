@@ -113,7 +113,9 @@ pro ucomp_geometry::display, camera, $
 
   ; display post
   if (finite(self.post_angle)) then begin
-    width = 35.0
+    ; default width in pixels used to be 35 pixels
+    self->getProperty, pixel_post_width=pixel_post_width
+
     t = (self.post_angle + 90.0) * !dtor
     if (keyword_set(no_rotate)) then begin
       x0 = self.occulter_center[0]
@@ -126,7 +128,7 @@ pro ucomp_geometry::display, camera, $
     y1 = self.occulter_radius * sin(t) + y0
     v = [y1 - y0, x0 - x1]
     v /= sqrt(total(v^2))
-    v *= width
+    v *= pixel_post_width
     v2 = [x1, y1] + v
     v3 = [x1, y1] - v
     v4 = [x1 - x0, y1 - y0] + v2
@@ -153,6 +155,7 @@ pro ucomp_geometry::setProperty, xsize=xsize, $
                                  occulter_chisq=occulter_chisq, $
                                  occulter_error=occulter_error, $
                                  post_angle=post_angle, $
+                                 post_width=post_width, $
                                  found_post_angle=found_post_angle, $
                                  eccentricity=eccentricity, $
                                  ellipse_angle=ellipse_angle, $
@@ -170,6 +173,7 @@ pro ucomp_geometry::setProperty, xsize=xsize, $
   if (n_elements(occulter_chisq) gt 0L) then self.occulter_chisq = occulter_chisq
   if (n_elements(occulter_error) gt 0L) then self.occulter_error = occulter_error
   if (n_elements(post_angle) gt 0L) then self.post_angle = post_angle
+  if (n_elements(post_width) gt 0L) then self.post_width = post_width
   if (n_elements(found_post_angle) gt 0L) then self.found_post_angle = found_post_angle
   if (n_elements(eccentricity) gt 0L) then self.eccentricity = eccentricity
   if (n_elements(ellipse_angle) gt 0L) then self.ellipse_angle = ellipse_angle
@@ -191,6 +195,8 @@ pro ucomp_geometry::getProperty, xsize=xsize, $
                                  occulter_chisq=occulter_chisq, $
                                  occulter_error=occulter_error, $
                                  post_angle=post_angle, $
+                                 post_width=post_width, $
+                                 pixel_post_width=pixel_post_width, $
                                  found_post_angle=found_post_angle, $
                                  eccentricity=eccentricity, $
                                  ellipse_angle=ellipse_angle, $
@@ -208,6 +214,10 @@ pro ucomp_geometry::getProperty, xsize=xsize, $
   if (arg_present(occulter_chisq)) then occulter_chisq = self.occulter_chisq
   if (arg_present(occulter_error)) then occulter_error = self.occulter_error
   if (arg_present(post_angle)) then post_angle = self.post_angle
+  if (arg_present(pixel_post_width)) then begin
+    pixel_post_width = 2 * self.occulter_radius * sin(!dtor * self.post_width / 2.0)
+  endif
+  if (arg_present(post_width)) then post_width = self.post_width
   if (arg_present(found_post_angle)) then found_post_angle = self.found_post_angle
   if (arg_present(eccentricity)) then eccentricity = self.eccentricity
   if (arg_present(ellipse_angle)) then ellipse_angle = self.ellipse_angle
@@ -248,6 +258,7 @@ function ucomp_geometry::init, _extra=e
   self.occulter_radius = !values.f_nan
 
   self.post_angle = !values.f_nan
+  self.post_width = !values.f_nan
   self.found_post_angle = !values.f_nan
   self.eccentricity = !values.f_nan
   self.ellipse_angle = !values.f_nan
@@ -280,6 +291,7 @@ pro ucomp_geometry__define
             occulter_chisq      : 0.0, $
             occulter_error      : 0L, $
             post_angle          : 0.0, $
+            post_width          : 0.0, $
             found_post_angle    : 0.0, $
             eccentricity        : 0.0, $
             ellipse_angle       : 0.0, $

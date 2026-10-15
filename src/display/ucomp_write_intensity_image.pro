@@ -72,6 +72,8 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
   ucomp_loadct, option_prefix + 'intensity', n_colors=n_colors
   mg_gamma_ct, display_gamma, /current, n_colors=n_colors
 
+  background_color = 0
+
   text_color = 252
   tvlct, 255, 255, 255, text_color
   occulter_color = 253
@@ -110,6 +112,7 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
                                     amount=run->line(file.wave_region, 'enhanced_intensity_amount'), $
                                     occulter_radius=file.occulter_radius, $
                                     post_angle=file.post_angle, $
+                                    post_width=file.post_width, $
                                     field_radius=run->epoch('field_radius'), $
                                     mask=run->config('display/mask_l1'))
     endif
@@ -120,12 +123,15 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
                         field_radius=run->epoch('field_radius'), $
                         occulter_radius=file.occulter_radius, $
                         post_angle=file.post_angle, $
-                        p_angle=file.p_angle)
+                        post_width=file.post_width, $
+                        p_angle=file.p_angle, $
+                        /nan)
     endif else if (run->line(file.wave_region, 'mask_l1_occulter')) then begin
       mask = ucomp_mask(dims[0:1], $
                         field_radius=run->epoch('field_radius'), $
                         occulter_radius=file.occulter_radius, $
-                        p_angle=file.p_angle)
+                        p_angle=file.p_angle, $
+                        /nan)
     endif else begin
       mask = bytarr(dims[0], dims[1]) + 1B
     endelse
@@ -135,6 +141,7 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
                        max=mg_signed_power(display_max, display_power), $
                        top=n_colors - 1L, $
                        /nan)
+    scaled_im[where(finite(scaled_im) eq 0, /null)] = background_color
 
     tv, scaled_im
 

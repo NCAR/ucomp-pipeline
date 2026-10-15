@@ -270,6 +270,10 @@ pro ucomp_l1_find_alignment, file, $
                 file.post_angle, $
                 comment='[deg] post angle CCW from north', $
                 format='(F0.3)', after=after
+  ucomp_addpar, primary_header, 'POST_WID', $
+                file.post_width, $
+                comment='[pixels] post width', $
+                format='(F0.3)', after=after
   radius = mean([rcam.occulter_radius, tcam.occulter_radius], /nan)
   ucomp_addpar, primary_header, 'RADIUS', $
                 radius, $

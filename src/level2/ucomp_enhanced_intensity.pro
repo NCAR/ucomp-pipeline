@@ -22,6 +22,8 @@
 ;     occulter radius to use if `MASK` is set
 ;   post_angle : in, optional, type=float
 ;     post angle to use if `MASK` is set
+;   post_width : in, optional, type=float
+;     post width to use if `MASK` is set
 ;   field_radius : in, optional, type=float
 ;     field radius to use if `MASK` is set
 ;   mask : in, optional, type=booleam
@@ -35,6 +37,7 @@ function ucomp_enhanced_intensity, intensity, $
                                    amount=amount, $
                                    occulter_radius=occulter_radius, $
                                    post_angle=post_angle, $
+                                   post_width=post_width, $
                                    field_radius=field_radius, $
                                    mask=mask
   compile_opt strictarr
@@ -47,7 +50,8 @@ function ucomp_enhanced_intensity, intensity, $
     _mask = ucomp_mask(dims[0:1], $
                        field_radius=field_radius, $
                        occulter_radius=occulter_radius + 3.5, $
-                       post_angle=post_angle)
+                       post_angle=post_angle, $
+                       post_width=post_width)
     masked_intensity = intensity * _mask
   endif else begin
     masked_intensity = intensity

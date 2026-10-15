@@ -299,6 +299,7 @@ pro ucomp_file::getProperty, run=run, $
                              image_scale=image_scale, $
                              occulter_radius=occulter_radius, $
                              post_angle=post_angle, $
+                             post_width=post_width, $
                              t_base=t_base, $
                              t_lcvr1=t_lcvr1, $
                              t_lcvr2=t_lcvr2, $
@@ -544,6 +545,11 @@ pro ucomp_file::getProperty, run=run, $
     self.rcam_geometry->getProperty, post_angle=rcam_post_angle
     self.tcam_geometry->getProperty, post_angle=tcam_post_angle
     post_angle = mean([rcam_post_angle, tcam_post_angle], /nan)
+  endif
+  if (arg_present(post_width)) then begin
+    self.rcam_geometry->getProperty, pixel_post_width=rcam_post_width
+    self.tcam_geometry->getProperty, pixel_post_width=tcam_post_width
+    post_width = mean([rcam_post_width, tcam_post_width], /nan)
   endif
 
   if (arg_present(t_base)) then t_base = self.t_base
