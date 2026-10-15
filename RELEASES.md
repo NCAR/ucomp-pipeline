@@ -821,3 +821,4 @@
 
 - added new synoptic cookbook name
 - fix for entering filesize in ucomp_table for non-L1 files
+- mask quicklook images by post width from fit instead of a default value
