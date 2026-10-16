@@ -1,5 +1,5 @@
 # needed for TIMESTAMP sub-command for STRING
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 4.0)
 
 macro(TODAY RESULT)
   string(TIMESTAMP M "%m")
