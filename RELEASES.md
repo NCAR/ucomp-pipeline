@@ -823,4 +823,6 @@
 - fix for entering filesize in ucomp_table for non-L1 files
 - mask quicklook images by post width from fit instead of a default value
 
-#### 1.0.28
+#### 1.0.28 [Oct 18, 2026]
+
+- fix for CMake version requirement check
