@@ -29,6 +29,8 @@ function ucomp_quality_saturated, file, $
 
   n_dims = size(ext_data, /n_dimensions)
 
+  ; [TODO]: adjust to Giuliana's values: should be camera, gain, mode dependent
+  ; using the data from the lab tests
   saturated_threshold = 4094.0
   nonlinear_threshold = 3000.0
 
