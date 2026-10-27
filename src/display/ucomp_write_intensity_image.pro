@@ -112,7 +112,6 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
                                     amount=run->line(file.wave_region, 'enhanced_intensity_amount'), $
                                     occulter_radius=file.occulter_radius, $
                                     post_angle=file.post_angle, $
-                                    post_width=file.post_width, $
                                     field_radius=run->epoch('field_radius'), $
                                     mask=run->config('display/mask_l1'))
     endif
@@ -123,7 +122,6 @@ pro ucomp_write_intensity_image, file, data, primary_header, $
                         field_radius=run->epoch('field_radius'), $
                         occulter_radius=file.occulter_radius, $
                         post_angle=file.post_angle, $
-                        post_width=file.post_width, $
                         p_angle=file.p_angle, $
                         /nan)
     endif else if (run->line(file.wave_region, 'mask_l1_occulter')) then begin

@@ -167,9 +167,6 @@ pro ucomp_write_iquv_image, data, $
                             ? occulter_radius / reduce_dims_factor $
                             : !null, $
                           post_angle=post_angle, $
-                          post_width=n_elements(post_width) gt 0L $
-                            ? post_width / reduce_dims_factor $
-                            : !null, $
                           field_radius=run->epoch('field_radius') / reduce_dims_factor, $
                           /nan)
       endif else begin
