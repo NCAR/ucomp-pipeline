@@ -172,20 +172,34 @@ pro ucomp_l1_promote_header, file, $
                 comment='Stokes V crosstalk metric', format='(F0.3)', $
                 after=after
 
+  ; [TODO]: average center 3 wavelengths together?
   if (n_elements(center_wavelength_indices) gt 0L) then begin
     center_wavelength_background = backgrounds[*, *, *, center_wavelength_indices]
     bkg_dims = size(center_wavelength_background, /dimensions)
     annulus_mask = ucomp_annulus(1.1 * solar_radius, 1.5 * solar_radius, $
-                                dimensions=bkg_dims[0:1])
+                                 dimensions=bkg_dims[0:1])
     post_mask = ucomp_post_mask(intensity_dims[0:1], file.post_angle)
     background_mask = annulus_mask and post_mask
-; TODO: compute for all wavelength, put mean in the primary header, use max for GBU
+    ; [TODO]: compute for all wavelength, put mean in the primary header, use
+    ; max for GBU
     background_indices = where(background_mask, n_background_pts)
     background_i = reform(center_wavelength_background[*, *, 0])
     median_background = median(background_i[background_indices])
     file.median_background = median_background
+
+    annulus_mask2 = ucomp_annulus(1.0 * solar_radius + 3.0, $
+                                  1.5 * solar_radius, $
+                                  dimensions=bkg_dims[0:1])
+    background_mask2 = annulus_mask2 and post_mask
+    background_indices2 = where(background_mask2, n_background_pts2)
+    median_background2 = median(background_i[background_indices2])
   endif
+  ; [TODO]: find median background by masking from 3 pixels above occulter to
+  ; 1.5 Rsun as well, put it in MED_BKG2
   ucomp_addpar, primary_header, 'MED_BKG', file.median_background, $
+                comment='[ppm] median of line center background annulus', $
+                format='(F0.3)', after=after
+  ucomp_addpar, primary_header, 'MED_BKG2', median_background2, $
                 comment='[ppm] median of line center background annulus', $
                 format='(F0.3)', after=after
 
