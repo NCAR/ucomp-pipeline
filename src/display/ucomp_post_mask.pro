@@ -13,7 +13,7 @@
 ;     position angle of post
 ;
 ; :Keywords:
-;   post_width : in, optional, type=float, default=70.0
+;   post_width : in, optional, type=float, default=76.0
 ;     width of the post in pixels; can be obtained from a geometry object's
 ;     `PIXEL_POST_WIDTH` property
 ;-
@@ -23,10 +23,10 @@ function ucomp_post_mask, dims, post_angle, post_width=post_width
   nx = dims[0]
   ny = dims[1]
 
-  ; the default power width is 78.0 for fullsize images, but has to be scaled
+  ; the default power width is 76.0 for fullsize images, but has to be scaled
   ; down if the image is only a fraction of the fullsize
   factor = max([nx / 1280.0, ny / 1024.0])
-  _post_width = mg_default(post_width, 78.0 * factor)
+  _post_width = mg_default(post_width, 76.0 * factor)
 
   post_mask = fltarr(nx, ny) + 1.0
 
