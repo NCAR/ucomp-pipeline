@@ -186,20 +186,8 @@ pro ucomp_l1_promote_header, file, $
     background_i = reform(center_wavelength_background[*, *, 0])
     median_background = median(background_i[background_indices])
     file.median_background = median_background
-
-    annulus_mask2 = ucomp_annulus(1.0 * solar_radius + 3.0, $
-                                  1.5 * solar_radius, $
-                                  dimensions=bkg_dims[0:1])
-    background_mask2 = annulus_mask2 and post_mask
-    background_indices2 = where(background_mask2, n_background_pts2)
-    median_background2 = median(background_i[background_indices2])
   endif
-  ; [TODO]: find median background by masking from 3 pixels above occulter to
-  ; 1.5 Rsun as well, put it in MED_BKG2
   ucomp_addpar, primary_header, 'MED_BKG', file.median_background, $
-                comment='[ppm] median of line center background annulus', $
-                format='(F0.3)', after=after
-  ucomp_addpar, primary_header, 'MED_BKG2', median_background2, $
                 comment='[ppm] median of line center background annulus', $
                 format='(F0.3)', after=after
 
