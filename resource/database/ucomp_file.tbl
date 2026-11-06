@@ -15,6 +15,7 @@ create table ucomp_file (
   level_id                              tinyint (2) not null,
   producttype_id                        tinyint (2),
   filetype_id                           tinyint (2),
+  published                             boolean,
 
   obs_plan                              char (60),
   obs_id                                char (60),
