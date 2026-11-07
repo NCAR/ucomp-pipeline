@@ -45,6 +45,7 @@ pro ucomp_db_l2_average_insert, wave_region, obsday_index, sw_index, db, run=run
             {name: 'level_id', type: '%d'}, $
             {name: 'producttype_id', type: '%d'}, $
             {name: 'filetype_id', type: '%d'}, $
+            {name: 'published', type: '%d'}, $
 
             {name: 'obs_plan', type: '''%s'''}, $
             {name: 'obs_id', type: '''%s'''}, $
@@ -103,8 +104,10 @@ pro ucomp_db_l2_average_insert, wave_region, obsday_index, sw_index, db, run=run
       if (types[t].product_type eq 'L2 average') then begin
         fits_read, fcb, !null, velocity_header, exten_no=4
         rest_wavelength = ucomp_getpar(velocity_header, 'RSTWVL')
+        published = run->config(wave_region + '/publish_type') ne 'none'
       endif else begin
         rest_wavelength = !null
+        published = run->config(wave_region + '/publish_l1')
       endelse
 
       fits_close, fcb
@@ -124,6 +127,7 @@ pro ucomp_db_l2_average_insert, wave_region, obsday_index, sw_index, db, run=run
                    types[t].level_index, $
                    producttype_index, $
                    filetype_index, $
+                   published, $
                    obs_plan, $
                    obs_id, $
                    0, $

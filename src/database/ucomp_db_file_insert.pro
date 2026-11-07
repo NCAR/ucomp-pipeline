@@ -71,6 +71,7 @@ pro ucomp_db_file_insert, files, level, product_type, $
             {name: 'level_id', type: '%d'}, $
             {name: 'producttype_id', type: '%d'}, $
             {name: 'filetype_id', type: '%d'}, $
+            {name: 'published', type: '%d'}, $
 
             {name: 'obs_plan', type: '''%s'''}, $
             {name: 'obs_id', type: '''%s'''}, $
@@ -146,6 +147,13 @@ pro ucomp_db_file_insert, files, level, product_type, $
       continue
     endelse
 
+    case level of
+      'L1': published = run->config(file.wave_region + '/publish_l1')
+      'L2': published = run->config(file.wave_region + '/publish_type') ne 'none'
+      'L3': published = 1
+      else: published = 0
+    endcase
+
     mg_log, 'ingesting %s', file.l1_basename, name=run.logger_name, /info
 
     db->execute, sql_cmd_fmt, $
@@ -159,6 +167,8 @@ pro ucomp_db_file_insert, files, level, product_type, $
                  level_index, $
                  producttype_index, $
                  filetype_index, $
+                 published, $
+
                  file.obs_plan_name, $
                  file.obs_id_name, $
 

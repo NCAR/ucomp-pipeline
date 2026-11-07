@@ -28,6 +28,9 @@ pro ucomp_db_density_insert, density_basenames, run=run
                                 status=status, $
                                 logger_name=run.logger_name)
 
+  ; all density files are published
+  published = 1B
+
   ; get index for level 3 data files
   q = 'select * from ucomp_level where level=''L3'''
   level_results = db->query(q, status=status)
@@ -56,6 +59,7 @@ pro ucomp_db_density_insert, density_basenames, run=run
             {name: 'level_id', type: '%d'}, $
             {name: 'producttype_id', type: '%d'}, $
             {name: 'filetype_id', type: '%d'}, $
+            {name: 'published', type: '%d'}, $
 
             {name: 'quality', type: '%d'}, $
             {name: 'gbu', type: '%d'}, $
@@ -98,6 +102,7 @@ pro ucomp_db_density_insert, density_basenames, run=run
                  level_index, $
                  producttype_index, $
                  filetype_index, $
+                 published, $
 
                  0UL, $
                  0UL, $
