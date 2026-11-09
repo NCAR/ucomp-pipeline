@@ -828,3 +828,5 @@
 - fix for CMake version requirement check
 
 #### 1.0.29
+
+- populate published field of ucomp_file database table
