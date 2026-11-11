@@ -11,7 +11,7 @@
 pro ucomp_db_startup, run=run
   compile_opt strictarr
 
-  if (~run->config('database/update')) then
+  if (~run->config('database/update')) then begin
     mg_log, 'not updating database, skipping...', name=run.logger_name, /warn
     goto, done
   endif
