@@ -831,4 +831,7 @@
 
 - populate published field of ucomp_file database table
 
-#### 1.0.30
+#### 1.0.30 [Nov 10, 2026]
+
+- fix for environments without database access
+- fix for days with machine log, but not FITS files
