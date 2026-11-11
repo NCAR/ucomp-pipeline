@@ -174,16 +174,22 @@ pro ucomp_send_notification, run=run
   ; add wave_region histogram image
   engineering_basedir = run->config('engineering/basedir')
   if (n_elements(engineering_basedir) gt 0L) then begin
+    attachments = []
     wave_region_histogram_filename = filepath(string(run.date, $
                                                      format='(%"%s.ucomp.daily.wave_regions.png")'), $
                                               subdir=ucomp_decompose_date(run.date), $
                                               root=engineering_basedir)
+    if (file_test(wave_region_histogram_filename, /regular)) then begin
+      attachments = [attachments, wave_region_histogram_filename]
+    endif
+
     data_type_histogram_filename = filepath(string(run.date, $
                                                    format='(%"%s.ucomp.daily.data_types.png")'), $
                                             subdir=ucomp_decompose_date(run.date), $
                                             root=engineering_basedir)
-    attachments = [wave_region_histogram_filename, $
-                   data_type_histogram_filename]
+    if (file_test(wave_region_histogram_filename, /regular)) then begin
+      attachments = [attachments, data_type_histogram_filename]
+    endif
   endif
 
   mg_send_mail, email, subject, body_text, $
