@@ -836,4 +836,6 @@
 - fix for environments without database access
 - fix for days with machine log, but not FITS files
 
-#### 1.0.31
+#### 1.0.31 [Nov 10, 2026]
+
+- fix typo
