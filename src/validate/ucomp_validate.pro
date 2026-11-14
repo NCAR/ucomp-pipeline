@@ -22,6 +22,11 @@ pro ucomp_validate, level_name, run=run
             name=run.logger_name, /info
     goto, done
   endif
+  if (~file_test(spec_filename, /regular)) then begin
+    mg_log, '%s validation spec does not exist, skipping', level_name, $
+            name=run.logger_name, /error
+    goto, done
+  endif
 
   ; get list of files
   case level_name of
@@ -47,7 +52,7 @@ pro ucomp_validate, level_name, run=run
   for f = 0L, n_files - 1L do begin
     basename = file_basename(files[f])
     dt = strmid(basename, 0, 15)
-    if (~self->epoch('process', datetime=dt)) then begin
+    if (~run->epoch('process', datetime=dt)) then begin
       mg_log, 'skipping %s', basename, name=run.logger_name, /debug
       n_invalid += 1L
       continue
