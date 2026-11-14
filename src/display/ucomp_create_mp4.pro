@@ -21,6 +21,13 @@
 pro ucomp_create_mp4, image_filenames, mp4_filename, run=run, status=status
   compile_opt strictarr
 
+  ffmpeg = run->config('externals/ffmpeg')
+  if (n_elements(ffmpeg) eq 0L) then begin
+    mg_log, 'ffmpeg not specified, skipping movie creation', $
+            name=run.logger_name, /info
+    goto, done
+  endif
+
   n_image_files = n_elements(image_filenames)
 
   tmp_image_fmt = '(%"tmp-%04d.%s")'
@@ -53,7 +60,7 @@ pro ucomp_create_mp4, image_filenames, mp4_filename, run=run, status=status
   cmd_format = '(%"%s -r 20 -i %s/tmp-%%*.%s -y -loglevel error ' $
                  + '-vcodec libx264 -passlogfile ucomp_tmp -r 20 %s")'
 
-  cmd = string(run->config('externals/ffmpeg'), $
+  cmd = string(ffmpeg, $
                tmp_dir, $
                ext, $
                mp4_filename, $
@@ -66,6 +73,7 @@ pro ucomp_create_mp4, image_filenames, mp4_filename, run=run, status=status
     mg_log, '%s', strjoin(error_result, ' '), name=run.logger_name, /error
   endif
 
+  done:
   ; delete tmp files
   file_delete, tmp_dir, /recursive, /quiet, /allow_nonexistent
 end
