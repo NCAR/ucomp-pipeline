@@ -133,13 +133,19 @@ pro ucomp_l3_density, run=run
   ; some output_basenames will be the empty string because the corresponding
   ; 1074 file was too far away from the 1079 file, so find the non-empty ones to
   ; insert
-  good_output_indices = where(output_basenames ne '', n_good_outputs)
-  if (n_good_outputs eq 0L) then begin
-    mg_log, 'no density files to insert into database', $
-            name=run.logger_name, /info
+
+  if (run->config('database/update')) then begin
+    good_output_indices = where(output_basenames ne '', n_good_outputs)
+    if (n_good_outputs eq 0L) then begin
+      mg_log, 'no density files to insert into database', $
+              name=run.logger_name, /info
+    endif else begin
+      output_basenames = output_basenames[good_output_indices]
+      ucomp_db_density_insert, output_basenames, run=run
+    endelse
   endif else begin
-    output_basenames = output_basenames[good_output_indices]
-    ucomp_db_density_insert, output_basenames, run=run
+    mg_log, 'skipping inserting density files into database', $
+            name=logger_name, /info
   endelse
 
   done:
