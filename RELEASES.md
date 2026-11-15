@@ -840,4 +840,8 @@
 
 - fix typo
 
-#### 1.0.32
+#### 1.0.32 [Nov 15, 2026]
+
+- handle no or invalid ffmpeg specification
+- handle invalid validation file location specified
+- handle not inserting density files in environment with no database
