@@ -845,3 +845,5 @@
 - handle no or invalid ffmpeg specification
 - handle invalid validation file location specified
 - handle not inserting density files in environment with no database
+
+#### 1.0.33
