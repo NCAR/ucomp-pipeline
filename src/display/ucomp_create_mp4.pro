@@ -27,6 +27,11 @@ pro ucomp_create_mp4, image_filenames, mp4_filename, run=run, status=status
             name=run.logger_name, /info
     goto, done
   endif
+  if (~file_test(ffmpeg, /executable)) then begin
+    mg_log, 'executable ffmpeg not found, skipping movie creation', $
+            name=run.logger_name, /info
+    goto, done
+  endif
 
   n_image_files = n_elements(image_filenames)
 

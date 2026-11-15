@@ -20,6 +20,11 @@ pro ucomp_write_l2_movies, wave_region, run=run
             name=run.logger_name, /info
     goto, done
   endif
+  if (~file_test(ffmpeg, /executable)) then begin
+    mg_log, 'executable ffmpeg not found, skipping movie creation', $
+            name=run.logger_name, /info
+    goto, done
+  endif
 
   mg_log, 'creating level 2 mp4s for %s nm', wave_region, $
           name=run.logger_name, /info
