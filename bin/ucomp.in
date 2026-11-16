@@ -828,7 +828,7 @@ def missing(args):
         for cf in created_files:
             if cf not in present_files:
                 if args.script:
-                    print(f"scp $REMOTE_LOCATION/{cf} $LOCAL_LOCATION")
+                    print(f"scp -p $REMOTE_LOCATION/{cf} $LOCAL_LOCATION")
                 else:
                     print(cf)
 
