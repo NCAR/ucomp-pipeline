@@ -847,3 +847,6 @@
 - handle not inserting density files in environment with no database
 
 #### 1.0.33
+
+- handle longer DATATYPE value in ucomp_raw database table
+- handle more bad metadata FITS keywords
