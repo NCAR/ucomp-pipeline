@@ -193,14 +193,26 @@ pro ucomp_read_raw_data, filename, $
   endif
 
   if (arg_present(ext_headers) && (n_elements(metadata_fixes) gt 0L)) then begin
-    file_indices = where(metadata_fixes.filename eq file_basename(filename), $
+    file_indices = where(metadata_fixes.filename eq file_basename(filename) $
+                           and metadata_fixes.extension gt 0, $
                          n_file_badframes)
     for f = 0L, n_file_badframes - 1L do begin
-      h = ext_headers[metadata_fixes[file_indices[f]].extension - 1]
-      ucomp_addpar, h, $
-                    metadata_fixes[file_indices[f]].keyword_name, $
-                    metadata_fixes[file_indices[f]].keyword_value
-      ext_headers[metadata_fixes[file_indices[f]].extension - 1] = h
+        h = ext_headers[metadata_fixes[file_indices[f]].extension - 1]
+        ucomp_addpar, h, $
+                      metadata_fixes[file_indices[f]].keyword_name, $
+                      metadata_fixes[file_indices[f]].keyword_value
+        ext_headers[metadata_fixes[file_indices[f]].extension - 1] = h
+    endfor
+  endif
+
+  if (arg_present(primary_header) && (n_elements(metadata_fixes) gt 0L)) then begin
+    file_indices = where(metadata_fixes.filename eq file_basename(filename) $
+                           and metadata_fixes.extension eq 0, $
+                         n_file_badframes)
+    for f = 0L, n_file_badframes - 1L do begin
+        ucomp_addpar, primary_header, $
+                      metadata_fixes[file_indices[f]].keyword_name, $
+                      metadata_fixes[file_indices[f]].keyword_value
     endfor
   endif
 

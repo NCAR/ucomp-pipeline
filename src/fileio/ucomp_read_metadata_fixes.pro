@@ -53,9 +53,14 @@ function ucomp_read_metadata_fixes, filename, error=error
 
   keyword_name  = raw_metadata_fixes.(2)
   for f = 0L, n_metadata_fixes - 1L do begin
-    ; occulter -> OCCLTR
+    ; metadata file name -> FITS keyword name
     case keyword_name[f] of
       'occulter': keyword_name[f] = 'OCCLTR'
+      'caloptic': keyword_name[f] = 'CALOPTIC'
+      'cover'   : keyword_name[f] = 'COVER'
+      'diffuser': keyword_name[f] = 'DIFFUSR'
+      'darkshut': keyword_name[f] = 'DARKSHUT'
+      'filter'  : keyword_name[f] = 'FILTER'
     endcase
   endfor
   metadata_fixes.keyword_name = keyword_name
