@@ -8,7 +8,7 @@
 ;   process_state : in, required, type=string
 ;     must be either "processed" or "processing", exactly
 ;   obsday_id : in, required, type=int
-;     `day_id` index into `mlso_numfiles` corresponging to the observing day
+;     `day_id` index into `mlso_numfiles` corresponding to the observing day
 ;     being processed 
 ;   db : in, required, type=object
 ;     `UCOMPdbMySQL` database object
