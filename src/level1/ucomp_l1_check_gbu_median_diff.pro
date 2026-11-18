@@ -17,9 +17,6 @@ pro ucomp_l1_check_gbu_median_diff, wave_region, run=run
 
   mg_log, 'starting...', name=run.logger_name, /info
 
-  publish_type = run->config(wave_region + '/publish_type')
-  check_qu = publish_type eq 'all'
-
   mask = ucomp_gbu_mask(run->config('gbu/mask'), wave_region, run=run) $
            and ucomp_gbu_mask(run->epoch('gbu_mask'), wave_region, run=run)
 
@@ -144,51 +141,51 @@ pro ucomp_l1_check_gbu_median_diff, wave_region, run=run
       dims = size(ext_data, /dimensions)
       sigma = fltarr(dims[2], dims[3]) + !values.f_nan
 
-      for p = 0L, dims[2] - 1L do begin
-        for w = 0L, dims[3] - 1L do begin
-          !null = where((sigma_data[*, *, p, w] eq 0.0) or (mask eq 0), $
-                        complement=nonzero_indices, ncomplement=n_nonzero)
-          if (n_nonzero gt 0L) then begin
-            diff = abs(ext_data[*, *, p, w] - median_data[*, *, p, w]) / sigma_data[*, *, p, w]
-            sigma[p, w] = median(diff[nonzero_indices])
-          endif
-        endfor
-      endfor
+      blue_reference_wavelength = run->line(wave_region, $
+                                            'blue_reference_wavelength', $
+                                            found=blue_reference_found)
+      center_wavelength         = run->line(wave_region, $
+                                            'center_wavelength')
+      red_reference_wavelength  = run->line(wave_region, $
+                                            'red_reference_wavelength', $
+                                            found=red_reference_found)
+      ucomp_find_fit_wavelengths, blue_reference_wavelength, $
+                                  center_wavelength, $
+                                  red_reference_wavelength, $
+                                  unique_wavelengths, $
+                                  blue_index=blue_index, $
+                                  center_index=center_index, $
+                                  red_index=red_index
 
-      for w = 0L, dims[3] - 1L do begin
-        mg_log, 'sigma @ %0.3f nm: %s', $
-                unique_wavelengths[w], $
-                strjoin(string(sigma[*, w], format='%0.2f'), ', '), $
-                name=run.logger_name, /debug
-      endfor
+      ; do like in CoMP now:
+      ;   - only for I (I = (I_center + I_red + I_blue) / 2?)
+      ;   - form diff = image - median(good_images)
+      ;   - if stddev(diff) > 2.5, the file is bad
 
-      ; intensity check first
-      program_files[f].max_i_sigma = max(sigma[0, *], /nan)
+      intensity = total(ext_data[*, *, 0, [blue_index, center_index, red_index]], 4, /preserve_type) / 2.0
+      diff = intensity - median_data[*, *, 0]
+
+      ; check I
+      program_files[f].max_i_sigma = stddev(diff)
       if (program_files[f].max_i_sigma gt run->line(wave_region, 'gbu_max_stddev_i')) then begin
         program_files[f].gbu = gbu_median_diff_mask
       endif
 
-      ; next, check Q and U
-      program_files[f].max_qu_sigma = max(sigma[1:2, *], /nan)
-      if (check_qu) then begin
-        if (program_files[f].max_qu_sigma gt run->line(wave_region, 'gbu_max_stddev_qu')) then begin
-          program_files[f].gbu = gbu_median_diff_mask
-        endif
-      endif
+      ; do not check Q and V now
 
       ; do not check V
 
       ; check background
-      background_percent_diff = 100.0 * (program_files[f].median_background -  program_median_background) $
-                                  / program_median_background
-
-      mg_log, 'background %% diff: %0.1f %%', $
-              background_percent_diff, $
-              name=run.logger_name, /debug
-      mg_log, 'max background %% diff: %0.1f%% (threshold: %0.1f %%)', $
-              max(background_percent_diff), $
-              run->line(wave_region, 'gbu_max_background_increase'), $
-              name=run.logger_name, /debug
+;       background_percent_diff = 100.0 * (program_files[f].median_background -  program_median_background) $
+;                                   / program_median_background
+; 
+;       mg_log, 'background %% diff: %0.1f %%', $
+;               background_percent_diff, $
+;               name=run.logger_name, /debug
+;       mg_log, 'max background %% diff: %0.1f%% (threshold: %0.1f %%)', $
+;               max(background_percent_diff), $
+;               run->line(wave_region, 'gbu_max_background_increase'), $
+;               name=run.logger_name, /debug
 
       ; not performing this check right now, but writing % diff in logs
       ; if (max(background_percent_diff) gt run->line(wave_region, 'gbu_max_background_increase')) then begin
