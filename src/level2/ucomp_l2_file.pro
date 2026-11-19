@@ -92,21 +92,11 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                                         found=red_reference_found)
 
   if (red_reference_found && blue_reference_found) then begin
-    mg_log, 'using %0.3f nm-%0.3f nm-%0.3f nm for analytical Guassian', $
+    mg_log, 'ref wavelengths %0.3f nm-%0.3f nm-%0.3f nm for analytic Guassian', $
             blue_reference_wavelength, $
             center_wavelength, $
             red_reference_wavelength, $
             name=run.logger_name, /debug
-    ; NOTE: this is naive and assuming that there are not two equally distant
-    ; wavelengths to the preferred spot, for example, if center wavelength is
-    ; 1074.7 with 0.11 wing_offset, and the observed wavelengths were:
-    ;
-    ;   1074.535, 1074.645, 1074.7, 1074.755, 1074.865
-    ;
-    ; Then we might get a tie that is broken arbitrarily that results in
-    ; selecting blue=1074.535 and red=1074.755, depending on floating point
-    ; round off, or always rounding down, or some other arbitrary process.
-
     ucomp_find_fit_wavelengths, blue_reference_wavelength, $
                                 center_wavelength, $
                                 red_reference_wavelength, $
@@ -115,7 +105,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
                                 center_index=center_index, $
                                 red_index=red_index
   endif else begin
-    mg_log, 'using center 3 wavelengths for analytical Guassian', $
+    mg_log, 'using center 3 wavelengths for analytic Guassian', $
             name=run.logger_name, /debug
 
     blue_index = n_wavelengths / 2L - 1L
@@ -123,7 +113,7 @@ pro ucomp_l2_file, filename, thumbnail=thumbnail, run=run
     red_index = n_wavelengths / 2L + 1L
   endelse
 
-  mg_log, 'using %0.3f nm-%0.3f nm-%0.3f nm for analytical Guassian', $
+  mg_log, 'using %0.3f nm-%0.3f nm-%0.3f nm for analytic Guassian', $
           wavelengths[blue_index], $
           wavelengths[center_index], $
           wavelengths[red_index], $
