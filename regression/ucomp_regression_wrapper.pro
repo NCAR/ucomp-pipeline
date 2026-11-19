@@ -168,6 +168,7 @@ pro ucomp_regression_wrapper, date, config_filename
 
   ; validate any FITS files written
   fitsverify_location = run->config('externals/fitsverify')
+  fitsverify_library = run->config('externals/fitsverify')
   solarnet_location = run->config('externals/solarnet')
   for r = 0L, n_results - 1L do begin
     filename = filepath(results[r], root=results_dir)
@@ -175,7 +176,10 @@ pro ucomp_regression_wrapper, date, config_filename
       mg_log, 'validating FITS file %s...', results[r], $
               name=run.logger_name, /info
       if (n_elements(fitsverify_location) gt 0L) then begin
-        fitsverify_cmd = string(fitsverify_location, filename, format='%s -q -e %s')
+        fitsverify_cmd = string(fitsverify_library, $
+                                fitsverify_location, $
+                                filename, $
+                                format='LD_LIBRARY_PATH=%s %s -q -e %s')
         spawn, fitsverify_cmd, stdout, stderr, exit_status=n_errors
         if (n_errors gt 0L) then begin
           for o = 0L, n_elements(stdout) - 1L do begin
