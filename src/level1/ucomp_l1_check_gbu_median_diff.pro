@@ -166,7 +166,7 @@ pro ucomp_l1_check_gbu_median_diff, wave_region, run=run
       diff = intensity - median_data[*, *, 0]
 
       ; check I
-      program_files[f].max_i_sigma = stddev(diff)
+      program_files[f].max_i_sigma = stddev(diff, /nan)
       if (program_files[f].max_i_sigma gt run->line(wave_region, 'gbu_max_stddev_i')) then begin
         program_files[f].gbu = gbu_median_diff_mask
       endif
