@@ -175,9 +175,17 @@ pro ucomp_regression_wrapper, date, config_filename
       mg_log, 'validating FITS file %s...', results[r], $
               name=run.logger_name, /info
       if (n_elements(fitsverify_location) gt 0L) then begin
-        spawn, string(fitsverify_location, filename, format='%s -q -e %s'), $
-               stdout, stderr, exit_status=n_errors
+        fitsverify_cmd = string(fitsverify_location, filename, format='%s -q -e %s')
+        spawn, fitsverify_cmd, stdout, stderr, exit_status=n_errors
         if (n_errors gt 0L) then begin
+          for o = 0L, n_elements(stdout) - 1L do begin
+            mg_log, 'stdout %d: %s', o + 1, stdout[o], name=run.logger_name, /error
+          endfor
+          for e = 0L, n_elements(stderr) - 1L do begin
+            mg_log, 'stderr %d: %s', e + 1, stderr[e], name=run.logger_name, /error
+          endfor
+          mg_log, 'fitsverify cmd: %s', fitsverify_cmd, $
+                  name=run.logger_name, /error
           mg_log, '%d errors found in %s', n_errors, results[r], $
                   name=run.logger_name, /error
           status += 8L
