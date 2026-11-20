@@ -115,4 +115,4 @@ SUBJECT="UCoMP nightly test results for ${DATE}"
 mail -s "${SUBJECT}" -a "${LOG_FILENAME}" -a "${REGRESSION_FILENAME}" -r $(whoami)@ucar.edu $(whoami)@ucar.edu < ${MESSAGE_FILENAME}
 
 # clean up
-rm -rf ${LOG_DIRNAME}
+#rm -rf ${LOG_DIRNAME}
