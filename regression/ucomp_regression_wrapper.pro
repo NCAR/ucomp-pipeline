@@ -182,12 +182,6 @@ pro ucomp_regression_wrapper, date, config_filename
                                 format='LD_LIBRARY_PATH=%s %s -q -e %s')
         spawn, fitsverify_cmd, stdout, stderr, exit_status=n_errors
         if (n_errors gt 0L) then begin
-          for o = 0L, n_elements(stdout) - 1L do begin
-            mg_log, 'stdout %d: %s', o + 1, stdout[o], name=run.logger_name, /error
-          endfor
-          for e = 0L, n_elements(stderr) - 1L do begin
-            mg_log, 'stderr %d: %s', e + 1, stderr[e], name=run.logger_name, /error
-          endfor
           mg_log, 'fitsverify cmd: %s', fitsverify_cmd, $
                   name=run.logger_name, /error
           mg_log, '%d errors found in %s', n_errors, results[r], $
@@ -201,7 +195,8 @@ pro ucomp_regression_wrapper, date, config_filename
         spawn, string(solarnet_location, filename, format='%s -q %s'), $
                exit_status=n_findings
         if (n_findings gt 0L) then begin
-          mg_log, '%d findings found in %s', n_findings, results[r], $
+          mg_log, '%d SOLARNET finding(s) found in %s', $
+                  n_findings, results[r], $
                   name=run.logger_name, /warn
         endif
       endif
