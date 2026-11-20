@@ -168,7 +168,7 @@ pro ucomp_regression_wrapper, date, config_filename
 
   ; validate any FITS files written
   fitsverify_location = run->config('externals/fitsverify')
-  fitsverify_library = run->config('externals/fitsverify')
+  fitsverify_library = strjoin(run->config('externals/fitsverify_library'), path_sep(/search_path))
   solarnet_location = run->config('externals/solarnet')
   for r = 0L, n_results - 1L do begin
     filename = filepath(results[r], root=results_dir)
