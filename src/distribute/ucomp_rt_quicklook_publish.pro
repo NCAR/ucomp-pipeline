@@ -12,7 +12,7 @@
 ;   run : in, required, type=object
 ;     `ucomp_run` object
 ;-
-pro ucomp_rt_quicklook_distribute, files, run=run
+pro ucomp_rt_quicklook_publish, files, run=run
   compile_opt strictarr
 
   if (n_elements(files) eq 0L) then begin

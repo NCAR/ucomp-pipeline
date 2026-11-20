@@ -5,7 +5,7 @@ function ucomp_rt_quicklook_publish_ut::init, _extra=e
 
   if (~self->UCoMPutTestCase::init(_extra=e)) then return, 0
 
-  self->addTestingRoutine, ['ucomp_rt_quicklook_distribute']
+  self->addTestingRoutine, ['ucomp_rt_quicklook_publish']
   
 
   return, 1
