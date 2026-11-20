@@ -182,10 +182,11 @@ pro ucomp_regression_wrapper, date, config_filename
                                 format='LD_LIBRARY_PATH=%s %s -q -e %s')
         spawn, fitsverify_cmd, stdout, stderr, exit_status=n_errors
         if (n_errors gt 0L) then begin
-          mg_log, 'fitsverify cmd: %s', fitsverify_cmd, $
-                  name=run.logger_name, /error
           mg_log, '%d errors found in %s', n_errors, results[r], $
                   name=run.logger_name, /error
+          for e = 0L, n_elements(stderr) - 1L do begin
+            mg_log, '%s', stderr[e], name=run.logger_name, /error
+          endfor
           status += 8L
         endif
       endif
