@@ -200,6 +200,12 @@ pro ucomp_regression_wrapper, date, config_filename
                   n_findings, results[r], $
                   name=run.logger_name, /warn
           mg_log, solarnet_cmd, name=run.logger_name, /warn
+          for e = 0L, n_elements(stderr) - 1L do begin
+            mg_log, stderr[e], name=run.logger_name, /warn
+          endfor
+          for 0 = 0L, n_elements(stdout) - 1L do begin
+            mg_log, stdout[o], name=run.logger_name, /warn
+          endfor
         endif
       endif
     endif
