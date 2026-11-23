@@ -58,3 +58,45 @@ function ucomp_vcrosstalk_metric, data, solar_radius, post_angle, $
   indices = where(mask, n_pts)
   return, total((v[indices])^2, /preserve_type, /nan) * 1.0e6 / n_pts / n_pts
 end
+
+
+; main-level example program
+
+date = '20261118'
+basename = '20261118.175709.ucomp.789.l1.p5.fts'
+
+config_basename = 'ucomp.production.cfg'
+config_filename = filepath(config_basename, $
+                           subdir=['..', '..', '..', 'ucomp-config'], $
+                           root=mg_src_root())
+run = ucomp_run(date, 'test', config_filename)
+
+filename = filepath(basename, $
+                    subdir=[date, 'level1'], $
+                    root=run->config('processing/basedir'))
+
+ucomp_read_l1_data, filename, $
+                    primary_header=primary_header, $
+                    ext_data=ext_data, $
+                    ext_headers=ext_headers, $
+                    background_data=background_data, $
+                    background_headers=background_headers, $
+                    n_wavelengths=n_wavelengths
+
+post_angle = ucomp_getpar(primary_header, 'POST_ANG')
+solar_radius = ucomp_getpar(primary_header, 'R_SUN')
+
+n_extensions = n_elements(ext_headers)
+vcrosstalk_by_extension = fltarr(n_extensions)
+
+for e = 0L, n_extensions - 1L do begin
+  vcrosstalk_by_extension[e] = ucomp_vcrosstalk_metric(ext_data[*, *, *, e], $
+                                                       solar_radius, $
+                                                       post_angle)
+endfor
+
+print, vcrosstalk_by_extension
+
+obj_destroy, run
+
+end
