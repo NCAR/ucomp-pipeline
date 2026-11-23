@@ -193,12 +193,13 @@ pro ucomp_regression_wrapper, date, config_filename
       if (n_elements(solarnet_location) gt 0L) then begin
         mg_log, 'validating FITS file %s against SOLARNET...', results[r], $
                 name=run.logger_name, /info
-        spawn, string(solarnet_location, filename, format='%s -q %s'), $
-               exit_status=n_findings
+        solarnet_cmd = string(solarnet_location, filename, format='%s -q %s')
+        spawn, solarnet_cmd, stdout, stderr, exit_status=n_findings
         if (n_findings gt 0L) then begin
           mg_log, '%d SOLARNET finding(s) found in %s', $
                   n_findings, results[r], $
                   name=run.logger_name, /warn
+          mg_log, solarnet_cmd, name=run.logger_name, /warn
         endif
       endif
     endif
