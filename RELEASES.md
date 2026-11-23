@@ -850,3 +850,5 @@
 
 - handle longer DATATYPE value in ucomp_raw database table
 - handle more bad metadata FITS keywords
+- change difference from median GBU test to like CoMP's
+- find nearest red/blue reference wavelength by rounding away from center
