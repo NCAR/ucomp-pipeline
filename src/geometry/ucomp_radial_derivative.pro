@@ -100,9 +100,9 @@ function ucomp_radial_derivative, data, radius_guess, dr, $
     points[1, s] = yy[imax]
 
     radii[s] = radius_guess - dr $
-                 + ucomp_parabola([double(imax - 1.), $
+                 + ucomp_parabola([double(imax - 1.0D), $
                                    double(imax), $
-                                   double(imax + 1.)], $
+                                   double(imax + 1.0D)], $
                                   [rad[imax - 1], $
                                    rad[imax], $
                                    rad[imax + 1]])
