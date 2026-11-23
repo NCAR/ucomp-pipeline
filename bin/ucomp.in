@@ -273,7 +273,10 @@ def list_processes(args):
 
     ucomp_processes = []
     for p in psutil.process_iter():
-        cmdline = p.cmdline()
+        try:
+            cmdline = p.cmdline()
+        except psutil.ZombieProcess as e:
+            cmdline = ""
         cmdline = "" if len(cmdline) == 0 else cmdline[-1]
         if p.name() == "idl" and cmdline.startswith("ucomp"):
             ucomp_processes.append({"cmdline": cmdline,
