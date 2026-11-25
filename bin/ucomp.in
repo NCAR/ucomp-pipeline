@@ -90,7 +90,6 @@ CONFIG_DIR = "@CONFIG_DIR@"
 
 
 # config file helpers
-# [TODO]: need to handle config file inheritance
 
 def get_config_filename(flags):
     config_basename = f"ucomp.{flags}.cfg"
@@ -108,8 +107,33 @@ def get_config(flags, error):
         error(f"configuration file does not exist: {config_basename}")
 
     # read config file to get arguments to launch data/processing simulators
+    config_dirname = os.path.dirname(config_filename)
+
+    # make a list of config files that will be read because of inheritance
+    config_filenames = [config_filename]
+
+    # read the first config file
     config = configparser.ConfigParser()
     config.read(config_filename)
+
+    while config.has_section("config") and config.has_option("config", "inherit"):
+        parent_config_basename = config.get("config", "inherit")
+        if parent_config_basename is None:
+            break
+        else:
+            parent_config_filename = os.path.join(
+                config_dirname,
+                parent_config_basename
+            )
+            if not os.path.exists(parent_config_filename):
+                error(f"parent config file {parent_config_basename} not found")
+            config = configparser.ConfigParser()
+            config.read(parent_config_filename)
+            config_filenames.append(parent_config_filename)
+
+    config = configparser.ConfigParser()
+    config_filenames.reverse()
+    config.read(config_filenames)
 
     return(config)
 
@@ -242,6 +266,9 @@ def notify_completed(args, task):
 
         with open(config_filename, "r") as f:
             text = f.read()
+
+        if "message" in args and args.message is not None:
+            text = f"{args.message}\n\n" + text
 
         msg = MIMEText(text)
         msg["Subject"] = f"UCoMP {task} [{args.flags}] job completed for {dates} on {hostname}"
@@ -1588,6 +1615,18 @@ if __name__ == "__main__":
     clearday_parser.add_argument("-f", "--flags", type=str, help=flags_help,
         default="latest")
 
+    msg_help = "message passed along to report"
+    eod_parser.add_argument("-m", "--message", type=str, help=msg_help,
+        default=None)
+    rt_parser.add_argument("-m", "--message", type=str, help=msg_help,
+        default=None)
+    cal_parser.add_argument("-m", "--message", type=str, help=msg_help,
+        default=None)
+    reprocess_parser.add_argument("-m", "--message", type=str, help=msg_help,
+        default=None)
+    clearday_parser.add_argument("-m", "--message", type=str, help=msg_help,
+        default=None)
+
     nowait_help = "set to run all dates simultaneously"
     eod_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
     rt_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
@@ -1616,6 +1655,8 @@ if __name__ == "__main__":
         help="apply distortion to files")
     distort_parser.add_argument("-f", "--flags", type=str, help=flags_help,
         default="latest")
+    distort_parser.add_argument("-m", "--message", type=str, help=msg_help,
+        default=None)
     distort_parser.add_argument("--no-wait", action="store_true",
         help=nowait_help)
     distort_parser.add_argument("--verbose", action="store_true",
@@ -1631,6 +1672,8 @@ if __name__ == "__main__":
         metavar="date-expr")
     archive_parser.add_argument("-f", "--flags", type=str, help=flags_help,
         default="latest")
+    archive_parser.add_argument("-m", "--message", type=str, help=msg_help,
+        default=None)
     archive_parser.add_argument("-l", "--level", type=str, default=None,
         help="level to archive: 0, 1, 2, or 3")
     archive_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
@@ -1645,6 +1688,8 @@ if __name__ == "__main__":
         metavar="date-expr")
     regression_parser.add_argument("-f", "--flags", type=str, help=flags_help,
         default="latest")
+    regression_parser.add_argument("-m", "--message", type=str, help=msg_help,
+        default=None)
     regression_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
     regression_parser.add_argument("--verbose", action="store_true",
         help="set to show more information on launch")
@@ -1657,6 +1702,8 @@ if __name__ == "__main__":
         metavar="date-expr")
     verify_parser.add_argument("-f", "--flags", type=str, help=flags_help,
         default="latest")
+    verify_parser.add_argument("-m", "--message", type=str, help=msg_help,
+        default=None)
     verify_parser.add_argument("--verbose", action="store_true",
         help="set to show more information on launch")
     verify_parser.set_defaults(func=verify, parser=verify_parser)
@@ -1679,6 +1726,8 @@ if __name__ == "__main__":
         metavar="date-expr")
     script_parser.add_argument("-f", "--flags", type=str, help=flags_help,
         default="latest")
+    script_parser.add_argument("-m", "--message", type=str, help=msg_help,
+        default=None)
     script_parser.add_argument("-n", "--name", type=str, help="name of script",
         required=True)
     script_parser.add_argument("--no-wait", action="store_true", help=nowait_help)
